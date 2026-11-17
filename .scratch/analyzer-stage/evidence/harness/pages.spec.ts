@@ -1,13 +1,13 @@
 /* Pages and parts outside the grade: AT-17 (static heroes), AT-19, AT-21, AT-23, AT-24. */
 import { test, expect, type Page } from "@playwright/test";
-import { openAnalyzer, openPage, serveDir, SCR, BASE, dir, log, reset, newPage, WIDTHS, THEMES } from "./lib";
-import { rateEachHeroText } from "../../ev/apps/site/e2e/floorx";
-const CMD = "EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)";
+import { openAnalyzer, openPage, serveDir, SCR, BASE, dir, log, reset, newPage, WIDTHS, THEMES, plateScan, fmtPlate } from "./lib";
+import { rateEachHeroText } from "../../ev2/apps/site/e2e/floorx";
+const CMD = "EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)";
 const fmt = (rows: { hero: string; text: string; ratio: number | null }[]) => rows.map((r) => `${r.hero} | ${r.text} | ${r.ratio === null ? "no pixel" : r.ratio.toFixed(2)}:1`).join("\n    ");
 
 test.describe("cpc", () => {
   let srv: { close: () => Promise<void> };
-  test.beforeAll(async () => { srv = await serveDir(`${SCR}/out-cpc`, 4173); });
+  test.beforeAll(async () => { srv = await serveDir(`${SCR}/r2-out-cpc`, 4173); });
   test.afterAll(async () => { await srv.close(); });
 
   test("AT-17 static heroes", async ({ browser }) => {
@@ -19,22 +19,7 @@ test.describe("cpc", () => {
       await page.waitForTimeout(800);
       const hero = page.locator("main section").first();
       await hero.screenshot({ path: `${dir("AT-17")}/${name}-${width}-${theme}.png` });
-      // Each hero text: its background, its text shadow, and the background of each box up to the hero.
-      const boxes = await hero.evaluate((h) => {
-        const out: string[] = [];
-        for (const el of h.querySelectorAll("h1, h2, h3, p, span, a, div")) {
-          const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim());
-          if (!own) continue;
-          const chain: string[] = [];
-          for (let up: Element | null = el; up && up !== h; up = up.parentElement) {
-            const cs = getComputedStyle(up);
-            if (cs.backgroundColor !== "rgba(0, 0, 0, 0)" || cs.backgroundImage !== "none" || cs.backdropFilter !== "none") chain.push(`${up.tagName.toLowerCase()} bg ${cs.backgroundColor} img ${cs.backgroundImage.slice(0, 30)} backdrop ${cs.backdropFilter}`);
-          }
-          if (chain.length) out.push(`"${el.textContent!.trim().slice(0, 30)}": ${chain.join(" < ")}`);
-        }
-        return out;
-      });
-      log("AT-17", `${name} ${width} ${theme}: hero texts with a filled box between the text and the hero: ${boxes.length ? boxes.join(" ; ") : "none"}`);
+      log("AT-17", `${name} ${width} ${theme}: ${fmtPlate(await plateScan(page, "main section"))}`);
       await ctx.close();
     }
   });
@@ -109,7 +94,7 @@ test.describe("cpc", () => {
 
 test.describe("norcal", () => {
   let srv: { close: () => Promise<void> };
-  test.beforeAll(async () => { srv = await serveDir(`${SCR}/out-norcal`, 4173); });
+  test.beforeAll(async () => { srv = await serveDir(`${SCR}/r2-out-norcal`, 4173); });
   test.afterAll(async () => { await srv.close(); });
   test("AT-23 Finder wait", async ({ browser }) => {
     reset("AT-23", CMD);

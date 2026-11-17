@@ -1,9 +1,9 @@
 /* The tests that need a real grade: AT-10, 11, 12, 13 (reveal), 17 (result), 20 (reveal), 26, 30, 31, 32. */
 import { test, expect, type Page } from "@playwright/test";
 import { writeFileSync } from "node:fs";
-import { openAnalyzer, serveDir, SCR, T_QUERY, READ_HERO, WAIT_HERO, dir, log, reset, holdAnalyze, settle, newPage, netLog, watchReveal, revealOf, WIDTHS, THEMES, type Reveal } from "./lib";
-import { rateEachHeroText } from "../../ev/apps/site/e2e/floorx";
-const CMD = "EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)";
+import { openAnalyzer, serveDir, SCR, T_QUERY, READ_HERO, WAIT_HERO, dir, log, reset, holdAnalyze, settle, newPage, netLog, watchReveal, revealOf, watchRowLight, rowLightOf, plateScan, fmtPlate, WIDTHS, THEMES, type Reveal } from "./lib";
+import { rateEachHeroText } from "../../ev2/apps/site/e2e/floorx";
+const CMD = "EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)";
 const N_QUERY = "?team=4&with=6&give=8132&get=8144,6130";
 const isAnalyze = (r: { url: () => string; request: () => { method: () => string } }) => r.url().endsWith("/analyze") && r.request().method() === "POST";
 const stamps = (sent: number, r: Reveal) => (["lean", "scale", "case", "tabs"] as const).map((k) => `${k} ${r[k] === null ? "never" : `${r[k]! - sent} ms`}`).join(", ");
@@ -26,7 +26,7 @@ async function firstGrade(page: Page, query: string, theme: "light" | "dark", la
 test("R0 the first real grade of trade T and of the norcal trade", async ({ browser }) => {
   reset("AT-26", CMD);
   reset("AT-12", CMD);
-  let srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  let srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   let { ctx, page } = await newPage(browser, 1280);
   const t = await firstGrade(page, T_QUERY, "dark", "T");
   await page.waitForTimeout(1500);
@@ -35,7 +35,7 @@ test("R0 the first real grade of trade T and of the norcal trade", async ({ brow
   log("AT-12", `trade T, first real grade: HTTP ${t.status} after ${t.took} ms; Lean "${t.doc.lean}"; fairness ${fav}; the full answer is in answer-T.json`);
   writeFileSync(`${dir("AT-12")}/answer-T.json`, JSON.stringify(t.doc, null, 2));
   await ctx.close(); await srv.close();
-  srv = await serveDir(`${SCR}/out-norcal`, 4173);
+  srv = await serveDir(`${SCR}/r2-out-norcal`, 4173);
   ({ ctx, page } = await newPage(browser, 1280));
   const n = await firstGrade(page, N_QUERY, "dark", "norcal");
   log("AT-12", `norcal trade of AT-20, first real grade: HTTP ${n.status} after ${n.took} ms; Lean "${n.doc.lean}"`);
@@ -44,14 +44,15 @@ test("R0 the first real grade of trade T and of the norcal trade", async ({ brow
 
 test("AT-10, 11, 12, 17, 26, 30, 31 on a cached grade of trade T", async ({ browser }) => {
   for (const at of ["AT-10", "AT-11", "AT-30", "AT-31"]) reset(at, CMD);
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   for (const width of WIDTHS) for (const theme of THEMES) {
     const rec = width === 1280 && theme === "dark";
-    const { ctx, page } = await newPage(browser, width, rec ? { recordVideo: { dir: `${SCR}/video-reveal`, size: { width: 1280, height: 900 } } } : {});
+    const { ctx, page } = await newPage(browser, width, rec ? { recordVideo: { dir: `${SCR}/r2-video-reveal`, size: { width: 1280, height: 900 } } } : {});
     const rows = netLog(page);
     await openAnalyzer(page, T_QUERY, theme);
     await settle(page);
     await watchReveal(page);
+    await watchRowLight(page);
     let got = 0;
     const resp = page.waitForResponse(isAnalyze);
     await page.getByRole("button", { name: "Grade the Trade" }).click();
@@ -71,9 +72,14 @@ test("AT-10, 11, 12, 17, 26, 30, 31 on a cached grade of trade T", async ({ brow
     const maxPull = (i: number) => Math.max(...pulls.map((p) => p[i] ?? 0));
     const deepest = reveal.mesh.reduce((a, b) => (Math.max(...b.pulls, 0) > Math.max(...a.pulls, 0) ? b : a), reveal.mesh[0]);
     log("AT-12", `${width} ${theme}: flash peak ${peak?.flash} at ${peak ? peak.at - got : "?"} ms; deepest dip ${deepest ? Math.max(...deepest.pulls, 0).toFixed(3) : "?"} at ${deepest ? deepest.at - got : "?"} ms; max pull per side ${[0, 1].map((i) => maxPull(i).toFixed(3)).join(", ")}; last pulls ${reveal.mesh.at(-1)?.pulls.join(",")}; flash shot at ${flashAt} ms, dip shot at ${dipAt} ms`);
+    const light = await rowLightOf(page);
+    const f = (l: number[]) => l.map((v) => v.toFixed(0)).join(", ");
+    const share = (l: number[]) => (l.length === 2 && l[0] + l[1] > 0 ? `; row 1 (Teehee) has ${((100 * l[1]) / Math.max(l[0], 1)).toFixed(1)}% of the light of row 0 (Bo Girds)` : "");
+    log("AT-12", `${width} ${theme}: light of the read mesh in the box of each row (row 0 Bo Girds, row 1 Teehee): at the flash peak (flash ${light.flash.flash}) ${f(light.flash.sums)}${share(light.flash.sums)}; at the deepest dip (pull ${light.dip.pull}) ${f(light.dip.sums)}${share(light.dip.sums)}; at rest ${f(light.rest)}`);
     if (rec) writeFileSync(`${dir("AT-12")}/mesh-1280-dark.json`, JSON.stringify(reveal.mesh.map((m) => ({ t: m.at - got, flash: m.flash, pulls: m.pulls }))));
     await page.locator(READ_HERO).screenshot({ path: `${dir("AT-11")}/${width}-${theme}.png` });
     await page.locator(READ_HERO).screenshot({ path: `${dir("AT-17")}/analyzer-result-${width}-${theme}.png` });
+    log("AT-17", `analyzer-result ${width} ${theme}: ${fmtPlate(await plateScan(page, READ_HERO))}`);
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(1500);
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -118,10 +124,10 @@ test("AT-10, 11, 12, 17, 26, 30, 31 on a cached grade of trade T", async ({ brow
 });
 
 test("AT-13 reveal with motion off", async ({ browser }) => {
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   for (const width of WIDTHS) for (const theme of THEMES) {
     const rec = width === 1280 && theme === "dark";
-    const { ctx, page } = await newPage(browser, width, { reducedMotion: "reduce", ...(rec ? { recordVideo: { dir: `${SCR}/video-reduced`, size: { width: 1280, height: 900 } } } : {}) });
+    const { ctx, page } = await newPage(browser, width, { reducedMotion: "reduce", ...(rec ? { recordVideo: { dir: `${SCR}/r2-video-reduced`, size: { width: 1280, height: 900 } } } : {}) });
     await openAnalyzer(page, T_QUERY, theme);
     const held = await holdAnalyze(page);
     await page.getByRole("button", { name: "Grade the Trade" }).click();
@@ -141,7 +147,7 @@ test("AT-13 reveal with motion off", async ({ browser }) => {
 
 test("AT-20 reveal end scans", async ({ browser }) => {
   for (const [client, query] of [["cpc", T_QUERY], ["norcal", N_QUERY]] as const) {
-    const srv = await serveDir(`${SCR}/out-${client}`, 4173);
+    const srv = await serveDir(`${SCR}/r2-out-${client}`, 4173);
     for (const width of [375, 390, 768, 1280]) for (const theme of THEMES) {
       const { ctx, page } = await newPage(browser, width);
       await openAnalyzer(page, query, theme);

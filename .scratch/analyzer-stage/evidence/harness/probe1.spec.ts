@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 import { openAnalyzer, serveDir, SCR, HERO, log, newPage } from "./lib";
 test("AT-1 pitch", async ({ browser }) => {
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   const { ctx, page } = await newPage(browser, 1280);
   await openAnalyzer(page, "", "dark");
   await page.waitForTimeout(3000);

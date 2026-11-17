@@ -1,19 +1,24 @@
-The method of this test. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
+The method of this test, round 2 on 2026-11-17. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
 
-1. A detached worktree of a90b3c92 holds the build, because the background make check of the Spec worktree writes apps/site/out at the same time.
-2. In it: uv sync --all-packages, pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
-3. make -C apps/api api-evidence runs in the same detached worktree on port 8080, with real Sleeper data.
+1. A detached worktree of 7b1d09c7, the head of the Spec branch, holds the build.
+2. In it: pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
+3. make -C apps/api api-evidence runs from the same detached worktree on port 8080, with real Sleeper data and real Claude calls.
 4. The script serves the export on http://127.0.0.1:4173 with apps/site/e2e/serve.ts, so a missing path gets 404.html with status 404.
-5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint.
+5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint. The harness gives the load 30 s and one retry.
 6. The passphrase localtest sits in localStorage key cpc.passphrase, so no dialog covers the page.
-7. A held request: a Playwright route on the analyze POST waits and never calls route.continue(), so the real request stays open while the script samples the wait. No answer is made up.
+7. A held request: a Playwright route on the analyze POST waits. A test that needs the answer then calls route.continue(), so the real request goes on to the local API. No answer is made up.
 8. Off-machine calls are not blocked, so the headshots load from sleepercdn.com through the real teams route of the local API.
 
-The scripts are in evidence/harness/. Run: EV_TESTS=<folder of the scripts> pnpm --dir apps/site exec playwright test --config pw-evidence.config.ts <spec>.
-The test of this folder: pages.spec.ts, test "AT-17 static heroes". Its log is output.txt.
+The scripts are in evidence/harness/. Run from apps/site: EV_TESTS=<folder of the scripts> pnpm exec playwright test --config pw-evidence.config.ts <spec>.
+
+The tests of this folder: pages.spec.ts, test "AT-17 static heroes", and grade.spec.ts, test "AT-10, 11, 12, 17, 26, 30, 31 on a cached grade of trade T". Its log is output.txt.
 
 What the script does for this test:
-Opens /2026/week-09/, /2026/managers/6/ (Bo Girds), /midseason/2026/, and a missing path /no-such-page/ (404.html) and shoots the first section of main at each width and theme. The log lists each hero text that has an element with a fill between it and the hero. The analyzer result of trade T needs a real grade. See EVIDENCE.md.
-
-The grade part: grade.spec.ts, test "AT-10, 11, 12, 17, 26, 30, 31 on a cached grade of trade T".
-The analyzer result of trade T: the same session as AT-11 shoots the read hero at the end of the reveal into analyzer-result-<width>-<theme>.png.
+It opens /2026/week-09/, /2026/managers/6/ (Bo Girds), /midseason/2026/, and a missing path /no-such-page/ (404.html), and shoots the first section of main at each width and theme. The analyzer result of trade T is the read hero at the end of the reveal of a cached real grade, shot into analyzer-result-<width>-<theme>.png.
+The plate scan (plateScan in harness/lib.ts) runs on each hero. For each element with a visible text node of its own, it walks up to the hero and names each element with a fill on the way: its tag, its class, its background, its box shadow, and its kind. The kinds:
+- plate box: the old plate utility, a fill of the band color (--color-band) with a box shadow, or the class plate.
+- record pill: an element with data-result, the W or L chip of a week.
+- button: an a, a button, or a [role=button].
+- stat tile: a box of the hero tone of Tile (class bg-chip-dark) with two or more children.
+- other fill: any other fill.
+A text with no fill on the way reads "the hero art only". The log gives the band color, the count of each kind, then one line per hero text: the text, the kind of its nearest fill, and the chain of fills.

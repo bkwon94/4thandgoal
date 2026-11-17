@@ -1,10 +1,10 @@
 /* The wait with reduced motion: AT-13 (wait part), AT-14, and AT-34. */
 import { test } from "@playwright/test";
 import { openAnalyzer, serveDir, SCR, T_QUERY, WAIT_HERO, dir, log, reset, holdAnalyze, newPage, startWait, waitState, untilElapsed, WIDTHS, THEMES } from "./lib";
-const CMD = "EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts reduced  (see steps.txt)";
+const CMD = "EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts reduced  (see steps.txt)";
 const L_QUERY = "?team=2&with=11&give=8144&get=9502";
 let srv: { close: () => Promise<void> };
-test.beforeAll(async () => { srv = await serveDir(`${SCR}/out-cpc`, 4173); });
+test.beforeAll(async () => { srv = await serveDir(`${SCR}/r2-out-cpc`, 4173); });
 test.afterAll(async () => { await srv.close(); });
 const R = { reducedMotion: "reduce" };
 

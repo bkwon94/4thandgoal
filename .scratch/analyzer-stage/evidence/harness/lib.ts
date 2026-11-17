@@ -1,10 +1,10 @@
 import { expect, type Page, type Browser, type BrowserContext } from "@playwright/test";
 import { mkdirSync, writeFileSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
-import { openPage, scanHeroPixels } from "../../ev/apps/site/e2e/floor";
-import { serveDir } from "../../ev/apps/site/e2e/serve";
+import { openPage, scanHeroPixels } from "../../ev2/apps/site/e2e/floor";
+import { serveDir } from "../../ev2/apps/site/e2e/serve";
 export { openPage, scanHeroPixels, serveDir };
-export const EV = "/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/analyzer-stage/.scratch/analyzer-stage/evidence";
+export const EV = process.env.EV_OUT ?? "/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/analyzer-stage/.scratch/analyzer-stage/evidence";
 export const SCR = "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad";
 export const BASE = "http://127.0.0.1:4173";
 export const HERO = 'section[aria-label="Trade Analyzer"]';
@@ -19,8 +19,21 @@ export function reset(at: string, cmd: string) { writeFileSync(join(dir(at), "ou
 /* Opens the analyzer with the passphrase stored and the theme set. A held analyze route keeps the real request until release. */
 export async function openAnalyzer(page: Page, query: string, theme: "light" | "dark") {
   await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "localtest"));
-  await openPage(page, `${BASE}/analyze/${query}`, theme);
+  // A first load can stall on an off-machine request, so the load gets 30 s and one retry. The retry is part of the
+  // instrument and logs the requests that were still open.
+  page.setDefaultNavigationTimeout(30000);
+  const open = new Set<string>();
+  page.on("request", (r) => open.add(r.url()));
+  page.on("requestfinished", (r) => open.delete(r.url()));
+  page.on("requestfailed", (r) => open.delete(r.url()));
+  const capped = () => Promise.race([openPage(page, `${BASE}/analyze/${query}`, theme), new Promise<never>((_, no) => setTimeout(() => no(new Error("openPage took over 30 s")), 30000))]);
+  try { await capped(); } catch (e) {
+    console.log(`openAnalyzer: the first load failed (${String(e).split("\n")[0]}); open requests: ${[...open].join(", ")}; retry`);
+    await openPage(page, `${BASE}/analyze/${query}`, theme);
+  }
   await expect(page.getByRole("button", { name: "Grade the Trade" }).or(page.getByRole("button", { name: "Find a Trade" })).first()).toBeVisible({ timeout: 60000 });
+  // The grade bar is ready only when the teams are in. A query with players fills a whole trade, so the tap waits for the bar.
+  if (/[?&](give|get)=/.test(query)) await expect(page.getByRole("button", { name: "Grade the Trade" })).toBeEnabled({ timeout: 60000 });
 }
 export type Held = { release: () => Promise<void>; seen: () => boolean; sentAt: () => number | null };
 /* Holds the real analyze POST, then passes it on to the local API on release. */
@@ -40,7 +53,10 @@ export async function settle(page: Page) {
 }
 export async function newPage(browser: Browser, width: number, opts: Record<string, unknown> = {}): Promise<{ ctx: BrowserContext; page: Page }> {
   const ctx = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: "no-preference", ...opts });
-  return { ctx, page: await ctx.newPage() };
+  const page = await ctx.newPage();
+  // Each action and wait of the harness gets 60 s, so a stalled step fails with its name and does not hang the run.
+  page.setDefaultTimeout(60000);
+  return { ctx, page };
 }
 /* Records each request and response of the API in a list, for a network log. */
 export function netLog(page: Page) {
@@ -159,3 +175,93 @@ export async function openTradeB(page: Page, theme: "light" | "dark") {
   await pick("Team Three", "The Blue Tent", ["Rashee Rice", "Brock Bowers"]);
   await pick("Team Two", "All You Need Is Love", ["Ashton Jeanty", "Jeremiyah Love"]);
 }
+/*
+ * The watch of the light of the read mesh in each row, copied from apps/site/e2e/analyzer-stage.spec.ts. Near the peak
+ * of the flash and near the deepest dip it sums the light of the canvas inside the box of each row, and 2.5 s after the
+ * read hero shows it sums the light of the flat mesh at rest. The light of a pixel is its color times its alpha.
+ */
+export type RowLight = { flash: { flash: number; sums: number[] }; dip: { pull: number; sums: number[] }; rest: number[] };
+export const watchRowLight = (page: Page) =>
+  page.evaluate((hero) => {
+    const w = window as unknown as { rowLight: Promise<unknown> };
+    w.rowLight = new Promise((done) => {
+      let shown: number | null = null;
+      let best = { flash: 0, sums: [] as number[] };
+      let deepest = { pull: 0, sums: [] as number[] };
+      const sums = (canvas: HTMLCanvasElement) => {
+        const origin = canvas.getBoundingClientRect();
+        const scale = canvas.width / origin.width;
+        const ctx = canvas.getContext("2d")!;
+        return [...document.querySelectorAll(`${hero} [data-mesh-anchor]`)].map((row) => {
+          const box = row.getBoundingClientRect();
+          const x = Math.round((box.left - origin.left) * scale);
+          const y = Math.round((box.top - origin.top) * scale);
+          const data = ctx.getImageData(x, y, Math.round(box.width * scale), Math.round(box.height * scale)).data;
+          let sum = 0;
+          for (let k = 0; k < data.length; k += 4) sum += ((data[k] + data[k + 1] + data[k + 2]) * data[k + 3]) / 255;
+          return sum;
+        });
+      };
+      const total = (list: number[]) => list.reduce((a, b) => a + b, 0);
+      const tick = () => {
+        const canvas = document.querySelector<HTMLCanvasElement>(`${hero} canvas[data-hero-mesh]`);
+        if (canvas && canvas.width > 1) {
+          shown ??= Date.now();
+          const flash = Number(canvas.dataset.meshFlash ?? 0);
+          const pull = Math.max(0, ...(canvas.dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number));
+          if (flash > 0.5) { const now = sums(canvas); if (total(now) > total(best.sums)) best = { flash, sums: now }; }
+          if (pull > 0.45) { const now = sums(canvas); if (total(now) > total(deepest.sums)) deepest = { pull, sums: now }; }
+          if (Date.now() - shown > 2500) return done({ flash: best, dip: deepest, rest: sums(canvas) });
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, READ_HERO);
+export const rowLightOf = (page: Page) => page.evaluate(() => (window as unknown as { rowLight: Promise<unknown> }).rowLight) as Promise<RowLight>;
+/*
+ * The plate scan of AT-17. For each hero text it walks from the text up to the hero and names each element with a fill
+ * on the way, with its kind. A plate box is the old plate utility: a fill of the band color with a box shadow, or the
+ * class `plate`. A record pill is a `[data-result]` chip. A button is an `a`, a `button`, or a `[role=button]`. A stat
+ * tile is a box of the hero tone of Tile, with a label and a number. Any other fill is "other fill".
+ */
+export const plateScan = (page: Page, heroSel: string) =>
+  page.locator(heroSel).first().evaluate((h) => {
+    const probe = document.createElement("div");
+    probe.style.backgroundColor = "var(--color-band)";
+    h.appendChild(probe);
+    const band = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    const kindOf = (el: Element, cs: CSSStyleDeclaration) => {
+      if (el.classList.contains("plate") || (cs.backgroundColor === band && cs.boxShadow !== "none")) return "plate box";
+      if (el.hasAttribute("data-result")) return "record pill";
+      if (el.matches("a, button, [role=button]")) return "button";
+      if (el.classList.contains("bg-chip-dark") && el.children.length >= 2) return "stat tile";
+      return "other fill";
+    };
+    const rows: { text: string; behind: string; kind: string }[] = [];
+    for (const el of h.querySelectorAll("*")) {
+      if (el.closest("svg")) continue;
+      const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim());
+      if (!own) continue;
+      const cs0 = getComputedStyle(el);
+      if (cs0.display === "none" || cs0.visibility === "hidden") continue;
+      const text = el.textContent!.trim().replace(/\s+/g, " ").slice(0, 40);
+      const fills: string[] = [];
+      const kinds: string[] = [];
+      for (let up: Element | null = el; up && up !== h; up = up.parentElement) {
+        const cs = getComputedStyle(up);
+        if (cs.backgroundColor !== "rgba(0, 0, 0, 0)" || cs.backgroundImage !== "none" || cs.backdropFilter !== "none") {
+          const kind = kindOf(up, cs);
+          kinds.push(kind);
+          fills.push(`${up.tagName.toLowerCase()}${up.getAttribute("class") ? ` class "${up.getAttribute("class")!.slice(0, 60)}"` : ""} bg ${cs.backgroundColor}${cs.backgroundImage !== "none" ? ` img ${cs.backgroundImage.slice(0, 24)}` : ""}${cs.boxShadow !== "none" ? ` shadow ${cs.boxShadow.slice(0, 40)}` : ""} [${kind}]`);
+        }
+      }
+      rows.push({ text, behind: fills.length ? fills.join(" < ") : "the hero art only", kind: kinds.length ? kinds[0] : "no fill" });
+    }
+    return { band, rows };
+  });
+export const fmtPlate = (scan: { band: string; rows: { text: string; behind: string; kind: string }[] }) => {
+  const count = (k: string) => scan.rows.filter((r) => r.kind === k).length;
+  return `band color ${scan.band}; ${scan.rows.length} hero texts: plate box ${count("plate box")}, record pill ${count("record pill")}, stat tile ${count("stat tile")}, button ${count("button")}, other fill ${count("other fill")}, no fill ${count("no fill")}\n    ${scan.rows.map((r) => `"${r.text}" | ${r.kind} | ${r.behind}`).join("\n    ")}`;
+};

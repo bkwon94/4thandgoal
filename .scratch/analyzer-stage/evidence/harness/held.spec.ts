@@ -2,10 +2,10 @@
 import { test, expect, type Page } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 import { openAnalyzer, serveDir, SCR, T_QUERY, HERO, WAIT_HERO, dir, log, reset, holdAnalyze, settle, newPage, startWait, waitState, untilElapsed, WIDTHS, THEMES } from "./lib";
-const CMD = "EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)";
+const CMD = "EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)";
 export const L_QUERY = "?team=2&with=11&give=8144&get=9502";
 let srv: { close: () => Promise<void> };
-test.beforeAll(async () => { srv = await serveDir(`${SCR}/out-cpc`, 4173); });
+test.beforeAll(async () => { srv = await serveDir(`${SCR}/r2-out-cpc`, 4173); });
 test.afterAll(async () => { await srv.close(); });
 const frames = (page: Page, sel: string) => page.locator(sel).evaluate((el) => Number((el as HTMLCanvasElement).dataset.meshFrames ?? 0));
 
@@ -38,6 +38,8 @@ test("AT-2 add a player", async ({ browser }) => {
     await openAnalyzer(page, "?team=6&with=12", theme);
     await settle(page);
     await page.locator(HERO).screenshot({ path: `${dir("AT-2")}/before-${width}-${theme}.png` });
+    const before = await page.locator(`${HERO} [data-mesh-anchor]`).evaluateAll((els) => els.map((el) => el.textContent?.replace(/\s+/g, " ").trim()));
+    log("AT-2", `${width} ${theme}: before the add, the stage rows read: ${before.length ? before.join(" | ") : "none"} (${before.length} rows); headshot tokens in the hero: ${await page.locator(`${HERO} [data-mesh-hole][title]`).count()}`);
     await page.getByRole("button", { name: "Add a player Team Two gets" }).click();
     const sheet = page.getByRole("dialog");
     await sheet.getByRole("tab", { name: "Bo Girds" }).click().catch(() => undefined);
@@ -156,26 +158,29 @@ test("S16 AT-15 shots and AT-16 out of view", async ({ browser }) => {
   }
 });
 
-test("AT-15 frames at 375 with 4x CPU slowdown", async ({ browser }) => {
-  const { ctx, page } = await newPage(browser, 375, { viewport: { width: 375, height: 812 } });
-  await openAnalyzer(page, T_QUERY, "dark");
-  await holdAnalyze(page);
-  await settle(page);
-  const cdp = await ctx.newCDPSession(page);
-  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
-  await page.evaluate(() => { const w = window as any; w.frameTimes = []; const tick = (n: number) => { w.frameTimes.push(n); requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
-  await browser.startTracing(page, { path: `${dir("AT-15")}/trace-375-4x.json`, screenshots: false });
-  await startWait(page, 3);
-  const tapped = await page.evaluate(() => (window as any).wait.t0 as number);
-  await page.waitForTimeout(5200);
-  await browser.stopTracing();
-  const times: number[] = await page.evaluate(([from, to]) => (window as any).frameTimes.filter((t: number) => t >= from && t <= to), [tapped + 1000, tapped + 5000]);
-  const deltas = times.slice(1).map((t, i) => t - times[i]);
-  const longest = Math.max(...deltas);
-  writeFileSync(`${dir("AT-15")}/frames-375-4x.txt`, `# rAF frame gaps in ms from 1 s to 5 s after the tap, 375 px, CPU slowdown 4x\n${deltas.map((d) => d.toFixed(1)).join("\n")}\n`);
-  log("AT-15", `375 dark, 4x CPU slowdown: ${deltas.length} frames from 1 s to 5 s after the tap; longest frame ${longest.toFixed(1)} ms; mean ${(deltas.reduce((a, b) => a + b, 0) / deltas.length).toFixed(1)} ms; frames over 50 ms: ${deltas.filter((d) => d > 50).length}`);
-  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
-  await ctx.close();
+test("AT-15 frames at 375 with 4x CPU slowdown, 4 separate runs", async ({ browser }) => {
+  for (let run = 1; run <= 4; run++) {
+    // Each run is a fresh browser context, so no run shares a page, a cache of the canvas, or a timer with another.
+    const { ctx, page } = await newPage(browser, 375, { viewport: { width: 375, height: 812 } });
+    await openAnalyzer(page, T_QUERY, "dark");
+    await holdAnalyze(page);
+    await settle(page);
+    const cdp = await ctx.newCDPSession(page);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+    await page.evaluate(() => { const w = window as any; w.frameTimes = []; const tick = (n: number) => { w.frameTimes.push(n); requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
+    await browser.startTracing(page, { path: `${dir("AT-15")}/trace-375-4x-run${run}.json`, screenshots: false });
+    await startWait(page, 3);
+    const tapped = await page.evaluate(() => (window as any).wait.t0 as number);
+    await page.waitForTimeout(5200);
+    await browser.stopTracing();
+    const times: number[] = await page.evaluate(([from, to]) => (window as any).frameTimes.filter((t: number) => t >= from && t <= to), [tapped + 1000, tapped + 5000]);
+    const deltas = times.slice(1).map((t, i) => t - times[i]);
+    const longest = Math.max(...deltas);
+    writeFileSync(`${dir("AT-15")}/frames-375-4x-run${run}.txt`, `# Run ${run} of 4: rAF frame gaps in ms from 1 s to 5 s after the tap, 375 px, CPU slowdown 4x\n${deltas.map((d) => d.toFixed(1)).join("\n")}\n`);
+    log("AT-15", `run ${run} of 4, 375 dark, 4x CPU slowdown: ${deltas.length} frames from 1 s to 5 s after the tap; longest frame after the first second ${longest.toFixed(1)} ms; mean ${(deltas.reduce((a, b) => a + b, 0) / deltas.length).toFixed(1)} ms; frames over 50 ms: ${deltas.filter((d) => d > 50).length}`);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
+    await ctx.close();
+  }
 });
 
 /* Trade B through the Stack, as the e2e spec opens it. */
@@ -217,7 +222,7 @@ test("AT-33 trade L, long line, motion on", async ({ browser }) => {
   reset("AT-33", CMD);
   for (const width of WIDTHS) for (const theme of THEMES) {
     const rec = width === 375 && theme === "dark";
-    const { ctx, page } = await newPage(browser, width, rec ? { recordVideo: { dir: `${SCR}/video-at33`, size: { width: 375, height: 900 } } } : {});
+    const { ctx, page } = await newPage(browser, width, rec ? { recordVideo: { dir: `${SCR}/r2-video-at33`, size: { width: 375, height: 900 } } } : {});
     await openAnalyzer(page, L_QUERY, theme);
     await holdAnalyze(page);
     await settle(page);

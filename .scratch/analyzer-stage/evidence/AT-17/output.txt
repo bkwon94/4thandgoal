@@ -1,25 +1,549 @@
-$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)
-week-09 375 light: hero texts with a filled box between the text and the hero: none
-week-09 375 dark: hero texts with a filled box between the text and the hero: none
-week-09 768 light: hero texts with a filled box between the text and the hero: none
-week-09 768 dark: hero texts with a filled box between the text and the hero: none
-week-09 1280 light: hero texts with a filled box between the text and the hero: none
-week-09 1280 dark: hero texts with a filled box between the text and the hero: none
-manager-bo-girds 375 light: hero texts with a filled box between the text and the hero: "W": span bg rgb(184, 52, 42) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "Playoff": div bg rgb(38, 38, 38) img none backdrop none ; "57%": div bg rgb(38, 38, 38) img none backdrop none ; "57": div bg rgb(38, 38, 38) img none backdrop none ; "down 25": div bg rgb(38, 38, 38) img none backdrop none ; "Bye": div bg rgb(38, 38, 38) img none backdrop none ; "10%": div bg rgb(38, 38, 38) img none backdrop none ; "Seed": div bg rgb(38, 38, 38) img none backdrop none ; "6th": div bg rgb(38, 38, 38) img none backdrop none
-manager-bo-girds 375 dark: hero texts with a filled box between the text and the hero: "W": span bg rgb(184, 52, 42) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "Playoff": div bg rgb(49, 49, 49) img none backdrop none ; "57%": div bg rgb(49, 49, 49) img none backdrop none ; "57": div bg rgb(49, 49, 49) img none backdrop none ; "down 25": div bg rgb(49, 49, 49) img none backdrop none ; "Bye": div bg rgb(49, 49, 49) img none backdrop none ; "10%": div bg rgb(49, 49, 49) img none backdrop none ; "Seed": div bg rgb(49, 49, 49) img none backdrop none ; "6th": div bg rgb(49, 49, 49) img none backdrop none
-manager-bo-girds 768 light: hero texts with a filled box between the text and the hero: "W": span bg rgb(184, 52, 42) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "Playoff": div bg rgb(38, 38, 38) img none backdrop none ; "57%": div bg rgb(38, 38, 38) img none backdrop none ; "57": div bg rgb(38, 38, 38) img none backdrop none ; "down 25": div bg rgb(38, 38, 38) img none backdrop none ; "Bye": div bg rgb(38, 38, 38) img none backdrop none ; "10%": div bg rgb(38, 38, 38) img none backdrop none ; "Seed": div bg rgb(38, 38, 38) img none backdrop none ; "6th": div bg rgb(38, 38, 38) img none backdrop none
-manager-bo-girds 768 dark: hero texts with a filled box between the text and the hero: "W": span bg rgb(184, 52, 42) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "Playoff": div bg rgb(49, 49, 49) img none backdrop none ; "57%": div bg rgb(49, 49, 49) img none backdrop none ; "57": div bg rgb(49, 49, 49) img none backdrop none ; "down 25": div bg rgb(49, 49, 49) img none backdrop none ; "Bye": div bg rgb(49, 49, 49) img none backdrop none ; "10%": div bg rgb(49, 49, 49) img none backdrop none ; "Seed": div bg rgb(49, 49, 49) img none backdrop none ; "6th": div bg rgb(49, 49, 49) img none backdrop none
-manager-bo-girds 1280 light: hero texts with a filled box between the text and the hero: "W": span bg rgb(184, 52, 42) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(38, 38, 38) img none backdrop none ; "Playoff": div bg rgb(38, 38, 38) img none backdrop none ; "57%": div bg rgb(38, 38, 38) img none backdrop none ; "57": div bg rgb(38, 38, 38) img none backdrop none ; "down 25": div bg rgb(38, 38, 38) img none backdrop none ; "Bye": div bg rgb(38, 38, 38) img none backdrop none ; "10%": div bg rgb(38, 38, 38) img none backdrop none ; "Seed": div bg rgb(38, 38, 38) img none backdrop none ; "6th": div bg rgb(38, 38, 38) img none backdrop none
-manager-bo-girds 1280 dark: hero texts with a filled box between the text and the hero: "W": span bg rgb(184, 52, 42) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "W": span bg rgb(184, 52, 42) img none backdrop none ; "L": span bg rgb(49, 49, 49) img none backdrop none ; "Playoff": div bg rgb(49, 49, 49) img none backdrop none ; "57%": div bg rgb(49, 49, 49) img none backdrop none ; "57": div bg rgb(49, 49, 49) img none backdrop none ; "down 25": div bg rgb(49, 49, 49) img none backdrop none ; "Bye": div bg rgb(49, 49, 49) img none backdrop none ; "10%": div bg rgb(49, 49, 49) img none backdrop none ; "Seed": div bg rgb(49, 49, 49) img none backdrop none ; "6th": div bg rgb(49, 49, 49) img none backdrop none
-midseason 375 light: hero texts with a filled box between the text and the hero: "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "16.8%": div bg rgb(38, 38, 38) img none backdrop none ; "London Cooking": div bg rgb(38, 38, 38) img none backdrop none ; "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "16.3%": div bg rgb(38, 38, 38) img none backdrop none ; "Bo Girds": div bg rgb(38, 38, 38) img none backdrop none ; "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "14.5%": div bg rgb(38, 38, 38) img none backdrop none ; "Maye d'force B with U": div bg rgb(38, 38, 38) img none backdrop none ; "Record leader": div bg rgb(38, 38, 38) img none backdrop none ; "9.7%": div bg rgb(38, 38, 38) img none backdrop none ; "All You Need Is Love, 11-5, 6t": div bg rgb(38, 38, 38) img none backdrop none
-midseason 375 dark: hero texts with a filled box between the text and the hero: "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "16.8%": div bg rgb(49, 49, 49) img none backdrop none ; "London Cooking": div bg rgb(49, 49, 49) img none backdrop none ; "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "16.3%": div bg rgb(49, 49, 49) img none backdrop none ; "Bo Girds": div bg rgb(49, 49, 49) img none backdrop none ; "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "14.5%": div bg rgb(49, 49, 49) img none backdrop none ; "Maye d'force B with U": div bg rgb(49, 49, 49) img none backdrop none ; "Record leader": div bg rgb(49, 49, 49) img none backdrop none ; "9.7%": div bg rgb(49, 49, 49) img none backdrop none ; "All You Need Is Love, 11-5, 6t": div bg rgb(49, 49, 49) img none backdrop none
-midseason 768 light: hero texts with a filled box between the text and the hero: "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "16.8%": div bg rgb(38, 38, 38) img none backdrop none ; "London Cooking": div bg rgb(38, 38, 38) img none backdrop none ; "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "16.3%": div bg rgb(38, 38, 38) img none backdrop none ; "Bo Girds": div bg rgb(38, 38, 38) img none backdrop none ; "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "14.5%": div bg rgb(38, 38, 38) img none backdrop none ; "Maye d'force B with U": div bg rgb(38, 38, 38) img none backdrop none ; "Record leader": div bg rgb(38, 38, 38) img none backdrop none ; "9.7%": div bg rgb(38, 38, 38) img none backdrop none ; "All You Need Is Love, 11-5, 6t": div bg rgb(38, 38, 38) img none backdrop none
-midseason 768 dark: hero texts with a filled box between the text and the hero: "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "16.8%": div bg rgb(49, 49, 49) img none backdrop none ; "London Cooking": div bg rgb(49, 49, 49) img none backdrop none ; "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "16.3%": div bg rgb(49, 49, 49) img none backdrop none ; "Bo Girds": div bg rgb(49, 49, 49) img none backdrop none ; "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "14.5%": div bg rgb(49, 49, 49) img none backdrop none ; "Maye d'force B with U": div bg rgb(49, 49, 49) img none backdrop none ; "Record leader": div bg rgb(49, 49, 49) img none backdrop none ; "9.7%": div bg rgb(49, 49, 49) img none backdrop none ; "All You Need Is Love, 11-5, 6t": div bg rgb(49, 49, 49) img none backdrop none
-midseason 1280 light: hero texts with a filled box between the text and the hero: "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "16.8%": div bg rgb(38, 38, 38) img none backdrop none ; "London Cooking": div bg rgb(38, 38, 38) img none backdrop none ; "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "16.3%": div bg rgb(38, 38, 38) img none backdrop none ; "Bo Girds": div bg rgb(38, 38, 38) img none backdrop none ; "Title odds": div bg rgb(38, 38, 38) img none backdrop none ; "14.5%": div bg rgb(38, 38, 38) img none backdrop none ; "Maye d'force B with U": div bg rgb(38, 38, 38) img none backdrop none ; "Record leader": div bg rgb(38, 38, 38) img none backdrop none ; "9.7%": div bg rgb(38, 38, 38) img none backdrop none ; "All You Need Is Love, 11-5, 6t": div bg rgb(38, 38, 38) img none backdrop none
-midseason 1280 dark: hero texts with a filled box between the text and the hero: "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "16.8%": div bg rgb(49, 49, 49) img none backdrop none ; "London Cooking": div bg rgb(49, 49, 49) img none backdrop none ; "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "16.3%": div bg rgb(49, 49, 49) img none backdrop none ; "Bo Girds": div bg rgb(49, 49, 49) img none backdrop none ; "Title odds": div bg rgb(49, 49, 49) img none backdrop none ; "14.5%": div bg rgb(49, 49, 49) img none backdrop none ; "Maye d'force B with U": div bg rgb(49, 49, 49) img none backdrop none ; "Record leader": div bg rgb(49, 49, 49) img none backdrop none ; "9.7%": div bg rgb(49, 49, 49) img none backdrop none ; "All You Need Is Love, 11-5, 6t": div bg rgb(49, 49, 49) img none backdrop none
-404 375 light: hero texts with a filled box between the text and the hero: "Go to Week 10": a bg rgb(184, 52, 42) img none backdrop none ; "Go Home": a bg rgb(38, 38, 38) img none backdrop none
-404 375 dark: hero texts with a filled box between the text and the hero: "Go to Week 10": a bg rgb(184, 52, 42) img none backdrop none ; "Go Home": a bg rgb(49, 49, 49) img none backdrop none
-404 768 light: hero texts with a filled box between the text and the hero: "Go to Week 10": a bg rgb(184, 52, 42) img none backdrop none ; "Go Home": a bg rgb(38, 38, 38) img none backdrop none
-404 768 dark: hero texts with a filled box between the text and the hero: "Go to Week 10": a bg rgb(184, 52, 42) img none backdrop none ; "Go Home": a bg rgb(49, 49, 49) img none backdrop none
-404 1280 light: hero texts with a filled box between the text and the hero: "Go to Week 10": a bg rgb(184, 52, 42) img none backdrop none ; "Go Home": a bg rgb(38, 38, 38) img none backdrop none
-404 1280 dark: hero texts with a filled box between the text and the hero: "Go to Week 10": a bg rgb(184, 52, 42) img none backdrop none ; "Go Home": a bg rgb(49, 49, 49) img none backdrop none
+$ EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)
+week-09 375 light: band color rgb(20, 20, 20); 10 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 0, no fill 10
+    "Week 09 // Matchup of the Week" | no fill | the hero art only
+    "London Cooking by 4.75" | no fill | the hero art only
+    "Nov 5 – Nov 9, 2026 · Published Tue Nov " | no fill | the hero art only
+    "Closest Finish" | no fill | the hero art only
+    "London Cooking" | no fill | the hero art only
+    "Javonte Williams · RB · 20.4" | no fill | the hero art only
+    "111.46" | no fill | the hero art only
+    "Maye d'force B with U" | no fill | the hero art only
+    "Drake Maye · QB · 21.26" | no fill | the hero art only
+    "106.71" | no fill | the hero art only
+week-09 375 dark: band color rgb(20, 20, 20); 10 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 0, no fill 10
+    "Week 09 // Matchup of the Week" | no fill | the hero art only
+    "London Cooking by 4.75" | no fill | the hero art only
+    "Nov 5 – Nov 9, 2026 · Published Tue Nov " | no fill | the hero art only
+    "Closest Finish" | no fill | the hero art only
+    "London Cooking" | no fill | the hero art only
+    "Javonte Williams · RB · 20.4" | no fill | the hero art only
+    "111.46" | no fill | the hero art only
+    "Maye d'force B with U" | no fill | the hero art only
+    "Drake Maye · QB · 21.26" | no fill | the hero art only
+    "106.71" | no fill | the hero art only
+week-09 768 light: band color rgb(20, 20, 20); 10 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 0, no fill 10
+    "Week 09 // Matchup of the Week" | no fill | the hero art only
+    "London Cooking by 4.75" | no fill | the hero art only
+    "Nov 5 – Nov 9, 2026 · Published Tue Nov " | no fill | the hero art only
+    "Closest Finish" | no fill | the hero art only
+    "London Cooking" | no fill | the hero art only
+    "Javonte Williams · RB · 20.4" | no fill | the hero art only
+    "111.46" | no fill | the hero art only
+    "Maye d'force B with U" | no fill | the hero art only
+    "Drake Maye · QB · 21.26" | no fill | the hero art only
+    "106.71" | no fill | the hero art only
+week-09 768 dark: band color rgb(20, 20, 20); 10 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 0, no fill 10
+    "Week 09 // Matchup of the Week" | no fill | the hero art only
+    "London Cooking by 4.75" | no fill | the hero art only
+    "Nov 5 – Nov 9, 2026 · Published Tue Nov " | no fill | the hero art only
+    "Closest Finish" | no fill | the hero art only
+    "London Cooking" | no fill | the hero art only
+    "Javonte Williams · RB · 20.4" | no fill | the hero art only
+    "111.46" | no fill | the hero art only
+    "Maye d'force B with U" | no fill | the hero art only
+    "Drake Maye · QB · 21.26" | no fill | the hero art only
+    "106.71" | no fill | the hero art only
+week-09 1280 light: band color rgb(20, 20, 20); 10 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 0, no fill 10
+    "Week 09 // Matchup of the Week" | no fill | the hero art only
+    "London Cooking by 4.75" | no fill | the hero art only
+    "Nov 5 – Nov 9, 2026 · Published Tue Nov " | no fill | the hero art only
+    "Closest Finish" | no fill | the hero art only
+    "London Cooking" | no fill | the hero art only
+    "Javonte Williams · RB · 20.4" | no fill | the hero art only
+    "111.46" | no fill | the hero art only
+    "Maye d'force B with U" | no fill | the hero art only
+    "Drake Maye · QB · 21.26" | no fill | the hero art only
+    "106.71" | no fill | the hero art only
+week-09 1280 dark: band color rgb(20, 20, 20); 10 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 0, no fill 10
+    "Week 09 // Matchup of the Week" | no fill | the hero art only
+    "London Cooking by 4.75" | no fill | the hero art only
+    "Nov 5 – Nov 9, 2026 · Published Tue Nov " | no fill | the hero art only
+    "Closest Finish" | no fill | the hero art only
+    "London Cooking" | no fill | the hero art only
+    "Javonte Williams · RB · 20.4" | no fill | the hero art only
+    "111.46" | no fill | the hero art only
+    "Maye d'force B with U" | no fill | the hero art only
+    "Drake Maye · QB · 21.26" | no fill | the hero art only
+    "106.71" | no fill | the hero art only
+manager-bo-girds 375 light: band color rgb(20, 20, 20); 35 hero texts: plate box 0, record pill 10, stat tile 8, button 0, other fill 0, no fill 17
+    "11-9 · 6th of 12" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "bkwon" | no fill | the hero art only
+    "Gradeafter week 10" | no fill | the hero art only
+    "after week 10" | no fill | the hero art only
+    "B" | no fill | the hero art only
+    "Soft at QB." | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "1" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "2" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "3" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "4" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "5" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "6" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "7" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "8" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "9" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "10" | no fill | the hero art only
+    "Playoff" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "57%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "57" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "down 25" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "Bye" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "10%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "Seed" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "6th" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+manager-bo-girds 375 dark: band color rgb(20, 20, 20); 35 hero texts: plate box 0, record pill 10, stat tile 8, button 0, other fill 0, no fill 17
+    "11-9 · 6th of 12" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "bkwon" | no fill | the hero art only
+    "Gradeafter week 10" | no fill | the hero art only
+    "after week 10" | no fill | the hero art only
+    "B" | no fill | the hero art only
+    "Soft at QB." | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "1" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "2" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "3" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "4" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "5" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "6" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "7" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "8" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "9" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "10" | no fill | the hero art only
+    "Playoff" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "57%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "57" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "down 25" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "Bye" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "10%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "Seed" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "6th" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+manager-bo-girds 768 light: band color rgb(20, 20, 20); 35 hero texts: plate box 0, record pill 10, stat tile 8, button 0, other fill 0, no fill 17
+    "11-9 · 6th of 12" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "bkwon" | no fill | the hero art only
+    "Gradeafter week 10" | no fill | the hero art only
+    "after week 10" | no fill | the hero art only
+    "B" | no fill | the hero art only
+    "Soft at QB." | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "1" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "2" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "3" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "4" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "5" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "6" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "7" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "8" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "9" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "10" | no fill | the hero art only
+    "Playoff" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "57%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "57" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "down 25" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "Bye" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "10%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "Seed" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "6th" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+manager-bo-girds 768 dark: band color rgb(20, 20, 20); 35 hero texts: plate box 0, record pill 10, stat tile 8, button 0, other fill 0, no fill 17
+    "11-9 · 6th of 12" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "bkwon" | no fill | the hero art only
+    "Gradeafter week 10" | no fill | the hero art only
+    "after week 10" | no fill | the hero art only
+    "B" | no fill | the hero art only
+    "Soft at QB." | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "1" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "2" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "3" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "4" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "5" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "6" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "7" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "8" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "9" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "10" | no fill | the hero art only
+    "Playoff" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "57%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "57" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "down 25" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "Bye" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "10%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "Seed" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "6th" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+manager-bo-girds 1280 light: band color rgb(20, 20, 20); 35 hero texts: plate box 0, record pill 10, stat tile 8, button 0, other fill 0, no fill 17
+    "11-9 · 6th of 12" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "bkwon" | no fill | the hero art only
+    "Gradeafter week 10" | no fill | the hero art only
+    "after week 10" | no fill | the hero art only
+    "B" | no fill | the hero art only
+    "Soft at QB." | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "1" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "2" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "3" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "4" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "5" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "6" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "7" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "8" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "9" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(38, 38, 38) [record pill]
+    "10" | no fill | the hero art only
+    "Playoff" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "57%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "57" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "down 25" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "Bye" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "10%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "Seed" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+    "6th" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(38, 38, 38) [stat tile]
+manager-bo-girds 1280 dark: band color rgb(20, 20, 20); 35 hero texts: plate box 0, record pill 10, stat tile 8, button 0, other fill 0, no fill 17
+    "11-9 · 6th of 12" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "bkwon" | no fill | the hero art only
+    "Gradeafter week 10" | no fill | the hero art only
+    "after week 10" | no fill | the hero art only
+    "B" | no fill | the hero art only
+    "Soft at QB." | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "1" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "2" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "3" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "4" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "5" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "6" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "7" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "8" | no fill | the hero art only
+    "W" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(184, 52, 42) [record pill]
+    "9" | no fill | the hero art only
+    "L" | record pill | span class "flex size-avatar items-center justify-center rounded-sm font" bg rgb(49, 49, 49) [record pill]
+    "10" | no fill | the hero art only
+    "Playoff" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "57%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "57" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "down 25" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "Bye" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "10%" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "Seed" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+    "6th" | stat tile | div class "rounded-tile p-sp-4 bg-chip-dark text-on-dark" bg rgb(49, 49, 49) [stat tile]
+midseason 375 light: band color rgb(20, 20, 20); 16 hero texts: plate box 0, record pill 0, stat tile 12, button 0, other fill 0, no fill 4
+    "2026 Midseason Report // Week 8" | no fill | the hero art only
+    "The Title Race" | no fill | the hero art only
+    "All You Need Is Love leads the standings" | no fill | the hero art only
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "16.8%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "London Cooking" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "16.3%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Bo Girds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "14.5%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Maye d'force B with U" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Record leader" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "9.7%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "All You Need Is Love, 11-5, 6th in title" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "See the sim" | no fill | the hero art only
+midseason 375 dark: band color rgb(20, 20, 20); 16 hero texts: plate box 0, record pill 0, stat tile 12, button 0, other fill 0, no fill 4
+    "2026 Midseason Report // Week 8" | no fill | the hero art only
+    "The Title Race" | no fill | the hero art only
+    "All You Need Is Love leads the standings" | no fill | the hero art only
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "16.8%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "London Cooking" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "16.3%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Bo Girds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "14.5%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Maye d'force B with U" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Record leader" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "9.7%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "All You Need Is Love, 11-5, 6th in title" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "See the sim" | no fill | the hero art only
+midseason 768 light: band color rgb(20, 20, 20); 16 hero texts: plate box 0, record pill 0, stat tile 12, button 0, other fill 0, no fill 4
+    "2026 Midseason Report // Week 8" | no fill | the hero art only
+    "The Title Race" | no fill | the hero art only
+    "All You Need Is Love leads the standings" | no fill | the hero art only
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "16.8%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "London Cooking" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "16.3%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Bo Girds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "14.5%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Maye d'force B with U" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Record leader" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "9.7%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "All You Need Is Love, 11-5, 6th in title" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "See the sim" | no fill | the hero art only
+midseason 768 dark: band color rgb(20, 20, 20); 16 hero texts: plate box 0, record pill 0, stat tile 12, button 0, other fill 0, no fill 4
+    "2026 Midseason Report // Week 8" | no fill | the hero art only
+    "The Title Race" | no fill | the hero art only
+    "All You Need Is Love leads the standings" | no fill | the hero art only
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "16.8%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "London Cooking" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "16.3%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Bo Girds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "14.5%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Maye d'force B with U" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Record leader" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "9.7%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "All You Need Is Love, 11-5, 6th in title" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "See the sim" | no fill | the hero art only
+midseason 1280 light: band color rgb(20, 20, 20); 16 hero texts: plate box 0, record pill 0, stat tile 12, button 0, other fill 0, no fill 4
+    "2026 Midseason Report // Week 8" | no fill | the hero art only
+    "The Title Race" | no fill | the hero art only
+    "All You Need Is Love leads the standings" | no fill | the hero art only
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "16.8%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "London Cooking" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "16.3%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Bo Girds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "14.5%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Maye d'force B with U" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "Record leader" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "9.7%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "All You Need Is Love, 11-5, 6th in title" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(38, 38, 38) [stat tile]
+    "See the sim" | no fill | the hero art only
+midseason 1280 dark: band color rgb(20, 20, 20); 16 hero texts: plate box 0, record pill 0, stat tile 12, button 0, other fill 0, no fill 4
+    "2026 Midseason Report // Week 8" | no fill | the hero art only
+    "The Title Race" | no fill | the hero art only
+    "All You Need Is Love leads the standings" | no fill | the hero art only
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "16.8%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "London Cooking" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "16.3%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Bo Girds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Title odds" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "14.5%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Maye d'force B with U" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "Record leader" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "9.7%" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "All You Need Is Love, 11-5, 6th in title" | stat tile | div class "p-sp-4 bg-chip-dark text-on-dark mt-sp-2 rounded-report" bg rgb(49, 49, 49) [stat tile]
+    "See the sim" | no fill | the hero art only
+404 375 light: band color rgb(20, 20, 20); 5 hero texts: plate box 0, record pill 0, stat tile 0, button 2, other fill 0, no fill 3
+    "Page not found" | no fill | the hero art only
+    "This page does not exist. The link may b" | no fill | the hero art only
+    "404" | no fill | the hero art only
+    "Go to Week 10" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(184, 52, 42) [button]
+    "Go Home" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(38, 38, 38) [button]
+404 375 dark: band color rgb(20, 20, 20); 5 hero texts: plate box 0, record pill 0, stat tile 0, button 2, other fill 0, no fill 3
+    "Page not found" | no fill | the hero art only
+    "This page does not exist. The link may b" | no fill | the hero art only
+    "404" | no fill | the hero art only
+    "Go to Week 10" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(184, 52, 42) [button]
+    "Go Home" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(49, 49, 49) [button]
+404 768 light: band color rgb(20, 20, 20); 5 hero texts: plate box 0, record pill 0, stat tile 0, button 2, other fill 0, no fill 3
+    "Page not found" | no fill | the hero art only
+    "This page does not exist. The link may b" | no fill | the hero art only
+    "404" | no fill | the hero art only
+    "Go to Week 10" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(184, 52, 42) [button]
+    "Go Home" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(38, 38, 38) [button]
+404 768 dark: band color rgb(20, 20, 20); 5 hero texts: plate box 0, record pill 0, stat tile 0, button 2, other fill 0, no fill 3
+    "Page not found" | no fill | the hero art only
+    "This page does not exist. The link may b" | no fill | the hero art only
+    "404" | no fill | the hero art only
+    "Go to Week 10" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(184, 52, 42) [button]
+    "Go Home" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(49, 49, 49) [button]
+404 1280 light: band color rgb(20, 20, 20); 5 hero texts: plate box 0, record pill 0, stat tile 0, button 2, other fill 0, no fill 3
+    "Page not found" | no fill | the hero art only
+    "This page does not exist. The link may b" | no fill | the hero art only
+    "404" | no fill | the hero art only
+    "Go to Week 10" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(184, 52, 42) [button]
+    "Go Home" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(38, 38, 38) [button]
+404 1280 dark: band color rgb(20, 20, 20); 5 hero texts: plate box 0, record pill 0, stat tile 0, button 2, other fill 0, no fill 3
+    "Page not found" | no fill | the hero art only
+    "This page does not exist. The link may b" | no fill | the hero art only
+    "404" | no fill | the hero art only
+    "Go to Week 10" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(184, 52, 42) [button]
+    "Go Home" | button | a class "press inline-flex min-h-touch items-center justify-center ro" bg rgb(49, 49, 49) [button]
+analyzer-result 375 light: band color rgb(20, 20, 20); 21 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 8, no fill 13
+    "The read for Bo Girds" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Teehee" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Pass" | no fill | the hero art only
+    "Lean no" | no fill | the hero art only
+    "Gut call" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Send it" | no fill | the hero art only
+    "If you believe Walker's groin keeps him " | no fill | the hero art only
+    "Read the full case" | no fill | the hero art only
+    "This week's player values are not out ye" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Fairness" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Fair" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "No side gives much more than it gets, so" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Bo Girds" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Two healthy starters, a top WR and a sta" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Teehee" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "The best player in the deal, a top RB wh" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+analyzer-result 375 dark: band color rgb(20, 20, 20); 21 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 8, no fill 13
+    "The read for Bo Girds" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Teehee" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Pass" | no fill | the hero art only
+    "Lean no" | no fill | the hero art only
+    "Gut call" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Send it" | no fill | the hero art only
+    "If you believe Walker's groin keeps him " | no fill | the hero art only
+    "Read the full case" | no fill | the hero art only
+    "This week's player values are not out ye" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Fairness" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Fair" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "No side gives much more than it gets, so" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Bo Girds" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Two healthy starters, a top WR and a sta" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Teehee" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "The best player in the deal, a top RB wh" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+analyzer-result 768 light: band color rgb(20, 20, 20); 20 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 8, no fill 12
+    "The read for Bo Girds" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Teehee" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Pass" | no fill | the hero art only
+    "Lean no" | no fill | the hero art only
+    "Gut call" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Send it" | no fill | the hero art only
+    "If you believe Walker's groin keeps him " | no fill | the hero art only
+    "This week's player values are not out ye" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Fairness" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Fair" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "No side gives much more than it gets, so" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Bo Girds" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Two healthy starters, a top WR and a sta" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Teehee" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "The best player in the deal, a top RB wh" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+analyzer-result 768 dark: band color rgb(20, 20, 20); 20 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 8, no fill 12
+    "The read for Bo Girds" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Teehee" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Pass" | no fill | the hero art only
+    "Lean no" | no fill | the hero art only
+    "Gut call" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Send it" | no fill | the hero art only
+    "If you believe Walker's groin keeps him " | no fill | the hero art only
+    "This week's player values are not out ye" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Fairness" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Fair" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "No side gives much more than it gets, so" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Bo Girds" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Two healthy starters, a top WR and a sta" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Teehee" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "The best player in the deal, a top RB wh" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+analyzer-result 1280 light: band color rgb(20, 20, 20); 20 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 8, no fill 12
+    "The read for Bo Girds" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Teehee" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Pass" | no fill | the hero art only
+    "Lean no" | no fill | the hero art only
+    "Gut call" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Send it" | no fill | the hero art only
+    "If you believe Walker's groin keeps him " | no fill | the hero art only
+    "This week's player values are not out ye" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Fairness" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Fair" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "No side gives much more than it gets, so" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Bo Girds" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Two healthy starters, a top WR and a sta" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "Teehee" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+    "The best player in the deal, a top RB wh" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(255, 255, 255) [other fill]
+analyzer-result 1280 dark: band color rgb(20, 20, 20); 20 hero texts: plate box 0, record pill 0, stat tile 0, button 0, other fill 8, no fill 12
+    "The read for Bo Girds" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Bo Girds" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Teehee" | no fill | the hero art only
+    "gets" | no fill | the hero art only
+    "Pass" | no fill | the hero art only
+    "Lean no" | no fill | the hero art only
+    "Gut call" | no fill | the hero art only
+    "Lean yes" | no fill | the hero art only
+    "Send it" | no fill | the hero art only
+    "If you believe Walker's groin keeps him " | no fill | the hero art only
+    "This week's player values are not out ye" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Fairness" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Fair" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "No side gives much more than it gets, so" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Bo Girds" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Two healthy starters, a top WR and a sta" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "Teehee" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]
+    "The best player in the deal, a top RB wh" | other fill | div class "rounded-card border bg-card p-sp-4 text-ink border-rule" bg rgb(31, 31, 31) [other fill]

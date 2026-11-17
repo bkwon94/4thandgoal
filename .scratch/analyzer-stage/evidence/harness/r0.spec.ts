@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 import { openAnalyzer, serveDir, SCR, T_QUERY, READ_HERO, netLog, dir, newPage } from "./lib";
 test("R0: the first real grade of trade T, 1280 dark", async ({ browser }) => {
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   const { ctx, page } = await newPage(browser, 1280);
   const rows = netLog(page);
   await openAnalyzer(page, T_QUERY, "dark");

@@ -1,17 +1,19 @@
-The method of this test. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
+The method of this test, round 2 on 2026-11-17. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
 
-1. A detached worktree of a90b3c92 holds the build, because the background make check of the Spec worktree writes apps/site/out at the same time.
-2. In it: uv sync --all-packages, pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
-3. make -C apps/api api-evidence runs in the same detached worktree on port 8080, with real Sleeper data.
+1. A detached worktree of 7b1d09c7, the head of the Spec branch, holds the build.
+2. In it: pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
+3. make -C apps/api api-evidence runs from the same detached worktree on port 8080, with real Sleeper data and real Claude calls.
 4. The script serves the export on http://127.0.0.1:4173 with apps/site/e2e/serve.ts, so a missing path gets 404.html with status 404.
-5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint.
+5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint. The harness gives the load 30 s and one retry.
 6. The passphrase localtest sits in localStorage key cpc.passphrase, so no dialog covers the page.
-7. A held request: a Playwright route on the analyze POST waits and never calls route.continue(), so the real request stays open while the script samples the wait. No answer is made up.
+7. A held request: a Playwright route on the analyze POST waits. A test that needs the answer then calls route.continue(), so the real request goes on to the local API. No answer is made up.
 8. Off-machine calls are not blocked, so the headshots load from sleepercdn.com through the real teams route of the local API.
 
-The scripts are in evidence/harness/. Run: EV_TESTS=<folder of the scripts> pnpm --dir apps/site exec playwright test --config pw-evidence.config.ts <spec>.
-The test of this folder: held.spec.ts, tests "AT-15 frames at 375 with 4x CPU slowdown" and "S16 AT-15 shots and AT-16 out of view". Its log is output.txt.
+The scripts are in evidence/harness/. Run from apps/site: EV_TESTS=<folder of the scripts> pnpm exec playwright test --config pw-evidence.config.ts <spec>.
+
+The test of this folder: held.spec.ts, tests "S16 AT-15 shots and AT-16 out of view" and "AT-15 frames at 375 with 4x CPU slowdown, 4 separate runs". Its log is output.txt.
 
 What the script does for this test:
-At 375 x 812 dark, trade T held, CDP Emulation.setCPUThrottlingRate 4. A requestAnimationFrame loop stores each frame time; browser.startTracing writes trace-375-4x.json. The log gives the count, the longest, and the mean of the frame gaps from 1 s to 5 s after the tap; frames-375-4x.txt lists each gap. The shots at each width and theme are the wait at 5 s, with no slowdown.
-The measure ran 4 times on 2026-11-17. output.txt gives each run; frames-375-4x-run2.txt to run4.txt hold the gaps of runs 2 to 4. The gaps of run 1 were overwritten.
+4 separate runs. Each run is a fresh browser context at 375 x 812, dark, trade T held, CDP Emulation.setCPUThrottlingRate 4. A requestAnimationFrame loop stores each frame time; browser.startTracing writes trace-375-4x-run<n>.json (gzip after the run). The log gives, for each run, the count, the longest, and the mean of the frame gaps from 1 s to 5 s after the tap; frames-375-4x-run<n>.txt lists each gap. The shots at each width and theme are the wait at 5 s, with no slowdown.
+
+An earlier pass of the same 4 runs on 7b1d09c7, before the harness waited for the ready grade bar, logged a longest frame of 16.8, 16.8, 16.8, and 50.0 ms, with 0 frames over 50 ms in each run. Its files were replaced by the files of this folder, which come from one later pass.

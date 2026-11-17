@@ -2,13 +2,13 @@
 import { test } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 import { openAnalyzer, serveDir, SCR, T_QUERY, WAIT_HERO, dir, log, reset, holdAnalyze, settle, newPage, startWait, waitState, untilElapsed, WIDTHS, THEMES } from "./lib";
-const CMD = "EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)";
+const CMD = "EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)";
 test("wait of trade T", async ({ browser }) => {
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   for (const at of ["AT-3", "AT-5", "AT-6", "AT-7", "AT-29"]) reset(at, CMD);
   for (const width of WIDTHS) for (const theme of THEMES) {
     const full = width === 1280 && theme === "dark";
-    const { ctx, page } = await newPage(browser, width, full ? { recordVideo: { dir: `${SCR}/video-wait`, size: { width: 1280, height: 900 } } } : {});
+    const { ctx, page } = await newPage(browser, width, full ? { recordVideo: { dir: `${SCR}/r2-video-wait`, size: { width: 1280, height: 900 } } } : {});
     await openAnalyzer(page, T_QUERY, theme);
     const held = await holdAnalyze(page);
     await settle(page);

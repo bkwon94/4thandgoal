@@ -3,7 +3,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 import { openTradeB, serveDir, SCR, dir, log, reset, newPage } from "./lib";
 
-const CMD = "EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts fold  (see steps.txt)";
+const CMD = "EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts fold  (see steps.txt)";
 /* Each fairness reason of the read: its text, its lines, and whether it shows More. */
 const reasons = (page: Page) => page.evaluate(() => [...document.querySelectorAll("main p.line-clamp-3, main p[class*='line-clamp-3'], main p.max-w-measure.text-lead")].filter((p) => p.closest("div.flex.flex-col.items-start")).map((p) => {
   const el = p as HTMLElement;
@@ -13,7 +13,7 @@ const reasons = (page: Page) => page.evaluate(() => [...document.querySelectorAl
 }));
 test("AT-32 trade B", async ({ browser }) => {
   reset("AT-32", CMD);
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   const { ctx, page } = await newPage(browser, 375);
   await openTradeB(page, "dark");
   const resp = page.waitForResponse((r) => r.url().endsWith("/analyze") && r.request().method() === "POST", { timeout: 240000 });
@@ -29,7 +29,7 @@ test("AT-32 trade B", async ({ browser }) => {
 });
 
 test("AT-32 shots before and after More", async ({ browser }) => {
-  const srv = await serveDir(`${SCR}/out-cpc`, 4173);
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
   for (const width of [375, 768, 1280]) for (const theme of ["light", "dark"] as const) {
     const { ctx, page } = await newPage(browser, width);
     await openTradeB(page, theme);

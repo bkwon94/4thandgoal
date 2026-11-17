@@ -1,19 +1,18 @@
-The method of this test. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
+The method of this test, round 2 on 2026-11-17. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
 
-1. A detached worktree of a90b3c92 holds the build, because the background make check of the Spec worktree writes apps/site/out at the same time.
-2. In it: uv sync --all-packages, pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
-3. make -C apps/api api-evidence runs in the same detached worktree on port 8080, with real Sleeper data.
+1. A detached worktree of 7b1d09c7, the head of the Spec branch, holds the build.
+2. In it: pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
+3. make -C apps/api api-evidence runs from the same detached worktree on port 8080, with real Sleeper data and real Claude calls.
 4. The script serves the export on http://127.0.0.1:4173 with apps/site/e2e/serve.ts, so a missing path gets 404.html with status 404.
-5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint.
+5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint. The harness gives the load 30 s and one retry.
 6. The passphrase localtest sits in localStorage key cpc.passphrase, so no dialog covers the page.
-7. A held request: a Playwright route on the analyze POST waits and never calls route.continue(), so the real request stays open while the script samples the wait. No answer is made up.
+7. A held request: a Playwright route on the analyze POST waits. A test that needs the answer then calls route.continue(), so the real request goes on to the local API. No answer is made up.
 8. Off-machine calls are not blocked, so the headshots load from sleepercdn.com through the real teams route of the local API.
 
-The scripts are in evidence/harness/. Run: EV_TESTS=<folder of the scripts> pnpm --dir apps/site exec playwright test --config pw-evidence.config.ts <spec>.
-The test of this folder: reduced.spec.ts, test "AT-13 wait part and AT-14 ...". Its log is output.txt.
+The scripts are in evidence/harness/. Run from apps/site: EV_TESTS=<folder of the scripts> pnpm exec playwright test --config pw-evidence.config.ts <spec>.
+
+The tests of this folder: reduced.spec.ts, test "AT-13 wait part and AT-14 lines, reduced motion", and grade.spec.ts, test "AT-13 reveal with motion off". Its log is output.txt.
 
 What the script does for this test:
-Context with reducedMotion reduce. Opens trade T with the analyze POST held and clicks Grade the Trade. At 1 s and 3 s it shoots the hero (wait-a, wait-b) and reads the canvas pixels with getImageData, and logs how many pixels differ and the data-mesh-frames count. The reveal part needs a real grade, which the local API could not give. See EVIDENCE.md.
-
-The grade part: grade.spec.ts, test "AT-13 reveal with motion off".
-Context with reducedMotion reduce. Trade T with the analyze POST held for 1.5 s of the wait, then passed on to the local API (a cached repeat). The reveal watch logs the opacity of the result on each frame, the largest move of the Lean word, and the flash and pulls of the mesh. The shots show the read hero at the end. At 1280 px dark the context records a video.
+The wait part: a context with reducedMotion reduce. It opens trade T with the analyze POST held and clicks Grade the Trade. At 1 s and 3 s it shoots the wait hero (wait-a, wait-b), reads the canvas pixels with getImageData, and logs how many pixels differ and the data-mesh-frames count.
+The reveal part: a context with reducedMotion reduce. Trade T with the analyze POST held for 1.5 s of the wait, then passed on to the local API (a cached repeat of the R0 grade). The reveal watch logs the opacity of the result on each frame, the largest move of the Lean word, and the flash and pulls of the mesh. The shots show the read hero at the end (result-*). At 1280 px dark the context records a video (video-reveal-1280-dark.webm).

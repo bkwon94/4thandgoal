@@ -1,7 +1,7 @@
 /* AT-20: the pixel scan of the analyzer hero in idle and in the wait, for cpc (trade T) and norcal (the recorded trade). */
 import { test, type Page } from "@playwright/test";
 import { openAnalyzer, serveDir, SCR, HERO, WAIT_HERO, T_QUERY, dir, log, holdAnalyze, settle, newPage, startWait, waitState } from "./lib";
-import { rateEachHeroText } from "../../ev/apps/site/e2e/floorx";
+import { rateEachHeroText } from "../../ev2/apps/site/e2e/floorx";
 const N_QUERY = "?team=4&with=6&give=8132&get=8144,6130";
 const lineAtRest = (page: Page) => page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getComputedTiming().endTime !== Infinity).map((a) => a.finished.catch(() => undefined))));
 type Row = { hero: string; text: string; ratio: number | null };
@@ -12,7 +12,7 @@ const worst = (rows: Row[]) => {
 };
 for (const [client, query] of [["cpc", T_QUERY], ["norcal", N_QUERY]] as const) {
   test(`AT-20 ${client} idle and wait`, async ({ browser }) => {
-    const srv = await serveDir(`${SCR}/out-${client}`, 4173);
+    const srv = await serveDir(`${SCR}/r2-out-${client}`, 4173);
     for (const width of [375, 390, 768, 1280]) for (const theme of ["light", "dark"] as const) {
       const scan = width === 390 || width === 1280;
       const { ctx, page } = await newPage(browser, width);

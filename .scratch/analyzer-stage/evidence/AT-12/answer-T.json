@@ -81,18 +81,18 @@
     ]
   },
   "lean": "Lean yes",
-  "case": "If you believe two healthy starters today beat waiting on Walker's groin, this trade is worth sending. The chart is missing this week, so this one rests on your gut and the sheet, not a value number. Walker is the RB3 and the best player in the deal, and he is reported to be close to a return, so the risk is that you sell a star right before he comes back. His history says he fades after midseason, though, while Tuten gives you another RB who can play now and Higgins is the WR7 on a strong offense. With byes hitting your starters this week and your team on the bubble, that depth is the push I'd make.",
+  "case": "If you believe Walker's groin keeps him out longer than the Chiefs hope, then two healthy starters for him is worth it for you. Walker is the best player in this deal, an RB3 by season points, and a back like that is hard to replace once he is healthy. You're on the bubble and need points now, and both Higgins and Tuten can play this week while Kyren Williams and Matthew Golden are on bye. The risk is that Walker comes back soon and Teehee gets a top back for the stretch run, and Higgins has seen his targets dip lately. The chart for this week is missing, so this comes down to your gut on depth versus a star, and I'd push you toward sending it.",
   "fairness": {
     "state": "fair",
     "gives_more": null,
     "sides": [
       {
         "roster_id": 6,
-        "reason": "Bo Girds gets a healthy starting RB and a top WR for an injured star."
+        "reason": "Two healthy starters, a top WR and a starting RB, for a back who is out right now."
       },
       {
         "roster_id": 12,
-        "reason": "Teehee gets the RB3 in Walker, betting his absence is short."
+        "reason": "The best player in the deal, a top RB who is out for now."
       }
     ]
   },
@@ -101,31 +101,31 @@
       "roster_id": 6,
       "bullets": [
         {
-          "text": "Tuten gives you another RB who can play now, as your playable top-36 RBs go from 2 to 3.",
+          "text": "Tuten is healthy and has scored 15.4 points per game, good for RB13.",
           "mark": "for",
-          "fact_id": "6.depth.rb",
-          "fact_text": "For Bo Girds, the RBs in the top 36 go from 3 to 3. Of them, the RBs who can play now go from 2 to 3."
+          "fact_id": "12490.ppg",
+          "fact_text": "Bhayshul Tuten (RB, JAX) scored 15.4 points per game over 9 games before the trade. His Season rank is RB13, by total points this season."
         },
         {
-          "text": "Higgins is the WR7 by total points this season.",
+          "text": "Higgins has scored 16.1 points per game and ranks WR7.",
           "mark": "for",
           "fact_id": "6801.ppg",
           "fact_text": "Tee Higgins (WR, CIN) scored 16.1 points per game over 9 games before the trade. His Season rank is WR7, by total points this season."
         },
         {
-          "text": "Walker faded late in each of 2023, 2024 and 2025, at about 10 points per game in weeks 9 to 17, though each split rests on only 5 to 9 games.",
+          "text": "Kyren Williams and Matthew Golden are on bye in week 11, so two new starters who play now help right away.",
           "mark": "for",
-          "fact_id": "8151.history",
-          "fact_text": "In 2023, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 15.09 in weeks 1 to 8 over 7 games; 10.1 in weeks 9 to 17 over 7 games; no cold game. In 2024, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 17.72 in weeks 1 to 8 over 6 games; 10.38 in weeks 9 to 17 over 5 games; 5.6 in cold games over 1 game. In 2025, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 10.16 in weeks 1 to 8 over 7 games; 10 in weeks 9 to 17 over 9 games; no cold game. A cold game is outdoors at 40 degrees F or below."
+          "fact_id": "6.bye",
+          "fact_text": "For Bo Girds, Kyren Williams and Matthew Golden start after the trade and have a bye in week 11, the trade week."
         },
         {
-          "text": "You give up Walker, the RB3 this season and the top player in this trade.",
-          "mark": "against",
-          "fact_id": "8151.ppg",
-          "fact_text": "Kenneth Walker III (RB, KC) scored 22.9 points per game over 8 games before the trade. His Season rank is RB3, by total points this season."
+          "text": "Higgins has finished strong before: 18.62 points per game in weeks 9 to 17 of 2024, though over just 6 games.",
+          "mark": "for",
+          "fact_id": "6801.history",
+          "fact_text": "In 2023, Tee Higgins played for CIN and scored half PPR points per game as follows: 7.22 in weeks 1 to 8 over 6 games; 12.22 in weeks 9 to 17 over 6 games; 5.3 in cold games over 2 games. In 2024, Tee Higgins played for CIN and scored half PPR points per game as follows: 13.32 in weeks 1 to 8 over 5 games; 18.62 in weeks 9 to 17 over 6 games; 12.83 in cold games over 3 games. In 2025, Tee Higgins played for CIN and scored half PPR points per game as follows: 9.06 in weeks 1 to 8 over 8 games; 15.65 in weeks 9 to 17 over 6 games; 19.95 in cold games over 2 games. A cold game is outdoors at 40 degrees F or below."
         },
         {
-          "text": "Higgins's target share slipped to 17 percent over the last 2 weeks.",
+          "text": "Higgins's target share fell to 17 percent over the last 2 weeks.",
           "mark": "against",
           "fact_id": "6801.targets",
           "fact_text": "Tee Higgins's target share was 17 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
@@ -146,34 +146,34 @@
       "roster_id": 12,
       "bullets": [
         {
-          "text": "Walker is the RB3 by total points, at 22.9 points per game.",
+          "text": "Walker has scored 22.9 points per game and ranks RB3 this season.",
           "mark": "for",
           "fact_id": "8151.ppg",
           "fact_text": "Kenneth Walker III (RB, KC) scored 22.9 points per game over 8 games before the trade. His Season rank is RB3, by total points this season."
         },
         {
-          "text": "Per Rotowire, Walker is expected to be able to go against the Cardinals.",
-          "mark": "for",
-          "fact_id": "NEWS.8151.2",
-          "fact_text": "Reported on 2026-11-15 by Rotowire: Walker (groin), who won't play Sunday in Atlanta, is expected to \"be able to go\" next Sunday against the Cardinals, Ian Rapoport of NFL Network reports."
+          "text": "Walker is listed Out with no return week on file.",
+          "mark": "against",
+          "fact_id": "8151.injury",
+          "fact_text": "Kenneth Walker III is listed Out now, with no return week on file. He was on the NFL injury report in 1 week this season before the trade."
         },
         {
-          "text": "Walker is listed Out with no return week on file, and Tuten was your RB1 before this.",
+          "text": "Per Rotoballer, Adam Schefter reported the Chiefs believe the groin injury is short-term.",
+          "mark": "for",
+          "fact_id": "NEWS.8151.2",
+          "fact_text": "Reported on 2026-11-16 by Rotoballer: Kansas City Chiefs running back Kenneth Walker (groin) missed the team's Week 10 win over the Falcons with a groin injury, but according to NFL insider Adam Schefter, the team believes it is a short-term ailment. In his absence, rookie Emmett Johnson topped 100 rushing yards for the first time in"
+        },
+        {
+          "text": "Giving up Tuten leaves RB1 short while Walker is out, and the best free agent RB is Jawhar Jordan at RB20.",
           "mark": "against",
           "fact_id": "12.hole.rb1",
           "fact_text": "For Teehee, the trade leaves RB1 short: Kenneth Walker III is out with no return week on file. Bhayshul Tuten held RB1 before the trade. The best free agent at RB is Jawhar Jordan, RB20."
         },
         {
-          "text": "Your WRs in the top 36 drop from 5 to 4.",
+          "text": "Walker has faded late before: 10.38 points per game in weeks 9 to 17 of 2024, over only 5 games.",
           "mark": "against",
-          "fact_id": "12.depth.wr",
-          "fact_text": "For Teehee, the WRs in the top 36 go from 5 to 4."
-        },
-        {
-          "text": "You put your points in fewer players and free a roster spot.",
-          "mark": "for",
-          "fact_id": "12.measure.consolidation",
-          "fact_text": "The consolidation measure for Teehee: It gets fewer players than it gives, so its points sit in fewer players and it frees roster room. It gets the top player in the trade."
+          "fact_id": "8151.history",
+          "fact_text": "In 2023, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 15.09 in weeks 1 to 8 over 7 games; 10.1 in weeks 9 to 17 over 7 games; no cold game. In 2024, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 17.72 in weeks 1 to 8 over 6 games; 10.38 in weeks 9 to 17 over 5 games; 5.6 in cold games over 1 game. In 2025, Kenneth Walker III played for SEA and scored half PPR points per game as follows: 10.16 in weeks 1 to 8 over 7 games; 10 in weeks 9 to 17 over 9 games; no cold game. A cold game is outdoors at 40 degrees F or below."
         }
       ],
       "week_lines": [
@@ -192,7 +192,7 @@
     "chart_week": null,
     "stats_through": 10,
     "completed_through": 10,
-    "rosters_fetched": "2026-11-17T15:52:05.611838-05:00",
+    "rosters_fetched": "2026-11-17T17:46:22.181443-05:00",
     "known_games": null,
     "no_chart": true,
     "no_chart_note": "This week's player values are not out yet."
