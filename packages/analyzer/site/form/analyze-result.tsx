@@ -1,11 +1,12 @@
 /**
- * The analyzer result from one analyze document, in one column: the Lean on its scale, the Case, the fairness line, the swap card, and one tab per side.
- * It arrives in a staged reveal of about 1 s over the mesh. The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
+ * The analyzer result from one analyze document, in one column: the trade on the stage, the Lean on its scale, the Case, the fairness line, and one tab per side.
+ * It arrives in a staged reveal of about 1 s over the mesh. The trade finder shows SwapCard and reuses AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { PencilIcon } from "lucide-react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, ReadSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
 import { favoredSide } from "../lib/favored-side";
 import { knownGamesSegments } from "../lib/known-games-segments";
@@ -48,18 +49,9 @@ function Caps({ children, className }: { children: ReactNode; className?: string
 /* The move of a player in the swap card with three or more sides: "To" or "From", and the team. */
 type Move = { word: "To" | "From"; team: string };
 
-/* The ranks of a traded player: the Season rank, then the Recent rank with its label only when the document sends one. */
-function rankLine(player: TradedPlayer): string | null {
-  if (!player.season_rank) return null;
-  return player.recent_rank
-    ? `Season rank ${player.season_rank} · Recent rank ${player.recent_rank}`
-    : `Season rank ${player.season_rank}`;
-}
-
 /* move names the team the player goes to or comes from. Only the swap card with three or more sides passes one.
-   ranks shows the rank line. Only the side card passes it, so the swap card and the finder cards show no rank. */
-function PlayerChip({ player, move, ranks }: { player: TradedPlayer; move?: Move; ranks?: boolean }) {
-  const line = ranks ? rankLine(player) : null;
+   The chip shows no rank, because the swap card of the Finder is the one place it shows. */
+function PlayerChip({ player, move }: { player: TradedPlayer; move?: Move }) {
   return (
     <li className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center">
       {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative.
@@ -73,7 +65,6 @@ function PlayerChip({ player, move, ranks }: { player: TradedPlayer; move?: Move
       <span className="py-sp-1 text-meta text-mute">
         {player.position} · {player.nfl_team}
       </span>
-      {line && <span className="text-meta text-ink-2">{line}</span>}
       {/* A long team name wraps under the name, so the tag never clips at the phone width. */}
       {/* The word is a muted caps label and the team keeps its own case, so a team name that starts with "To" reads apart.
           The space between the two spans keeps the text "To <Team>" for a screen reader. */}
@@ -372,6 +363,47 @@ const FAIRNESS_WORD = {
   lopsided: { word: "Lopsided", color: "text-ink", meaning: "It gives more than it gets." },
 } as const;
 
+/* The fairness reason of one side. A reason longer than 3 lines folds to 3, so one side does not push the others off the
+   screen, and "More" opens the rest. The button shows only when the text runs past the fold, so a short reason reads as
+   plain prose. The page measures the fold again on a change of width, such as a phone that turns. The rest shows at
+   once on the tap, as the Case does, so no part moves and motion off needs no other path. The text keeps the stable
+   id of a blurb, so the egg hunt can name a word in it. */
+function ReasonFold({ reason }: { reason: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [long, setLong] = useState(false);
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  // A layout effect, so the reader never sees a frame with the fold and no More.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || open) return;
+    const measure = () => setLong(el.scrollHeight > el.clientHeight + 1);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [reason, open]);
+  return (
+    <div className="flex flex-col items-start">
+      <p ref={ref} id={id} className={cn("m-0 max-w-measure text-lead text-ink-2", !open && "line-clamp-3")} {...textId("blurb", reason)}>
+        {reason}
+      </p>
+      {long && !open && (
+        <button
+          type="button"
+          aria-expanded={false}
+          aria-controls={id}
+          onClick={() => setOpen(true)}
+          className="press -my-sp-1 inline-flex min-h-touch min-w-touch cursor-pointer items-center text-meta font-bold text-accent-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          More
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* The fairness line rises in with the card of the read, in the texts reveal of the Case, so no part sits inside two reveals. */
 function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
   const state = FAIRNESS_WORD[fairness.state];
@@ -397,28 +429,10 @@ function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairn
         {sides.map((side) => (
           <li key={side.roster_id}>
             <Caps className="mb-sp-1 block">{side.team}</Caps>
-            <Blurb>{fairness.sides.find((f) => f.roster_id === side.roster_id)?.reason}</Blurb>
+            <ReasonFold reason={fairness.sides.find((f) => f.roster_id === side.roster_id)?.reason ?? ""} />
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-/* The players a side gets and gives. A phone stacks the two groups. From the tablet tier they stand next to each other. */
-function SidePlayers({ side }: { side: Side }) {
-  return (
-    <div className="flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:gap-x-sp-4">
-      <ChipGroup label={side.mine ? "You Get" : "Gets"}>
-        {side.gets.map((player) => (
-          <PlayerChip key={player.player_id} player={player} ranks />
-        ))}
-      </ChipGroup>
-      <ChipGroup label={side.mine ? "You Give" : "Gives"}>
-        {side.gives.map((player) => (
-          <PlayerChip key={player.player_id} player={player} ranks />
-        ))}
-      </ChipGroup>
     </div>
   );
 }
@@ -438,17 +452,37 @@ function WeekLines({ side }: { side: Side }) {
   );
 }
 
-/* The panel of one side: the players, then the Bullets with their Marks, then the Week lines. The tab names the team. */
+/* The panel of one side: the Bullets with their Marks, then the Week lines. The tab names the team. The hero is the one
+   place that shows the players, so the panel does not list them again. */
 function SideRead({ side }: { side: Side }) {
   return (
     <div>
-      <SidePlayers side={side} />
-
-      <div className="mt-sp-4">
-        <BulletRows bullets={side.bullets} idBase={side.roster_id} />
-      </div>
+      <BulletRows bullets={side.bullets} idBase={side.roster_id} />
 
       <WeekLines side={side} />
+    </div>
+  );
+}
+
+/* The header of The Sides: the heading, and Edit at its right when the page can open the Stack. Edit sits here, near
+   the sides it changes, so the reader reaches it with no long scroll and nothing floats over the result. The visible
+   word is short, so the button stretches to the touch size on each side. */
+function SidesHeader({ onEdit }: { onEdit?: () => void }) {
+  if (!onEdit) return <Label heading>The Sides</Label>;
+  return (
+    <div className="-mt-sp-3 mb-sp-1 flex items-center justify-between gap-sp-3">
+      <Label heading className="mb-0">
+        The Sides
+      </Label>
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label="Edit the trade"
+        className="press -mr-sp-2 flex min-h-touch min-w-touch cursor-pointer items-center justify-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      >
+        <PencilIcon aria-hidden="true" className="size-sp-4" />
+        Edit
+      </button>
     </div>
   );
 }
@@ -509,8 +543,8 @@ export function tradeKey(doc: AnalyzeResponse): string {
 function CardsSkeleton() {
   return (
     <div aria-hidden="true" className="t-skel-skeleton is-pulsing flex flex-col gap-sp-3 tablet:gap-card-gap">
-      {/* The heights follow the swap card, the side tabs, and the counters, so the cards that fade in fill about the same space. */}
-      {["11rem", "14rem", "6rem"].map((height) => (
+      {/* The heights follow the side tabs and the counters, so the cards that fade in fill about the same space. */}
+      {["14rem", "6rem"].map((height) => (
         <div key={height} className="flex flex-col gap-sp-3 px-gutter py-sp-5 tablet:bg-page">
           <span className="block h-sp-3 w-1/4 rounded-pill bg-rule" />
           <span className="block rounded-card bg-raised" style={{ height }} />
@@ -521,8 +555,17 @@ function CardsSkeleton() {
 }
 
 /* The avatar of each team by roster id. The analyze document carries none, so the form passes the avatars of the teams of
-   the league. A team with no avatar shows the default one. */
-export default function AnalyzeResult({ doc, avatars = new Map() }: { doc: AnalyzeResponse; avatars?: ReadonlyMap<number, string | null> }) {
+   the league. A team with no avatar shows the default one. onEdit opens the Stack with the graded trade. A page with no
+   Stack passes none, so the result shows no Edit. */
+export default function AnalyzeResult({
+  doc,
+  avatars = new Map(),
+  onEdit,
+}: {
+  doc: AnalyzeResponse;
+  avatars?: ReadonlyMap<number, string | null>;
+  onEdit?: () => void;
+}) {
   const off = useMotionOff();
   const cardsShown = useBeat(REVEAL.cards, off);
   const sides = joinSides(doc);
@@ -562,14 +605,9 @@ export default function AnalyzeResult({ doc, avatars = new Map() }: { doc: Analy
       <div className={cn("t-skel", cardsShown && "is-revealed")}>
       <CardsSkeleton />
       <div className="t-skel-content tablet:flex tablet:flex-col tablet:gap-card-gap">
+      {/* One tab per team. joinSides puts the asker first, so the tab of the asker opens first. */}
       <Chapter>
-        <Label heading>The Trade</Label>
-        <SwapCard sides={sides} />
-      </Chapter>
-
-      {/* One tab per team under the swap card. joinSides puts the asker first, so the tab of the asker opens first. */}
-      <Chapter>
-        <Label heading>The Sides</Label>
+        <SidesHeader onEdit={onEdit} />
         <SideTabs label="The sides" tabs={sides.map((side) => ({ key: side.roster_id, label: side.team, panel: <SideRead side={side} /> }))} />
       </Chapter>
 

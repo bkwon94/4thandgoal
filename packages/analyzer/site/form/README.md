@@ -3,9 +3,9 @@
 ## Knows
 
 - The analyzer page body: the passphrase dialog, the trade form, and the result.
-- The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the fold line, the sweep of the finder wait, the stage lines, the trade on the stage as one row per side with a count in idle and headshot tokens in the wait, and the error box.
-- The result of one analyze document: the read hero with the trade on the stage, the Lean on its 5-step scale, the Case, and the fairness line, the swap card, one tab per side, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses. It arrives in a staged reveal of about 1 s over the mesh, or in one plain fade with motion off.
-- The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap, and the Bullet rows. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.
+- The trade form, the Stack: the hero, the teams row, a card for each side, the sheets, the grade bar with its Ready halo, the sweep of the finder wait, the stage lines, the trade on the stage as one row per side with a count in idle and headshot tokens in the wait, and the error box.
+- The result of one analyze document: the read hero with the trade on the stage, the Lean on its 5-step scale, the Case, the fairness line with each long reason folded under More, one tab per side with Edit in its header, and the Bullet rows in `bullet-rows.tsx`, which the Finder card reuses. It arrives in a staged reveal of about 1 s over the mesh, or in one plain fade with motion off.
+- The trade finder, with an optional partner and up to three picks of the Advisor, each with a headline, the swap card, and the Bullet rows. The swap card shows only in the Finder. After a fallback, each trade of the shortlist shows its fact lines. The teams prefetch of the home page.
 - `useRequest`, the guard of a call from a part to the API: the run id, the abort controller, and the unmounted flag.
 
 ## Ports

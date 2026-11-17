@@ -39,8 +39,10 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
 const card = (side: SideTitle) => screen.getByRole("region", { name: `${side} gets` });
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 const sheet = () => screen.getByRole("dialog");
-/* A result folds the form, so a test taps Edit to change the trade under it. */
+/* A result hides the form, so a test taps Edit in the header of The Sides to change the trade. */
 const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
+/* The elements that asked to scroll into view. jsdom does no layout and has no scrollIntoView, so each test records them. */
+let scrolled: Element[] = [];
 
 /* Adds a side with a team through "+". */
 async function addTeam(team: string) {
@@ -70,6 +72,10 @@ const rowsOf = (side: SideTitle) =>
 const TRADE = { mine: "Pukancun on 3", other: "Blitz Bakers", mineGets: "Ben Two", otherGets: "Ana One" };
 
 beforeEach(() => {
+  scrolled = [];
+  Element.prototype.scrollIntoView = function (this: Element) {
+    scrolled.push(this);
+  };
   fetchStub.mockReset();
   onUnauthorized.mockReset();
   vi.stubGlobal("fetch", fetchStub);
@@ -472,7 +478,7 @@ describe("TradeForm", () => {
     expect(new Headers(init.headers).get("content-type")).toContain("application/json");
   });
 
-  it("folds the form to a line of faces and puts the grading hero in place of the title while the grade runs", async () => {
+  it("hides the form, shows no fold line, and puts the grading hero in place of the title while the grade runs", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     fireEvent.click(submit());
@@ -480,15 +486,14 @@ describe("TradeForm", () => {
     expect(within(hero).getByRole("status").getAttribute("aria-busy")).toBe("true");
     expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
-    const fold = screen.getByRole("group", { name: "The trade" });
-    expect(fold.textContent).toContain("Ana One for Ben Two");
-    // One face for each team of the trade.
-    expect(fold.querySelectorAll("img")).toHaveLength(2);
-    expect(fold.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(fold).queryByRole("button", { name: "Edit the trade" })).toBeNull();
+    // The stage of the hero shows the trade, so no fold line repeats it above the hero.
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Edit the trade" })).toBeNull();
+    expect(stageRow(hero, TRADE.mine)).toBeTruthy();
+    expect(stageRow(hero, TRADE.other)).toBeTruthy();
   });
 
-  it("fills the hero with the read and the fairness block, and keeps the form folded with an Edit button", async () => {
+  it("fills the hero with the read and the fairness block, and keeps the form hidden with Edit in the header of The Sides", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
@@ -501,10 +506,16 @@ describe("TradeForm", () => {
     expect(screen.queryByRole("region", { name: "Grading the Trade" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
-    const fold = screen.getByRole("group", { name: "The trade" });
-    expect(fold.compareDocumentPosition(heroRead) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
-    expect(heroRead.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "The Trade" })).toBeNull();
+    // Edit sits in the header of The Sides, after its heading and before the tabs of the sides.
+    const sides = screen.getByRole("heading", { level: 2, name: "The Sides" });
+    const header = sides.parentElement as HTMLElement;
+    const editButton = within(header).getByRole("button", { name: "Edit the trade" });
+    expect(editButton.textContent).toBe("Edit");
+    expect(editButton.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(heroRead.compareDocumentPosition(sides) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(editButton.compareDocumentPosition(screen.getByRole("tablist", { name: "The sides" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("draws no scene under a folded result or after Edit, as each hero of the analyzer is static (AT-35, AT-44)", async () => {
@@ -521,14 +532,15 @@ describe("TradeForm", () => {
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
   });
 
-  it("opens the form again with Edit and keeps the result under it", async () => {
+  it("opens the Stack with the graded trade on Edit, scrolls to it, and keeps the result under it", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
     expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
-    expect(screen.getByRole("region", { name: "Who gets what" })).toBeTruthy();
+    const stack = screen.getByRole("region", { name: "Who gets what" });
+    await waitFor(() => expect(scrolled).toEqual([stack]));
     expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
     expect(submit().disabled).toBe(false);
     expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
@@ -818,7 +830,7 @@ describe("TradeForm with three or four sides", () => {
     expect(submit().disabled).toBe(false);
   });
 
-  it("folds a trade of three teams to one line with a face for each team", async () => {
+  it("puts a trade of three teams on the stage of the wait, one row per team, with no fold line", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTwoTeams();
     await addTeam("Punt Punks");
@@ -827,9 +839,9 @@ describe("TradeForm with three or four sides", () => {
     await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
     await pickPlayers("Your Team", "Punt Punks", "Cy One");
     fireEvent.click(submit());
-    const fold = await screen.findByRole("group", { name: "The trade" });
-    expect(fold.textContent).toContain("Ana One and Ana Two for Cy One");
-    expect(fold.querySelectorAll("img")).toHaveLength(3);
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    for (const team of ["Pukancun on 3", "Blitz Bakers", "Punt Punks"]) expect(stageRow(hero, team)).toBeTruthy();
   });
 
   it("posts every side in order with the destination of each player, as main does", async () => {

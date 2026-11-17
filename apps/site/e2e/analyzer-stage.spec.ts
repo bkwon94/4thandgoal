@@ -691,3 +691,105 @@ test.describe("the reveal, with motion off", () => {
     expect(reveal.fade.at(-1)).toBe(1);
   });
 });
+
+/* Opens the stage trade and answers its grade at once with `body`, the recorded answer by default, then waits for the
+   read hero. With motion off the result shows at rest, so a test reads its layout with no part in flight. */
+async function gradeNow(page: Page, theme: Theme = "dark", body = stageAnswer().body) {
+  await openAnalyzer(page, stageQuery(), theme, (route) => route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body }));
+  await page.getByRole("button", { name: "Grade the Trade" }).click();
+  await expect(page.locator(READ_HERO)).toBeVisible();
+  await expect(page.getByRole("tablist", { name: "The sides" })).toBeVisible();
+}
+
+/* The visible images and player chips of the page below the read hero. The hidden Stack keeps its rows for Edit, so a
+   part that the reader cannot see does not count. */
+const shownBelowHero = (page: Page) =>
+  page.evaluate((hero) => {
+    const read = document.querySelector(hero)!;
+    const below = (el: Element) => !read.contains(el) && el.checkVisibility() && read.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING;
+    return {
+      images: [...document.querySelectorAll("main img")].filter(below).map((img) => img.getAttribute("src") ?? ""),
+      chips: [...document.querySelectorAll("main li:has(> img)")].filter(below).length,
+    };
+  }, READ_HERO);
+
+test.describe("the result, with motion off", () => {
+  for (const width of [375, 768, 1280]) {
+    for (const theme of ["light", "dark"] as const) {
+      test(`result once: ${CLIENT} below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, ${theme} ${width}px (AT-30)`, async ({ page }, info) => {
+        await page.setViewportSize({ width, height: 900 });
+        await gradeNow(page, theme);
+        await page.screenshot({ path: info.outputPath(`result-once-${CLIENT}-${theme}-${width}.png`), fullPage: true });
+        await expect(page.getByRole("heading", { name: "The Trade", exact: true })).toHaveCount(0);
+        await expect(page.getByRole("group", { name: "The trade", exact: true })).toHaveCount(0);
+        // Each side tab of the result, so no panel hides a list of players.
+        for (const tab of await page.getByRole("tablist", { name: "The sides" }).getByRole("tab").all()) {
+          await tab.click();
+          const shown = await shownBelowHero(page);
+          console.log(`result once: ${CLIENT} ${theme} ${width}px, tab ${await tab.textContent()}: ${shown.images.length} images, ${shown.chips} chips below the hero`);
+          expect(shown.images, "an image shows below the hero").toEqual([]);
+          expect(shown.chips, "a player chip shows below the hero").toBe(0);
+        }
+      });
+
+      test(`result edit: ${CLIENT} Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, ${theme} ${width}px (AT-31)`, async ({ page }, info) => {
+        await page.setViewportSize({ width, height: 900 });
+        await gradeNow(page, theme);
+        const sides = page.getByRole("heading", { name: "The Sides", exact: true });
+        const edit = page.getByRole("button", { name: "Edit the trade" });
+        await edit.scrollIntoViewIfNeeded();
+        const box = (await edit.boundingBox())!;
+        const head = (await sides.boundingBox())!;
+        console.log(`result edit: ${CLIENT} ${theme} ${width}px: the Edit target is ${box.width.toFixed(1)} x ${box.height.toFixed(1)} px`);
+        expect(box.width).toBeGreaterThanOrEqual(44);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        // Edit sits at the right of the heading, on its line.
+        expect(box.x).toBeGreaterThan(head.x + head.width);
+        expect(box.y).toBeLessThan(head.y + head.height);
+        expect(box.y + box.height).toBeGreaterThan(head.y);
+        await sides.locator("..").screenshot({ path: info.outputPath(`result-edit-header-${CLIENT}-${theme}-${width}.png`) });
+
+        await edit.click();
+        const stack = page.getByRole("region", { name: "Who gets what" });
+        await expect(stack).toBeInViewport();
+        // The Stack holds trade T: each side lists the players it gets.
+        const trade = stageTrade(TEAMS);
+        for (const id of trade.get) await expect(stack.getByText(playerName(trade.with, id), { exact: true })).toBeVisible();
+        for (const id of trade.give) await expect(stack.getByText(playerName(trade.team, id), { exact: true })).toBeVisible();
+        await page.screenshot({ path: info.outputPath(`result-edit-stack-${CLIENT}-${theme}-${width}.png`) });
+      });
+    }
+  }
+
+  /* The recorded reasons of trade T fit in 3 lines, so the test puts the Case of the same real grade in the place of the
+     reason of the asker, to get a reason past 3 lines. Each other part of the answer stays as recorded. */
+  test(`result fold: ${CLIENT} a fairness reason past 3 lines shows 3 lines and More, and a tap shows it in full, 375px (AT-32)`, async ({ page }, info) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    const { doc } = stageAnswer();
+    const asker = doc.fairness!.sides.find((side) => side.roster_id === doc.trade.asker)!;
+    const long = { ...doc, fairness: { ...doc.fairness!, sides: doc.fairness!.sides.map((side) => (side === asker ? { ...side, reason: doc.case } : side)) } };
+    await gradeNow(page, "dark", JSON.stringify(long));
+    const card = page.locator(READ_HERO);
+    const reason = card.locator("p").filter({ hasText: doc.case.slice(0, 40) }).last();
+    const lines = (el: HTMLElement) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
+    await reason.scrollIntoViewIfNeeded();
+    expect(await reason.evaluate(lines), "the folded reason is not 3 lines").toBe(3);
+    const more = card.getByRole("button", { name: "More", exact: true });
+    await expect(more).toBeVisible();
+    await expect(more).toHaveAttribute("aria-expanded", "false");
+    const target = (await more.boundingBox())!;
+    expect(target.width).toBeGreaterThanOrEqual(44);
+    expect(target.height).toBeGreaterThanOrEqual(44);
+    // The short reason of the other side fits, so it shows no More.
+    await expect(card.getByRole("button", { name: "More", exact: true })).toHaveCount(1);
+    await reason.locator("..").screenshot({ path: info.outputPath(`result-fold-before-${CLIENT}-375.png`) });
+
+    await more.click();
+    await expect(more).toHaveCount(0);
+    const open = await reason.evaluate((el) => ({ lines: Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)), clipped: el.scrollHeight > el.clientHeight + 1 }));
+    console.log(`result fold: ${CLIENT} 375px: the open reason runs ${open.lines} lines`);
+    expect(open.lines).toBeGreaterThan(3);
+    expect(open.clipped, "the open reason is still cut off").toBe(false);
+    await reason.locator("..").screenshot({ path: info.outputPath(`result-fold-after-${CLIENT}-375.png`) });
+  });
+});

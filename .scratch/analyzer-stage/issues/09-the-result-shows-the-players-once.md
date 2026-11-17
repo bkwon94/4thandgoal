@@ -10,8 +10,8 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-30, AT-31, and AT-32
 
 **Status:** ready-for-agent
 
-- [ ] The result of trade T has no "The Trade" chapter, and below the hero it has no player chip, no headshot, and no `FoldLine` card.
-- [ ] The Finder still shows its swap card.
-- [ ] A tap on Edit in the header of "The Sides" opens the Stack with trade T, in view.
-- [ ] The Edit target is 44 px or more on each side.
-- [ ] A fairness reason past 3 lines at 375 px shows 3 lines and "More", and a tap shows it in full.
+- [x] The result of trade T has no "The Trade" chapter, and below the hero it has no player chip, no headshot, and no `FoldLine` card.
+- [x] The Finder still shows its swap card.
+- [x] A tap on Edit in the header of "The Sides" opens the Stack with trade T, in view.
+- [x] The Edit target is 44 px or more on each side.
+- [x] A fairness reason past 3 lines at 375 px shows 3 lines and "More", and a tap shows it in full.
