@@ -126,7 +126,8 @@ Brian checks these seams with the spec.
 
 - Axe gives an incomplete result for text over a gradient or a canvas. The floor fails an incomplete result now, so the plate removal fails the floor unless the floor changes.
 - The floor gets a pixel scan of hero text, after the method of the prototype of decision 05. The scan hides the text of each hero, takes a screenshot, finds the brightest pixel under the box of each text, and compares it with the color of the text.
-- An axe incomplete result passes to the pixel scan only when its node sits inside a hero and its reason is a background image, a gradient, or an overlap. Every other incomplete result still fails. The pixel scan must find at least one text in each hero, so an empty scan fails.
+- An axe incomplete result passes to the pixel scan only when its node sits inside a hero and its reason is a background image, a gradient, an overlap, or content too short for axe to judge. Every other incomplete result still fails.
+- The pixel scan also reads hero text inside an aria-hidden part, such as the big digits of the 404 page. The pixel scan must find at least one text in each hero, so an empty scan fails.
 - On the analyzer hero, the scan samples the wait at least 10 times over 3 s and keeps the worst ratio, because the mesh moves. It also samples idle and the end of the reveal.
 - The scan runs in both clients, at 390 px and 1280 px.
 
@@ -158,3 +159,7 @@ Brian checks these seams with the spec.
 - Round 5 of the decision 01 prototype measured 2.45:1 for the column label of the other side during the wait. The holes of the canvas must fix that, and the pixel scan proves it.
 - The norcal client has a darker band and an orange accent. Its glow must pass the pixel scan too.
 - `next dev` printed a security advisory for Next.js 16.4.2. That upgrade is not part of this spec.
+
+## Revisions
+
+- 2026-11-16: Brian widened the pixel scan after ticket 02 found two axe incomplete results with no plate: the reason "content too short", on the week numbers and the score parts, and the aria-hidden 404 digits. Both now go to the pixel scan. The bar stays 4.5:1.
