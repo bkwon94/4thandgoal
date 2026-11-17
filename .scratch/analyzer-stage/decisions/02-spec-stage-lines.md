@@ -6,7 +6,7 @@ Map: `.scratch/analyzer-stage/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ During the wait, short stage lines cycle under the title, such as "Weighing the 
 
 ## Decision
 
-None yet.
+Recorded in the spec `PRD.md`, under "The stage lines", approved by Brian on 2026-11-16. The list has 12 lines, each for 2.5 s. Line 1 is "Weighing the sides" and line 12 is "Weighing it all together". The lines between them mix true general lines from the measures of the grade with lines that name a player, a team, or a manager of the trade. After line 12 the list starts again at line 2. No line says that a step is done. A screen reader hears one message, "Grading the trade".

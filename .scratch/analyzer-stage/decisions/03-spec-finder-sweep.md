@@ -6,7 +6,7 @@ Map: `.scratch/analyzer-stage/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The grade wait and the Finder wait share `Sweep` in `packages/analyzer/site/form
 
 ## Decision
 
-None yet.
+Recorded in the spec `PRD.md`, under "The Finder", approved by Brian on 2026-11-16. The Finder wait keeps `Sweep`, because a Finder search has no trade on stage for the mesh to weigh. The grade wait no longer uses `Sweep`.

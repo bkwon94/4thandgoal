@@ -18,11 +18,11 @@ One spec for the hero of the analyzer page. The hero lives in three states, idle
 - The motion is D, "Mesh + light": the hero grid as a live Canvas 2D mesh that weighs the sides, with sparse light pulses, and a flash and a dip toward the favored side at the reveal. The hero text has no plate box. The grade button wraps the ui-sdk `Button`, and its pending state starts the wait. `decisions/01-prototype-motion-and-reveal.md`.
 - Every hero of the site drops the plate box from its text, in this spec, with a contrast test of 4.5:1 on each changed hero. Brian, against the recommendation to keep it to the analyzer. `decisions/04-grill-plate-scope.md`.
 - The `plate` utility leaves the site. The glow of the static hero art shrinks to `ellipse 38% 46% at 100% 112%`, so it never reaches text. Each plate use off a hero goes too. ADR 0036. `decisions/05-prototype-text-without-plate.md`.
+- The stage lines: 12 lines, 2.5 s each, general lines from the measures mixed with lines that name the trade, never "done". `decisions/02-spec-stage-lines.md`.
+- The Finder wait keeps `Sweep`. `decisions/03-spec-finder-sweep.md`.
 
 ## NOT YET SPECIFIED
 
-- What do the stage lines say, and how fast do they cycle? `decisions/02-spec-stage-lines.md`.
-- Does the Finder wait take the new loader, or keep `Sweep`? `decisions/03-spec-finder-sweep.md`.
 
 ## OUT OF SCOPE
 
