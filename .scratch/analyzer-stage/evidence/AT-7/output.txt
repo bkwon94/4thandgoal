@@ -1,0 +1,21 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)
+375 light: shot 375-light.png started 5919 ms after the tap
+375 dark: shot 375-dark.png started 5888 ms after the tap
+768 light: shot 768-light.png started 5907 ms after the tap
+768 dark: shot 768-dark.png started 5904 ms after the tap
+1280 light: shot 1280-light.png started 6128 ms after the tap
+1280 dark: shot 1280-dark.png started 5965 ms after the tap
+1280 dark: each line in 30.6 s of the wait:
+    23 ms  Weighing the sides
+    2533 ms  Checking roster fit
+    5035 ms  Reading Tee Higgins's season
+    7537 ms  Reading the standings
+    10054 ms  Looking at the schedule ahead
+    12550 ms  Checking Teehee's depth at RB
+    15071 ms  Reading recent usage
+    17568 ms  Weighing what bkwon gives up
+    20068 ms  Checking the injury report
+    22569 ms  Reading Kenneth Walker III's season
+    25072 ms  Sizing up the upside
+    27570 ms  Weighing it all together
+    30082 ms  Checking roster fit

@@ -1,0 +1,9 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)
+trade T, first real grade: HTTP 200 after 36174 ms; Lean "Lean yes"; fairness fair; the full answer is in answer-T.json
+norcal trade of AT-20, first real grade: HTTP 200 after 27714 ms; Lean "Send it"
+375 light: flash peak 0.962 at 77 ms; deepest dip 0.550 at 527 ms; max pull per side 0.550, 0.000; last pulls 0,0; flash shot at 173 ms, dip shot at 741 ms
+375 dark: flash peak 0.953 at 75 ms; deepest dip 0.550 at 526 ms; max pull per side 0.550, 0.000; last pulls 0,0; flash shot at 170 ms, dip shot at 740 ms
+768 light: flash peak 0.986 at 84 ms; deepest dip 0.550 at 536 ms; max pull per side 0.550, 0.000; last pulls 0,0; flash shot at 185 ms, dip shot at 765 ms
+768 dark: flash peak 0.965 at 89 ms; deepest dip 0.550 at 539 ms; max pull per side 0.550, 0.000; last pulls 0,0; flash shot at 177 ms, dip shot at 772 ms
+1280 light: flash peak 0.938 at 86 ms; deepest dip 0.550 at 519 ms; max pull per side 0.550, 0.000; last pulls 0,0; flash shot at 195 ms, dip shot at 766 ms
+1280 dark: flash peak 0.937 at 77 ms; deepest dip 0.550 at 526 ms; max pull per side 0.550, 0.000; last pulls 0,0; flash shot at 187 ms, dip shot at 753 ms

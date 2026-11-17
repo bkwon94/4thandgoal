@@ -1,0 +1,17 @@
+- banner:
+  - link "Cornerstone Fantasy Football League":
+    - /url: /
+  - link "Egg board, 1 egg left to find":
+    - /url: /eggs/
+    - text: "1"
+  - button "Switch to dark theme"
+  - button "Open the menu"
+- main:
+  - region "Grading the Trade":
+    - text: Live
+    - heading "Grading the Trade" [level=2]
+    - text: This can take up to a minute.
+    - status "Grading the Trade"
+  - button "Grade the Trade" [disabled]
+- alert
+- status: Grading the trade

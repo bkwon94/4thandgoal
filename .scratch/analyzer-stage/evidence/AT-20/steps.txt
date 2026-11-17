@@ -1,0 +1,3 @@
+
+The grade part: grade.spec.ts, test "AT-20 reveal end scans".
+For cpc (trade T) and norcal, a real cached grade with no hold. After the reveal and every finite animation end, the pixel scan rates each text of the read hero at 390 and 1280 px in both themes. The shots show the read hero at 375, 768, and 1280 px.

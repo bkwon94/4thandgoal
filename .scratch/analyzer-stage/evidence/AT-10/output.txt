@@ -1,0 +1,7 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)
+375 light: cached grade: the response came 1794948803400 (clock ms); the Lean word at rest 261 ms after the response
+375 dark: cached grade: the response came 1794948814227 (clock ms); the Lean word at rest 259 ms after the response
+768 light: cached grade: the response came 1794948824540 (clock ms); the Lean word at rest 251 ms after the response
+768 dark: cached grade: the response came 1794948834395 (clock ms); the Lean word at rest 254 ms after the response
+1280 light: cached grade: the response came 1794948845109 (clock ms); the Lean word at rest 252 ms after the response
+1280 dark: cached grade: the response came 1794948855751 (clock ms); the Lean word at rest 261 ms after the response

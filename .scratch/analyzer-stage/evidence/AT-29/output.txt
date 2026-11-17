@@ -1,0 +1,19 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)
+375 light: shot 375-light.png started 1009 ms after the tap
+375 light: 3 headshot tokens; the last token at rest 1324 ms after the tap
+375 light: rows: Bo Girds: Tee Higgins [img https://sleepercdn.com/content/nfl/players/6801.jpg loaded=true], Bhayshul Tuten [img https://sleepercdn.com/content/nfl/players/12490.jpg loaded=true] | Teehee: Kenneth Walker III [img https://sleepercdn.com/content/nfl/players/8151.jpg loaded=true]
+375 dark: shot 375-dark.png started 1014 ms after the tap
+375 dark: 3 headshot tokens; the last token at rest 608 ms after the tap
+375 dark: rows: Bo Girds: Tee Higgins [img https://sleepercdn.com/content/nfl/players/6801.jpg loaded=true], Bhayshul Tuten [img https://sleepercdn.com/content/nfl/players/12490.jpg loaded=true] | Teehee: Kenneth Walker III [img https://sleepercdn.com/content/nfl/players/8151.jpg loaded=true]
+768 light: shot 768-light.png started 1006 ms after the tap
+768 light: 3 headshot tokens; the last token at rest 608 ms after the tap
+768 light: rows: Bo Girds: Tee Higgins [img https://sleepercdn.com/content/nfl/players/6801.jpg loaded=true], Bhayshul Tuten [img https://sleepercdn.com/content/nfl/players/12490.jpg loaded=true] | Teehee: Kenneth Walker III [img https://sleepercdn.com/content/nfl/players/8151.jpg loaded=true]
+768 dark: shot 768-dark.png started 1011 ms after the tap
+768 dark: 3 headshot tokens; the last token at rest 621 ms after the tap
+768 dark: rows: Bo Girds: Tee Higgins [img https://sleepercdn.com/content/nfl/players/6801.jpg loaded=true], Bhayshul Tuten [img https://sleepercdn.com/content/nfl/players/12490.jpg loaded=true] | Teehee: Kenneth Walker III [img https://sleepercdn.com/content/nfl/players/8151.jpg loaded=true]
+1280 light: shot 1280-light.png started 1007 ms after the tap
+1280 light: 3 headshot tokens; the last token at rest 625 ms after the tap
+1280 light: rows: Bo Girds: Tee Higgins [img https://sleepercdn.com/content/nfl/players/6801.jpg loaded=true], Bhayshul Tuten [img https://sleepercdn.com/content/nfl/players/12490.jpg loaded=true] | Teehee: Kenneth Walker III [img https://sleepercdn.com/content/nfl/players/8151.jpg loaded=true]
+1280 dark: shot 1280-dark.png started 1075 ms after the tap
+1280 dark: 3 headshot tokens; the last token at rest 617 ms after the tap
+1280 dark: rows: Bo Girds: Tee Higgins [img https://sleepercdn.com/content/nfl/players/6801.jpg loaded=true], Bhayshul Tuten [img https://sleepercdn.com/content/nfl/players/12490.jpg loaded=true] | Teehee: Kenneth Walker III [img https://sleepercdn.com/content/nfl/players/8151.jpg loaded=true]

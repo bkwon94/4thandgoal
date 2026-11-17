@@ -1,0 +1,317 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts contrast  (see steps.txt)
+cpc idle 390 light: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 9.18:1
+    h1.m-0 "Trade Analyzer" 14.74:1
+    div "Who gets what?" 9.18:1
+    span.min-w-0 "Bo Girds" 17.76:1
+    span.flex-none "gets" 10.84:1
+    span.font-mono "2 players" 10.84:1
+    span.min-w-0 "Teehee" 17.04:1
+    span.font-mono "1 player" 11.27:1
+cpc wait 390 light: 12 samples over 3156 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 9.18:1
+    h2.m-0 "Grading the Trade" 14.24:1
+    div.w-fit "This can take up to a minute." 7.01:1
+    span.t-think-text "Weighing the sides" 11.15:1
+    span.min-w-0 "Bo Girds" 16.50:1
+    span.flex-none "gets" 8.36:1
+    span.min-w-0 "Teehee" 16.73:1
+    span.t-think-text "Checking roster fit" 11.14:1
+cpc idle 390 dark: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 9.18:1
+    h1.m-0 "Trade Analyzer" 14.74:1
+    div "Who gets what?" 9.18:1
+    span.min-w-0 "Bo Girds" 17.76:1
+    span.flex-none "gets" 10.84:1
+    span.font-mono "2 players" 10.84:1
+    span.min-w-0 "Teehee" 17.04:1
+    span.font-mono "1 player" 11.27:1
+cpc wait 390 dark: 12 samples over 3115 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 9.18:1
+    h2.m-0 "Grading the Trade" 14.23:1
+    div.w-fit "This can take up to a minute." 7.01:1
+    span.t-think-text "Weighing the sides" 11.15:1
+    span.min-w-0 "Bo Girds" 16.50:1
+    span.flex-none "gets" 8.48:1
+    span.min-w-0 "Teehee" 16.97:1
+    span.t-think-text "Checking roster fit" 11.14:1
+cpc idle 1280 light: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 9.18:1
+    h1.m-0 "Trade Analyzer" 15.13:1
+    div "Who gets what?" 9.42:1
+    span.min-w-0 "Bo Girds" 15.13:1
+    span.flex-none "gets" 10.84:1
+    span.font-mono "2 players" 10.95:1
+    span.min-w-0 "Teehee" 15.13:1
+    span.font-mono "1 player" 10.95:1
+cpc wait 1280 light: 11 samples over 3195 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 9.18:1
+    h2.m-0 "Grading the Trade" 11.25:1
+    div.w-fit "This can take up to a minute." 9.42:1
+    span.t-think-text "Weighing the sides" 9.80:1
+    span.min-w-0 "Bo Girds" 14.23:1
+    span.flex-none "gets" 10.45:1
+    span.min-w-0 "Teehee" 14.42:1
+    span.t-think-text "Checking roster fit" 9.84:1
+cpc idle 1280 dark: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 9.18:1
+    h1.m-0 "Trade Analyzer" 15.13:1
+    div "Who gets what?" 9.42:1
+    span.min-w-0 "Bo Girds" 15.13:1
+    span.flex-none "gets" 10.84:1
+    span.font-mono "2 players" 10.95:1
+    span.min-w-0 "Teehee" 15.13:1
+    span.font-mono "1 player" 10.95:1
+cpc wait 1280 dark: 11 samples over 3169 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 9.18:1
+    h2.m-0 "Grading the Trade" 11.88:1
+    div.w-fit "This can take up to a minute." 9.42:1
+    span.t-think-text "Weighing the sides" 9.80:1
+    span.min-w-0 "Bo Girds" 14.09:1
+    span.flex-none "gets" 10.54:1
+    span.min-w-0 "Teehee" 14.42:1
+    span.t-think-text "Checking roster fit" 9.95:1
+norcal idle 390 light: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 8.87:1
+    h1.m-0 "Trade Analyzer" 13.98:1
+    div "Who gets what?" 10.22:1
+    span.min-w-0 "The Mean Machine" 17.11:1
+    span.flex-none "gets" 12.31:1
+    span.font-mono "2 players" 12.30:1
+    span.min-w-0 "Mitseeker5000" 16.33:1
+    span.font-mono "1 player" 12.66:1
+norcal wait 390 light: 12 samples over 3110 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 8.87:1
+    h2.m-0 "Grading the Trade" 13.82:1
+    div.w-fit "This can take up to a minute." 8.21:1
+    span.t-think-text "Weighing the sides" 12.65:1
+    span.min-w-0 "The Mean Machine" 14.18:1
+    span.flex-none "gets" 10.61:1
+    span.min-w-0 "Mitseeker5000" 15.08:1
+    span.t-think-text "Checking roster fit" 12.65:1
+norcal idle 390 dark: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 8.81:1
+    h1.m-0 "Trade Analyzer" 13.64:1
+    div "Who gets what?" 9.99:1
+    span.min-w-0 "The Mean Machine" 17.11:1
+    span.flex-none "gets" 12.30:1
+    span.font-mono "2 players" 12.28:1
+    span.min-w-0 "Mitseeker5000" 16.22:1
+    span.font-mono "1 player" 12.57:1
+norcal wait 390 dark: 12 samples over 3123 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 8.81:1
+    h2.m-0 "Grading the Trade" 13.45:1
+    div.w-fit "This can take up to a minute." 8.21:1
+    span.t-think-text "Weighing the sides" 12.57:1
+    span.min-w-0 "The Mean Machine" 14.18:1
+    span.flex-none "gets" 10.76:1
+    span.min-w-0 "Mitseeker5000" 15.05:1
+    span.t-think-text "Checking roster fit" 12.57:1
+norcal idle 1280 light: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 8.87:1
+    h1.m-0 "Trade Analyzer" 14.19:1
+    div "Who gets what?" 10.59:1
+    span.min-w-0 "The Mean Machine" 14.15:1
+    span.flex-none "gets" 12.30:1
+    span.font-mono "2 players" 12.30:1
+    span.min-w-0 "Mitseeker5000" 14.15:1
+    span.font-mono "1 player" 12.47:1
+norcal wait 1280 light: 11 samples over 3190 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 8.87:1
+    h2.m-0 "Grading the Trade" 11.65:1
+    div.w-fit "This can take up to a minute." 10.59:1
+    span.t-think-text "Weighing the sides" 11.19:1
+    span.min-w-0 "The Mean Machine" 10.75:1
+    span.flex-none "gets" 11.98:1
+    span.min-w-0 "Mitseeker5000" 11.81:1
+    span.t-think-text "Checking roster fit" 11.44:1
+norcal idle 1280 dark: worst ratio of each hero text:
+    div.w-fit "Trade Analyzer" 8.81:1
+    h1.m-0 "Trade Analyzer" 13.98:1
+    div "Who gets what?" 10.37:1
+    span.min-w-0 "The Mean Machine" 13.85:1
+    span.flex-none "gets" 12.21:1
+    span.font-mono "2 players" 12.21:1
+    span.min-w-0 "Mitseeker5000" 13.85:1
+    span.font-mono "1 player" 12.39:1
+norcal wait 1280 dark: 11 samples over 3192 ms; worst ratio of each hero text over all samples:
+    div.w-fit "Live" 8.81:1
+    h2.m-0 "Grading the Trade" 11.49:1
+    div.w-fit "This can take up to a minute." 10.35:1
+    span.t-think-text "Weighing the sides" 11.08:1
+    span.min-w-0 "The Mean Machine" 10.60:1
+    span.flex-none "gets" 11.98:1
+    span.min-w-0 "Mitseeker5000" 11.60:1
+    span.t-think-text "Checking roster fit" 11.32:1
+cpc reveal end 390 light: ratio of each hero text:
+    div.w-fit "The read for Bo Girds" 9.18:1
+    span.inline-block "Lean yes" 7.48:1
+    span.min-w-0 "Bo Girds" 17.58:1
+    span.flex-none "gets" 11.06:1
+    span.min-w-0 "Teehee" 17.40:1
+    span.flex-none "gets" 10.61:1
+    span.text-center "Pass" 6.23:1
+    span.text-center "Lean no" 6.23:1
+    span.text-center "Gut call" 6.23:1
+    span.text-center "Lean yes" 17.58:1
+    span.text-center "Send it" 6.23:1
+    p.m-0 "If you believe two healthy starters toda" 8.34:1
+    button.press "Read the full case" 9.09:1
+    p.m-0 "This week's player values are not out ye" 5.74:1
+    span.font-mono "Fairness" 5.74:1
+    span.m-0 "Fair" 5.74:1
+    p.mt-0 "No side gives much more than it gets, so" 5.74:1
+    span.text-label "Bo Girds" 5.74:1
+    p.m-0 "Bo Girds gets a healthy starting RB and " 11.37:1
+    span.text-label "Teehee" 5.74:1
+    p.m-0 "Teehee gets the RB3 in Walker, betting h" 11.37:1
+cpc reveal end 390 dark: ratio of each hero text:
+    div.w-fit "The read for Bo Girds" 9.18:1
+    span.inline-block "Lean yes" 7.48:1
+    span.min-w-0 "Bo Girds" 17.58:1
+    span.flex-none "gets" 11.06:1
+    span.min-w-0 "Teehee" 17.40:1
+    span.flex-none "gets" 10.61:1
+    span.text-center "Pass" 6.23:1
+    span.text-center "Lean no" 6.23:1
+    span.text-center "Gut call" 6.23:1
+    span.text-center "Lean yes" 17.58:1
+    span.text-center "Send it" 6.23:1
+    p.m-0 "If you believe two healthy starters toda" 8.34:1
+    button.press "Read the full case" 9.09:1
+    p.m-0 "This week's player values are not out ye" 5.79:1
+    span.font-mono "Fairness" 5.79:1
+    span.m-0 "Fair" 5.79:1
+    p.mt-0 "No side gives much more than it gets, so" 5.79:1
+    span.text-label "Bo Girds" 5.79:1
+    p.m-0 "Bo Girds gets a healthy starting RB and " 10.26:1
+    span.text-label "Teehee" 5.79:1
+    p.m-0 "Teehee gets the RB3 in Walker, betting h" 10.26:1
+cpc reveal end 1280 light: ratio of each hero text:
+    div.w-fit "The read for Bo Girds" 9.18:1
+    span.inline-block "Lean yes" 7.68:1
+    span.min-w-0 "Bo Girds" 15.13:1
+    span.flex-none "gets" 10.84:1
+    span.min-w-0 "Teehee" 15.13:1
+    span.flex-none "gets" 10.95:1
+    span.text-center "Pass" 6.11:1
+    span.text-center "Lean no" 6.11:1
+    span.text-center "Gut call" 6.05:1
+    span.text-center "Lean yes" 17.40:1
+    span.text-center "Send it" 6.05:1
+    p.m-0 "If you believe two healthy starters toda" 9.42:1
+    p.m-0 "This week's player values are not out ye" 5.74:1
+    span.font-mono "Fairness" 5.74:1
+    span.m-0 "Fair" 5.74:1
+    p.mt-0 "No side gives much more than it gets, so" 5.74:1
+    span.text-label "Bo Girds" 5.74:1
+    p.m-0 "Bo Girds gets a healthy starting RB and " 11.37:1
+    span.text-label "Teehee" 5.74:1
+    p.m-0 "Teehee gets the RB3 in Walker, betting h" 11.37:1
+cpc reveal end 1280 dark: ratio of each hero text:
+    div.w-fit "The read for Bo Girds" 9.18:1
+    span.inline-block "Lean yes" 7.68:1
+    span.min-w-0 "Bo Girds" 15.13:1
+    span.flex-none "gets" 10.84:1
+    span.min-w-0 "Teehee" 15.13:1
+    span.flex-none "gets" 10.95:1
+    span.text-center "Pass" 6.11:1
+    span.text-center "Lean no" 6.11:1
+    span.text-center "Gut call" 6.05:1
+    span.text-center "Lean yes" 17.40:1
+    span.text-center "Send it" 6.05:1
+    p.m-0 "If you believe two healthy starters toda" 9.42:1
+    p.m-0 "This week's player values are not out ye" 5.79:1
+    span.font-mono "Fairness" 5.79:1
+    span.m-0 "Fair" 5.79:1
+    p.mt-0 "No side gives much more than it gets, so" 5.79:1
+    span.text-label "Bo Girds" 5.79:1
+    p.m-0 "Bo Girds gets a healthy starting RB and " 10.26:1
+    span.text-label "Teehee" 5.79:1
+    p.m-0 "Teehee gets the RB3 in Walker, betting h" 10.26:1
+norcal reveal end 390 light: ratio of each hero text:
+    div.w-fit "The read for The Mean Machine" 8.87:1
+    span.inline-block "Send it" 7.24:1
+    span.min-w-0 "The Mean Machine" 17.11:1
+    span.flex-none "gets" 12.39:1
+    span.min-w-0 "Mitseeker5000" 16.63:1
+    span.flex-none "gets" 12.08:1
+    span.text-center "Pass" 7.52:1
+    span.text-center "Lean no" 7.52:1
+    span.text-center "Gut call" 7.52:1
+    span.text-center "Lean yes" 7.47:1
+    span.text-center "Send it" 16.75:1
+    p.m-0 "If you believe Olave's steady role matte" 9.08:1
+    button.press "Read the full case" 8.74:1
+    p.m-0 "This week's player values are not out ye" 5.91:1
+    span.font-mono "Fairness" 5.91:1
+    span.m-0 "Lopsided: Mitseeker5000 gives more." 17.49:1
+    p.mt-0 "It gives more than it gets." 5.91:1
+    span.text-label "The Mean Machine" 5.91:1
+    p.m-0 "The Mean Machine gets the top player in " 11.24:1
+    span.text-label "Mitseeker5000" 5.91:1
+    p.m-0 "Mitseeker5000 gets a busy starting RB an" 11.24:1
+norcal reveal end 390 dark: ratio of each hero text:
+    div.w-fit "The read for The Mean Machine" 8.81:1
+    span.inline-block "Send it" 7.07:1
+    span.min-w-0 "The Mean Machine" 17.11:1
+    span.flex-none "gets" 12.31:1
+    span.min-w-0 "Mitseeker5000" 16.50:1
+    span.flex-none "gets" 12.00:1
+    span.text-center "Pass" 7.47:1
+    span.text-center "Lean no" 7.47:1
+    span.text-center "Gut call" 7.47:1
+    span.text-center "Lean yes" 7.46:1
+    span.text-center "Send it" 16.63:1
+    p.m-0 "If you believe Olave's steady role matte" 8.83:1
+    button.press "Read the full case" 8.61:1
+    p.m-0 "This week's player values are not out ye" 6.21:1
+    span.font-mono "Fairness" 6.21:1
+    span.m-0 "Lopsided: Mitseeker5000 gives more." 13.84:1
+    p.mt-0 "It gives more than it gets." 6.21:1
+    span.text-label "The Mean Machine" 6.21:1
+    p.m-0 "The Mean Machine gets the top player in " 10.11:1
+    span.text-label "Mitseeker5000" 6.21:1
+    p.m-0 "Mitseeker5000 gets a busy starting RB an" 10.11:1
+norcal reveal end 1280 light: ratio of each hero text:
+    div.w-fit "The read for The Mean Machine" 8.87:1
+    span.inline-block "Send it" 7.35:1
+    span.min-w-0 "The Mean Machine" 14.15:1
+    span.flex-none "gets" 12.30:1
+    span.min-w-0 "Mitseeker5000" 14.15:1
+    span.flex-none "gets" 12.37:1
+    span.text-center "Pass" 7.46:1
+    span.text-center "Lean no" 7.46:1
+    span.text-center "Gut call" 7.45:1
+    span.text-center "Lean yes" 7.47:1
+    span.text-center "Send it" 16.50:1
+    p.m-0 "If you believe Olave's steady role matte" 10.47:1
+    p.m-0 "This week's player values are not out ye" 5.91:1
+    span.font-mono "Fairness" 5.91:1
+    span.m-0 "Lopsided: Mitseeker5000 gives more." 17.49:1
+    p.mt-0 "It gives more than it gets." 5.91:1
+    span.text-label "The Mean Machine" 5.91:1
+    p.m-0 "The Mean Machine gets the top player in " 11.24:1
+    span.text-label "Mitseeker5000" 5.91:1
+    p.m-0 "Mitseeker5000 gets a busy starting RB an" 11.24:1
+norcal reveal end 1280 dark: ratio of each hero text:
+    div.w-fit "The read for The Mean Machine" 8.81:1
+    span.inline-block "Send it" 7.24:1
+    span.min-w-0 "The Mean Machine" 13.85:1
+    span.flex-none "gets" 12.21:1
+    span.min-w-0 "Mitseeker5000" 13.85:1
+    span.flex-none "gets" 12.30:1
+    span.text-center "Pass" 7.45:1
+    span.text-center "Lean no" 7.41:1
+    span.text-center "Gut call" 7.40:1
+    span.text-center "Lean yes" 7.46:1
+    span.text-center "Send it" 16.49:1
+    p.m-0 "If you believe Olave's steady role matte" 10.25:1
+    p.m-0 "This week's player values are not out ye" 6.21:1
+    span.font-mono "Fairness" 6.21:1
+    span.m-0 "Lopsided: Mitseeker5000 gives more." 13.84:1
+    p.mt-0 "It gives more than it gets." 6.21:1
+    span.text-label "The Mean Machine" 6.21:1
+    p.m-0 "The Mean Machine gets the top player in " 10.11:1
+    span.text-label "Mitseeker5000" 6.21:1
+    p.m-0 "Mitseeker5000 gets a busy starting RB an" 10.11:1

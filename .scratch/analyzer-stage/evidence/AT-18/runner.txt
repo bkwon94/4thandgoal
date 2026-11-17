@@ -1,0 +1,15 @@
+The shots of AT-18 and AT-25 come from the evidence runner, in a detached worktree of a90b3c92, because the background make check of the Spec worktree writes apps/site/out at the same time. The local API ran there on port 8080.
+
+$ pnpm --dir apps/site evidence analyzer-stage
+build cpc: 6.2 s
+AT-18 /2026/week-09/ cpc: 6 shots in 20.1 s
+AT-25 /2026/week-09/ cpc: 6 shots in 20.1 s
+    Error: build norcal failed:
+    Error [SecurityFatalError]: Your version of Next.js is affected by a known security vulnerability.
+
+The Next.js security notice stopped each second build of a round (runner-1 to runner-6 each built cpc, then norcal stopped). The cpc shots of AT-18 and the shots of AT-25 are from the last of those rounds. The norcal shots come from one more round with a copy of steps.json that names only norcal, so the runner wrote them with no client prefix; the agent renamed them norcal-<width>-<theme>.png.
+
+$ pnpm --dir apps/site evidence analyzer-stage AT-18   (steps.json copy: clients ["norcal"])
+build norcal: 4.0 s
+AT-18 /2026/week-09/ norcal: 6 shots in 16.7 s
+Total: 1 test of analyzer-stage in 20.6 s

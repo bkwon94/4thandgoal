@@ -1,0 +1,7 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)
+375 light: after the add, the stage rows read: Bo Girdsgets | Teeheegets1 player; headshot tokens in the hero: 0
+375 dark: after the add, the stage rows read: Bo Girdsgets | Teeheegets1 player; headshot tokens in the hero: 0
+768 light: after the add, the stage rows read: Bo Girdsgets | Teeheegets1 player; headshot tokens in the hero: 0
+768 dark: after the add, the stage rows read: Bo Girdsgets | Teeheegets1 player; headshot tokens in the hero: 0
+1280 light: after the add, the stage rows read: Bo Girdsgets | Teeheegets1 player; headshot tokens in the hero: 0
+1280 dark: after the add, the stage rows read: Bo Girdsgets | Teeheegets1 player; headshot tokens in the hero: 0

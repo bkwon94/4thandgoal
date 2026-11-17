@@ -1,0 +1,12 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts fold  (see steps.txt)
+trade B, real grade at 375 dark: HTTP 200 after 31827 ms
+375 dark: reason "As long as you can clear room for two extra bodies, this is a deal you send before anyone changes their mind. You land Christian McCaffrey, the RB2 on the season, plus Derrick Henry, and you go from 1 to 2 RBs in the top 36 while giving up an injured Brock Bowers. The risk is Henry's recent slump and an aging Travis Kelce, but Henry scored 18.83 a game in the second half last year, so the history leans your way. The week 11 chart is missing, so this read rests on usage, rank, and roster fit instead. You are already in a playoff spot, and adding a top back like this is exactly the kind of big move worth making. Push it through." shows 3 lines of 18; More false
+375 dark: reason "The Blue Tent adds McCaffrey and Henry at RB, plus a QB, a TE, and a WR, for an injured TE and two others." shows 3 lines of 4; More true
+375 dark: reason "Lil Fridge gets younger at RB with Irving and Jeanty, plus Love on IR." shows 3 lines of 3; More false
+375 dark: reason "All You Need Is Love adds a rising WR in Rice and an elite TE in Bowers once he heals." shows 3 lines of 3; More false
+375 light: The Blue Tent reason before: 3 lines shown of 4, clipped true, More shown true; after the tap: 4 lines shown of 4, clipped false; More target was 44 x 44 px; More buttons left 0
+375 dark: The Blue Tent reason before: 3 lines shown of 4, clipped true, More shown true; after the tap: 4 lines shown of 4, clipped false; More target was 44 x 44 px; More buttons left 0
+768 light: The Blue Tent reason before: 2 lines shown of 2, clipped false, More shown false; after the tap: no More to tap
+768 dark: The Blue Tent reason before: 2 lines shown of 2, clipped false, More shown false; after the tap: no More to tap
+1280 light: The Blue Tent reason before: 2 lines shown of 2, clipped false, More shown false; after the tap: no More to tap
+1280 dark: The Blue Tent reason before: 2 lines shown of 2, clipped false, More shown false; after the tap: no More to tap

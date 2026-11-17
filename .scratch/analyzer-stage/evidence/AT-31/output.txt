@@ -1,0 +1,13 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)
+375 light: the Edit target is 59.0 x 44.0 px, at x 292, y 405; the heading The Sides ends at x 94, y 422-433
+375 light: after Edit the Stack "Who gets what" is in view; it names Tee Higgins true, Bhayshul Tuten true, Kenneth Walker III true
+375 dark: the Edit target is 59.0 x 44.0 px, at x 292, y 405; the heading The Sides ends at x 94, y 422-433
+375 dark: after Edit the Stack "Who gets what" is in view; it names Tee Higgins true, Bhayshul Tuten true, Kenneth Walker III true
+768 light: the Edit target is 60.9 x 44.0 px, at x 619, y 405; the heading The Sides ends at x 164, y 421-433
+768 light: after Edit the Stack "Who gets what" is in view; it names Tee Higgins true, Bhayshul Tuten true, Kenneth Walker III true
+768 dark: the Edit target is 60.9 x 44.0 px, at x 619, y 405; the heading The Sides ends at x 164, y 421-433
+768 dark: after Edit the Stack "Who gets what" is in view; it names Tee Higgins true, Bhayshul Tuten true, Kenneth Walker III true
+1280 light: the Edit target is 62.8 x 44.0 px, at x 913, y 405; the heading The Sides ends at x 386, y 420-434
+1280 light: after Edit the Stack "Who gets what" is in view; it names Tee Higgins true, Bhayshul Tuten true, Kenneth Walker III true
+1280 dark: the Edit target is 62.8 x 44.0 px, at x 913, y 405; the heading The Sides ends at x 386, y 420-434
+1280 dark: after Edit the Stack "Who gets what" is in view; it names Tee Higgins true, Bhayshul Tuten true, Kenneth Walker III true

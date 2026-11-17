@@ -1,0 +1,20 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)
+375 light: shot dip-side-1-375-light.png started 1778 ms after the tap
+375 light: shot dip-side-0-375-light.png started 3051 ms after the tap
+375 dark: shot dip-side-1-375-dark.png started 1793 ms after the tap
+375 dark: shot dip-side-0-375-dark.png started 3043 ms after the tap
+768 light: shot dip-side-1-768-light.png started 1803 ms after the tap
+768 light: shot dip-side-0-768-light.png started 3042 ms after the tap
+768 dark: shot dip-side-1-768-dark.png started 1805 ms after the tap
+768 dark: shot dip-side-0-768-dark.png started 3056 ms after the tap
+1280 light: shot dip-side-1-1280-light.png started 1789 ms after the tap
+1280 light: shot dip-side-0-1280-light.png started 3053 ms after the tap
+1280 dark: shot dip-side-1-1280-dark.png started 1803 ms after the tap
+1280 dark: shot dip-side-0-1280-dark.png started 3123 ms after the tap
+1280 dark: side 0 is Bo Girds, side 1 is Teehee. Runs of the side that pulls hardest (pull > 0.05) in the first 5.2 s:
+    side 0: 173-1134 ms, peak pull 0.50
+    side 1: 1420-2387 ms, peak pull 0.50
+    side 0: 2670-3635 ms, peak pull 0.50
+    side 1: 3917-4885 ms, peak pull 0.50
+    side 0: 5169-5184 ms, peak pull 0.08
+1280 dark: video /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/video-wait/page@c51e80e1a46d6470b9acd549ef8c3a88.webm

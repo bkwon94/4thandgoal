@@ -1,0 +1,9 @@
+$ pnpm --dir apps/site exec playwright test --project=rules e2e/floor-rules.spec.ts -g "incomplete result outside a hero still fails|pixel scan finds no text fails" --reporter=list
+
+Running 2 tests using 2 workers
+
+pixel scan: hero "Week 9": 2 texts, worst 12.33:1
+  ✓  2 [rules] › e2e/floor-rules.spec.ts:145:5 › a hero where the pixel scan finds no text fails and names the hero (586ms)
+  ✓  1 [rules] › e2e/floor-rules.spec.ts:99:5 › hero text over the art passes on its pixels, and an incomplete result outside a hero still fails and names it (588ms)
+
+  2 passed (1.3s)

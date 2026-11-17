@@ -1,0 +1,7 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)
+375 light: 1.5 s after Send with the answer in progress: mesh canvases 0, stage line parts (.t-think) 0, grading heroes 0; status parts: article "Who should I start this week?⠏Reading the league…", div "⠏Reading the league…", button "⠏"
+375 dark: 1.5 s after Send with the answer in progress: mesh canvases 0, stage line parts (.t-think) 0, grading heroes 0; status parts: article "Who should I start this week?⠏Reading the league…", div "⠏Reading the league…", button "⠏"
+768 light: 1.5 s after Send with the answer in progress: mesh canvases 0, stage line parts (.t-think) 0, grading heroes 0; status parts: article "Who should I start this week?⠏Reading the league…", div "⠏Reading the league…", button "⠏"
+768 dark: 1.5 s after Send with the answer in progress: mesh canvases 0, stage line parts (.t-think) 0, grading heroes 0; status parts: article "Who should I start this week?⠏Reading the league…", div "⠏Reading the league…", button "⠏"
+1280 light: 1.5 s after Send with the answer in progress: mesh canvases 0, stage line parts (.t-think) 0, grading heroes 0; status parts: article "Who should I start this week?⠏Reading the league…", div "⠏Reading the league…", button "⠏"
+1280 dark: 1.5 s after Send with the answer in progress: mesh canvases 0, stage line parts (.t-think) 0, grading heroes 0; status parts: article "Who should I start this week?⠏Reading the league…", div "⠏Reading the league…", button "⠏"

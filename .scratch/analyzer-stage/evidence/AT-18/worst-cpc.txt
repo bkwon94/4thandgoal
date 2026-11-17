@@ -1,0 +1,14 @@
+# cpc: the worst ratio of each hero, the lowest over every line 'pixel scan: hero' of floor-cpc.txt
+4.57:1  Rank 1
+4.57:1  Stage: Maye d'force B with U
+4.57:1  To Infinity and Bijan
+4.57:1  The Title Race
+4.57:1  Stage: Teehee
+5.50:1  Matchup of the Week
+5.74:1  The Read
+5.89:1  Page not found
+7.01:1  Grading the Trade
+8.64:1  Act I: How We Got Here
+8.64:1  Act II: The Moves
+8.64:1  Act III: What Comes Next
+9.18:1  Trade Analyzer

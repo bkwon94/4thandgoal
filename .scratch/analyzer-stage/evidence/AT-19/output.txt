@@ -1,0 +1,49 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)
+390 light: pixel scan of the week 9 hero, the texts with 106.71: div.font-mono "106.71" 5.66:1
+390 light: every hero text:
+    Matchup of the Week | div.w-fit "Week 09 // Matchup of the Week" | 8.64:1
+    Matchup of the Week | h1.m-0 "London Cooking by 4.75" | 17.04:1
+    Matchup of the Week | div.w-fit "Nov 5 – Nov 9, 2026 · Published Tue Nov " | 10.61:1
+    Matchup of the Week | div.w-fit "Closest Finish" | 8.64:1
+    Matchup of the Week | div.w-fit "London Cooking" | 17.04:1
+    Matchup of the Week | div.mt-sp-1 "Javonte Williams · RB · 20.4" | 5.98:1
+    Matchup of the Week | div.font-mono "111.46" | 16.83:1
+    Matchup of the Week | div.w-fit "Maye d'force B with U" | 10.61:1
+    Matchup of the Week | div.mt-sp-1 "Drake Maye · QB · 21.26" | 5.98:1
+    Matchup of the Week | div.font-mono "106.71" | 5.66:1
+390 dark: pixel scan of the week 9 hero, the texts with 106.71: div.font-mono "106.71" 5.66:1
+390 dark: every hero text:
+    Matchup of the Week | div.w-fit "Week 09 // Matchup of the Week" | 8.64:1
+    Matchup of the Week | h1.m-0 "London Cooking by 4.75" | 17.04:1
+    Matchup of the Week | div.w-fit "Nov 5 – Nov 9, 2026 · Published Tue Nov " | 10.61:1
+    Matchup of the Week | div.w-fit "Closest Finish" | 8.64:1
+    Matchup of the Week | div.w-fit "London Cooking" | 17.04:1
+    Matchup of the Week | div.mt-sp-1 "Javonte Williams · RB · 20.4" | 5.98:1
+    Matchup of the Week | div.font-mono "111.46" | 16.83:1
+    Matchup of the Week | div.w-fit "Maye d'force B with U" | 10.61:1
+    Matchup of the Week | div.mt-sp-1 "Drake Maye · QB · 21.26" | 5.98:1
+    Matchup of the Week | div.font-mono "106.71" | 5.66:1
+1280 light: pixel scan of the week 9 hero, the texts with 106.71: div.font-mono "106.71" 5.45:1
+1280 light: every hero text:
+    Matchup of the Week | div.w-fit "Week 09 // Matchup of the Week" | 8.64:1
+    Matchup of the Week | h1.m-0 "London Cooking by 4.75" | 17.04:1
+    Matchup of the Week | div.w-fit "Nov 5 – Nov 9, 2026 · Published Tue Nov " | 10.61:1
+    Matchup of the Week | div.w-fit "Closest Finish" | 8.64:1
+    Matchup of the Week | div.w-fit "London Cooking" | 17.04:1
+    Matchup of the Week | div.mt-sp-1 "Javonte Williams · RB · 20.4" | 5.98:1
+    Matchup of the Week | div.font-mono "111.46" | 16.65:1
+    Matchup of the Week | div.w-fit "Maye d'force B with U" | 10.61:1
+    Matchup of the Week | div.mt-sp-1 "Drake Maye · QB · 21.26" | 5.98:1
+    Matchup of the Week | div.font-mono "106.71" | 5.45:1
+1280 dark: pixel scan of the week 9 hero, the texts with 106.71: div.font-mono "106.71" 5.45:1
+1280 dark: every hero text:
+    Matchup of the Week | div.w-fit "Week 09 // Matchup of the Week" | 8.64:1
+    Matchup of the Week | h1.m-0 "London Cooking by 4.75" | 17.04:1
+    Matchup of the Week | div.w-fit "Nov 5 – Nov 9, 2026 · Published Tue Nov " | 10.61:1
+    Matchup of the Week | div.w-fit "Closest Finish" | 8.64:1
+    Matchup of the Week | div.w-fit "London Cooking" | 17.04:1
+    Matchup of the Week | div.mt-sp-1 "Javonte Williams · RB · 20.4" | 5.98:1
+    Matchup of the Week | div.font-mono "111.46" | 16.65:1
+    Matchup of the Week | div.w-fit "Maye d'force B with U" | 10.61:1
+    Matchup of the Week | div.mt-sp-1 "Drake Maye · QB · 21.26" | 5.98:1
+    Matchup of the Week | div.font-mono "106.71" | 5.45:1

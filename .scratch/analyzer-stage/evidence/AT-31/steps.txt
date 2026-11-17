@@ -1,0 +1,16 @@
+The method of this test. The evidence agent wrote a Playwright script, because no step verb of the evidence runner covers it.
+
+1. A detached worktree of a90b3c92 holds the build, because the background make check of the Spec worktree writes apps/site/out at the same time.
+2. In it: uv sync --all-packages, pnpm install, then CLIENT=<client> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build for cpc and norcal. Each export is copied to a scratch folder.
+3. make -C apps/api api-evidence runs in the same detached worktree on port 8080, with real Sleeper data.
+4. The script serves the export on http://127.0.0.1:4173 with apps/site/e2e/serve.ts, so a missing path gets 404.html with status 404.
+5. Each page is a fresh browser context at the width, 900 px tall, with motion on unless the test says reduced motion. apps/site/e2e/floor.ts openPage sets cpc.theme before the first paint.
+6. The passphrase localtest sits in localStorage key cpc.passphrase, so no dialog covers the page.
+7. A held request: a Playwright route on the analyze POST waits and never calls route.continue(), so the real request stays open while the script samples the wait. No answer is made up.
+8. Off-machine calls are not blocked, so the headshots load from sleepercdn.com through the real teams route of the local API.
+
+The scripts are in evidence/harness/. Run: EV_TESTS=<folder of the scripts> pnpm --dir apps/site exec playwright test --config pw-evidence.config.ts <spec>.
+The test of this folder: grade.spec.ts, test "AT-10, 11, 12, 17, 26, 30, 31 on a cached grade of trade T". Its log is output.txt.
+
+What the script does for this test:
+One session per width and theme. grade.spec.ts, test "R0 ...", made the first real grade of trade T (36 s) and of the norcal trade (28 s) at 1280 px dark, so each later grade of the same trade is a cached repeat. The script opens trade T, waits for the idle mesh to stop, starts the reveal watch of apps/site/e2e/analyzer-stage.spec.ts (copied into harness/lib.ts), and taps Grade the Trade. The real analyze POST goes to the local API with no hold. After the reveal the script scrolls Edit the trade into view, logs its box and the box of the heading The Sides, shoots the header, taps Edit, checks that the region "Who gets what" is in view and names the three players, and shoots the view.

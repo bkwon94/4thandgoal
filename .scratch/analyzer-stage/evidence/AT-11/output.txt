@@ -1,0 +1,8 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)
+375 light: each part at rest, from the response: lean 261 ms, scale 478 ms, case 977 ms, tabs 946 ms
+375 dark: each part at rest, from the response: lean 259 ms, scale 476 ms, case 974 ms, tabs 926 ms
+768 light: each part at rest, from the response: lean 251 ms, scale 487 ms, case 1002 ms, tabs 952 ms
+768 dark: each part at rest, from the response: lean 254 ms, scale 489 ms, case 1003 ms, tabs 953 ms
+1280 light: each part at rest, from the response: lean 252 ms, scale 485 ms, case 987 ms, tabs 951 ms
+1280 dark: each part at rest, from the response: lean 261 ms, scale 476 ms, case 993 ms, tabs 944 ms
+1280 dark: video /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/video-reveal/page@e6cd8df4763efb09c8e27974df463bc2.webm (it is also the recording of AT-12)
