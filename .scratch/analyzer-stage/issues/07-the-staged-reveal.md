@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT
 
 **Blocked by:** 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] On a cached repeat of trade T, the Lean word shows within 1.3 s of the response.
 - [x] The time stamps show the Lean word, then the Lean scale, then the Case and the side tabs, within about 1 s.
