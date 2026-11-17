@@ -10,9 +10,9 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, AT-9,
 
 **Status:** ready-for-agent
 
-- [ ] A unit test gives 12 lines for trade T and for a real trade of three sides, with the fixed first and last lines and none of the banned words.
-- [ ] Over 10 s of a held wait, 4 different lines show, the first one "Weighing the sides".
-- [ ] Over 30 s of a held wait, at least one line names a player, a team, or a manager of trade T.
+- [x] A unit test gives 12 lines for trade T and for a real trade of three sides, with the fixed first and last lines and none of the banned words.
+- [x] Over 10 s of a held wait, 4 different lines show, the first one "Weighing the sides".
+- [x] Over 30 s of a held wait, at least one line names a player, a team, or a manager of trade T.
 - [ ] Two snapshots of the accessibility tree, at 2 s and 7 s, show only the status "Grading the trade".
-- [ ] With reduced motion on, the line still changes about every 2.5 s, with no shimmer.
-- [ ] `GLOSSARY.md` defines "Stage line".
+- [x] With reduced motion on, the line still changes about every 2.5 s, with no shimmer.
+- [x] `GLOSSARY.md` defines "Stage line".

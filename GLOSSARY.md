@@ -222,6 +222,10 @@ _Avoid_: Layout, chrome, frame, nav
 The one build-time reader of a published file. It checks the shape and hands typed data to the app layer. Only the app layer calls a loader.
 _Avoid_: Fetcher, reader, data module
 
+**Stage line**:
+One short line under the analyzer title during a grade wait. It never says that a step is done.
+_Avoid_: Loading message, progress line, status line
+
 ## Pipeline language
 
 The pipeline builds the weekly report page for the Cornerstone fantasy football league. It turns Sleeper and nflverse

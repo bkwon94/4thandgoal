@@ -364,6 +364,39 @@ describe("TradeForm", () => {
     expect(document.activeElement).toBe(busy);
   });
 
+  it("shows stage lines of the trade under the title, hidden from a screen reader, with one status label (AT-6, AT-9)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    const line = hero.querySelector(".t-think-text:last-child") as HTMLElement;
+    expect(line.textContent).toBe("Weighing the sides");
+    // The lines sit inside a part that a screen reader skips. The status keeps its one label.
+    expect(line.closest("[aria-hidden=true]")).not.toBeNull();
+    const status = within(hero).getByRole("status");
+    expect(status.getAttribute("aria-label")).toBe("Grading the Trade");
+    expect(within(hero).queryByText("Weighing the sides", { ignore: "[aria-hidden=true] *" })).toBeNull();
+  });
+
+  it("names a player, a team, or a manager of the trade in a stage line", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    // The clock starts after the picks, so the picks keep the real timers. The hero mounts in the click.
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      fireEvent.click(submit());
+      const hero = screen.getByRole("region", { name: "Grading the Trade" });
+      const seen: string[] = [];
+      for (let i = 0; i < 12; i++) {
+        seen.push(hero.querySelector(".t-think-text:last-child")?.textContent ?? "");
+        await act(async () => void vi.advanceTimersByTime(2500));
+      }
+      expect(seen.some((text) => /Ben Two|Ana One|Pukancun on 3|Blitz Bakers|Ana|Ben/.test(text))).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("sends one POST to the analyze route with a JSON body and takes a JSON response (AT-26)", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
