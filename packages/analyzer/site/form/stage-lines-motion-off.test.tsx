@@ -68,8 +68,14 @@ describe("StageLines with motion off", () => {
       const line = container.querySelector<HTMLElement>(".t-think-text")!;
       expect(line.classList.contains("is-scroll")).toBe(false);
       expect(line.style.getPropertyValue("--think-scroll")).toBe("");
-      // The sizer holds one line of height. With motion off it is gone, so the still line sits in the flow and wraps.
-      expect(container.querySelector(".t-think-sizer")).toBeNull();
+      // With motion off the sizer wraps the longest line in the same cell as the still line, so the box keeps one height
+      // through each swap. The mesh cuts its hole under the sizer only, so a swap of the line changes no pixel of the mesh.
+      const box = container.querySelector(".t-think")!;
+      const sizer = box.querySelector(".t-think-sizer");
+      expect(box.classList.contains("is-still")).toBe(true);
+      expect(sizer?.textContent).toBe("Checking Bhayshul Tuten's depth at running back");
+      expect(line.hasAttribute("data-mesh-skip")).toBe(true);
+      expect(sizer?.hasAttribute("data-mesh-skip")).toBe(false);
     } finally {
       Object.defineProperty(Element.prototype, "clientWidth", client);
       Object.defineProperty(Element.prototype, "scrollWidth", scroll);

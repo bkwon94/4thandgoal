@@ -675,7 +675,8 @@
    box scrolls once from right to left to its end, on the translate property, so the swap keeps the transform. The box
    clips it on the x axis only, so the rise and the leave of a swap still show. The inline-size containment keeps a long
    line from widening the hero. The scroll eases in and out, so it starts soft and ends at rest with the end readable.
-   With motion off the still line sits in the flow and wraps in full. */
+   With motion off the still line and the sizer share one grid cell and both wrap, so a long line wraps in full and the
+   box keeps the height of the longest line. */
 @layer components {
     .t-think {
         --think-swap: 150ms;
@@ -735,6 +736,15 @@
         white-space: normal;
         transition: none;
         will-change: auto;
+    }
+    .t-think.is-still {
+        display: grid;
+    }
+    .t-think.is-still > * {
+        grid-area: 1 / 1;
+    }
+    .t-think.is-still > .t-think-sizer {
+        white-space: normal;
     }
     .t-think-text.is-still::before {
         display: none;

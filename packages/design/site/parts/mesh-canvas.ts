@@ -208,7 +208,9 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const el = node.parentElement;
-      if (!el || !node.textContent?.trim()) continue;
+      // A text inside [data-mesh-skip] sits over a hole that another element holds, such as the still stage line over
+      // its sizer, so a swap of that text changes no hole and the still mesh draws the same pixels.
+      if (!el || !node.textContent?.trim() || el.closest("[data-mesh-skip]")) continue;
       const depth = parseFloat(getComputedStyle(el).fontSize) <= SMALL_TEXT_PX ? HOLE_DEPTH_SMALL : HOLE_DEPTH;
       const range = document.createRange();
       range.selectNodeContents(node);

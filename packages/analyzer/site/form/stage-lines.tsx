@@ -24,7 +24,9 @@ function lineIndex(tick: number, count: number): number {
 /* The classes of a line live in globals.css. The sizer is the longest line, so the box keeps one height through each swap.
    The part measures each new line against its box. A line that fits does not move. A line that does not fit scrolls from
    right to left until its end is in view, so no line stays cut off at the edge of the hero. With motion off, the line
-   sits in the flow with no sizer, so a long line wraps in full and does not move. */
+   and the sizer share one cell and both wrap, so a long line wraps in full, does not move, and the box keeps one height.
+   The mesh then cuts its hole under the sizer only, because the hole of a line that swaps would redraw a mesh that must
+   stay still. */
 export function StageLines({ lines }: { lines: string[] }) {
   const off = useMotionOff();
   const [tick, setTick] = useState(0);
@@ -84,8 +86,8 @@ export function StageLines({ lines }: { lines: string[] }) {
         } as CSSProperties)
       : undefined;
   return (
-    <span ref={box} aria-hidden="true" className="t-think text-body leading-body">
-      {!off && <span className="t-think-sizer">{longest}</span>}
+    <span ref={box} aria-hidden="true" className={`t-think text-body leading-body${off ? " is-still" : ""}`}>
+      <span className="t-think-sizer">{longest}</span>
       {leaving && (
         // The outgoing line leaves from the place where it rests, so a long line does not jump back to its start.
         <span
@@ -97,7 +99,14 @@ export function StageLines({ lines }: { lines: string[] }) {
           {leaving.text}
         </span>
       )}
-      <span ref={live} key={tick} className={`t-think-text${state}${over > 0 ? " is-scroll" : ""}`} data-text={text} style={scroll}>
+      <span
+        ref={live}
+        key={tick}
+        className={`t-think-text${state}${over > 0 ? " is-scroll" : ""}`}
+        data-text={text}
+        data-mesh-skip={off ? "" : undefined}
+        style={scroll}
+      >
         {text}
       </span>
     </span>

@@ -480,6 +480,32 @@ test.describe("the wait, with motion off", () => {
     expect(first.equals(second), "the mesh moved in the wait with motion off").toBe(true);
     expect((await pulls(page)).every((p) => p === 0)).toBe(true);
   });
+
+  /* The stage line swaps at 2.5 s, so two reads of the canvas at 1 s and 3 s span a swap. The swap of the text sits
+     over the canvas, so it may change the hero but never one pixel of the mesh. */
+  for (const [theme, width] of [["light", 375], ["dark", 1280]] as const) {
+    test(`wait still: ${CLIENT} the canvas keeps each pixel across a swap of the stage line, ${theme} ${width}px (AT-13)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await openAnalyzer(page, stageQuery(), theme);
+      await page.getByRole("button", { name: "Grade the Trade" }).click();
+      const canvas = page.locator(WAIT_CANVAS);
+      await expect(canvas).toBeVisible();
+      const read = () =>
+        canvas.evaluate((el) => {
+          const c = el as HTMLCanvasElement;
+          return Array.from(c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data);
+        });
+      await page.waitForTimeout(1000);
+      const first = await read();
+      await page.waitForTimeout(2000);
+      const second = await read();
+      let differ = 0;
+      for (let k = 0; k < first.length; k += 4) if (first.slice(k, k + 4).some((v, i) => v !== second[k + i])) differ++;
+      console.log(`wait still: ${CLIENT} ${theme} ${width}px: ${differ} px differ of ${first.length / 4}`);
+      expect(second.length).toBe(first.length);
+      expect(differ, "the canvas changed in the wait with motion off").toBe(0);
+    });
+  }
 });
 
 test.describe("the stage, with motion off", () => {
