@@ -4,6 +4,8 @@ Spec: `.scratch/analyzer-stage/PRD.md`.
 
 The Test verdict: the Judge gives one for each test in `VERDICTS.md`. The Judge is a fresh subagent that reads only this file and the evidence. The PR merges when every test has PASS and Brian gives no FAIL in a PR comment (ADR 0026). The agent that builds the work records the evidence and gives no Test verdict.
 
+Trade B is real data of client `cpc`, season `2026`, from the teams route of 2026 on 2026-11-17: The Blue Tent (roster 1) gets `11560`, `1466`, `2449`, `3198`, and `4034` from Lil Fridge (roster 3). All You Need Is Love (roster 2) gets `10229` and `11604` from The Blue Tent. Lil Fridge gets `12527` and `13287` from All You Need Is Love, and `11584` from The Blue Tent. The evidence agent records the name of each player. If a roster has moved, the agent picks a real trade of 3 sides where one side gets 5 players, and records it.
+
 Trade T is real data of client `cpc`, season `2026`, week 9: roster 6, Bo Girds, gives Kenneth Walker III (`8151`) to roster 12, Teehee, for Tee Higgins (`6801`) and Bhayshul Tuten (`12490`). Bo Girds asks. The grade reads the live snapshot, so the Lean of trade T can move. The evidence agent records the Lean and the favored side on the day of the run.
 
 The analyzer tests run against the local API through the evidence harness (`apps/site/e2e/evidence.ts`). A test that samples the wait holds the real analyze request with a Playwright route, then passes it on to the local API. The hero stays dark in both themes, but each site test still takes both themes (ADR 0006).
@@ -23,7 +25,7 @@ App: site
 Stories: 1, 2
 Given: The analyzer of `cpc`, with Bo Girds and Teehee as the two teams of the Stack.
 When: The reader adds Kenneth Walker III to the side of Bo Girds.
-Then: The hero shows the name Kenneth Walker III on the stage.
+Then: The row of Teehee on the stage shows "1 player" and no headshot.
 Evidence: screenshots of the hero before and after the add, at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-3: The wait starts on the tap
@@ -167,7 +169,7 @@ App: site
 Stories: 23
 Given: The analyzer of each client, `cpc` and `norcal`, with a real trade of two sides. Trade T is the trade in `cpc`. The evidence agent picks and records a trade in `norcal`.
 When: The pixel scan reads the hero in idle, in the wait with 10 samples over 3 s, and at the end of the reveal.
-Then: Each hero text, including the column label of each side, reaches 4.5:1 or more in each state, at 390 and 1280 px.
+Then: Each hero text, including the row label of each side, reaches 4.5:1 or more in each state, at 390 and 1280 px.
 Evidence: the worst ratio of each text in each state, and screenshots of each state at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-21: The egg banner text stays readable
@@ -218,6 +220,70 @@ When: The reader grades the trade.
 Then: The network log shows one `POST` to the analyze route, with a JSON response, not `text/event-stream`.
 Evidence: the network log of the grade, and screenshots of the result at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
+AT-27: A big trade stays compact
+App: site
+Stories: 29
+Given: The analyzer of `cpc` with trade B in the Stack, and the analyze request held.
+When: The reader taps "Grade the Trade".
+Then: The stage shows 3 rows, one per side, and the row of The Blue Tent shows 3 headshots and a "+2" token.
+Evidence: screenshots of the hero in the wait at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-28: Idle shows no headshot on the stage
+App: site
+Stories: 30
+Given: The analyzer of `cpc` with trade T in the Stack.
+When: The reader looks at the hero before the grade.
+Then: The row of Bo Girds shows "2 players", the row of Teehee shows "1 player", and the hero shows no headshot.
+Evidence: screenshots of the hero and the Stack at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-29: The headshots rise into the rows on the tap
+App: site
+Stories: 30
+Given: The analyzer of `cpc` with trade T in the Stack, and the analyze request held.
+When: The reader taps "Grade the Trade".
+Then: Within 1 s, the row of Bo Girds shows the headshots of Tee Higgins and Bhayshul Tuten, and the row of Teehee shows the headshot of Kenneth Walker III.
+Evidence: the time stamps of the tap and of the last headshot in view, and screenshots of the hero 1 s after the tap at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-30: The result shows the players once
+App: site
+Stories: 31
+Given: The analyzer of `cpc` with the result of trade T.
+When: The reader scrolls from the hero to the end of the result.
+Then: The result has no "The Trade" chapter, and below the hero it has no player chip, no headshot, and no `FoldLine` card.
+Evidence: screenshots of the full result at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-31: Edit sits in the header of The Sides
+App: site
+Stories: 32
+Given: The analyzer of `cpc` with the result of trade T.
+When: The reader taps Edit in the header of "The Sides".
+Then: The Stack opens with trade T and scrolls into view, and the target of Edit is 44 px or more on each side.
+Evidence: the size of the Edit target, and screenshots of the header and of the open Stack at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-32: A long fairness reason folds
+App: site
+Stories: 33
+Given: The analyzer of `cpc` at 375 px with the result of a real trade whose fairness reason of one side runs past 3 lines. The evidence agent picks the trade and records it.
+When: The reader taps "More" under that reason.
+Then: Before the tap the reason shows 3 lines and "More", and after the tap it shows in full.
+Evidence: screenshots of the reason before and after the tap at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-33: A long stage line shows in full
+App: site
+Stories: 34
+Given: The analyzer of `cpc` at 375 px with trade B in the Stack, and the analyze request held.
+When: The reader taps "Grade the Trade" and the wait runs for 30 s.
+Then: Each stage line is set at the size of `text-body`, and a line wider than the hero scrolls from right to left until its end is in view.
+Evidence: the computed font size, the text and the width of each line, a screen recording of a long line, and screenshots of its start and its end at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-34: With motion off, a long stage line wraps
+App: site
+Stories: 34
+Given: The analyzer of `cpc` at 375 px with trade B in the Stack, reduced motion on, and the analyze request held.
+When: The wait shows a stage line wider than the hero.
+Then: The line wraps to a second line in full and does not move.
+Evidence: two screenshots of the line 1 s apart, and screenshots at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
 ## Trace
 
 Story 1: AT-2
@@ -248,6 +314,12 @@ Story 25: AT-18
 Story 26: no test. Reason: ADR 0036 is already on the Spec branch, from decision 05.
 Story 27: AT-18, AT-22
 Story 28: AT-23
+Story 29: AT-27
+Story 30: AT-28, AT-29
+Story 31: AT-30
+Story 32: AT-31
+Story 33: AT-32
+Story 34: AT-33, AT-34
 Out of scope "The wait of the front door chat": AT-24
 Out of scope "Real progress from an API stream": AT-26
 Out of scope "A new loader for the Finder wait": AT-23
@@ -255,4 +327,4 @@ Out of scope "A change to the hero scene of the other pages": AT-25
 
 ## Revisions
 
-None yet.
+- 2026-11-17: Decision 06. Brian approved a change to AT-2 (idle shows a count, not the name) and to AT-20 (row label, not column label), and the new tests AT-27 to AT-34.
