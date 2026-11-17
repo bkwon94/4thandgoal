@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-6, AT-7, AT-8, AT-9,
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A unit test gives 12 lines for trade T and for a real trade of three sides, with the fixed first and last lines and none of the banned words.
 - [x] Over 10 s of a held wait, 4 different lines show, the first one "Weighing the sides".
