@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Label } from "@cpc/design/parts/label";
+import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import { EggsError, type Board, type ClaimAnswer, type EggsApi } from "../lib/api";
@@ -59,6 +60,7 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   const motion = !useMotionOff();
   // The stamp holds on the ticket, then the end card shows. A close of the sheet in the hold stops the timer.
   const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const asked = useRef(false);
 
   useEffect(() => () => {
     if (hold.current !== null) clearTimeout(hold.current);
@@ -111,144 +113,157 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="egg-claim-title" className="fixed inset-0 z-50 flex items-end justify-center tablet:items-center tablet:p-gutter">
-      <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/60" />
-      <div className="egg-sheet-rise relative flex max-h-[92dvh] w-full max-w-lg flex-col gap-sp-5 overflow-y-auto rounded-t-hero border-t border-rule bg-page px-gutter pt-sp-3 pb-sp-6 text-ink tablet:rounded-hero tablet:border">
-        {/* The sheet scrolls when its content is taller than the sheet. Each part with no content of its own to hold its
-            height takes flex-none, or the column shrinks it: the handle, and the hero, whose overflow-hidden lets it shrink. */}
-        <span aria-hidden="true" className="h-1 w-9 flex-none self-center rounded-pill bg-rule tablet:hidden" />
-
-        <div className="egg-up relative flex flex-none items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
-          <span className="relative flex-none">
-            {/* The ground reaches the edges of the hero on the left, top, and bottom. On the right it stops at the edge of
-                the tile, so the full gap lies between the ground and the title. */}
-            <ArtGround inset="-inset-y-sp-3 -left-sp-3 right-0" />
-            {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
-            <span className="relative flex size-16 items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
-              {letter}
-            </span>
-          </span>
-          <div className="flex min-w-0 flex-col gap-sp-1">
-            <Label dark className="mb-0 text-meta">
-              Claim
-            </Label>
-            {/* Each line is its own element. axe reads the page under the sheet at each line of an element, and a line
-                that wraps sits over two parts of the page, so axe then cannot read its contrast. The break leaves room
-                for a wide letter in the narrow column at 340px. */}
-            <h2 id="egg-claim-title" className="text-stat leading-tight font-bold">
-              <span className="block">{`Put ${letter} in`}</span> <span className="block">an egg word.</span>
-            </h2>
-          </div>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onClose}
-            className="press ml-auto flex size-touch flex-none items-center justify-center self-start rounded-pill bg-band text-on-dark-muted"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <section className="egg-up egg-up-1 flex flex-col">
-          <Label className="text-meta">1 · Who are you?</Label>
-          {manager === null ? (
-            <div role="group" aria-label="Your team" className="flex flex-wrap gap-sp-2">
-              {board?.managers.map((each) => (
-                <button
-                  key={each.roster_id}
-                  type="button"
-                  onClick={() => pickTeam(each.roster_id)}
-                  className="press min-h-touch rounded-pill border border-rule bg-card px-sp-4 text-body font-bold text-ink"
-                >
-                  {each.team}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="egg-pop flex flex-wrap items-center gap-sp-2">
-              <span className="inline-flex min-h-touch items-center gap-sp-2 rounded-pill bg-ink px-sp-4 text-body font-bold text-page">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-                {manager.team}
+    <Sheet
+      side="bottom"
+      open
+      onOpenChange={(next) => {
+        // A drag close reports twice before the hunt drops the sheet, and the hunt must hear one close.
+        if (!next && !asked.current) {
+          asked.current = true;
+          onClose();
+        }
+      }}
+      container={typeof document === "undefined" ? undefined : document.body}
+    >
+      <SheetBackdrop />
+      {/* The Drawer owns the slide, the drag, the dim, the focus trap, and the fade under reduced motion. The sheet is a
+          bottom sheet at every tier, so the tablet tier keeps the same edge and a max width. */}
+      <SheetContent className="mx-auto flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-hero border border-b-0 border-rule">
+        {/* The grip says "sheet" to a thumb. A drag down on the sheet closes it. */}
+        <SheetGrip className="mt-sp-3 h-sp-1 w-sp-6" />
+        {/* The body scrolls when its content is taller than the sheet. Each part with no content of its own to hold its
+            height takes flex-none, or the column shrinks it: the hero, whose overflow-hidden lets it shrink. */}
+        <div className="flex min-h-0 flex-1 flex-col gap-sp-5 overflow-y-auto overscroll-contain px-gutter pt-sp-3 pb-sp-6">
+          <div className="egg-up relative flex flex-none items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
+            <span className="relative flex-none">
+              {/* The ground reaches the edges of the hero on the left, top, and bottom. On the right it stops at the edge of
+                  the tile, so the full gap lies between the ground and the title. */}
+              <ArtGround inset="-inset-y-sp-3 -left-sp-3 right-0" />
+              {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
+              <span className="relative flex size-16 items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
+                {letter}
               </span>
-              <button type="button" onClick={() => pickTeam(null)} className="press min-h-touch px-sp-3 text-body font-bold text-accent-ink">
-                Change
-              </button>
+            </span>
+            <div className="flex min-w-0 flex-col gap-sp-1">
+              <Label dark className="mb-0 text-meta">
+                Claim
+              </Label>
+              {/* Each line is its own element. axe reads the page under the sheet at each line of an element, and a line
+                  that wraps sits over two parts of the page, so axe then cannot read its contrast. The break leaves room
+                  for a wide letter in the narrow column at 340px. */}
+              <SheetTitle id="egg-claim-title" className="m-0 text-stat leading-tight font-bold">
+                <span className="block">{`Put ${letter} in`}</span> <span className="block">an egg word.</span>
+              </SheetTitle>
             </div>
-          )}
-        </section>
+            <SheetClose
+              aria-label="Close"
+              className="press ml-auto flex size-touch flex-none items-center justify-center self-start rounded-pill bg-band text-on-dark-muted"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </SheetClose>
+          </div>
 
-        {board !== null && team !== null && (
-          <section className="flex flex-col gap-sp-3">
-            <Label className="egg-up mb-0 text-meta">2 · Where does {letter} go?</Label>
-            <div role="group" aria-label="Egg word" className="flex flex-col gap-sp-3">
-              {board.words.map((each, index) => (
-                <WordCard
-                  key={each.word}
-                  word={each}
-                  team={team}
-                  letter={letter}
-                  step={index + 1}
-                  picked={word === each.word}
-                  onPick={() => setWord(each.word)}
-                />
-              ))}
-            </div>
-            {block && (
-              <div className="egg-up egg-up-4 flex items-center gap-sp-3 rounded-card border-2 border-dashed border-accent bg-card p-sp-4">
-                <span className="flex size-11 flex-none items-center justify-center rounded-letter border-2 border-dashed border-accent font-mono text-score font-bold text-accent-ink">
-                  {letter}
+          <section className="egg-up egg-up-1 flex flex-col">
+            <Label className="text-meta">1 · Who are you?</Label>
+            {manager === null ? (
+              <div role="group" aria-label="Your team" className="flex flex-wrap gap-sp-2">
+                {board?.managers.map((each) => (
+                  <button
+                    key={each.roster_id}
+                    type="button"
+                    onClick={() => pickTeam(each.roster_id)}
+                    className="press min-h-touch rounded-pill border border-rule bg-card px-sp-4 text-body font-bold text-ink"
+                  >
+                    {each.team}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="egg-pop flex flex-wrap items-center gap-sp-2">
+                <span className="inline-flex min-h-touch items-center gap-sp-2 rounded-pill bg-ink px-sp-4 text-body font-bold text-page">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  {manager.team}
                 </span>
-                <div className="flex flex-col gap-sp-0">
-                  <span className="text-body font-bold">{letter} fits none of your egg words.</span>
-                  <span className="text-meta text-ink-2">Claim it as a block. Then no other manager can put it in a word.</span>
-                </div>
+                <button type="button" onClick={() => pickTeam(null)} className="press min-h-touch px-sp-3 text-body font-bold text-accent-ink">
+                  Change
+                </button>
               </div>
             )}
           </section>
-        )}
 
-        {stored === null && (
-          <label className="flex flex-col">
-            <span className="mb-sp-3 text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
-              3 · League passphrase
-            </span>
-            <input
-              type="password"
-              autoComplete="off"
-              value={typed}
-              onChange={(event) => setTyped(event.target.value)}
-              className="min-h-touch rounded-tile border border-rule bg-card px-sp-4 text-lead text-ink"
+          {board !== null && team !== null && (
+            <section className="flex flex-col gap-sp-3">
+              <Label className="egg-up mb-0 text-meta">2 · Where does {letter} go?</Label>
+              <div role="group" aria-label="Egg word" className="flex flex-col gap-sp-3">
+                {board.words.map((each, index) => (
+                  <WordCard
+                    key={each.word}
+                    word={each}
+                    team={team}
+                    letter={letter}
+                    step={index + 1}
+                    picked={word === each.word}
+                    onPick={() => setWord(each.word)}
+                  />
+                ))}
+              </div>
+              {block && (
+                <div className="egg-up egg-up-4 flex items-center gap-sp-3 rounded-card border-2 border-dashed border-accent bg-card p-sp-4">
+                  <span className="flex size-11 flex-none items-center justify-center rounded-letter border-2 border-dashed border-accent font-mono text-score font-bold text-accent-ink">
+                    {letter}
+                  </span>
+                  <div className="flex flex-col gap-sp-0">
+                    <span className="text-body font-bold">{letter} fits none of your egg words.</span>
+                    <span className="text-meta text-ink-2">Claim it as a block. Then no other manager can put it in a word.</span>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {stored === null && (
+            <label className="flex flex-col">
+              <span className="mb-sp-3 text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
+                3 · League passphrase
+              </span>
+              <input
+                type="password"
+                autoComplete="off"
+                value={typed}
+                onChange={(event) => setTyped(event.target.value)}
+                className="min-h-touch rounded-tile border border-rule bg-card px-sp-4 text-lead text-ink"
+              />
+            </label>
+          )}
+
+          {error && <p role="alert" className="text-lead text-accent-ink">{error}</p>}
+
+          <div className="flex flex-col gap-sp-2">
+            <ClaimTicket
+              letter={letter}
+              word={block ? null : word}
+              block={block}
+              team={manager?.team ?? null}
+              label={label}
+              locked={locked}
+              send={send}
+              motion={motion}
+              onTear={claim}
             />
-          </label>
-        )}
-
-        {error && <p role="alert" className="text-lead text-accent-ink">{error}</p>}
-
-        <div className="flex flex-col gap-sp-2">
-          <ClaimTicket
-            letter={letter}
-            word={block ? null : word}
-            block={block}
-            team={manager?.team ?? null}
-            label={label}
-            locked={locked}
-            send={send}
-            motion={motion}
-            onTear={claim}
-          />
-          {/* Each sentence is its own line. A line that wraps sits over two parts of the page under the sheet, and axe then
-              cannot read its contrast. */}
-          <span className="text-center text-meta text-mute">
-            <span className="block">The first claim wins the egg.</span>
-            <span className="block">The commissioner can undo a claim.</span>
-          </span>
-        </div>
-      </div>
-    </div>
+            {/* Each sentence is its own line. A line that wraps sits over two parts of the page under the sheet, and axe then
+                cannot read its contrast. */}
+            <span className="text-center text-meta text-mute">
+              <span className="block">The first claim wins the egg.</span>
+              <span className="block">The commissioner can undo a claim.</span>
+            </span>
+          </div>
+          </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 

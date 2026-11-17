@@ -1,0 +1,113 @@
+# Each sheet is the shared Sheet
+
+Kind: quick-win
+Status: done
+Branch: `win-one-sheet`.
+Source: the session of 2026-11-16.
+Boundary: holds. 4 items of one kind; no new term or ADR; no moved seam, each item swaps a part for the shared `Sheet` of `packages/design/site/ui/sheet.tsx`; each done condition is one sentence.
+
+## Items
+
+### 1. The sheet of the analyzer is the shared Sheet
+
+Done condition: `packages/analyzer/site/form/sheet.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of the `Dialog`, so the player sheet and the team sheet of the analyzer drag closed like the team sheet of the front door.
+Method: tdd
+Red: at `4ca8b2d1` with `packages/analyzer/site/form/sheet.test.tsx` of `2b717bea`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/sheet.test.tsx`
+
+```text
+ FAIL  ../../packages/analyzer/site/form/sheet.test.tsx > the sheet of the analyzer > shows the grip of the shared Sheet, the title, the body, and the footer
+AssertionError: expected null to be truthy
+ FAIL  ../../packages/analyzer/site/form/sheet.test.tsx > the sheet of the analyzer > closes on a drag down and calls onClose
+AssertionError: expected [] to deeply equal [ 'close' ]
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+```
+
+Green: at `2b717bea`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/sheet.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+```
+Test verdict: PASS
+
+### 2. The claim sheet of the egg hunt is the shared Sheet
+
+Done condition: `packages/eggs/site/hunt/claim-sheet.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of its own fixed `div` with `role="dialog"`, so it drags closed like the team sheet of the front door.
+Method: tdd
+Red: at `4ccf87cd` with `packages/eggs/site/hunt/claim-sheet.test.tsx` of `1f96b744`, `cd apps/site && npx vitest run ../../packages/eggs/site/hunt/claim-sheet.test.tsx`
+
+```text
+ FAIL  ../../packages/eggs/site/hunt/claim-sheet.test.tsx > the claim sheet of the egg hunt > shows the grip of the shared Sheet and the team pills
+AssertionError: expected null to be truthy
+ FAIL  ../../packages/eggs/site/hunt/claim-sheet.test.tsx > the claim sheet of the egg hunt > closes on a drag down and calls onClose once
+AssertionError: expected [] to deeply equal [ 'close' ]
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+```
+
+Green: at `1f96b744`, `cd apps/site && npx vitest run ../../packages/eggs/site/hunt/claim-sheet.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+```
+Test verdict: PASS
+
+### 3. The passphrase sheet of the front door is the shared Sheet
+
+Done condition: `apps/site/src/app/front-door/passphrase-sheet.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of its own `motion.div` modal, and its field still stays above the keyboard.
+Method: tdd
+Red: at `6b576def~1` with `apps/site/src/app/front-door/passphrase-sheet.test.tsx` of `6b576def`, `cd apps/site && npx vitest run src/app/front-door/passphrase-sheet.test.tsx`
+
+```text
+ FAIL  src/app/front-door/passphrase-sheet.test.tsx > the passphrase sheet of the front door > shows the grip of the shared Sheet and keeps the focus in the field
+AssertionError: expected null to be truthy
+ FAIL  src/app/front-door/passphrase-sheet.test.tsx > the passphrase sheet of the front door > lifts the content by the keyboard signal so the field sits above the keyboard
+AssertionError: expected '' to be 'var(--spacing-door-foot)' // Object.is equality
+ FAIL  src/app/front-door/passphrase-sheet.test.tsx > the passphrase sheet of the front door > closes on a drag down and calls onClose once
+AssertionError: expected [] to deeply equal [ 'close' ]
+ Test Files  1 failed (1)
+      Tests  3 failed | 3 passed (6)
+```
+
+Green: at `6b576def`, `cd apps/site && npx vitest run src/app/front-door/passphrase-sheet.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+```
+Test verdict: PASS
+
+### 4. The passphrase dialog of the analyzer is the shared Sheet
+
+Done condition: `packages/analyzer/site/form/passphrase-dialog.tsx` renders the shared `Sheet` of `@cpc/design/ui/sheet` in place of the centered `Dialog`, so the analyzer asks for the passphrase in the same sheet as the front door.
+Method: tdd
+Red: at `7766f282` with `packages/analyzer/site/form/passphrase-dialog.test.tsx` of `74d2c587`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/passphrase-dialog.test.tsx`
+
+```text
+ FAIL  ../../packages/analyzer/site/form/passphrase-dialog.test.tsx > the passphrase dialog of the analyzer > renders the shared Sheet from the bottom, with no grip because it does not drag
+AssertionError: expected null to be 'bottom' // Object.is equality
+ FAIL  ../../packages/analyzer/site/form/passphrase-dialog.test.tsx > the passphrase dialog of the analyzer > lifts the content by the keyboard signal so the field sits above the keyboard
+AssertionError: expected '' to be 'var(--spacing-door-foot)' // Object.is equality
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+```
+
+Green: at `74d2c587`, `cd apps/site && npx vitest run ../../packages/analyzer/site/form/passphrase-dialog.test.tsx`
+
+```text
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+```
+Test verdict: PASS
+
+## Comments
+
+Closes with the squash merge of the PR of `win-one-sheet`. Commits: `2b717bea`, `1f96b744`, `6b576def`, `60af5c88`, `74d2c587`. Date: 2026-11-16.
+The four new test files went red on the old code and green on the fix, and `make check-fast BASE=main` passed with 1539 site tests.
+Brian checks items 3 and 4 on iPhone Safari and Chrome, because jsdom checks only the style of the keyboard lift.
+The rule `egg-sheet-rise` in `apps/site/src/app/globals.css` has no user now, and a later run can remove it.
+In jsdom, a click test after a drag test of the Drawer misses its click, so each drag test runs last in its file.
+Read 14 files: AGENTS.md, apps/site/AGENTS.md, docs/agents/issue-tracker.md, GLOSSARY.md, packages/design/site/ui/README.md, packages/design/site/ui/sheet.tsx, packages/design/site/shell/keyboard.ts, apps/site/src/app/globals.css, apps/site/src/app/front-door/team-sheet.tsx, apps/site/src/app/front-door/passphrase-sheet.tsx, packages/analyzer/site/form/sheet.tsx, packages/analyzer/site/form/passphrase-dialog.tsx, packages/analyzer/site/form/analyzer.tsx, packages/eggs/site/hunt/claim-sheet.tsx.
+CI failed: AT-51 in `e2e/front-door-passphrase.spec.ts` timed out on the tap, because the field sat off the screen. The cause is the inline `bottom` of `SheetContent`: with the inline `top` of the Drawer, it cut the content to its border. The fix `5e9ed010` drops the offset in items 3 and 4, and the Drawer lifts the sheet by its own `--keyboard-inset`.

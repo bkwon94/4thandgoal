@@ -4,6 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget } from "../lib/fixtures/api";
 import { Analyzer } from "./analyzer";
 import { pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
