@@ -198,7 +198,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const grading = grade.status === "grading";
   // The form hides while the grade runs and under a result, so the hero and the read lead the page. The stage of the
   // hero shows the trade, so no line repeats it.
-  const folded = grading || (grade.status === "done" && !editing);
+  const formHidden = grading || (grade.status === "done" && !editing);
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
@@ -357,7 +357,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           of the form, above the finder. The part holds the form section and the bar, and nothing after them. */}
       <div>
       {/* The hidden form stays in the page, so the picks, the sheets, and the finder cards keep their state for Edit. */}
-      <div hidden={folded}>
+      <div hidden={formHidden}>
         {/* The scroll margin keeps the top of the Stack clear of the edge of the screen after Edit. */}
         <section ref={stackRef} aria-label="Who gets what" className="mt-sp-5 flex scroll-mt-sp-5 flex-col gap-sp-4">
           <TeamsRow
@@ -406,10 +406,10 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           )}
         </section>
       </div>
-      {/* Under a hidden result the bar has no trade to grade again, so it hides until Edit. */}
-      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
+      {/* Under a result the form is hidden and the bar has no trade to grade again, so it hides until Edit. */}
+      {!(formHidden && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
       </div>
-      <div hidden={folded}>
+      <div hidden={formHidden}>
         {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
             The finder grades two sides, so it hides at three or four. */}
         {/* The finder is off by default because the page felt crowded. */}
@@ -484,7 +484,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       })}
       stage={stage}
     />
-  ) : folded ? null : (
+  ) : formHidden ? null : (
     <TitleHero stage={stage} />
   );
 
