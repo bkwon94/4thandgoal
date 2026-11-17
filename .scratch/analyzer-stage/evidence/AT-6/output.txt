@@ -1,0 +1,47 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)
+375 light: shot line-2-375-light.png started 3211 ms after the tap
+375 light: shot line-3-375-light.png started 5825 ms after the tap
+375 light: lines in the first 6.0 s:
+    6 ms  Weighing the sides
+    2525 ms  Checking roster fit
+    5019 ms  Weighing what Your Team gives up
+375 dark: shot line-2-375-dark.png started 3209 ms after the tap
+375 dark: shot line-3-375-dark.png started 5818 ms after the tap
+375 dark: lines in the first 6.0 s:
+    17 ms  Weighing the sides
+    2529 ms  Checking roster fit
+    5030 ms  Reading Tee Higgins's season
+768 light: shot line-2-768-light.png started 3211 ms after the tap
+768 light: shot line-3-768-light.png started 5818 ms after the tap
+768 light: lines in the first 6.0 s:
+    9 ms  Weighing the sides
+    2509 ms  Checking roster fit
+    5010 ms  Reading Tee Higgins's season
+768 dark: shot line-2-768-dark.png started 3213 ms after the tap
+768 dark: shot line-3-768-dark.png started 5816 ms after the tap
+768 dark: lines in the first 6.0 s:
+    13 ms  Weighing the sides
+    2518 ms  Checking roster fit
+    5018 ms  Reading Tee Higgins's season
+1280 light: shot line-2-1280-light.png started 3214 ms after the tap
+1280 light: shot line-3-1280-light.png started 5833 ms after the tap
+1280 light: lines in the first 6.3 s:
+    17 ms  Weighing the sides
+    2521 ms  Checking roster fit
+    5022 ms  Reading Tee Higgins's season
+1280 dark: shot line-2-1280-dark.png started 3337 ms after the tap
+1280 dark: shot line-3-1280-dark.png started 5833 ms after the tap
+1280 dark: lines in the first 30.6 s:
+    23 ms  Weighing the sides
+    2533 ms  Checking roster fit
+    5035 ms  Reading Tee Higgins's season
+    7537 ms  Reading the standings
+    10054 ms  Looking at the schedule ahead
+    12550 ms  Checking Teehee's depth at RB
+    15071 ms  Reading recent usage
+    17568 ms  Weighing what bkwon gives up
+    20068 ms  Checking the injury report
+    22569 ms  Reading Kenneth Walker III's season
+    25072 ms  Sizing up the upside
+    27570 ms  Weighing it all together
+    30082 ms  Checking roster fit

@@ -147,6 +147,11 @@
     --spacing-ring-avatar: 24px;
     --spacing-ring-bar: 36px;
     --spacing-ring-bar-w: 4px;
+    /* A headshot token on the stage of the analyzer hero. 32px keeps a face readable, and three overlapped tokens and a
+       "+N" token still leave the full team name room in a row at 375. */
+    --spacing-stage-token: 32px;
+    /* The column of the tokens in a stage row: 3 faces and a "+N" token, each overlapped by sp-2. */
+    --spacing-stage-tokens: calc(4 * var(--spacing-stage-token) - 3 * var(--spacing-sp-2));
     /* The team pick chip on the waiver page: a 44px touch row and 4px above and below. The empty slot takes the same height
        before the page reads storage, so the ring does not move down when the chip shows. */
     --spacing-pick-chip: 52px;
@@ -187,6 +192,9 @@
     /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
     --container-door: 560px;
     --container-sheet: 440px;
+    /* The stage of the analyzer hero. From the tablet tier up, a row as wide as the hero puts the tokens far from their
+       team, so the rows keep the width of the door column. */
+    --container-stage: 560px;
     /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
        It is in ch, so the cap grows with the body size of the tier. Tables, grids, and score rows take no cap. */
     --container-measure: 68ch;
@@ -469,25 +477,13 @@
     }
 }
 
-/* The text plate of the hero: the band color under the text and a soft edge of the same color around it.
-   The grid and the glow then never sit under a letter, so the contrast of hero text is the contrast of its role pair,
-   and axe can read it. A box-shadow is no background for axe, and the edge hides the end of the plate on the glow.
-   The plate reaches past the text on each side, because tight leading and wide tracking put the glyph boxes past the
-   box of the element, and axe needs the plate to hold every glyph box. A glyph box is about 1.3 em tall, so a line
-   with no extra leading needs 0.2 em above and below. The negative margin keeps the text in line with the hero. */
-@utility plate {
-    background-color: var(--color-band);
-    box-shadow: 0 0 var(--spacing-sp-3) var(--spacing-sp-2) var(--color-band);
-    padding: max(var(--spacing-sp-1), 0.2em) var(--spacing-sp-1);
-    margin-inline: calc(var(--spacing-sp-1) * -1);
-}
-
 @layer components {
     /* The art of the hero: the brand glow in the lower right corner, over the 24px grid of the grid color.
+       The glow is small and low, so its bright part stays off hero text and the text needs no plate (ADR 0036).
        Three layers of one background cannot be Tailwind classes cleanly, so they live here. */
     .hero-texture {
         background-image:
-            radial-gradient(ellipse 70% 90% at 100% 100%, var(--color-accent-glow), transparent 70%),
+            radial-gradient(ellipse 38% 46% at 100% 112%, var(--color-accent-glow), transparent 70%),
             linear-gradient(var(--color-grid) 1px, transparent 1px),
             linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
         background-size:
@@ -672,9 +668,227 @@
     }
 }
 
+/* The stage lines of the analyzer wait (recipes 28 and 15 of transitions.dev). A line shimmers while it holds, then the
+   old line leaves up through a small blur while the new line rises in from below. The hero sits on the band color in both
+   themes, so the base and the highlight are the colors for text on dark. The sizer holds the longest line, so the box
+   keeps one height through each swap. A still line has no shimmer and no move, for reduced motion. A line wider than its
+   box scrolls once from right to left to its end, on the translate property, so the swap keeps the transform. The box
+   clips it on the x axis only, so the rise and the leave of a swap still show. The inline-size containment keeps a long
+   line from widening the hero. The scroll eases in and out, so it starts soft and ends at rest with the end readable.
+   With motion off the still line and the sizer share one grid cell and both wrap, so a long line wraps in full and the
+   box keeps the height of the longest line. */
+@layer components {
+    .t-think {
+        --think-swap: 150ms;
+        --think-distance: 8px;
+        --think-blur: 2px;
+        --think-shimmer: 2000ms;
+        --think-ease: ease-in-out;
+        position: relative;
+        display: block;
+        overflow-x: clip;
+        contain: inline-size;
+    }
+    .t-think-sizer {
+        display: block;
+        visibility: hidden;
+        white-space: nowrap;
+    }
+    .t-think-text {
+        position: absolute;
+        inset: 0 0 auto 0;
+        display: block;
+        color: var(--color-on-dark-2);
+        white-space: nowrap;
+        transition:
+            transform var(--think-swap) var(--think-ease),
+            filter var(--think-swap) var(--think-ease),
+            opacity var(--think-swap) var(--think-ease);
+        will-change: transform, filter, opacity;
+    }
+    .t-think-text::before {
+        content: attr(data-text);
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(90deg, transparent 0%, transparent 40%, var(--color-on-dark) 50%, transparent 60%, transparent 100%);
+        background-size: 400% 100%;
+        background-repeat: no-repeat;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        animation: t-think-shimmer var(--think-shimmer) linear infinite;
+    }
+    .t-think-text.is-exit {
+        transform: translateY(calc(var(--think-distance) * -1));
+        filter: blur(var(--think-blur));
+        opacity: 0;
+    }
+    .t-think-text.is-enter-start {
+        transition: none;
+        transform: translateY(var(--think-distance));
+        filter: blur(var(--think-blur));
+        opacity: 0;
+    }
+    .t-think-text.is-still {
+        position: static;
+        white-space: normal;
+        transition: none;
+        will-change: auto;
+    }
+    .t-think.is-still {
+        display: grid;
+    }
+    .t-think.is-still > * {
+        grid-area: 1 / 1;
+    }
+    .t-think.is-still > .t-think-sizer {
+        white-space: normal;
+    }
+    .t-think-text.is-still::before {
+        display: none;
+    }
+    /* A long line takes the width of its text, so the shimmer sweeps the whole line and not the box only. */
+    .t-think-text.is-scroll {
+        right: auto;
+        width: max-content;
+        animation: t-think-scroll var(--think-scroll-time) cubic-bezier(0.65, 0, 0.35, 1) var(--think-scroll-delay) both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .t-think-text {
+            transition: none;
+            transform: none;
+            filter: none;
+        }
+        .t-think-text::before {
+            display: none;
+        }
+        .t-think-text.is-scroll {
+            animation: none;
+        }
+    }
+}
+@keyframes t-think-scroll {
+    to {
+        translate: var(--think-scroll) 0;
+    }
+}
+@keyframes t-think-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+    100% {
+        background-position: 0% 0;
+    }
+}
+
+/* The Case of the analyzer reveal (recipe 18 of transitions.dev, texts reveal): each line rises in through a small blur,
+   the second line one stagger after the first, when the part adds is-shown. The reveal has no exit, so the recipe's
+   is-hiding state is not here. Under reduced motion, the lines show at rest at once. */
+@layer components {
+    .t-stagger {
+        --stagger-dur: 500ms;
+        --stagger-distance: 12px;
+        --stagger-stagger: 40ms;
+        --stagger-blur: 3px;
+        --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .t-stagger-line {
+        display: block;
+        opacity: 0;
+        transform: translateY(var(--stagger-distance));
+        filter: blur(var(--stagger-blur));
+        transition:
+            opacity var(--stagger-dur) var(--stagger-ease),
+            transform var(--stagger-dur) var(--stagger-ease),
+            filter var(--stagger-dur) var(--stagger-ease);
+        will-change: transform, opacity, filter;
+    }
+    .t-stagger-line--2 {
+        transition-delay: var(--stagger-stagger);
+    }
+    .t-stagger.is-shown .t-stagger-line {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .t-stagger-line {
+            transition: none !important;
+        }
+    }
+}
+
+/* The result cards of the analyzer reveal (recipe 14 of transitions.dev, skeleton reveal): the skeleton of the cards
+   pulses once, then it fades out through a small blur while the real cards fade in, when the part adds is-revealed.
+   The result has no fixed height, so the content stays in the flow and sets the height, and the skeleton sits over its
+   top. The skeleton never takes a tap. The one pulse lasts as long as the beat of the cards, 500 ms, so the skeleton
+   fades out at full strength and not from the dim middle of a pulse. Under reduced motion, the cards show at rest at once. */
+@layer components {
+    .t-skel {
+        --pulse-dur: 500ms;
+        --pulse-count: 1;
+        --pulse-min: 0.5;
+        --reveal-dur: 400ms;
+        --reveal-blur: 2px;
+        --reveal-ease: ease-in-out;
+        position: relative;
+    }
+    .t-skel-skeleton {
+        position: absolute;
+        inset: 0 0 auto 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 1;
+        filter: blur(0);
+        transition:
+            opacity var(--reveal-dur) var(--reveal-ease),
+            filter var(--reveal-dur) var(--reveal-ease);
+    }
+    .t-skel-content {
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        filter: blur(var(--reveal-blur));
+        transition:
+            opacity var(--reveal-dur) var(--reveal-ease),
+            filter var(--reveal-dur) var(--reveal-ease);
+    }
+    .t-skel.is-revealed .t-skel-skeleton {
+        opacity: 0;
+        filter: blur(var(--reveal-blur));
+    }
+    .t-skel.is-revealed .t-skel-content {
+        opacity: 1;
+        filter: blur(0);
+    }
+    .t-skel-skeleton.is-pulsing > * {
+        animation: t-skel-pulse var(--pulse-dur) ease-in-out var(--pulse-count);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .t-skel-skeleton,
+        .t-skel-content {
+            transition: none !important;
+        }
+        .t-skel-skeleton.is-pulsing > * {
+            animation: none !important;
+        }
+    }
+}
+@keyframes t-skel-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: var(--pulse-min);
+    }
+}
+
 /* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
-   An egg card has a two-line headline over the grid and the glow, and the plate of each line painted over the line above
-   it and showed as a dark box. So an egg hero hides its full texture, and the art takes a soft oval of the texture.
+   An egg card has a two-line headline over the grid and the glow, and a box behind each line showed as a dark box over the line above
+   it. So an egg hero hides its full texture, and the art takes a soft oval of the texture.
    The text then sits on the flat band color, its contrast is the contrast of its role pair, and axe can read it.
    The ground comes first in its parent and the art after it is positioned, so the art paints over the ground. A negative
    z-index would do the same, but axe then misreads the stack and cannot read the contrast of the art. Each use sets its

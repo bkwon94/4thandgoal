@@ -1,6 +1,7 @@
 /**
  * The wait of a personal Topic on the front door at 375 px, on the static export in out/ of the current CLIENT, with
  * motion on. A kept Answer shows whole with no step line first (AT-8), and a fresh Answer still shows its steps (AT-65).
+ * The chat wait shows no mesh and no stage line of the analyzer (AT-24).
  */
 import { type Page, expect, test } from "@playwright/test";
 import { existsSync, readFileSync } from "node:fs";
@@ -96,3 +97,18 @@ test("a fresh Answer of a personal Topic still waits on the live first line with
   // The live step turns a braille spinner, so its mark shows a braille frame.
   await expect(step.locator("[data-mark]")).toHaveText(/^[⠀-⣿]$/);
 });
+
+/* The mesh and the stage lines belong to the grade wait of the analyzer. The chat wait keeps its own motion, so it shows
+   neither, at each width (AT-24). */
+for (const width of [375, 768, 1280]) {
+  test(`the chat wait shows no mesh and no stage line, ${width}px (AT-24)`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openDoorWithWeakSpots(page, { kept: false });
+    await openWeakSpots(page);
+    const step = page.getByRole("article", { name: "Weak spots" }).getByRole("list", { name: "Steps" }).getByRole("listitem").first();
+    await expect(step).toHaveAttribute("data-state", "live");
+    await page.screenshot({ path: info.outputPath(`chat-wait-${width}.png`) });
+    expect(await page.locator("canvas[data-hero-mesh]").count(), "a mesh shows in the chat wait").toBe(0);
+    expect(await page.locator(".t-think").count(), "a stage line shows in the chat wait").toBe(0);
+  });
+}

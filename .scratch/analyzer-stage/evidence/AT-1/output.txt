@@ -1,0 +1,6 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)
+1280 light: shots a and b 2 s apart are byte-equal: true; the canvas drew 0 frames between them (data-mesh-frames 26 -> 26); --hero-grid n/a
+1280 light: stage rows in the idle hero: 0
+1280 dark: shots a and b 2 s apart are byte-equal: true; the canvas drew 0 frames between them (data-mesh-frames 26 -> 26); --hero-grid n/a
+1280 dark: stage rows in the idle hero: 0
+1280 dark: --spacing-hero-grid 24px (the pitch the mesh reads, see packages/design/site/parts/mesh-canvas.ts line 184); data-mesh-pulls ; data-mesh-flash 0.000; frames 27

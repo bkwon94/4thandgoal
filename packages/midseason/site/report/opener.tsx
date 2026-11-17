@@ -68,7 +68,7 @@ export function Opener({
               {/* A plain fragment link, so a tap jumps to the sim with scripts off too. */}
               <a
                 href={finaleHref}
-                className="plate inline-flex min-h-touch w-fit items-center gap-sp-1 font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase no-underline hover-fine:underline"
+                className="inline-flex min-h-touch w-fit items-center gap-sp-1 font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase no-underline hover-fine:underline"
               >
                 See the sim
                 {/* An svg, not a glyph: axe gives no contrast verdict on a lone arrow character, and the floor fails that. */}

@@ -1,0 +1,7 @@
+# The first grade of trade T on this day, not cached. The tap to the response took 36174 ms.
+191 ms  -> GET http://localhost:8080/clients/cpc/eggs/board
+192 ms  -> GET http://localhost:8080/clients/cpc/teams?season=2026
+1096 ms  -> POST http://localhost:8080/clients/cpc/analyze
+6245 ms  <- 200 GET http://localhost:8080/clients/cpc/eggs/board  content-type: application/json  transfer-encoding: -
+6245 ms  <- 200 GET http://localhost:8080/clients/cpc/teams?season=2026  content-type: application/json  transfer-encoding: -
+37119 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -

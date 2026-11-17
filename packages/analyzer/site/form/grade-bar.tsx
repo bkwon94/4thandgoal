@@ -5,13 +5,16 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
+
 type GradeBarProps = {
   // Each team gives and gets a player, so the trade can be graded.
   ready: boolean;
   grading: boolean;
   // The level of the Ready halo, from 0 to 1. It is 1 only when ready is true.
   level: number;
-  onGrade: () => void;
+  // The Promise keeps the button pending until the grade settles.
+  onGrade: () => Promise<void>;
 };
 
 export function GradeBar({ ready, grading, level, onGrade }: GradeBarProps) {
@@ -38,15 +41,16 @@ export function GradeBar({ ready, grading, level, onGrade }: GradeBarProps) {
           )}
         </span>
         {/* The off bar is a plain opaque surface with no opacity, so its text keeps the contrast of its pair. */}
-        <button
-          type="button"
-          disabled={!ready || grading}
-          aria-busy={grading || undefined}
-          onClick={onGrade}
-          className="press relative min-h-touch w-full cursor-pointer rounded-pill border border-transparent bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:border-rule disabled:bg-raised disabled:text-mute"
+        {/* A native disabled button leaves the tab order, so only the off bar is natively disabled. A grade that the finder
+            starts has no press of this button to track, so the press does nothing while grading is true. */}
+        <PendingButton
+          disabled={!ready}
+          pendingAnnouncement="Grading the trade"
+          onClick={() => (grading ? undefined : onGrade())}
+          className="press relative min-h-touch w-full cursor-pointer rounded-pill border border-transparent bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:border-rule disabled:bg-raised disabled:text-mute aria-disabled:cursor-progress"
         >
-          {grading ? "Grading…" : "Grade the Trade"}
-        </button>
+          Grade the Trade
+        </PendingButton>
       </div>
     </div>
   );

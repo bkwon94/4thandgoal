@@ -1,6 +1,7 @@
 /**
  * The sweep of a wait: a red bar that sweeps along a grey track, so a wait of 20 seconds or more reads as work in progress.
- * The grading hero and the finder share it. Only transform animates, and with motion off the track stays as a still grey line.
+ * The finder uses it. The grade wait has the mesh in its place, because a finder search has no trade on the stage to weigh.
+ * Only transform animates, and with motion off the track stays as a still grey line.
  */
 "use client";
 

@@ -1,0 +1,7 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)
+375 light: in the Finder wait: Sweep bar parts 1 (classes ["absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"]), canvases in the Finder 0, grading heroes 0, stage line parts 0
+375 dark: in the Finder wait: Sweep bar parts 1 (classes ["absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"]), canvases in the Finder 0, grading heroes 0, stage line parts 0
+768 light: in the Finder wait: Sweep bar parts 1 (classes ["absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"]), canvases in the Finder 0, grading heroes 0, stage line parts 0
+768 dark: in the Finder wait: Sweep bar parts 1 (classes ["absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"]), canvases in the Finder 0, grading heroes 0, stage line parts 0
+1280 light: in the Finder wait: Sweep bar parts 1 (classes ["absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"]), canvases in the Finder 0, grading heroes 0, stage line parts 0
+1280 dark: in the Finder wait: Sweep bar parts 1 (classes ["absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"]), canvases in the Finder 0, grading heroes 0, stage line parts 0

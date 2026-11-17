@@ -1,0 +1,484 @@
+$ CLIENT=cpc pnpm --dir apps/site check:floor   (after CLIENT=cpc pnpm build, in a detached worktree of a90b3c92, as scripts/build-each-client.mjs does)
+
+> 4thandgoal-site@0.1.0 check:floor /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/ev/apps/site
+> playwright test --project=floor
+
+
+Running 207 tests using 2 workers
+
+  ✓    2 [floor] › e2e/analyzer-stage.spec.ts:470:7 › the wait, with motion off › wait still: cpc the mesh of the wait stays still and flat, 1280px (2.4s)
+stage fade: cpc: the last token at rest 198 ms after the tap, moved false, faded true
+  ✓    3 [floor] › e2e/analyzer-stage.spec.ts:486:7 › the stage, with motion off › stage fade: cpc with reduced motion the headshots fade in and no token moves, 1280px (AT-29) (444ms)
+  ✓    1 [floor] › e2e/analyzer-stage.spec.ts:93:7 › with motion on › idle mesh: cpc shows the same flat mesh in two shots 2 s apart, empty Stack, 1280px (AT-1) (6.1s)
+reveal order: cpc 375px: lean 278 ms, scale 498 ms, case 1031 ms, tabs 978 ms
+  ✓    4 [floor] › e2e/analyzer-stage.spec.ts:616:9 › the reveal, with motion on › reveal order: cpc the Lean word lands first, then the scale, then the Case and the side tabs, within about 1 s, 375px (AT-10, AT-11) (5.6s)
+  ✓    5 [floor] › e2e/analyzer-stage.spec.ts:103:7 › with motion on › idle mesh: cpc draws no frame out of view or in a hidden tab, 390px (AT-16) (6.2s)
+pixel scan: hero "Trade Analyzer": 9 texts, worst 9.18:1
+  ✓    7 [floor] › e2e/analyzer-stage.spec.ts:142:9 › idle contrast: cpc each hero text over the mesh reaches 4.5:1 with a trade on the stage, dark 390px (AT-20) (863ms)
+pixel scan: hero "Trade Analyzer": 9 texts, worst 9.18:1
+  ✓    8 [floor] › e2e/analyzer-stage.spec.ts:142:9 › idle contrast: cpc each hero text over the mesh reaches 4.5:1 with a trade on the stage, dark 1280px (AT-20) (844ms)
+reveal order: cpc 768px: lean 280 ms, scale 498 ms, case 1030 ms, tabs 980 ms
+  ✓    6 [floor] › e2e/analyzer-stage.spec.ts:616:9 › the reveal, with motion on › reveal order: cpc the Lean word lands first, then the scale, then the Case and the side tabs, within about 1 s, 768px (AT-10, AT-11) (5.7s)
+pixel scan: hero "Trade Analyzer": 9 texts, worst 9.18:1
+  ✓    9 [floor] › e2e/analyzer-stage.spec.ts:142:9 › idle contrast: cpc each hero text over the mesh reaches 4.5:1 with a trade on the stage, light 390px (AT-20) (894ms)
+pixel scan: hero "Trade Analyzer": 9 texts, worst 9.18:1
+  ✓   11 [floor] › e2e/analyzer-stage.spec.ts:142:9 › idle contrast: cpc each hero text over the mesh reaches 4.5:1 with a trade on the stage, light 1280px (AT-20) (840ms)
+pixel scan: hero "Trade Analyzer": 8 texts, worst 9.18:1
+  ✓   12 [floor] › e2e/analyzer-stage.spec.ts:160:7 › idle contrast: cpc the placeholder of a side with no player reaches 4.5:1, dark 390px (AT-20) (1.4s)
+pixel scan: hero "Trade Analyzer": 8 texts, worst 9.18:1
+  ✓   13 [floor] › e2e/analyzer-stage.spec.ts:160:7 › idle contrast: cpc the placeholder of a side with no player reaches 4.5:1, dark 1280px (AT-20) (961ms)
+wait start: cpc 375px: 30.2 ms from the tap
+  ✓   14 [floor] › e2e/analyzer-stage.spec.ts:297:9 › the wait, with motion on › wait start: cpc the mesh moves and "Weighing the sides" shows within 100 ms of the tap, 375px (AT-3) (1.5s)
+reveal order: cpc 1280px: lean 294 ms, scale 512 ms, case 1044 ms, tabs 994 ms
+reveal order: cpc: the recording is /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/ev/apps/site/test-results/analyzer-stage-the-reveal--ff184-out-1-s-1280px-AT-10-AT-11--floor/video/page@b7f2c2d3355776b55437cdba2aeab47c.webm
+  ✓   10 [floor] › e2e/analyzer-stage.spec.ts:616:9 › the reveal, with motion on › reveal order: cpc the Lean word lands first, then the scale, then the Case and the side tabs, within about 1 s, 1280px (AT-10, AT-11) (6.4s)
+wait start: cpc 768px: 39.1 ms from the tap
+  ✓   15 [floor] › e2e/analyzer-stage.spec.ts:297:9 › the wait, with motion on › wait start: cpc the mesh moves and "Weighing the sides" shows within 100 ms of the tap, 768px (AT-3) (1.5s)
+wait start: cpc 1280px: 46.5 ms from the tap
+  ✓   17 [floor] › e2e/analyzer-stage.spec.ts:297:9 › the wait, with motion on › wait start: cpc the mesh moves and "Weighing the sides" shows within 100 ms of the tap, 1280px (AT-3) (1.6s)
+reveal mesh: cpc: Lean Lean yes, favored side 0 (roster 6)
+reveal mesh: cpc: flash peak 0.975 at 92 ms, deepest dip 0.55 at 542 ms, last pulls 0,0
+  ✓   16 [floor] › e2e/analyzer-stage.spec.ts:639:7 › the reveal, with motion on › reveal mesh: cpc the lines of the favored side flash once, then the mesh dips toward it and goes flat, 1280px (AT-12) (5.7s)
+wait dips: cpc: side 0 729-1088 ms, side 1 1928-2340 ms, side 0 3195-3555 ms, side 1 4442-4815 ms
+wait dips: cpc: the recording is /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/ev/apps/site/test-results/analyzer-stage-the-wait-wi-0fb93-ut-1-25-s-each-1280px-AT-5--floor/video/page@ec597c4281dc9e0c73c0fb86dce571b7.webm
+  ✓   18 [floor] › e2e/analyzer-stage.spec.ts:308:7 › the wait, with motion on › wait dips: cpc the mesh dips under each side in turn, about 1.25 s each, 1280px (AT-5) (6.7s)
+pixel scan: hero "The Read": 24 texts, worst 5.79:1
+  ✓   19 [floor] › e2e/analyzer-stage.spec.ts:674:11 › the reveal, with motion on › reveal contrast: cpc each hero text reaches 4.5:1 at the end of the reveal, dark 390px (AT-20) (5.7s)
+wait frames: cpc 375px 4x: 239 frames, longest 16.8 ms
+  ✓   20 [floor] › e2e/analyzer-stage.spec.ts:355:7 › the wait, with motion on › wait frames: cpc no frame of the wait takes longer than 50 ms after the first second, 375px, 4x CPU slowdown (AT-15) (6.6s)
+pixel scan: hero "The Read": 23 texts, worst 5.79:1
+  ✓   21 [floor] › e2e/analyzer-stage.spec.ts:674:11 › the reveal, with motion on › reveal contrast: cpc each hero text reaches 4.5:1 at the end of the reveal, dark 1280px (AT-20) (5.7s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 7.01:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 7.90:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 7.25:1
+wait contrast: cpc dark 390px: 11 samples over 3224 ms
+  ✓   22 [floor] › e2e/analyzer-stage.spec.ts:391:11 › the wait, with motion on › wait contrast: cpc each hero text reaches 4.5:1 in 10 samples over 3 s of the wait, dark 390px (AT-20) (4.7s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "The Read": 24 texts, worst 5.74:1
+  ✓   23 [floor] › e2e/analyzer-stage.spec.ts:674:11 › the reveal, with motion on › reveal contrast: cpc each hero text reaches 4.5:1 at the end of the reveal, light 390px (AT-20) (5.7s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.10:1
+wait contrast: cpc dark 1280px: 10 samples over 3266 ms
+  ✓   24 [floor] › e2e/analyzer-stage.spec.ts:391:11 › the wait, with motion on › wait contrast: cpc each hero text reaches 4.5:1 in 10 samples over 3 s of the wait, dark 1280px (AT-20) (4.7s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 7.01:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.16:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.71:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.75:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "The Read": 23 texts, worst 5.74:1
+  ✓   25 [floor] › e2e/analyzer-stage.spec.ts:674:11 › the reveal, with motion on › reveal contrast: cpc each hero text reaches 4.5:1 at the end of the reveal, light 1280px (AT-20) (5.8s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 8.60:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 7.01:1
+wait contrast: cpc light 390px: 11 samples over 3210 ms
+  ✓   26 [floor] › e2e/analyzer-stage.spec.ts:391:11 › the wait, with motion on › wait contrast: cpc each hero text reaches 4.5:1 in 10 samples over 3 s of the wait, light 390px (AT-20) (4.7s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+reveal still: cpc: the opacity of the result over the first frames: 0.00, 0.01, 0.10, 0.19, 0.27, 0.35, 0.42, 0.50, 0.57, 0.63, 0.69, 0.75
+  ✓   27 [floor] › e2e/analyzer-stage.spec.ts:686:7 › the reveal, with motion off › reveal still: cpc the mesh stays still, no part moves, and the result shows in one plain fade, 1280px (AT-13) (4.9s)
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+result once: cpc light 375px, tab Bo Girds: 0 images, 0 chips below the hero
+result once: cpc light 375px, tab Teehee: 0 images, 0 chips below the hero
+  ✓   29 [floor] › e2e/analyzer-stage.spec.ts:722:11 › the result, with motion off › result once: cpc below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, light 375px (AT-30) (516ms)
+pixel scan: hero "Grading the Trade": 11 texts, worst 9.18:1
+wait contrast: cpc light 1280px: 10 samples over 3295 ms
+  ✓   28 [floor] › e2e/analyzer-stage.spec.ts:391:11 › the wait, with motion on › wait contrast: cpc each hero text reaches 4.5:1 in 10 samples over 3 s of the wait, light 1280px (AT-20) (4.8s)
+result edit: cpc light 375px: the Edit target is 59.0 x 44.0 px
+  ✓   30 [floor] › e2e/analyzer-stage.spec.ts:738:11 › the result, with motion off › result edit: cpc Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, light 375px (AT-31) (545ms)
+result once: cpc dark 375px, tab Bo Girds: 0 images, 0 chips below the hero
+result once: cpc dark 375px, tab Teehee: 0 images, 0 chips below the hero
+  ✓   32 [floor] › e2e/analyzer-stage.spec.ts:722:11 › the result, with motion off › result once: cpc below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, dark 375px (AT-30) (428ms)
+result edit: cpc dark 375px: the Edit target is 59.0 x 44.0 px
+  ✓   33 [floor] › e2e/analyzer-stage.spec.ts:738:11 › the result, with motion off › result edit: cpc Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, dark 375px (AT-31) (427ms)
+result once: cpc light 768px, tab Bo Girds: 0 images, 0 chips below the hero
+result once: cpc light 768px, tab Teehee: 0 images, 0 chips below the hero
+  ✓   34 [floor] › e2e/analyzer-stage.spec.ts:722:11 › the result, with motion off › result once: cpc below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, light 768px (AT-30) (453ms)
+result edit: cpc light 768px: the Edit target is 60.9 x 44.0 px
+  ✓   35 [floor] › e2e/analyzer-stage.spec.ts:738:11 › the result, with motion off › result edit: cpc Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, light 768px (AT-31) (473ms)
+stage rise: cpc 375px: the last token at rest 603 ms after the tap, moved true
+  ✓   31 [floor] › e2e/analyzer-stage.spec.ts:413:9 › the wait, with motion on › stage rise: cpc the headshots of each side rise into its row within 1 s of the tap, 375px (AT-29) (2.1s)
+result once: cpc dark 768px, tab Bo Girds: 0 images, 0 chips below the hero
+result once: cpc dark 768px, tab Teehee: 0 images, 0 chips below the hero
+  ✓   36 [floor] › e2e/analyzer-stage.spec.ts:722:11 › the result, with motion off › result once: cpc below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, dark 768px (AT-30) (460ms)
+result edit: cpc dark 768px: the Edit target is 60.9 x 44.0 px
+  ✓   38 [floor] › e2e/analyzer-stage.spec.ts:738:11 › the result, with motion off › result edit: cpc Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, dark 768px (AT-31) (485ms)
+result once: cpc light 1280px, tab Bo Girds: 0 images, 0 chips below the hero
+result once: cpc light 1280px, tab Teehee: 0 images, 0 chips below the hero
+  ✓   39 [floor] › e2e/analyzer-stage.spec.ts:722:11 › the result, with motion off › result once: cpc below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, light 1280px (AT-30) (473ms)
+result edit: cpc light 1280px: the Edit target is 62.8 x 44.0 px
+  ✓   40 [floor] › e2e/analyzer-stage.spec.ts:738:11 › the result, with motion off › result edit: cpc Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, light 1280px (AT-31) (495ms)
+stage rise: cpc 768px: the last token at rest 607 ms after the tap, moved true
+  ✓   37 [floor] › e2e/analyzer-stage.spec.ts:413:9 › the wait, with motion on › stage rise: cpc the headshots of each side rise into its row within 1 s of the tap, 768px (AT-29) (2.2s)
+result once: cpc dark 1280px, tab Bo Girds: 0 images, 0 chips below the hero
+result once: cpc dark 1280px, tab Teehee: 0 images, 0 chips below the hero
+  ✓   41 [floor] › e2e/analyzer-stage.spec.ts:722:11 › the result, with motion off › result once: cpc below the hero the result has no The Trade chapter, no player chip, no headshot, and no fold line, dark 1280px (AT-30) (496ms)
+result edit: cpc dark 1280px: the Edit target is 62.8 x 44.0 px
+  ✓   43 [floor] › e2e/analyzer-stage.spec.ts:738:11 › the result, with motion off › result edit: cpc Edit in the header of The Sides is 44 px or more on each side, and opens the Stack with the trade in view, dark 1280px (AT-31) (465ms)
+result fold: cpc 375px: the open reason runs 22 lines
+  ✓   44 [floor] › e2e/analyzer-stage.spec.ts:769:7 › the result, with motion off › result fold: cpc a fairness reason past 3 lines shows 3 lines and More, and a tap shows it in full, 375px (AT-32) (503ms)
+  ✓   45 [floor] › e2e/floor.spec.ts:124:5 › each page of the full floor is a built page (0ms)
+  ✓   46 [floor] › e2e/floor.spec.ts:133:5 › the full floor holds the 7 pages and the 3 open states of the spec (0ms)
+  ✓   47 [floor] › e2e/floor.spec.ts:141:5 › no waiver page is built, and its URL shows the 404 page (176ms)
+  ✓   48 [floor] › e2e/floor.spec.ts:150:5 › the built CSS keeps the empty alt text of the rolled letters of the Index list (1ms)
+cpc /404-floor-check/ dark 390px: prose 0, other text 6, in 105 ms
+cpc /404-floor-check/ dark 390px: exempt links inside prose: none
+pixel scan: hero "Page not found": 5 texts, worst 5.89:1
+  ✓   49 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /404-floor-check/ dark 390px (465ms)
+cpc /404-floor-check/ dark 1280px: prose 0, other text 11, in 106 ms
+cpc /404-floor-check/ dark 1280px: exempt links inside prose: none
+stage rise: cpc 1280px: the last token at rest 608 ms after the tap, moved true
+  ✓   42 [floor] › e2e/analyzer-stage.spec.ts:413:9 › the wait, with motion on › stage rise: cpc the headshots of each side rise into its row within 1 s of the tap, 1280px (AT-29) (2.1s)
+pixel scan: hero "Page not found": 5 texts, worst 5.89:1
+  ✓   50 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /404-floor-check/ dark 1280px (477ms)
+cpc /404-floor-check/ light 390px: prose 0, other text 6, in 107 ms
+cpc /404-floor-check/ light 390px: exempt links inside prose: none
+pixel scan: hero "Page not found": 5 texts, worst 5.89:1
+  ✓   52 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /404-floor-check/ light 390px (454ms)
+cpc /404-floor-check/ light 1280px: prose 0, other text 11, in 111 ms
+cpc /404-floor-check/ light 1280px: exempt links inside prose: none
+pixel scan: hero "Page not found": 5 texts, worst 5.89:1
+  ✓   53 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /404-floor-check/ light 1280px (475ms)
+cpc /rankings/ dark 390px: prose 69, other text 234, in 120 ms
+cpc /rankings/ dark 390px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 4.57:1
+  ✓   54 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ dark 390px (580ms)
+cpc /rankings/ dark 1280px: prose 69, other text 239, in 120 ms
+cpc /rankings/ dark 1280px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 4.57:1
+  ✓   55 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ dark 1280px (663ms)
+cpc /rankings/ light 390px: prose 69, other text 234, in 122 ms
+cpc /rankings/ light 390px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 5.31:1
+  ✓   56 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ light 390px (606ms)
+cpc /rankings/ light 1280px: prose 69, other text 239, in 127 ms
+cpc /rankings/ light 1280px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 5.31:1
+  ✓   57 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ light 1280px (695ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px: prose 69, other text 234, in 182 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px: exempt links inside prose: none
+stage big: cpc 375px: row heights 44, 44, 44
+  ✓   51 [floor] › e2e/analyzer-stage.spec.ts:434:9 › the wait, with motion on › stage big: cpc trade B shows 3 rows, and The Blue Tent shows 3 headshots and +2, 375px (AT-27) (3.9s)
+pixel scan: hero "Rank 1": 12 texts, worst 4.57:1
+  ✓   58 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 390px (679ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px: prose 69, other text 239, in 187 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 4.57:1
+  ✓   60 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) dark 1280px (746ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px: prose 69, other text 234, in 183 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 5.31:1
+  ✓   61 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 390px (682ms)
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px: prose 69, other text 239, in 185 ms
+cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px: exempt links inside prose: none
+pixel scan: hero "Rank 1": 12 texts, worst 5.31:1
+  ✓   62 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /rankings/ tap main ol > li:first-child button[aria-expanded]:not([aria-label]) light 1280px (751ms)
+cpc /2026/managers/ dark 390px: prose 24, other text 362, in 135 ms
+cpc /2026/managers/ dark 390px: exempt links inside prose: none
+  ✓   63 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ dark 390px (595ms)
+cpc /2026/managers/ dark 1280px: prose 24, other text 386, in 139 ms
+cpc /2026/managers/ dark 1280px: exempt links inside prose: none
+stage big: cpc 768px: row heights 44, 44, 44
+  ✓   59 [floor] › e2e/analyzer-stage.spec.ts:434:9 › the wait, with motion on › stage big: cpc trade B shows 3 rows, and The Blue Tent shows 3 headshots and +2, 768px (AT-27) (3.9s)
+pixel scan: hero "Stage: Maye d'force B with U": 18 texts, worst 4.57:1
+  ✓   64 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ dark 1280px (710ms)
+cpc /2026/managers/ light 390px: prose 24, other text 362, in 138 ms
+cpc /2026/managers/ light 390px: exempt links inside prose: none
+  ✓   66 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ light 390px (573ms)
+cpc /2026/managers/ light 1280px: prose 24, other text 386, in 137 ms
+cpc /2026/managers/ light 1280px: exempt links inside prose: none
+pixel scan: hero "Stage: Maye d'force B with U": 18 texts, worst 5.31:1
+  ✓   67 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ light 1280px (673ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px: prose 24, other text 362, in 201 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px: exempt links inside prose: none
+  ✓   68 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 390px (654ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px: prose 24, other text 386, in 328 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px: exempt links inside prose: none
+pixel scan: hero "Stage: Maye d'force B with U": 18 texts, worst 4.57:1
+  ✓   69 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] dark 1280px (898ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px: prose 24, other text 362, in 212 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px: exempt links inside prose: none
+  ✓   70 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 390px (635ms)
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px: prose 24, other text 386, in 215 ms
+cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px: exempt links inside prose: none
+stage big: cpc 1280px: row heights 44, 44, 44
+  ✓   65 [floor] › e2e/analyzer-stage.spec.ts:434:9 › the wait, with motion on › stage big: cpc trade B shows 3 rows, and The Blue Tent shows 3 headshots and +2, 1280px (AT-27) (3.9s)
+  -   72 [floor] › e2e/analyzer-stage.spec.ts:453:7 › the wait, with motion on › finder wait: cpc the Finder wait shows the Sweep bar, and the hero shows no wait mesh and no stage line (AT-23)
+pixel scan: hero "Stage: Maye d'force B with U": 18 texts, worst 5.31:1
+  ✓   71 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/ tap ul[aria-label="Index List"] > li:first-child > button[aria-expanded] light 1280px (832ms)
+  ✓   73 [floor] › e2e/floor.spec.ts:286:5 › chapter rail: cpc /2026/week-10/ marks each chapter after a jump at 1280px (642ms)
+cpc /2026/managers/7/ dark 390px: prose 2, other text 387, in 361 ms
+cpc /2026/managers/7/ dark 390px: exempt links inside prose: none
+cpc /2026/managers/1/ dark 390px: prose 2, other text 277, in 143 ms
+  ✓   75 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/1/ dark 390px (181ms)
+cpc /2026/managers/10/ dark 390px: prose 2, other text 299, in 156 ms
+  ✓   76 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/10/ dark 390px (196ms)
+cpc /2026/managers/11/ dark 390px: prose 2, other text 276, in 168 ms
+  ✓   77 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/11/ dark 390px (209ms)
+cpc /2026/managers/12/ dark 390px: prose 2, other text 269, in 165 ms
+  ✓   78 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/12/ dark 390px (203ms)
+pixel scan: hero "To Infinity and Bijan": 35 texts, worst 4.57:1
+  ✓   74 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/7/ dark 390px (1.1s)
+cpc /2026/managers/7/ dark 1280px: prose 2, other text 397, in 156 ms
+cpc /2026/managers/7/ dark 1280px: exempt links inside prose: none
+pixel scan: hero "To Infinity and Bijan": 35 texts, worst 4.57:1
+  ✓   80 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/7/ dark 1280px (1.1s)
+cpc /2026/managers/7/ light 390px: prose 2, other text 387, in 144 ms
+cpc /2026/managers/7/ light 390px: exempt links inside prose: none
+cpc /2026/managers/2/ dark 390px: prose 2, other text 228, in 1388 ms
+  ✓   79 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/2/ dark 390px (1.4s)
+cpc /2026/managers/3/ dark 390px: prose 2, other text 237, in 147 ms
+  ✓   82 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/3/ dark 390px (190ms)
+pixel scan: hero "To Infinity and Bijan": 35 texts, worst 5.31:1
+  ✓   81 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/7/ light 390px (888ms)
+cpc /2026/managers/4/ dark 390px: prose 2, other text 371, in 546 ms
+  ✓   83 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/4/ dark 390px (586ms)
+cpc /2026/managers/7/ light 1280px: prose 2, other text 397, in 226 ms
+cpc /2026/managers/7/ light 1280px: exempt links inside prose: none
+cpc /2026/managers/5/ dark 390px: prose 2, other text 199, in 155 ms
+  ✓   85 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/5/ dark 390px (196ms)
+cpc /2026/managers/6/ dark 390px: prose 2, other text 371, in 150 ms
+  ✓   86 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/6/ dark 390px (188ms)
+cpc /2026/managers/8/ dark 390px: prose 2, other text 345, in 154 ms
+  ✓   87 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/8/ dark 390px (193ms)
+cpc /2026/managers/9/ dark 390px: prose 2, other text 311, in 153 ms
+  ✓   88 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/managers/9/ dark 390px (191ms)
+cpc /2026/week-06/ dark 390px: prose 11, other text 290, in 158 ms
+pixel scan: hero "To Infinity and Bijan": 35 texts, worst 5.31:1
+  ✓   89 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/week-06/ dark 390px (196ms)
+  ✓   84 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/managers/7/ light 1280px (1.2s)
+cpc /2026/week-07/ dark 390px: prose 12, other text 275, in 151 ms
+  ✓   90 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/week-07/ dark 390px (191ms)
+cpc /analyze/ dark 390px: prose 2, other text 19, in 282 ms
+cpc /analyze/ dark 390px: exempt links inside prose: none
+cpc /2026/week-08/ dark 390px: prose 12, other text 291, in 143 ms
+  ✓   92 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/week-08/ dark 390px (180ms)
+cpc /2026/week-09/ dark 390px: prose 12, other text 329, in 149 ms
+  ✓   93 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /2026/week-09/ dark 390px (187ms)
+pixel scan: hero "Trade Analyzer": 3 texts, worst 9.92:1
+  ✓   91 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /analyze/ dark 390px (640ms)
+cpc /eggs/ dark 390px: prose 0, other text 1, in 95 ms
+  ✓   94 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /eggs/ dark 390px (133ms)
+cpc /midseason/2026/ dark 390px: prose 29, other text 1000, in 170 ms
+  ✓   96 [floor] › e2e/floor.spec.ts:298:7 › fast sweep: cpc /midseason/2026/ dark 390px (207ms)
+cpc /analyze/ dark 1280px: prose 2, other text 24, in 285 ms
+cpc /analyze/ dark 1280px: exempt links inside prose: none
+  ✓   97 [floor] › e2e/floor.spec.ts:326:7 › the top band of cpc is one row at 768px, with the menu button (190ms)
+pixel scan: hero "Trade Analyzer": 3 texts, worst 9.92:1
+  ✓   95 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /analyze/ dark 1280px (663ms)
+  ✓   98 [floor] › e2e/floor.spec.ts:326:7 › the top band of cpc is one row at 1024px, with the pill bar (192ms)
+  ✓  100 [floor] › e2e/floor.spec.ts:326:7 › the top band of cpc is one row at 1280px, with the pill bar (194ms)
+cpc /analyze/ light 390px: prose 2, other text 19, in 318 ms
+cpc /analyze/ light 390px: exempt links inside prose: none
+  ✓  101 [floor] › e2e/floor.spec.ts:344:5 › the week chips of the Ladder of cpc stay on one row at 375px (193ms)
+cpc /midseason/2026/ dark 375px: prose 29, other text 1000, in 5 ms
+pixel scan: hero "Trade Analyzer": 3 texts, worst 9.92:1
+  ✓   99 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /analyze/ light 390px (675ms)
+cpc /analyze/ light 1280px: prose 2, other text 24, in 303 ms
+cpc /analyze/ light 1280px: exempt links inside prose: none
+pixel scan: hero "Trade Analyzer": 3 texts, worst 9.92:1
+  ✓  103 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /analyze/ light 1280px (693ms)
+cpc /2026/week-10/ dark 390px: prose 12, other text 332, in 153 ms
+cpc /2026/week-10/ dark 390px: exempt links inside prose: none
+pixel scan: hero "The Title Race": 16 texts, worst 4.57:1
+pixel scan: hero "Act I: How We Got Here": 2 texts, worst 8.64:1
+pixel scan: hero "Act II: The Moves": 2 texts, worst 8.64:1
+pixel scan: hero "Act III: What Comes Next": 2 texts, worst 8.64:1
+  ✓  102 [floor] › e2e/floor.spec.ts:368:9 › midseason floor: cpc /midseason/2026/ dark 375px (1.5s)
+  ✓  105 [floor] › e2e/floor.spec.ts:379:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, dark 375px (315ms)
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.54:1
+  ✓  104 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ dark 390px (912ms)
+cpc /midseason/2026/ dark 768px: prose 29, other text 1012, in 5 ms
+cpc /2026/week-10/ dark 1280px: prose 12, other text 345, in 154 ms
+cpc /2026/week-10/ dark 1280px: exempt links inside prose: none
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.50:1
+  ✓  107 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ dark 1280px (1.1s)
+cpc /2026/week-10/ light 390px: prose 12, other text 332, in 154 ms
+cpc /2026/week-10/ light 390px: exempt links inside prose: none
+pixel scan: hero "The Title Race": 16 texts, worst 4.57:1
+pixel scan: hero "Act I: How We Got Here": 2 texts, worst 8.64:1
+pixel scan: hero "Act II: The Moves": 2 texts, worst 8.64:1
+pixel scan: hero "Act III: What Comes Next": 2 texts, worst 8.64:1
+  ✓  106 [floor] › e2e/floor.spec.ts:368:9 › midseason floor: cpc /midseason/2026/ dark 768px (1.6s)
+  ✓  109 [floor] › e2e/floor.spec.ts:379:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, dark 768px (270ms)
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.54:1
+  ✓  108 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ light 390px (846ms)
+cpc /midseason/2026/ dark 1280px: prose 29, other text 1017, in 18 ms
+cpc /2026/week-10/ light 1280px: prose 12, other text 345, in 153 ms
+cpc /2026/week-10/ light 1280px: exempt links inside prose: none
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.50:1
+  ✓  111 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ light 1280px (991ms)
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px: prose 12, other text 332, in 201 ms
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px: exempt links inside prose: none
+pixel scan: hero "The Title Race": 16 texts, worst 4.57:1
+pixel scan: hero "Act I: How We Got Here": 2 texts, worst 8.64:1
+pixel scan: hero "Act II: The Moves": 2 texts, worst 8.64:1
+pixel scan: hero "Act III: What Comes Next": 2 texts, worst 8.64:1
+  ✓  110 [floor] › e2e/floor.spec.ts:368:9 › midseason floor: cpc /midseason/2026/ dark 1280px (1.7s)
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.54:1
+  ✓  112 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 390px (893ms)
+  ✓  113 [floor] › e2e/floor.spec.ts:379:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, dark 1280px (267ms)
+cpc /midseason/2026/ light 375px: prose 29, other text 1000, in 18 ms
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px: prose 12, other text 345, in 219 ms
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px: exempt links inside prose: none
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.50:1
+  ✓  114 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) dark 1280px (1.0s)
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px: prose 12, other text 332, in 202 ms
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px: exempt links inside prose: none
+pixel scan: hero "The Title Race": 16 texts, worst 5.31:1
+pixel scan: hero "Act I: How We Got Here": 2 texts, worst 8.64:1
+pixel scan: hero "Act II: The Moves": 2 texts, worst 8.64:1
+pixel scan: hero "Act III: What Comes Next": 2 texts, worst 8.64:1
+  ✓  115 [floor] › e2e/floor.spec.ts:368:9 › midseason floor: cpc /midseason/2026/ light 375px (1.4s)
+  ✓  117 [floor] › e2e/floor.spec.ts:379:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, light 375px (269ms)
+cpc /midseason/2026/ light 768px: prose 29, other text 1012, in 4 ms
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.54:1
+  ✓  116 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 390px (892ms)
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px: prose 12, other text 345, in 217 ms
+cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px: exempt links inside prose: none
+pixel scan: hero "Matchup of the Week": 10 texts, worst 5.50:1
+  ✓  119 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px (1.1s)
+cpc / dark 390px: prose 1, other text 27, in 132 ms
+cpc / dark 390px: exempt links inside prose: none
+pixel scan: hero "The Title Race": 16 texts, worst 5.31:1
+pixel scan: hero "Act I: How We Got Here": 2 texts, worst 8.64:1
+pixel scan: hero "Act II: The Moves": 2 texts, worst 8.64:1
+pixel scan: hero "Act III: What Comes Next": 2 texts, worst 8.64:1
+  ✓  118 [floor] › e2e/floor.spec.ts:368:9 › midseason floor: cpc /midseason/2026/ light 768px (1.6s)
+  ✓  121 [floor] › e2e/floor.spec.ts:379:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, light 768px (273ms)
+  ✓  120 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc / dark 390px (629ms)
+cpc /midseason/2026/ light 1280px: prose 29, other text 1017, in 20 ms
+cpc / dark 1280px: prose 1, other text 32, in 128 ms
+cpc / dark 1280px: exempt links inside prose: none
+  ✓  123 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc / dark 1280px (696ms)
+cpc / light 390px: prose 1, other text 27, in 130 ms
+cpc / light 390px: exempt links inside prose: none
+  ✓  124 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc / light 390px (616ms)
+cpc / light 1280px: prose 1, other text 32, in 129 ms
+cpc / light 1280px: exempt links inside prose: none
+pixel scan: hero "The Title Race": 16 texts, worst 5.31:1
+pixel scan: hero "Act I: How We Got Here": 2 texts, worst 8.64:1
+pixel scan: hero "Act II: The Moves": 2 texts, worst 8.64:1
+pixel scan: hero "Act III: What Comes Next": 2 texts, worst 8.64:1
+  ✓  122 [floor] › e2e/floor.spec.ts:368:9 › midseason floor: cpc /midseason/2026/ light 1280px (1.7s)
+  ✓  126 [floor] › e2e/floor.spec.ts:379:9 › midseason rail: cpc /midseason/2026/ jumps to Act III and stays at the top, light 1280px (270ms)
+  ✓  125 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc / light 1280px (619ms)
+  -  127 [floor] › e2e/floor.spec.ts:401:9 › midseason takeover: cpc / dark 375px
+  -  129 [floor] › e2e/floor.spec.ts:401:9 › midseason takeover: cpc / dark 768px
+cpc /2026/managers/ stage dark 1280px: prose 24, other text 386, in 225 ms
+  -  130 [floor] › e2e/floor.spec.ts:401:9 › midseason takeover: cpc / dark 1280px
+  -  131 [floor] › e2e/floor.spec.ts:401:9 › midseason takeover: cpc / light 375px
+  -  132 [floor] › e2e/floor.spec.ts:401:9 › midseason takeover: cpc / light 768px
+pixel scan: hero "Stage: Teehee": 18 texts, worst 4.57:1
+  ✓  128 [floor] › e2e/floor.spec.ts:206:7 › stage floor: cpc /2026/managers/ hover on row 2 dark 1280px (806ms)
+  -  133 [floor] › e2e/floor.spec.ts:401:9 › midseason takeover: cpc / light 1280px
+cpc /2026/managers/ stage light 1280px: prose 24, other text 386, in 223 ms
+  ✓  135 [floor] › e2e/floor.spec.ts:418:7 › midseason swap rows: cpc /midseason/2026/ text rows and no All-play, 375px (232ms)
+  ✓  136 [floor] › e2e/floor.spec.ts:418:7 › midseason swap rows: cpc /midseason/2026/ text rows and no All-play, 768px (260ms)
+pixel scan: hero "Stage: Teehee": 18 texts, worst 5.31:1
+  ✓  134 [floor] › e2e/floor.spec.ts:206:7 › stage floor: cpc /2026/managers/ hover on row 2 light 1280px (857ms)
+  ✓  137 [floor] › e2e/floor.spec.ts:418:7 › midseason swap rows: cpc /midseason/2026/ text rows and no All-play, 1280px (245ms)
+  ✓  139 [floor] › e2e/floor.spec.ts:432:5 › midseason tables: cpc /midseason/2026/ fit their cards or scroll with the team column fixed, 375px (239ms)
+  ✓  138 [floor] › e2e/floor.spec.ts:223:5 › stage swap: cpc /2026/managers/ on a hover and a focus at 1280px (317ms)
+  ✓  141 [floor] › e2e/floor.spec.ts:249:7 › no stage: cpc /2026/managers/ shows the ledger alone at 390px (187ms)
+  ✓  140 [floor] › e2e/floor.spec.ts:457:5 › midseason top 10: cpc /midseason/2026/ opens on RB at 375px (250ms)
+  ✓  142 [floor] › e2e/floor.spec.ts:249:7 › no stage: cpc /2026/managers/ shows the ledger alone at 768px (185ms)
+  ✓  143 [floor] › e2e/floor.spec.ts:471:7 › sim odds: cpc /midseason/2026/ below the replay at full width, 375px (241ms)
+  ✓  144 [floor] › e2e/floor.spec.ts:262:7 › no split word: cpc /2026/week-10/ 375px (202ms)
+  ✓  145 [floor] › e2e/floor.spec.ts:471:7 › sim odds: cpc /midseason/2026/ below the replay at full width, 768px (253ms)
+  ✓  146 [floor] › e2e/floor.spec.ts:262:7 › no split word: cpc /2026/week-10/ 768px (205ms)
+  ✓  147 [floor] › e2e/floor.spec.ts:471:7 › sim odds: cpc /midseason/2026/ below the replay at full width, 1280px (249ms)
+  ✓  148 [floor] › e2e/floor.spec.ts:262:7 › no split word: cpc /2026/week-10/ 1280px (206ms)
+  ✓  150 [floor] › e2e/floor.spec.ts:274:5 › chapter rail: cpc /2026/week-10/ marks Position leaders in view at 1280px (222ms)
+  ✓  151 [floor] › e2e/front-door-glide.spec.ts:25:5 › the ask box glides to the bottom in one move on the first question (ticket 46) (2.6s)
+  ✓  152 [floor] › e2e/front-door-kept.spec.ts:74:5 › a tap on a personal Topic whose Answer is kept shows no step line on any frame (AT-8, ticket 49) (2.7s)
+  ✓  153 [floor] › e2e/front-door-kept.spec.ts:91:5 › a fresh Answer of a personal Topic still waits on the live first line with the braille spinner (AT-65) (2.7s)
+  ✓  154 [floor] › e2e/front-door-kept.spec.ts:104:7 › the chat wait shows no mesh and no stage line, 375px (AT-24) (2.9s)
+  ✓  149 [floor] › e2e/floor.spec.ts:491:7 › sim bracket: cpc /midseason/2026/ shows full team names and no chip on a card, 375px (13.8s)
+  ✓  155 [floor] › e2e/front-door-kept.spec.ts:104:7 › the chat wait shows no mesh and no stage line, 768px (AT-24) (2.9s)
+  ✓  157 [floor] › e2e/front-door-kept.spec.ts:104:7 › the chat wait shows no mesh and no stage line, 1280px (AT-24) (2.9s)
+  ✓  158 [floor] › e2e/front-door-morph.spec.ts:44:7 › a tap on the chip of Weak spots morphs it into its question (ticket 47) (4.0s)
+  ✓  159 [floor] › e2e/front-door-morph.spec.ts:44:7 › a tap on the chip of Sell high or buy low morphs it into its question (ticket 47) (4.0s)
+  ✓  160 [floor] › e2e/front-door-reduced.spec.ts:25:5 › under reduced motion the ask box fades on the first question, with no jump of its opacity (ticket 48) (2.6s)
+  ✓  156 [floor] › e2e/floor.spec.ts:491:7 › sim bracket: cpc /midseason/2026/ shows full team names and no chip on a card, 768px (13.8s)
+  ✓  161 [floor] › e2e/front-door-scroll.spec.ts:27:5 › a new question scrolls to its top under the Thread header (ticket 45) (5.8s)
+  ✓  163 [floor] › e2e/front-door-scroll.spec.ts:50:5 › a miss scrolls its question to the top, though its dock drops the chips in the same render (ticket 50) (5.7s)
+  ✓  164 [floor] › e2e/front-door-scroll.spec.ts:74:5 › the first question in a short Thread does not jump the page (ticket 45) (1.9s)
+  ✓  162 [floor] › e2e/floor.spec.ts:491:7 › sim bracket: cpc /midseason/2026/ shows full team names and no chip on a card, 1280px (13.8s)
+  ✓  166 [floor] › e2e/floor.spec.ts:528:7 › sim replay: cpc /midseason/2026/ plays a run and skips to the champion and the bracket at 375px (377ms)
+  ✓  165 [floor] › e2e/front-door.spec.ts:56:7 › the front door shows its 3 Suggestion chips whole at 375px (AT-4 of front-door) (1.0s)
+  ✓  167 [floor] › e2e/floor.spec.ts:528:7 › sim replay: cpc /midseason/2026/ plays a run and skips to the champion and the bracket at 1280px (364ms)
+  ✓  168 [floor] › e2e/front-door.spec.ts:56:7 › the front door shows its 3 Suggestion chips whole at 768px (AT-4 of front-door) (1.0s)
+  ✓  170 [floor] › e2e/front-door.spec.ts:56:7 › the front door shows its 3 Suggestion chips whole at 1280px (AT-4 of front-door) (1.0s)
+  ✓  171 [floor] › e2e/front-door.spec.ts:71:5 › the 3 widest chip labels show whole in one row with More at 375px (AT-42) (1.5s)
+  ✓  169 [floor] › e2e/front-door.spec.ts:134:7 › Send on a phone with the keyboard open › one tap on Send sends while the field has the focus (ticket 34) (3.5s)
+  ✓  172 [floor] › e2e/manager-scene.spec.ts:80:9 › the scene of a manager page of cpc › draws one light per played week, bright for a win and dim for a loss, with the dashed median, at 375 px (AT-18) (257ms)
+  ✓  174 [floor] › e2e/manager-scene.spec.ts:80:9 › the scene of a manager page of cpc › draws one light per played week, bright for a win and dim for a loss, with the dashed median, at 768 px (AT-18) (243ms)
+  ✓  175 [floor] › e2e/manager-scene.spec.ts:80:9 › the scene of a manager page of cpc › draws one light per played week, bright for a win and dim for a loss, with the dashed median, at 1280 px (AT-18) (234ms)
+cpc: title top 171.796875, scene top 334.1875, scene height 130
+  ✓  176 [floor] › e2e/manager-scene.spec.ts:115:7 › the scene of a manager page of cpc › puts the title above the scene, in a band of at most 140 px, at 375 px (AT-43) (210ms)
+  ✓  177 [floor] › e2e/manager-scene.spec.ts:127:7 › the scene of a manager page of cpc › draws weeks 1 to 8 of roster 7 in cpc, with weeks 3, 4, and 8 bright (AT-18) (0ms)
+  ✓  178 [floor] › e2e/manager-scene.spec.ts:136:9 › the scene of a manager page of cpc › opens the grade popover on a tap of the grade letter over the scene, at 375 px (AT-36) (251ms)
+  ✓  179 [floor] › e2e/manager-scene.spec.ts:136:9 › the scene of a manager page of cpc › opens the grade popover on a tap of the grade letter over the scene, at 1280 px (AT-36) (286ms)
+cpc: the hero "Rank 1" is static, with 0 scene canvases on the page
+  ✓  180 [floor] › e2e/page-scenes.spec.ts:94:7 › the static heroes of cpc › the rankings page has no scene, and its hero is static (AT-35, AT-44) (165ms)
+cpc: the hero "The Title Race" is static, with 0 scene canvases on the page
+  ✓  181 [floor] › e2e/page-scenes.spec.ts:100:7 › the static heroes of cpc › the report has no scene, and its opener is static (AT-35, AT-44) (218ms)
+  -  182 [floor] › e2e/page-scenes.spec.ts:107:7 › the static heroes of cpc › the Front page has no scene under the takeover, and one in the Matchup hero without it (AT-35, AT-44)
+  ✓  183 [floor] › e2e/page-scenes.spec.ts:121:7 › the static heroes of cpc › the front door has no hero and no scene (AT-50 of front-door) (164ms)
+cpc: the hero "Trade Analyzer" is static, with 0 scene canvases on the page
+  ✓  184 [floor] › e2e/page-scenes.spec.ts:128:7 › the static heroes of cpc › the analyzer has no scene before a grade, and its title hero is static (AT-35, AT-44) (911ms)
+  ✓  173 [floor] › e2e/front-door.spec.ts:158:7 › Send on a phone with the keyboard open › each tap on a Suggestion chip acts while the field has the focus (ticket 37) (3.8s)
+cpc: the link of Maye d'force B with U opened /2026/managers/9/
+  ✓  185 [floor] › e2e/page-scenes.spec.ts:138:7 › the hero of the rankings page of cpc › opens the manager page of the rank-1 team on a tap of Manager page (AT-45) (2.6s)
+  ✓  186 [floor] › e2e/front-door.spec.ts:194:7 › the ask box on a phone with the keyboard open › the ask box sits right above the keyboard in the empty Thread and in a Thread with an entry (4.8s)
+  ✓  188 [floor] › e2e/front-door.spec.ts:218:7 › the ask box on a phone with the keyboard open › the ask box of the empty Thread shows whole when the layout viewport shrinks with the keyboard (2.0s)
+  ✓  189 [floor] › e2e/scene.spec.ts:108:9 › the scene of the week page of cpc, at rest › draws the lights of the chart, with the Matchup in the accent color, at 375 px (AT-15, AT-34) (223ms)
+  ✓  190 [floor] › e2e/scene.spec.ts:108:9 › the scene of the week page of cpc, at rest › draws the lights of the chart, with the Matchup in the accent color, at 768 px (AT-15, AT-34) (197ms)
+  ✓  191 [floor] › e2e/scene.spec.ts:108:9 › the scene of the week page of cpc, at rest › draws the lights of the chart, with the Matchup in the accent color, at 1280 px (AT-15, AT-34) (199ms)
+  ✓  192 [floor] › e2e/scene.spec.ts:122:7 › the scene of the week page of cpc, at rest › has exactly one scene, in the first hero of the page, on a 2d context only (AT-35, AT-40) (184ms)
+cpc: title top 127.796875, scene top 312.578125, scene height 130
+  ✓  193 [floor] › e2e/scene.spec.ts:130:7 › the scene of the week page of cpc, at rest › puts the title above the scene, in a band of at most 140 px, at 375 px (AT-43) (185ms)
+  ✓  187 [floor] › e2e/page-scenes.spec.ts:153:7 › the 404 scene of cpc, with motion › drifts, so the frames at 2 s and 6 s differ, and never settles (AT-23) (6.2s)
+  ✓  195 [floor] › e2e/scene.spec.ts:182:7 › the scene of the week page of cpc, at rest › moves the selection from light to light with a slide, and stops on the light under the finger (AT-26) (430ms)
+  ✓  196 [floor] › e2e/scene.spec.ts:197:7 › the scene of the week page of cpc, at rest › shows the hint until the first tap, and keeps it gone after a reload (AT-28) (281ms)
+  ✓  194 [floor] › e2e/scene.spec.ts:141:7 › the scene of the week page of cpc, at rest › draws the settled chart at once, the same at 0.1 s and 2.5 s, in both themes (AT-31, AT-33) (2.8s)
+  ✓  198 [floor] › e2e/scene.spec.ts:159:7 › the scene of the week page of cpc, at rest › selects the nearest light to a tap in empty space, and does not play again (AT-25) (245ms)
+  ✓  199 [floor] › e2e/scene.spec.ts:173:7 › the scene of the week page of cpc, at rest › shows the label of the light at the right edge after a tap on it (AT-29) (191ms)
+cpc: the scene came to rest 1760 ms after entry
+  ✓  197 [floor] › e2e/scene.spec.ts:213:7 › the scene of the week page of cpc, with motion › settles in about 1.5 s, and is not in the chart at 0.4 s (AT-16) (2.4s)
+the box spans 394 to 448 px, and the keyboard starts at 516 px
+  ✓  201 [floor] › e2e/front-door-passphrase.spec.ts:91:7 › the passphrase box of the passphrase modal with the iOS keyboard (AT-51) › the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap (3.9s)
+  ✓  200 [floor] › e2e/scene.spec.ts:244:7 › the scene of the week page of cpc, with motion › requests no animation frame for 3 s after the settle (AT-32) (5.2s)
+  ✓  202 [floor] › e2e/front-door-passphrase.spec.ts:107:7 › the passphrase box of the passphrase modal with the iOS keyboard (AT-51) › the box sits above the keyboard with a kept team and no kept passphrase (1.1s)
+  ✓  203 [floor] › e2e/scene.spec.ts:255:7 › the scene of the week page of cpc, with motion › plays the settle again after the hero leaves the view and comes back (AT-30) (4.1s)
+  ✓  205 [floor] › e2e/scene.spec.ts:266:7 › the scene of the week page of cpc, with motion › ignores a tap during the settle, as the selection waits for rest (2.0s)
+  ✓  206 [floor] › e2e/scene.spec.ts:280:7 › the scene of the week page of cpc, on a touch screen › scrolls the page on a vertical swipe that starts in the scene (AT-27) (570ms)
+  ✓  204 [floor] › e2e/front-door-scroll-up.spec.ts:56:5 › a Suggestion chip tapped in a scrolled-up Thread scrolls its question to the top under the Thread header (8.0s)
+  ✓  207 [floor] › e2e/front-door-scroll-up.spec.ts:70:5 › a question typed in a scrolled-up Thread scrolls to the top under the Thread header (7.6s)
+
+  8 skipped
+  199 passed (2.9m)

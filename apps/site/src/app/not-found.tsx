@@ -31,13 +31,13 @@ export function NotFoundHero({ scene }: { scene?: HeroScene }) {
       scene={scene}
       meta="This page does not exist. The link may be old, or the week is not out yet."
       feature={
-        /* The big "404" is art, so the title keeps the one title style of every hero. The plate keeps the grid
-           and the glow from under each digit. The title names the page, so a screen reader skips the art.
+        /* The big "404" is art, so the title keeps the one title style of every hero. The glow stays low in the corner, off
+           the digits. The title names the page, so a screen reader skips the art.
            The art keeps the stable id of the egg hunt. */
         <Rise step={1}>
           <div
             aria-hidden="true"
-            className="plate w-fit font-mono text-hero leading-none font-bold tracking-grade"
+            className="w-fit font-mono text-hero leading-none font-bold tracking-grade"
             {...stableId("not-found-hero")}
           >
             404

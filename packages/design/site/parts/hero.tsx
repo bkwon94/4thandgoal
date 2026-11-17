@@ -32,6 +32,8 @@ type HeroProps = HeroSlots & {
   // The name of the region, for a screen reader, such as "Page not found" or "Matchup of the Week".
   label: string;
   className?: string;
+  // Live art in place of the static grid and glow, such as the mesh of the analyzer. See HeroFrame.
+  art?: ReactNode;
 };
 
 /* The four corner brackets. Each sits one step in from its corner, so no text sits on a bracket. */
@@ -43,9 +45,9 @@ const BRACKETS = [
 ];
 
 /* The fixed style of each text slot. A page cannot pass a class to a slot, so every hero reads as one family. */
-const EYEBROW = "plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
-const TITLE = "plate m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
-const META = "plate w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body text-on-dark-2";
+const EYEBROW = "w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
+const TITLE = "m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
+const META = "w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body text-on-dark-2";
 
 /* The slots on a phone stack in one column. From the tablet tier up the hero takes two rows: the eyebrow and the title
    top left with the meta top right, the feature in the open middle, then the stats bottom left and the action bottom
@@ -112,12 +114,16 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
   );
 }
 
-/* The text of a hero sits on a plate of the band color (the plate utility of globals.css). The plate keeps the grid and
-   the glow from under each letter, so the contrast of the text is the contrast of its role pair, and axe can read it.
+/* The text of a hero sits on the band color, the grid, and the low corner glow of .hero-texture. The glow stays off the
+   text, so the text needs no plate (ADR 0036), and the pixel scan of the floor checks its contrast.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art.
    The frame takes free content for the parts of the egg hunt only: the find card, the end card, and the egg word slider.
-   Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots. */
-export function HeroFrame({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
+   Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots.
+   `art` replaces the static texture with live art that the page gives, such as the mesh of the analyzer. It is a prop and
+   not a child, so a page can change the ground under the slots and never the slots. The art draws its own grid and glow,
+   and it sits in the same layer with the same marker, so the floor still finds the hero and reads its text by pixels.
+   The content box carries data-hero-content, so live art can find each text that it must keep clear. */
+export function HeroFrame({ label, className, art, children }: { label: string; className?: string; art?: ReactNode; children: ReactNode }) {
   return (
     <section
       aria-label={label}
@@ -127,7 +133,9 @@ export function HeroFrame({ label, className, children }: { label: string; class
       )}
     >
       <div aria-hidden="true">
-        <div data-hero-art="texture" className="hero-texture pointer-events-none absolute inset-0" />
+        <div data-hero-art="texture" className={cn("pointer-events-none absolute inset-0", art === undefined && "hero-texture")}>
+          {art}
+        </div>
         {BRACKETS.map((place) => (
           <span
             key={place}
@@ -136,14 +144,16 @@ export function HeroFrame({ label, className, children }: { label: string; class
           />
         ))}
       </div>
-      <div className="relative">{children}</div>
+      <div data-hero-content className="relative">
+        {children}
+      </div>
     </section>
   );
 }
 
-export function Hero({ label, className, ...slots }: HeroProps) {
+export function Hero({ label, className, art, ...slots }: HeroProps) {
   return (
-    <HeroFrame label={label} className={className}>
+    <HeroFrame label={label} className={className} art={art}>
       <Slots {...slots} />
     </HeroFrame>
   );

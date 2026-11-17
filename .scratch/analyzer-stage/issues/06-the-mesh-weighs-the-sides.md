@@ -1,0 +1,27 @@
+# 06: The mesh weighs the sides
+
+Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-3, AT-5, AT-15, AT-20 in the wait, and AT-23.
+
+**App:** site
+
+**What to build:** The pending grade button starts the wait of the mesh at once. A weight under each side pulls the mesh down in turn, 1.25 s per side, and a trade of three or more sides cycles through each side. Accent pulses, with a bright head and a soft tail, run along the mesh lines, bend with the mesh, and run faster near a weight that pulls. The stage lines of ticket 05 sit over the mesh. `Sweep` leaves the grade wait and stays in the Finder wait. The wait has no minimum time. With motion off, the mesh stays still.
+
+**Blocked by:** 04, 05
+
+**Status:** done
+
+- [x] Within 100 ms of the tap on "Grade the Trade", the mesh moves and "Weighing the sides" shows.
+- [x] A recording of 5 s of the wait shows a dip under the side of Bo Girds, then under the side of Teehee, about 1.25 s each.
+- [x] At 375 px with a 4x CPU slowdown, no frame of the wait takes longer than 50 ms after the first second.
+- [x] Each analyzer hero text reaches 4.5:1 or more over 10 samples in 3 s of the wait, in `cpc` and `norcal`, at 390 and 1280 px.
+- [x] The Finder wait of `norcal` shows the `Sweep` bar and no mesh.
+- [x] The design bar skills ran on the wait, and Brian checked it on his iPhone.
+
+## Comments
+
+- 2026-11-17: Brian checked the wait on his iPhone with a real grade of trade T and said "wait is good".
+
+The merge: `e2767736` merged into `analyzer-stage` on 2026-11-16; review fixes `a8f2b48d` and `4eb5bef2`; Judge fix round `7b1d09c7`.
+The proof: `make check-fast` passed at each merge, the full check passed on 2026-11-17, and the Judge gave PASS to AT-1 to AT-34 after one fix round.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/analyzer-stage/PRD.md, .scratch/analyzer-stage/ACCEPTANCE.md, .scratch/analyzer-stage/issues/06-the-mesh-weighs-the-sides.md.
+Closes with the squash merge of the spec PR.

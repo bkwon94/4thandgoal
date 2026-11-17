@@ -10,19 +10,22 @@ import AnalyzeResult from "./analyze-result";
 import { CircleAlertIcon } from "lucide-react";
 import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
-import { FoldLine } from "./fold-line";
 import { Hero } from "@cpc/design/parts/hero";
+import { HeroMesh } from "@cpc/design/parts/hero-mesh";
+import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Rise } from "@cpc/design/parts/rise";
 import { GetCard, type GotRow } from "./get-card";
 import { GradeBar } from "./grade-bar";
-import { Sweep } from "./sweep";
+import { StageLines } from "./stage-lines";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
 import { TeamsRow } from "./teams-row";
 import { TradeFinder } from "./trade-finder";
+import { TradeOnStage, type StageSide } from "./trade-on-stage";
 import { Button } from "@cpc/design/ui/button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
+import { stageLines, type StageTrade } from "../lib/stage-lines";
 import type { AnalyzeResponse, FinderTrade } from "../lib/analyze-types";
 import { ApiError, type ApiTarget, postAnalyze, toErrorLine, type Team } from "../lib/api";
 import {
@@ -86,25 +89,32 @@ type TradeToGrade = { sides: Sides; season: number };
 /* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
 type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
-/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the loading state as the feature.
-   The bars and the sweep sit where the read lands. With motion off, the bars hold still. The read that replaces
-   it opens with a level-two heading, so this title is level two too. */
-function GradingHero() {
-  const off = useMotionOff();
-  const pulse = off ? "" : "animate-pulse";
+/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the wait as the feature.
+   The read that replaces it opens with a level-two heading, so this title is level two too. The stage lines run under
+   the title, in a part of their own. A screen reader skips them. The page holds one status, the pending announcement
+   "Grading the trade" of the grade button, so the hero holds none, and a screen reader hears one message. The trade stays
+   on the stage, and the mesh weighs each side in turn under it, so the wait shows what the grade does. The drive starts
+   with the hero, so the mesh moves on the first frame after the tap. The trade is read once, because the grade locks
+   the form. With motion off, the mesh stays still and flat. */
+function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }) {
+  const [lines] = useState(() => stageLines(trade));
+  const [drive] = useState(() => waitDrive(performance.now()));
   return (
     <Hero
       label="Grading the Trade"
+      art={<HeroMesh drive={drive} />}
       level={2}
       eyebrow="Live"
       title="Grading the Trade"
       meta="This can take up to a minute."
       feature={
-        <div role="status" aria-busy="true" aria-label="Grading the Trade">
-          <div aria-hidden="true" className="flex flex-col gap-sp-3">
-            <div className={`h-sp-6 w-3/4 rounded-tile bg-rule-dark ${pulse}`} />
-            <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
-            <Sweep track="bg-rule-dark" />
+        // aria-busy marks the wait part as busy until the grade replaces it. It has no role, because the grade button
+        // holds the one status of the wait.
+        <div aria-busy="true">
+          <div aria-hidden="true" className="flex flex-col gap-sp-5">
+            <StageLines lines={lines} />
+            {/* The headshots go up to the stage on the tap, so the trade on the scale is the one the reader built. */}
+            <TradeOnStage sides={stage} show="tokens" rise />
           </div>
         </div>
       }
@@ -113,14 +123,19 @@ function GradingHero() {
 }
 
 /* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
-   It keeps the static grid with no scene. The fold hides it while a grade runs and under a result. */
-function TitleHero() {
+   Its ground is the mesh, calm and flat in idle, with no scene. Once a player is in the Stack, the trade shows on the
+   stage as the feature, one row per side with a count of its players. The cards of the Stack below show each player, so
+   the stage waits for the grade to show the faces. The grading hero and the read take its place while a grade runs and under a result. */
+function TitleHero({ stage }: { stage: StageSide[] }) {
+  const hasPlayer = stage.some((side) => side.players.length > 0);
   return (
     <Hero
       label="Trade Analyzer"
+      art={<HeroMesh />}
       eyebrow="Trade Analyzer"
       title="Trade Analyzer"
       meta={<Rise step={1}>Who gets what?</Rise>}
+      feature={hasPlayer ? <TradeOnStage sides={stage} show="count" /> : undefined}
     />
   );
 }
@@ -131,8 +146,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const nextSideId = useRef(EMPTY_SIDES.length);
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
-  // Edit opens the folded form under a result, so the reader can change the trade and keep the result on the screen.
+  // Edit opens the hidden form under a result, so the reader can change the trade and keep the result on the screen.
   const [editing, setEditing] = useState(false);
+  // Edit scrolls to the Stack, because the result sits below it and the reader taps Edit from inside the result.
+  const stackRef = useRef<HTMLElement>(null);
+  const scrollToStack = useRef(false);
   // A late answer from an old trade must not overwrite the state of a new one.
   const request = useRequest();
   // A finder card asks for the full result, so the page scrolls the result into view when the grade ends.
@@ -152,6 +170,19 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     resultRef.current?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
   }, [grade.status, off]);
 
+  // The scroll waits for the Stack to show, because it is hidden until the render after the tap on Edit.
+  useEffect(() => {
+    if (!editing || !scrollToStack.current) return;
+    scrollToStack.current = false;
+    stackRef.current?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
+  }, [editing, off]);
+
+  /* Edit opens the Stack with the graded trade, and scrolls to it. */
+  function edit() {
+    scrollToStack.current = true;
+    setEditing(true);
+  }
+
   // The page can swap a stored list for the fresh one while the form shows, so a pick of a traded player drops.
   // The check runs in the render, not in an effect, so no render ever shows a stale pick with the grade bar on.
   const [seenTeams, setSeenTeams] = useState(teams);
@@ -163,13 +194,16 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
 
   const asker = sides[0].rosterId;
   const myTeam = teamOf(teams, asker);
-  const ready = everySideTrades(sides);
+  // A link can fill a whole trade before the rosters arrive. The stage and the stage lines read the teams, so a grade
+  // that starts before them shows an empty stage and names "Your Team" in place of a manager. The bar waits for the teams.
+  const ready = teams.length > 0 && everySideTrades(sides);
   // The finder grades two sides, so it hides once the trade has a third side.
   const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
-  // The form folds to one line while the grade runs and under a result, so the hero and the read lead the page.
-  const folded = grading || (grade.status === "done" && !editing);
+  // The form hides while the grade runs and under a result, so the hero and the read lead the page. The stage of the
+  // hero shows the trade, so no line repeats it.
+  const formHidden = grading || (grade.status === "done" && !editing);
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
@@ -322,17 +356,15 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
 
   const playerSide = sheet?.kind === "players" ? sheet.side : null;
 
-  /* The players a side of another team gets from Your Team. */
-  const askerGives = sides.slice(1).flatMap((_, i) => rowsOf(i + 1).filter((row) => row.from.roster_id === asker));
-
   const form = (
     <>
       {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
           of the form, above the finder. The part holds the form section and the bar, and nothing after them. */}
       <div>
-      {/* The folded form stays in the page, so the picks, the sheets, and the finder cards keep their state for Edit. */}
-      <div hidden={folded}>
-        <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
+      {/* The hidden form stays in the page, so the picks, the sheets, and the finder cards keep their state for Edit. */}
+      <div hidden={formHidden}>
+        {/* The scroll margin keeps the top of the Stack clear of the edge of the screen after Edit. */}
+        <section ref={stackRef} aria-label="Who gets what" className="mt-sp-5 flex scroll-mt-sp-5 flex-col gap-sp-4">
           <TeamsRow
             slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
             onPickSlot={(slot) => setSheet({ kind: "team", slot })}
@@ -379,10 +411,10 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           )}
         </section>
       </div>
-      {/* Under a folded result the bar has no trade to grade again, so it hides until Edit. */}
-      {!(folded && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
+      {/* Under a result the form is hidden and the bar has no trade to grade again, so it hides until Edit. */}
+      {!(formHidden && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
       </div>
-      <div hidden={folded}>
+      <div hidden={formHidden}>
         {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
             The finder grades two sides, so it hides at three or four. */}
         {/* The finder is off by default because the page felt crowded. */}
@@ -427,25 +459,37 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </>
   );
 
+  /* The analyze document names each team but carries no avatar, so the result reads the avatars of the teams of the league. */
+  const avatars = new Map(teams.map((team) => [team.roster_id, team.avatar]));
+
   const result = grade.status === "done" && (
     <div ref={resultRef}>
-      <AnalyzeResult doc={grade.doc} />
+      <AnalyzeResult doc={grade.doc} avatars={avatars} onEdit={edit} />
     </div>
   );
 
-  const hero = folded ? (
-    <>
-      <FoldLine
-        asker={myTeam}
-        others={sides.slice(1).flatMap((side) => teamOf(teams, side.rosterId) ?? [])}
-        gives={askerGives.map((row) => row.player.name)}
-        gets={rowsOf(0).map((row) => row.player.name)}
-        onEdit={grade.status === "done" ? () => setEditing(true) : undefined}
-      />
-      {grading && <GradingHero />}
-    </>
-  ) : (
-    <TitleHero />
+  // One pass over the sides gives the stage and the grading trade the same team and rows for each side.
+  const sideViews = sides.map((side, index) => ({ side, index, team: teamOf(teams, side.rosterId), rows: rowsOf(index) }));
+
+  /* The trade on the stage: one row for each side with a team, and the players it gets with their headshots. */
+  const stage: StageSide[] = sideViews.flatMap(({ side, team, rows }) => {
+    if (!team) return [];
+    const players = rows.map(({ player }) => ({ id: player.player_id, name: player.name, headshot: player.headshot }));
+    return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
+  });
+
+  // Under a result the read is the hero, so the form puts no hero of its own above it.
+  const hero = grading ? (
+    <GradingHero
+      trade={sideViews.map(({ index, team, rows }) => ({
+        team: team?.team ?? SIDE_TITLES[index],
+        manager: team?.manager ?? SIDE_TITLES[index],
+        gets: rows.map((row) => ({ name: row.player.name, position: row.player.position })),
+      }))}
+      stage={stage}
+    />
+  ) : formHidden ? null : (
+    <TitleHero stage={stage} />
   );
 
   return children({ hero, form, result });

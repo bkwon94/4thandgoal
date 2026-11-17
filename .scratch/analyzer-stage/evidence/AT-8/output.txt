@@ -1,0 +1,63 @@
+$ pnpm --dir apps/site exec vitest run --reporter=verbose ../../packages/analyzer/site/lib/stage-lines.test.ts
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/ev/apps/site
+
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of trade T > gives 12 distinct lines 1ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of trade T > fixes the first and the last line 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of trade T > names no internal part, no rival, and no finished step 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of trade T > names a player, a team, or a manager of the trade 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of a real trade of three sides > gives 12 distinct lines 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of a real trade of three sides > fixes the first and the last line 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of a real trade of three sides > names no internal part, no rival, and no finished step 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines of a real trade of three sides > names a player, a team, or a manager of the trade 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines > names the players, the teams, and the managers of trade T 0ms
+ ✓ ../../packages/analyzer/site/lib/stage-lines.test.ts > stageLines > still gives 12 lines when a side gets no player 0ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  15:07:07
+   Duration  429ms (environment 83%, import 13%, transform 2%, tests 1%, worker 1%)
+
+
+$ pnpm --dir apps/site exec vitest run --reporter=verbose --silent=false ../../packages/analyzer/site/lib/at8-evidence.test.ts  (a scratch test in a detached worktree of a90b3c92; its source is evidence/AT-8/at8-evidence.test.ts)
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/ev/apps/site
+
+stdout | ../../packages/analyzer/site/lib/at8-evidence.test.ts > AT-8 stage lines of trade T > prints the 12 lines and keeps the rules
+trade T:
+  1. Weighing the sides
+  2. Checking roster fit
+  3. Reading Tee Higgins's season
+  4. Reading the standings
+  5. Looking at the schedule ahead
+  6. Checking Teehee's depth at RB
+  7. Reading recent usage
+  8. Weighing what bkwon gives up
+  9. Checking the injury report
+  10. Reading Kenneth Walker III's season
+  11. Sizing up the upside
+  12. Weighing it all together
+
+stdout | ../../packages/analyzer/site/lib/at8-evidence.test.ts > AT-8 stage lines of trade B > prints the 12 lines and keeps the rules
+trade B:
+  1. Weighing the sides
+  2. Checking roster fit
+  3. Reading Caleb Williams's season
+  4. Reading the standings
+  5. Looking at the schedule ahead
+  6. Checking Lil Fridge's depth at RB
+  7. Reading recent usage
+  8. Weighing what wsh5022 gives up
+  9. Checking the injury report
+  10. Reading Travis Kelce's season
+  11. Sizing up the upside
+  12. Weighing it all together
+
+ ✓ ../../packages/analyzer/site/lib/at8-evidence.test.ts > AT-8 stage lines of trade T > prints the 12 lines and keeps the rules 2ms
+ ✓ ../../packages/analyzer/site/lib/at8-evidence.test.ts > AT-8 stage lines of trade B > prints the 12 lines and keeps the rules 0ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  15:07:08
+   Duration  350ms (environment 96%, import 2%, transform 1%, tests 1%, worker 1%)
+

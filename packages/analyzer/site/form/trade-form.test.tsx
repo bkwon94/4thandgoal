@@ -39,8 +39,10 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
 const card = (side: SideTitle) => screen.getByRole("region", { name: `${side} gets` });
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 const sheet = () => screen.getByRole("dialog");
-/* A result folds the form, so a test taps Edit to change the trade under it. */
+/* A result hides the form, so a test taps Edit in the header of The Sides to change the trade. */
 const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
+/* The elements that asked to scroll into view. jsdom does no layout and has no scrollIntoView, so each test records them. */
+let scrolled: Element[] = [];
 
 /* Adds a side with a team through "+". */
 async function addTeam(team: string) {
@@ -51,6 +53,12 @@ async function addTeam(team: string) {
 /* The filled hero slots of a hero, in the order of the markup. */
 const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
 const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
+
+/* The row of a team on the stage of a hero, and the src of each player headshot in it. The team avatar is not a headshot. */
+const stageRow = (hero: HTMLElement, team: string) =>
+  [...hero.querySelectorAll("[data-mesh-anchor]")].find((row) => row.querySelector("[data-stage-team]")?.textContent === team) as HTMLElement;
+const stageHeadshots = (el: HTMLElement) =>
+  [...el.querySelectorAll("img")].map((img) => img.getAttribute("src") ?? "").filter((src) => /\/(p\d+\.png|players\/)/.test(src));
 
 const removeButton = (name: string) => screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
 
@@ -64,6 +72,10 @@ const rowsOf = (side: SideTitle) =>
 const TRADE = { mine: "Pukancun on 3", other: "Blitz Bakers", mineGets: "Ben Two", otherGets: "Ana One" };
 
 beforeEach(() => {
+  scrolled = [];
+  Element.prototype.scrollIntoView = function (this: Element) {
+    scrolled.push(this);
+  };
   fetchStub.mockReset();
   onUnauthorized.mockReset();
   vi.stubGlobal("fetch", fetchStub);
@@ -92,6 +104,20 @@ describe("TradeForm", () => {
     expect(submit().disabled).toBe(true);
     // No card can add a player before both sides have a team.
     expect(addPlayer("Your Team").disabled).toBe(true);
+  });
+
+  it("keeps the bar off until the teams arrive, so a grade never starts with an empty stage (AT-29)", () => {
+    cleanup();
+    // A link fills the Stack before the rosters arrive. The trade is complete, but the stage and the lines need the teams.
+    const prefill = [
+      { id: 0, rosterId: 4, gets: [{ playerId: "p4", fromSide: 1 }] },
+      { id: 1, rosterId: 12, gets: [{ playerId: "p1", fromSide: 0 }] },
+    ];
+    const props = { target: apiTarget, finderOn, passphrase: "localtest", onUnauthorized, prefill };
+    const { rerender } = render(<TradeForm teams={[]} {...props} />);
+    expect(submit().disabled).toBe(true);
+    rerender(<TradeForm teams={TEAMS} {...props} />);
+    expect(submit().disabled).toBe(false);
   });
 
   it("shows each team with its avatar, name, and manager in the team sheet", async () => {
@@ -309,10 +335,10 @@ describe("TradeForm", () => {
     expect(slotText(hero, "meta")).toBe("Who gets what?");
   });
 
-  it("keeps the static grid, the glow, and the brackets in the title hero before a grade, with no scene (AT-35, AT-44)", () => {
+  it("keeps the art layer and the brackets in the title hero before a grade, with no scene (AT-35, AT-44)", () => {
     const hero = screen.getByRole("region", { name: "Trade Analyzer" });
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
-    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    // The art layer holds the mesh, which draws the grid and the glow, and the four brackets sit in the corners.
     expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
     expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });
@@ -325,6 +351,63 @@ describe("TradeForm", () => {
     expect(hero.querySelector("canvas[data-hero-scene]")).toBeNull();
   });
 
+  it("keeps the trade on the stage in the wait, with no sweep and no grey bars (AT-5)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    // The mesh weighs the sides, so each side and the players it gets stay on the stage through the wait.
+    expect(stageRow(hero, TRADE.mine)).toBeTruthy();
+    expect(stageRow(hero, TRADE.other)).toBeTruthy();
+    expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual(["https://cdn.test/p4.png"]);
+    expect(stageHeadshots(stageRow(hero, TRADE.other))).toEqual(["https://cdn.test/p1.png"]);
+    // The track of a sweep is aria-hidden, so the query includes hidden elements. An image with no alt is presentation too, so the query skips images.
+    expect(within(hero).queryAllByRole("presentation", { hidden: true }).filter((el) => el.tagName !== "IMG")).toEqual([]);
+    expect(hero.querySelector(".animate-pulse")).toBeNull();
+  });
+
+  it("shows a row per side with a count and no headshot in idle, as the Stack shows each player (AT-2, AT-28)", async () => {
+    await pickTeam("Your Team", TRADE.mine);
+    await pickTeam("Team Two", TRADE.other);
+    await pickPlayers("Your Team", TRADE.other, "Ben One", "Ben Two");
+    await pickPlayers("Team Two", TRADE.mine, "Ana One");
+    const hero = screen.getByRole("region", { name: "Trade Analyzer" });
+    expect(within(stageRow(hero, TRADE.mine)).getByText("2 players")).toBeTruthy();
+    expect(within(stageRow(hero, TRADE.other)).getByText("1 player")).toBeTruthy();
+    expect(stageHeadshots(hero)).toEqual([]);
+    expect(within(hero).queryByText("Ben One")).toBeNull();
+  });
+
+  it("puts the headshots of each side into its row on the tap of Grade (AT-29)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTeam("Your Team", TRADE.mine);
+    await pickTeam("Team Two", TRADE.other);
+    await pickPlayers("Your Team", TRADE.other, "Ben One", "Ben Two");
+    await pickPlayers("Team Two", TRADE.mine, "Ana One");
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual(["https://cdn.test/p3.png", "https://cdn.test/p4.png"]);
+    expect(stageHeadshots(stageRow(hero, TRADE.other))).toEqual(["https://cdn.test/p1.png"]);
+    expect(within(hero).queryByText("2 players")).toBeNull();
+  });
+
+  it("puts the same rows on the result hero, one mesh anchor per side, asker first", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const heroRead = await screen.findByRole("region", { name: "The Read" });
+    // The rows replace the empty columns, so the hero holds one anchor per side and the dip of the reveal sits under a row.
+    const rows = [...heroRead.querySelectorAll("[data-mesh-anchor]")];
+    expect(rows.map((row) => row.querySelector("[data-stage-team]")?.textContent)).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team"]);
+    expect(stageHeadshots(rows[0] as HTMLElement)).toEqual([
+      "https://sleepercdn.com/content/nfl/players/10236.jpg",
+      "https://sleepercdn.com/content/nfl/players/8146.jpg",
+    ]);
+    expect(stageHeadshots(rows[1] as HTMLElement)).toEqual(["https://sleepercdn.com/content/nfl/players/7569.jpg"]);
+    // The avatar of a team comes from the teams of the league.
+    expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://cdn.test/ana.png");
+  });
+
   it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
@@ -335,7 +418,7 @@ describe("TradeForm", () => {
     expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("Grading the Trade");
     expect(slotText(hero, "meta")).toBe("This can take up to a minute.");
     const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    expect(within(feature).getByRole("status").getAttribute("aria-busy")).toBe("true");
+    expect(feature.querySelector("[aria-busy=true]")).not.toBeNull();
   });
 
   it("shows the loading line while the grade runs", async () => {
@@ -345,28 +428,90 @@ describe("TradeForm", () => {
     expect(await screen.findByText("Grading the Trade")).toBeTruthy();
     expect(screen.getByText("This can take up to a minute.")).toBeTruthy();
     expect(screen.queryByText(/chart/i)).toBeNull();
-    const busy = screen.getByRole("button", { name: "Grading…" }) as HTMLButtonElement;
-    expect(busy.disabled).toBe(true);
-    expect(busy.getAttribute("aria-busy")).toBe("true");
+    // The label stays while the grade runs, and the button stays pending instead of natively disabled.
+    expect(screen.queryByRole("button", { name: "Grading…" })).toBeNull();
+    expect(submit().getAttribute("aria-busy")).toBe("true");
   });
 
-  it("folds the form to a line of faces and puts the grading hero in place of the title while the grade runs", async () => {
+  it("keeps focus on the grade button, with its label, through the wait (AT-4)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    submit().focus();
+    fireEvent.click(submit());
+    await screen.findByRole("region", { name: "Grading the Trade" });
+    const busy = submit();
+    expect(busy.getAttribute("aria-busy")).toBe("true");
+    expect(busy.hasAttribute("data-pending")).toBe(true);
+    expect(busy.getAttribute("aria-disabled")).toBe("true");
+    expect(busy.textContent).toBe("Grade the Trade");
+    expect(document.activeElement).toBe(busy);
+  });
+
+  it("shows stage lines of the trade under the title, hidden from a screen reader, with one status label (AT-6, AT-9)", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
-    expect(within(hero).getByRole("status").getAttribute("aria-busy")).toBe("true");
-    expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
-    expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
-    const fold = screen.getByRole("group", { name: "The trade" });
-    expect(fold.textContent).toContain("Ana One for Ben Two");
-    // One face for each team of the trade.
-    expect(fold.querySelectorAll("img")).toHaveLength(2);
-    expect(fold.compareDocumentPosition(hero) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(fold).queryByRole("button", { name: "Edit the trade" })).toBeNull();
+    const line = hero.querySelector(".t-think-text:last-child") as HTMLElement;
+    expect(line.textContent).toBe("Weighing the sides");
+    // The lines sit inside a part that a screen reader skips. The page holds one status, the pending announcement of
+    // the grade button, so a screen reader hears one message.
+    expect(line.closest("[aria-hidden=true]")).not.toBeNull();
+    expect(within(hero).queryByRole("status")).toBeNull();
+    await screen.findByText("Grading the trade", {}, { timeout: 2500 });
+    const statuses = screen.getAllByRole("status");
+    expect(statuses.map((status) => status.textContent)).toEqual(["Grading the trade"]);
+    expect(statuses[0].hasAttribute("aria-label")).toBe(false);
+    expect(within(hero).queryByText("Weighing the sides", { ignore: "[aria-hidden=true] *" })).toBeNull();
   });
 
-  it("fills the hero with the read and the fairness block, and keeps the form folded with an Edit button", async () => {
+  it("names a player, a team, or a manager of the trade in a stage line", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    // The clock starts after the picks, so the picks keep the real timers. The hero mounts in the click.
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      fireEvent.click(submit());
+      const hero = screen.getByRole("region", { name: "Grading the Trade" });
+      const seen: string[] = [];
+      for (let i = 0; i < 12; i++) {
+        seen.push(hero.querySelector(".t-think-text:last-child")?.textContent ?? "");
+        await act(async () => void vi.advanceTimersByTime(2500));
+      }
+      expect(seen.some((text) => /Ben Two|Ana One|Pukancun on 3|Blitz Bakers|Ana|Ben/.test(text))).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("sends one POST to the analyze route with a JSON body and takes a JSON response (AT-26)", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    await waitFor(() => expect(fetchStub).toHaveBeenCalledTimes(1));
+    const [url, init] = fetchStub.mock.calls[0];
+    expect(String(url)).toContain("/analyze");
+    expect(init.method).toBe("POST");
+    expect(() => JSON.parse(init.body)).not.toThrow();
+    expect(new Headers(init.headers).get("content-type")).toContain("application/json");
+  });
+
+  it("hides the form, shows no fold line, and puts the grading hero in place of the title while the grade runs", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(hero.querySelector("[aria-busy=true]")).not.toBeNull();
+    expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
+    // The stage of the hero shows the trade, so no fold line repeats it above the hero.
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Edit the trade" })).toBeNull();
+    expect(stageRow(hero, TRADE.mine)).toBeTruthy();
+    expect(stageRow(hero, TRADE.other)).toBeTruthy();
+  });
+
+  it("fills the hero with the read and the fairness block, and keeps the form hidden with Edit in the header of The Sides", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
@@ -379,10 +524,16 @@ describe("TradeForm", () => {
     expect(screen.queryByRole("region", { name: "Grading the Trade" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
-    const fold = screen.getByRole("group", { name: "The trade" });
-    expect(fold.compareDocumentPosition(heroRead) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    const trade = screen.getByRole("heading", { level: 2, name: "The Trade" });
-    expect(heroRead.compareDocumentPosition(trade) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "The Trade" })).toBeNull();
+    // Edit sits in the header of The Sides, after its heading and before the tabs of the sides.
+    const sides = screen.getByRole("heading", { level: 2, name: "The Sides" });
+    const header = sides.parentElement as HTMLElement;
+    const editButton = within(header).getByRole("button", { name: "Edit the trade" });
+    expect(editButton.textContent).toBe("Edit");
+    expect(editButton.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    expect(heroRead.compareDocumentPosition(sides) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(editButton.compareDocumentPosition(screen.getByRole("tablist", { name: "The sides" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("draws no scene under a folded result or after Edit, as each hero of the analyzer is static (AT-35, AT-44)", async () => {
@@ -399,14 +550,15 @@ describe("TradeForm", () => {
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
   });
 
-  it("opens the form again with Edit and keeps the result under it", async () => {
+  it("opens the Stack with the graded trade on Edit, scrolls to it, and keeps the result under it", async () => {
     answer(200, fixtureJson);
     await pickTrade(TRADE);
     fireEvent.click(submit());
     await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
     expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
-    expect(screen.getByRole("region", { name: "Who gets what" })).toBeTruthy();
+    const stack = screen.getByRole("region", { name: "Who gets what" });
+    await waitFor(() => expect(scrolled).toEqual([stack]));
     expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
     expect(submit().disabled).toBe(false);
     expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
@@ -696,7 +848,7 @@ describe("TradeForm with three or four sides", () => {
     expect(submit().disabled).toBe(false);
   });
 
-  it("folds a trade of three teams to one line with a face for each team", async () => {
+  it("puts a trade of three teams on the stage of the wait, one row per team, with no fold line", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTwoTeams();
     await addTeam("Punt Punks");
@@ -705,9 +857,9 @@ describe("TradeForm with three or four sides", () => {
     await pickPlayers("Team Three", "Blitz Bakers", "Ben Two");
     await pickPlayers("Your Team", "Punt Punks", "Cy One");
     fireEvent.click(submit());
-    const fold = await screen.findByRole("group", { name: "The trade" });
-    expect(fold.textContent).toContain("Ana One and Ana Two for Cy One");
-    expect(fold.querySelectorAll("img")).toHaveLength(3);
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
+    for (const team of ["Pukancun on 3", "Blitz Bakers", "Punt Punks"]) expect(stageRow(hero, team)).toBeTruthy();
   });
 
   it("posts every side in order with the destination of each player, as main does", async () => {

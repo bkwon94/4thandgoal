@@ -1,0 +1,23 @@
+- banner:
+  - link "Cornerstone Fantasy Football League":
+    - /url: /
+  - navigation "Site menu":
+    - link "Home":
+      - /url: /
+    - link "Week 10":
+      - /url: /2026/week-10/
+    - link "Power Rankings":
+      - /url: /rankings/
+    - link "Managers":
+      - /url: /2026/managers/
+    - link "Trade Analyzer":
+      - /url: /analyze/
+  - button "Switch to dark theme"
+- main:
+  - region "Grading the Trade":
+    - text: Live
+    - heading "Grading the Trade" [level=2]
+    - text: This can take up to a minute.
+  - button "Grade the Trade" [disabled]
+- alert
+- status: Grading the trade

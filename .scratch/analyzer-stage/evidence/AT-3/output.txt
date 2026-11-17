@@ -1,0 +1,13 @@
+$ EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts wait  (see steps.txt)
+375 light: shot 375-light.png started 9 ms after the tap
+375 light: "Weighing the sides" first in the DOM 15.9 ms after the tap; two frames of the wait mesh differ at 49.1 ms
+375 dark: shot 375-dark.png started 50 ms after the tap
+375 dark: "Weighing the sides" first in the DOM 19.2 ms after the tap; two frames of the wait mesh differ at 52.4 ms
+768 light: shot 768-light.png started 10 ms after the tap
+768 light: "Weighing the sides" first in the DOM 10.6 ms after the tap; two frames of the wait mesh differ at 42.0 ms
+768 dark: shot 768-dark.png started 13 ms after the tap
+768 dark: "Weighing the sides" first in the DOM 8.9 ms after the tap; two frames of the wait mesh differ at 43.9 ms
+1280 light: shot 1280-light.png started 15 ms after the tap
+1280 light: "Weighing the sides" first in the DOM 18.1 ms after the tap; two frames of the wait mesh differ at 47.9 ms
+1280 dark: shot 1280-dark.png started 12 ms after the tap
+1280 dark: "Weighing the sides" first in the DOM 7.2 ms after the tap; two frames of the wait mesh differ at 39.1 ms

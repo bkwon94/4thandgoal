@@ -326,15 +326,15 @@ describe("The motion of the egg word slider", () => {
 });
 
 describe("The look of the egg board", () => {
-  it("puts a plate only in the text slots of the board hero, and shows the grid and the glow only behind the art", () => {
+  it("keeps the text slots of the board hero plain, and shows the grid and the glow only behind the art", () => {
     for (const state of [board, won]) {
       const { container, unmount } = render(<EggBoard board={state} now={NOW} />);
-      // The board hero takes the text slots of the shared hero, each with its plate. The texture is hidden, so each
-      // plate has the band color on the band color. A slide has no plate.
+      // The board hero takes the text slots of the shared hero. The texture is hidden, so each slot sits on the flat
+      // band color, and no slot has a plate.
       const boardHero = screen.getByRole("region", { name: "Egg hunt" });
-      const plates = [...container.querySelectorAll(".plate")];
-      expect(plates.map((plate) => plate.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "meta"]);
-      for (const plate of plates) expect(boardHero.contains(plate)).toBe(true);
+      const slots = [...container.querySelectorAll("[data-hero-slot]")];
+      expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(expect.arrayContaining(["eyebrow", "title", "meta"]));
+      for (const slot of slots) expect(boardHero.contains(slot)).toBe(true);
       // The board hero and the frame of the slider each hide the full texture. An oval of the texture sits behind the
       // grid of the board hero only, so each slide keeps its text on a flat color.
       const heroes = [...container.querySelectorAll("section")].filter((section) => section.querySelector("[data-hero-art]"));

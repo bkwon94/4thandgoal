@@ -1,0 +1,13 @@
+- banner:
+  - link "Cornerstone Fantasy Football League":
+    - /url: /
+  - button "Switch to light theme"
+  - button "Open the menu"
+- main:
+  - region "Grading the Trade":
+    - text: Live
+    - heading "Grading the Trade" [level=2]
+    - text: This can take up to a minute.
+  - button "Grade the Trade" [disabled]
+- alert
+- status: Grading the trade

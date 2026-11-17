@@ -1,0 +1,5 @@
+$ EV_TESTS=<scratch>/pw2/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)
+run 1 of 4, 375 dark, 4x CPU slowdown: 239 frames from 1 s to 5 s after the tap; longest frame after the first second 16.8 ms; mean 16.7 ms; frames over 50 ms: 0
+run 2 of 4, 375 dark, 4x CPU slowdown: 239 frames from 1 s to 5 s after the tap; longest frame after the first second 16.8 ms; mean 16.7 ms; frames over 50 ms: 0
+run 3 of 4, 375 dark, 4x CPU slowdown: 235 frames from 1 s to 5 s after the tap; longest frame after the first second 66.6 ms; mean 16.9 ms; frames over 50 ms: 1
+run 4 of 4, 375 dark, 4x CPU slowdown: 238 frames from 1 s to 5 s after the tap; longest frame after the first second 33.3 ms; mean 16.7 ms; frames over 50 ms: 0

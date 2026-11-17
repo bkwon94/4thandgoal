@@ -24,7 +24,7 @@ function topLine(side: MatchupSide): string | null {
 }
 
 /* One team of the matchup: the avatar, the name with the top player under it, and the score.
-   Each line of text sits on a plate, so the grid and the glow never sit under a letter.
+   The glow stays low in the corner, off each line of text, so a line needs no plate (ADR 0036).
    The home hero passes withTop false, because it shows the matchup in one look and not its players. */
 export function TeamRow({
   side,
@@ -42,14 +42,14 @@ export function TeamRow({
     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-sp-3">
       <Avatar src={avatarSrc(avatars, side.team.roster_id)} />
       <div className="min-w-0">
-        <div className={cn("plate w-fit text-lead leading-tight", lead ? "font-bold text-on-dark" : "text-on-dark-2")}>
+        <div className={cn("w-fit text-lead leading-tight", lead ? "font-bold text-on-dark" : "text-on-dark-2")}>
           {side.team.name}
         </div>
-        {top !== null && <div className="plate mt-sp-1 w-fit text-meta leading-tight text-on-dark-muted">{top}</div>}
+        {top !== null && <div className="mt-sp-1 w-fit text-meta leading-tight text-on-dark-muted">{top}</div>}
       </div>
       <div
         className={cn(
-          "plate font-mono text-score leading-stat tabular-nums",
+          "font-mono text-score leading-stat tabular-nums",
           lead ? "font-bold text-on-dark" : "text-on-dark-muted",
         )}
       >
@@ -67,8 +67,8 @@ export function matchupTitle(pick: Pick): string {
   return margin === 0 ? `${first.team.name} and ${second.team.name} tie` : `${first.team.name} by ${num(margin)}`;
 }
 
-/* The small caps line of the reason in the hero, such as "Closest Finish". It sits on a plate, as every text line of a hero. */
-const REASON = "plate w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase";
+/* The small caps line of the reason in the hero, such as "Closest Finish". It needs no plate, as no text line of a hero does. */
+const REASON = "w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase";
 
 export function MatchupOfTheWeek({
   week,

@@ -1,0 +1,30 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts pages  (see steps.txt)
+the drop of test egg T1 of eggs.spec.ts to the local API (week 9): HTTP 200
+390 light: pixel scan of the egg banner:
+    Egg drop | b.font-mono "1" | 9.72:1
+    Egg drop | b.font-bold "egg dropped today" | 19.17:1
+    Egg drop | span.text-on-dark-muted "·" | 6.73:1
+    Egg drop | b.font-mono "1" | 19.17:1
+    Egg drop | span.relative "1 egg dropped today · 1 left" | 19.17:1
+    Egg drop | a.press "Egg board" | 19.17:1
+390 dark: pixel scan of the egg banner:
+    Egg drop | b.font-mono "1" | 9.72:1
+    Egg drop | b.font-bold "egg dropped today" | 19.17:1
+    Egg drop | span.text-on-dark-muted "·" | 6.73:1
+    Egg drop | b.font-mono "1" | 19.17:1
+    Egg drop | span.relative "1 egg dropped today · 1 left" | 19.17:1
+    Egg drop | a.press "Egg board" | 19.17:1
+1280 light: pixel scan of the egg banner:
+    Egg drop | b.font-mono "1" | 9.72:1
+    Egg drop | b.font-bold "egg dropped today" | 19.17:1
+    Egg drop | span.text-on-dark-muted "·" | 6.73:1
+    Egg drop | b.font-mono "1" | 19.17:1
+    Egg drop | span.relative "1 egg dropped today · 1 left" | 19.17:1
+    Egg drop | a.press "Egg board" | 19.17:1
+1280 dark: pixel scan of the egg banner:
+    Egg drop | b.font-mono "1" | 9.72:1
+    Egg drop | b.font-bold "egg dropped today" | 19.17:1
+    Egg drop | span.text-on-dark-muted "·" | 6.73:1
+    Egg drop | b.font-mono "1" | 19.17:1
+    Egg drop | span.relative "1 egg dropped today · 1 left" | 19.17:1
+    Egg drop | a.press "Egg board" | 19.17:1

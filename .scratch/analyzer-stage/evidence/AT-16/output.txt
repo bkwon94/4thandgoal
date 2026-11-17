@@ -1,0 +1,25 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)
+375 light: the page of the wait is 900 px tall and the hero ends at 455 px, so a 900 px view cannot scroll the hero out; the harness adds an empty 2000 px block at the end of the body
+375 light: hero out of view: data-mesh-frames 321 -> 321 over 2 s (0 frames)
+375 light: back in view 1 s later: data-mesh-frames 383 (62 frames)
+375 light: tab hidden (the page reports hidden through a visibilitychange event, because headless Chromium keeps a background tab visible; visibilityState hidden): data-mesh-frames 411 -> 411 over 2 s (0 frames)
+375 dark: the page of the wait is 900 px tall and the hero ends at 455 px, so a 900 px view cannot scroll the hero out; the harness adds an empty 2000 px block at the end of the body
+375 dark: hero out of view: data-mesh-frames 320 -> 320 over 2 s (0 frames)
+375 dark: back in view 1 s later: data-mesh-frames 396 (76 frames)
+375 dark: tab hidden (the page reports hidden through a visibilitychange event, because headless Chromium keeps a background tab visible; visibilityState hidden): data-mesh-frames 440 -> 440 over 2 s (0 frames)
+768 light: the page of the wait is 900 px tall and the hero ends at 418 px, so a 900 px view cannot scroll the hero out; the harness adds an empty 2000 px block at the end of the body
+768 light: hero out of view: data-mesh-frames 333 -> 333 over 2 s (0 frames)
+768 light: back in view 1 s later: data-mesh-frames 402 (69 frames)
+768 light: tab hidden (the page reports hidden through a visibilitychange event, because headless Chromium keeps a background tab visible; visibilityState hidden): data-mesh-frames 440 -> 440 over 2 s (0 frames)
+768 dark: the page of the wait is 900 px tall and the hero ends at 418 px, so a 900 px view cannot scroll the hero out; the harness adds an empty 2000 px block at the end of the body
+768 dark: hero out of view: data-mesh-frames 316 -> 316 over 2 s (0 frames)
+768 dark: back in view 1 s later: data-mesh-frames 380 (64 frames)
+768 dark: tab hidden (the page reports hidden through a visibilitychange event, because headless Chromium keeps a background tab visible; visibilityState hidden): data-mesh-frames 416 -> 416 over 2 s (0 frames)
+1280 light: the page of the wait is 900 px tall and the hero ends at 427 px, so a 900 px view cannot scroll the hero out; the harness adds an empty 2000 px block at the end of the body
+1280 light: hero out of view: data-mesh-frames 357 -> 357 over 2 s (0 frames)
+1280 light: back in view 1 s later: data-mesh-frames 425 (68 frames)
+1280 light: tab hidden (the page reports hidden through a visibilitychange event, because headless Chromium keeps a background tab visible; visibilityState hidden): data-mesh-frames 501 -> 501 over 2 s (0 frames)
+1280 dark: the page of the wait is 900 px tall and the hero ends at 427 px, so a 900 px view cannot scroll the hero out; the harness adds an empty 2000 px block at the end of the body
+1280 dark: hero out of view: data-mesh-frames 437 -> 437 over 2 s (0 frames)
+1280 dark: back in view 1 s later: data-mesh-frames 510 (73 frames)
+1280 dark: tab hidden (the page reports hidden through a visibilitychange event, because headless Chromium keeps a background tab visible; visibilityState hidden): data-mesh-frames 673 -> 673 over 2 s (0 frames)

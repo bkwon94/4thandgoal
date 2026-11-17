@@ -1,0 +1,13 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)
+375 light: tab "Bo Girds": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+375 light: tab "Teehee": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+375 dark: tab "Bo Girds": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+375 dark: tab "Teehee": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+768 light: tab "Bo Girds": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+768 light: tab "Teehee": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+768 dark: tab "Bo Girds": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+768 dark: tab "Teehee": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+1280 light: tab "Bo Girds": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+1280 light: tab "Teehee": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+1280 dark: tab "Bo Girds": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0
+1280 dark: tab "Teehee": headings "The Trade" 0, groups "The trade" 0, visible images below the hero 0, player chips 0, fold-line parts 0

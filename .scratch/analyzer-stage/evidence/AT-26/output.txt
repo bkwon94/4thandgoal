@@ -1,0 +1,7 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts grade  (see steps.txt)
+375 light: analyze calls in the network log: 1543 ms  -> POST http://localhost:8080/clients/cpc/analyze || 4698 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -
+375 dark: analyze calls in the network log: 1718 ms  -> POST http://localhost:8080/clients/cpc/analyze || 4741 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -
+768 light: analyze calls in the network log: 1404 ms  -> POST http://localhost:8080/clients/cpc/analyze || 4190 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -
+768 dark: analyze calls in the network log: 1407 ms  -> POST http://localhost:8080/clients/cpc/analyze || 3654 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -
+1280 light: analyze calls in the network log: 1693 ms  -> POST http://localhost:8080/clients/cpc/analyze || 4543 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -
+1280 dark: analyze calls in the network log: 1403 ms  -> POST http://localhost:8080/clients/cpc/analyze || 4332 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -

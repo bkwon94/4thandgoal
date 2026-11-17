@@ -1,0 +1,6 @@
+97 ms  -> GET http://localhost:8080/clients/cpc/eggs/board
+97 ms  -> GET http://localhost:8080/clients/cpc/teams?season=2026
+106 ms  <- 200 GET http://localhost:8080/clients/cpc/eggs/board  content-type: application/json  transfer-encoding: -
+108 ms  <- 200 GET http://localhost:8080/clients/cpc/teams?season=2026  content-type: application/json  transfer-encoding: -
+1403 ms  -> POST http://localhost:8080/clients/cpc/analyze
+4332 ms  <- 200 POST http://localhost:8080/clients/cpc/analyze  content-type: application/json  transfer-encoding: -

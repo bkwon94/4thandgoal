@@ -47,11 +47,11 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
     // Focus stays inside the open popover, as it does in the Past Weeks one. The page still scrolls and takes a tap outside.
     <Popover open={open} onOpenChange={setOpen} modal="trap-focus">
       {/* The button keeps the look of the plain letter: the size, the weight, and the color come from the number around it.
-          It sits in the hero, so it carries the plate of the hero text, and it is a full tap target on each side. */}
+          It sits in the hero, so it needs no plate, and it is a full tap target on each side. */}
       <PopoverTrigger
         aria-label={`Grade ${grade.letter}, how the grade reads`}
         {...openId("popover-grade")}
-        className="press plate min-w-touch cursor-pointer border-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="press min-w-touch cursor-pointer border-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {grade.letter}
       </PopoverTrigger>

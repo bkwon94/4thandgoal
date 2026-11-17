@@ -76,16 +76,16 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
         className="hero-texture relative flex min-h-banner items-center gap-sp-2 overflow-hidden border-b border-rule-dark bg-band py-sp-1 pl-gutter text-on-dark"
       >
         <EggMark />
-        {/* The line sits on a plate, so the grid and the glow never sit under a letter.
+        {/* The glow stays low in the corner, off the line, so the line needs no plate (ADR 0036).
             The line wraps and the strip grows past its least height, so a narrow phone shows the whole line. */}
-        <span data-banner-line className="plate relative min-w-0 flex-1 text-body leading-tight text-pretty">
+        <span data-banner-line className="relative min-w-0 flex-1 text-body leading-tight text-pretty">
           <b className="font-mono font-bold text-accent-text">{line.count}</b> <b className="font-bold">{line.what}</b>
           <span className="text-on-dark-muted"> · </span>
           <b className="font-mono font-bold">{line.left}</b> left
         </span>
         <a
           href={href}
-          className="press plate relative flex min-h-touch flex-none items-center gap-sp-1 text-body font-bold text-on-dark no-underline"
+          className="press relative flex min-h-touch flex-none items-center gap-sp-1 text-body font-bold text-on-dark no-underline"
         >
           Egg board
           <svg viewBox="0 0 24 24" aria-hidden="true" className="size-sp-4" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">

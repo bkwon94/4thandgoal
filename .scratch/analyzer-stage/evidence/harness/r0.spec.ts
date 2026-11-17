@@ -1,0 +1,25 @@
+import { test, expect } from "@playwright/test";
+import { writeFileSync } from "node:fs";
+import { openAnalyzer, serveDir, SCR, T_QUERY, READ_HERO, netLog, dir, newPage } from "./lib";
+test("R0: the first real grade of trade T, 1280 dark", async ({ browser }) => {
+  const srv = await serveDir(`${SCR}/r2-out-cpc`, 4173);
+  const { ctx, page } = await newPage(browser, 1280);
+  const rows = netLog(page);
+  await openAnalyzer(page, T_QUERY, "dark");
+  const start = Date.now();
+  const resp = page.waitForResponse((r) => r.url().endsWith("/analyze") && r.request().method() === "POST", { timeout: 180000 });
+  await page.getByRole("button", { name: "Grade the Trade" }).click();
+  const r = await resp;
+  const took = Date.now() - start;
+  const body = await r.text();
+  writeFileSync(`${SCR}/answer-T.json`, body);
+  await expect(page.locator(READ_HERO)).toBeVisible();
+  await page.waitForTimeout(3000);
+  await page.screenshot({ path: `${dir("AT-26")}/first-grade-1280-dark.png`, fullPage: true });
+  rows.unshift(`# The first grade of trade T on this day, not cached. The tap to the response took ${took} ms.`);
+  writeFileSync(`${dir("AT-26")}/network-first-grade.txt`, rows.join("\n") + "\n");
+  const doc = JSON.parse(body);
+  console.log(`took ${took} ms, lean ${doc.lean}`);
+  await ctx.close();
+  await srv.close();
+});

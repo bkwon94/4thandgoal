@@ -272,10 +272,12 @@ describe("the targets of the rankings page", () => {
 });
 
 describe("the targets of the analyzer result", () => {
-  it("gives the Lean word, the swap card, and each Bullet row a stable id, and puts the trade key on its root", () => {
+  it("gives the Lean word and each Bullet row a stable id, and puts the trade key on its root", () => {
     const doc = analyzeResponse as AnalyzeResponse;
     const { container } = render(<AnalyzeResult doc={doc} />);
-    expect(ids()).toEqual(expect.arrayContaining(["lean-word", "swap-card"]));
+    expect(ids()).toContain("lean-word");
+    // The swap card shows only in the Finder, so the result has no target of it.
+    expect(ids()).not.toContain("swap-card");
     const bullets = doc.sides.reduce((count, side) => count + side.bullets.length, 0);
     expect(idsOf("bullet")).toHaveLength(bullets);
     const root = container.firstElementChild!;

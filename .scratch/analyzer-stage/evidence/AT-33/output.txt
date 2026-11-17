@@ -1,0 +1,91 @@
+$ EV_TESTS=<scratch>/pw/tests pnpm exec playwright test --config pw-evidence.config.ts held  (see steps.txt)
+375 light: 115 ms "Weighing the sides": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 light: 2615 ms "Checking roster fit": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 light: 5093 ms "Reading Tank Dell's season": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 light: 7795 ms "Reading the standings": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 light: 10073 ms "Looking at the schedule ahead": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 light: 12647 ms "Checking Unsolicited Dak Picks's depth at WR": font 14px (box 14px), line width 307 px, line box 293 px, hero 341 px, class "t-think-text is-scroll", --think-scroll -14px
+375 light: start shot: line left 41.0, right 348.1, box 41.0-334.0
+375 light: the left/right edge of the long line every 100 ms from the start shot: 41.0/348.1 41.0/348.1 40.8/347.9 40.3/347.4 38.9/346.0 36.8/343.9 32.5/339.6 29.8/336.9 28.3/335.4 27.5/334.6 27.1/334.1 27.0/334.1 27.0/334.1 27.0/334.1 27.0/334.1 27.0/334.1 41.0/334.0 41.0/334.0 41.0/334.0 41.0/334.0
+375 light: 16049 ms "Reading recent usage": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 light: 17595 ms "Weighing what wsh5022 gives up": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 light: 20109 ms "Checking the injury report": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 light: 22699 ms "Reading Chris Olave's season": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 light: 25152 ms "Sizing up the upside": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 light: 27631 ms "Weighing it all together": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 dark: 110 ms "Weighing the sides": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 2557 ms "Checking roster fit": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 dark: 5048 ms "Reading Tank Dell's season": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 dark: 7598 ms "Reading the standings": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 10066 ms "Looking at the schedule ahead": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start", --think-scroll none
+375 dark: 12597 ms "Checking Unsolicited Dak Picks's depth at WR": font 14px (box 14px), line width 307 px, line box 293 px, hero 341 px, class "t-think-text is-enter-start is-scroll", --think-scroll -14px
+375 dark: start shot: line left 41.0, right 348.1, box 41.0-334.0
+375 dark: the left/right edge of the long line every 100 ms from the start shot: 41.0/348.1 41.0/348.0 40.7/347.8 39.5/346.6 37.5/344.6 34.0/341.1 31.2/338.3 29.1/336.2 27.9/335.0 27.3/334.4 27.0/334.1 27.0/334.1 27.0/334.1 27.0/334.1 27.0/334.1 41.0/334.0 41.0/334.0 41.0/334.0 41.0/334.0 41.0/334.0
+375 dark: 16444 ms "Reading recent usage": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 17726 ms "Weighing what wsh5022 gives up": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 20191 ms "Checking the injury report": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 22779 ms "Reading Chris Olave's season": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 25260 ms "Sizing up the upside": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: 27794 ms "Weighing it all together": font 14px (box 14px), line width 293 px, line box 293 px, hero 341 px, class "t-think-text", --think-scroll none
+375 dark: video /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/aefcbbd4-1bb0-4c65-999d-49283a8a0c92/scratchpad/video-at33/page@0f0a775d4228ed368a839495ce8678b1.webm
+768 light: 117 ms "Weighing the sides": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 light: 2650 ms "Checking roster fit": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 light: 5110 ms "Reading Tank Dell's season": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 light: 7627 ms "Reading the standings": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 light: 10096 ms "Looking at the schedule ahead": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 light: 12625 ms "Checking Unsolicited Dak Picks's depth at WR": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 light: start shot: line left 105.0, right 663.0, box 105.0-663.0
+768 light: the left/right edge of the long line every 100 ms from the start shot: 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0
+768 light: 16633 ms "Reading recent usage": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 light: 17728 ms "Weighing what wsh5022 gives up": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 light: 20213 ms "Checking the injury report": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 light: 22718 ms "Reading Chris Olave's season": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 light: 25169 ms "Sizing up the upside": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 light: 27667 ms "Weighing it all together": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: 124 ms "Weighing the sides": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 dark: 2654 ms "Checking roster fit": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 dark: 5120 ms "Reading Tank Dell's season": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 dark: 7584 ms "Reading the standings": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: 10089 ms "Looking at the schedule ahead": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: 12637 ms "Checking Unsolicited Dak Picks's depth at WR": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: start shot: line left 105.0, right 663.0, box 105.0-663.0
+768 dark: the left/right edge of the long line every 100 ms from the start shot: 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0 105.0/663.0
+768 dark: 16282 ms "Reading recent usage": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 dark: 17655 ms "Weighing what wsh5022 gives up": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+768 dark: 20149 ms "Checking the injury report": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: 22644 ms "Reading Chris Olave's season": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: 25164 ms "Sizing up the upside": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text is-enter-start", --think-scroll none
+768 dark: 27709 ms "Weighing it all together": font 15px (box 15px), line width 558 px, line box 558 px, hero 606 px, class "t-think-text", --think-scroll none
+1280 light: 28 ms "Weighing the sides": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 light: 2531 ms "Checking roster fit": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 5073 ms "Reading Tank Dell's season": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 7541 ms "Reading the standings": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 10082 ms "Looking at the schedule ahead": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 12555 ms "Checking Unsolicited Dak Picks's depth at WR": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: start shot: line left 321.0, right 959.0, box 321.0-959.0
+1280 light: the left/right edge of the long line every 100 ms from the start shot: 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0
+1280 light: 15174 ms "Reading recent usage": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 light: 17573 ms "Weighing what wsh5022 gives up": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 20123 ms "Checking the injury report": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 light: 22561 ms "Reading Chris Olave's season": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 25053 ms "Sizing up the upside": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 light: 27560 ms "Weighing it all together": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 dark: 9 ms "Weighing the sides": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 2583 ms "Checking roster fit": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 5078 ms "Reading Tank Dell's season": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 7577 ms "Reading the standings": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 10079 ms "Looking at the schedule ahead": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 12519 ms "Checking Unsolicited Dak Picks's depth at WR": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 dark: start shot: line left 321.0, right 959.0, box 321.0-959.0
+1280 dark: the left/right edge of the long line every 100 ms from the start shot: 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0 321.0/959.0
+1280 dark: 15938 ms "Reading recent usage": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 17576 ms "Weighing what wsh5022 gives up": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 dark: 20102 ms "Checking the injury report": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 dark: 22650 ms "Reading Chris Olave's season": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+1280 dark: 25068 ms "Sizing up the upside": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text is-enter-start", --think-scroll none
+1280 dark: 27663 ms "Weighing it all together": font 16px (box 16px), line width 638 px, line box 638 px, hero 686 px, class "t-think-text", --think-scroll none
+
+The token text-body in apps/site/src/app/globals.css:
+210:    --text-body: 14px;
+428:      --text-body: 15px;
+438:      --text-body: 16px;

@@ -83,6 +83,85 @@ test("axe color-contrast fails on a violation and on an incomplete result, and p
   );
 });
 
+/*
+ * A hero as HeroFrame renders it: a section on the band color, an art layer with the glow and the grid, and the content
+ * over it. The glow sits at the top left here, under the start of the content, so a test can put text on its bright part.
+ */
+const hero = (label: string, glow: string, content: string) => `<section aria-label="${label}"
+    style="position:relative;overflow:hidden;background:#101418;color:#f5f5f5;padding:24px">
+    <div aria-hidden="true"><div data-hero-art="texture" style="position:absolute;inset:0;background-image:
+      radial-gradient(ellipse 60% 80% at 0% 0%, ${glow}, transparent 70%),
+      linear-gradient(#2a2f36 1px, transparent 1px), linear-gradient(90deg, #2a2f36 1px, transparent 1px);
+      background-size:100% 100%, 24px 24px, 24px 24px"></div></div>
+    <div style="position:relative">${content}</div>
+  </section>`;
+
+test("hero text over the art passes on its pixels, and an incomplete result outside a hero still fails and names it", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Week 9", "#3a1418", `<h1 class="title" style="font-size:32px">Week 9</h1><p class="meta" style="font-size:16px">A clear meta line.</p>`)}
+    <div style="background:linear-gradient(#000,#fff)"><p class="glow" style="color:#777">Text on a glow.</p></div>
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual([expect.stringMatching(/^incomplete: \.glow /)]);
+});
+
+test("hero text that the glow makes faint fails, and the failure names the hero, the text, the ratio, and the pixel", async ({
+  page,
+}) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Manager", "#ff4040", `<p class="muted" style="font-size:16px;color:#9a9a9a">A muted line on the glow.</p>`)}
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual([
+    expect.stringMatching(/^pixel: hero "Manager" p\.muted "A muted line on the glow\." is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/),
+  ]);
+});
+
+test("a short text of a hero, which axe cannot judge, is rated on its pixels, and a short text outside a hero still fails", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Chips", "#ff4040", `<p style="font-size:16px;color:#f5f5f5">A clear line.</p><span class="chip" style="display:block;font-size:16px;color:#7a7a7a">7</span><span class="ok" style="display:block;font-size:16px;color:#ffffff">8</span>`)}
+    <p class="short" style="color:#777">7</p>
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual(
+    expect.arrayContaining([expect.stringMatching(/^pixel: hero "Chips" span\.chip "7" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/)]),
+  );
+  expect(failures.filter((line) => line.startsWith("pixel:"))).toHaveLength(1);
+  expect(failures).toEqual(expect.arrayContaining([expect.stringMatching(/^incomplete: \.short .*too short/)]));
+});
+
+test("an aria-hidden text of a hero is rated on its pixels", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Art text", "#ff4040", `<p style="font-size:16px;color:#f5f5f5">A clear line.</p><div aria-hidden="true" class="art" style="font-size:48px;color:#9a9a9a">404</div>`)}
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Art text" div\.art "404" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/)]);
+});
+
+test("a hero where the pixel scan finds no text fails and names the hero", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Empty stage", "#3a1418", `<div style="height:120px"></div><span style="position:absolute;width:1px;height:1px;overflow:hidden">Hidden note</span>`)}
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Empty stage": the pixel scan finds no text$/)]);
+});
+
+test("the egg banner is a hero of its own, so the pixel scan reads its line over the hero texture", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    <section aria-label="Egg drop" class="hero-texture" style="background:#101418 radial-gradient(ellipse 60% 80% at 0% 0%, #ff4040, transparent 70%);color:#f5f5f5;padding:8px">
+      <span class="line" style="font-size:16px;color:#9a9a9a">3 eggs dropped</span>
+    </section>
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Egg drop" span\.line "3 eggs dropped" is \d\.\d\d:1/)]);
+});
+
 test("axe color-contrast with a scope checks only the open part, so text that the open part covers passes", async ({ page }) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">
