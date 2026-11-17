@@ -1,5 +1,6 @@
 /**
  * Tests for the analyzer, the week page, the Front page, the front door, the power rankings, the waiver page, and the manager page with the reduced-motion media query on. The content must show at rest at once.
+ * The one exception is the analyzer result: it arrives in one plain fade of the whole result, and no part of it moves.
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
@@ -74,6 +75,17 @@ function expectAtRest(element: HTMLElement) {
   }
 }
 
+/* The analyzer result with motion off: the root of the result may fade, as one plain fade, and no box inside it fades on
+   its own. No box from the element up to the page root moves. */
+function expectInPlainFade(element: HTMLElement) {
+  const root = element.closest<HTMLElement>("[data-trade-key]");
+  expect(root, "the element is not inside the result").not.toBeNull();
+  for (let box: HTMLElement | null = element; box; box = box.parentElement) {
+    if (box !== root) expect(box.style.opacity).not.toBe("0");
+    expect(box.style.transform).not.toMatch(/translate/);
+  }
+}
+
 /* Opens the team sheet of a slot or of "+" with a click, and taps one team. */
 async function pickTeam(button: string | RegExp, team: string) {
   fireEvent.click(screen.getByRole("button", { name: button }));
@@ -97,16 +109,16 @@ afterAll(() => {
 });
 
 describe("Reduced motion", () => {
-  it("shows the Lean word at once", () => {
+  it("shows the Lean word still, in the plain fade of the result", () => {
     render(<AnalyzeResult doc={fixtureJson as AnalyzeResponse} />);
-    expectAtRest(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='lean-word']") as HTMLElement);
+    expectInPlainFade(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='lean-word']") as HTMLElement);
   });
 
-  it("shows the Bullets of the open tab at once (AT-51)", () => {
+  it("shows the Bullets of the open tab still, in the plain fade of the result (AT-51)", () => {
     const doc = fixtureJson as AnalyzeResponse;
     render(<AnalyzeResult doc={doc} />);
     for (const bullet of doc.sides[0].bullets) {
-      expectAtRest(within(screen.getByRole("tabpanel")).getByText(bullet.text));
+      expectInPlainFade(within(screen.getByRole("tabpanel")).getByText(bullet.text));
     }
   });
 

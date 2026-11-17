@@ -1,21 +1,24 @@
 /**
  * The analyzer result from one analyze document, in one column: the Lean on its scale, the Case, the fairness line, the swap card, and one tab per side.
- * The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
+ * It arrives in a staged reveal of about 1 s over the mesh. The trade finder reuses SwapCard and AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
 import { motion } from "framer-motion";
-import { useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import type { AnalyzeResponse, AsOf, ReadSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
+import { favoredSide } from "../lib/favored-side";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { BulletRows } from "./bullet-rows";
 import { SideTabs } from "./side-tabs";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { DURATION, rise } from "@cpc/design/lib/motion";
+import { DURATION, EASE_OUT, INSTANT, rise } from "@cpc/design/lib/motion";
 import { Blurb } from "@cpc/design/parts/blurb";
 import { Card } from "@cpc/design/parts/card";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
+import { HeroMesh } from "@cpc/design/parts/hero-mesh";
+import { revealDrive } from "@cpc/design/parts/mesh-canvas";
 import { Headshot } from "@cpc/league/headshot";
 import { Label } from "@cpc/design/parts/label";
 import { cn } from "@cpc/design/lib/utils";
@@ -166,6 +169,27 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   );
 }
 
+/* The staged reveal, in ms from the moment the grade arrives. The one pulse of the card skeleton in globals.css lasts as
+   long as the beat of the cards, so keep the two the same. The Lean word lands first, then the scale fills, then the
+   Case and the result cards with the side tabs rise in, so the reader gets the answer before the detail. Each part ends
+   by about 1 s. No beat waits on the clock before the Lean word, so a fast grade shows at once. */
+const REVEAL = { scale: 200, fill: 260, case: 450, cards: 500 } as const;
+
+/* True once `ms` have passed since the part mounted, and at once with motion off. A part that adds the class of a
+   transitions.dev recipe on its beat reads it, as the orchestration of the recipe does. */
+function useBeat(ms: number, off: boolean): boolean {
+  const [on, setOn] = useState(off);
+  useEffect(() => {
+    if (off) {
+      setOn(true);
+      return;
+    }
+    const timer = setTimeout(() => setOn(true), ms);
+    return () => clearTimeout(timer);
+  }, [ms, off]);
+  return on;
+}
+
 /* The Lean word sits on the hero, so each color is one that the band holds in both themes. A yes leans in the accent, a no in the plain ink. */
 const LEAN_COLOR: Record<Lean, string> = {
   "Send it": "text-accent-text",
@@ -188,15 +212,33 @@ const LEAN_ANSWER: Record<Lean, "yes" | "no" | "not_as_is"> = {
 const SCALE: readonly Lean[] = ["Pass", "Lean no", "Gut call", "Lean yes", "Send it"];
 
 /* The 5-step scale under the Lean word. The lit step carries aria-current, so a screen reader hears which step the Lean is.
-   The scale sits on the hero, so each color is a hero role. The glow stays low in the corner, off the labels (ADR 0036). */
-function LeanScale({ lean }: { lean: Lean }) {
+   The scale sits on the hero, so each color is a hero role. The glow stays low in the corner, off the labels (ADR 0036).
+   In the reveal, the scale fades in on its beat and the accent of the lit step fills from the left, so the eye goes
+   from the word to the step. With motion off, it shows at rest. */
+function LeanScale({ lean, off }: { lean: Lean; off: boolean }) {
   return (
-    <ol aria-label="The Lean scale" className="m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1">
+    <motion.ol
+      aria-label="The Lean scale"
+      className="m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1"
+      initial={off ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={off ? INSTANT : { duration: 0.2, ease: EASE_OUT, delay: REVEAL.scale / 1000 }}
+    >
       {SCALE.map((step) => {
         const lit = step === lean;
         return (
           <li key={step} aria-current={lit ? "step" : undefined} className="flex flex-col gap-sp-1">
-            <span aria-hidden="true" className={cn("block h-sp-1 rounded-pill", lit ? "bg-accent" : "bg-rule-dark")} />
+            <span aria-hidden="true" className="relative block h-sp-1 overflow-hidden rounded-pill bg-rule-dark">
+              {lit && (
+                <motion.span
+                  data-reveal-part="scale"
+                  className="absolute inset-0 origin-left rounded-pill bg-accent"
+                  initial={off ? false : { scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={off ? INSTANT : { duration: 0.3, ease: EASE_OUT, delay: REVEAL.fill / 1000 }}
+                />
+              )}
+            </span>
             <span
               className={cn(
                 "text-center text-label leading-tight font-bold tracking-caps uppercase",
@@ -208,7 +250,7 @@ function LeanScale({ lean }: { lean: Lean }) {
           </li>
         );
       })}
-    </ol>
+    </motion.ol>
   );
 }
 
@@ -246,9 +288,12 @@ function CaseText({ readCase }: { readCase: string }) {
 
 /* The read fills the hero slots: the side as the eyebrow and the Lean word as the title. The feature holds the rest
    in this order: the scale, the Case, then the fairness line. Each chapter of the result opens with a
-   level-two heading, so the title is level two. The Lean word rises in once, so the call lands with a beat. With
-   motion off, it shows at rest at once. The no-values note and the fairness block sit on a card under the Case, so
-   their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area. */
+   level-two heading, so the title is level two. The no-values note and the fairness block sit on a card under the
+   Case, so their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area.
+   The ground is the mesh of the grade wait, and the reveal starts the moment the grade arrives: the lines of the
+   favored side flash once, and the mesh dips toward that side and goes flat. The Lean word rises in at once, the scale
+   fills on its beat, and the Case rises in with recipe 18 of transitions.dev, the Case first and the card one stagger
+   after it. With motion off, the mesh stays still and each part shows at rest, inside the plain fade of the result. */
 function ReadHero({
   lean,
   readCase,
@@ -256,6 +301,7 @@ function ReadHero({
   asOf,
   sides,
   fairness,
+  favored,
 }: {
   lean: Lean;
   readCase: string;
@@ -263,8 +309,13 @@ function ReadHero({
   asOf: AsOf;
   sides: SwapSide[];
   fairness?: Fairness | null;
+  // The index in `sides` of the favored side, or null when no side is favored.
+  favored: number | null;
 }) {
   const off = useMotionOff();
+  // The drive starts with the hero, which mounts when the grade arrives, so the flash adds no delay.
+  const [drive] = useState(() => revealDrive(performance.now(), favored));
+  const caseShown = useBeat(REVEAL.case, off);
   const note = asOf.no_chart && asOf.no_chart_note;
   const card =
     note || fairness ? (
@@ -281,6 +332,7 @@ function ReadHero({
   return (
     <Hero
       label="The Read"
+      art={<HeroMesh drive={drive} />}
       level={2}
       eyebrow={`The read for ${team ?? "Your Side"}`}
       title={
@@ -290,9 +342,20 @@ function ReadHero({
       }
       feature={
         <div className="flex flex-col gap-sp-4">
-          <LeanScale lean={lean} />
-          <CaseText readCase={readCase} />
-          {card}
+          {/* One empty column for each side, asker first as in the wait, over the content box. The mesh reads the center
+              of each column as the place of that side, so the reveal dips under the same half of the hero as the wait. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid auto-cols-fr grid-flow-col">
+            {sides.map((side) => (
+              <span key={side.roster_id} data-mesh-anchor />
+            ))}
+          </div>
+          <LeanScale lean={lean} off={off} />
+          <div className={cn("t-stagger flex flex-col gap-sp-4", caseShown && "is-shown")}>
+            <div className="t-stagger-line t-stagger-line--1">
+              <CaseText readCase={readCase} />
+            </div>
+            {card && <div className="t-stagger-line t-stagger-line--2">{card}</div>}
+          </div>
         </div>
       }
     />
@@ -309,9 +372,8 @@ const FAIRNESS_WORD = {
   lopsided: { word: "Lopsided", color: "text-ink", meaning: "It gives more than it gets." },
 } as const;
 
-/* The fairness line rises in like the Lean word, so both read as one call. With motion off, it shows at rest at once. */
+/* The fairness line rises in with the card of the read, in the texts reveal of the Case, so no part sits inside two reveals. */
 function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairness }) {
-  const off = useMotionOff();
   const state = FAIRNESS_WORD[fairness.state];
   // A lopsided line names the side that gives more, so the reader knows who loses. The type says a lopsided block always has gives_more, and the pipeline sets it to a side of the trade.
   const word = state.word;
@@ -325,12 +387,9 @@ function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairn
       <div className="mb-sp-2 flex flex-wrap items-center gap-sp-2">
         <span className="font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">Fairness</span>
         {/* The pill is a short label, not prose, so it is a span at the row size. */}
-        <motion.span
-          className={cn("m-0 rounded-pill border border-rule px-sp-3 py-sp-1 text-row leading-tight font-extrabold tracking-snug", state.color)}
-          {...rise(off, { duration: DURATION.fairness })}
-        >
+        <span className={cn("m-0 rounded-pill border border-rule px-sp-3 py-sp-1 text-row leading-tight font-extrabold tracking-snug", state.color)}>
           {line}
-        </motion.span>
+        </span>
       </div>
       <p className="mt-0 mb-sp-3 text-lead text-mute">{state.meaning}</p>
       <ul className="m-0 flex list-none flex-col gap-sp-2 p-0">
@@ -445,17 +504,56 @@ export function tradeKey(doc: AnalyzeResponse): string {
     .join("|");
 }
 
+/* The skeleton of the result cards: one block for each chapter, in the colors of the page. It pulses once, then the
+   real cards fade in over it on their beat, as recipe 14 of transitions.dev. A screen reader skips it. */
+function CardsSkeleton() {
+  return (
+    <div aria-hidden="true" className="t-skel-skeleton is-pulsing flex flex-col gap-sp-3 tablet:gap-card-gap">
+      {/* The heights follow the swap card, the side tabs, and the counters, so the cards that fade in fill about the same space. */}
+      {["11rem", "14rem", "6rem"].map((height) => (
+        <div key={height} className="flex flex-col gap-sp-3 px-gutter py-sp-5 tablet:bg-page">
+          <span className="block h-sp-3 w-1/4 rounded-pill bg-rule" />
+          <span className="block rounded-card bg-raised" style={{ height }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
+  const off = useMotionOff();
+  const cardsShown = useBeat(REVEAL.cards, off);
   const sides = joinSides(doc);
   const askerTeam = sides.find((s) => s.roster_id === doc.trade.asker)?.team;
+  // The favored roster comes from the Lean of the grade (see favored-side.ts). The hero takes its place in the order of the sides.
+  const favoredRoster = favoredSide(doc);
+  const favored = favoredRoster === null ? null : sides.findIndex((s) => s.roster_id === favoredRoster);
 
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
   return (
     // The root carries the trade key and the answer of the Lean, so the egg hunt reads them as a condition. The attribute data-trade-answer keeps its name, because the eggs read it. The stable id is lean-word.
-    <div className="tablet:flex tablet:flex-col tablet:gap-card-gap" {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: LEAN_ANSWER[doc.lean] }}>
-      <ReadHero lean={doc.lean} readCase={doc.case} team={askerTeam} asOf={doc.as_of} sides={sides} fairness={doc.fairness} />
+    // With motion off, the reveal is one plain fade of the whole result, and no part moves.
+    <motion.div
+      className="tablet:flex tablet:flex-col tablet:gap-card-gap"
+      {...{ [TRADE_KEY]: tradeKey(doc), [TRADE_ANSWER]: LEAN_ANSWER[doc.lean] }}
+      initial={off ? { opacity: 0 } : false}
+      animate={{ opacity: 1 }}
+      transition={{ duration: DURATION.page, ease: "easeOut" }}
+    >
+      <ReadHero
+        lean={doc.lean}
+        readCase={doc.case}
+        team={askerTeam}
+        asOf={doc.as_of}
+        sides={sides}
+        fairness={doc.fairness}
+        favored={favored !== null && favored >= 0 ? favored : null}
+      />
 
+      <div className={cn("t-skel", cardsShown && "is-revealed")}>
+      <CardsSkeleton />
+      <div className="t-skel-content tablet:flex tablet:flex-col tablet:gap-card-gap">
       <Chapter>
         <Label heading>The Trade</Label>
         <SwapCard sides={sides} />
@@ -475,6 +573,8 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
           <AsOfLine doc={doc} />
         </div>
       </Chapter>
-    </div>
+      </div>
+      </div>
+    </motion.div>
   );
 }

@@ -1,9 +1,13 @@
 /**
  * The stage of the analyzer hero on the static export of the current CLIENT. Idle: the mesh holds still, pauses out of
- * view and in a hidden tab, and each hero text over it reaches 4.5:1. Wait: the mesh weighs each side in turn.
+ * view and in a hidden tab, and each hero text over it reaches 4.5:1. Wait: the mesh weighs each side in turn. Reveal:
+ * the mesh flashes and dips toward the favored side, and the parts of the read land in order, in about 1 s.
  */
 import type { Theme } from "@cpc/design/lib/theme";
-import { expect, test, type Page } from "@playwright/test";
+import { favoredSide } from "@cpc/analyzer/lib/favored-side";
+import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
+import { expect, test, type Page, type Route } from "@playwright/test";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { rawTeams, type RawTeam } from "../src/fixtures/raw-teams";
 import { openPage, scanHeroPixels } from "./floor";
@@ -38,8 +42,9 @@ test.afterAll(async () => {
 });
 
 /* The analyzer with a stored passphrase, so no dialog covers the page. The teams route answers with the real rosters,
-   and every other call off this machine fails, so no test reaches the live API. */
-async function openAnalyzer(page: Page, query = "", theme: Theme = "dark") {
+   and every other call off this machine fails, so no test reaches the live API. `onAnalyze` gets the held POST of the
+   grade, so a test of the reveal can answer it when it chooses. */
+async function openAnalyzer(page: Page, query = "", theme: Theme = "dark", onAnalyze?: (route: Route) => void) {
   await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
@@ -47,6 +52,7 @@ async function openAnalyzer(page: Page, query = "", theme: Theme = "dark") {
     // runs for as long as the test samples it. The page closes with the request still open.
     const held = path.endsWith("/analyze") || path.endsWith("/find");
     if (held && request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    if (held && path.endsWith("/analyze")) return onAnalyze?.(route);
     if (held) return;
     if (!path.endsWith("/teams")) return route.abort();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
@@ -355,5 +361,194 @@ test.describe("the wait, with motion off", () => {
     const second = await canvas.screenshot({ path: info.outputPath(`wait-still-${CLIENT}-b.png`) });
     expect(first.equals(second), "the mesh moved in the wait with motion off").toBe(true);
     expect((await pulls(page)).every((p) => p === 0)).toBe(true);
+  });
+});
+
+/* The read hero of the result, which holds the mesh of the reveal. */
+const READ_HERO = 'section[aria-label="The Read"]';
+
+/* The answer of the local API to trade T, recorded once from a real grade. A test of the reveal plays it to the held
+   grade, so the reveal runs on a real grade. No test makes up a grade, so a test with no recording fails. */
+const TRADE_T_ANSWER = join(process.cwd(), "e2e", "fixtures", "analyze-trade-t.json");
+function tradeTAnswer(): { body: string; doc: AnalyzeResponse } {
+  if (!existsSync(TRADE_T_ANSWER)) throw new Error(`no recorded answer of trade T at ${TRADE_T_ANSWER}: record one from the local API`);
+  const body = readFileSync(TRADE_T_ANSWER, "utf8");
+  return { body, doc: JSON.parse(body) as AnalyzeResponse };
+}
+
+/* The index of the favored side in the order of the read hero, the asker first, or null when no side is favored. */
+function favoredIndex(doc: AnalyzeResponse): number | null {
+  const roster = favoredSide(doc);
+  if (roster === null) return null;
+  const order = [...doc.trade.sides].sort((a, b) => Number(b.roster_id === doc.trade.asker) - Number(a.roster_id === doc.trade.asker));
+  return order.findIndex((side) => side.roster_id === roster);
+}
+
+/* The time line of one reveal, in ms of the clock of the machine. Each part is the first frame at which it is at rest:
+   fully opaque and with no move left. Each sample of the mesh holds the flash and the pull of each side at one frame. */
+type Reveal = {
+  lean: number | null;
+  scale: number | null;
+  case: number | null;
+  tabs: number | null;
+  mesh: { at: number; flash: number; pulls: number[] }[];
+  // The opacity of the root of the result at each frame, for the plain fade of motion off.
+  fade: number[];
+  // The largest move in px of the Lean word at any frame.
+  leanMove: number;
+};
+
+/* Starts a watch of the reveal in the page. It runs on each frame for 2.5 s after the read hero shows. */
+const watchReveal = (page: Page) =>
+  page.evaluate((hero) => {
+    const w = window as unknown as { reveal: Promise<unknown> };
+    w.reveal = new Promise((done) => {
+      const t: Record<string, unknown> = { lean: null, scale: null, case: null, tabs: null, mesh: [], fade: [], leanMove: 0 };
+      const mesh = t.mesh as { at: number; flash: number; pulls: number[] }[];
+      const fade = t.fade as number[];
+      let shown: number | null = null;
+      // The opacity of an element as the eye sees it: its own times each box above it.
+      const seen = (el: Element | null) => {
+        let o = 1;
+        for (let up = el; up; up = up.parentElement) o *= parseFloat(getComputedStyle(up).opacity);
+        return el ? o : 0;
+      };
+      const matrix = (el: Element) => new DOMMatrixReadOnly(getComputedStyle(el).transform === "none" ? undefined : getComputedStyle(el).transform);
+      const still = (el: Element | null) => !!el && seen(el) >= 0.99 && Math.abs(matrix(el).f) < 0.5 && getComputedStyle(el).filter === "none";
+      const mark = (key: string, ok: boolean) => {
+        if (ok && t[key] === null) t[key] = Date.now();
+      };
+      const tick = () => {
+        const now = Date.now();
+        const read = document.querySelector(hero);
+        if (read) {
+          shown ??= now;
+          const lean = read.querySelector('[data-stable-id="lean-word"]');
+          if (lean) t.leanMove = Math.max(t.leanMove as number, Math.abs(matrix(lean).f));
+          mark("lean", still(lean));
+          const fill = read.querySelector('[data-reveal-part="scale"]');
+          mark("scale", !!fill && seen(fill) >= 0.99 && matrix(fill).a >= 0.99);
+          mark("case", still(read.querySelector(".t-stagger-line")));
+          const tabs = document.querySelector('[role="tablist"][aria-label="The sides"]');
+          mark("tabs", !!tabs && seen(tabs) >= 0.99 && getComputedStyle(tabs.closest(".t-skel-content") ?? tabs).filter === "none");
+          const canvas = read.querySelector<HTMLCanvasElement>("canvas[data-hero-mesh]");
+          if (canvas?.dataset.meshFlash !== undefined)
+            mesh.push({ at: now, flash: Number(canvas.dataset.meshFlash), pulls: (canvas.dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number) });
+          fade.push(parseFloat(getComputedStyle(read.closest("[data-trade-key]") ?? read).opacity));
+          if (now - shown > 2500) return done(t);
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, READ_HERO);
+
+const revealOf = (page: Page) => page.evaluate(() => (window as unknown as { reveal: Promise<unknown> }).reveal) as Promise<Reveal>;
+
+/*
+ * Opens trade T, taps "Grade the Trade", lets the wait run for 1.5 s, then answers the held grade with the recorded
+ * answer of trade T. It gives the time the answer went out and the time line of the reveal.
+ */
+async function gradeAndReveal(page: Page, theme: Theme = "dark"): Promise<{ sent: number; reveal: Reveal; doc: AnalyzeResponse }> {
+  const { body, doc } = tradeTAnswer();
+  let held: Route | undefined;
+  await openAnalyzer(page, stageQuery(), theme, (route) => {
+    held = route;
+  });
+  await settle(page);
+  await page.getByRole("button", { name: "Grade the Trade" }).click();
+  await expect(page.locator(WAIT_HERO)).toBeVisible();
+  await expect.poll(() => held !== undefined).toBe(true);
+  await page.waitForTimeout(1500);
+  await watchReveal(page);
+  // The clock starts before the answer goes out, so each time from it is an upper bound.
+  const sent = Date.now();
+  await held!.fulfill({ status: 200, headers: CORS, contentType: "application/json", body });
+  return { sent, reveal: await revealOf(page), doc };
+}
+
+/* Each time of the reveal in ms from the answer, for the log of the evidence. */
+const stamps = (sent: number, r: Reveal) =>
+  (["lean", "scale", "case", "tabs"] as const).map((key) => `${key} ${r[key] === null ? "never" : `${r[key]! - sent} ms`}`).join(", ");
+
+test.describe("the reveal, with motion on", () => {
+  test.use({ reducedMotion: "no-preference" });
+
+  for (const width of [375, 768, 1280]) {
+    test(`reveal order: ${CLIENT} the Lean word lands first, then the scale, then the Case and the side tabs, within about 1 s, ${width}px (AT-10, AT-11)`, async ({ browser }, info) => {
+      // At 1280 px a page of its own records a video, which is the recording of AT-11 and AT-12.
+      const context = await browser.newContext({
+        viewport: { width, height: 900 },
+        reducedMotion: "no-preference",
+        ...(width === 1280 ? { recordVideo: { dir: info.outputPath("video"), size: { width, height: 900 } } } : {}),
+      });
+      const page = await context.newPage();
+      const { sent, reveal } = await gradeAndReveal(page);
+      await page.locator(READ_HERO).screenshot({ path: info.outputPath(`reveal-end-${CLIENT}-${width}.png`) });
+      console.log(`reveal order: ${CLIENT} ${width}px: ${stamps(sent, reveal)}`);
+      await context.close();
+      if (width === 1280) console.log(`reveal order: ${CLIENT}: the recording is ${await page.video()?.path()}`);
+      const { lean, scale, case: readCase, tabs } = reveal;
+      for (const [part, at] of Object.entries({ lean, scale, case: readCase, tabs })) expect(at, `the ${part} never came to rest`).not.toBeNull();
+      expect(lean! - sent, "the Lean word took too long after the answer").toBeLessThanOrEqual(1300);
+      expect(lean!, "the scale came to rest before the Lean word").toBeLessThan(scale!);
+      expect(scale!, "the Case came to rest before the scale").toBeLessThan(readCase!);
+      expect(scale!, "the side tabs came to rest before the scale").toBeLessThan(tabs!);
+      expect(Math.max(readCase!, tabs!) - sent, "the reveal took longer than about 1 s").toBeLessThanOrEqual(1300);
+    });
+  }
+
+  test(`reveal mesh: ${CLIENT} the lines of the favored side flash once, then the mesh dips toward it and goes flat, 1280px (AT-12)`, async ({ page }, info) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const { sent, reveal, doc } = await gradeAndReveal(page);
+    const favored = favoredIndex(doc);
+    const { mesh } = reveal;
+    console.log(`reveal mesh: ${CLIENT}: Lean ${doc.lean}, favored side ${favored === null ? "none" : `${favored} (roster ${favoredSide(doc)})`}`);
+    const peak = mesh.reduce((a, b) => (b.flash > a.flash ? b : a), mesh[0]);
+    const pullOf = (i: number) => Math.max(...mesh.map((m) => m.pulls[i] ?? 0));
+    const deepest = favored === null ? null : mesh.reduce((a, b) => ((b.pulls[favored] ?? 0) > (a.pulls[favored] ?? 0) ? b : a), mesh[0]);
+    console.log(
+      `reveal mesh: ${CLIENT}: flash peak ${peak.flash} at ${peak.at - sent} ms, ` +
+        `${deepest ? `deepest dip ${deepest.pulls[favored!]} at ${deepest.at - sent} ms, ` : ""}last pulls ${mesh.at(-1)?.pulls.join(",")}`,
+    );
+    await page.locator(READ_HERO).screenshot({ path: info.outputPath(`reveal-flat-${CLIENT}-1280.png`) });
+    expect(mesh.at(-1)!.pulls.every((p) => p === 0), "the mesh did not go flat").toBe(true);
+    if (favored === null) {
+      // A Gut call favors no side, so the mesh settles flat with no flash and no dip.
+      expect(peak.flash).toBe(0);
+      expect(mesh.every((m) => m.pulls.every((p) => p === 0))).toBe(true);
+      return;
+    }
+    expect(peak.flash, "the favored side did not flash").toBeGreaterThan(0.5);
+    expect(mesh.filter((m) => m.at > peak.at + 600).every((m) => m.flash === 0), "the flash did not fade in about 0.6 s").toBe(true);
+    expect(peak.at, "the dip came before the flash").toBeLessThan(deepest!.at);
+    expect(pullOf(favored), "the mesh did not dip toward the favored side").toBeGreaterThan(0.3);
+    for (let i = 0; i < doc.trade.sides.length; i++) if (i !== favored) expect(pullOf(i), `the mesh dipped under side ${i}`).toBe(0);
+  });
+
+  /* The read hero sits on the mesh too, so the pixel scan reads it at the end of the reveal, with the mesh at rest. */
+  for (const theme of ["dark", "light"] as const) {
+    for (const width of [390, 1280]) {
+      test(`reveal contrast: ${CLIENT} each hero text reaches 4.5:1 at the end of the reveal, ${theme} ${width}px (AT-20)`, async ({ page }, info) => {
+        await page.setViewportSize({ width, height: 900 });
+        await gradeAndReveal(page, theme);
+        await lineAtRest(page);
+        await page.locator(READ_HERO).screenshot({ path: info.outputPath(`reveal-contrast-${CLIENT}-${theme}-${width}.png`) });
+        expect(await scanHeroPixels(page, READ_HERO), `the read hero of ${CLIENT} breaks the readability floor`).toEqual([]);
+      });
+    }
+  }
+});
+
+test.describe("the reveal, with motion off", () => {
+  test(`reveal still: ${CLIENT} the mesh stays still, no part moves, and the result shows in one plain fade, 1280px (AT-13)`, async ({ page }, info) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const { reveal } = await gradeAndReveal(page);
+    await page.locator(READ_HERO).screenshot({ path: info.outputPath(`reveal-still-${CLIENT}-1280.png`) });
+    console.log(`reveal still: ${CLIENT}: the opacity of the result over the first frames: ${reveal.fade.slice(0, 12).map((o) => o.toFixed(2)).join(", ")}`);
+    expect(reveal.mesh.every((m) => m.flash === 0 && m.pulls.every((p) => p === 0)), "the mesh moved at the reveal with motion off").toBe(true);
+    expect(reveal.leanMove, "the Lean word moved with motion off").toBeLessThan(0.5);
+    expect(reveal.fade.some((o) => o < 0.99), "the result showed with no fade").toBe(true);
+    expect(reveal.fade.at(-1)).toBe(1);
   });
 });

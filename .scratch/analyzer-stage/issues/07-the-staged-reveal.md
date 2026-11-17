@@ -16,4 +16,4 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT
 - [ ] With reduced motion on, the mesh stays still in the wait and the result appears in a plain fade.
 - [ ] Each analyzer hero text reaches 4.5:1 or more at the end of the reveal, in `cpc` and `norcal`.
 - [ ] The full floor passes in `cpc` and `norcal`.
-- [ ] The front door chat wait shows no mesh and no stage line.
+- [x] The front door chat wait shows no mesh and no stage line.
