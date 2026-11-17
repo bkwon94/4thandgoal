@@ -1,7 +1,7 @@
 # Analyzer headshots show a black bar on the right
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-headshot-black-bar`.
 Source: the session of 2026-11-16.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -40,3 +40,8 @@ Nico Collins: 0.0px left gap, 0.0px right gap
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-headshot-black-bar`. Commits: `8ab7621d`, `d011c5e8`, `55b7d33e`, `f46dc0e9`. Date: 2026-11-16.
+The loop `pnpm check:grade-bar` went red with a 16px right gap at `8ab7621d`, then green with 3 Playwright tests at `d011c5e8`; `make check-fast BASE=main` passes with 1525 Vitest tests.
+No CI job runs the `grade-bar` Playwright project, so a later run can add it to CI; Next.js 16.4.2 prints a security notice that fails every other `next build`.
+Read 9 files: AGENTS.md, apps/site/AGENTS.md, .scratch/bugs/headshot-black-bar.md, .claude/plugin/skills/quick/format.md, packages/analyzer/site/form/analyze-result.tsx, packages/analyzer/site/form/player-sheet.tsx, packages/analyzer/site/form/get-card.tsx, apps/site/e2e/grade-bar.spec.ts, apps/site/playwright.config.ts.
