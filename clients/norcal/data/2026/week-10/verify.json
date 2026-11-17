@@ -1,0 +1,1125 @@
+{
+  "build": {
+    "started": "2026-11-17T11:03:27.805449-05:00",
+    "sources": {
+      "history": true,
+      "nflverse_pbp": false,
+      "nflverse_ftn": false,
+      "nflverse_injuries": true,
+      "ffverse": true,
+      "nflverse_snaps": true,
+      "ffopportunity": false,
+      "nflverse_stats_player": true
+    },
+    "fetched": "2026-11-17T11:02:33.310718-05:00"
+  },
+  "chapters": {
+    "motw": [
+      {
+        "chapter": "motw",
+        "code_failures": [
+          "[5] the sentence holds 3 numbers; the limit is 2"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "Bo Girds knocked off Davlionman 146.68 to 121.14 in an upset.",
+          "The losing side actually led by 12.46 after the early Sunday games, then the lead flipped back late and Monday stretched it to 25.54.",
+          "Without Isaiah Likely, the top tight end of the week, that is a loss.",
+          "Recent adds Darnell Washington and Tutu Atwell gave the losers 1.5 and 4.1, and Drake London is now listed Questionable (Head).",
+          "The winners' own recent adds were no feast either, with Justice Hill at 8.8, Kaleb Johnson at 4.2, and CJ Daniels below both.",
+          "This week nudged the winners up to 7th and their playoff odds to about 57%, while the other side held its spot but watched its playoff odds slide to about 65%."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "motw",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M3.result gives the score and M3.upset states it was an upset."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.lead says Davlionman led by 12.46 after the early Sunday games and Bo Girds led by 6.84 after the late ones."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "RANK.8131 ranks Likely 1 of 18 among started TEs, and the three swing facts say each outscored the 25.54 margin."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "M3.top.10 gives Gibbs 44.2, M3.result shows Davlionman lost, and M3.move.9479 gives Washington as a recent add with 1.5."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "M3.inj.8112 gives the Questionable (Head) status and M3.snaps.8112 gives the 59 of 72 snaps; the injury fact is cited."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "M3.impact says Bo Girds rose to 7th and Davlionman's playoff odds fell to about 65%."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Bo Girds took down Davlionman 146.68 to 121.14 in an upset.",
+          "The winners trailed by 12.46 after the early Sunday games and were back up 6.84 after the late ones.",
+          "Isaiah Likely led all started TEs, and he, Parker Washington and Trevor Lawrence each outscored the margin on his own.",
+          "Jahmyr Gibbs put up 44.2 in a loss, and recent add Darnell Washington answered with 1.5.",
+          "Drake London is now listed Questionable (Head) after playing 59 of 72 snaps.",
+          "This week lifted the winners to 7th and dropped the losers' playoff odds to about 65%."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.97
+            },
+            {
+              "index": 2,
+              "yes": 0.95
+            },
+            {
+              "index": 3,
+              "yes": 0.82
+            },
+            {
+              "index": 4,
+              "yes": 0.8
+            },
+            {
+              "index": 5,
+              "yes": 0.95
+            }
+          ],
+          "input_tokens": 5970,
+          "error": null
+        }
+      }
+    ],
+    "game_changer": [
+      {
+        "chapter": "game_changer",
+        "code_failures": [
+          "[2] number 4 is not in the cited facts AW.game_changer.news",
+          "[0] every sentence has a number (sentences 0, 1, 2, 3, 4); write at least one sentence with no number"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "Christian McCaffrey put up 46.3 points on a 22.55 projection.",
+          "He found the end zone on the ground and through the air in the 49ers' win over the Cowboys.",
+          "The receiving line was the absurd part: all 4 targets caught for 161 yards.",
+          "puurdygood beat kaiedmonds by 12.48, and without McCaffrey, that is a loss.",
+          "He decided it from the top of the running back pile, 1st of 33 started RBs this week."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "game_changer",
+        "code_failures": [
+          "[2] the blurb: team puurdygood is named 2 times; name it once, then write 'this side', 'they', or the player names"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "Christian McCaffrey dropped 46.3 on puurdygood's opponents, more than double a 22.55 projection.",
+          "He piled up 161 receiving yards in the 49ers' shootout with the Cowboys.",
+          "puurdygood beat kaiedmonds by 12.48, and McCaffrey won it by outscoring the margin on his own: without him, that is a loss.",
+          "Every other started running back this week finished behind him.",
+          "Not a fair fight."
+        ],
+        "jev": null
+      }
+    ],
+    "awards": [
+      {
+        "chapter": "awards",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "AW.top_scorer and AW.game_changer both name McCaffrey for puurdygood with 46.3, and M5.result gives the 12.48-point win, so 'swept' just means he won both named awards."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "AW.overachiever names Pickens for Hock Tua 💦, and RANK.8137 ranks him 1 of 45 among started WRs."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "AW.mvb gives Daniels 28.76 on the Mitseeker5000 bench, and M2.result shows Mitseeker5000 lost by 40.92."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "W.adds lists Drew Lock as a free agent add who scored 19.6 for kaiedmonds, and M5.result shows kaiedmonds lost."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Christian McCaffrey swept Top Scorer and Game Changer for puurdygood, dropping 46.3 in a 12.48-point win.",
+          "George Pickens took Overachiever and finished as the top started WR for Hock Tua 💦.",
+          "Jayden Daniels was the MVB with 28.76 sitting on the Mitseeker5000 bench during a 40.92-point loss.",
+          "The new pickup Drew Lock scored 19.6 for kaiedmonds, who lost anyway."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.96
+            },
+            {
+              "index": 1,
+              "yes": 0.96
+            },
+            {
+              "index": 2,
+              "yes": 0.71
+            },
+            {
+              "index": 3,
+              "yes": 0.38
+            }
+          ],
+          "input_tokens": 3785,
+          "error": null
+        }
+      }
+    ],
+    "position_leaders": [
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": false,
+            "reason": "Each score of 45.42 is in the facts, but 'matching Dak Prescott's line exactly' is a comparison no single fact states. Pickens at 43.5 as top WR is supported."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "LEAD.RB.1 gives 46.3 for puurdygood, 1st of 33 started RBs. LEAD.RB.1.volume gives the 48 percent carry share. 'Only' is tone."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Burrow (CIN) is 3rd among started QBs and Chase (CIN) is 2nd among started WRs, both for Skol Daddy, so calling it a Cincinnati stack is supported."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "LEAD.TE.1 ranks Likely 1st of 18 started TEs, for Bo Girds."
+          }
+        ],
+        "passed": false,
+        "sentences": [
+          "Hock Tua 💦 got Patrick Mahomes at 45.42, matching Dak Prescott's line exactly, plus George Pickens at 43.5 as the top wide receiver.",
+          "Christian McCaffrey led all running backs with 46.3 for puurdygood on a carry share of only 48 percent.",
+          "Skol Daddy rode the Cincinnati stack, with Joe Burrow 3rd among quarterbacks and Ja'Marr Chase 2nd among receivers.",
+          "Isaiah Likely topped every started tight end for Bo Girds."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.89
+            },
+            {
+              "index": 2,
+              "yes": 0.74
+            },
+            {
+              "index": 3,
+              "yes": 0.8
+            }
+          ],
+          "input_tokens": 3600,
+          "error": null
+        }
+      },
+      {
+        "chapter": "position_leaders",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "Mahomes 45.42 and Pickens 43.5 for Hock Tua, and Pickens is 1st of 45 started WRs, all match LEAD.QB.2 and LEAD.WR.1."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "McCaffrey 1st of 33 started RBs with 46.3 for puurdygood and a 48 percent carry share match LEAD.RB.1 and LEAD.RB.1.volume. 'Just' is tone, not a claim."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "Likely is 1st among started TEs for Bo Girds. Smith-Njigba is 1st among started WRs in the target and air-yard share measure, described without naming WOPR."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Hock Tua 💦 got 45.42 from Patrick Mahomes and 43.5 from George Pickens, the top-scoring started WR of the week.",
+          "Christian McCaffrey led every started running back with 46.3 for puurdygood, and he did it on a carry share of just 48 percent.",
+          "Isaiah Likely topped the tight ends for Bo Girds, while Jaxon Smith-Njigba had the biggest share of his team's targets and air yards among started WRs."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.92
+            },
+            {
+              "index": 1,
+              "yes": 0.88
+            },
+            {
+              "index": 2,
+              "yes": 0.89
+            }
+          ],
+          "input_tokens": 3476,
+          "error": null
+        }
+      }
+    ],
+    "recap_1": [
+      {
+        "chapter": "recap_1",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M1.lead and M1.turn give the 36.6 lead after the late games and Burrow and Chase scoring Sunday night; M1.result gives the 36.16 win."
+          },
+          {
+            "index": 1,
+            "supported": false,
+            "reason": "Burrow's swing role, the playoff crossing and the losing streak are supported, but 'near the bottom' is a rank claim: the facts give 11th, not the league size or a bottom position."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M1.hurt.5859 gives the 3rd-quarter injury, M1.inj.5859 gives the Out listing, and M1.move.4177 makes Hollins a recent add who scored 9.8."
+          }
+        ],
+        "passed": false,
+        "sentences": [
+          "The Mean Machine led by 36.6 heading into Sunday night, then Joe Burrow and Ja'Marr Chase flipped it and Skol Daddy won by 36.16.",
+          "Burrow outscored the margin on his own, and this side crossed into the playoff spots this week while the losing side stayed stuck near the bottom on a losing streak.",
+          "On the losing side, A.J. Brown was hurt in the 3rd quarter and is now listed Out, while the new pickup Mack Hollins chipped in 9.8."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.88
+            },
+            {
+              "index": 1,
+              "yes": 0.82
+            },
+            {
+              "index": 2,
+              "yes": 0.96
+            }
+          ],
+          "input_tokens": 4944,
+          "error": null
+        }
+      },
+      {
+        "chapter": "recap_1",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M1.lead and M1.turn give the 36.6 lead after the late games and Burrow's 41.16 on Sunday night; M1.swing.6770 makes him a swing player who outscored the 36.16 margin."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M1.impact says Skol Daddy crossed into the playoff spots and The Mean Machine has lost 3 straight; the four inj facts list all four players as Out."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "The move facts make both players recent adds, with Hollins at 9.8 for the losers and Kiner at 2.5 for the winners; 'a wash' reads as opinion, not a stated comparison."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "The Mean Machine sat on a 36.6 lead after the late Sunday games, then Joe Burrow posted 41.16 on Sunday night and outscored the final margin on his own.",
+          "Skol Daddy crossed into the playoff spots this week while the losers extended a losing streak, and A.J. Brown, Brock Bowers, Woody Marks and Jordan Addison are all now listed Out.",
+          "The new pickups were a wash: Mack Hollins gave the losers 9.8 and Corey Kiner gave the winners 2.5."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.93
+            },
+            {
+              "index": 2,
+              "yes": 0.76
+            }
+          ],
+          "input_tokens": 4942,
+          "error": null
+        }
+      }
+    ],
+    "recap_2": [
+      {
+        "chapter": "recap_2",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M2.lead shows Mitseeker5000 led after Thursday and the lead changed once to BobBuckstein, and M2.upset confirms an upset over the 1st-place team."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M2.impact states Mitseeker5000 fell from 1st to 3rd and BobBuckstein's playoff odds rose from about 40% to 53%."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M2.move.12540 calls Dike a recent add who scored 4.1, and M2.inj.1466 lists Kelce Questionable (Ankle) on Sleeper as of Tuesday."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "BobBuckstein trailed after Thursday, then took the lead for good and knocked off the top of the table in an upset.",
+          "Mitseeker5000 slid to 3rd this week while the winners' playoff odds climbed to 53%.",
+          "On the losing side, the new pickup Chimere Dike managed 4.1, and Travis Kelce is now listed Questionable with an ankle."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.82
+            },
+            {
+              "index": 1,
+              "yes": 0.82
+            },
+            {
+              "index": 2,
+              "yes": 0.95
+            }
+          ],
+          "input_tokens": 4594,
+          "error": null
+        }
+      }
+    ],
+    "recap_3": [
+      {
+        "chapter": "recap_3",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M3.lead shows Davlionman led by 12.46 after early Sunday, Bo Girds retook the lead and led by 25.54 after Monday; M3.result gives the margin and M3.upset states the upset."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M3.move.9479 makes Darnell Washington a recent add who scored 1.5, and M3.inj.8112 lists Drake London as Questionable (Head)."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M3.impact: Bo Girds rose from 8th to 7th with odds going from 46% to 57%; Davlionman stayed 4th with odds falling from 79% to 65%."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Bo Girds trailed by 12.46 after the early Sunday games, took the lead back, and pulled away into Monday to win by 25.54 in an upset.",
+          "Davlionman got 1.5 from the new pickup Darnell Washington, and Drake London is now listed Questionable (Head).",
+          "The winners climbed a spot and gained playoff odds this week, while the losers held their place and watched their playoff odds slip."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.94
+            },
+            {
+              "index": 1,
+              "yes": 0.97
+            },
+            {
+              "index": 2,
+              "yes": 0.9
+            }
+          ],
+          "input_tokens": 4775,
+          "error": null
+        }
+      }
+    ],
+    "recap_4": [
+      {
+        "chapter": "recap_4",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M4.lead shows Breece Mode led only after Thursday, with one lead change, and M4.inj.8210 gives Okonkwo's Questionable (Back) status."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M4.result and H.8.high confirm the season-high 193.52, and M4.top.8 gives Mahomes's 45.42."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M4.impact says Hock Tua rose from 2nd to 1st and Breece Mode's playoff odds fell from about 49% to 34%."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Breece Mode led after Thursday and never again, and Chig Okonkwo is now listed Questionable (back).",
+          "Hock Tua 💦 then hung a season-high 193.52 on them, with Patrick Mahomes alone putting up 45.42.",
+          "The week lifted the winners into 1st, while the other side's playoff odds this week fell to 34%."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.9
+            },
+            {
+              "index": 1,
+              "yes": 0.95
+            },
+            {
+              "index": 2,
+              "yes": 0.97
+            }
+          ],
+          "input_tokens": 4539,
+          "error": null
+        }
+      }
+    ],
+    "recap_5": [
+      {
+        "chapter": "recap_5",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M5.move.5854 confirms Drew Lock as a free agent add who scored 19.6, and M5.impact confirms kaiedmonds fell out of the playoff spots with odds going to about 58%."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M5.turn and M5.lead show puurdygood trailed by 6.02 after the early Sunday games and took the lead late; M5.driver.4034 makes McCaffrey a margin driver, so 'won it' with 46.3 fits."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M5.inj.8126 gives the Questionable (Ankle) Sleeper listing; M5.impact shows puurdygood rose from 3rd to 2nd and has now won 3 straight."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Recent add Drew Lock gave kaiedmonds 19.6 off the free agent pile, and they still slid out of the playoff spots with playoff odds dropping to about 58% this week.",
+          "Down 6.02 after the early Sunday games, puurdygood flipped it late, and Christian McCaffrey won it with 46.3.",
+          "Wan'Dale Robinson is now listed Questionable with an ankle, but they climbed the standings anyway and stretched the winning streak."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.9
+            },
+            {
+              "index": 1,
+              "yes": 0.9
+            },
+            {
+              "index": 2,
+              "yes": 0.85
+            }
+          ],
+          "input_tokens": 5008,
+          "error": null
+        }
+      }
+    ],
+    "recap_6": [
+      {
+        "chapter": "recap_6",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "M6.result gives the 122.2 to 106.22 score, H.12.high calls 122.2 a season high, and M6.upset cites the upset."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "M6.turn says VarsityBlue2 led by 7.22 after Sunday night, The Dart Side took the lead Monday, and Hampton and Lane scored Monday."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "M6.move.3286 makes Robinson a recent add who scored 0, and M6.impact gives the odds falling from 3% to 1% and The Dart Side ending a 3-game losing streak."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "The Dart Side posted a season high to beat VarsityBlue2 122.2 to 106.22 in an upset.",
+          "The losing side still led going into Monday, then watched the lead flip with Omarion Hampton and Ja'Kobi Lane on the field.",
+          "Demarcus Robinson, the losers' new pickup, put up a 0, their playoff odds slid to 1% this week, and the winners at least snapped a losing streak."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.97
+            },
+            {
+              "index": 1,
+              "yes": 0.72
+            },
+            {
+              "index": 2,
+              "yes": 0.91
+            }
+          ],
+          "input_tokens": 4910,
+          "error": null
+        }
+      }
+    ],
+    "next_week": [
+      {
+        "chapter": "next_week",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "NX.5v6.streak, NX.5v6.shootout and NX.5v6.cut state the streak on the line, the shootout and the game near the cut against Mitseeker5000."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "SW.5v6 gives Skol Daddy's playoff odds as 78% with a win and 40% with a loss."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "SW.5v6 gives Mitseeker5000's playoff odds as 95% with a win and 68% with a loss."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "NX.1v10.streak gives the 3-game win streak on the line, and NX.1v10.table says the game is at the top of the table."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "SW.1v10 gives puurdygood 99% with a win and 88% with a loss; 'holds either way' is a fair description."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "SW.1v10 gives Davlionman 86% with a win and 50% with a loss; one fact holds both teams' odds, so the contrast follows directly from it."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Skol Daddy puts its win streak on the line against Mitseeker5000 in a shootout near the cut.",
+          "A win puts their playoff odds at 78%, a loss drops them to 40%.",
+          "Their opponent sits at 95% playoff odds with a win and 68% with a loss.",
+          "puurdygood risks a 3-game win streak against Davlionman in a top-of-the-table game.",
+          "That side holds either way, at 99% or 88% playoff odds.",
+          "Their opponent has the real swing: 86% playoff odds with a win, 50% with a loss."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.92
+            },
+            {
+              "index": 1,
+              "yes": 0.83
+            },
+            {
+              "index": 2,
+              "yes": 0.91
+            },
+            {
+              "index": 3,
+              "yes": 0.93
+            },
+            {
+              "index": 4,
+              "yes": 0.81
+            },
+            {
+              "index": 5,
+              "yes": 0.59
+            }
+          ],
+          "input_tokens": 8017,
+          "error": null
+        }
+      }
+    ],
+    "rankings": [
+      {
+        "chapter": "rankings",
+        "code_failures": [
+          "[7] the sentence holds 3 numbers; the limit is 2",
+          "[10] the sentence holds 3 numbers; the limit is 2",
+          "[21] player Brenton Strange is not on a team in this chapter"
+        ],
+        "verdicts": [],
+        "passed": false,
+        "sentences": [
+          "Skol Daddy keeps the top spot on 3 straight wins, scoring 154.61 a week over that stretch.",
+          "Still just 5-5, they sit level with the last playoff spot with playoff odds of about 59%.",
+          "puurdygood climbs on a 12-point win that lifted them to 2nd in the standings.",
+          "Their most common finish is the 1st seed, with playoff odds around 95%.",
+          "Hock Tua 💦 won by 70 points and still slid a place, to 3rd.",
+          "Rankings have no sense of gratitude.",
+          "They still own 1st in the standings with a 7-3 record.",
+          "Bo Girds jumps 2 places after a 26-point win over the 4th-place team.",
+          "They sit just outside the playoff spots at 5-5, with playoff odds of about 57%.",
+          "Only one team has an easier road the rest of the way.",
+          "BobBuckstein rises 2 places off a 41-point beating of the 1st-place team.",
+          "That still leaves them 9th in the standings, with playoff odds near a coin flip at 53%.",
+          "The projections like them a lot more than their season pace does.",
+          "Mitseeker5000 tumbles 3 places after taking that 41-point loss.",
+          "They've scored 107.22 a week over the last 3 weeks, well off their season average.",
+          "The slide is real, but the cushion above the cut is still there.",
+          "kaiedmonds lost by 12 and fell to 8th in the standings, yet climbs these rankings anyway.",
+          "Losing your way up the table is a rare skill.",
+          "They project 135 a week from here, with playoff odds of about 58%.",
+          "Breece Mode holds 8th while sitting in the last playoff spot at 5-5.",
+          "Their scoring has sagged to 113.43 a week lately, well under the season average.",
+          "Owning a playoff spot with playoff odds of only about 34% is a strange place to live.",
+          "Davlionman drops 4 places off a 26-point loss.",
+          "They're still in a playoff spot at 6-4, with scoring that ranks 9th.",
+          "The record is doing more work than the scoreboard.",
+          "The Dart Side climbs 2 places on a 16-point win.",
+          "At 3-7 and last in the standings, playoff odds of about 1% feel generous.",
+          "VarsityBlue2 slips a place after losing by 16 to the last-place team.",
+          "They have dropped 2 straight and own the hardest remaining schedule in the league.",
+          "The Mean Machine finishes 12th on 3 straight losses.",
+          "Nothing about this lineup has been mean lately.",
+          "They sit 2 games below the cut with playoff odds of about 1%."
+        ],
+        "jev": null
+      },
+      {
+        "chapter": "rankings",
+        "code_failures": [],
+        "verdicts": [
+          {
+            "index": 0,
+            "supported": true,
+            "reason": "PR.5 gives 1st with no move, and S.5 gives the 5-5 record."
+          },
+          {
+            "index": 1,
+            "supported": true,
+            "reason": "H.5.streak gives 3 straight wins, and H.5.trend gives 154.61 per week over the last 3 weeks."
+          },
+          {
+            "index": 2,
+            "supported": true,
+            "reason": "S.5 says the team is level with the last playoff spot."
+          },
+          {
+            "index": 3,
+            "supported": true,
+            "reason": "PR.1 gives 2nd, up 2 places, and PR.1.why gives the 12-point win."
+          },
+          {
+            "index": 4,
+            "supported": true,
+            "reason": "S.2 gives the 7-3 record, 2 games above the cut."
+          },
+          {
+            "index": 5,
+            "supported": true,
+            "reason": "H.1.streak says won 3 straight."
+          },
+          {
+            "index": 6,
+            "supported": true,
+            "reason": "PR.8 gives 3rd, down 1, and PR.8.why gives the 70-point win."
+          },
+          {
+            "index": 7,
+            "supported": true,
+            "reason": "PR.8.why says the team moved down 1 place after the win."
+          },
+          {
+            "index": 8,
+            "supported": true,
+            "reason": "S.1 gives 1st in the standings with a 7-3 record."
+          },
+          {
+            "index": 9,
+            "supported": true,
+            "reason": "PR.7 gives 4th, up 2 places, and PR.7.why gives the 26-point win."
+          },
+          {
+            "index": 10,
+            "supported": true,
+            "reason": "S.7 gives 5-5, 1 spot outside the playoff spots."
+          },
+          {
+            "index": 11,
+            "supported": true,
+            "reason": "ODDS.7 gives about 57%; the coin-flip framing is commentary."
+          },
+          {
+            "index": 12,
+            "supported": true,
+            "reason": "PR.3.why gives a 41-point win over the 1st-place team."
+          },
+          {
+            "index": 13,
+            "supported": true,
+            "reason": "S.9 gives 9th in the standings, and PR.3 gives 5th in the power rankings, up 2 after the win."
+          },
+          {
+            "index": 14,
+            "supported": true,
+            "reason": "ODDS.3.why gives a 139 projection against a 123 pace."
+          },
+          {
+            "index": 15,
+            "supported": true,
+            "reason": "PR.6 gives 6th, down 3, and PR.6.why gives the 41-point loss."
+          },
+          {
+            "index": 16,
+            "supported": true,
+            "reason": "H.6.trend gives 107.22, down from a season average of 133.34."
+          },
+          {
+            "index": 17,
+            "supported": true,
+            "reason": "H.6.streak gives 2 straight losses, and S.3 gives 3rd in the standings."
+          },
+          {
+            "index": 18,
+            "supported": true,
+            "reason": "PR.9.why gives the 12-point loss, and PR.9 gives 7th, up 2."
+          },
+          {
+            "index": 19,
+            "supported": true,
+            "reason": "PR.9.why says standing fell from 6th to 8th."
+          },
+          {
+            "index": 20,
+            "supported": true,
+            "reason": "A reaction with no factual claim."
+          },
+          {
+            "index": 21,
+            "supported": true,
+            "reason": "PR.11 gives 8th with no move, and S.6 gives the last playoff spot."
+          },
+          {
+            "index": 22,
+            "supported": true,
+            "reason": "H.11.trend gives 113.43, down from the season average."
+          },
+          {
+            "index": 23,
+            "supported": true,
+            "reason": "ODDS.11 gives about 34%, and S.6 places the team in that spot."
+          },
+          {
+            "index": 24,
+            "supported": true,
+            "reason": "PR.10 gives 9th, down 4, and PR.10.why gives the 26-point loss."
+          },
+          {
+            "index": 25,
+            "supported": true,
+            "reason": "S.4 gives 4th with a 6-4 record."
+          },
+          {
+            "index": 26,
+            "supported": true,
+            "reason": "PR.12 gives 10th, up 2, and PR.12.why gives the 16-point win."
+          },
+          {
+            "index": 27,
+            "supported": true,
+            "reason": "PR.12.why says results over the last 3 weeks rose from 12th to 6th."
+          },
+          {
+            "index": 28,
+            "supported": true,
+            "reason": "S.12 gives 12th with a 3-7 record, and 12th of 12 reads as last."
+          },
+          {
+            "index": 29,
+            "supported": true,
+            "reason": "PR.2 gives 11th, and PR.2.why gives a loss to The Dart Side, the 12th-place team."
+          },
+          {
+            "index": 30,
+            "supported": true,
+            "reason": "H.2.trend gives 98.17 per week over the last 3 weeks."
+          },
+          {
+            "index": 31,
+            "supported": true,
+            "reason": "ODDS.2.why gives the hardest remaining schedule."
+          },
+          {
+            "index": 32,
+            "supported": true,
+            "reason": "PR.4 gives 12th, and H.4.streak gives 3 straight losses."
+          },
+          {
+            "index": 33,
+            "supported": true,
+            "reason": "A joke backed by PR.4's 0-3 recent record; no new factual claim."
+          }
+        ],
+        "passed": true,
+        "sentences": [
+          "Skol Daddy holds 1st in the power rankings on a 5-5 record.",
+          "They've won 3 straight, averaging 154.61 over that stretch.",
+          "Still only level with the last playoff spot, somehow.",
+          "puurdygood climbs to 2nd after a 12-point win.",
+          "Their 7-3 record sits 2 games above the cut.",
+          "They've won 3 straight.",
+          "Hock Tua 💦 slips to 3rd despite a 70-point beatdown.",
+          "Even a blowout win could not stop the slide.",
+          "They still lead the actual standings at 7-3.",
+          "Bo Girds jumps to 4th off a 26-point win.",
+          "At 5-5, they sit 1 spot outside the playoff spots.",
+          "Their playoff odds are a coin flip with a lean, about 57%.",
+          "BobBuckstein beat the 1st-place team by 41 points.",
+          "That lifts a 9th-place team up to 5th in these rankings.",
+          "They project 139 a week from here, well above their 123 pace.",
+          "Mitseeker5000 tumbles to 6th after a blowout loss.",
+          "Their last 3 weeks average 107.22, a long way down from the season mark.",
+          "That's 2 straight losses for a team still 3rd in the standings.",
+          "kaiedmonds lost by 12 and somehow rose to 7th.",
+          "The actual standings went the other way, from 6th to 8th.",
+          "Explain that one.",
+          "Breece Mode holds at 8th while sitting in the last playoff spot.",
+          "Their scoring over the last 3 weeks is down to 113.43 a week.",
+          "Their playoff odds sit at about 34% despite holding that spot.",
+          "Davlionman slides to 9th after a 26-point loss.",
+          "They're still 4th in the real standings at 6-4.",
+          "The Dart Side climbs to 10th off a 16-point win.",
+          "Their recent results rank jumped from 12th to 6th.",
+          "Still 3-7 and dead last in the standings, though.",
+          "VarsityBlue2 falls to 11th after losing to the last-place team.",
+          "They've scored 98.17 a week over the last 3 weeks.",
+          "The hardest remaining schedule in the league awaits.",
+          "The Mean Machine is 12th, losers of 3 straight.",
+          "The name promises menace, and the lineup has delivered none of it lately."
+        ],
+        "jev": {
+          "model": "jev-1.14.0",
+          "answers": [
+            {
+              "index": 0,
+              "yes": 0.98
+            },
+            {
+              "index": 1,
+              "yes": 0.89
+            },
+            {
+              "index": 2,
+              "yes": 0.88
+            },
+            {
+              "index": 3,
+              "yes": 0.96
+            },
+            {
+              "index": 4,
+              "yes": 0.9
+            },
+            {
+              "index": 5,
+              "yes": 0.78
+            },
+            {
+              "index": 6,
+              "yes": 0.8
+            },
+            {
+              "index": 7,
+              "yes": 0.71
+            },
+            {
+              "index": 8,
+              "yes": 0.87
+            },
+            {
+              "index": 9,
+              "yes": 0.9
+            },
+            {
+              "index": 10,
+              "yes": 0.81
+            },
+            {
+              "index": 11,
+              "yes": 0.88
+            },
+            {
+              "index": 12,
+              "yes": 0.29
+            },
+            {
+              "index": 13,
+              "yes": 0.85
+            },
+            {
+              "index": 14,
+              "yes": 0.84
+            },
+            {
+              "index": 15,
+              "yes": 0.81
+            },
+            {
+              "index": 16,
+              "yes": 0.87
+            },
+            {
+              "index": 17,
+              "yes": 0.94
+            },
+            {
+              "index": 18,
+              "yes": 0.92
+            },
+            {
+              "index": 19,
+              "yes": 0.85
+            },
+            {
+              "index": 20,
+              "yes": 0.92
+            },
+            {
+              "index": 21,
+              "yes": 0.91
+            },
+            {
+              "index": 22,
+              "yes": 0.86
+            },
+            {
+              "index": 23,
+              "yes": 0.87
+            },
+            {
+              "index": 24,
+              "yes": 0.89
+            },
+            {
+              "index": 25,
+              "yes": 0.82
+            },
+            {
+              "index": 26,
+              "yes": 0.95
+            },
+            {
+              "index": 27,
+              "yes": 0.96
+            },
+            {
+              "index": 28,
+              "yes": 0.79
+            },
+            {
+              "index": 29,
+              "yes": 0.73
+            },
+            {
+              "index": 30,
+              "yes": 0.82
+            },
+            {
+              "index": 31,
+              "yes": 0.76
+            },
+            {
+              "index": 32,
+              "yes": 0.97
+            },
+            {
+              "index": 33,
+              "yes": 0.8
+            }
+          ],
+          "input_tokens": 11090,
+          "error": null
+        }
+      }
+    ]
+  }
+}
