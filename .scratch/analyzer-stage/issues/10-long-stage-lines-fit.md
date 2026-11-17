@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-33 and AT-34.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] Each stage line has the computed font size of `text-body`.
 - [ ] At 375 px with trade B, a line wider than the hero scrolls until its end is in view, within its 2.5 s.
