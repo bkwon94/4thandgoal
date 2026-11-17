@@ -106,6 +106,20 @@ describe("TradeForm", () => {
     expect(addPlayer("Your Team").disabled).toBe(true);
   });
 
+  it("keeps the bar off until the teams arrive, so a grade never starts with an empty stage (AT-29)", () => {
+    cleanup();
+    // A link fills the Stack before the rosters arrive. The trade is complete, but the stage and the lines need the teams.
+    const prefill = [
+      { id: 0, rosterId: 4, gets: [{ playerId: "p4", fromSide: 1 }] },
+      { id: 1, rosterId: 12, gets: [{ playerId: "p1", fromSide: 0 }] },
+    ];
+    const props = { target: apiTarget, finderOn, passphrase: "localtest", onUnauthorized, prefill };
+    const { rerender } = render(<TradeForm teams={[]} {...props} />);
+    expect(submit().disabled).toBe(true);
+    rerender(<TradeForm teams={TEAMS} {...props} />);
+    expect(submit().disabled).toBe(false);
+  });
+
   it("shows each team with its avatar, name, and manager in the team sheet", async () => {
     fireEvent.click(slot("Your Team"));
     const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");

@@ -194,7 +194,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
 
   const asker = sides[0].rosterId;
   const myTeam = teamOf(teams, asker);
-  const ready = everySideTrades(sides);
+  // A link can fill a whole trade before the rosters arrive. The stage and the stage lines read the teams, so a grade
+  // that starts before them shows an empty stage and names "Your Team" in place of a manager. The bar waits for the teams.
+  const ready = teams.length > 0 && everySideTrades(sides);
   // The finder grades two sides, so it hides once the trade has a third side.
   const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.

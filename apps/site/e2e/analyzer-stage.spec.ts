@@ -54,8 +54,9 @@ test.afterAll(async () => {
 
 /* The analyzer with a stored passphrase, so no dialog covers the page. The teams route answers with the real rosters,
    and every other call off this machine fails, so no test reaches the live API. `onAnalyze` gets the held POST of the
-   grade, so a test of the reveal can answer it when it chooses. */
-async function openAnalyzer(page: Page, query = "", theme: Theme = "dark", onAnalyze?: (route: Route) => void) {
+   grade, so a test of the reveal can answer it when it chooses. `teamsAfterMs` holds the real rosters back for that
+   long, as a cold teams route of the API does on a first load. */
+async function openAnalyzer(page: Page, query = "", theme: Theme = "dark", onAnalyze?: (route: Route) => void, teamsAfterMs = 0) {
   await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
@@ -67,7 +68,9 @@ async function openAnalyzer(page: Page, query = "", theme: Theme = "dark", onAna
     if (held) return;
     if (!path.endsWith("/teams")) return route.abort();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
-    return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body: JSON.stringify({ teams: TEAMS }) });
+    const answer = () => route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body: JSON.stringify({ teams: TEAMS }) });
+    if (teamsAfterMs > 0) return void setTimeout(() => void answer().catch(() => undefined), teamsAfterMs);
+    return answer();
   });
   await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
   await openPage(page, `${server.url}/analyze/${query}`, theme);
@@ -442,6 +445,26 @@ test.describe("the wait, with motion on", () => {
       expect(other).toEqual(trade.give.map((id) => playerName(trade.team, id)));
     });
   }
+
+  test(`stage rise: ${CLIENT} on a cold load with slow teams, the headshots rise within 1 s of the tap and no line names a side title, 375px (AT-29)`, async ({ page }) => {
+    const trade = stageTrade(TEAMS);
+    await page.setViewportSize({ width: 375, height: 900 });
+    // The rosters arrive 2 s after the page opens. The reader taps "Grade the Trade" as soon as it turns on.
+    await openAnalyzer(page, stageQuery(), "light", undefined, 2000);
+    const { elapsed } = await tapAndTimeTokens(page, trade.get.length + trade.give.length);
+    console.log(`stage rise cold: ${CLIENT}: the last token at rest ${elapsed.toFixed(0)} ms after the tap`);
+    expect(elapsed).toBeLessThanOrEqual(1000);
+    // The stage lines are fixed when the wait starts, so each named line names a real team, manager, or player.
+    const lines = new Set<string>();
+    for (let t = 0; t < 5600; t += 250) {
+      const line = await page.locator(`${WAIT_HERO} .t-think-text:last-child`).textContent();
+      if (line) lines.add(line);
+      await page.waitForTimeout(250);
+    }
+    console.log(`stage rise cold: ${CLIENT}: lines ${[...lines].join(" / ")}`);
+    expect([...lines].filter((line) => /Your Team|Team Two/.test(line))).toEqual([]);
+    expect(lines.size).toBeGreaterThanOrEqual(3);
+  });
 
   for (const width of [375, 768, 1280]) {
     test(`stage big: ${CLIENT} trade B shows 3 rows, and The Blue Tent shows 3 headshots and +2, ${width}px (AT-27)`, async ({ page }, info) => {
