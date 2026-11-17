@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-2, AT-20, AT-27, AT-
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] In idle with trade T, the rows show "2 players" and "1 player", and the hero shows no headshot.
 - [x] Within 1 s of the tap on "Grade the Trade", each row of trade T shows the headshots of the players it gets.
