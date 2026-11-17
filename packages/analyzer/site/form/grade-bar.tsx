@@ -1,6 +1,6 @@
 /**
- * The "Grade the Trade" bar: one wide button fixed at the bottom of the screen.
- * It stays in reach at every scroll, and the analyzer page keeps the same space free under the page, so the bar covers no content.
+ * The "Grade the Trade" bar: one wide button that sticks at the bottom of the screen inside its parent.
+ * It stays in reach while the parent is in view, and it rests at the end of the parent after that, so it covers no content below.
  * The button wears the Ready halo, after the method of the Send Halo item: a ring that glows brighter as the trade fills.
  */
 "use client";
@@ -16,7 +16,7 @@ type GradeBarProps = {
 
 export function GradeBar({ ready, grading, level, onGrade }: GradeBarProps) {
   return (
-    <div className="fixed inset-x-sp-3 bottom-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))] z-30 mx-auto max-w-page">
+    <div className="sticky bottom-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))] z-30 mx-auto mt-sp-4 max-w-page">
       <div className="relative">
         {/* The Ready halo: an accent ring 2px out from the button, with the brand glow around it. Its opacity is the level,
             so the brightness tells how close the trade is to ready. The accent fill holds 3 to 1 against the page in both
