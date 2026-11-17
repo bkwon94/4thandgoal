@@ -10,7 +10,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-4 and AT-26.
 
 **Status:** ready-for-agent
 
-- [ ] Only the wrapper imports `@ui-sdk`, and the rule test of ADR 0035 passes.
-- [ ] A keyboard tap on "Grade the Trade" with trade T gives `aria-busy="true"` and `data-pending`, and the focus stays on the button through the wait.
-- [ ] The label stays "Grade the Trade" while the button is pending.
-- [ ] The network log of a grade shows one `POST` to the analyze route with a JSON response.
+- [x] Only the wrapper imports `@ui-sdk`, and the rule test of ADR 0035 passes.
+- [x] A keyboard tap on "Grade the Trade" with trade T gives `aria-busy="true"` and `data-pending`, and the focus stays on the button through the wait.
+- [x] The label stays "Grade the Trade" while the button is pending.
+- [x] The network log of a grade shows one `POST` to the analyze route with a JSON response.

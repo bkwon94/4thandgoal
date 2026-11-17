@@ -345,9 +345,35 @@ describe("TradeForm", () => {
     expect(await screen.findByText("Grading the Trade")).toBeTruthy();
     expect(screen.getByText("This can take up to a minute.")).toBeTruthy();
     expect(screen.queryByText(/chart/i)).toBeNull();
-    const busy = screen.getByRole("button", { name: "Grading…" }) as HTMLButtonElement;
-    expect(busy.disabled).toBe(true);
+    // The label stays while the grade runs, and the button stays pending instead of natively disabled.
+    expect(screen.queryByRole("button", { name: "Grading…" })).toBeNull();
+    expect(submit().getAttribute("aria-busy")).toBe("true");
+  });
+
+  it("keeps focus on the grade button, with its label, through the wait (AT-4)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    submit().focus();
+    fireEvent.click(submit());
+    await screen.findByRole("region", { name: "Grading the Trade" });
+    const busy = submit();
     expect(busy.getAttribute("aria-busy")).toBe("true");
+    expect(busy.hasAttribute("data-pending")).toBe(true);
+    expect(busy.getAttribute("aria-disabled")).toBe("true");
+    expect(busy.textContent).toBe("Grade the Trade");
+    expect(document.activeElement).toBe(busy);
+  });
+
+  it("sends one POST to the analyze route with a JSON body and takes a JSON response (AT-26)", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    await waitFor(() => expect(fetchStub).toHaveBeenCalledTimes(1));
+    const [url, init] = fetchStub.mock.calls[0];
+    expect(String(url)).toContain("/analyze");
+    expect(init.method).toBe("POST");
+    expect(() => JSON.parse(init.body)).not.toThrow();
+    expect(new Headers(init.headers).get("content-type")).toContain("application/json");
   });
 
   it("folds the form to a line of faces and puts the grading hero in place of the title while the grade runs", async () => {
