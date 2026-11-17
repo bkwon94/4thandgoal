@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-1, AT-2, AT-16, and 
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] With an empty Stack, two screenshots 2 s apart show the same flat mesh.
 - [x] After the add of Kenneth Walker III to the side of Bo Girds, the hero shows his name.
