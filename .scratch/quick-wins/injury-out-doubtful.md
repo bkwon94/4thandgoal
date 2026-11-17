@@ -41,8 +41,26 @@ Test verdict: pending
 
 Done condition: The injury fact of the trade fact sheet and of the sell high sheet names an injury only as the rule of item 1 reads it, gives the latest NFL practice status of the trade week in place of a Sleeper Out that has no NFL game status yet, and holds no count of injury report weeks.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `d02c82e9`, `uv run --exact --package cornerstone pytest -q -p no:xdist apps/pipeline/tests/test_measures.py -k test_the_injury_facts_name_only`
+
+```text
+FAILED ...[a stale sleeper out with no trade week row says the status is from the last game]
+FAILED ...[a stale sleeper out with a practice row gives the practice status]
+FAILED ...[a trade week Questionable is a plain status]
+FAILED ...[a trade week Doubtful counts]
+FAILED ...[a sleeper IR with no near return counts]
+FAILED ...[past report weeks alone give no count]
+6 failed, 214 deselected
+E  + Matthew Golden is listed Out now, with no return week on file.
+E  + Matthew Golden has no injury status now. He was on the NFL injury report in 5 weeks this season before the trade.
+```
+
+Green: at `c3da67a6`, `uv run --exact --package cornerstone pytest -q -p no:xdist apps/pipeline/tests/test_measures.py -k test_the_injury_facts_name_only`
+
+```text
+6 passed, 214 deselected in 0.88s
+```
+
 Test verdict: pending
 
 ### 3. The Week line reads the NFL game status of the trade week
