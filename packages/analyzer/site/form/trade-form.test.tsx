@@ -404,7 +404,7 @@ describe("TradeForm", () => {
     expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("Grading the Trade");
     expect(slotText(hero, "meta")).toBe("This can take up to a minute.");
     const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    expect(within(feature).getByRole("status").getAttribute("aria-busy")).toBe("true");
+    expect(feature.querySelector("[aria-busy=true]")).not.toBeNull();
   });
 
   it("shows the loading line while the grade runs", async () => {
@@ -440,10 +440,14 @@ describe("TradeForm", () => {
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     const line = hero.querySelector(".t-think-text:last-child") as HTMLElement;
     expect(line.textContent).toBe("Weighing the sides");
-    // The lines sit inside a part that a screen reader skips. The status keeps its one label.
+    // The lines sit inside a part that a screen reader skips. The page holds one status, the pending announcement of
+    // the grade button, so a screen reader hears one message.
     expect(line.closest("[aria-hidden=true]")).not.toBeNull();
-    const status = within(hero).getByRole("status");
-    expect(status.getAttribute("aria-label")).toBe("Grading the Trade");
+    expect(within(hero).queryByRole("status")).toBeNull();
+    await screen.findByText("Grading the trade", {}, { timeout: 2500 });
+    const statuses = screen.getAllByRole("status");
+    expect(statuses.map((status) => status.textContent)).toEqual(["Grading the trade"]);
+    expect(statuses[0].hasAttribute("aria-label")).toBe(false);
     expect(within(hero).queryByText("Weighing the sides", { ignore: "[aria-hidden=true] *" })).toBeNull();
   });
 
@@ -483,7 +487,7 @@ describe("TradeForm", () => {
     await pickTrade(TRADE);
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
-    expect(within(hero).getByRole("status").getAttribute("aria-busy")).toBe("true");
+    expect(hero.querySelector("[aria-busy=true]")).not.toBeNull();
     expect(screen.queryByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeNull();
     expect(screen.queryByRole("region", { name: "Who gets what" })).toBeNull();
     // The stage of the hero shows the trade, so no fold line repeats it above the hero.

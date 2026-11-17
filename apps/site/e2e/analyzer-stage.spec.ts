@@ -305,6 +305,19 @@ test.describe("the wait, with motion on", () => {
     });
   }
 
+  test(`wait status: ${CLIENT} the accessibility tree holds one status, "Grading the trade", at 2 s and at 7 s, 375px (AT-9)`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    await openAnalyzer(page, stageQuery());
+    await page.getByRole("button", { name: "Grade the Trade" }).click();
+    await expect(page.locator(WAIT_HERO)).toBeVisible();
+    for (const wait of [2000, 5000]) {
+      await page.waitForTimeout(wait);
+      const statuses = (await page.locator("body").ariaSnapshot()).split("\n").filter((line) => /^\s*- status\b/.test(line));
+      console.log(`wait status: ${CLIENT}: ${statuses.map((line) => line.trim()).join(" | ")}`);
+      expect(statuses.map((line) => line.trim())).toEqual(["- status: Grading the trade"]);
+    }
+  });
+
   test(`wait dips: ${CLIENT} the mesh dips under each side in turn, about 1.25 s each, 1280px (AT-5)`, async ({ browser }, info) => {
     // A page of its own records a video of the wait, which is the recording of AT-5.
     const context = await browser.newContext({

@@ -91,7 +91,8 @@ type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "pla
 
 /* The hero while the grade runs, in the hero slots: Live, the title, the line, and the wait as the feature.
    The read that replaces it opens with a level-two heading, so this title is level two too. The stage lines run under
-   the title, in a part of their own. A screen reader skips them and hears the one label of the status. The trade stays
+   the title, in a part of their own. A screen reader skips them. The page holds one status, the pending announcement
+   "Grading the trade" of the grade button, so the hero holds none, and a screen reader hears one message. The trade stays
    on the stage, and the mesh weighs each side in turn under it, so the wait shows what the grade does. The drive starts
    with the hero, so the mesh moves on the first frame after the tap. The trade is read once, because the grade locks
    the form. With motion off, the mesh stays still and flat. */
@@ -107,7 +108,9 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
       title="Grading the Trade"
       meta="This can take up to a minute."
       feature={
-        <div role="status" aria-busy="true" aria-label="Grading the Trade">
+        // aria-busy marks the wait part as busy until the grade replaces it. It has no role, because the grade button
+        // holds the one status of the wait.
+        <div aria-busy="true">
           <div aria-hidden="true" className="flex flex-col gap-sp-5">
             <StageLines lines={lines} />
             {/* The headshots go up to the stage on the tap, so the trade on the scale is the one the reader built. */}

@@ -159,8 +159,8 @@ describe("Reduced motion", () => {
     await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
     await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
-    const status = screen.getByRole("status");
-    expect(status.getAttribute("aria-busy")).toBe("true");
+    const status = screen.getByRole("region", { name: "Grading the Trade" }).querySelector("[aria-busy=true]") as HTMLElement;
+    expect(status).not.toBeNull();
     // The track is aria-hidden, so the query must include hidden elements to find the sweep if it existed. An image with no alt is presentation too, so the query skips images.
     expect(within(status).queryAllByRole("presentation", { hidden: true }).filter((el) => el.tagName !== "IMG")).toEqual([]);
   });
@@ -173,7 +173,7 @@ describe("Reduced motion", () => {
     await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
     await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
-    const tokens = [...screen.getByRole("status").querySelectorAll("[data-mesh-hole][title]")] as HTMLElement[];
+    const tokens = [...screen.getByRole("region", { name: "Grading the Trade" }).querySelectorAll("[data-mesh-hole][title]")] as HTMLElement[];
     expect(tokens.map((token) => token.title)).toEqual(["Ben One", "Ana One"]);
     for (const token of tokens) {
       expect(token.style.transform).toBe("");
