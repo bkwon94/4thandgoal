@@ -5,7 +5,7 @@
  * A hero is a `section` that carries the hero texture. HeroFrame renders a section whose art layer, a direct child
  * with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
  * names both. A text of a hero is each element of the hero that holds a visible text node of its own, outside an
- * aria-hidden part and outside an SVG. Its box is the box of each line of its text, not the box of the element.
+ * SVG. An aria-hidden text counts, because a sighted reader still reads it. Its box is the box of each line of its text, not the box of the element.
  */
 import { DARK_CLASS, THEME_KEY, type Theme } from "@cpc/design/lib/theme";
 import AxeBuilder from "@axe-core/playwright";
@@ -24,9 +24,9 @@ const TARGET_SELECTOR =
 export const HERO_SELECTOR = 'section:has(> [aria-hidden="true"] > [data-hero-art="texture"]), section.hero-texture';
 /* Every hero text reaches 4.5 to 1, large or not (ADR 0036), so a glow that grows can never pass a title at 3 to 1. */
 export const HERO_MIN_RATIO = 4.5;
-/* The reasons of an axe incomplete result that the pixel scan of a hero can judge: art under the text. axe names them
-   with these message keys. An incomplete result with any other reason, or outside a hero, still fails. */
-const PIXEL_REASONS = ["bgImage", "bgGradient", "bgOverlap"];
+/* The reasons of an axe incomplete result that the pixel scan of a hero can judge: art under the text, and a text so
+   short, such as one digit, that axe does not rate it. axe names them with these message keys. An incomplete result with any other reason, or outside a hero, still fails. */
+const PIXEL_REASONS = ["bgImage", "bgGradient", "bgOverlap", "shortTextContent"];
 
 export type TextScan = { failures: string[]; prose: number; other: number };
 export type TargetScan = { failures: string[]; exempt: string[] };
@@ -124,7 +124,7 @@ function inPage({ scan, limits, scope }: InPage): unknown {
       const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
         const el = node.parentElement;
-        if (!el || !node.textContent?.trim() || el.closest('[aria-hidden="true"], svg') || !visible(el)) continue;
+        if (!el || !node.textContent?.trim() || el.closest("svg") || !visible(el)) continue;
         const clips: DOMRect[] = [];
         for (let up: Element | null = el; up && up !== hero.parentElement; up = up.parentElement) {
           const style = getComputedStyle(up);
@@ -230,12 +230,12 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
     [...node.any, ...node.all, ...node.none].map((check) => (check.data as { messageKey?: string } | null)?.messageKey).find(Boolean);
   const candidates = result.incomplete.flatMap((rule) => rule.nodes).filter((node) => PIXEL_REASONS.includes(reason(node) ?? ""));
   // A target of one selector names a node of the page itself. A longer target crosses a frame or a shadow root, and no hero sits there.
-  // A node in an aria-hidden part or an SVG keeps its line, because the pixel scan does not read that text.
+  // A node in an SVG keeps its line, because the pixel scan does not read that text. An aria-hidden text is read.
   const inHero = await page.evaluate(
     ([targets, selector]) =>
       targets.map((target) => {
         const node = target.length === 1 ? document.querySelector(target[0]) : null;
-        return node !== null && node.closest(selector) !== null && node.closest('[aria-hidden="true"], svg') === null;
+        return node !== null && node.closest(selector) !== null && node.closest("svg") === null;
       }),
     [candidates.map((node) => node.target.map(String)), HERO_SELECTOR] as const,
   );

@@ -188,10 +188,10 @@ const LEAN_ANSWER: Record<Lean, "yes" | "no" | "not_as_is"> = {
 const SCALE: readonly Lean[] = ["Pass", "Lean no", "Gut call", "Lean yes", "Send it"];
 
 /* The 5-step scale under the Lean word. The lit step carries aria-current, so a screen reader hears which step the Lean is.
-   The scale sits on the hero, so each color is a hero role. The plate keeps the glow and the grid off the labels. */
+   The scale sits on the hero, so each color is a hero role. The glow stays low in the corner, off the labels (ADR 0036). */
 function LeanScale({ lean }: { lean: Lean }) {
   return (
-    <ol aria-label="The Lean scale" className="plate m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1">
+    <ol aria-label="The Lean scale" className="m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1">
       {SCALE.map((step) => {
         const lit = step === lean;
         return (
@@ -214,13 +214,13 @@ function LeanScale({ lean }: { lean: Lean }) {
 
 /* The Case under the scale. A phone clamps it to 3 lines, so the page stays short, and the button opens the rest.
    From the tablet tier the Case shows in full and the button hides. The button goes once the Case is open, because
-   nothing is left to read. The plate sits on the wrapper, so the clamp clips the text and not the plate. */
+   nothing is left to read. The wrapper holds the text, so the clamp clips only the text. */
 function CaseText({ readCase }: { readCase: string }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (
     <div className="flex flex-col items-start gap-sp-1">
-      <div className="plate max-w-measure">
+      <div className="max-w-measure">
         <p
           id={id}
           className={cn("m-0 text-lead leading-body text-on-dark-2", !open && "max-tablet:line-clamp-3")}
@@ -235,7 +235,7 @@ function CaseText({ readCase }: { readCase: string }) {
           aria-expanded={false}
           aria-controls={id}
           onClick={() => setOpen(true)}
-          className="press plate min-h-touch cursor-pointer text-meta font-bold text-accent-text underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text tablet:hidden"
+          className="press min-h-touch cursor-pointer text-meta font-bold text-accent-text underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text tablet:hidden"
         >
           Read the full case
         </button>

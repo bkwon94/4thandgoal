@@ -20,12 +20,12 @@ function changeWords(change: number): string {
   return change > 0 ? `up ${change}` : `down ${Math.abs(change)}`;
 }
 
-/* The small caps line of the hero, such as the "GRADE" label. Each text line of a hero sits on a plate, so the grid
-   and the glow never sit under a letter and axe can read the contrast (ticket 04). */
-const HERO_CAPS = "plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
+/* The small caps line of the hero, such as the "GRADE" label. The glow stays low in the corner, off each
+   text line of a hero, so a line needs no plate (ADR 0036). */
+const HERO_CAPS = "w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
 
 /* The chip of one week. A win takes the brand fill and a loss the raised fill of the hero. A bye or a tie has no
-   result, so it shows a dash. Each chip has its own fill, so it needs no plate. The week number sits under the chip. */
+   result, so it shows a dash. Each chip has its own fill. The week number sits under the chip. */
 function WeekChip({ week }: { week: SeasonWeek }) {
   const letter = week.won === null ? "—" : week.won ? "W" : "L";
   return (
@@ -40,7 +40,7 @@ function WeekChip({ week }: { week: SeasonWeek }) {
       >
         {letter}
       </span>
-      <span className="plate font-mono text-meta leading-none text-on-dark-2 tabular-nums">{week.week}</span>
+      <span className="font-mono text-meta leading-none text-on-dark-2 tabular-nums">{week.week}</span>
     </li>
   );
 }
@@ -84,18 +84,18 @@ export function ManagerHero({
               </div>
               <div className="mt-sp-2 flex flex-wrap items-center gap-x-sp-5 gap-y-sp-2">
                 {/* The letter opens the grade popover, which says what each part of the grade ranks.
-                    The leading stays at 1, so the plate of the letter holds its whole glyph box and axe can read it. */}
+                    The leading stays at 1, so the letter keeps its own line box. */}
                 <div className="font-mono text-hero leading-none font-bold">
                   {grade ? (
                     <GradePopover grade={grade} teams={teams} />
                   ) : (
-                    <span aria-label="No grade" className="plate">
+                    <span aria-label="No grade">
                       —
                     </span>
                   )}
                 </div>
                 {grade && (
-                  <div className="plate max-w-measure min-w-0 flex-1 text-lead leading-body text-on-dark-2">{grade.read}</div>
+                  <div className="max-w-measure min-w-0 flex-1 text-lead leading-body text-on-dark-2">{grade.read}</div>
                 )}
               </div>
             </div>

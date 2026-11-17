@@ -119,6 +119,29 @@ test("hero text that the glow makes faint fails, and the failure names the hero,
   ]);
 });
 
+test("a short text of a hero, which axe cannot judge, is rated on its pixels, and a short text outside a hero still fails", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Chips", "#ff4040", `<p style="font-size:16px;color:#f5f5f5">A clear line.</p><span class="chip" style="display:block;font-size:16px;color:#7a7a7a">7</span><span class="ok" style="display:block;font-size:16px;color:#ffffff">8</span>`)}
+    <p class="short" style="color:#777">7</p>
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual(
+    expect.arrayContaining([expect.stringMatching(/^pixel: hero "Chips" span\.chip "7" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/)]),
+  );
+  expect(failures.filter((line) => line.startsWith("pixel:"))).toHaveLength(1);
+  expect(failures).toEqual(expect.arrayContaining([expect.stringMatching(/^incomplete: \.short .*too short/)]));
+});
+
+test("an aria-hidden text of a hero is rated on its pixels", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main style="background:#fff">
+    ${hero("Art text", "#ff4040", `<p style="font-size:16px;color:#f5f5f5">A clear line.</p><div aria-hidden="true" class="art" style="font-size:48px;color:#9a9a9a">404</div>`)}
+  </main>`);
+  const failures = await scanContrast(page);
+  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Art text" div\.art "404" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/)]);
+});
+
 test("a hero where the pixel scan finds no text fails and names the hero", async ({ page }) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">

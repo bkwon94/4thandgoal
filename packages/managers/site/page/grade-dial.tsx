@@ -38,11 +38,11 @@ function arcName(part: GradePart, teams: number): string {
 }
 
 /* The colors of each tone. The hero tone sits on the band color of a hero in both themes, so its text takes the on-dark
-   roles on a plate, as every hero text does, and an unlit blade takes the rule color of the hero.
+   roles, and an unlit blade takes the rule color of the hero.
    The wait color is the unlit color, spelled in full so Tailwind finds the class. */
 const TONES = {
-  page: { off: "bg-bar-off", wait: "group-data-[wait]:bg-bar-off", ink: "text-ink", mute: "text-mute", plate: "" },
-  hero: { off: "bg-rule-dark", wait: "group-data-[wait]:bg-rule-dark", ink: "text-on-dark", mute: "text-on-dark-2", plate: "plate" },
+  page: { off: "bg-bar-off", wait: "group-data-[wait]:bg-bar-off", ink: "text-ink", mute: "text-mute" },
+  hero: { off: "bg-rule-dark", wait: "group-data-[wait]:bg-rule-dark", ink: "text-on-dark", mute: "text-on-dark-2" },
 } as const;
 
 type Tone = keyof typeof TONES;
@@ -88,14 +88,14 @@ function Arc({ part, teams, size, off, tone }: ArcProps) {
         })}
         {/* The rank sits in the open end of the arc, so a reader gets the rank without a count of blades. */}
         <div className="absolute inset-x-0 bottom-0 flex flex-col items-center leading-none">
-          <span className={cn("font-extrabold tabular-nums", colors.ink, colors.plate, large ? "text-score" : "text-row")}>
+          <span className={cn("font-extrabold tabular-nums", colors.ink, large ? "text-score" : "text-row")}>
             {ordinal(part.rank)}
           </span>
-          {large && <span className={cn("mt-sp-1 text-meta tabular-nums", colors.mute, colors.plate)}>{`of ${teams}`}</span>}
+          {large && <span className={cn("mt-sp-1 text-meta tabular-nums", colors.mute)}>{`of ${teams}`}</span>}
         </div>
       </div>
-      <div className={cn("mt-sp-2 text-meta leading-tight font-semibold", colors.ink, colors.plate)}>{PART_NAMES[part.key]}</div>
-      <div className={cn("text-meta leading-tight tabular-nums", colors.mute, colors.plate)}>
+      <div className={cn("mt-sp-2 text-meta leading-tight font-semibold", colors.ink)}>{PART_NAMES[part.key]}</div>
+      <div className={cn("text-meta leading-tight tabular-nums", colors.mute)}>
         {large ? `${GRADE_WEIGHTS[part.key]}% of the grade` : `${GRADE_WEIGHTS[part.key]}%`}
       </div>
     </div>

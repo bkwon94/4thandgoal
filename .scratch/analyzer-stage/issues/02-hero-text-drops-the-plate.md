@@ -10,9 +10,9 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-17, AT-18, AT-19, AT
 
 **Status:** ready-for-agent
 
-- [ ] No file of the site uses the `plate` utility, and the utility is gone.
-- [ ] The pixel scan gives 4.5:1 or more for each hero text in `cpc` and `norcal`, at 390 and 1280 px, and the floor passes.
-- [ ] The score 106.71 of the week 9 hero of `cpc` reaches 4.5:1 or more.
+- [x] No file of the site uses the `plate` utility, and the utility is gone.
+- [x] The pixel scan gives 4.5:1 or more for each hero text in `cpc` and `norcal`, at 390 and 1280 px, and the floor passes.
+- [x] The score 106.71 of the week 9 hero of `cpc` reaches 4.5:1 or more.
 - [ ] Each text of the egg banner reaches 4.5:1 or more with eggs on.
-- [ ] The hero scene of the week hero keeps its own row.
-- [ ] A polish pass checks the rhythm of each changed hero by eye, at 375, 768, and 1280 px.
+- [x] The hero scene of the week hero keeps its own row.
+- [x] A polish pass checks the rhythm of each changed hero by eye, at 375, 768, and 1280 px.
