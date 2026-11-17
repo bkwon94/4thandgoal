@@ -58,11 +58,12 @@ function PlayerChip({ player, move, ranks }: { player: TradedPlayer; move?: Move
   const line = ranks ? rankLine(player) : null;
   return (
     <li className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center">
-      {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative. */}
+      {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative.
+          max-w-none lifts the max-width of 100% that the base styles set on each image, so the frame stretches into the side margins of the chip. */}
       <Headshot
         src={player.headshot}
         lazy
-        className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot self-stretch border-b-2 border-accent bg-linear-to-b from-card to-page object-contain object-bottom"
+        className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot max-w-none self-stretch border-b-2 border-accent bg-linear-to-b from-card to-page object-contain object-bottom"
       />
       <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>
       <span className="py-sp-1 text-meta text-mute">
