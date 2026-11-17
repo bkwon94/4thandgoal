@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-3, AT-5, AT-15, AT-2
 
 **Blocked by:** 04, 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Within 100 ms of the tap on "Grade the Trade", the mesh moves and "Weighing the sides" shows.
 - [x] A recording of 5 s of the wait shows a dip under the side of Bo Girds, then under the side of Teehee, about 1.25 s each.
