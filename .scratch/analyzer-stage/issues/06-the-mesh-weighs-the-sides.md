@@ -15,4 +15,8 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-3, AT-5, AT-15, AT-2
 - [x] At 375 px with a 4x CPU slowdown, no frame of the wait takes longer than 50 ms after the first second.
 - [x] Each analyzer hero text reaches 4.5:1 or more over 10 samples in 3 s of the wait, in `cpc` and `norcal`, at 390 and 1280 px.
 - [x] The Finder wait of `norcal` shows the `Sweep` bar and no mesh.
-- [ ] The design bar skills ran on the wait, and Brian checked it on his iPhone.
+- [x] The design bar skills ran on the wait, and Brian checked it on his iPhone.
+
+## Comments
+
+- 2026-11-17: Brian checked the wait on his iPhone with a real grade of trade T and said "wait is good".
