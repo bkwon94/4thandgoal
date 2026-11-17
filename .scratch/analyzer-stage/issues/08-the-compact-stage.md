@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-2, AT-20, AT-27, AT-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] In idle with trade T, the rows show "2 players" and "1 player", and the hero shows no headshot.
 - [x] Within 1 s of the tap on "Grade the Trade", each row of trade T shows the headshots of the players it gets.
@@ -16,3 +16,11 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-2, AT-20, AT-27, AT-
 - [x] The result hero of trade T shows the same rows, and the mesh dips under the row of the favored side.
 - [x] With reduced motion, the headshots fade in and no token moves.
 - [x] The pixel scan of the floor passes on the analyzer in idle, wait, and reveal, in both clients.
+
+## Comments
+
+The merge: `41be3294` merged into `analyzer-stage` on 2026-11-17; review fixes `a8f2b48d` and `4eb5bef2`; Judge fix round `7b1d09c7`.
+The proof: `make check-fast` passed at each merge, the full check passed on 2026-11-17, and the Judge gave PASS to AT-1 to AT-34 after one fix round.
+The note: The e2e tests block calls off the machine, so their tokens show initials; the evidence on the local API shows the real headshots.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/analyzer-stage/PRD.md, .scratch/analyzer-stage/ACCEPTANCE.md, .scratch/analyzer-stage/issues/08-the-compact-stage.md.
+Closes with the squash merge of the spec PR.

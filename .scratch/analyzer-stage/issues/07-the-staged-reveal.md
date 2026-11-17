@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT
 
 **Blocked by:** 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] On a cached repeat of trade T, the Lean word shows within 1.3 s of the response.
 - [x] The time stamps show the Lean word, then the Lean scale, then the Case and the side tabs, within about 1 s.
@@ -17,3 +17,10 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT
 - [x] Each analyzer hero text reaches 4.5:1 or more at the end of the reveal, in `cpc` and `norcal`.
 - [x] The full floor passes in `cpc` and `norcal`.
 - [x] The front door chat wait shows no mesh and no stage line.
+
+## Comments
+
+The merge: `1b9c7646` merged into `analyzer-stage` on 2026-11-17; review fixes `a8f2b48d` and `4eb5bef2`; Judge fix round `7b1d09c7`.
+The proof: `make check-fast` passed at each merge, the full check passed on 2026-11-17, and the Judge gave PASS to AT-1 to AT-34 after one fix round.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/analyzer-stage/PRD.md, .scratch/analyzer-stage/ACCEPTANCE.md, .scratch/analyzer-stage/issues/07-the-staged-reveal.md.
+Closes with the squash merge of the spec PR.

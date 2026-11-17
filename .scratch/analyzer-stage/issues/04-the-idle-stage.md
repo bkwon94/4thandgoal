@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-1, AT-2, AT-16, and 
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] With an empty Stack, two screenshots 2 s apart show the same flat mesh.
 - [x] After the add of Kenneth Walker III to the side of Bo Girds, the hero shows his name.
@@ -20,3 +20,8 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-1, AT-2, AT-16, and 
 ## Comments
 
 - 2026-11-16: Brian checked the idle stage on his iPhone over the LAN dev server and said "its good".
+
+The merge: `6638fcd1` merged into `analyzer-stage` on 2026-11-16; review fixes `a8f2b48d` and `4eb5bef2`; Judge fix round `7b1d09c7`.
+The proof: `make check-fast` passed at each merge, the full check passed on 2026-11-17, and the Judge gave PASS to AT-1 to AT-34 after one fix round.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/analyzer-stage/PRD.md, .scratch/analyzer-stage/ACCEPTANCE.md, .scratch/analyzer-stage/issues/04-the-idle-stage.md.
+Closes with the squash merge of the spec PR.

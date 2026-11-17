@@ -8,10 +8,18 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-30, AT-31, and AT-32
 
 **Blocked by:** 08
 
-**Status:** in-review
+**Status:** done
 
 - [x] The result of trade T has no "The Trade" chapter, and below the hero it has no player chip, no headshot, and no `FoldLine` card.
 - [x] The Finder still shows its swap card.
 - [x] A tap on Edit in the header of "The Sides" opens the Stack with trade T, in view.
 - [x] The Edit target is 44 px or more on each side.
 - [x] A fairness reason past 3 lines at 375 px shows 3 lines and "More", and a tap shows it in full.
+
+## Comments
+
+The merge: `d65298a4` merged into `analyzer-stage` on 2026-11-17; review fixes `a8f2b48d` and `4eb5bef2`; Judge fix round `7b1d09c7`.
+The proof: `make check-fast` passed at each merge, the full check passed on 2026-11-17, and the Judge gave PASS to AT-1 to AT-34 after one fix round.
+The note: A grade that the Finder starts has no screen-reader status after fix AT-9 `367ac9b0`; the Finder is on only in norcal. The rank lines of the result are gone, and a later ticket can bring them back on a tap of a token.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/analyzer-stage/PRD.md, .scratch/analyzer-stage/ACCEPTANCE.md, .scratch/analyzer-stage/issues/09-the-result-shows-the-players-once.md.
+Closes with the squash merge of the spec PR.
