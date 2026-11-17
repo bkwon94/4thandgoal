@@ -15,6 +15,7 @@ import { Hero } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
 import { GetCard, type GotRow } from "./get-card";
 import { GradeBar } from "./grade-bar";
+import { StageLines } from "./stage-lines";
 import { Sweep } from "./sweep";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
@@ -23,6 +24,7 @@ import { TradeFinder } from "./trade-finder";
 import { Button } from "@cpc/design/ui/button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
+import { stageLines, type StageTrade } from "../lib/stage-lines";
 import type { AnalyzeResponse, FinderTrade } from "../lib/analyze-types";
 import { ApiError, type ApiTarget, postAnalyze, toErrorLine, type Team } from "../lib/api";
 import {
@@ -88,9 +90,12 @@ type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "pla
 
 /* The hero while the grade runs, in the hero slots: Live, the title, the line, and the loading state as the feature.
    The bars and the sweep sit where the read lands. With motion off, the bars hold still. The read that replaces
-   it opens with a level-two heading, so this title is level two too. */
-function GradingHero() {
+   it opens with a level-two heading, so this title is level two too. The stage lines run under the title, in a part of
+   their own. A screen reader skips them and hears the one label of the status. The trade is read once, because the
+   grade locks the form. */
+function GradingHero({ trade }: { trade: StageTrade }) {
   const off = useMotionOff();
+  const [lines] = useState(() => stageLines(trade));
   const pulse = off ? "" : "animate-pulse";
   return (
     <Hero
@@ -102,6 +107,7 @@ function GradingHero() {
       feature={
         <div role="status" aria-busy="true" aria-label="Grading the Trade">
           <div aria-hidden="true" className="flex flex-col gap-sp-3">
+            <StageLines lines={lines} />
             <div className={`h-sp-6 w-3/4 rounded-tile bg-rule-dark ${pulse}`} />
             <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
             <Sweep track="bg-rule-dark" />
@@ -442,7 +448,18 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
         gets={rowsOf(0).map((row) => row.player.name)}
         onEdit={grade.status === "done" ? () => setEditing(true) : undefined}
       />
-      {grading && <GradingHero />}
+      {grading && (
+        <GradingHero
+          trade={sides.map((side, index) => {
+            const team = teamOf(teams, side.rosterId);
+            return {
+              team: team?.team ?? SIDE_TITLES[index],
+              manager: team?.manager ?? SIDE_TITLES[index],
+              gets: rowsOf(index).map((row) => ({ name: row.player.name, position: row.player.position })),
+            };
+          })}
+        />
+      )}
     </>
   ) : (
     <TitleHero />
