@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
 import { useMotionOff } from "../hooks/use-motion-off";
 import { type MeshDrive, runMesh } from "./mesh-canvas";
 
-/* `drive` sets the weights of the mesh over time. With none, the mesh is the calm, flat grid of idle. */
+/* `drive` sets the weights and the pulses of the mesh over time. With none, the mesh is the calm, flat grid of idle.
+   A new drive starts the runner again, so a caller keeps one drive for the life of a state, such as one grade wait. */
 export function HeroMesh({ drive }: { drive?: MeshDrive }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const probe = useRef<HTMLSpanElement>(null);
@@ -28,11 +29,12 @@ export function HeroMesh({ drive }: { drive?: MeshDrive }) {
   return (
     <>
       <canvas ref={canvas} data-hero-mesh className="absolute inset-0 block size-full" />
-      {/* The probe: the runner reads the grid, the glow, and the dot colors from it, and again on a switch of the theme. */}
+      {/* The probe: the runner reads the grid, the glow, the dot, and the pulse colors from it, and again on a switch of the theme. */}
       <span ref={probe} className="hidden">
         <span className="text-grid" />
         <span className="text-accent-glow" />
         <span className="text-on-dark-muted" />
+        <span className="text-accent-text" />
       </span>
     </>
   );

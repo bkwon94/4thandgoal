@@ -10,9 +10,9 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-3, AT-5, AT-15, AT-2
 
 **Status:** ready-for-agent
 
-- [ ] Within 100 ms of the tap on "Grade the Trade", the mesh moves and "Weighing the sides" shows.
-- [ ] A recording of 5 s of the wait shows a dip under the side of Bo Girds, then under the side of Teehee, about 1.25 s each.
-- [ ] At 375 px with a 4x CPU slowdown, no frame of the wait takes longer than 50 ms after the first second.
-- [ ] Each analyzer hero text reaches 4.5:1 or more over 10 samples in 3 s of the wait, in `cpc` and `norcal`, at 390 and 1280 px.
-- [ ] The Finder wait of `norcal` shows the `Sweep` bar and no mesh.
+- [x] Within 100 ms of the tap on "Grade the Trade", the mesh moves and "Weighing the sides" shows.
+- [x] A recording of 5 s of the wait shows a dip under the side of Bo Girds, then under the side of Teehee, about 1.25 s each.
+- [x] At 375 px with a 4x CPU slowdown, no frame of the wait takes longer than 50 ms after the first second.
+- [x] Each analyzer hero text reaches 4.5:1 or more over 10 samples in 3 s of the wait, in `cpc` and `norcal`, at 390 and 1280 px.
+- [x] The Finder wait of `norcal` shows the `Sweep` bar and no mesh.
 - [ ] The design bar skills ran on the wait, and Brian checked it on his iPhone.
