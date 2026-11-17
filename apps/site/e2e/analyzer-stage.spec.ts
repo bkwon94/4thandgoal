@@ -35,6 +35,16 @@ function stageTrade(teams: RawTeam[]): { team: number; with: number; give: strin
   return { team: mine.roster_id, with: theirs.roster_id, give: [mine.players[0].player_id], get: theirs.players.slice(0, 2).map((p) => p.player_id) };
 }
 
+/* The name of a team of the client. */
+const teamName = (rosterId: number) => TEAMS.find((t) => t.roster_id === rosterId)!.team;
+
+/* The row of a team on the stage of a hero. */
+const rowOf = (page: Page, hero: string, team: string) =>
+  page.locator(`${hero} [data-mesh-anchor]`).filter({ has: page.locator("[data-stage-team]").getByText(team, { exact: true }) });
+
+/* The headshot tokens of a row: a face or the initials of a face that did not load. The "+N" token is not a face. */
+const tokensOf = (row: ReturnType<typeof rowOf>) => row.locator("[data-mesh-hole][title]");
+
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
   server = await serveDir(OUT);
@@ -130,11 +140,12 @@ for (const theme of ["dark", "light"] as const) {
   for (const width of [390, 1280]) {
     test(`idle contrast: ${CLIENT} each hero text over the mesh reaches 4.5:1 with a trade on the stage, ${theme} ${width}px (AT-20)`, async ({ page }, info) => {
       const trade = stageTrade(TEAMS);
-      const names = trade.get.map((id) => TEAMS.find((t) => t.roster_id === trade.with)!.players.find((p) => p.player_id === id)!.name);
       await page.setViewportSize({ width, height: 900 });
       await openAnalyzer(page, `?team=${trade.team}&with=${trade.with}&give=${trade.give.join(",")}&get=${trade.get.join(",")}`, theme);
       const hero = page.locator(HERO);
-      for (const name of names) await expect(hero.getByText(name, { exact: true })).toBeVisible();
+      // Idle shows the count of each side, and the row label of each side is a hero text that the scan reads.
+      await expect(rowOf(page, HERO, teamName(trade.team)).getByText(`${trade.get.length} players`)).toBeVisible();
+      await expect(rowOf(page, HERO, teamName(trade.with)).getByText(`${trade.give.length} player`, { exact: true })).toBeVisible();
       await settle(page);
       await hero.screenshot({ path: info.outputPath(`idle-stage-${CLIENT}-${theme}-${width}.png`) });
       expect(await scanHeroPixels(page, HERO), `the idle hero of ${CLIENT} breaks the readability floor`).toEqual([]);
@@ -142,15 +153,15 @@ for (const theme of ["dark", "light"] as const) {
   }
 }
 
-/* A side with no player yet shows a placeholder in place of a chip. Its small muted text sits on the mesh with no chip
-   under it, so it gets its own pixel scan. */
+/* A side with no player yet shows a dashed empty token in place of a count. Its row label sits on the mesh with no
+   count beside it, so it gets its own pixel scan. */
 for (const width of [390, 1280]) {
   test(`idle contrast: ${CLIENT} the placeholder of a side with no player reaches 4.5:1, dark ${width}px (AT-20)`, async ({ page }, info) => {
     const trade = stageTrade(TEAMS);
     await page.setViewportSize({ width, height: 900 });
     await openAnalyzer(page, `?team=${trade.team}&with=${trade.with}&give=${trade.give.join(",")}`);
     const hero = page.locator(HERO);
-    await expect(hero.getByText("No player yet")).toBeVisible();
+    await expect(rowOf(page, HERO, teamName(trade.team)).locator("[data-stage-empty]")).toBeVisible();
     await settle(page);
     await hero.screenshot({ path: info.outputPath(`idle-stage-one-side-${CLIENT}-${width}.png`) });
     expect(await scanHeroPixels(page, HERO), `the idle hero of ${CLIENT} breaks the readability floor`).toEqual([]);
@@ -161,6 +172,68 @@ for (const width of [390, 1280]) {
 function stageQuery(): string {
   const trade = stageTrade(TEAMS);
   return `?team=${trade.team}&with=${trade.with}&give=${trade.give.join(",")}&get=${trade.get.join(",")}`;
+}
+
+/* The name of a player of a team of the client. */
+const playerName = (rosterId: number, playerId: string) => TEAMS.find((t) => t.roster_id === rosterId)!.players.find((p) => p.player_id === playerId)!.name;
+
+/*
+ * Taps "Grade the Trade" and watches each token of the wait hero on each frame until `count` tokens are at rest: fully
+ * opaque, with no move, no scale, and no blur. It gives the time in ms from the tap, whether a token ever moved or blurred,
+ * and whether a token ever showed part faded.
+ */
+async function tapAndTimeTokens(page: Page, count: number): Promise<{ elapsed: number; moved: boolean; faded: boolean }> {
+  const button = page.getByRole("button", { name: "Grade the Trade" });
+  await expect(button).toBeEnabled();
+  const handle = await button.elementHandle();
+  return page.evaluate(
+    ([el, hero, want]) =>
+      new Promise<{ elapsed: number; moved: boolean; faded: boolean }>((done, fail) => {
+        let moved = false;
+        let faded = false;
+        const start = performance.now();
+        (el as HTMLElement).click();
+        const check = () => {
+          const elapsed = performance.now() - start;
+          if (elapsed > 3000) return fail(new Error("the tokens did not come to rest within 3 s"));
+          const tokens = [...document.querySelectorAll(`${hero} [data-mesh-hole][title]`)];
+          let still = 0;
+          for (const token of tokens) {
+            const style = getComputedStyle(token);
+            const m = new DOMMatrixReadOnly(style.transform === "none" ? undefined : style.transform);
+            const shifted = Math.abs(m.f) > 0.01 || Math.abs(m.a - 1) > 0.001;
+            const blurred = !["none", "blur(0px)"].includes(style.filter);
+            const opacity = parseFloat(style.opacity);
+            if (shifted || blurred) moved = true;
+            if (opacity > 0 && opacity < 0.99) faded = true;
+            if (!shifted && !blurred && opacity >= 0.99) still++;
+          }
+          if (tokens.length === want && still === want) return done({ elapsed, moved, faded });
+          requestAnimationFrame(check);
+        };
+        requestAnimationFrame(check);
+      }),
+    [handle, WAIT_HERO, count] as const,
+  );
+}
+
+/* Opens trade B of the spec in cpc. The query fills two sides: The Blue Tent gets 5 from Lil Fridge, and Lil Fridge gets
+   Bucky Irving. The third side, All You Need Is Love, joins through "+", and its gets are picked in the sheets. */
+async function openTradeB(page: Page) {
+  await openAnalyzer(page, "?team=1&with=3&get=11560,1466,2449,3198,4034&give=11584");
+  await page.getByRole("button", { name: "Add a team" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: /All You Need Is Love/ }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const pick = async (side: string, from: string, names: string[]) => {
+    await page.getByRole("button", { name: `Add a player ${side} gets` }).click();
+    const sheet = page.getByRole("dialog");
+    await sheet.getByRole("tab", { name: from }).click();
+    for (const name of names) await sheet.getByRole("checkbox", { name: new RegExp(name) }).click();
+    await sheet.getByRole("button", { name: /^Done/ }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  };
+  await pick("Team Three", "The Blue Tent", ["Rashee Rice", "Brock Bowers"]);
+  await pick("Team Two", "All You Need Is Love", ["Ashton Jeanty", "Jeremiyah Love"]);
 }
 
 /*
@@ -334,6 +407,47 @@ test.describe("the wait, with motion on", () => {
     }
   }
 
+  for (const width of [375, 768, 1280]) {
+    test(`stage rise: ${CLIENT} the headshots of each side rise into its row within 1 s of the tap, ${width}px (AT-29)`, async ({ page }, info) => {
+      const trade = stageTrade(TEAMS);
+      await page.setViewportSize({ width, height: 900 });
+      await openAnalyzer(page, stageQuery());
+      await settle(page);
+      // Idle shows no face, only the count of each side.
+      expect(await page.locator(`${HERO} [data-mesh-hole][title]`).count()).toBe(0);
+      const { elapsed, moved } = await tapAndTimeTokens(page, trade.get.length + trade.give.length);
+      console.log(`stage rise: ${CLIENT} ${width}px: the last token at rest ${elapsed.toFixed(0)} ms after the tap, moved ${moved}`);
+      await page.locator(WAIT_HERO).screenshot({ path: info.outputPath(`stage-rise-${CLIENT}-${width}.png`) });
+      expect(elapsed).toBeLessThanOrEqual(1000);
+      expect(moved, "the tokens did not rise").toBe(true);
+      // Each row holds the players its side gets, by name.
+      const asker = await tokensOf(rowOf(page, WAIT_HERO, teamName(trade.team))).evaluateAll((els) => els.map((el) => el.getAttribute("title")));
+      const other = await tokensOf(rowOf(page, WAIT_HERO, teamName(trade.with))).evaluateAll((els) => els.map((el) => el.getAttribute("title")));
+      expect(asker).toEqual(trade.get.map((id) => playerName(trade.with, id)));
+      expect(other).toEqual(trade.give.map((id) => playerName(trade.team, id)));
+    });
+  }
+
+  for (const width of [375, 768, 1280]) {
+    test(`stage big: ${CLIENT} trade B shows 3 rows, and The Blue Tent shows 3 headshots and +2, ${width}px (AT-27)`, async ({ page }, info) => {
+      test.skip(CLIENT !== "cpc", "trade B is a trade of cpc");
+      await page.setViewportSize({ width, height: 900 });
+      await openTradeB(page);
+      await page.getByRole("button", { name: "Grade the Trade" }).click();
+      await expect(page.locator(WAIT_HERO)).toBeVisible();
+      await expect(page.locator(`${WAIT_HERO} [data-mesh-anchor]`)).toHaveCount(3);
+      const tent = rowOf(page, WAIT_HERO, "The Blue Tent");
+      await expect(tokensOf(tent)).toHaveCount(3);
+      await expect(tent.getByText("+2", { exact: true })).toBeVisible();
+      await lineAtRest(page);
+      await page.locator(WAIT_HERO).screenshot({ path: info.outputPath(`stage-big-${CLIENT}-${width}.png`) });
+      // No row wraps: each row keeps one line, as tall as its touch row.
+      const heights = await page.locator(`${WAIT_HERO} [data-mesh-anchor]`).evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
+      console.log(`stage big: ${CLIENT} ${width}px: row heights ${heights.join(", ")}`);
+      for (const h of heights) expect(h).toBeLessThan(60);
+    });
+  }
+
   test(`finder wait: ${CLIENT} the Finder wait shows the Sweep bar, and the hero shows no wait mesh and no stage line (AT-23)`, async ({ page }, info) => {
     test.skip(CLIENT !== "norcal", "the Finder is on in norcal only");
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -363,6 +477,19 @@ test.describe("the wait, with motion off", () => {
     const second = await canvas.screenshot({ path: info.outputPath(`wait-still-${CLIENT}-b.png`) });
     expect(first.equals(second), "the mesh moved in the wait with motion off").toBe(true);
     expect((await pulls(page)).every((p) => p === 0)).toBe(true);
+  });
+});
+
+test.describe("the stage, with motion off", () => {
+  test(`stage fade: ${CLIENT} with reduced motion the headshots fade in and no token moves, 1280px (AT-29)`, async ({ page }, info) => {
+    const trade = stageTrade(TEAMS);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await openAnalyzer(page, stageQuery());
+    const { elapsed, moved, faded } = await tapAndTimeTokens(page, trade.get.length + trade.give.length);
+    console.log(`stage fade: ${CLIENT}: the last token at rest ${elapsed.toFixed(0)} ms after the tap, moved ${moved}, faded ${faded}`);
+    await page.locator(WAIT_HERO).screenshot({ path: info.outputPath(`stage-fade-${CLIENT}-1280.png`) });
+    expect(moved, "a token moved with motion off").toBe(false);
+    expect(faded, "the tokens showed with no fade").toBe(true);
   });
 });
 
@@ -512,6 +639,10 @@ test.describe("the reveal, with motion on", () => {
     const favored = favoredIndex(doc);
     const { mesh } = reveal;
     console.log(`reveal mesh: ${CLIENT}: Lean ${doc.lean}, favored side ${favored === null ? "none" : `${favored} (roster ${favoredSide(doc)})`}`);
+    // The result hero holds the same rows as the wait, one anchor per side in the order of the read, the asker first.
+    const order = [...doc.trade.sides].sort((a, b) => Number(b.roster_id === doc.trade.asker) - Number(a.roster_id === doc.trade.asker));
+    await expect(page.locator(`${READ_HERO} [data-mesh-anchor] [data-stage-team]`)).toHaveText(order.map((side) => side.team));
+    for (const side of order) await expect(tokensOf(rowOf(page, READ_HERO, side.team))).toHaveCount(Math.min(side.gets.length, 3));
     const peak = mesh.reduce((a, b) => (b.flash > a.flash ? b : a), mesh[0]);
     const pullOf = (i: number) => Math.max(...mesh.map((m) => m.pulls[i] ?? 0));
     const deepest = favored === null ? null : mesh.reduce((a, b) => ((b.pulls[favored] ?? 0) > (a.pulls[favored] ?? 0) ? b : a), mesh[0]);

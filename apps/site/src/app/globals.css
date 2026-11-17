@@ -147,6 +147,11 @@
     --spacing-ring-avatar: 24px;
     --spacing-ring-bar: 36px;
     --spacing-ring-bar-w: 4px;
+    /* A headshot token on the stage of the analyzer hero. 32px keeps a face readable, and three overlapped tokens and a
+       "+N" token still leave the full team name room in a row at 375. */
+    --spacing-stage-token: 32px;
+    /* The column of the tokens in a stage row: 3 faces and a "+N" token, each overlapped by sp-2. */
+    --spacing-stage-tokens: calc(4 * var(--spacing-stage-token) - 3 * var(--spacing-sp-2));
     /* The team pick chip on the waiver page: a 44px touch row and 4px above and below. The empty slot takes the same height
        before the page reads storage, so the ring does not move down when the chip shows. */
     --spacing-pick-chip: 52px;
@@ -187,6 +192,9 @@
     /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
     --container-door: 560px;
     --container-sheet: 440px;
+    /* The stage of the analyzer hero. From the tablet tier up, a row as wide as the hero puts the tokens far from their
+       team, so the rows keep the width of the door column. */
+    --container-stage: 560px;
     /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
        It is in ch, so the cap grows with the body size of the tier. Tables, grids, and score rows take no cap. */
     --container-measure: 68ch;

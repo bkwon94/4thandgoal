@@ -11,6 +11,7 @@ import { favoredSide } from "../lib/favored-side";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { BulletRows } from "./bullet-rows";
 import { SideTabs } from "./side-tabs";
+import { TradeOnStage, type StageSide } from "./trade-on-stage";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { DURATION, EASE_OUT, INSTANT, rise } from "@cpc/design/lib/motion";
 import { Blurb } from "@cpc/design/parts/blurb";
@@ -287,7 +288,7 @@ function CaseText({ readCase }: { readCase: string }) {
 }
 
 /* The read fills the hero slots: the side as the eyebrow and the Lean word as the title. The feature holds the rest
-   in this order: the scale, the Case, then the fairness line. Each chapter of the result opens with a
+   in this order: the trade on the stage, the scale, the Case, then the fairness line. Each chapter of the result opens with a
    level-two heading, so the title is level two. The no-values note and the fairness block sit on a card under the
    Case, so their text keeps the colors of the card. The read has no stats and no action, so the hero shows no empty area.
    The ground is the mesh of the grade wait, and the reveal starts the moment the grade arrives: the lines of the
@@ -302,6 +303,7 @@ function ReadHero({
   sides,
   fairness,
   favored,
+  stage,
 }: {
   lean: Lean;
   readCase: string;
@@ -311,6 +313,8 @@ function ReadHero({
   fairness?: Fairness | null;
   // The index in `sides` of the favored side, or null when no side is favored.
   favored: number | null;
+  // The trade on the stage, one row per side in the order of `sides`.
+  stage: StageSide[];
 }) {
   const off = useMotionOff();
   // The drive starts with the hero, which mounts when the grade arrives, so the flash adds no delay.
@@ -342,13 +346,9 @@ function ReadHero({
       }
       feature={
         <div className="flex flex-col gap-sp-4">
-          {/* One empty column for each side, asker first as in the wait, over the content box. The mesh reads the center
-              of each column as the place of that side, so the reveal dips under the same half of the hero as the wait. */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid auto-cols-fr grid-flow-col">
-            {sides.map((side) => (
-              <span key={side.roster_id} data-mesh-anchor />
-            ))}
-          </div>
+          {/* The same rows as the wait, asker first, with the faces at rest. The mesh reads the center of each row as the
+              place of that side, so the dip of the reveal sits under the row of the favored side. */}
+          <TradeOnStage sides={stage} show="tokens" />
           <LeanScale lean={lean} off={off} />
           <div className={cn("t-stagger flex flex-col gap-sp-4", caseShown && "is-shown")}>
             <div className="t-stagger-line t-stagger-line--1">
@@ -520,7 +520,9 @@ function CardsSkeleton() {
   );
 }
 
-export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
+/* The avatar of each team by roster id. The analyze document carries none, so the form passes the avatars of the teams of
+   the league. A team with no avatar shows the default one. */
+export default function AnalyzeResult({ doc, avatars = new Map() }: { doc: AnalyzeResponse; avatars?: ReadonlyMap<number, string | null> }) {
   const off = useMotionOff();
   const cardsShown = useBeat(REVEAL.cards, off);
   const sides = joinSides(doc);
@@ -549,6 +551,12 @@ export default function AnalyzeResult({ doc }: { doc: AnalyzeResponse }) {
         sides={sides}
         fairness={doc.fairness}
         favored={favored !== null && favored >= 0 ? favored : null}
+        stage={sides.map((side) => ({
+          id: side.roster_id,
+          team: side.team,
+          avatar: avatars.get(side.roster_id) ?? null,
+          players: side.gets.map((player) => ({ id: player.player_id, name: player.name, headshot: player.headshot })),
+        }))}
       />
 
       <div className={cn("t-skel", cardsShown && "is-revealed")}>

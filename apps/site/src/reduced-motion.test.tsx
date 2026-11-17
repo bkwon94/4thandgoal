@@ -161,8 +161,24 @@ describe("Reduced motion", () => {
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
     const status = screen.getByRole("status");
     expect(status.getAttribute("aria-busy")).toBe("true");
-    // The track is aria-hidden, so the query must include hidden elements to find the sweep if it existed.
-    expect(within(status).queryByRole("presentation", { hidden: true })).toBeNull();
+    // The track is aria-hidden, so the query must include hidden elements to find the sweep if it existed. An image with no alt is presentation too, so the query skips images.
+    expect(within(status).queryAllByRole("presentation", { hidden: true }).filter((el) => el.tagName !== "IMG")).toEqual([]);
+  });
+
+  it("fades the headshots into the stage on the tap of Grade, with no rise and no blur", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
+    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    await pickTeam("Pick Your Team", "Pukancun on 3");
+    await pickTeam("Pick Team Two", "Blitz Bakers");
+    await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
+    await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
+    fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
+    const tokens = [...screen.getByRole("status").querySelectorAll("[data-mesh-hole][title]")] as HTMLElement[];
+    expect(tokens.map((token) => token.title)).toEqual(["Ben One", "Ana One"]);
+    for (const token of tokens) {
+      expect(token.style.transform).toBe("");
+      expect(token.style.filter).toBe("");
+    }
   });
 });
 

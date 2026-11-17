@@ -111,7 +111,8 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
         <div role="status" aria-busy="true" aria-label="Grading the Trade">
           <div aria-hidden="true" className="flex flex-col gap-sp-5">
             <StageLines lines={lines} />
-            <TradeOnStage sides={stage} />
+            {/* The headshots go up to the stage on the tap, so the trade on the scale is the one the reader built. */}
+            <TradeOnStage sides={stage} show="tokens" rise />
           </div>
         </div>
       }
@@ -121,7 +122,8 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
 
 /* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
    Its ground is the mesh, calm and flat in idle, with no scene. Once a player is in the Stack, the trade shows on the
-   stage as the feature. The fold hides it while a grade runs and under a result. */
+   stage as the feature, one row per side with a count of its players. The cards of the Stack below show each player, so
+   the stage waits for the grade to show the faces. The fold hides it while a grade runs and under a result. */
 function TitleHero({ stage }: { stage: StageSide[] }) {
   const hasPlayer = stage.some((side) => side.players.length > 0);
   return (
@@ -131,7 +133,7 @@ function TitleHero({ stage }: { stage: StageSide[] }) {
       eyebrow="Trade Analyzer"
       title="Trade Analyzer"
       meta={<Rise step={1}>Who gets what?</Rise>}
-      feature={hasPlayer ? <TradeOnStage sides={stage} /> : undefined}
+      feature={hasPlayer ? <TradeOnStage sides={stage} show="count" /> : undefined}
     />
   );
 }
@@ -438,18 +440,21 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </>
   );
 
+  /* The analyze document names each team but carries no avatar, so the result reads the avatars of the teams of the league. */
+  const avatars = new Map(teams.map((team) => [team.roster_id, team.avatar]));
+
   const result = grade.status === "done" && (
     <div ref={resultRef}>
-      <AnalyzeResult doc={grade.doc} />
+      <AnalyzeResult doc={grade.doc} avatars={avatars} />
     </div>
   );
 
-  /* The trade on the stage: one column for each side with a team, and the players it gets. */
-  const stage = sides.flatMap((side, index) => {
+  /* The trade on the stage: one row for each side with a team, and the players it gets with their headshots. */
+  const stage: StageSide[] = sides.flatMap((side, index) => {
     const team = teamOf(teams, side.rosterId);
     if (!team) return [];
-    const players = rowsOf(index).map(({ player }) => ({ id: player.player_id, name: player.name, meta: `${player.position} · ${player.nfl_team}` }));
-    return [{ id: side.id, label: `${team.team} gets`, players }];
+    const players = rowsOf(index).map(({ player }) => ({ id: player.player_id, name: player.name, headshot: player.headshot }));
+    return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
   });
 
   const hero = folded ? (

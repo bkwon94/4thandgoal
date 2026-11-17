@@ -10,9 +10,9 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-2, AT-20, AT-27, AT-
 
 **Status:** ready-for-agent
 
-- [ ] In idle with trade T, the rows show "2 players" and "1 player", and the hero shows no headshot.
-- [ ] Within 1 s of the tap on "Grade the Trade", each row of trade T shows the headshots of the players it gets.
-- [ ] With trade B in the wait, the stage shows 3 rows, and the row of The Blue Tent shows 3 headshots and "+2".
-- [ ] The result hero of trade T shows the same rows, and the mesh dips under the row of the favored side.
-- [ ] With reduced motion, the headshots fade in and no token moves.
-- [ ] The pixel scan of the floor passes on the analyzer in idle, wait, and reveal, in both clients.
+- [x] In idle with trade T, the rows show "2 players" and "1 player", and the hero shows no headshot.
+- [x] Within 1 s of the tap on "Grade the Trade", each row of trade T shows the headshots of the players it gets.
+- [x] With trade B in the wait, the stage shows 3 rows, and the row of The Blue Tent shows 3 headshots and "+2".
+- [x] The result hero of trade T shows the same rows, and the mesh dips under the row of the favored side.
+- [x] With reduced motion, the headshots fade in and no token moves.
+- [x] The pixel scan of the floor passes on the analyzer in idle, wait, and reveal, in both clients.
