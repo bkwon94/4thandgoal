@@ -35,7 +35,7 @@ Green: at `2e978737`, `uv run --exact --package cornerstone pytest -q -p no:xdis
 7 passed, 207 deselected in 1.04s
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The injury facts name only Out and Doubtful
 
@@ -61,7 +61,7 @@ Green: at `c3da67a6`, `uv run --exact --package cornerstone pytest -q -p no:xdis
 6 passed, 214 deselected in 0.88s
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ### 3. The Week line reads the NFL game status of the trade week
 
@@ -85,7 +85,7 @@ Green: at `b94c3ec4`, `uv run --exact --package cornerstone pytest -q -p no:xdis
 6 passed, 35 deselected in 1.00s
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
 
