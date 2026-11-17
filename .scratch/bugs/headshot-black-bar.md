@@ -37,6 +37,6 @@ Nico Collins: 0.0px left gap, 0.0px right gap
   3 passed (1.2s)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
