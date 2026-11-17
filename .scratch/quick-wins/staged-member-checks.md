@@ -12,8 +12,32 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each don
 
 Done condition: The commit hook uses only staged paths to select workspace members under the existing dependency and shared-file rules.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `a7bd3af9` with `scripts/test_changed_apps.py` of `26352faa`, `python3 -B -m unittest discover -s scripts -p test_changed_apps.py -k TheStagedCheck`
+
+```text
+FAIL: test_only_staged_paths_choose_the_member_checks (test_changed_apps.TheStagedCheck.test_only_staged_paths_choose_the_member_checks)
++ ['scripts', 'pipeline', 'api']
+- ['scripts',
+-  'site',
+-  'pipeline',
+-  'api',
+-  'packages/facts',
+-  'packages/league',
+-  'packages/waiver']
+Ran 1 test in 0.079s
+FAILED (failures=1)
+```
+
+Green: at `26352faa`, `python3 -B -m unittest discover -s scripts -p test_changed_apps.py -k TheStagedCheck`
+
+```text
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.119s
+
+OK
+```
+
 Test verdict: pending
 
 ## Comments
