@@ -5,7 +5,7 @@ Spec branch: `analyzer-stage`.
 
 ## DESTINATION
 
-One spec for the hero of the analyzer page. The hero lives in three states, idle, wait, and reveal, with one motion story. The trade sits on stage, and stage lines cycle during the wait, so the reader is not bored while the grade runs.
+One spec for the hero of the analyzer page. The hero lives in three states, idle, wait, and reveal, with one motion story. The trade sits on stage, and stage lines cycle during the wait, so the reader is not bored while the grade runs. The same spec removes the plate box from the text of every hero of the site.
 
 ## DECISIONS SO FAR
 
@@ -16,12 +16,13 @@ One spec for the hero of the analyzer page. The hero lives in three states, idle
 - The idle hero gets the calm mode of the motion, and each added player shows on the stage. Brian, 2026-11-16 Stage 1 grill.
 - The change needs no API change. The analyze call stays one `POST` with no stream. Brian, 2026-11-16 Stage 1 grill.
 - The motion is D, "Mesh + light": the hero grid as a live Canvas 2D mesh that weighs the sides, with sparse light pulses, and a flash and a dip toward the favored side at the reveal. The hero text has no plate box. The grade button wraps the ui-sdk `Button`, and its pending state starts the wait. `decisions/01-prototype-motion-and-reveal.md`.
+- Every hero of the site drops the plate box from its text, in this spec, with a contrast test of 4.5:1 on each changed hero. Brian, against the recommendation to keep it to the analyzer. `decisions/04-grill-plate-scope.md`.
 
 ## NOT YET SPECIFIED
 
 - What do the stage lines say, and how fast do they cycle? `decisions/02-spec-stage-lines.md`.
 - Does the Finder wait take the new loader, or keep `Sweep`? `decisions/03-spec-finder-sweep.md`.
-- Does the hero text with no plate box stay on the analyzer hero only, or go to every hero of the site? `decisions/04-grill-plate-scope.md`.
+- How does hero text with no plate stay readable on a hero with no canvas, and do the plate uses that are not on a hero change too? `decisions/05-prototype-text-without-plate.md`.
 
 ## OUT OF SCOPE
 

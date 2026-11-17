@@ -6,7 +6,7 @@ Map: `.scratch/analyzer-stage/MAP.md`.
 
 **Blocked by:** 01
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -21,4 +21,10 @@ The options:
 
 ## Decision
 
-None yet.
+Every hero, in this spec. Brian chose option 2 on 2026-11-16, against the recommendation of option 1.
+
+- The spec removes the plate box from the text of every hero, not only the analyzer hero.
+- The `plate` has 50 uses in 19 files: the heroes of the week, the managers, the midseason report, the sim replay, the egg hunt, the front door, and the 404 page. The spec grows about twice as big.
+- Most of those heroes have the static grid and a CSS glow, with no canvas. The method of decision 01, a light hole in a canvas, does not work there. Decision 05 picks the method for them.
+- Some plate uses are on a dark surface that is not a hero, such as `bullet-rows.tsx`, `side-tabs.tsx`, `grade-popover.tsx`, and `egg-board.tsx`. Decision 05 also decides if those change.
+- Each changed hero needs an acceptance test that its text reaches 4.5:1.
