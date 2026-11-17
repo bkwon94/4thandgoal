@@ -1,11 +1,6 @@
 /**
  * The scans of the readability floor: text size, tap targets, sideways scroll, words split over two lines, and contrast with axe and by pixels.
  * Each scan reads one loaded page and returns its failures as lines that name the element and the measure.
- *
- * A hero is a `section` that carries the hero texture. HeroFrame renders a section whose art layer, a direct child
- * with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
- * names both. A text of a hero is each element of the hero that holds a visible text node of its own, outside an
- * SVG. An aria-hidden text counts, because a sighted reader still reads it. Its box is the box of each line of its text, not the box of the element.
  */
 import { DARK_CLASS, THEME_KEY, type Theme } from "@cpc/design/lib/theme";
 import AxeBuilder from "@axe-core/playwright";
@@ -20,7 +15,10 @@ export const TARGET_MIN_PX = 44;
 const TARGET_SELECTOR =
   "a[href], button, input:not([type=hidden]), select, textarea, summary, label[for], [role=button], [role=link], [role=tab]";
 
-/* The two forms of a hero. See the comment at the top of the file. */
+/* The two forms of a hero. A hero is a `section` that carries the hero texture. HeroFrame renders a section whose art layer, a direct child
+   with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
+   names both. A text of a hero is each element of the hero that holds a visible text node of its own, outside an
+   SVG. An aria-hidden text counts, because a sighted reader still reads it. Its box is the box of each line of its text, not the box of the element. */
 export const HERO_SELECTOR = 'section:has(> [aria-hidden="true"] > [data-hero-art="texture"]), section.hero-texture';
 /* Every hero text reaches 4.5 to 1, large or not (ADR 0036), so a glow that grows can never pass a title at 3 to 1. */
 export const HERO_MIN_RATIO = 4.5;
@@ -105,8 +103,8 @@ function inPage({ scan, limits, scope }: InPage): unknown {
 
   if (scan === "heroes") {
     // Marks each hero and each of its texts, and reads the color and the line boxes of each text, in page coordinates.
-    // A line box is clipped by each box that clips or scrolls above it, so a cut or a screen reader only text, such as
-    // a box of 1px, gives no box. A box under 2px on a side is too small to read and is dropped.
+    // Each box above a text that clips or scrolls also clips its line boxes, so a cut text or a screen reader only text,
+    // such as a box of 1px, gives no box. The scan drops a box under 2px on a side, because it is too small to read.
     const root = scope === undefined ? document.body : document.querySelector(scope);
     // A hero that the layout hides, such as the stage of the Index list under the desktop tier, is not on the page.
     const heroes = [...document.querySelectorAll(limits.heroSelector)].filter((hero) => root !== null && root.contains(hero) && visible(hero));
@@ -118,8 +116,22 @@ function inPage({ scan, limits, scope }: InPage): unknown {
       const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
       return [r, g, b, a / 255];
     };
+    // A pseudo-element draws text when its computed content holds a quoted string that is not empty. Chrome resolves
+    // `content: attr(...)` to that string. A slash outside the quotes starts the alt text, which the screen does not draw.
+    // A pseudo-element with no such string, such as an empty glow or an image, is real background, so the scan keeps it.
+    const drawsText = (content: string) => {
+      for (const [token, text] of content.matchAll(/"((?:[^"\\]|\\.)*)"|\//g)) {
+        if (token === "/") return false;
+        if (text !== "") return true;
+      }
+      return false;
+    };
     return heroes.map((hero, h) => {
       (hero as HTMLElement).dataset.floorHero = String(h);
+      for (const el of hero.querySelectorAll<HTMLElement>("*")) {
+        if (drawsText(getComputedStyle(el, "::before").content)) el.dataset.floorBefore = "";
+        if (drawsText(getComputedStyle(el, "::after").content)) el.dataset.floorAfter = "";
+      }
       const texts = new Map<Element, number[][]>();
       const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -261,10 +273,10 @@ export async function scanHeroPixels(page: Page, scope?: string): Promise<string
   const heroes = (await page.evaluate<unknown, InPage>(inPage, { scan: "heroes", limits: LIMITS, scope })) as HeroScan[];
   if (heroes.length === 0) return [];
   const hide = await page.addStyleTag({
-    // A pseudo-element of a text draws a copy of the text, such as the shimmer of a stage line, so it hides with the text.
+    // A marked pseudo-element draws a copy of a text, such as the shimmer of a stage line, so it hides with the text.
     content:
       "[data-floor-text] { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; } " +
-      "[data-floor-text]::before, [data-floor-text]::after { visibility: hidden !important; }",
+      "[data-floor-before]::before, [data-floor-after]::after { visibility: hidden !important; }",
   });
   try {
     // Two frames, so the browser paints the hidden text before the screenshot.
@@ -290,9 +302,11 @@ export async function scanHeroPixels(page: Page, scope?: string): Promise<string
   } finally {
     await hide.evaluate((el) => (el as Element).remove());
     await page.evaluate(() => {
-      for (const el of document.querySelectorAll<HTMLElement>("[data-floor-hero], [data-floor-text]")) {
+      for (const el of document.querySelectorAll<HTMLElement>("[data-floor-hero], [data-floor-text], [data-floor-before], [data-floor-after]")) {
         delete el.dataset.floorHero;
         delete el.dataset.floorText;
+        delete el.dataset.floorBefore;
+        delete el.dataset.floorAfter;
       }
     });
   }

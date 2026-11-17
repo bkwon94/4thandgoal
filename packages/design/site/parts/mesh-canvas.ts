@@ -1,7 +1,6 @@
 /**
- * The runner of the mesh on one Canvas 2D context: the grid, the low corner glow, the weights and the light pulses of a
- * wait, the flash and the dip of a reveal, and a soft hole under each hero text. It draws a frame only on a change, and
- * never while the hero is out of view.
+ * The runner of the mesh on one Canvas 2D context: the grid, the low corner glow, the weights and the light pulses of a wait, the flash and the dip of a reveal, and a soft hole under each hero text.
+ * It draws a frame only on a change, and never while the hero is out of view.
  */
 import { type MeshLine, type MeshNodes, type MeshWeight, meshNodes, pointOnLine, pullSigma, turnPulls } from "./mesh-math";
 

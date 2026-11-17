@@ -1,6 +1,6 @@
 /**
  * Holds the site to ADR 0036: hero text has no plate. No source file of the site or of a package uses the plate class,
- * and globals.css defines no plate utility. Comments are skipped, because they may name the rule.
+ * and globals.css defines no plate utility. The test skips comments, because they may name the rule.
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";

@@ -1,12 +1,12 @@
 /**
- * Tests for the stage lines with the reduced-motion media query on: the line still changes every 2.5 s, with no shimmer and no outgoing copy,
- * and a long line wraps in full and does not scroll.
- * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
+ * Tests for the stage lines with the reduced-motion media query on.
+ * The line still changes every 2.5 s, with no shimmer and no outgoing copy, and a long line wraps in full and does not scroll.
  */
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StageLines } from "./stage-lines";
 
+// matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
 vi.stubGlobal(
   "matchMedia",
   (query: string) =>
