@@ -15,12 +15,13 @@ One spec for the hero of the analyzer page. The hero lives in three states, idle
 - The wait has no minimum time, because a fake delay costs the reader real time. Brian, 2026-11-16 Stage 1 grill.
 - The idle hero gets the calm mode of the motion, and each added player shows on the stage. Brian, 2026-11-16 Stage 1 grill.
 - The change needs no API change. The analyze call stays one `POST` with no stream. Brian, 2026-11-16 Stage 1 grill.
+- The motion is D, "Mesh + light": the hero grid as a live Canvas 2D mesh that weighs the sides, with sparse light pulses, and a flash and a dip toward the favored side at the reveal. The hero text has no plate box. The grade button wraps the ui-sdk `Button`, and its pending state starts the wait. `decisions/01-prototype-motion-and-reveal.md`.
 
 ## NOT YET SPECIFIED
 
-- Which motion carries idle, wait, and reveal: the extended hero scene, or one of two scrolltide options? `decisions/01-prototype-motion-and-reveal.md`.
 - What do the stage lines say, and how fast do they cycle? `decisions/02-spec-stage-lines.md`.
 - Does the Finder wait take the new loader, or keep `Sweep`? `decisions/03-spec-finder-sweep.md`.
+- Does the hero text with no plate box stay on the analyzer hero only, or go to every hero of the site? `decisions/04-grill-plate-scope.md`.
 
 ## OUT OF SCOPE
 
