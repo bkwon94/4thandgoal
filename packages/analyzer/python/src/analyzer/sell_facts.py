@@ -6,7 +6,7 @@ why.
 from decimal import Decimal
 
 from analyzer.chart_facts import player_value_facts
-from analyzer.measures import _injury_text, _report_weeks
+from analyzer.measures import injury_fact_text
 from facts.tokens import Nums, fact
 from league.history import season_rank
 from league.models import Fact
@@ -66,7 +66,7 @@ def _lineup_fact(snapshot: Snapshot, pid: str) -> Fact:
 
 
 def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The text of the injury Measure for the player: how long he is out, then his weeks on the injury report.
+    """The injury of the player as the injury Measure reads it, or the status of the NFL report of the trade week.
 
     A player who is out has a low price, so the Advisor needs this fact to judge a sell. The fact only states the
     injury: no code drops an injured player from the sheet (ADR 0030). A player with no injury gets a plain line, so
@@ -74,11 +74,7 @@ def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
     """
     n = Nums()
     player = snapshot.players[pid]
-    text = _injury_text(snapshot, pid, player.name)
-    if not text:
-        text = f"{player.name} is not out now."
-        if _report_weeks(snapshot, pid) is None:
-            text += " No count of his weeks on the injury report is on file."
+    text = injury_fact_text(snapshot, pid, player.name) or f"{player.name} is not out now."
     return fact(f"{pid}.injury", n.text(text), n, [], [player.name])
 
 

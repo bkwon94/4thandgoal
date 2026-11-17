@@ -849,10 +849,11 @@ def _out_sentence(snapshot: Snapshot, player_id: str, name: str) -> str | None:
         return f"{name} is out for the season."
     if _due_back(snapshot, player_id):
         return f"{name} is out until week {snapshot.returns[player_id]}."
-    if snapshot.players[player_id].injury_status in OUT_STATUSES:
-        return f"{name} is out with no return week on file."
     if trade_week_report_status(snapshot, player_id) == "Doubtful":
         return f"{name} is doubtful in week {snapshot.week}."
+    # A stale Sleeper Out is no injury that counts, so it gets no sentence. `injury_fact_text` says what is known.
+    if snapshot.players[player_id].injury_status in OUT_STATUSES and injury_counts(snapshot, player_id):
+        return f"{name} is out with no return week on file."
     return None
 
 
@@ -872,6 +873,43 @@ def _injury_text(snapshot: Snapshot, player_id: str, name: str) -> str:
     out = _out_sentence(snapshot, player_id, name)
     report = _report_sentence(snapshot, player_id, name if out is None else "He")
     return " ".join(sentence for sentence in (out, report) if sentence is not None)
+
+
+PRACTICE_SENTENCES = {
+    "Full Participation in Practice": "was a full participant in practice",
+    "Limited Participation in Practice": "was a limited participant in practice",
+    "Did Not Participate In Practice": "did not take part in practice",
+}
+
+
+def _practice_status(snapshot: Snapshot, player_id: str) -> str | None:
+    """The NFL practice status of the trade week for the player, as the file writes it, else None."""
+    id_map, practice = snapshot.id_map or {}, snapshot.practice or {}
+    if player_id not in id_map:
+        return None
+    return practice.get(id_map[player_id], {}).get(snapshot.week)
+
+
+def injury_fact_text(snapshot: Snapshot, player_id: str, name: str) -> str | None:
+    """The one plain statement of the injury fact for the player, or None when he has no status to state.
+
+    An injury that counts, or a return week on file, reads as the injury Measure reads it. An NFL game status of the
+    trade week that does not count reads as a plain status. A Sleeper status with no game status for the trade week is
+    the one of the last game, so the fact gives the latest practice status of the trade week, or says the report has
+    no game status yet. It never holds a count of injury report weeks.
+    """
+    if (out := _out_sentence(snapshot, player_id, name)) is not None:
+        return out
+    if (report := trade_week_report_status(snapshot, player_id)) is not None:
+        return f"{name} is listed {report} for week {snapshot.week}."
+    status = snapshot.players[player_id].injury_status
+    if status is None:
+        return None
+    practice = PRACTICE_SENTENCES.get(_practice_status(snapshot, player_id) or "")
+    if practice is not None:
+        return f"{name} {practice} in week {snapshot.week}."
+    return (f"{name}'s Sleeper status is {status} from the last game, and the NFL report of week {snapshot.week} "
+            "has no game status yet.")
 
 
 def _injury(snapshot: Snapshot, side: Side) -> MeasureRead:

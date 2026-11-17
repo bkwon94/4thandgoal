@@ -5,7 +5,7 @@ Each fact carries every number in its text.
 It reads the snapshot and a proposed trade, not the weekly bundle, so it is not a chapter.
 """
 from analyzer.chart_facts import chart_facts
-from analyzer.measures import Side, hole_sentence, trade_handcuffs
+from analyzer.measures import Side, hole_sentence, injury_fact_text, trade_handcuffs
 from analyzer.nfl_team_facts import nfl_team_facts
 from analyzer.trade import ProposedTrade, build_sides
 from analyzer.tunables import RECENT_RANK_GAP
@@ -87,34 +87,12 @@ def _redzone_fact(snapshot: Snapshot, pid: str) -> Fact | None:
     return fact(f"{pid}.redzone", text, n, [], [name])
 
 
-def _report_weeks(snapshot: Snapshot, pid: str) -> int | None:
-    """The count of weeks before the trade with the player on the NFL injury report, or None with no report or id."""
-    if snapshot.injuries is None or snapshot.id_map is None or pid not in snapshot.id_map:
-        return None
-    weeks = snapshot.injuries.get(snapshot.id_map[pid], {})
-    return sum(1 for week in weeks if week <= snapshot.as_of.completed_through)
-
-
 def _injury_fact(snapshot: Snapshot, pid: str) -> Fact:
-    """The injury status now, the return week on file, and the count of injury report weeks before the trade."""
+    """The injury of the player as the injury Measure reads it, or the status of the NFL report of the trade week."""
     n = Nums()
     player = snapshot.players[pid]
-    back = snapshot.returns.get(pid)
-    if player.injury_status is None:
-        text = f"{player.name} has no injury status now"
-    else:
-        text = f"{player.name} is listed {player.injury_status} now"
-    if back is not None:
-        text += f", and his return week on file is week {n(back)}."
-    elif player.injury_status is not None:
-        text += ", with no return week on file."
-    else:
-        text += "."
-    weeks = _report_weeks(snapshot, pid)
-    if weeks:
-        text += (f" He was on the NFL injury report in {n(weeks)} {plural(weeks, 'week', 'weeks')} "
-                 "this season before the trade.")
-    return fact(f"{pid}.injury", text, n, [], [player.name])
+    text = injury_fact_text(snapshot, pid, player.name) or f"{player.name} has no injury status now."
+    return fact(f"{pid}.injury", n.text(text), n, [], [player.name])
 
 
 def _need_fact(snapshot: Snapshot, trade: ProposedTrade, rid: int) -> Fact:

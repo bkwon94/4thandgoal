@@ -106,6 +106,8 @@ class Snapshot(BaseModel):
     as_of: AsOf
     # The injury report status, by gsis_id and week. The id map joins it to Sleeper ids.
     injuries: dict[str, dict[int, str]] | None = None
+    # The NFL practice status by gsis_id and week. The id map joins it to Sleeper ids. The snapshot lives in memory only.
+    practice: dict[str, dict[int, str]] | None = None
     # The opponent of each NFL team, by team and week. A bye week has no entry.
     schedules: dict[str, TeamSchedule] | None = None
     # The gsis_ids in depth order, by NFL team and position. The id map joins them to Sleeper ids.
@@ -502,6 +504,7 @@ def build_snapshot(
         id_map=slow.id_map if slow else None,
         points_allowed=slow.points_allowed if slow else None,
         injuries=slow.injuries if slow else None,
+        practice=slow.practice if slow else None,
         expected=slow.expected if slow else None,
         wopr=slow.wopr if slow else None,
         team_stats=slow.team_stats if slow else None,

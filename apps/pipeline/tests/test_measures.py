@@ -1506,8 +1506,8 @@ NO_REPORT_NOTE = "The injury report is not available, so no count of report week
 def test_injury_reads_a_player_out_now_with_no_return_week(snap):
     # Saquon Barkley is Out and has no row in the returns file. Wicks is Questionable, which is not out.
     third, tenth = _reads(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    # A Sleeper Out with no NFL game status of the trade week does not count, but its read still names him as news.
-    assert third[INJURY].reason == f"Barkley is out with no return week on file. {NO_REPORT_NOTE}"
+    # A Sleeper Out with no NFL game status of the trade week does not count, so the read never calls him out.
+    assert third[INJURY].reason == NO_REPORT_NOTE
     # Wicks is not out, and the snapshot has no injury report, so the read says no count ran.
     assert tenth[INJURY].reason == "The injury report is not available, so no count of report weeks ran."
 
@@ -1550,7 +1550,7 @@ def test_injury_never_reads_a_count_of_report_weeks(slow_snap):
 
 def test_the_injury_report_of_a_known_games_week_ends_at_the_completed_week(known_snap):
     # The player stats run through week 6 here, but the injury report ends at week 5.
-    # Weeks 3, 4, and 6 are three report weeks, so a read through week 6 would count three weeks in the fact.
+    # Weeks 3, 4, and 6 are on the report. The status of week 6 is the one of the trade week, so the fact names it.
     assert known_snap.as_of.stats_through == 6
     assert known_snap.as_of.completed_through == 5
     weeks = {3: "Questionable", 4: "Questionable", 6: "Questionable"}
@@ -1558,8 +1558,7 @@ def test_the_injury_report_of_a_known_games_week_ends_at_the_completed_week(know
     trade = _trade(3, [MEYERS], 2, [OLAVE])
     third, _ = _reads(trade, snap)
     assert third[INJURY].silent
-    assert "on the NFL injury report in 2 weeks this season before the trade." in (
-        trade_fact_sheet(trade, snap)[f"{OLAVE}.injury"].text)
+    assert trade_fact_sheet(trade, snap)[f"{OLAVE}.injury"].text == "Chris Olave is listed Questionable for week 6."
 
 
 def test_injury_without_the_injury_report_says_no_count_ran(snap):
@@ -1727,7 +1726,7 @@ def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
     fourth, _ = _reads(_trade(4, [COLLINS], 12, [STAR]), snap)
     assert CLIENT.settings.star_rank_by_position["RB"] == 12
     assert fourth[UPSIDE].reason == NO_UPSIDE
-    assert fourth["injury"].reason == f"Hampton is out with no return week on file. {NO_REPORT_NOTE}"
+    assert fourth["injury"].reason == NO_REPORT_NOTE
 
 
 def test_a_qb_4th_at_his_position_and_47th_on_the_chart_is_a_star_return_bet(snap):
@@ -2258,7 +2257,7 @@ def test_a_player_out_with_no_return_week_counts_for_his_projection_ahead_from_w
     assert lineup_value(snap, SAQUON) == 20
     assert due_back_week(snap, SAQUON) == 14
     third, _ = _reads(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert third["injury"].reason == f"Barkley is out with no return week on file. {NO_REPORT_NOTE}"
+    assert third["injury"].reason == NO_REPORT_NOTE
 
 
 def test_a_team_in_a_playoff_spot_whose_lineup_gain_comes_from_a_player_out_with_no_return_week_says_he_counts_as_back(
