@@ -118,8 +118,22 @@ function inPage({ scan, limits, scope }: InPage): unknown {
       const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
       return [r, g, b, a / 255];
     };
+    // A pseudo-element draws text when its computed content holds a quoted string that is not empty. Chrome resolves
+    // `content: attr(...)` to that string. A slash outside the quotes starts the alt text, which the screen does not draw.
+    // A pseudo-element with no such string, such as an empty glow or an image, is real background, so the scan keeps it.
+    const drawsText = (content: string) => {
+      for (const [token, text] of content.matchAll(/"((?:[^"\\]|\\.)*)"|\//g)) {
+        if (token === "/") return false;
+        if (text !== "") return true;
+      }
+      return false;
+    };
     return heroes.map((hero, h) => {
       (hero as HTMLElement).dataset.floorHero = String(h);
+      for (const el of hero.querySelectorAll<HTMLElement>("*")) {
+        if (drawsText(getComputedStyle(el, "::before").content)) el.dataset.floorBefore = "";
+        if (drawsText(getComputedStyle(el, "::after").content)) el.dataset.floorAfter = "";
+      }
       const texts = new Map<Element, number[][]>();
       const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -261,10 +275,10 @@ export async function scanHeroPixels(page: Page, scope?: string): Promise<string
   const heroes = (await page.evaluate<unknown, InPage>(inPage, { scan: "heroes", limits: LIMITS, scope })) as HeroScan[];
   if (heroes.length === 0) return [];
   const hide = await page.addStyleTag({
-    // A pseudo-element of a text draws a copy of the text, such as the shimmer of a stage line, so it hides with the text.
+    // A marked pseudo-element draws a copy of a text, such as the shimmer of a stage line, so it hides with the text.
     content:
       "[data-floor-text] { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; } " +
-      "[data-floor-text]::before, [data-floor-text]::after { visibility: hidden !important; }",
+      "[data-floor-before]::before, [data-floor-after]::after { visibility: hidden !important; }",
   });
   try {
     // Two frames, so the browser paints the hidden text before the screenshot.
@@ -290,9 +304,11 @@ export async function scanHeroPixels(page: Page, scope?: string): Promise<string
   } finally {
     await hide.evaluate((el) => (el as Element).remove());
     await page.evaluate(() => {
-      for (const el of document.querySelectorAll<HTMLElement>("[data-floor-hero], [data-floor-text]")) {
+      for (const el of document.querySelectorAll<HTMLElement>("[data-floor-hero], [data-floor-text], [data-floor-before], [data-floor-after]")) {
         delete el.dataset.floorHero;
         delete el.dataset.floorText;
+        delete el.dataset.floorBefore;
+        delete el.dataset.floorAfter;
       }
     });
   }
