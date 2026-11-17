@@ -143,6 +143,39 @@ def test_questionable_and_doubtful_never_count(thursday, status):
     assert all("stay at 2." in text and "Nacua" not in text for text in texts)
 
 
+NACUA_GSIS = "00-0036000"
+
+# Each case: Nacua's Sleeper status, his NFL game status by week, and the Week line of weeks 9 and 10. The trade week is
+# 9. Nacua is out only for an NFL Out or Doubtful of week 9. A Sleeper Out with no row for week 9 never counts, as for
+# Kenneth Walker III, whom Sleeper kept Out after the game he missed. A Doubtful never counts in the next week.
+THE_GAME_STATUS_CASES = {
+    "sleeper out with no game status for the trade week":
+        ("Out", {}, "stay at 2.", "stay at 2."),
+    "sleeper out with a trade week Questionable":
+        ("Out", {9: "Questionable"}, "stay at 2.", "stay at 2."),
+    "sleeper doubtful with no game status for the trade week":
+        ("Doubtful", {}, "stay at 2.", "stay at 2."),
+    "trade week Out":
+        (None, {9: "Out"}, "stay at 1.", "stay at 2."),
+    "trade week Doubtful":
+        (None, {9: "Doubtful"}, "stay at 1.", "stay at 2."),
+    "trade week Questionable":
+        (None, {9: "Questionable"}, "stay at 2.", "stay at 2."),
+}
+
+
+@pytest.mark.parametrize("sleeper, report, week_9, week_10", THE_GAME_STATUS_CASES.values(),
+                         ids=THE_GAME_STATUS_CASES.keys())
+def test_the_week_line_reads_the_nfl_game_status_of_the_trade_week(thursday, sleeper, report, week_9, week_10):
+    listed = report.get(9) if report.get(9) in ("Out", "Doubtful") else None
+    snapshot = _nacua(thursday, sleeper)
+    snapshot = snapshot.model_copy(update={"id_map": {**(snapshot.id_map or {}), NACUA: NACUA_GSIS},
+                                           "injuries": {NACUA_GSIS: report}})
+    texts = _texts(TRADE_A, snapshot, 10)
+    assert week_9 in texts[0] and (f"Nacua is listed {listed}." in texts[0] if listed else "Nacua" not in texts[0])
+    assert week_10 in texts[1] and "Nacua" not in texts[1]
+
+
 def test_a_three_side_trade_gives_week_lines_for_every_side(thursday):
     # AT-5: roster 4 gives Rome Odunze to roster 12, roster 12 gives Garrett Wilson to roster 7, and roster 7 gives
     # Ryan Flournoy to roster 4.
