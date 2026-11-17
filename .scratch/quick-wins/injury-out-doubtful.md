@@ -1,7 +1,7 @@
 # The analyzer counts an injury only for Out or Doubtful
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-injury-out-doubtful`.
 Source: the session of 2026-11-17.
 Boundary: holds. 3 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -93,3 +93,8 @@ Test verdict: PASS
 - Brian, 2026-11-17: the status must be the one of the current week. An Out from the last week needs the reports of this week. The snapshot holds the NFL injury report by week (`Snapshot.injuries`), and `week_line.py` already marks Tuesday and Wednesday as the days of a stale Out (`LAST_GAME_DAYS`).
 - Brian, 2026-11-17: an Out with a near return stays news, with no mark. The NFL practice status fills the days before the game status. Source: the nflverse file `injuries_<season>.csv.gz` (`INJURIES_URL`), from the NFL injury API.
 - The case of Brian: Kenneth Walker III, Sleeper id `8151`, KC. He missed week 10 and news has him back in week 11. On 2026-11-17 the Sleeper file has him `Out` (groin), and `data/nfl/2026/returns.json` has no row for him. Today the injury Measure reads him against the side that gets him: "out with no return week on file". His Out must not count in the trade. Build the red test of item 1 on this case.
+- Closes with the squash merge of the PR of `win-injury-out-doubtful`. Commits: `7c7085aa`, `2e978737`, `d02c82e9`, `c3da67a6`, `ca308bcb`, `1c905439`, `b94c3ec4`. Date: 2026-11-17.
+  The loop of each item went red, then green, and the quick Judge gave PASS to all 3 items; at the last item the pipeline suite had 1698 passed, the API suite 581, and the analyzer package 30.
+  Later: `analyze-response.json` in the API tests and the site fixtures still holds the old fact text "listed Questionable now, with no return week on file", and the Measure text "out for long or often" still says "often".
+  Later: the nflverse file has no practice day, so the practice fact names the week only; `.scratch/stakes/pipeline/research.md` still lists the removed `INJURY_WEEKS`.
+  Read 12 files: AGENTS.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, GLOSSARY.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, .claude/plugin/skills/implement/build.md, packages/analyzer/python/src/analyzer/measures.py, packages/analyzer/python/src/analyzer/trade_facts.py, packages/analyzer/python/src/analyzer/week_line.py, packages/league/python/src/league/nflverse.py, .scratch/grade-clarity/decisions/02-research-depth-chart-freshness.notes.md.
