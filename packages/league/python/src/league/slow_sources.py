@@ -26,6 +26,7 @@ from league.nflverse import (
     read_id_map,
     read_injuries,
     read_kickoffs,
+    read_practice,
     read_schedules,
 )
 from league.nflverse_expected import read_expected
@@ -49,6 +50,9 @@ class SlowSources(BaseModel):
     points_allowed: dict[str, dict[str, PositionAllowed]] | None = None
     # The injury report status by gsis_id and week. `id_map` joins it to Sleeper ids, as for the depth chart.
     injuries: dict[str, dict[int, str]] | None = None
+    # The NFL practice status by gsis_id and week, from the same file as the injury report. The injury facts read the
+    # practice status of the trade week while the report has no game status yet, so its absence is no name in `missing`.
+    practice: dict[str, dict[int, str]] | None = None
     # The expected window of each player by Sleeper id. Only the expected gap Measure reads it.
     # That Measure says in its own reason when the data is not there. A None here is "expected_points" in `missing`,
     # so the sources line shows that the grade did not read the file.
@@ -118,7 +122,8 @@ def load_slow_sources(cache_dir: Path, season: int, week: int, history_root: Pat
     team_stats = _read("team_stats", read_team_stats, team_stats_path, week - 1) if team_stats_path.exists() else None
     # The two go by the names of their files in `missing`, because the sources line names the files the grade read.
     named = {**sources, "expected_points": expected, "player_weeks": wopr}
-    return SlowSources(**sources, depth_chart_dt=depth.dt if depth else None, expected=expected, wopr=wopr,
+    practice = _read("practice", read_practice, injuries_path) if injuries_path.exists() else None
+    return SlowSources(**sources, practice=practice, depth_chart_dt=depth.dt if depth else None, expected=expected, wopr=wopr,
                        kickoffs=kickoffs, team_stats=team_stats,
                        missing=[name for name, source in named.items() if source is None])
 

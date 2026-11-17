@@ -4,11 +4,10 @@ opponent of each player it gets, each bye, each player who is out, and each play
 as a plain fact for the page, and the Advisor makes the call.
 """
 from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
 
-from analyzer.measures import _join, _short_names
+from analyzer.measures import LONG_OUT_STATUSES, _join, _short_names, trade_week_report_status
 from analyzer.trade import ProposedTrade
 from analyzer.tunables import STEP_UP_CHART_HOURS
 from league.lineup import above_the_line
@@ -17,14 +16,10 @@ from league.points_allowed import most_points_text, opponent_rank
 from league.ranks import RANKED_POSITIONS, _back_in_a_known_game
 from league.snapshot import Snapshot, SnapshotPlayer
 
-# The Sleeper statuses that keep a player out of both weeks. An NFL player on IR misses at least 4 games.
-# Decision 02 of grade-clarity. "Out" counts for the trade week only, and Questionable and Doubtful never count.
-LONG_OUT_STATUSES = ("IR", "PUP", "NA", "Sus")
-OUT = "Out"
-# Sleeper keeps the status of the last game until the new injury reports of the week, so on a Tuesday and a Wednesday
-# an Out is the one of the last game. The day is the one in US Eastern time, where the NFL week runs.
-EASTERN = ZoneInfo("America/New_York")
-LAST_GAME_DAYS = (1, 2)
+# The NFL game statuses of the trade week that make a player out in that week. Sleeper keeps the status of the last
+# game until the new injury reports, so a Sleeper Out or Doubtful with no game status for the trade week never counts.
+# Decision 02 of grade-clarity, rule 4, read for the NFL game status. Questionable never counts.
+OUT_REPORTS = ("Out", "Doubtful")
 
 
 class WeekLine(BaseModel):
@@ -124,8 +119,9 @@ def _opponent_sentence(snapshot: Snapshot, player_id: str, name: str, week: int)
 def _out_reason(snapshot: Snapshot, player: SnapshotPlayer, week: int) -> tuple[str, int | None] | None:
     """Why the player is out that week, as a kind and a return week, or None when he can play. Decision 02.
 
-    Out for the season and a return week on file after the week count in each week. IR, PUP, NA, and Sus count in
-    each week too. Out counts in the trade week only. Questionable and Doubtful never count.
+    Out for the season and a return week on file after the week count in each week. The Sleeper statuses IR, PUP, NA,
+    and Sus count in each week too. An NFL game status of Out or Doubtful of the trade week counts in the trade week
+    only. A Sleeper Out or Doubtful with no game status for the trade week never counts, and Questionable never does.
     The player can be on no roster, as the player ahead on a depth chart often is.
     A player with a returns row by the trade week who played in its known games is back, as `due_back_week` reads
     him, though his status can still say out.
@@ -140,14 +136,22 @@ def _out_reason(snapshot: Snapshot, player: SnapshotPlayer, week: int) -> tuple[
     status = player.injury_status
     if status in LONG_OUT_STATUSES:
         return status, None
-    if status == OUT and week == snapshot.week:
-        return OUT, None
+    if week == snapshot.week and (report := _counted_report(snapshot, player)) is not None:
+        return report, None
     return None
 
 
-def counted_status(status: str | None) -> str | None:
-    """The Sleeper status as the Week line reads it: an out status, or None for a status that never counts."""
-    return status if status == OUT or status in LONG_OUT_STATUSES else None
+def _counted_report(snapshot: Snapshot, player: SnapshotPlayer) -> str | None:
+    """The NFL game status of the trade week when it is Out or Doubtful, else None."""
+    report = trade_week_report_status(snapshot, player.player_id)
+    return report if report in OUT_REPORTS else None
+
+
+def counted_status(snapshot: Snapshot, player: SnapshotPlayer) -> tuple[str | None, str | None]:
+    """The statuses of the player as the Week line reads them: the Sleeper status when it is IR, PUP, NA, or Sus, and
+    the NFL game status of the trade week when it is Out or Doubtful. None for a status that never counts."""
+    status = player.injury_status
+    return (status if status in LONG_OUT_STATUSES else None), _counted_report(snapshot, player)
 
 
 def chart_is_fresh(snapshot: Snapshot) -> bool:
@@ -171,21 +175,15 @@ def _steps_up(snapshot: Snapshot, player_id: str, week: int) -> bool:
             and _out_reason(snapshot, ahead, week) is not None)
 
 
-def last_game_status(snapshot: Snapshot) -> bool:
-    """True when the grade runs on a Tuesday or a Wednesday in US Eastern time, so an Out is from the last game."""
-    graded_at = snapshot.as_of.graded_at
-    return graded_at is not None and graded_at.astimezone(EASTERN).weekday() in LAST_GAME_DAYS
-
-
-def _absence_words(snapshot: Snapshot, kind: str, back: int | None, many: bool) -> str:
+def _absence_words(kind: str, back: int | None, many: bool) -> str:
     """The words after the names of the players out for one reason, such as "is on IR" or "are listed Out"."""
     verb = "are" if many else "is"
     if kind == "season":
         return f"{verb} out for the season"
     if kind == "until":
         return f"{verb} out until week {back}"
-    if kind == OUT:
-        return f"{'were' if many else 'was'} listed Out last week" if last_game_status(snapshot) else f"{verb} listed Out"
+    if kind in OUT_REPORTS:
+        return f"{verb} listed {kind}"
     return {"IR": f"{verb} on IR", "PUP": f"{verb} on the PUP list", "NA": f"{verb} not active",
             "Sus": f"{verb} suspended"}[kind]
 
@@ -197,5 +195,5 @@ def _absence_sentences(snapshot: Snapshot, players: list[str], names: dict[str, 
         reason = _out_reason(snapshot, snapshot.players[pid], week)
         if reason is not None:
             by_reason.setdefault(reason, []).append(names[pid])
-    return [f"{_join(out)} {_absence_words(snapshot, kind, back, len(out) > 1)}."
+    return [f"{_join(out)} {_absence_words(kind, back, len(out) > 1)}."
             for (kind, back), out in by_reason.items()]

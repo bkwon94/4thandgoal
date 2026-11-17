@@ -16,7 +16,6 @@ from analyzer.tunables import (
     EXPECTED_MEASURE_ON,
     FIT_THRESHOLD,
     HANDCUFF_CARRY_SHARE,
-    INJURY_WEEKS,
     OUT_OF_RACE_WEEKS,
     SUPERSTAR_RANK,
     WOPR_SWING,
@@ -791,6 +790,41 @@ def _out_with_no_near_return(snapshot: Snapshot, player_id: str) -> bool:
     return week is None or week > snapshot.week + RETURN_WINDOW_WEEKS
 
 
+# The Sleeper statuses that keep a player out for some time. A plain Sleeper "Out" is not one of them: an Out counts
+# only when the NFL game status of the trade week says so.
+LONG_OUT_STATUSES = OUT_STATUSES - {"Out"}
+
+
+def trade_week_report_status(snapshot: Snapshot, player_id: str) -> str | None:
+    """The NFL game status of the trade week for the player, Out, Doubtful, or Questionable, else None.
+
+    None when the injury report or the id map is not in the snapshot, or the player has no row for the trade week.
+    """
+    id_map, injuries = snapshot.id_map or {}, snapshot.injuries or {}
+    if player_id not in id_map:
+        return None
+    return injuries.get(id_map[player_id], {}).get(snapshot.week)
+
+
+def injury_counts(snapshot: Snapshot, player_id: str) -> bool:
+    """True when the player is out for the season, on IR, PUP, NA, or Sus, or listed Out, each with no near return,
+    or Doubtful, by the NFL game status of the trade week.
+
+    A Sleeper Out or Doubtful with no game status for the trade week never counts, because Sleeper lags the NFL.
+    A near return is a return week no later than the trade week plus RETURN_WINDOW_WEEKS.
+    """
+    if player_id in snapshot.out_for_season:
+        return True
+    report = trade_week_report_status(snapshot, player_id)
+    if report == "Doubtful":
+        return True
+    if report == "Out" or snapshot.players[player_id].injury_status in LONG_OUT_STATUSES:
+        week = snapshot.returns.get(player_id)
+        # The PRD's "now" is the trade week N, so the window counts from N, not from the last completed week.
+        return week is None or week > snapshot.week + RETURN_WINDOW_WEEKS
+    return False
+
+
 def _report_weeks(snapshot: Snapshot, player_id: str) -> int | None:
     """The count of weeks through the last completed week with the player on the injury report.
 
@@ -815,7 +849,10 @@ def _out_sentence(snapshot: Snapshot, player_id: str, name: str) -> str | None:
         return f"{name} is out for the season."
     if _due_back(snapshot, player_id):
         return f"{name} is out until week {snapshot.returns[player_id]}."
-    if snapshot.players[player_id].injury_status in OUT_STATUSES:
+    if trade_week_report_status(snapshot, player_id) == "Doubtful":
+        return f"{name} is doubtful in week {snapshot.week}."
+    # A stale Sleeper Out is no injury that counts, so it gets no sentence. `injury_fact_text` says what is known.
+    if snapshot.players[player_id].injury_status in OUT_STATUSES and injury_counts(snapshot, player_id):
         return f"{name} is out with no return week on file."
     return None
 
@@ -838,8 +875,46 @@ def _injury_text(snapshot: Snapshot, player_id: str, name: str) -> str:
     return " ".join(sentence for sentence in (out, report) if sentence is not None)
 
 
+PRACTICE_SENTENCES = {
+    "Full Participation in Practice": "was a full participant in practice",
+    "Limited Participation in Practice": "was a limited participant in practice",
+    "Did Not Participate In Practice": "did not take part in practice",
+}
+
+
+def _practice_status(snapshot: Snapshot, player_id: str) -> str | None:
+    """The NFL practice status of the trade week for the player, as the file writes it, else None."""
+    id_map, practice = snapshot.id_map or {}, snapshot.practice or {}
+    if player_id not in id_map:
+        return None
+    return practice.get(id_map[player_id], {}).get(snapshot.week)
+
+
+def injury_fact_text(snapshot: Snapshot, player_id: str, name: str) -> str | None:
+    """The one plain statement of the injury fact for the player, or None when he has no status to state.
+
+    An injury that counts, or a return week on file, reads as the injury Measure reads it. An NFL game status of the
+    trade week that does not count reads as a plain status. A Sleeper status with no game status for the trade week is
+    the one of the last game, so the fact gives the latest practice status of the trade week, or says the report has
+    no game status yet. It never holds a count of injury report weeks.
+    """
+    if (out := _out_sentence(snapshot, player_id, name)) is not None:
+        return out
+    if (report := trade_week_report_status(snapshot, player_id)) is not None:
+        return f"{name} is listed {report} for week {snapshot.week}."
+    status = snapshot.players[player_id].injury_status
+    if status is None:
+        return None
+    practice = PRACTICE_SENTENCES.get(_practice_status(snapshot, player_id) or "")
+    if practice is not None:
+        return f"{name} {practice} in week {snapshot.week}."
+    return (f"{name}'s Sleeper status is {status} from the last game, and the NFL report of week {snapshot.week} "
+            "has no game status yet.")
+
+
 def _injury(snapshot: Snapshot, side: Side) -> MeasureRead:
-    """Injury: a player it gets who is out for the season, out with no near return, or on the report in many weeks.
+    """Injury: a player it gets who counts by `injury_counts`: out for the season, out with no near return, or
+    Doubtful by the NFL game status of the trade week.
 
     With no such player, the read still names each player it gets who is out now, because his return week is news.
     """
@@ -849,9 +924,7 @@ def _injury(snapshot: Snapshot, side: Side) -> MeasureRead:
     for pid in side.gets:
         if pid in exempt:
             continue
-        # The season mark comes first, then no near return, then the count of report weeks, in the order the read checks them.
-        if (pid in snapshot.out_for_season or _out_with_no_near_return(snapshot, pid)
-                or (_report_weeks(snapshot, pid) or 0) >= INJURY_WEEKS):
+        if injury_counts(snapshot, pid):
             return MeasureRead(name=INJURY, reason=_injury_text(snapshot, pid, names[pid]))
     out_now = [_injury_text(snapshot, pid, names[pid]) for pid in side.gets
                if _out_sentence(snapshot, pid, names[pid]) is not None]

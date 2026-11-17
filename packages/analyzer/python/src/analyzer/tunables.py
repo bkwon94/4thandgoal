@@ -35,9 +35,7 @@ STEP_UP_CHART_HOURS = 48
 # 0.7 times air yards share. The 8 counts only the target share part: 1.5 times a 5-point share swing is about 8.
 WOPR_SWING = 8
 
-# Injury: a player the side gets who is out now, or who was on the injury report in many weeks, reads against it.
-# The count of weeks on the injury report, through the last completed week, that makes a player injury-prone.
-INJURY_WEEKS = 3
+# Injury: a player the side gets who counts by `injury_counts` of measures.py reads against it.
 # The near return reads RETURN_WINDOW_WEEKS of league/tunables.py, because the lineup reads it too.
 
 # Handcuff: a backup to the roster's own starting running back is insurance only when he carries the ball little.

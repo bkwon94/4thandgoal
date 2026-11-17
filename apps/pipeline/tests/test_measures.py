@@ -33,6 +33,7 @@ from analyzer.measures import (
     team_race,
     trade_handcuffs,
 )
+from analyzer.sell_facts import sell_sheet
 from analyzer.team_facts import team_facts
 from analyzer.trade import (
     ProposedTrade,
@@ -1499,10 +1500,14 @@ def test_a_running_backs_wopr_is_never_read(snap):
         "the shares are flat, and the players you get have more red-zone use.")
 
 
+NO_REPORT_NOTE = "The injury report is not available, so no count of report weeks ran."
+
+
 def test_injury_reads_a_player_out_now_with_no_return_week(snap):
     # Saquon Barkley is Out and has no row in the returns file. Wicks is Questionable, which is not out.
     third, tenth = _reads(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert third[INJURY].reason == "Barkley is out with no return week on file."
+    # A Sleeper Out with no NFL game status of the trade week does not count, so the read never calls him out.
+    assert third[INJURY].reason == NO_REPORT_NOTE
     # Wicks is not out, and the snapshot has no injury report, so the read says no count ran.
     assert tenth[INJURY].reason == "The injury report is not available, so no count of report weeks ran."
 
@@ -1511,7 +1516,7 @@ def test_injury_names_the_return_week_of_a_player_out_now(slow_snap):
     # The trade week is 6, so a return in week 9 is past the return window.
     snap = slow_snap.model_copy(update={"returns": {SAQUON: 9}})
     third, _ = _reads(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert third[INJURY].reason == "Barkley is out until week 9."
+    assert third[INJURY].reason == "Barkley is out until week 9. Saquon Barkley has no injury report count on file."
 
 
 @pytest.mark.parametrize("week", [7, 8])
@@ -1537,31 +1542,108 @@ def _with_report_weeks(snap, gsis: str, weeks: list[int]):
     return snap.model_copy(update={"injuries": injuries})
 
 
-def test_injury_reads_the_count_of_report_weeks_and_never_counts_the_trade_week(slow_snap):
-    # Weeks 2, 3, and 6 are three weeks, but week 6 is the trade week, so only two count and the read is silent.
-    third, _ = _reads(_trade(3, [MEYERS], 2, [OLAVE]), _with_report_weeks(slow_snap, OLAVE_GSIS, [3]))
-    assert third[INJURY].silent
+def test_injury_never_reads_a_count_of_report_weeks(slow_snap):
+    # Weeks 2, 3, 4, and 6 are on the report, but the Questionable status of week 6 and the past weeks never count.
     third, _ = _reads(_trade(3, [MEYERS], 2, [OLAVE]), _with_report_weeks(slow_snap, OLAVE_GSIS, [3, 4]))
-    assert third[INJURY].reason == "Olave was on the injury report in 3 of 5 weeks."
+    assert third[INJURY].silent
 
 
 def test_the_injury_report_of_a_known_games_week_ends_at_the_completed_week(known_snap):
     # The player stats run through week 6 here, but the injury report ends at week 5.
-    # Weeks 3, 4, and 6 are three report weeks, so a read through week 6 would name the count.
+    # Weeks 3, 4, and 6 are on the report. The status of week 6 is the one of the trade week, so the fact names it.
     assert known_snap.as_of.stats_through == 6
     assert known_snap.as_of.completed_through == 5
-    snap = known_snap.model_copy(update={"id_map": {OLAVE: OLAVE_GSIS},
-                                         "injuries": {OLAVE_GSIS: {3: "Questionable", 4: "Questionable", 6: "Out"}}})
+    weeks = {3: "Questionable", 4: "Questionable", 6: "Questionable"}
+    snap = known_snap.model_copy(update={"id_map": {OLAVE: OLAVE_GSIS}, "injuries": {OLAVE_GSIS: weeks}})
     trade = _trade(3, [MEYERS], 2, [OLAVE])
     third, _ = _reads(trade, snap)
     assert third[INJURY].silent
-    assert "on the NFL injury report in 2 weeks this season before the trade." in (
-        trade_fact_sheet(trade, snap)[f"{OLAVE}.injury"].text)
+    assert trade_fact_sheet(trade, snap)[f"{OLAVE}.injury"].text == "Chris Olave is listed Questionable for week 6."
 
 
 def test_injury_without_the_injury_report_says_no_count_ran(snap):
     third, _ = _reads(_trade(3, [MEYERS], 2, [OLAVE]), snap)
     assert "The injury report is not available" in third["injury"].reason
+
+
+# Matthew Golden and Pat Freiermuth are on roster 6 and have an id map entry, so roster 3 gets both from roster 6.
+GOLDEN, GOLDEN_GSIS, FREIERMUTH_GSIS = "12501", "00-0040667", "00-0036894"
+
+# Each case: Golden's and Freiermuth's Sleeper status, returns row, and report by week. The read names the first
+# player it gets who counts, so its reason names only him. No player who counts gives the silent read.
+THE_RULE_CASES = {
+    "sleeper out with no returns row and no trade week report never counts":
+        (("Out", None, {}), ("IR", None, {}), "Freiermuth is out with no return week on file."),
+    "trade week report Doubtful counts":
+        ((None, None, {6: "Questionable"}), (None, None, {6: "Doubtful"}), "Freiermuth is doubtful in week 6."),
+    "trade week report Questionable never counts":
+        ((None, None, {6: "Questionable"}), (None, None, {6: "Questionable"}), None),
+    "trade week report Out with no near return counts":
+        ((None, None, {6: "Questionable"}), ("Out", None, {6: "Out"}), "Freiermuth is out with no return week on file."),
+    "trade week report Out with a near return never counts":
+        (("Out", 7, {6: "Out"}), (None, None, {6: "Doubtful"}), "Freiermuth is doubtful in week 6."),
+    "sleeper IR with no near return counts":
+        (("IR", None, {}), (None, None, {}), "Golden is out with no return week on file."),
+    "a count of past report weeks alone never counts":
+        ((None, None, {week: "Questionable" for week in range(1, 6)}), ("IR", None, {}),
+         "Freiermuth is out with no return week on file."),
+}
+
+
+@pytest.mark.parametrize("first, second, reason", THE_RULE_CASES.values(), ids=THE_RULE_CASES.keys())
+def test_injury_counts_only_an_out_or_doubtful_of_the_trade_week_and_a_sleeper_out_of_no_near_return(
+        slow_snap, first, second, reason):
+    # Roster 3 gets Golden, then Freiermuth. The trade week is 6.
+    returns = {pid: week for pid, (_, week, _) in ((GOLDEN, first), (FREIERMUTH, second)) if week is not None}
+    snap = slow_snap.model_copy(update={
+        "returns": returns,
+        "injuries": {GOLDEN_GSIS: first[2], FREIERMUTH_GSIS: second[2]}})
+    snap = _with_status(_with_status(snap, GOLDEN, first[0]), FREIERMUTH, second[0])
+    third, _ = _reads(_trade(3, [DIGGS], 6, [GOLDEN, FREIERMUTH]), snap)
+    if reason is None:
+        assert third[INJURY].silent
+    else:
+        assert third[INJURY].reason == reason
+
+
+# Each case: Golden's Sleeper status, returns row, report by week, practice by week, then the text of the injury fact
+# of the trade fact sheet and of the sell high sheet. The trade week is 6, so the report of week 5 is the week before.
+GOLDEN_NAME = "Matthew Golden"
+STALE_OUT = f"{GOLDEN_NAME}'s Sleeper status is Out from the last game, and the NFL report of week 6 has no game status yet."
+THE_FACT_CASES = {
+    "a stale sleeper out with no trade week row says the status is from the last game":
+        ("Out", None, {}, {}, STALE_OUT, STALE_OUT),
+    "a stale sleeper out with a practice row gives the practice status":
+        ("Out", None, {}, {6: "Limited Participation in Practice"},
+         f"{GOLDEN_NAME} was a limited participant in practice in week 6.",
+         f"{GOLDEN_NAME} was a limited participant in practice in week 6."),
+    "a trade week Questionable is a plain status":
+        (None, None, {6: "Questionable"}, {},
+         f"{GOLDEN_NAME} is listed Questionable for week 6.", f"{GOLDEN_NAME} is listed Questionable for week 6."),
+    "a trade week Doubtful counts":
+        (None, None, {6: "Doubtful"}, {},
+         f"{GOLDEN_NAME} is doubtful in week 6.", f"{GOLDEN_NAME} is doubtful in week 6."),
+    "a sleeper IR with no near return counts":
+        ("IR", None, {}, {},
+         f"{GOLDEN_NAME} is out with no return week on file.", f"{GOLDEN_NAME} is out with no return week on file."),
+    "past report weeks alone give no count":
+        (None, None, {week: "Questionable" for week in range(1, 6)}, {},
+         f"{GOLDEN_NAME} has no injury status now.", f"{GOLDEN_NAME} is not out now."),
+}
+
+
+@pytest.mark.parametrize("status, back, report, practice, trade_text, sell_text", THE_FACT_CASES.values(),
+                         ids=THE_FACT_CASES.keys())
+def test_the_injury_facts_name_only_an_out_or_doubtful_and_the_practice_status_of_the_trade_week(
+        slow_snap, status, back, report, practice, trade_text, sell_text):
+    snap = slow_snap.model_copy(update={
+        "returns": {} if back is None else {GOLDEN: back},
+        "injuries": {GOLDEN_GSIS: report},
+        "practice": {GOLDEN_GSIS: practice}})
+    snap = _with_status(snap, GOLDEN, status)
+    trade = trade_fact_sheet(_trade(3, [DIGGS], 6, [GOLDEN]), snap)
+    assert trade[f"{GOLDEN}.injury"].text == trade_text
+    assert sell_sheet(snap, 6)[f"{GOLDEN}.injury"].text == sell_text
 
 
 def _out_for_season(snap, *players: str):
@@ -1644,7 +1726,7 @@ def test_a_rb_13th_at_his_position_is_no_star_return_bet(snap):
     fourth, _ = _reads(_trade(4, [COLLINS], 12, [STAR]), snap)
     assert CLIENT.settings.star_rank_by_position["RB"] == 12
     assert fourth[UPSIDE].reason == NO_UPSIDE
-    assert fourth["injury"].reason == "Hampton is out with no return week on file."
+    assert fourth["injury"].reason == NO_REPORT_NOTE
 
 
 def test_a_qb_4th_at_his_position_and_47th_on_the_chart_is_a_star_return_bet(snap):
@@ -2175,7 +2257,7 @@ def test_a_player_out_with_no_return_week_counts_for_his_projection_ahead_from_w
     assert lineup_value(snap, SAQUON) == 20
     assert due_back_week(snap, SAQUON) == 14
     third, _ = _reads(_trade(3, [WICKS], 10, [SAQUON]), snap)
-    assert third["injury"].reason == "Barkley is out with no return week on file."
+    assert third["injury"].reason == NO_REPORT_NOTE
 
 
 def test_a_team_in_a_playoff_spot_whose_lineup_gain_comes_from_a_player_out_with_no_return_week_says_he_counts_as_back(

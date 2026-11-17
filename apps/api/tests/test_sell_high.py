@@ -135,7 +135,9 @@ def test_the_injury_fact_gives_the_text_of_the_injury_measure_and_drops_no_injur
         if " is out " in lineups[pid] or " is out for the season" in lineups[pid]:
             assert " is out " in text
         else:
-            assert " is not out now." in text or " was on the injury report in " in text
+            # A player who is not out has no count of report weeks, only a plain status of the trade week.
+            assert " is not out now." in text or " is listed Questionable for week " in text or " from the last game, and " in text
+            assert "injury report in" not in text
 
 
 def test_the_trend_and_the_schedule_read_the_last_4_weeks_and_the_weeks_ahead(api, seller):

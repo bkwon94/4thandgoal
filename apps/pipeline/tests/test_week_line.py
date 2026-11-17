@@ -33,12 +33,26 @@ TUESDAY = datetime(2026, 11, 3, 12, 0, tzinfo=ET)
 COOPER, WASHINGTON = "13276", "9487"
 
 
+def _reported_out(snapshot):
+    """The snapshot with an NFL game status Out for the trade week for each player whose Sleeper status is Out.
+
+    The saved NFL injury report has no row for week 9, so the rows stand in for the report of the trade week. Each
+    player gets an id map entry of his own, because the saved id map holds few players.
+    """
+    out = [player for player in [*snapshot.players.values(), *snapshot.ahead_on_chart.values()]
+           if player.injury_status == "Out"]
+    gsis = {player.player_id: f"00-{player.player_id}" for player in out}
+    return snapshot.model_copy(update={
+        "id_map": {**(snapshot.id_map or {}), **gsis},
+        "injuries": {**(snapshot.injuries or {}), **{gsis[player.player_id]: {snapshot.week: "Out"} for player in out}}})
+
+
 def _snapshot(now: datetime):
     returns_file = returns_path(CLIENT.nfl_dir, 2026)
     slow = load_slow_sources(NFLVERSE, 2026, 9, SAVED / "history")
-    return build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, slow, trade_week=9,
-                          returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
-                          now=now, client=CLIENT)
+    return _reported_out(build_snapshot(
+        load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, slow, trade_week=9,
+        returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file), now=now, client=CLIENT))
 
 
 @pytest.fixture(scope="module")
@@ -94,9 +108,9 @@ def test_trade_a_names_the_home_game_of_the_player_the_other_side_gets(thursday)
     assert texts[1].endswith("BUF at home, 3rd most points to WRs.")
 
 
-def test_a_grade_on_a_tuesday_says_listed_out_last_week():
+def test_a_grade_on_a_tuesday_reads_the_game_status_of_the_trade_week_as_any_other_day():
     texts = _texts(TRADE_A, _snapshot(TUESDAY), 10)
-    assert texts[0].endswith("Egbuka and Samuel were listed Out last week.")
+    assert texts[0].endswith("Egbuka and Samuel are listed Out.")
     assert "Out" not in texts[1]
 
 
@@ -130,7 +144,9 @@ def test_a_long_absence_counts_in_both_weeks(thursday, change, week_9, week_10):
 
 
 def test_out_and_a_return_in_the_next_week_count_in_the_trade_week_only(thursday):
-    for snapshot, words in ((_nacua(thursday, "Out"), "Egbuka, Samuel and Nacua are listed Out."),
+    reported = _nacua(thursday).model_copy(update={
+        "id_map": {**thursday.id_map, NACUA: NACUA_GSIS}, "injuries": {**thursday.injuries, NACUA_GSIS: {9: "Out"}}})
+    for snapshot, words in ((reported, "Egbuka, Samuel and Nacua are listed Out."),
                             (_nacua(thursday, back=10), "Nacua is out until week 10.")):
         texts = _texts(TRADE_A, snapshot, 10)
         assert "stay at 1." in texts[0] and words in texts[0]
@@ -141,6 +157,39 @@ def test_out_and_a_return_in_the_next_week_count_in_the_trade_week_only(thursday
 def test_questionable_and_doubtful_never_count(thursday, status):
     texts = _texts(TRADE_A, _nacua(thursday, status), 10)
     assert all("stay at 2." in text and "Nacua" not in text for text in texts)
+
+
+NACUA_GSIS = "00-0036000"
+
+# Each case: Nacua's Sleeper status, his NFL game status by week, and the Week line of weeks 9 and 10. The trade week is
+# 9. Nacua is out only for an NFL Out or Doubtful of week 9. A Sleeper Out with no row for week 9 never counts, as for
+# Kenneth Walker III, whom Sleeper kept Out after the game he missed. A Doubtful never counts in the next week.
+THE_GAME_STATUS_CASES = {
+    "sleeper out with no game status for the trade week":
+        ("Out", {}, "stay at 2.", "stay at 2."),
+    "sleeper out with a trade week Questionable":
+        ("Out", {9: "Questionable"}, "stay at 2.", "stay at 2."),
+    "sleeper doubtful with no game status for the trade week":
+        ("Doubtful", {}, "stay at 2.", "stay at 2."),
+    "trade week Out":
+        (None, {9: "Out"}, "stay at 1.", "stay at 2."),
+    "trade week Doubtful":
+        (None, {9: "Doubtful"}, "stay at 1.", "stay at 2."),
+    "trade week Questionable":
+        (None, {9: "Questionable"}, "stay at 2.", "stay at 2."),
+}
+
+
+@pytest.mark.parametrize("sleeper, report, week_9, week_10", THE_GAME_STATUS_CASES.values(),
+                         ids=THE_GAME_STATUS_CASES.keys())
+def test_the_week_line_reads_the_nfl_game_status_of_the_trade_week(thursday, sleeper, report, week_9, week_10):
+    listed = report.get(9) if report.get(9) in ("Out", "Doubtful") else None
+    snapshot = _nacua(thursday, sleeper)
+    snapshot = snapshot.model_copy(update={"id_map": {**(snapshot.id_map or {}), NACUA: NACUA_GSIS},
+                                           "injuries": {NACUA_GSIS: report}})
+    texts = _texts(TRADE_A, snapshot, 10)
+    assert week_9 in texts[0] and (f"Nacua is listed {listed}." in texts[0] if listed else "Nacua" not in texts[0])
+    assert week_10 in texts[1] and "Nacua" not in texts[1]
 
 
 def test_a_three_side_trade_gives_week_lines_for_every_side(thursday):
@@ -217,9 +266,9 @@ def newest_chart_dir(tmp_path_factory):
 def _newest(directory: Path, now: datetime | None):
     returns_file = returns_path(CLIENT.nfl_dir, 2026)
     slow = load_slow_sources(directory, 2026, 9, SAVED / "history")
-    return build_snapshot(load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, slow, trade_week=9,
-                          returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file),
-                          now=now, client=CLIENT)
+    return _reported_out(build_snapshot(
+        load_raw(SAVED / "week-08" / "raw"), SAVED / "history", None, slow, trade_week=9,
+        returns=load_returns(returns_file), out_for_season=load_out_for_season(returns_file), now=now, client=CLIENT))
 
 
 @pytest.fixture(scope="module")
@@ -260,10 +309,15 @@ def test_a_chart_exactly_48_hours_old_still_names_a_step_up(fresh):
     assert _texts(TRADE_TEN, snapshot, 8)[0].endswith(" Lemon and Godwin step up.")
 
 
-def _with_ahead_status(snapshot, player_id: str, status: str | None):
-    """The snapshot with the player ahead of `player_id` on the depth chart given a status."""
+def _with_ahead_status(snapshot, player_id: str, status: str | None, report: str | None = None):
+    """The snapshot with the player ahead of `player_id` on the depth chart given a Sleeper status and an NFL game
+    status of the trade week, which replaces the one he had."""
     ahead = snapshot.ahead_on_chart[player_id].model_copy(update={"injury_status": status})
-    return snapshot.model_copy(update={"ahead_on_chart": {**snapshot.ahead_on_chart, player_id: ahead}})
+    gsis = f"00-{ahead.player_id}"
+    return snapshot.model_copy(update={
+        "ahead_on_chart": {**snapshot.ahead_on_chart, player_id: ahead},
+        "id_map": {**(snapshot.id_map or {}), ahead.player_id: gsis},
+        "injuries": {**(snapshot.injuries or {}), gsis: {} if report is None else {snapshot.week: report}}})
 
 
 def test_a_player_ahead_on_ir_makes_a_step_up_in_both_weeks(fresh):
@@ -272,10 +326,17 @@ def test_a_player_ahead_on_ir_makes_a_step_up_in_both_weeks(fresh):
     assert texts[1].endswith(" Robinson steps up.")
 
 
-@pytest.mark.parametrize("status", ["Questionable", "Doubtful", None])
-def test_a_player_ahead_who_can_play_makes_no_step_up(fresh, status):
-    texts = _texts(TRADE_TEN, _with_ahead_status(fresh, LEMON, status), 8)
+@pytest.mark.parametrize("status, report", [("Questionable", "Questionable"), ("Doubtful", None), (None, None)])
+def test_a_player_ahead_who_can_play_makes_no_step_up(fresh, status, report):
+    # A Sleeper Doubtful with no NFL game status for the trade week does not count.
+    texts = _texts(TRADE_TEN, _with_ahead_status(fresh, LEMON, status, report), 8)
     assert texts[0].endswith(" Godwin steps up.")
+
+
+def test_a_player_ahead_who_is_doubtful_by_the_nfl_game_status_makes_a_step_up(fresh):
+    texts = _texts(TRADE_TEN, _with_ahead_status(fresh, LEMON, None, "Doubtful"), 8)
+    assert texts[0].endswith(" Lemon and Godwin step up.")
+    assert "step" not in texts[1]
 
 
 def test_a_player_who_is_out_himself_does_not_step_up(fresh):
@@ -294,6 +355,17 @@ def test_the_cache_key_changes_with_the_dt_of_the_chart_and_each_status_a_week_l
     assert cache_key(TRADE_A, _with_ahead_status(fresh, SAMUEL, "IR")) != key
     # A status of a rostered player in the trade that the Week line reads.
     assert cache_key(TRADE_A, _with_status(fresh, NACUA, "IR")) != key
+
+
+def test_the_cache_key_changes_with_the_nfl_game_status_of_the_trade_week_that_a_week_line_reads(fresh):
+    def reported(status: str):
+        return fresh.model_copy(update={"id_map": {**fresh.id_map, NACUA: NACUA_GSIS},
+                                        "injuries": {**fresh.injuries, NACUA_GSIS: {9: status}}})
+    key = cache_key(TRADE_A, fresh)
+    assert cache_key(TRADE_A, reported("Out")) != key
+    assert cache_key(TRADE_A, reported("Doubtful")) != cache_key(TRADE_A, reported("Out"))
+    # Questionable never counts, so it keeps the hit.
+    assert cache_key(TRADE_A, reported("Questionable")) == key
 
 
 def test_the_cache_key_changes_with_the_status_of_a_player_ahead_on_no_roster(fresh):

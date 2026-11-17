@@ -155,6 +155,18 @@ def read_injuries(path: Path, week: int) -> dict[str, dict[int, str]] | None:
     return injuries if has_week else None
 
 
+def read_practice(path: Path) -> dict[str, dict[int, str]]:
+    """The NFL practice status by gsis_id and week, regular season only: the latest row of the week that has one.
+
+    The status is the text of the file, such as "Limited Participation in Practice". A blank status gives no entry.
+    """
+    practice: dict[str, dict[int, str]] = {}
+    for row in _rows(path):
+        if row["season_type"] == "REG" and row["practice_status"]:
+            practice.setdefault(row["gsis_id"], {})[int(row["week"])] = row["practice_status"]
+    return practice
+
+
 # The play by play names each hurt player in the text of the play, as "BAL-8-L.Jackson was injured during the play".
 # The name has no digit, so a match never runs across the team and jersey tag of another player.
 INJURED = re.compile(r"\b([A-Z]{2,3})-\d+-([A-Za-z.' -]+?) was injured during the play")

@@ -803,15 +803,13 @@ def _graded_at(snapshot, at: datetime):
     return snapshot.model_copy(update={"as_of": snapshot.as_of.model_copy(update={"graded_at": at})})
 
 
-def test_the_cache_key_tells_a_tuesday_or_wednesday_grade_from_the_rest_of_the_week(settings, sources):
-    # A Week line graded on a Tuesday or a Wednesday says "listed Out last week", so a grade of Thursday must miss it.
+def test_the_cache_key_does_not_change_with_the_day_of_the_week_of_the_grade(settings, sources):
+    # The Week line reads the NFL game status of the trade week, so it says the same on each day of the week.
     trade = ProposedTrade.model_validate(TRADE)
     # The age of the depth chart changes the key too, so this snapshot holds no chart time and only the day counts.
     snapshot = _here(sources, settings).snapshot(trade.season).model_copy(update={"depth_chart_dt": None})
-    tuesday, wednesday, thursday, friday = (datetime(2026, 10, day, 12, 0, tzinfo=ET) for day in (20, 21, 22, 23))
-    assert cache_key(trade, _graded_at(snapshot, tuesday)) == cache_key(trade, _graded_at(snapshot, wednesday))
-    assert cache_key(trade, _graded_at(snapshot, thursday)) == cache_key(trade, _graded_at(snapshot, friday))
-    assert cache_key(trade, _graded_at(snapshot, tuesday)) != cache_key(trade, _graded_at(snapshot, thursday))
+    days = [datetime(2026, 10, day, 12, 0, tzinfo=ET) for day in (20, 21, 22, 23)]
+    assert len({cache_key(trade, _graded_at(snapshot, day)) for day in days}) == 1
 
 
 def test_the_cache_key_changes_with_a_team_in_progress(settings, sources):
