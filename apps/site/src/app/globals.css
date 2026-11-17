@@ -743,6 +743,109 @@
     }
 }
 
+/* The Case of the analyzer reveal (recipe 18 of transitions.dev, texts reveal): each line rises in through a small blur,
+   the second line one stagger after the first, when the part adds is-shown. The reveal has no exit, so the recipe's
+   is-hiding state is not here. Under reduced motion, the lines show at rest at once. */
+@layer components {
+    .t-stagger {
+        --stagger-dur: 500ms;
+        --stagger-distance: 12px;
+        --stagger-stagger: 40ms;
+        --stagger-blur: 3px;
+        --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .t-stagger-line {
+        display: block;
+        opacity: 0;
+        transform: translateY(var(--stagger-distance));
+        filter: blur(var(--stagger-blur));
+        transition:
+            opacity var(--stagger-dur) var(--stagger-ease),
+            transform var(--stagger-dur) var(--stagger-ease),
+            filter var(--stagger-dur) var(--stagger-ease);
+        will-change: transform, opacity, filter;
+    }
+    .t-stagger-line--2 {
+        transition-delay: var(--stagger-stagger);
+    }
+    .t-stagger.is-shown .t-stagger-line {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .t-stagger-line {
+            transition: none !important;
+        }
+    }
+}
+
+/* The result cards of the analyzer reveal (recipe 14 of transitions.dev, skeleton reveal): the skeleton of the cards
+   pulses once, then it fades out through a small blur while the real cards fade in, when the part adds is-revealed.
+   The result has no fixed height, so the content stays in the flow and sets the height, and the skeleton sits over its
+   top. The skeleton never takes a tap. The one pulse lasts as long as the beat of the cards, 500 ms, so the skeleton
+   fades out at full strength and not from the dim middle of a pulse. Under reduced motion, the cards show at rest at once. */
+@layer components {
+    .t-skel {
+        --pulse-dur: 500ms;
+        --pulse-count: 1;
+        --pulse-min: 0.5;
+        --reveal-dur: 400ms;
+        --reveal-blur: 2px;
+        --reveal-ease: ease-in-out;
+        position: relative;
+    }
+    .t-skel-skeleton {
+        position: absolute;
+        inset: 0 0 auto 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 1;
+        filter: blur(0);
+        transition:
+            opacity var(--reveal-dur) var(--reveal-ease),
+            filter var(--reveal-dur) var(--reveal-ease);
+    }
+    .t-skel-content {
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        filter: blur(var(--reveal-blur));
+        transition:
+            opacity var(--reveal-dur) var(--reveal-ease),
+            filter var(--reveal-dur) var(--reveal-ease);
+    }
+    .t-skel.is-revealed .t-skel-skeleton {
+        opacity: 0;
+        filter: blur(var(--reveal-blur));
+    }
+    .t-skel.is-revealed .t-skel-content {
+        opacity: 1;
+        filter: blur(0);
+    }
+    .t-skel-skeleton.is-pulsing > * {
+        animation: t-skel-pulse var(--pulse-dur) ease-in-out var(--pulse-count);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .t-skel-skeleton,
+        .t-skel-content {
+            transition: none !important;
+        }
+        .t-skel-skeleton.is-pulsing > * {
+            animation: none !important;
+        }
+    }
+}
+@keyframes t-skel-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: var(--pulse-min);
+    }
+}
+
 /* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
    An egg card has a two-line headline over the grid and the glow, and a box behind each line showed as a dark box over the line above
    it. So an egg hero hides its full texture, and the art takes a soft oval of the texture.

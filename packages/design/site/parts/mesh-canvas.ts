@@ -1,6 +1,7 @@
 /**
  * The runner of the mesh on one Canvas 2D context: the grid, the low corner glow, the weights and the light pulses of a
- * wait, and a soft hole under each hero text. It draws a frame only on a change, and never while the hero is out of view.
+ * wait, the flash and the dip of a reveal, and a soft hole under each hero text. It draws a frame only on a change, and
+ * never while the hero is out of view.
  */
 import { type MeshLine, type MeshNodes, type MeshWeight, meshNodes, pointOnLine, pullSigma, turnPulls } from "./mesh-math";
 
@@ -10,8 +11,12 @@ export type MeshPoint = { x: number; y: number };
 /* What the mesh shows at a time. `anchors` holds the center of each `[data-mesh-anchor]` of the hero, in the order of the
    markup, so a drive can set a weight under each side. `busy` keeps the loop on for the next frame. `pulses` is the share
    of the light pulses that shows, from 0 to 1, and none shows when it is left out. Idle has no weight and is not busy, so
-   the flat mesh costs no frame at all until the layout changes. The grade wait passes its own drive. */
-export type MeshDrive = (now: number, anchors: readonly MeshPoint[]) => { weights: MeshWeight[]; busy: boolean; pulses?: number };
+   the flat mesh costs no frame at all until the layout changes. The grade wait passes its own drive. `flash` lights the
+   mesh lines near one point, from 0 (none) to 1, such as the favored side at a reveal. */
+export type MeshDrive = (
+  now: number,
+  anchors: readonly MeshPoint[],
+) => { weights: MeshWeight[]; busy: boolean; pulses?: number; flash?: { at: MeshPoint; amount: number } };
 
 export const IDLE_DRIVE: MeshDrive = () => ({ weights: [], busy: false });
 
@@ -25,6 +30,49 @@ export function waitDrive(start: number): MeshDrive {
   return (now, anchors) => {
     const pulls = turnPulls(now - start, anchors.length, WAIT_PULL);
     return { weights: anchors.map((a, i) => ({ x: a.x, y: a.y, pull: pulls[i] })), busy: true, pulses: 1 };
+  };
+}
+
+/* The flash of a reveal: the lines of the favored side light at once, peak at FLASH_PEAK_MS, then fade out by
+   FLASH_END_MS, about 0.6 s, after the lane flash of the scrolltide item light-cove. */
+const FLASH_PEAK_MS = 60;
+const FLASH_FADE_MS = 180;
+const FLASH_END_MS = 600;
+/* The dip of a reveal starts while the flash fades, pulls toward the favored side, and lets go to flat by DIP_END_MS. */
+const DIP_START_MS = 150;
+const DIP_END_MS = 1300;
+const REVEAL_PULL = 0.55;
+
+/* The share of the flash at `since` ms into the reveal. */
+function flashAt(since: number): number {
+  if (since < 0 || since >= FLASH_END_MS) return 0;
+  return since < FLASH_PEAK_MS ? since / FLASH_PEAK_MS : Math.exp(-(since - FLASH_PEAK_MS) / FLASH_FADE_MS);
+}
+
+/* The pull of the dip at `since` ms into the reveal. The power on the phase puts the peak at about a third of the dip,
+   so the mesh drops fast toward the side and then settles slowly to flat, with no jump at either end. */
+function dipAt(since: number): number {
+  const u = (since - DIP_START_MS) / (DIP_END_MS - DIP_START_MS);
+  if (u <= 0 || u >= 1) return 0;
+  return REVEAL_PULL * Math.sin(Math.PI * u ** 0.6) ** 2;
+}
+
+/* The drive of a reveal, from the time the grade arrives: the lines of the favored anchor flash once, then the mesh dips
+   toward it and goes flat, and the drive ends. `favored` is the index of that anchor, or null when no side is favored,
+   such as a Gut call. Then the mesh settles flat at once, with no flash and no dip. */
+export function revealDrive(start: number, favored: number | null): MeshDrive {
+  return (now, anchors) => {
+    const since = now - start;
+    const at = favored === null ? undefined : anchors[favored];
+    // One weight sits under each anchor, in the order of the anchors, so the evidence reads the pull of each side.
+    if (!at) return { weights: anchors.map((a) => ({ x: a.x, y: a.y, pull: 0 })), busy: false };
+    const flash = flashAt(since);
+    const dip = dipAt(since);
+    return {
+      weights: anchors.map((a, i) => ({ x: a.x, y: a.y, pull: i === favored ? dip : 0 })),
+      busy: since < DIP_END_MS,
+      flash: flash > 0 ? { at, amount: flash } : undefined,
+    };
   };
 }
 
@@ -68,6 +116,11 @@ const FAR = 10000;
 const WEIGHT_LIGHT = 0.8;
 /* The light of a weight reaches this many sigmas of its pull. */
 const WEIGHT_LIGHT_REACH = 2.6;
+
+/* The lines of the flash reach this many sigmas of the pull, a little past the light of a weight, so the whole side
+   lights. The peak is bright, because the flash lasts less than a second, and the holes still cut it under each text. */
+const FLASH_REACH = 3.4;
+const FLASH_PEAK = 0.95;
 
 /* The pulses of a wait, after the pulses of the scrolltide item light-cove: a bright head, a soft tail, and a small bloom.
    Few and slow, so the mesh stays calm. */
@@ -242,6 +295,19 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     }
   }
 
+  /* The lines near the point of the flash light up in the pulse color, in proportion to its share. */
+  function drawFlash(path: Path2D, flash: { at: MeshPoint; amount: number }) {
+    const [r, g, b] = colors.pulse;
+    const peak = FLASH_PEAK * flash.amount;
+    const { x, y } = flash.at;
+    const fill = ctx.createRadialGradient(x, y, 0, x, y, pullSigma(width) * FLASH_REACH);
+    fill.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${peak})`);
+    fill.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${peak * 0.4})`);
+    fill.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+    ctx.strokeStyle = fill;
+    ctx.stroke(path);
+  }
+
   /* 0 inside a text and its pad, rising to 1 at PULSE_CLEAR pixels out. */
   function clearOf(px: number, py: number): number {
     let f = 1;
@@ -362,12 +428,14 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     // With motion off, the mesh is still and flat: no weight pulls and no pulse runs.
     const weights = motionOff ? [] : drawn.weights;
     const pulseWant = motionOff ? 0 : (drawn.pulses ?? 0);
+    const flash = motionOff ? undefined : drawn.flash;
     ctx.clearRect(0, 0, width, height);
     if (width >= 2 && height >= 2) {
       const nodes = meshNodes(width, height, pitch, weights);
       const path = gridPath(nodes);
       drawGrid(nodes, path);
       drawWeightLight(path, weights);
+      if (flash) drawFlash(path, flash);
       drawGlow();
       drawPulses(nodes, weights, pulseWant, step);
       cutHoles();
@@ -375,6 +443,8 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     canvas.dataset.meshFrames = String(++frames);
     // The pull of each weight, in the order of the anchors. The evidence of AT-5 reads it to find the side that pulls.
     canvas.dataset.meshPulls = (motionOff ? drawn.weights.map(() => 0) : drawn.weights.map((w) => w.pull)).map((p) => p.toFixed(3)).join(",");
+    // The share of the flash. The evidence of AT-12 reads it to see the flash before the dip.
+    canvas.dataset.meshFlash = (flash?.amount ?? 0).toFixed(3);
     const fading = pulses.length > 0 && pulseShare >= 0.01;
     if (((drawn.busy || fading) && !motionOff) || now < settleUntil) schedule();
     else lastNow = 0;
