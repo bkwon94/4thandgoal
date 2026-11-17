@@ -10,7 +10,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance test AT-22.
 
 **Status:** ready-for-agent
 
-- [ ] The floor runs the pixel scan on each hero of each page that it scans, in both clients, at 390 and 1280 px.
-- [ ] A unit test shows that an axe "incomplete" result outside a hero still fails the floor, and the failure names it.
-- [ ] A unit test shows that a hero where the pixel scan finds no text fails the floor, and the failure names it.
-- [ ] The floor passes in `cpc` and in `norcal` with the plate still on.
+- [x] The floor runs the pixel scan on each hero of each page that it scans, in both clients, at 390 and 1280 px.
+- [x] A unit test shows that an axe "incomplete" result outside a hero still fails the floor, and the failure names it.
+- [x] A unit test shows that a hero where the pixel scan finds no text fails the floor, and the failure names it.
+- [x] The floor passes in `cpc` and in `norcal` with the plate still on.
