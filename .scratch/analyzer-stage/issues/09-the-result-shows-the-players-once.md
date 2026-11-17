@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-30, AT-31, and AT-32
 
 **Blocked by:** 08
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The result of trade T has no "The Trade" chapter, and below the hero it has no player chip, no headshot, and no `FoldLine` card.
 - [x] The Finder still shows its swap card.
