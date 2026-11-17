@@ -463,25 +463,24 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </div>
   );
 
+  // One pass over the sides gives the stage and the grading trade the same team and rows for each side.
+  const sideViews = sides.map((side, index) => ({ side, index, team: teamOf(teams, side.rosterId), rows: rowsOf(index) }));
+
   /* The trade on the stage: one row for each side with a team, and the players it gets with their headshots. */
-  const stage: StageSide[] = sides.flatMap((side, index) => {
-    const team = teamOf(teams, side.rosterId);
+  const stage: StageSide[] = sideViews.flatMap(({ side, team, rows }) => {
     if (!team) return [];
-    const players = rowsOf(index).map(({ player }) => ({ id: player.player_id, name: player.name, headshot: player.headshot }));
+    const players = rows.map(({ player }) => ({ id: player.player_id, name: player.name, headshot: player.headshot }));
     return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
   });
 
   // Under a result the read is the hero, so the form puts no hero of its own above it.
   const hero = grading ? (
     <GradingHero
-      trade={sides.map((side, index) => {
-        const team = teamOf(teams, side.rosterId);
-        return {
-          team: team?.team ?? SIDE_TITLES[index],
-          manager: team?.manager ?? SIDE_TITLES[index],
-          gets: rowsOf(index).map((row) => ({ name: row.player.name, position: row.player.position })),
-        };
-      })}
+      trade={sideViews.map(({ index, team, rows }) => ({
+        team: team?.team ?? SIDE_TITLES[index],
+        manager: team?.manager ?? SIDE_TITLES[index],
+        gets: rows.map((row) => ({ name: row.player.name, position: row.player.position })),
+      }))}
       stage={stage}
     />
   ) : formHidden ? null : (
