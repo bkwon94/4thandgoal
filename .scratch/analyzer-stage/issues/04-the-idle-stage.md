@@ -15,4 +15,8 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-1, AT-2, AT-16, and 
 - [x] The canvas draws no frame while the hero is out of view, and none while the tab is hidden.
 - [x] Each analyzer hero text reaches 4.5:1 or more in idle, in `cpc` and `norcal`, at 390 and 1280 px.
 - [x] `GLOSSARY.md` defines "Mesh".
-- [ ] The design bar skills ran on the idle hero, and Brian checked it on his iPhone.
+- [x] The design bar skills ran on the idle hero, and Brian checked it on his iPhone.
+
+## Comments
+
+- 2026-11-16: Brian checked the idle stage on his iPhone over the LAN dev server and said "its good".
