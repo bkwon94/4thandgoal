@@ -1,7 +1,7 @@
 # The power rankings test expects an old team name
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-topics-team-rename`.
 Source: the session of 2026-11-17.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -30,3 +30,7 @@ Green: at `123926d4`, `cd apps/pipeline && uv run --exact --package cornerstone 
 Test verdict: PASS
 
 ## Comments
+- Closes with the squash merge of the PR of `bug-topics-team-rename`. Commits: `62b1e3ca`, `123926d4`, `c42d8ad2`. Date: 2026-11-17.
+- The loop went red at `62b1e3ca` and green at `123926d4`, and all 13 tests of `tests/test_topics.py` pass.
+- `test_the_cpc_ladder_block_lists_each_team_by_standing_with_its_odds_and_the_playoff_line` also expects the old name and can fail on a later rewrite; a fixed copy of the data fixes both tests.
+- Read 4 files: apps/pipeline/tests/test_topics.py, clients/cpc/published/2026/rankings.json, .claude/plugin/skills/quick/format.md, AGENTS.md.
