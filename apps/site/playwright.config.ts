@@ -24,7 +24,8 @@ export default defineConfig({
     // the layout of the front door.
     { name: "floor", testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts"] },
     // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
-    { name: "grade-bar", testMatch: "grade-bar.spec.ts" },
+    // It also checks the headshot frames of the analyzer result on the same export.
+    { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "analyze-headshot.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
     // The project "open-card" checks find-in-page and the frame rate of the Open card on the export of cpc, with motion on.
