@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance test AT-22.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The floor runs the pixel scan on each hero of each page that it scans, in both clients, at 390 and 1280 px.
 - [x] A unit test shows that an axe "incomplete" result outside a hero still fails the floor, and the failure names it.
