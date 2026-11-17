@@ -226,7 +226,7 @@ def test_the_power_rankings_block_lists_each_team_with_its_rank_and_its_move(tmp
     assert block["kind"] == "rank_movers"
     assert [(r["rank"], r["name"], r["move"]) for r in block["rows"]] == [
         (1, "Return of T Mac", 3), (2, "The Blue Tent", 3), (3, "All You Need Is Love", -2), (4, "Bo Girds", 3),
-        (5, "London Cooking", 3), (6, "Teehee", -4), (7, "Maye d'force B with U", -4), (8, "Lil Fridge", -2),
+        (5, "Puka Deez...", 3), (6, "Teehee", -4), (7, "Maye d'force B with U", -4), (8, "Lil Fridge", -2),
         (9, "To Infinity and Bijan", 0), (10, "Unsolicited Dak Picks", 0), (11, "NFC Least", 1),
         (12, "behold the lamb", -1)]
     assert [r["name"] for r in block["rows"] if r["you"]] == ["Bo Girds"]
