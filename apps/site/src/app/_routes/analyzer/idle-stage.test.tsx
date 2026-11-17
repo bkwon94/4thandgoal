@@ -1,6 +1,6 @@
 /**
  * Tests for the idle stage of the analyzer hero, on the real rosters of the latest weekly build of cpc.
- * Each player that the reader adds shows on the stage of the title hero, and the hero ground is the mesh (AT-1, AT-2).
+ * Each side shows on the stage of the title hero with a count of the players it gets, and the hero ground is the mesh (AT-1, AT-2).
  * It sits in the app layer, because it reads the raw files of the client, and a package reads no file (ADR 0012).
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
@@ -37,14 +37,18 @@ describe("the idle stage", () => {
     expect(hero.querySelector("[data-hero-slot=feature]")).toBeNull();
   });
 
-  it("shows Kenneth Walker III on the stage after the add to the side that Bo Girds trades with (AT-2)", async () => {
+  it("counts Kenneth Walker III in the row of Teehee after the add, with no headshot on the stage (AT-2)", async () => {
     await pickTeam("Your Team", "Bo Girds");
     await pickTeam("Team Two", "Teehee");
     await pickPlayers("Team Two", "Bo Girds", "Kenneth Walker III");
     const hero = screen.getByRole("region", { name: "Trade Analyzer" });
     const stage = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    expect(within(stage).getByText("Kenneth Walker III")).toBeTruthy();
-    expect(within(stage).getByText("Teehee gets")).toBeTruthy();
-    expect(within(stage).getByText("Bo Girds gets")).toBeTruthy();
+    const row = (team: string) => within(stage).getByText(team, { exact: true }).closest("li") as HTMLElement;
+    expect(within(row("Teehee")).getByText("1 player")).toBeTruthy();
+    // Bo Girds gets no player yet, so its row holds the dashed empty token.
+    expect(row("Bo Girds").querySelector("[data-stage-empty]")).not.toBeNull();
+    // The Stack below shows each player, so the stage shows no name and no headshot before the grade.
+    expect(within(stage).queryByText("Kenneth Walker III")).toBeNull();
+    expect(stage.querySelector("[title]")).toBeNull();
   });
 });

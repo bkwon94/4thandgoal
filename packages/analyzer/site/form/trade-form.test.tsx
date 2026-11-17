@@ -52,6 +52,12 @@ async function addTeam(team: string) {
 const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
 const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
 
+/* The row of a team on the stage of a hero, and the src of each player headshot in it. The team avatar is not a headshot. */
+const stageRow = (hero: HTMLElement, team: string) =>
+  [...hero.querySelectorAll("[data-mesh-anchor]")].find((row) => row.querySelector("[data-stage-team]")?.textContent === team) as HTMLElement;
+const stageHeadshots = (el: HTMLElement) =>
+  [...el.querySelectorAll("img")].map((img) => img.getAttribute("src") ?? "").filter((src) => /\/(p\d+\.png|players\/)/.test(src));
+
 const removeButton = (name: string) => screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
 
 /* The text of each row of a card. */
@@ -331,13 +337,55 @@ describe("TradeForm", () => {
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     // The mesh weighs the sides, so each side and the players it gets stay on the stage through the wait.
-    expect(within(hero).getByText(`${TRADE.mine} gets`)).toBeTruthy();
-    expect(within(hero).getByText(`${TRADE.other} gets`)).toBeTruthy();
-    expect(within(hero).getByText(TRADE.mineGets)).toBeTruthy();
-    expect(within(hero).getByText(TRADE.otherGets)).toBeTruthy();
-    // The track of a sweep is aria-hidden, so the query includes hidden elements.
-    expect(within(hero).queryByRole("presentation", { hidden: true })).toBeNull();
+    expect(stageRow(hero, TRADE.mine)).toBeTruthy();
+    expect(stageRow(hero, TRADE.other)).toBeTruthy();
+    expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual(["https://cdn.test/p4.png"]);
+    expect(stageHeadshots(stageRow(hero, TRADE.other))).toEqual(["https://cdn.test/p1.png"]);
+    // The track of a sweep is aria-hidden, so the query includes hidden elements. An image with no alt is presentation too, so the query skips images.
+    expect(within(hero).queryAllByRole("presentation", { hidden: true }).filter((el) => el.tagName !== "IMG")).toEqual([]);
     expect(hero.querySelector(".animate-pulse")).toBeNull();
+  });
+
+  it("shows a row per side with a count and no headshot in idle, as the Stack shows each player (AT-2, AT-28)", async () => {
+    await pickTeam("Your Team", TRADE.mine);
+    await pickTeam("Team Two", TRADE.other);
+    await pickPlayers("Your Team", TRADE.other, "Ben One", "Ben Two");
+    await pickPlayers("Team Two", TRADE.mine, "Ana One");
+    const hero = screen.getByRole("region", { name: "Trade Analyzer" });
+    expect(within(stageRow(hero, TRADE.mine)).getByText("2 players")).toBeTruthy();
+    expect(within(stageRow(hero, TRADE.other)).getByText("1 player")).toBeTruthy();
+    expect(stageHeadshots(hero)).toEqual([]);
+    expect(within(hero).queryByText("Ben One")).toBeNull();
+  });
+
+  it("puts the headshots of each side into its row on the tap of Grade (AT-29)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTeam("Your Team", TRADE.mine);
+    await pickTeam("Team Two", TRADE.other);
+    await pickPlayers("Your Team", TRADE.other, "Ben One", "Ben Two");
+    await pickPlayers("Team Two", TRADE.mine, "Ana One");
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual(["https://cdn.test/p3.png", "https://cdn.test/p4.png"]);
+    expect(stageHeadshots(stageRow(hero, TRADE.other))).toEqual(["https://cdn.test/p1.png"]);
+    expect(within(hero).queryByText("2 players")).toBeNull();
+  });
+
+  it("puts the same rows on the result hero, one mesh anchor per side, asker first", async () => {
+    answer(200, fixtureJson);
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const heroRead = await screen.findByRole("region", { name: "The Read" });
+    // The rows replace the empty columns, so the hero holds one anchor per side and the dip of the reveal sits under a row.
+    const rows = [...heroRead.querySelectorAll("[data-mesh-anchor]")];
+    expect(rows.map((row) => row.querySelector("[data-stage-team]")?.textContent)).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team"]);
+    expect(stageHeadshots(rows[0] as HTMLElement)).toEqual([
+      "https://sleepercdn.com/content/nfl/players/10236.jpg",
+      "https://sleepercdn.com/content/nfl/players/8146.jpg",
+    ]);
+    expect(stageHeadshots(rows[1] as HTMLElement)).toEqual(["https://sleepercdn.com/content/nfl/players/7569.jpg"]);
+    // The avatar of a team comes from the teams of the league.
+    expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://cdn.test/ana.png");
   });
 
   it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
