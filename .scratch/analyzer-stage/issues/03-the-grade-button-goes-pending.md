@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-4 and AT-26.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Only the wrapper imports `@ui-sdk`, and the rule test of ADR 0035 passes.
 - [x] A keyboard tap on "Grade the Trade" with trade T gives `aria-busy="true"` and `data-pending`, and the focus stays on the button through the wait.
