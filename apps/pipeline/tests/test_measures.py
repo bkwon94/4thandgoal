@@ -33,6 +33,7 @@ from analyzer.measures import (
     team_race,
     trade_handcuffs,
 )
+from analyzer.sell_facts import sell_sheet
 from analyzer.team_facts import team_facts
 from analyzer.trade import (
     ProposedTrade,
@@ -1604,6 +1605,46 @@ def test_injury_counts_only_an_out_or_doubtful_of_the_trade_week_and_a_sleeper_o
         assert third[INJURY].silent
     else:
         assert third[INJURY].reason == reason
+
+
+# Each case: Golden's Sleeper status, returns row, report by week, practice by week, then the text of the injury fact
+# of the trade fact sheet and of the sell high sheet. The trade week is 6, so the report of week 5 is the week before.
+GOLDEN_NAME = "Matthew Golden"
+STALE_OUT = f"{GOLDEN_NAME}'s Sleeper status is Out from the last game, and the NFL report of week 6 has no game status yet."
+THE_FACT_CASES = {
+    "a stale sleeper out with no trade week row says the status is from the last game":
+        ("Out", None, {}, {}, STALE_OUT, STALE_OUT),
+    "a stale sleeper out with a practice row gives the practice status":
+        ("Out", None, {}, {6: "Limited Participation in Practice"},
+         f"{GOLDEN_NAME} was a limited participant in practice in week 6.",
+         f"{GOLDEN_NAME} was a limited participant in practice in week 6."),
+    "a trade week Questionable is a plain status":
+        (None, None, {6: "Questionable"}, {},
+         f"{GOLDEN_NAME} is listed Questionable for week 6.", f"{GOLDEN_NAME} is listed Questionable for week 6."),
+    "a trade week Doubtful counts":
+        (None, None, {6: "Doubtful"}, {},
+         f"{GOLDEN_NAME} is doubtful in week 6.", f"{GOLDEN_NAME} is doubtful in week 6."),
+    "a sleeper IR with no near return counts":
+        ("IR", None, {}, {},
+         f"{GOLDEN_NAME} is out with no return week on file.", f"{GOLDEN_NAME} is out with no return week on file."),
+    "past report weeks alone give no count":
+        (None, None, {week: "Questionable" for week in range(1, 6)}, {},
+         f"{GOLDEN_NAME} has no injury status now.", f"{GOLDEN_NAME} is not out now."),
+}
+
+
+@pytest.mark.parametrize("status, back, report, practice, trade_text, sell_text", THE_FACT_CASES.values(),
+                         ids=THE_FACT_CASES.keys())
+def test_the_injury_facts_name_only_an_out_or_doubtful_and_the_practice_status_of_the_trade_week(
+        slow_snap, status, back, report, practice, trade_text, sell_text):
+    snap = slow_snap.model_copy(update={
+        "returns": {} if back is None else {GOLDEN: back},
+        "injuries": {GOLDEN_GSIS: report},
+        "practice": {GOLDEN_GSIS: practice}})
+    snap = _with_status(snap, GOLDEN, status)
+    trade = trade_fact_sheet(_trade(3, [DIGGS], 6, [GOLDEN]), snap)
+    assert trade[f"{GOLDEN}.injury"].text == trade_text
+    assert sell_sheet(snap, 6)[f"{GOLDEN}.injury"].text == sell_text
 
 
 def _out_for_season(snap, *players: str):
