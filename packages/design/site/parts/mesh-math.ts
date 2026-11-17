@@ -55,3 +55,36 @@ export function meshNodes(width: number, height: number, pitch: number, weights:
   }
   return { cols, rows, x, y };
 }
+
+/* One side holds the weight of the wait for this long, then the next side takes it. */
+export const TURN_MS = 1250;
+
+/*
+ * The pull of each of `count` weights at `since` ms into the wait, each from 0 to `peak`. One weight pulls at a time,
+ * in turn, for TURN_MS each, and the turns cycle through every weight. sin² starts and ends each turn at no pull, so the
+ * weight hands from one side to the next with no jump, no gap, and no overlap.
+ */
+export function turnPulls(since: number, count: number, peak: number): number[] {
+  const pulls = new Array<number>(count).fill(0);
+  if (count === 0 || since < 0) return pulls;
+  const phase = since / TURN_MS;
+  const turn = Math.floor(phase);
+  pulls[turn % count] = peak * Math.sin(Math.PI * (phase - turn)) ** 2;
+  return pulls;
+}
+
+/* A line of the mesh: a row ("h") or a column ("v") of nodes, by its index. */
+export type MeshLine = { dir: "h" | "v"; index: number };
+
+/* The place at `t` along a line of the mesh, in nodes from its first node. It reads the pulled nodes, so a point on the
+   line bends with the mesh. A `t` past either end holds at that end. */
+export function pointOnLine({ cols, rows, x, y }: MeshNodes, line: MeshLine, t: number): { x: number; y: number } {
+  const count = line.dir === "h" ? cols : rows;
+  const at = Math.max(0, Math.min(count - 1.001, t));
+  const k = Math.floor(at);
+  const f = at - k;
+  const node = (n: number) => (line.dir === "h" ? line.index * cols + n : n * cols + line.index);
+  const a = node(k);
+  const b = node(k + 1);
+  return { x: x[a] + (x[b] - x[a]) * f, y: y[a] + (y[b] - y[a]) * f };
+}

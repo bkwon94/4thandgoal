@@ -261,7 +261,10 @@ export async function scanHeroPixels(page: Page, scope?: string): Promise<string
   const heroes = (await page.evaluate<unknown, InPage>(inPage, { scan: "heroes", limits: LIMITS, scope })) as HeroScan[];
   if (heroes.length === 0) return [];
   const hide = await page.addStyleTag({
-    content: "[data-floor-text] { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }",
+    // A pseudo-element of a text draws a copy of the text, such as the shimmer of a stage line, so it hides with the text.
+    content:
+      "[data-floor-text] { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; } " +
+      "[data-floor-text]::before, [data-floor-text]::after { visibility: hidden !important; }",
   });
   try {
     // Two frames, so the browser paints the hidden text before the screenshot.

@@ -19,7 +19,8 @@ export function TradeOnStage({ sides }: { sides: StageSide[] }) {
   return (
     <div aria-hidden="true" className="grid grid-cols-2 gap-sp-3 tablet:auto-cols-fr tablet:grid-flow-col tablet:gap-sp-6">
       {sides.map((side) => (
-        <div key={side.id} className="flex min-w-0 flex-col gap-sp-2">
+        // The anchor sets the place of the weight of this side, so the mesh of a grade wait dips under it.
+        <div key={side.id} data-mesh-anchor className="flex min-w-0 flex-col gap-sp-2">
           <span className="w-fit font-mono text-meta leading-tight font-bold tracking-wide break-words text-on-dark-muted uppercase">
             {side.label}
           </span>

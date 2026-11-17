@@ -13,11 +13,11 @@ import { ErrorLine } from "@cpc/design/parts/error-line";
 import { FoldLine } from "./fold-line";
 import { Hero } from "@cpc/design/parts/hero";
 import { HeroMesh } from "@cpc/design/parts/hero-mesh";
+import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Rise } from "@cpc/design/parts/rise";
 import { GetCard, type GotRow } from "./get-card";
 import { GradeBar } from "./grade-bar";
 import { StageLines } from "./stage-lines";
-import { Sweep } from "./sweep";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
 import { TeamsRow } from "./teams-row";
@@ -90,30 +90,28 @@ type TradeToGrade = { sides: Sides; season: number };
 /* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
 type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
-/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the loading state as the feature.
-   The bars and the sweep sit where the read lands. With motion off, the bars hold still. The read that replaces
-   it opens with a level-two heading, so this title is level two too. The stage lines run under the title, in a part of
-   their own. A screen reader skips them and hears the one label of the status. The trade is read once, because the
-   grade locks the form. */
-function GradingHero({ trade }: { trade: StageTrade }) {
-  const off = useMotionOff();
+/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the wait as the feature.
+   The read that replaces it opens with a level-two heading, so this title is level two too. The stage lines run under
+   the title, in a part of their own. A screen reader skips them and hears the one label of the status. The trade stays
+   on the stage, and the mesh weighs each side in turn under it, so the wait shows what the grade does. The drive starts
+   with the hero, so the mesh moves on the first frame after the tap. The trade is read once, because the grade locks
+   the form. With motion off, the mesh stays still and flat. */
+function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }) {
   const [lines] = useState(() => stageLines(trade));
-  const pulse = off ? "" : "animate-pulse";
+  const [drive] = useState(() => waitDrive(performance.now()));
   return (
     <Hero
       label="Grading the Trade"
-      art={<HeroMesh />}
+      art={<HeroMesh drive={drive} />}
       level={2}
       eyebrow="Live"
       title="Grading the Trade"
       meta="This can take up to a minute."
       feature={
         <div role="status" aria-busy="true" aria-label="Grading the Trade">
-          <div aria-hidden="true" className="flex flex-col gap-sp-3">
+          <div aria-hidden="true" className="flex flex-col gap-sp-5">
             <StageLines lines={lines} />
-            <div className={`h-sp-6 w-3/4 rounded-tile bg-rule-dark ${pulse}`} />
-            <div className={`h-sp-4 w-11/12 rounded-tile bg-rule-dark ${pulse}`} />
-            <Sweep track="bg-rule-dark" />
+            <TradeOnStage sides={stage} />
           </div>
         </div>
       }
@@ -446,6 +444,14 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </div>
   );
 
+  /* The trade on the stage: one column for each side with a team, and the players it gets. */
+  const stage = sides.flatMap((side, index) => {
+    const team = teamOf(teams, side.rosterId);
+    if (!team) return [];
+    const players = rowsOf(index).map(({ player }) => ({ id: player.player_id, name: player.name, meta: `${player.position} · ${player.nfl_team}` }));
+    return [{ id: side.id, label: `${team.team} gets`, players }];
+  });
+
   const hero = folded ? (
     <>
       <FoldLine
@@ -465,18 +471,12 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
               gets: rowsOf(index).map((row) => ({ name: row.player.name, position: row.player.position })),
             };
           })}
+          stage={stage}
         />
       )}
     </>
   ) : (
-    <TitleHero
-      stage={sides.flatMap((side, index) => {
-        const team = teamOf(teams, side.rosterId);
-        if (!team) return [];
-        const players = rowsOf(index).map(({ player }) => ({ id: player.player_id, name: player.name, meta: `${player.position} · ${player.nfl_team}` }));
-        return [{ id: side.id, label: `${team.team} gets`, players }];
-      })}
-    />
+    <TitleHero stage={stage} />
   );
 
   return children({ hero, form, result });

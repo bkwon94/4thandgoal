@@ -325,6 +325,21 @@ describe("TradeForm", () => {
     expect(hero.querySelector("canvas[data-hero-scene]")).toBeNull();
   });
 
+  it("keeps the trade on the stage in the wait, with no sweep and no grey bars (AT-5)", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    await pickTrade(TRADE);
+    fireEvent.click(submit());
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    // The mesh weighs the sides, so each side and the players it gets stay on the stage through the wait.
+    expect(within(hero).getByText(`${TRADE.mine} gets`)).toBeTruthy();
+    expect(within(hero).getByText(`${TRADE.other} gets`)).toBeTruthy();
+    expect(within(hero).getByText(TRADE.mineGets)).toBeTruthy();
+    expect(within(hero).getByText(TRADE.otherGets)).toBeTruthy();
+    // The track of a sweep is aria-hidden, so the query includes hidden elements.
+    expect(within(hero).queryByRole("presentation", { hidden: true })).toBeNull();
+    expect(hero.querySelector(".animate-pulse")).toBeNull();
+  });
+
   it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
