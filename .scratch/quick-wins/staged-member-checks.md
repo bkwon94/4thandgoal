@@ -38,6 +38,6 @@ Ran 1 test in 0.119s
 OK
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
