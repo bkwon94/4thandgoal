@@ -20,10 +20,10 @@ One spec for the hero of the analyzer page. The hero lives in three states, idle
 - The `plate` utility leaves the site. The glow of the static hero art shrinks to `ellipse 38% 46% at 100% 112%`, so it never reaches text. Each plate use off a hero goes too. ADR 0036. `decisions/05-prototype-text-without-plate.md`.
 - The stage lines: 12 lines, 2.5 s each, general lines from the measures mixed with lines that name the trade, never "done". `decisions/02-spec-stage-lines.md`.
 - The Finder wait keeps `Sweep`. `decisions/03-spec-finder-sweep.md`.
+- The stage is one slim row per side with up to 3 headshots then "+N". It is the one place that shows the players: idle shows a count, the headshots rise in on Grade, and the result drops the swap card and the side player lists. Edit sits in "The Sides" header. The stage lines are smaller and scroll right to left when too long. `decisions/06-prototype-compact-stage-and-edit.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the stage stay compact for a big trade, and where do the trade summary and Edit go under a result? `decisions/06-prototype-compact-stage-and-edit.md`.
 
 
 ## OUT OF SCOPE

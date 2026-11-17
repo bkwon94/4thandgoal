@@ -6,7 +6,7 @@ Map: `.scratch/analyzer-stage/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -25,7 +25,15 @@ The prototype runs on the real analyzer page, with a big trade of 3 or 4 sides a
 
 ## Decision
 
-None yet.
+Brian chose round 2 variant A "One stage", with Edit from variant B, on 2026-11-17. He also asked for a change to the stage lines.
+
+1. **The stage.** It is the round 1 "Rows" stage: one slim row per side, with the team avatar, the full team name, "gets", up to 3 overlapped headshots, then "+N".
+2. **The result.** The hero is the one place that shows the players. The "The Trade" `SwapCard` chapter leaves the result. Each side panel under "The Sides" keeps its bullets and week lines, and drops `SidePlayers`. In the fairness block, a long reason folds to about 3 lines with a "More" control.
+3. **Idle: the stage waits.** While the reader builds, each row shows the team and a player count, such as "5 players", or a dashed token for a side with none. No headshots show in idle. On the tap of Grade, the headshots rise into the rows with a short stagger and a blur that clears. With reduced motion, it is a plain fade.
+4. **Edit.** An "Edit" text button sits at the right of "The Sides" header. The `FoldLine` card leaves the result. The bottom bar of variant A is not used, because it covered the fairness card. A tap on Edit opens the form and scrolls to it.
+5. **The stage lines.** The status line of the wait is one step smaller than `text-lead`. A line that does not fit the box scrolls into view from right to left, and is never cut off. A line that fits does not move. With reduced motion, a long line wraps to a second line and does not scroll. The wrap is a recommendation of the orchestrator that Brian did not reject.
+
+The prototype of both rounds is in `~/plans/analyzer-stage-prototype/`: `stage-06-round1/` and `stage-06-round2/`, each with the diff, the files, and the screenshots.
 
 ## Comments
 
@@ -50,3 +58,13 @@ The orchestrator proposed, and Brian agreed to prototype:
 
 Round 2 must use scrolltide, transitions.dev, and ui-sdk as needed (Brian, 2026-11-17).
 
+
+### Round 2, 2026-11-17
+
+Three variants ran on the real `/analyze/` page, each on the Rows stage. A copy is in `~/plans/analyzer-stage-prototype/stage-06-round2/`.
+
+- `A` "One stage": the hero alone shows the players. Idle rows show a count, and the headshots rise in on Grade. A fixed Edit bar takes the place of the grade bar, but it covers the fairness card on the first screen.
+- `B` "Rows as tabs": a tap on a hero row opens its side. Each side is a closed disclosure with its reason. Edit is a text button in "The Sides" header.
+- `C` "Quiet end": no stage until Grade. The reasons move into each side panel. Edit is a full-width button at the end, easy to miss.
+
+Brian: "Agree w you". He took A with the Edit of B. He added the change to the stage lines.
