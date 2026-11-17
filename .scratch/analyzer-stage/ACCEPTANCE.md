@@ -128,8 +128,8 @@ AT-15: The wait stays smooth on a phone
 App: site
 Stories: 19
 Given: The analyzer of `cpc` at 375 px with a 4x CPU slowdown, trade T in the Stack, and the analyze request held.
-When: The reader taps "Grade the Trade" and the wait runs for 5 s.
-Then: After the first second, no frame of the wait takes longer than 50 ms.
+When: The reader taps "Grade the Trade" and the wait runs for 5 s, in 4 separate runs.
+Then: In at least 3 of the 4 runs, no frame of the wait after the first second takes longer than 50 ms.
 Evidence: the performance trace, the longest frame after the first second, and screenshots of the wait at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-16: The canvas pauses out of view
@@ -145,7 +145,7 @@ App: site
 Stories: 20
 Given: Client `cpc`, `2026` week 9: the week hero, the manager page of Bo Girds, the midseason report opener, the 404 page, and the analyzer result of trade T.
 When: The reader opens each page.
-Then: No hero text has a dark box behind it.
+Then: No hero text sits on the plate box, and the record pills, the stat tiles, and the buttons keep their own fill.
 Evidence: screenshots of each hero at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-18: The floor reads every hero text
@@ -329,3 +329,4 @@ Out of scope "A change to the hero scene of the other pages": AT-25
 
 - 2026-11-17: Decision 06. Brian approved a change to AT-2 (idle shows a count, not the name) and to AT-20 (row label, not column label), and the new tests AT-27 to AT-34.
 - 2026-11-17: Brian approved a change to the Given of AT-33 and AT-34. At `text-body`, no stage line of trade B is wider than the hero at 375 px, so both tests use trade L, a real trade with All You Need Is Love.
+- 2026-11-17: After the first round of the Judge, Brian approved two changes. AT-15 now takes 4 runs and allows one run with a slow frame. AT-17 now names the plate box, so a record pill, a stat tile, or a button keeps its fill.
