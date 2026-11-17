@@ -663,7 +663,11 @@
 /* The stage lines of the analyzer wait (recipes 28 and 15 of transitions.dev). A line shimmers while it holds, then the
    old line leaves up through a small blur while the new line rises in from below. The hero sits on the band color in both
    themes, so the base and the highlight are the colors for text on dark. The sizer holds the longest line, so the box
-   keeps one width through each swap. A still line has no shimmer and no move, for reduced motion. */
+   keeps one height through each swap. A still line has no shimmer and no move, for reduced motion. A line wider than its
+   box scrolls once from right to left to its end, on the translate property, so the swap keeps the transform. The box
+   clips it on the x axis only, so the rise and the leave of a swap still show. The inline-size containment keeps a long
+   line from widening the hero. The scroll eases in and out, so it starts soft and ends at rest with the end readable.
+   With motion off the still line sits in the flow and wraps in full. */
 @layer components {
     .t-think {
         --think-swap: 150ms;
@@ -673,6 +677,8 @@
         --think-ease: ease-in-out;
         position: relative;
         display: block;
+        overflow-x: clip;
+        contain: inline-size;
     }
     .t-think-sizer {
         display: block;
@@ -717,11 +723,19 @@
         opacity: 0;
     }
     .t-think-text.is-still {
+        position: static;
+        white-space: normal;
         transition: none;
         will-change: auto;
     }
     .t-think-text.is-still::before {
         display: none;
+    }
+    /* A long line takes the width of its text, so the shimmer sweeps the whole line and not the box only. */
+    .t-think-text.is-scroll {
+        right: auto;
+        width: max-content;
+        animation: t-think-scroll var(--think-scroll-time) cubic-bezier(0.65, 0, 0.35, 1) var(--think-scroll-delay) both;
     }
     @media (prefers-reduced-motion: reduce) {
         .t-think-text {
@@ -732,6 +746,14 @@
         .t-think-text::before {
             display: none;
         }
+        .t-think-text.is-scroll {
+            animation: none;
+        }
+    }
+}
+@keyframes t-think-scroll {
+    to {
+        translate: var(--think-scroll) 0;
     }
 }
 @keyframes t-think-shimmer {

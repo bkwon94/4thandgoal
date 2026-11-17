@@ -12,6 +12,6 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-33 and AT-34.
 
 - [ ] Each stage line has the computed font size of `text-body`.
 - [ ] At 375 px with trade B, a line wider than the hero scrolls until its end is in view, within its 2.5 s.
-- [ ] A line that fits does not move.
+- [x] A line that fits does not move.
 - [ ] With reduced motion at 375 px, a long line wraps in full and does not move.
-- [ ] The accessibility tree in the wait still shows one status, "Grading the trade", and no stage line.
+- [x] The accessibility tree in the wait still shows one status, "Grading the trade", and no stage line.
