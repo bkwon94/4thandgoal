@@ -107,8 +107,7 @@ function BoardHero({ board }: { board: Board }) {
   ];
   return (
     // The class egg-hero hides the full texture of the hero, and the oval of the texture sits behind the grid of the
-    // eggs only, so each line of text sits on the flat band color (the ground of globals.css). The plate of each text
-    // slot then has the band color on the band color, so it shows no box. The board gets no hero scene (ADR 0027): the
+    // eggs only, so each line of text sits on the flat band color (the ground of globals.css). The board gets no hero scene (ADR 0027): the
     // grid of the eggs is already a picture of the data.
     <Hero
       label="Egg hunt"

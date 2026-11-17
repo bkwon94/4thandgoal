@@ -43,9 +43,9 @@ const BRACKETS = [
 ];
 
 /* The fixed style of each text slot. A page cannot pass a class to a slot, so every hero reads as one family. */
-const EYEBROW = "plate w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
-const TITLE = "plate m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
-const META = "plate w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body text-on-dark-2";
+const EYEBROW = "w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
+const TITLE = "m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
+const META = "w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body text-on-dark-2";
 
 /* The slots on a phone stack in one column. From the tablet tier up the hero takes two rows: the eyebrow and the title
    top left with the meta top right, the feature in the open middle, then the stats bottom left and the action bottom
@@ -112,8 +112,8 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
   );
 }
 
-/* The text of a hero sits on a plate of the band color (the plate utility of globals.css). The plate keeps the grid and
-   the glow from under each letter, so the contrast of the text is the contrast of its role pair, and axe can read it.
+/* The text of a hero sits on the band color, the grid, and the low corner glow of .hero-texture. The glow stays off the
+   text, so the text needs no plate (ADR 0036) and its contrast is checked by the pixel scan of the floor.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art.
    The frame takes free content for the parts of the egg hunt only: the find card, the end card, and the egg word slider.
    Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots. */

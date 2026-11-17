@@ -469,25 +469,13 @@
     }
 }
 
-/* The text plate of the hero: the band color under the text and a soft edge of the same color around it.
-   The grid and the glow then never sit under a letter, so the contrast of hero text is the contrast of its role pair,
-   and axe can read it. A box-shadow is no background for axe, and the edge hides the end of the plate on the glow.
-   The plate reaches past the text on each side, because tight leading and wide tracking put the glyph boxes past the
-   box of the element, and axe needs the plate to hold every glyph box. A glyph box is about 1.3 em tall, so a line
-   with no extra leading needs 0.2 em above and below. The negative margin keeps the text in line with the hero. */
-@utility plate {
-    background-color: var(--color-band);
-    box-shadow: 0 0 var(--spacing-sp-3) var(--spacing-sp-2) var(--color-band);
-    padding: max(var(--spacing-sp-1), 0.2em) var(--spacing-sp-1);
-    margin-inline: calc(var(--spacing-sp-1) * -1);
-}
-
 @layer components {
     /* The art of the hero: the brand glow in the lower right corner, over the 24px grid of the grid color.
+       The glow is small and low, so its bright part stays off hero text and the text needs no plate (ADR 0036).
        Three layers of one background cannot be Tailwind classes cleanly, so they live here. */
     .hero-texture {
         background-image:
-            radial-gradient(ellipse 70% 90% at 100% 100%, var(--color-accent-glow), transparent 70%),
+            radial-gradient(ellipse 38% 46% at 100% 112%, var(--color-accent-glow), transparent 70%),
             linear-gradient(var(--color-grid) 1px, transparent 1px),
             linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
         background-size:
@@ -756,8 +744,8 @@
 }
 
 /* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
-   An egg card has a two-line headline over the grid and the glow, and the plate of each line painted over the line above
-   it and showed as a dark box. So an egg hero hides its full texture, and the art takes a soft oval of the texture.
+   An egg card has a two-line headline over the grid and the glow, and a box behind each line showed as a dark box over the line above
+   it. So an egg hero hides its full texture, and the art takes a soft oval of the texture.
    The text then sits on the flat band color, its contrast is the contrast of its role pair, and axe can read it.
    The ground comes first in its parent and the art after it is positioned, so the art paints over the ground. A negative
    z-index would do the same, but axe then misreads the stack and cannot read the contrast of the art. Each use sets its
