@@ -11,6 +11,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 
 | Feature | App | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- | --- |
+| `analyzer-stage` | site | 01 the floor reads hero text by pixels | none | |
 | `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |

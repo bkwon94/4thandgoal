@@ -5,7 +5,7 @@ Date: 2026-11-16
 Apps: site only. The analyzer hero gets the mesh, the stage lines, and the staged reveal. Every hero drops the plate. The pipeline and the API do not change.
 Spec branch: `analyzer-stage`.
 Source: the map `.scratch/analyzer-stage/MAP.md` and decision tickets 01 to 05. ADR 0035 (one wrapper per ui-sdk part), ADR 0036 (hero text has no plate).
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 07, in `issues/`.
 
 ## Problem Statement
 
