@@ -12,8 +12,29 @@ Boundary: holds. 3 items of one kind; no new term or ADR; no moved seam; each do
 
 Done condition: The injury Measure reads against a side only for a player it gets who is out for the season, on IR, PUP, NA, or Sus with no near return, or listed Out with no near return or Doubtful by the NFL game status of the trade week, so a Sleeper Out or Doubtful with no NFL game status for the trade week, an Out with a near return, a Questionable status, or a count of injury report weeks never counts.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `7c7085aa`, `uv run --exact --package cornerstone pytest -q -p no:xdist apps/pipeline/tests/test_measures.py -k test_injury_counts_only_an_out_or_doubtful`
+
+```text
+FAILED apps/pipeline/tests/test_measures.py::test_injury_counts_only_an_out_or_doubtful_of_the_trade_week_and_a_sleeper_out_of_no_near_return[sleeper out with no returns row and no trade week report never counts]
+FAILED ...[trade week report Doubtful counts]
+FAILED ...[trade week report Out with a near return never counts]
+FAILED ...[a count of past report weeks alone never counts]
+4 failed, 3 passed, 207 deselected
+E  AssertionError: assert 'Golden is ou...week on file.' == 'Freiermuth i...week on file.'
+E    + Golden is out with no return week on file.
+E  AssertionError: assert 'No player it...njury report.' == 'Freiermuth i...ul in week 6.'
+E    + No player it gets is out for long or often on the injury report.
+E  AssertionError: assert 'Golden was o...5 of 5 weeks.' == 'Freiermuth i...week on file.'
+E    + Golden was on the injury report in 5 of 5 weeks.
+```
+
+Green: at `2e978737`, `uv run --exact --package cornerstone pytest -q -p no:xdist apps/pipeline/tests/test_measures.py -k test_injury_counts_only_an_out_or_doubtful`
+
+```text
+.......                                                                  [100%]
+7 passed, 207 deselected in 1.04s
+```
+
 Test verdict: pending
 
 ### 2. The injury facts name only Out and Doubtful
