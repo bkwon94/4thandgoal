@@ -271,7 +271,7 @@ Evidence: screenshots of the reason before and after the tap at 375, 768, and 12
 AT-33: A long stage line shows in full
 App: site
 Stories: 34
-Given: The analyzer of `cpc` at 375 px with trade B in the Stack, and the analyze request held.
+Given: The analyzer of `cpc` at 375 px with trade L in the Stack, and the analyze request held. Trade L is a real trade of 2 sides where All You Need Is Love is a side, and one stage line is wider than the hero. The evidence agent picks it and records it.
 When: The reader taps "Grade the Trade" and the wait runs for 30 s.
 Then: Each stage line is set at the size of `text-body`, and a line wider than the hero scrolls from right to left until its end is in view.
 Evidence: the computed font size, the text and the width of each line, a screen recording of a long line, and screenshots of its start and its end at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -279,7 +279,7 @@ Evidence: the computed font size, the text and the width of each line, a screen 
 AT-34: With motion off, a long stage line wraps
 App: site
 Stories: 34
-Given: The analyzer of `cpc` at 375 px with trade B in the Stack, reduced motion on, and the analyze request held.
+Given: The analyzer of `cpc` at 375 px with trade L of AT-33 in the Stack, reduced motion on, and the analyze request held.
 When: The wait shows a stage line wider than the hero.
 Then: The line wraps to a second line in full and does not move.
 Evidence: two screenshots of the line 1 s apart, and screenshots at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -328,3 +328,4 @@ Out of scope "A change to the hero scene of the other pages": AT-25
 ## Revisions
 
 - 2026-11-17: Decision 06. Brian approved a change to AT-2 (idle shows a count, not the name) and to AT-20 (row label, not column label), and the new tests AT-27 to AT-34.
+- 2026-11-17: Brian approved a change to the Given of AT-33 and AT-34. At `text-body`, no stage line of trade B is wider than the hero at 375 px, so both tests use trade L, a real trade with All You Need Is Love.
