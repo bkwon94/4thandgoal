@@ -1,0 +1,2703 @@
+{
+  "schema_version": 1,
+  "week": 10,
+  "built": "2026-11-17T11:03:27.805449-05:00",
+  "buckets": {
+    "best_adds": [
+      {
+        "player_id": "8195",
+        "name": "Ronnie Rivers",
+        "position": "RB",
+        "team": "LAR",
+        "week_projection": 0.0,
+        "ros_projection": 0.45,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.9677,
+          "projection": 0.563
+        },
+        "board_score": 0.9029,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.8195",
+            "text": "Ronnie Rivers played 22% of snaps and took 15 carries last week, up from 0% and 0.",
+            "numbers": [
+              "22",
+              "15",
+              "0",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Ronnie Rivers"
+            ]
+          },
+          {
+            "id": "W.env.8195",
+            "text": "LAR runs the 2nd fastest offense and succeeds on 48% of runs.",
+            "numbers": [
+              "48",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Ronnie Rivers"
+            ]
+          },
+          {
+            "id": "WV.research.8195.1",
+            "text": "Ronnie Rivers ran 15 straight times for 81 yards on the Rams' last drive of a 34-6 win over Arizona, so his 15 carries came in garbage time with the game already decided. Source: Yahoo Sports, https://sports.yahoo.com/articles/ronnie-rivers-made-history-rams-173000818.html",
+            "numbers": [
+              "15",
+              "81",
+              "34-6",
+              "34",
+              "6",
+              "15"
+            ],
+            "teams": [],
+            "players": [
+              "Ronnie Rivers"
+            ]
+          },
+          {
+            "id": "WV.research.8195.2",
+            "text": "The Rams are on bye in Week 11, and Rivers is usually a special teams player, so he is a 3rd-string back behind Kyren Williams and Blake Corum, who ran for 100 yards. Source: Yahoo Sports, https://sports.yahoo.com/articles/ronnie-rivers-blake-corum-among-011200482.html",
+            "numbers": [
+              "11",
+              "3",
+              "100"
+            ],
+            "teams": [],
+            "players": [
+              "Ronnie Rivers"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 21,
+          "fact": {
+            "id": "waiver_price_8195",
+            "text": "Bid $21 to win Ronnie Rivers. The top bid of another manager is about $10.83, from puurdygood with $100 left. The last winning RB claim in the last 3 weeks is $20.",
+            "numbers": [
+              "21",
+              "10.83",
+              "100",
+              "3",
+              "20"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Ronnie Rivers"
+            ]
+          },
+          "last_like": {
+            "player_id": "9757",
+            "name": "Kendre Miller",
+            "roster_id": 5,
+            "team": "Skol Daddy",
+            "week": 8,
+            "bid": 20
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Ronnie Rivers ran 15 straight times for 81 yards on the Rams' last drive of a 34-6 win over Arizona, so his 15 carries came in garbage time with the game already decided.",
+            "url": "https://sports.yahoo.com/articles/ronnie-rivers-made-history-rams-173000818.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-17",
+            "stance": "backs"
+          },
+          {
+            "text": "The Rams are on bye in Week 11, and Rivers is usually a special teams player, so he is a 3rd-string back behind Kyren Williams and Blake Corum, who ran for 100 yards.",
+            "url": "https://sports.yahoo.com/articles/ronnie-rivers-blake-corum-among-011200482.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "11762",
+        "name": "Anthony Gould",
+        "position": "WR",
+        "team": "IND",
+        "week_projection": 4.85,
+        "ros_projection": 30.95,
+        "scores": {
+          "usage": 0.963,
+          "environment": 0.5806,
+          "projection": 0.9399
+        },
+        "board_score": 0.8437,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11762",
+            "text": "Anthony Gould played 54% of snaps and took 4 targets last week, up from 2% and 1.",
+            "numbers": [
+              "54",
+              "4",
+              "2",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Anthony Gould"
+            ]
+          },
+          {
+            "id": "W.env.11762",
+            "text": "IND runs the 9th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Anthony Gould"
+            ]
+          },
+          {
+            "id": "WV.research.11762.1",
+            "text": "RotoBaller's Morgan Rode says Gould played 32 snaps (54.2%) in Week 10 and caught 2 of 4 targets for 28 yards, which makes him a deep-league add. Source: RotoBaller, https://www.rotoballer.com/player-news/anthony-gould-worth-deep-league-adds-before-week-11/1996219",
+            "numbers": [
+              "32",
+              "54.2",
+              "10",
+              "2",
+              "4",
+              "28"
+            ],
+            "teams": [],
+            "players": [
+              "Anthony Gould"
+            ]
+          },
+          {
+            "id": "WV.research.11762.2",
+            "text": "Gould has a toe injury and was listed as limited in Monday's walkthrough, so watch his status before Thursday's game against Houston. Source: RotoBaller, https://www.rotoballer.com/player-news/anthony-gould-worth-deep-league-adds-before-week-11/1996219",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Anthony Gould"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 11,
+          "fact": {
+            "id": "waiver_price_11762",
+            "text": "Bid $11 to win Anthony Gould. The top bid of another manager is about $10.12, from puurdygood with $100 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "11",
+              "10.12",
+              "100",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Anthony Gould"
+            ]
+          },
+          "last_like": {
+            "player_id": "13413",
+            "name": "Cyrus Allen",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 8,
+            "bid": 0
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 13,
+        "injury_status": "Questionable",
+        "return_week": null,
+        "research": [
+          {
+            "text": "RotoBaller's Morgan Rode says Gould played 32 snaps (54.2%) in Week 10 and caught 2 of 4 targets for 28 yards, which makes him a deep-league add.",
+            "url": "https://www.rotoballer.com/player-news/anthony-gould-worth-deep-league-adds-before-week-11/1996219",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "backs"
+          },
+          {
+            "text": "Gould has a toe injury and was listed as limited in Monday's walkthrough, so watch his status before Thursday's game against Houston.",
+            "url": "https://www.rotoballer.com/player-news/anthony-gould-worth-deep-league-adds-before-week-11/1996219",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "7828",
+        "name": "Noah Gray",
+        "position": "TE",
+        "team": "KC",
+        "week_projection": 4.08,
+        "ros_projection": 28.19,
+        "scores": {
+          "usage": 0.8846,
+          "environment": 0.6613,
+          "projection": 0.9273
+        },
+        "board_score": 0.8261,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.7828",
+            "text": "Noah Gray played 85% of snaps and took 3 targets last week, up from 62% and 1.",
+            "numbers": [
+              "85",
+              "3",
+              "62",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Gray"
+            ]
+          },
+          {
+            "id": "W.env.7828",
+            "text": "KC runs the 18th fastest offense and passes on 56% of neutral downs.",
+            "numbers": [
+              "56",
+              "18"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Gray"
+            ]
+          },
+          {
+            "id": "WV.research.7828.1",
+            "text": "With Travis Kelce injured, Yahoo Sports says Noah Gray had 6 catches for 44 yards in 4 games without Kelce and is still a weak fantasy choice at tight end. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-injury-impact-travis-192232566.html",
+            "numbers": [
+              "6",
+              "44",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Gray"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 10,
+          "fact": {
+            "id": "waiver_price_7828",
+            "text": "Bid $10 to win Noah Gray. The top bid of another manager is about $9.91, from puurdygood with $100 left.",
+            "numbers": [
+              "10",
+              "9.91",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Noah Gray"
+            ]
+          },
+          "last_like": {
+            "player_id": "4993",
+            "name": "Mike Gesicki",
+            "roster_id": 2,
+            "team": "VarsityBlue2",
+            "week": 7,
+            "bid": 11
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 5,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "With Travis Kelce injured, Yahoo Sports says Noah Gray had 6 catches for 44 yards in 4 games without Kelce and is still a weak fantasy choice at tight end.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-injury-impact-travis-192232566.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "10214",
+        "name": "Davis Allen",
+        "position": "TE",
+        "team": "LAR",
+        "week_projection": 0.0,
+        "ros_projection": 6.93,
+        "scores": {
+          "usage": 0.7692,
+          "environment": 0.9677,
+          "projection": 0.7273
+        },
+        "board_score": 0.8204,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.10214",
+            "text": "Davis Allen played 68% of snaps and took 1 targets last week, up from 56% and 0.",
+            "numbers": [
+              "68",
+              "1",
+              "56",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Davis Allen"
+            ]
+          },
+          {
+            "id": "W.env.10214",
+            "text": "LAR runs the 2nd fastest offense and passes on 61% of neutral downs.",
+            "numbers": [
+              "61",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Davis Allen"
+            ]
+          },
+          {
+            "id": "WV.research.10214.1",
+            "text": "NBC Sports reports Davis Allen caught 1 of 1 targets for a 19-yard touchdown in the Rams' Week 10 win over the Cardinals. Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-15/davis-allen-scores-19-yard-touchdown-vs-cardinals",
+            "numbers": [
+              "1",
+              "1",
+              "19",
+              "10"
+            ],
+            "teams": [],
+            "players": [
+              "Davis Allen"
+            ]
+          },
+          {
+            "id": "WV.research.10214.2",
+            "text": "Rotoballer lists the Rams among the 6 teams on bye in Week 11, so Davis Allen will not play this week. Source: RotoBaller, https://www.rotoballer.com/week-11-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1994822",
+            "numbers": [
+              "6",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Davis Allen"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 10,
+          "fact": {
+            "id": "waiver_price_10214",
+            "text": "Bid $10 to win Davis Allen. The top bid of another manager is about $9.84, from puurdygood with $100 left.",
+            "numbers": [
+              "10",
+              "9.84",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Davis Allen"
+            ]
+          },
+          "last_like": {
+            "player_id": "4993",
+            "name": "Mike Gesicki",
+            "roster_id": 2,
+            "team": "VarsityBlue2",
+            "week": 7,
+            "bid": 11
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "NBC Sports reports Davis Allen caught 1 of 1 targets for a 19-yard touchdown in the Rams' Week 10 win over the Cardinals.",
+            "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-15/davis-allen-scores-19-yard-touchdown-vs-cardinals",
+            "source": "NBC Sports",
+            "date": "2026-11-15",
+            "stance": "backs"
+          },
+          {
+            "text": "Rotoballer lists the Rams among the 6 teams on bye in Week 11, so Davis Allen will not play this week.",
+            "url": "https://www.rotoballer.com/week-11-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1994822",
+            "source": "RotoBaller",
+            "date": "2026-11-16",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "11292",
+        "name": "Tommy DeVito",
+        "position": "QB",
+        "team": "NE",
+        "week_projection": 0.0,
+        "ros_projection": 15.45,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.4194,
+          "projection": 0.8515
+        },
+        "board_score": 0.7961,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11292",
+            "text": "Tommy DeVito played 83% of snaps and took 0 carries last week, up from 19% and 0.",
+            "numbers": [
+              "83",
+              "0",
+              "19",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Tommy DeVito"
+            ]
+          },
+          {
+            "id": "W.env.11292",
+            "text": "NE runs the 23rd fastest offense and passes on 51% of neutral downs.",
+            "numbers": [
+              "51",
+              "23"
+            ],
+            "teams": [],
+            "players": [
+              "Tommy DeVito"
+            ]
+          },
+          {
+            "id": "WV.research.11292.1",
+            "text": "SI says Tommy DeVito had a hard day after replacing Drake Maye in the loss to Detroit, completing half of his 24 passes for 81 yards with 1 touchdown and 1 interception. Source: Sports Illustrated, https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-11-waiver-wire-mack-hollins-malachi-fields",
+            "numbers": [
+              "24",
+              "81",
+              "1",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Tommy DeVito"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 10,
+          "fact": {
+            "id": "waiver_price_11292",
+            "text": "Bid $10 to win Tommy DeVito. The top bid of another manager is about $9.55, from puurdygood with $100 left.",
+            "numbers": [
+              "10",
+              "9.55",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Tommy DeVito"
+            ]
+          },
+          "last_like": {
+            "player_id": "7523",
+            "name": "Trevor Lawrence",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 7,
+            "bid": 31
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "SI says Tommy DeVito had a hard day after replacing Drake Maye in the loss to Detroit, completing half of his 24 passes for 81 yards with 1 touchdown and 1 interception.",
+            "url": "https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-11-waiver-wire-mack-hollins-malachi-fields",
+            "source": "Sports Illustrated",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "7716",
+        "name": "John Bates",
+        "position": "TE",
+        "team": "WAS",
+        "week_projection": 2.06,
+        "ros_projection": 13.94,
+        "scores": {
+          "usage": 0.8077,
+          "environment": 0.7258,
+          "projection": 0.8121
+        },
+        "board_score": 0.784,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.7716",
+            "text": "John Bates played 41% of snaps and took 0 targets last week, up from 24% and 0.",
+            "numbers": [
+              "41",
+              "0",
+              "24",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "John Bates"
+            ]
+          },
+          {
+            "id": "W.env.7716",
+            "text": "WAS runs the 11th fastest offense and passes on 53% of neutral downs.",
+            "numbers": [
+              "53",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "John Bates"
+            ]
+          },
+          {
+            "id": "WV.research.7716.1",
+            "text": "RotoBaller's early Week 11 tight end rankings by Nick Mariano put John Bates at TE 56, in tier 9, and 242nd overall. Source: RotoBaller, https://www.rotoballer.com/fantasy-football-rankings-tight-ends-te-week-11-early-updates-2026/1996032",
+            "numbers": [
+              "11",
+              "56",
+              "9",
+              "242"
+            ],
+            "teams": [],
+            "players": [
+              "John Bates"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 10,
+          "fact": {
+            "id": "waiver_price_7716",
+            "text": "Bid $10 to win John Bates. The top bid of another manager is about $9.41, from puurdygood with $100 left.",
+            "numbers": [
+              "10",
+              "9.41",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "John Bates"
+            ]
+          },
+          "last_like": {
+            "player_id": "4993",
+            "name": "Mike Gesicki",
+            "roster_id": 2,
+            "team": "VarsityBlue2",
+            "week": 7,
+            "bid": 11
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "RotoBaller's early Week 11 tight end rankings by Nick Mariano put John Bates at TE 56, in tier 9, and 242nd overall.",
+            "url": "https://www.rotoballer.com/fantasy-football-rankings-tight-ends-te-week-11-early-updates-2026/1996032",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "13333",
+        "name": "Deion Burks",
+        "position": "WR",
+        "team": "IND",
+        "week_projection": 4.0,
+        "ros_projection": 25.57,
+        "scores": {
+          "usage": 0.8519,
+          "environment": 0.5806,
+          "projection": 0.9099
+        },
+        "board_score": 0.7821,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.13333",
+            "text": "Deion Burks played 58% of snaps and took 2 targets last week, up from 27% and 1.",
+            "numbers": [
+              "58",
+              "2",
+              "27",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Deion Burks"
+            ]
+          },
+          {
+            "id": "W.env.13333",
+            "text": "IND runs the 9th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Deion Burks"
+            ]
+          },
+          {
+            "id": "WV.research.13333.1",
+            "text": "In his Week 11 waiver column, Justin Boone lists Deion Burks as a deep stash at 0% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "numbers": [
+              "11",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Deion Burks"
+            ]
+          },
+          {
+            "id": "WV.research.13333.2",
+            "text": "Boone also lists Burks as a WR streaming option for the Week 11 game at Houston. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "numbers": [
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Deion Burks"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 10,
+          "fact": {
+            "id": "waiver_price_13333",
+            "text": "Bid $10 to win Deion Burks. The top bid of another manager is about $9.39, from puurdygood with $100 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "10",
+              "9.39",
+              "100",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Deion Burks"
+            ]
+          },
+          "last_like": {
+            "player_id": "13413",
+            "name": "Cyrus Allen",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 8,
+            "bid": 0
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "In his Week 11 waiver column, Justin Boone lists Deion Burks as a deep stash at 0% rostered.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "news"
+          },
+          {
+            "text": "Boone also lists Burks as a WR streaming option for the Week 11 game at Houston.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "11575",
+        "name": "Ray Davis",
+        "position": "RB",
+        "team": "BUF",
+        "week_projection": 1.46,
+        "ros_projection": 9.91,
+        "scores": {
+          "usage": 0.75,
+          "environment": 0.7742,
+          "projection": 0.8319
+        },
+        "board_score": 0.7736,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11575",
+            "text": "Ray Davis played 21% of snaps and took 3 carries last week, up from 14% and 2.",
+            "numbers": [
+              "21",
+              "3",
+              "14",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Ray Davis"
+            ]
+          },
+          {
+            "id": "W.env.11575",
+            "text": "BUF runs the 12th fastest offense and succeeds on 47% of runs.",
+            "numbers": [
+              "47",
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Ray Davis"
+            ]
+          },
+          {
+            "id": "WV.research.11575.1",
+            "text": "CBS Sports reports Ray Davis ran 3 times for 8 yards in the Week 10 win over the Jets and has been held to single-digit rushing yards in 8 of 9 games this season. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/bills-ray-davis-eight-yards-in-week-10-win/",
+            "numbers": [
+              "3",
+              "8",
+              "10",
+              "8",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Ray Davis"
+            ]
+          },
+          {
+            "id": "WV.research.11575.2",
+            "text": "RotoBaller lists Ray Davis as a pure handcuff stash behind James Cook, rostered in 4% of leagues. Source: RotoBaller, https://www.rotoballer.com/week-11-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1994822",
+            "numbers": [
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Ray Davis"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 21,
+          "fact": {
+            "id": "waiver_price_11575",
+            "text": "Bid $21 to win Ray Davis. The top bid of another manager is about $9.28, from puurdygood with $100 left. The last winning RB claim in the last 3 weeks is $20.",
+            "numbers": [
+              "21",
+              "9.28",
+              "100",
+              "3",
+              "20"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Ray Davis"
+            ]
+          },
+          "last_like": {
+            "player_id": "9757",
+            "name": "Kendre Miller",
+            "roster_id": 5,
+            "team": "Skol Daddy",
+            "week": 8,
+            "bid": 20
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "CBS Sports reports Ray Davis ran 3 times for 8 yards in the Week 10 win over the Jets and has been held to single-digit rushing yards in 8 of 9 games this season.",
+            "url": "https://www.cbssports.com/fantasy/football/news/bills-ray-davis-eight-yards-in-week-10-win/",
+            "source": "CBS Sports",
+            "date": "2026-11-16",
+            "stance": "backs"
+          },
+          {
+            "text": "RotoBaller lists Ray Davis as a pure handcuff stash behind James Cook, rostered in 4% of leagues.",
+            "url": "https://www.rotoballer.com/week-11-fantasy-football-waiver-wire-pickups-stashes-all-positions-2026/1994822",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      }
+    ],
+    "trending": [
+      {
+        "player_id": "10218",
+        "name": "Xavier Hutchinson",
+        "position": "WR",
+        "team": "HOU",
+        "week_projection": 5.48,
+        "ros_projection": 38.37,
+        "scores": {
+          "usage": 0.1852,
+          "environment": 0.7419,
+          "projection": 0.9742
+        },
+        "board_score": 0.51,
+        "trending_count": 676935,
+        "facts": [
+          {
+            "id": "W.usage.10218",
+            "text": "Xavier Hutchinson played 76% of snaps and took 9 targets last week, down from 81% and 5.",
+            "numbers": [
+              "76",
+              "9",
+              "81",
+              "5"
+            ],
+            "teams": [],
+            "players": [
+              "Xavier Hutchinson"
+            ]
+          },
+          {
+            "id": "W.env.10218",
+            "text": "HOU runs the 12th fastest offense and passes on 56% of neutral downs.",
+            "numbers": [
+              "56",
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Xavier Hutchinson"
+            ]
+          },
+          {
+            "id": "WV.trending.10218",
+            "text": "Xavier Hutchinson was added in 676935 Sleeper leagues in the last day.",
+            "numbers": [
+              "676935"
+            ],
+            "teams": [],
+            "players": [
+              "Xavier Hutchinson"
+            ]
+          },
+          {
+            "id": "WV.research.10218.1",
+            "text": "In his Week 11 Yahoo waiver column, Justin Boone lists Xavier Hutchinson as a wide receiver add for the home game against IND and notes he is 3% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "numbers": [
+              "11",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Xavier Hutchinson"
+            ]
+          },
+          {
+            "id": "WV.research.10218.2",
+            "text": "Yahoo Sports says Hutchinson caught 4 of 9 targets for 58 yards and a touchdown against Cleveland in Week 10 and calls him a deep-league flex option against Indianapolis in Week 11. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "numbers": [
+              "4",
+              "9",
+              "58",
+              "10",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Xavier Hutchinson"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 7,
+          "fact": {
+            "id": "waiver_price_10218",
+            "text": "Bid $7 to win Xavier Hutchinson. The top bid of another manager is about $6.12, from puurdygood with $100 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "7",
+              "6.12",
+              "100",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Xavier Hutchinson"
+            ]
+          },
+          "last_like": {
+            "player_id": "13413",
+            "name": "Cyrus Allen",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 8,
+            "bid": 0
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 8,
+        "injury_status": "Questionable",
+        "return_week": null,
+        "research": [
+          {
+            "text": "In his Week 11 Yahoo waiver column, Justin Boone lists Xavier Hutchinson as a wide receiver add for the home game against IND and notes he is 3% rostered.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "news"
+          },
+          {
+            "text": "Yahoo Sports says Hutchinson caught 4 of 9 targets for 58 yards and a touchdown against Cleveland in Week 10 and calls him a deep-league flex option against Indianapolis in Week 11.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "13424",
+        "name": "Seth McGowan",
+        "position": "RB",
+        "team": "IND",
+        "week_projection": 6.22,
+        "ros_projection": 41.8,
+        "scores": {
+          "usage": 0.5833,
+          "environment": 0.7742,
+          "projection": 0.9832
+        },
+        "board_score": 0.7206,
+        "trending_count": 438976,
+        "facts": [
+          {
+            "id": "W.usage.13424",
+            "text": "Seth McGowan played 29% of snaps and took 12 carries last week, down from 31% and 6.",
+            "numbers": [
+              "29",
+              "12",
+              "31",
+              "6"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "W.env.13424",
+            "text": "IND runs the 9th fastest offense and succeeds on 46% of runs.",
+            "numbers": [
+              "46",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "WV.trending.13424",
+            "text": "Seth McGowan was added in 438976 Sleeper leagues in the last day.",
+            "numbers": [
+              "438976"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "WV.research.13424.1",
+            "text": "A Yahoo Sports waiver column named Seth McGowan a must-add for Week 11, noting he had 12 carries for 77 yards on 17 snaps and scored for the second straight game. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "numbers": [
+              "11",
+              "12",
+              "77",
+              "17"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "WV.research.13424.2",
+            "text": "The same column expects another close split of carries between Jonathan Taylor and McGowan on Thursday night against Houston, a matchup it calls tough on paper. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 21,
+          "fact": {
+            "id": "waiver_price_13424",
+            "text": "Bid $21 to win Seth McGowan. The top bid of another manager is about $8.65, from puurdygood with $100 left. The last winning RB claim in the last 3 weeks is $20.",
+            "numbers": [
+              "21",
+              "8.65",
+              "100",
+              "3",
+              "20"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          "last_like": {
+            "player_id": "9757",
+            "name": "Kendre Miller",
+            "roster_id": 5,
+            "team": "Skol Daddy",
+            "week": 8,
+            "bid": 20
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "A Yahoo Sports waiver column named Seth McGowan a must-add for Week 11, noting he had 12 carries for 77 yards on 17 snaps and scored for the second straight game.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "backs"
+          },
+          {
+            "text": "The same column expects another close split of carries between Jonathan Taylor and McGowan on Thursday night against Houston, a matchup it calls tough on paper.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "11563",
+        "name": "Bo Nix",
+        "position": "QB",
+        "team": "DEN",
+        "week_projection": 17.94,
+        "ros_projection": 123.92,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.3871,
+          "projection": 1.0
+        },
+        "board_score": 0.3161,
+        "trending_count": 164730,
+        "facts": [
+          {
+            "id": "W.env.11563",
+            "text": "DEN runs the 29th fastest offense and passes on 52% of neutral downs.",
+            "numbers": [
+              "52",
+              "29"
+            ],
+            "teams": [],
+            "players": [
+              "Bo Nix"
+            ]
+          },
+          {
+            "id": "WV.trending.11563",
+            "text": "Bo Nix was added in 164730 Sleeper leagues in the last day.",
+            "numbers": [
+              "164730"
+            ],
+            "teams": [],
+            "players": [
+              "Bo Nix"
+            ]
+          },
+          {
+            "id": "WV.research.11563.1",
+            "text": "NFL.com ranks Bo Nix 9th among its Week 11 waiver targets and notes he has scored more than 15 fantasy points in 3 straight games. Source: NFL.com, https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-11-wr-keenan-allen-rb-seth-mcgowan-among-top-targets",
+            "numbers": [
+              "9",
+              "11",
+              "15",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Bo Nix"
+            ]
+          },
+          {
+            "id": "WV.research.11563.2",
+            "text": "Sports Illustrated lists Bo Nix as a Week 11 waiver option at 57% rostered and says he scored 19 or more points in 2 of his past 3 games. Source: Sports Illustrated, https://www.si.com/fantasy/week-11-waiver-wire-targets",
+            "numbers": [
+              "11",
+              "57",
+              "19",
+              "2",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Bo Nix"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 4,
+          "fact": {
+            "id": "waiver_price_11563",
+            "text": "Bid $4 to win Bo Nix. The top bid of another manager is about $3.79, from puurdygood with $100 left.",
+            "numbers": [
+              "4",
+              "3.79",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Bo Nix"
+            ]
+          },
+          "last_like": {
+            "player_id": "7523",
+            "name": "Trevor Lawrence",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 7,
+            "bid": 31
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 10,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "NFL.com ranks Bo Nix 9th among its Week 11 waiver targets and notes he has scored more than 15 fantasy points in 3 straight games.",
+            "url": "https://www.nfl.com/news/2026-nfl-fantasy-football-waiver-wire-week-11-wr-keenan-allen-rb-seth-mcgowan-among-top-targets",
+            "source": "NFL.com",
+            "date": "2026-11-17",
+            "stance": "news"
+          },
+          {
+            "text": "Sports Illustrated lists Bo Nix as a Week 11 waiver option at 57% rostered and says he scored 19 or more points in 2 of his past 3 games.",
+            "url": "https://www.si.com/fantasy/week-11-waiver-wire-targets",
+            "source": "Sports Illustrated",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "12499",
+        "name": "Elic Ayomanor",
+        "position": "WR",
+        "team": "TEN",
+        "week_projection": 8.53,
+        "ros_projection": 55.03,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.129,
+          "projection": 0.9957
+        },
+        "board_score": 0.2378,
+        "trending_count": 156480,
+        "facts": [
+          {
+            "id": "W.env.12499",
+            "text": "TEN runs the 31st fastest offense and passes on 48% of neutral downs.",
+            "numbers": [
+              "48",
+              "31"
+            ],
+            "teams": [],
+            "players": [
+              "Elic Ayomanor"
+            ]
+          },
+          {
+            "id": "WV.trending.12499",
+            "text": "Elic Ayomanor was added in 156480 Sleeper leagues in the last day.",
+            "numbers": [
+              "156480"
+            ],
+            "teams": [],
+            "players": [
+              "Elic Ayomanor"
+            ]
+          },
+          {
+            "id": "WV.research.12499.1",
+            "text": "Justin Boone at Yahoo Fantasy lists Elic Ayomanor, 1% rostered, as a Week 11 waiver option for the Titans' game at Dallas. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "numbers": [
+              "1",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Elic Ayomanor"
+            ]
+          },
+          {
+            "id": "WV.research.12499.2",
+            "text": "RotoWire calls Ayomanor a Week 11 option to consider only because Dallas' defense may be weak enough to help secondary Titans targets. Source: RotoWire, https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-11-146790",
+            "numbers": [
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Elic Ayomanor"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 3,
+          "fact": {
+            "id": "waiver_price_12499",
+            "text": "Bid $3 to win Elic Ayomanor. The top bid of another manager is about $2.85, from puurdygood with $100 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "3",
+              "2.85",
+              "100",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Elic Ayomanor"
+            ]
+          },
+          "last_like": {
+            "player_id": "13413",
+            "name": "Cyrus Allen",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 8,
+            "bid": 0
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 9,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Justin Boone at Yahoo Fantasy lists Elic Ayomanor, 1% rostered, as a Week 11 waiver option for the Titans' game at Dallas.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "news"
+          },
+          {
+            "text": "RotoWire calls Ayomanor a Week 11 option to consider only because Dallas' defense may be weak enough to help secondary Titans targets.",
+            "url": "https://www.rotowire.com/football/article/fantasy-football-waiver-wire-top-pickups-for-week-11-146790",
+            "source": "RotoWire",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "12700",
+        "name": "Gavin Bartholomew",
+        "position": "TE",
+        "team": "MIN",
+        "week_projection": 2.27,
+        "ros_projection": 14.41,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.1935,
+          "projection": 0.8182
+        },
+        "board_score": 0.7217,
+        "trending_count": 108432,
+        "facts": [
+          {
+            "id": "W.usage.12700",
+            "text": "Gavin Bartholomew played 77% of snaps and took 4 targets last week, up from 12% and 0.",
+            "numbers": [
+              "77",
+              "4",
+              "12",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "W.env.12700",
+            "text": "MIN runs the 30th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "30"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "WV.trending.12700",
+            "text": "Gavin Bartholomew was added in 108432 Sleeper leagues in the last day.",
+            "numbers": [
+              "108432"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "WV.research.12700.1",
+            "text": "Yahoo Sports lists Gavin Bartholomew as one of its tight end waiver targets for Week 11, a week with 6 teams on bye. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-191151864.html",
+            "numbers": [
+              "11",
+              "6"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "WV.research.12700.2",
+            "text": "RotoBaller's Week 11 waiver rankings say to add Gavin Bartholomew in leagues with 12 or more teams and rank him 39th overall. Source: RotoBaller, https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-11-2026/1995073",
+            "numbers": [
+              "11",
+              "12",
+              "39"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 9,
+          "fact": {
+            "id": "waiver_price_12700",
+            "text": "Bid $9 to win Gavin Bartholomew. The top bid of another manager is about $8.66, from puurdygood with $100 left.",
+            "numbers": [
+              "9",
+              "8.66",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          "last_like": {
+            "player_id": "4993",
+            "name": "Mike Gesicki",
+            "roster_id": 2,
+            "team": "VarsityBlue2",
+            "week": 7,
+            "bid": 11
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 6,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Yahoo Sports lists Gavin Bartholomew as one of its tight end waiver targets for Week 11, a week with 6 teams on bye.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-191151864.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "backs"
+          },
+          {
+            "text": "RotoBaller's Week 11 waiver rankings say to add Gavin Bartholomew in leagues with 12 or more teams and rank him 39th overall.",
+            "url": "https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-11-2026/1995073",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "4017",
+        "name": "Deshaun Watson",
+        "position": "QB",
+        "team": "CLE",
+        "week_projection": 0.0,
+        "ros_projection": 91.24,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.5161,
+          "projection": 0.9406
+        },
+        "board_score": 0.3429,
+        "trending_count": 87392,
+        "facts": [
+          {
+            "id": "W.env.4017",
+            "text": "CLE runs the 15th fastest offense and passes on 50% of neutral downs.",
+            "numbers": [
+              "50",
+              "15"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          {
+            "id": "WV.trending.4017",
+            "text": "Deshaun Watson was added in 87392 Sleeper leagues in the last day.",
+            "numbers": [
+              "87392"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          {
+            "id": "WV.research.4017.1",
+            "text": "Yahoo Sports lists Deshaun Watson as a Week 11 waiver stash at 14% rostered, noting the Browns are on bye in Week 11 but face the Raiders, Bengals, Falcons, Giants, Ravens, and Colts after that, and suggests a FAAB bid of 2% or more. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/week-11-waiver-wire-pickups-020613348.html",
+            "numbers": [
+              "11",
+              "14",
+              "11",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 5,
+          "fact": {
+            "id": "waiver_price_4017",
+            "text": "Bid $5 to win Deshaun Watson. The top bid of another manager is about $4.11, from puurdygood with $100 left.",
+            "numbers": [
+              "5",
+              "4.11",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          "last_like": {
+            "player_id": "7523",
+            "name": "Trevor Lawrence",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 7,
+            "bid": 31
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Yahoo Sports lists Deshaun Watson as a Week 11 waiver stash at 14% rostered, noting the Browns are on bye in Week 11 but face the Raiders, Bengals, Falcons, Giants, Ravens, and Colts after that, and suggests a FAAB bid of 2% or more.",
+            "url": "https://sports.yahoo.com/articles/week-11-waiver-wire-pickups-020613348.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-16",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "13269",
+        "name": "Fernando Mendoza",
+        "position": "QB",
+        "team": "LV",
+        "week_projection": 12.27,
+        "ros_projection": 87.18,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.3871,
+          "projection": 0.9109
+        },
+        "board_score": 0.2983,
+        "trending_count": 42944,
+        "facts": [
+          {
+            "id": "W.env.13269",
+            "text": "LV runs the 22nd fastest offense and passes on 50% of neutral downs.",
+            "numbers": [
+              "50",
+              "22"
+            ],
+            "teams": [],
+            "players": [
+              "Fernando Mendoza"
+            ]
+          },
+          {
+            "id": "WV.trending.13269",
+            "text": "Fernando Mendoza was added in 42944 Sleeper leagues in the last day.",
+            "numbers": [
+              "42944"
+            ],
+            "teams": [],
+            "players": [
+              "Fernando Mendoza"
+            ]
+          },
+          {
+            "id": "WV.research.13269.1",
+            "text": "Justin Boone of Yahoo Fantasy lists Fernando Mendoza as a Week 11 quarterback waiver option at DN, rostered in 18% of leagues. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "numbers": [
+              "11",
+              "18"
+            ],
+            "teams": [],
+            "players": [
+              "Fernando Mendoza"
+            ]
+          },
+          {
+            "id": "WV.research.13269.2",
+            "text": "Yahoo Sports names Mendoza a Week 11 quarterback waiver target and says his running could make him a Jaxson Dart-type fantasy asset if he runs 6-10 times per game and gets goal-line carries. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-191151864.html",
+            "numbers": [
+              "11",
+              "6-10",
+              "6",
+              "10"
+            ],
+            "teams": [],
+            "players": [
+              "Fernando Mendoza"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 4,
+          "fact": {
+            "id": "waiver_price_13269",
+            "text": "Bid $4 to win Fernando Mendoza. The top bid of another manager is about $3.58, from puurdygood with $100 left.",
+            "numbers": [
+              "4",
+              "3.58",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Fernando Mendoza"
+            ]
+          },
+          "last_like": {
+            "player_id": "7523",
+            "name": "Trevor Lawrence",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 7,
+            "bid": 31
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Justin Boone of Yahoo Fantasy lists Fernando Mendoza as a Week 11 quarterback waiver option at DN, rostered in 18% of leagues.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "news"
+          },
+          {
+            "text": "Yahoo Sports names Mendoza a Week 11 quarterback waiver target and says his running could make him a Jaxson Dart-type fantasy asset if he runs 6-10 times per game and gets goal-line carries.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-191151864.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "4037",
+        "name": "Chris Godwin Jr.",
+        "position": "WR",
+        "team": "TB",
+        "week_projection": 9.04,
+        "ros_projection": 61.15,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.3548,
+          "projection": 1.0
+        },
+        "board_score": 0.3064,
+        "trending_count": 37422,
+        "facts": [
+          {
+            "id": "W.env.4037",
+            "text": "TB runs the 10th fastest offense and passes on 39% of neutral downs.",
+            "numbers": [
+              "39",
+              "10"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Godwin Jr."
+            ]
+          },
+          {
+            "id": "WV.trending.4037",
+            "text": "Chris Godwin Jr. was added in 37422 Sleeper leagues in the last day.",
+            "numbers": [
+              "37422"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Godwin Jr."
+            ]
+          },
+          {
+            "id": "WV.research.4037.1",
+            "text": "In his Week 11 waiver column, 4for4's Ryan McDowell put Chris Godwin on his Drop List, showing him as 55% rostered. Source: 4for4, https://www.4for4.com/2026/w10/fantasy-football-waiver-wire-week-11-top-pickups-drops-stash-kaelon-black",
+            "numbers": [
+              "11",
+              "4",
+              "4",
+              "55",
+              "4",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Godwin Jr."
+            ]
+          },
+          {
+            "id": "WV.research.4037.2",
+            "text": "RotoBaller named Chris Godwin Jr. first among wide receivers to think about cutting for Week 11, showing him as 55% rostered. Source: RotoBaller, https://www.rotoballer.com/who-to-drop-for-fantasy-football-week-11-2026/1995889",
+            "numbers": [
+              "11",
+              "55"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Godwin Jr."
+            ]
+          }
+        ],
+        "price": {
+          "bid": 4,
+          "fact": {
+            "id": "waiver_price_4037",
+            "text": "Bid $4 to win Chris Godwin Jr.. The top bid of another manager is about $3.68, from puurdygood with $100 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "4",
+              "3.68",
+              "100",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Chris Godwin Jr."
+            ]
+          },
+          "last_like": {
+            "player_id": "13413",
+            "name": "Cyrus Allen",
+            "roster_id": 7,
+            "team": "Bo Girds",
+            "week": 8,
+            "bid": 0
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 10,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "In his Week 11 waiver column, 4for4's Ryan McDowell put Chris Godwin on his Drop List, showing him as 55% rostered.",
+            "url": "https://www.4for4.com/2026/w10/fantasy-football-waiver-wire-week-11-top-pickups-drops-stash-kaelon-black",
+            "source": "4for4",
+            "date": "2026-11-16",
+            "stance": "disputes"
+          },
+          {
+            "text": "RotoBaller named Chris Godwin Jr. first among wide receivers to think about cutting for Week 11, showing him as 55% rostered.",
+            "url": "https://www.rotoballer.com/who-to-drop-for-fantasy-football-week-11-2026/1995889",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "disputes"
+          }
+        ]
+      }
+    ],
+    "sneaky": [
+      {
+        "player_id": "12700",
+        "name": "Gavin Bartholomew",
+        "position": "TE",
+        "team": "MIN",
+        "week_projection": 2.27,
+        "ros_projection": 14.41,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.1935,
+          "projection": 0.8182
+        },
+        "board_score": 0.7217,
+        "trending_count": 108432,
+        "facts": [
+          {
+            "id": "W.usage.12700",
+            "text": "Gavin Bartholomew played 77% of snaps and took 4 targets last week, up from 12% and 0.",
+            "numbers": [
+              "77",
+              "4",
+              "12",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "W.env.12700",
+            "text": "MIN runs the 30th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "30"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "WV.trending.12700",
+            "text": "Gavin Bartholomew was added in 108432 Sleeper leagues in the last day.",
+            "numbers": [
+              "108432"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "WV.story.12700",
+            "text": "T.J. Hockenson is out, and Gavin Bartholomew is next on the depth chart.",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew",
+              "T.J. Hockenson"
+            ]
+          },
+          {
+            "id": "WV.research.12700.1",
+            "text": "Yahoo Sports lists Gavin Bartholomew as one of its tight end waiver targets for Week 11, a week with 6 teams on bye. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-191151864.html",
+            "numbers": [
+              "11",
+              "6"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          {
+            "id": "WV.research.12700.2",
+            "text": "RotoBaller's Week 11 waiver rankings say to add Gavin Bartholomew in leagues with 12 or more teams and rank him 39th overall. Source: RotoBaller, https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-11-2026/1995073",
+            "numbers": [
+              "11",
+              "12",
+              "39"
+            ],
+            "teams": [],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 9,
+          "fact": {
+            "id": "waiver_price_12700",
+            "text": "Bid $9 to win Gavin Bartholomew. The top bid of another manager is about $8.66, from puurdygood with $100 left.",
+            "numbers": [
+              "9",
+              "8.66",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Gavin Bartholomew"
+            ]
+          },
+          "last_like": {
+            "player_id": "4993",
+            "name": "Mike Gesicki",
+            "roster_id": 2,
+            "team": "VarsityBlue2",
+            "week": 7,
+            "bid": 11
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "behind_injury",
+        "bye": 6,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Yahoo Sports lists Gavin Bartholomew as one of its tight end waiver targets for Week 11, a week with 6 teams on bye.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-week-191151864.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "backs"
+          },
+          {
+            "text": "RotoBaller's Week 11 waiver rankings say to add Gavin Bartholomew in leagues with 12 or more teams and rank him 39th overall.",
+            "url": "https://www.rotoballer.com/waiver-wire-rankings-fantasy-football-week-11-2026/1995073",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "11593",
+        "name": "Brevyn Spann-Ford",
+        "position": "TE",
+        "team": "DAL",
+        "week_projection": 8.06,
+        "ros_projection": 13.78,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.8226,
+          "projection": 0.8061
+        },
+        "board_score": 0.408,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11593",
+            "text": "Brevyn Spann-Ford played 66% of snaps and took 3 targets last week, down from 70% and 3.",
+            "numbers": [
+              "66",
+              "3",
+              "70",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          {
+            "id": "W.env.11593",
+            "text": "DAL runs the 3rd fastest offense and passes on 52% of neutral downs.",
+            "numbers": [
+              "52",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          {
+            "id": "WV.story.11593",
+            "text": "Jake Ferguson is out, and Brevyn Spann-Ford is next on the depth chart.",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford",
+              "Jake Ferguson"
+            ]
+          },
+          {
+            "id": "WV.research.11593.1",
+            "text": "Justin Boone lists Brevyn Spann-Ford, who is 1% rostered, among his tight end waiver adds for Week 11 against TEN. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "numbers": [
+              "1",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          {
+            "id": "WV.research.11593.2",
+            "text": "SB Nation's Week 11 waiver column calls Brevyn Spann-Ford an interesting tight end pickup because Dallas throws so much. Source: SB Nation via Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-143815834.html",
+            "numbers": [
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 5,
+          "fact": {
+            "id": "waiver_price_11593",
+            "text": "Bid $5 to win Brevyn Spann-Ford. The top bid of another manager is about $4.9, from puurdygood with $100 left.",
+            "numbers": [
+              "5",
+              "4.9",
+              "100"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          "last_like": {
+            "player_id": "4993",
+            "name": "Mike Gesicki",
+            "roster_id": 2,
+            "team": "VarsityBlue2",
+            "week": 7,
+            "bid": 11
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "behind_injury",
+        "bye": 14,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Justin Boone lists Brevyn Spann-Ford, who is 1% rostered, among his tight end waiver adds for Week 11 against TEN.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-11-fantasy-football-waiver-wire-pickups-kaelon-black-among-top-adds-with-6-teams-on-bye-injuries-piling-up-184937445.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-17",
+            "stance": "news"
+          },
+          {
+            "text": "SB Nation's Week 11 waiver column calls Brevyn Spann-Ford an interesting tight end pickup because Dallas throws so much.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-143815834.html",
+            "source": "SB Nation via Yahoo Sports",
+            "date": "2026-11-17",
+            "stance": "backs"
+          }
+        ]
+      }
+    ],
+    "stashes": [
+      {
+        "player_id": "13424",
+        "name": "Seth McGowan",
+        "position": "RB",
+        "team": "IND",
+        "week_projection": 6.22,
+        "ros_projection": 41.8,
+        "scores": {
+          "usage": 0.5833,
+          "environment": 0.7742,
+          "projection": 0.9832
+        },
+        "board_score": 0.7206,
+        "trending_count": 438976,
+        "facts": [
+          {
+            "id": "W.usage.13424",
+            "text": "Seth McGowan played 29% of snaps and took 12 carries last week, down from 31% and 6.",
+            "numbers": [
+              "29",
+              "12",
+              "31",
+              "6"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "W.env.13424",
+            "text": "IND runs the 9th fastest offense and succeeds on 46% of runs.",
+            "numbers": [
+              "46",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "WV.trending.13424",
+            "text": "Seth McGowan was added in 438976 Sleeper leagues in the last day.",
+            "numbers": [
+              "438976"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "WV.research.13424.1",
+            "text": "A Yahoo Sports waiver column named Seth McGowan a must-add for Week 11, noting he had 12 carries for 77 yards on 17 snaps and scored for the second straight game. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "numbers": [
+              "11",
+              "12",
+              "77",
+              "17"
+            ],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          {
+            "id": "WV.research.13424.2",
+            "text": "The same column expects another close split of carries between Jonathan Taylor and McGowan on Thursday night against Houston, a matchup it calls tough on paper. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Seth McGowan"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 21,
+          "fact": {
+            "id": "waiver_price_13424",
+            "text": "Bid $21 to win Seth McGowan. The top bid of another manager is about $8.65, from puurdygood with $100 left. The last winning RB claim in the last 3 weeks is $20.",
+            "numbers": [
+              "21",
+              "8.65",
+              "100",
+              "3",
+              "20"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Seth McGowan"
+            ]
+          },
+          "last_like": {
+            "player_id": "9757",
+            "name": "Kendre Miller",
+            "roster_id": 5,
+            "team": "Skol Daddy",
+            "week": 8,
+            "bid": 20
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "handcuff",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "A Yahoo Sports waiver column named Seth McGowan a must-add for Week 11, noting he had 12 carries for 77 yards on 17 snaps and scored for the second straight game.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "backs"
+          },
+          {
+            "text": "The same column expects another close split of carries between Jonathan Taylor and McGowan on Thursday night against Houston, a matchup it calls tough on paper.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-waiver-wire-8-140008832.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-16",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "6039",
+        "name": "Ty Johnson",
+        "position": "RB",
+        "team": "BUF",
+        "week_projection": 6.05,
+        "ros_projection": 41.4,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.7742,
+          "projection": 0.9748
+        },
+        "board_score": 0.4272,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.6039",
+            "text": "Ty Johnson played 18% of snaps and took 0 carries last week, down from 21% and 1.",
+            "numbers": [
+              "18",
+              "0",
+              "21",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "W.env.6039",
+            "text": "BUF runs the 12th fastest offense and succeeds on 47% of runs.",
+            "numbers": [
+              "47",
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 21,
+          "fact": {
+            "id": "waiver_price_6039",
+            "text": "Bid $21 to win Ty Johnson. The top bid of another manager is about $5.13, from puurdygood with $100 left. The last winning RB claim in the last 3 weeks is $20.",
+            "numbers": [
+              "21",
+              "5.13",
+              "100",
+              "3",
+              "20"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          "last_like": {
+            "player_id": "9757",
+            "name": "Kendre Miller",
+            "roster_id": 5,
+            "team": "Skol Daddy",
+            "week": 8,
+            "bid": 20
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "handcuff",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": []
+      },
+      {
+        "player_id": "11729",
+        "name": "Sione Vaki",
+        "position": "RB",
+        "team": "DET",
+        "week_projection": 4.06,
+        "ros_projection": 32.11,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.9194,
+          "projection": 0.9664
+        },
+        "board_score": 0.4691,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11729",
+            "text": "Sione Vaki played 25% of snaps and took 6 carries last week, down from 32% and 3.",
+            "numbers": [
+              "25",
+              "6",
+              "32",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Sione Vaki"
+            ]
+          },
+          {
+            "id": "W.env.11729",
+            "text": "DET runs the 6th fastest offense and succeeds on 48% of runs.",
+            "numbers": [
+              "48",
+              "6"
+            ],
+            "teams": [],
+            "players": [
+              "Sione Vaki"
+            ]
+          },
+          {
+            "id": "WV.research.11729.1",
+            "text": "RotoBaller lists Sione Vaki as a Week 11 FAAB running back pickup and Detroit handcuff, saying he has averaged 8 touches over his last 3 games at 5.35 yards per carry. Source: RotoBaller, https://www.rotoballer.com/faab-waiver-wire-advice-week-11-fantasy-pickups-2026/1995747",
+            "numbers": [
+              "11",
+              "8",
+              "3",
+              "5.35"
+            ],
+            "teams": [],
+            "players": [
+              "Sione Vaki"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 21,
+          "fact": {
+            "id": "waiver_price_11729",
+            "text": "Bid $21 to win Sione Vaki. The top bid of another manager is about $5.63, from puurdygood with $100 left. The last winning RB claim in the last 3 weeks is $20.",
+            "numbers": [
+              "21",
+              "5.63",
+              "100",
+              "3",
+              "20"
+            ],
+            "teams": [
+              "puurdygood"
+            ],
+            "players": [
+              "Sione Vaki"
+            ]
+          },
+          "last_like": {
+            "player_id": "9757",
+            "name": "Kendre Miller",
+            "roster_id": 5,
+            "team": "Skol Daddy",
+            "week": 8,
+            "bid": 20
+          },
+          "outbid": {
+            "23": 11,
+            "24": 11,
+            "27": 11,
+            "38": 11,
+            "49": 11,
+            "71": 11,
+            "75": 11,
+            "89": 11,
+            "92": 11,
+            "100": 11
+          }
+        },
+        "drop": null,
+        "reason": "handcuff",
+        "bye": 6,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "RotoBaller lists Sione Vaki as a Week 11 FAAB running back pickup and Detroit handcuff, saying he has averaged 8 touches over his last 3 games at 5.35 yards per carry.",
+            "url": "https://www.rotoballer.com/faab-waiver-wire-advice-week-11-fantasy-pickups-2026/1995747",
+            "source": "RotoBaller",
+            "date": "2026-11-17",
+            "stance": "backs"
+          }
+        ]
+      }
+    ],
+    "drops": []
+  },
+  "budgets": [
+    {
+      "roster_id": 1,
+      "budget_left": 100,
+      "waiver_order": 1
+    },
+    {
+      "roster_id": 2,
+      "budget_left": 38,
+      "waiver_order": 5
+    },
+    {
+      "roster_id": 3,
+      "budget_left": 27,
+      "waiver_order": 3
+    },
+    {
+      "roster_id": 4,
+      "budget_left": 75,
+      "waiver_order": 6
+    },
+    {
+      "roster_id": 5,
+      "budget_left": 75,
+      "waiver_order": 11
+    },
+    {
+      "roster_id": 6,
+      "budget_left": 92,
+      "waiver_order": 2
+    },
+    {
+      "roster_id": 7,
+      "budget_left": 23,
+      "waiver_order": 8
+    },
+    {
+      "roster_id": 8,
+      "budget_left": 49,
+      "waiver_order": 7
+    },
+    {
+      "roster_id": 9,
+      "budget_left": 89,
+      "waiver_order": 4
+    },
+    {
+      "roster_id": 10,
+      "budget_left": 100,
+      "waiver_order": 12
+    },
+    {
+      "roster_id": 11,
+      "budget_left": 24,
+      "waiver_order": 10
+    },
+    {
+      "roster_id": 12,
+      "budget_left": 71,
+      "waiver_order": 9
+    }
+  ],
+  "experts_missing": false
+}
