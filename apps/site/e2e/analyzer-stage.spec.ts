@@ -25,10 +25,12 @@ const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers
 const TEAMS = rawTeams(CLIENT);
 
 /* The trade on the stage. In cpc it is trade T of the spec: Bo Girds gives Kenneth Walker III to Teehee for Tee Higgins
-   and Bhayshul Tuten. Another client takes its two longest team names, so a long column label must fit, with one player
-   given and two got. */
+   and Bhayshul Tuten. In norcal it is the recorded trade of AT-20: The Mean Machine gives Tyler Allgeier to
+   Mitseeker5000 for Chris Olave and Devin Singletary, the two longest team names, so a long column label must fit.
+   Another client takes its two longest team names, with one player given and two got. */
 function stageTrade(teams: RawTeam[]): { team: number; with: number; give: string[]; get: string[] } {
   if (CLIENT === "cpc") return { team: 6, with: 12, give: ["8151"], get: ["6801", "12490"] };
+  if (CLIENT === "norcal") return { team: 4, with: 6, give: ["8132"], get: ["8144", "6130"] };
   const [mine, theirs] = [...teams].filter((t) => t.players.length >= 2).sort((a, b) => b.team.length - a.team.length || a.roster_id - b.roster_id);
   return { team: mine.roster_id, with: theirs.roster_id, give: [mine.players[0].player_id], get: theirs.players.slice(0, 2).map((p) => p.player_id) };
 }
@@ -367,12 +369,16 @@ test.describe("the wait, with motion off", () => {
 /* The read hero of the result, which holds the mesh of the reveal. */
 const READ_HERO = 'section[aria-label="The Read"]';
 
-/* The answer of the local API to trade T, recorded once from a real grade. A test of the reveal plays it to the held
-   grade, so the reveal runs on a real grade. No test makes up a grade, so a test with no recording fails. */
-const TRADE_T_ANSWER = join(process.cwd(), "e2e", "fixtures", "analyze-trade-t.json");
-function tradeTAnswer(): { body: string; doc: AnalyzeResponse } {
-  if (!existsSync(TRADE_T_ANSWER)) throw new Error(`no recorded answer of trade T at ${TRADE_T_ANSWER}: record one from the local API`);
-  const body = readFileSync(TRADE_T_ANSWER, "utf8");
+/* The answer of the local API to the trade on the stage, recorded once from a real grade on 2026-11-17: trade T in cpc
+   (Lean yes, 31 s) and the trade of stageTrade in norcal (Lean yes, 25 s). A test of the reveal plays it to the held
+   grade, so the reveal runs on a real grade. No test makes up a grade, so a client with no recording fails.
+   The local API had no TYPESAFE_API_KEY, so neither grade has a Jev answer. The read of the week 10 chart failed, so
+   each answer lists "chart" as missing and shows the no-values note. */
+const ANSWERS: Record<string, string> = { cpc: "analyze-trade-t.json", norcal: "analyze-trade-norcal.json" };
+const STAGE_ANSWER = join(process.cwd(), "e2e", "fixtures", ANSWERS[CLIENT] ?? `analyze-trade-${CLIENT}.json`);
+function stageAnswer(): { body: string; doc: AnalyzeResponse } {
+  if (!existsSync(STAGE_ANSWER)) throw new Error(`no recorded answer of the stage trade at ${STAGE_ANSWER}: record one from the local API`);
+  const body = readFileSync(STAGE_ANSWER, "utf8");
   return { body, doc: JSON.parse(body) as AnalyzeResponse };
 }
 
@@ -414,7 +420,9 @@ const watchReveal = (page: Page) =>
         return el ? o : 0;
       };
       const matrix = (el: Element) => new DOMMatrixReadOnly(getComputedStyle(el).transform === "none" ? undefined : getComputedStyle(el).transform);
-      const still = (el: Element | null) => !!el && seen(el) >= 0.99 && Math.abs(matrix(el).f) < 0.5 && getComputedStyle(el).filter === "none";
+      // A recipe ends its blur at blur(0), which the browser computes as blur(0px), so either counts as sharp.
+      const sharp = (el: Element) => ["none", "blur(0px)"].includes(getComputedStyle(el).filter);
+      const still = (el: Element | null) => !!el && seen(el) >= 0.99 && Math.abs(matrix(el).f) < 0.5 && sharp(el);
       const mark = (key: string, ok: boolean) => {
         if (ok && t[key] === null) t[key] = Date.now();
       };
@@ -430,7 +438,7 @@ const watchReveal = (page: Page) =>
           mark("scale", !!fill && seen(fill) >= 0.99 && matrix(fill).a >= 0.99);
           mark("case", still(read.querySelector(".t-stagger-line")));
           const tabs = document.querySelector('[role="tablist"][aria-label="The sides"]');
-          mark("tabs", !!tabs && seen(tabs) >= 0.99 && getComputedStyle(tabs.closest(".t-skel-content") ?? tabs).filter === "none");
+          mark("tabs", !!tabs && seen(tabs) >= 0.99 && sharp(tabs.closest(".t-skel-content") ?? tabs));
           const canvas = read.querySelector<HTMLCanvasElement>("canvas[data-hero-mesh]");
           if (canvas?.dataset.meshFlash !== undefined)
             mesh.push({ at: now, flash: Number(canvas.dataset.meshFlash), pulls: (canvas.dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number) });
@@ -446,11 +454,11 @@ const watchReveal = (page: Page) =>
 const revealOf = (page: Page) => page.evaluate(() => (window as unknown as { reveal: Promise<unknown> }).reveal) as Promise<Reveal>;
 
 /*
- * Opens trade T, taps "Grade the Trade", lets the wait run for 1.5 s, then answers the held grade with the recorded
- * answer of trade T. It gives the time the answer went out and the time line of the reveal.
+ * Opens the stage trade, taps "Grade the Trade", lets the wait run for 1.5 s, then answers the held grade with the
+ * recorded answer of that trade. It gives the time the answer went out and the time line of the reveal.
  */
 async function gradeAndReveal(page: Page, theme: Theme = "dark"): Promise<{ sent: number; reveal: Reveal; doc: AnalyzeResponse }> {
-  const { body, doc } = tradeTAnswer();
+  const { body, doc } = stageAnswer();
   let held: Route | undefined;
   await openAnalyzer(page, stageQuery(), theme, (route) => {
     held = route;

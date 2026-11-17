@@ -10,10 +10,10 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT
 
 **Status:** ready-for-agent
 
-- [ ] On a cached repeat of trade T, the Lean word shows within 1.3 s of the response.
-- [ ] The time stamps show the Lean word, then the Lean scale, then the Case and the side tabs, within about 1 s.
-- [ ] A recording of the reveal shows the flash and the dip toward the favored side of trade T.
-- [ ] With reduced motion on, the mesh stays still in the wait and the result appears in a plain fade.
-- [ ] Each analyzer hero text reaches 4.5:1 or more at the end of the reveal, in `cpc` and `norcal`.
-- [ ] The full floor passes in `cpc` and `norcal`.
+- [x] On a cached repeat of trade T, the Lean word shows within 1.3 s of the response.
+- [x] The time stamps show the Lean word, then the Lean scale, then the Case and the side tabs, within about 1 s.
+- [x] A recording of the reveal shows the flash and the dip toward the favored side of trade T.
+- [x] With reduced motion on, the mesh stays still in the wait and the result appears in a plain fade.
+- [x] Each analyzer hero text reaches 4.5:1 or more at the end of the reveal, in `cpc` and `norcal`.
+- [x] The full floor passes in `cpc` and `norcal`.
 - [x] The front door chat wait shows no mesh and no stage line.
