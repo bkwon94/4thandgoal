@@ -4,8 +4,8 @@ Status: ready-for-agent
 Date: 2026-11-16
 Apps: site only. The analyzer hero gets the mesh, the stage lines, and the staged reveal. Every hero drops the plate. The pipeline and the API do not change.
 Spec branch: `analyzer-stage`.
-Source: the map `.scratch/analyzer-stage/MAP.md` and decision tickets 01 to 05. ADR 0035 (one wrapper per ui-sdk part), ADR 0036 (hero text has no plate).
-Tickets: 01 to 07, in `issues/`.
+Source: the map `.scratch/analyzer-stage/MAP.md` and decision tickets 01 to 06. ADR 0035 (one wrapper per ui-sdk part), ADR 0036 (hero text has no plate).
+Tickets: 01 to 07, in `issues/`. The revision of 2026-11-17 adds tickets from 08.
 
 ## Problem Statement
 
@@ -17,9 +17,11 @@ Every hero of the site also sets its text on a plate: a dark box of the band col
 
 The analyzer hero becomes a stage with three states: idle, wait, and reveal.
 
-1. **Idle.** The hero grid is a live mesh that matches the old 24 px grid, calm and flat. Each player that the reader adds shows on the stage.
-2. **Wait.** The grade button goes pending and the wait starts at once. The mesh dips under each side of the trade in turn, so the hero reads as "weighing the sides". Sparse light pulses run along the mesh lines. Short stage lines cycle under the title, one every 2.5 s. No line says that a step is done, because the analyze call has no progress to report.
+1. **Idle.** The hero grid is a live mesh that matches the old 24 px grid, calm and flat. The stage shows one slim row per side, with the team and a count of its players. The headshots wait for the grade.
+2. **Wait.** The grade button goes pending and the wait starts at once. The headshots of each side rise into its row. The mesh dips under each side of the trade in turn, so the hero reads as "weighing the sides". Sparse light pulses run along the mesh lines. Short stage lines cycle under the title, one every 2.5 s. No line says that a step is done, because the analyze call has no progress to report.
 3. **Reveal.** The lines of the favored side flash once. The mesh dips toward the favored side and goes flat. Then, in about 1 s, the Lean word lands, the Lean scale fills, and the Case and the side tabs rise in.
+
+The stage is the one place on the page that shows the players of the trade. Under a result, the cards below the hero hold the reasons, not the players again. Edit sits in the header of "The Sides".
 
 With motion off, the mesh is still and flat, the stage lines change with no shimmer, and the reveal is a plain fade.
 
@@ -55,6 +57,12 @@ Every hero of the site drops the plate. The corner glow of the static hero art i
 26. As a future builder, I want the reason the plate went in an ADR, so that no one puts the box back by habit.
 27. As a future builder, I want a contrast check that reads the art layer, so that a later change to the glow cannot fail contrast unseen.
 28. As a reader of the Finder, I want its wait to stay as it is, so that a page with no trade on stage does not show a scale that weighs nothing.
+29. As a reader with a big trade, I want the stage to stay compact, so that a trade of 4 sides and 10 players still fits the hero.
+30. As a reader who builds a trade, I want the players once on the page, so that the hero and the Stack do not repeat each other.
+31. As a reader of a result, I want the players once on the page, so that the reasons sit near the top on a phone.
+32. As a reader of a result, I want Edit near the sides of the trade, so that I can change the trade without a long scroll and with nothing over the result.
+33. As a reader of a long fairness reason, I want it to fold, so that one side does not push the others off the screen.
+34. As a reader in the wait, I want each stage line in full, so that no line is cut off at the edge of the hero.
 
 ## Implementation Decisions
 
@@ -78,6 +86,20 @@ Every hero of the site drops the plate. The corner glow of the static hero art i
 - The pending state starts the wait of the hero.
 - The label stays "Grade the Trade" while it is pending. The ui-sdk docs advise against a change of text while a button is pending, and the hero already carries the wait. The prototype morph to "Grading…" does not ship.
 
+### The compact stage and Edit (decision 06)
+
+- The stage is one slim row per side, asker first. A row shows the team avatar, the full team name, "gets", then the headshot tokens. The name truncates with an ellipsis when it does not fit.
+- A row shows up to 3 headshot tokens, overlapped, then a "+N" token for the rest. A headshot that fails to load shows the initials of the player.
+- Idle: a row shows the team and a player count, such as "5 players". A side with no player shows a dashed empty token. No headshot shows in idle, because the Stack below already shows each player.
+- Wait: on the pending state of the grade button, the headshots rise into each row, with a stagger by row and by token, and a blur that clears. With motion off, the tokens fade in.
+- Result: the same rows sit on the `ReadHero`. The mesh anchors of the rows replace the empty columns, so the dip of the reveal sits under the right row.
+- The "The Trade" chapter, with the `SwapCard`, leaves the result. The `SwapCard` stays in the Finder.
+- Each panel of "The Sides" keeps its bullets and its week lines, and drops `SidePlayers`.
+- In the fairness block, a reason longer than about 3 lines folds, with a "More" control that opens it.
+- The `FoldLine` card leaves the page. The stage already shows the trade in the wait and under a result.
+- Edit is a text button with a pencil icon at the right of the "The Sides" header. A tap opens the Stack and scrolls to it. The button has a touch target of at least 44 px.
+- The players lose their rank lines on the result, because only the hero shows them now. A later ticket can bring the ranks back on a tap of a token.
+
 ### The stage lines (decision 02)
 
 - One pure function builds the list of lines from the trade on the stage. Each line names no internal part. It never says Jev, Advisor, Finder, or front door. It says "manager", never "rival".
@@ -87,6 +109,9 @@ Every hero of the site drops the plate. The corner glow of the static hero art i
 - The general lines come from the measures of the grade, so each one is true: roster fit, standing, trend and usage, injury, upside, schedule, and the playoff race. Examples: "Checking roster fit", "Reading the standings", "Looking at the schedule ahead", "Reading recent usage".
 - The lines with a name follow these shapes: "Reading {player}'s season", "Checking {team}'s depth at {position}", "Weighing what {manager} gives up". The trade on the stage gives each value. The function picks names from each side in turn.
 - Each line shows for 2.5 s. After line 12, the list starts again at line 2. The line uses the thinking states and the shimmer text recipes of transitions.dev.
+- The line is set at `text-body`, one step smaller than `text-lead` (decision 06).
+- A line that does not fit the width of the hero scrolls into view from right to left, once, inside its 2.5 s, and never shows cut off. A line that fits does not move.
+- With motion off, a long line wraps to a second line and does not scroll.
 - The lines are hidden from a screen reader. The status region keeps one label, "Grading the trade", so a screen reader hears one message.
 - With motion off, the line swaps with no shimmer and no slide.
 - Brian may change the copy of any line at the approval of this spec.
@@ -135,6 +160,7 @@ Brian checks these seams with the spec.
 
 - The floor: every hero text reaches 4.5:1 in each client and each width, including the analyzer in idle, wait, and reveal, and the egg banner where eggs are on.
 - The analyzer e2e test: the wait starts on the tap, the stage lines change about every 2.5 s, the lines name a player of the trade, the reveal shows the Lean word before the Case, the focus stays on the grade button through the wait, and motion off gives a still hero.
+- The analyzer e2e test, for decision 06: idle shows a count and no headshot, the wait shows the headshots, a side of more than 3 players shows "+N", the result has no "The Trade" chapter and no player list in "The Sides", Edit in "The Sides" header opens the Stack, and a long stage line is never cut off at 390 px.
 - The unit test: 12 lines, the fixed first and last lines, a name of the trade in at least one line, no internal name, no "rival", and no word of completion such as "done" or "finished".
 - No test checks that a plate is absent by its class. The pixel scan and a screenshot are the evidence.
 
@@ -163,3 +189,4 @@ Brian checks these seams with the spec.
 ## Revisions
 
 - 2026-11-16: Brian widened the pixel scan after ticket 02 found two axe incomplete results with no plate: the reason "content too short", on the week numbers and the score parts, and the aria-hidden 404 digits. Both now go to the pixel scan. The bar stays 4.5:1.
+- 2026-11-17: Decision 06 adds the compact stage and moves Edit. The stage shows one row per side. The headshots appear only from the wait on. The result drops the swap card, the side player lists, and the `FoldLine`. Edit moves to the header of "The Sides". The stage lines go one size smaller and scroll when too long.
