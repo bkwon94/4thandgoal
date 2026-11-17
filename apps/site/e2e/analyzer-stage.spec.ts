@@ -642,13 +642,67 @@ const watchReveal = (page: Page) =>
     });
   }, READ_HERO);
 
+/* Starts a watch of the light of the read mesh in each row, in the page. Near the peak of the flash and near the deepest
+   dip it sums the light of the canvas inside the box of each row, and 2.5 s after the read hero
+   shows it sums the light of the flat mesh at rest. The light of a pixel is its color times its alpha. */
+const watchRowLight = (page: Page) =>
+  page.evaluate((hero) => {
+    const w = window as unknown as { rowLight: Promise<unknown> };
+    w.rowLight = new Promise((done) => {
+      let shown: number | null = null;
+      let best = { flash: 0, sums: [] as number[] };
+      let deepest = { pull: 0, sums: [] as number[] };
+      const sums = (canvas: HTMLCanvasElement) => {
+        const origin = canvas.getBoundingClientRect();
+        const scale = canvas.width / origin.width;
+        const ctx = canvas.getContext("2d")!;
+        return [...document.querySelectorAll(`${hero} [data-mesh-anchor]`)].map((row) => {
+          const box = row.getBoundingClientRect();
+          const x = Math.round((box.left - origin.left) * scale);
+          const y = Math.round((box.top - origin.top) * scale);
+          const data = ctx.getImageData(x, y, Math.round(box.width * scale), Math.round(box.height * scale)).data;
+          let sum = 0;
+          for (let k = 0; k < data.length; k += 4) sum += ((data[k] + data[k + 1] + data[k + 2]) * data[k + 3]) / 255;
+          return sum;
+        });
+      };
+      const tick = () => {
+        const canvas = document.querySelector<HTMLCanvasElement>(`${hero} canvas[data-hero-mesh]`);
+        if (canvas && canvas.width > 1) {
+          shown ??= Date.now();
+          const flash = Number(canvas.dataset.meshFlash ?? 0);
+          const pull = Math.max(0, ...(canvas.dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number));
+          // A resize clears the canvas until the next frame, so of the frames near the peak, the brightest one counts.
+          const total = (list: number[]) => list.reduce((a, b) => a + b, 0);
+          if (flash > 0.5) {
+            const now = sums(canvas);
+            if (total(now) > total(best.sums)) best = { flash, sums: now };
+          }
+          if (pull > 0.45) {
+            const now = sums(canvas);
+            if (total(now) > total(deepest.sums)) deepest = { pull, sums: now };
+          }
+          if (Date.now() - shown > 2500) return done({ flash: best, dip: deepest, rest: sums(canvas) });
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, READ_HERO);
+
+const rowLightOf = (page: Page) =>
+  page.evaluate(() => (window as unknown as { rowLight: Promise<unknown> }).rowLight) as Promise<RowLight>;
+
+/* The light of each row at the peak of the flash, at the deepest dip, and at rest. */
+type RowLight = { flash: { flash: number; sums: number[] }; dip: { pull: number; sums: number[] }; rest: number[] };
+
 const revealOf = (page: Page) => page.evaluate(() => (window as unknown as { reveal: Promise<unknown> }).reveal) as Promise<Reveal>;
 
 /*
  * Opens the stage trade, taps "Grade the Trade", lets the wait run for 1.5 s, then answers the held grade with the
  * recorded answer of that trade. It gives the time the answer went out and the time line of the reveal.
  */
-async function gradeAndReveal(page: Page, theme: Theme = "dark"): Promise<{ sent: number; reveal: Reveal; doc: AnalyzeResponse }> {
+async function gradeAndReveal(page: Page, theme: Theme = "dark", alsoWatch?: (page: Page) => Promise<unknown>): Promise<{ sent: number; reveal: Reveal; doc: AnalyzeResponse }> {
   const { body, doc } = stageAnswer();
   let held: Route | undefined;
   await openAnalyzer(page, stageQuery(), theme, (route) => {
@@ -660,6 +714,7 @@ async function gradeAndReveal(page: Page, theme: Theme = "dark"): Promise<{ sent
   await expect.poll(() => held !== undefined).toBe(true);
   await page.waitForTimeout(1500);
   await watchReveal(page);
+  await alsoWatch?.(page);
   // The clock starts before the answer goes out, so each time from it is an upper bound.
   const sent = Date.now();
   await held!.fulfill({ status: 200, headers: CORS, contentType: "application/json", body });
@@ -729,6 +784,30 @@ test.describe("the reveal, with motion on", () => {
     expect(pullOf(favored), "the mesh did not dip toward the favored side").toBeGreaterThan(0.3);
     for (let i = 0; i < doc.trade.sides.length; i++) if (i !== favored) expect(pullOf(i), `the mesh dipped under side ${i}`).toBe(0);
   });
+
+  /* The rows stack, so a light that spreads from the center of the favored row reaches the other row too. The flash and
+     the light of the dip must stay in the region of the favored row. */
+  for (const [theme, width] of [["light", 375], ["dark", 1280]] as const) {
+    test(`reveal rows: ${CLIENT} the flash and the dip light only the row of the favored side, ${theme} ${width}px (AT-12)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const { doc } = await gradeAndReveal(page, theme, watchRowLight);
+      const favored = favoredIndex(doc);
+      test.skip(favored === null, "the recorded answer favors no side");
+      const { flash, dip, rest } = await rowLightOf(page);
+      const lit = (sums: number[]) => sums.map((sum, i) => Math.max(0, sum - rest[i]));
+      const [flashLit, dipLit] = [lit(flash.sums), lit(dip.sums)];
+      const other = flashLit.map((_, i) => i).filter((i) => i !== favored);
+      console.log(
+        `reveal rows: ${CLIENT} ${theme} ${width}px: favored row ${favored}; flash ${flash.flash} lights ${flashLit.map((v) => v.toFixed(0)).join(", ")}; ` +
+          `dip ${dip.pull} lights ${dipLit.map((v) => v.toFixed(0)).join(", ")}`,
+      );
+      expect(flashLit[favored!], "the flash did not light the favored row").toBeGreaterThan(0);
+      for (const i of other) {
+        expect(flashLit[i], `the flash lit row ${i}`).toBeLessThan(0.15 * flashLit[favored!]);
+        expect(dipLit[i], `the dip lit row ${i}`).toBeLessThan(0.25 * dipLit[favored!]);
+      }
+    });
+  }
 
   /* The read hero sits on the mesh too, so the pixel scan reads it at the end of the reveal, with the mesh at rest. */
   for (const theme of ["dark", "light"] as const) {

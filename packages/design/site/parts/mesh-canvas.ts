@@ -7,15 +7,20 @@ import { type MeshLine, type MeshNodes, type MeshWeight, meshNodes, pointOnLine,
 /* A point in the pixels of the canvas. */
 export type MeshPoint = { x: number; y: number };
 
+/* An anchor of the hero: the center of its box and the size of the box, in the pixels of the canvas. The rows of the
+   stage stack, so a light that must stay on one side keeps to the box of its row and not to a circle around its center. */
+export type MeshAnchor = MeshPoint & { w: number; h: number };
+
 /* What the mesh shows at a time. `anchors` holds the center of each `[data-mesh-anchor]` of the hero, in the order of the
    markup, so a drive can set a weight under each side. `busy` keeps the loop on for the next frame. `pulses` is the share
    of the light pulses that shows, from 0 to 1, and none shows when it is left out. Idle has no weight and is not busy, so
    the flat mesh costs no frame at all until the layout changes. The grade wait passes its own drive. `flash` lights the
-   mesh lines near one point, from 0 (none) to 1, such as the favored side at a reveal. */
+   mesh lines in the box of one anchor, from 0 (none) to 1, such as the favored side at a reveal. `lightIn` keeps the light
+   of the weights in the box of one anchor too, so a weight that pulls the whole mesh still lights only its own side. */
 export type MeshDrive = (
   now: number,
-  anchors: readonly MeshPoint[],
-) => { weights: MeshWeight[]; busy: boolean; pulses?: number; flash?: { at: MeshPoint; amount: number } };
+  anchors: readonly MeshAnchor[],
+) => { weights: MeshWeight[]; busy: boolean; pulses?: number; flash?: { at: MeshAnchor; amount: number }; lightIn?: MeshAnchor };
 
 export const IDLE_DRIVE: MeshDrive = () => ({ weights: [], busy: false });
 
@@ -71,6 +76,7 @@ export function revealDrive(start: number, favored: number | null): MeshDrive {
       weights: anchors.map((a, i) => ({ x: a.x, y: a.y, pull: i === favored ? dip : 0 })),
       busy: since < DIP_END_MS,
       flash: flash > 0 ? { at, amount: flash } : undefined,
+      lightIn: at,
     };
   };
 }
@@ -116,10 +122,13 @@ const WEIGHT_LIGHT = 0.8;
 /* The light of a weight reaches this many sigmas of its pull. */
 const WEIGHT_LIGHT_REACH = 2.6;
 
-/* The lines of the flash reach this many sigmas of the pull, a little past the light of a weight, so the whole side
-   lights. The peak is bright, because the flash lasts less than a second, and the holes still cut it under each text. */
-const FLASH_REACH = 3.4;
+/* The peak of the flash is bright, because the flash lasts less than a second, and the holes still cut it under each text. */
 const FLASH_PEAK = 0.95;
+/* The light in the box of one anchor reaches this far past the box: a grid cell to each side, and only a few pixels up
+   and down, because the next row of the stage starts at the edge of the box. It holds full from the center out to
+   REGION_CORE of the reach, then fades to none at the edge, so the side lights with a soft edge and no hard cut. */
+const REGION_PAD_Y = 4;
+const REGION_CORE = 0.6;
 
 /* The pulses of a wait, after the pulses of the scrolltide item light-cove: a bright head, a soft tail, and a small bloom.
    Few and slow, so the mesh stays calm. */
@@ -171,9 +180,13 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
   // The layout that the frames reuse: the holes, the mask they cut, and the anchors. A change of the layout marks it stale.
   let layoutStale = true;
   let holeList: Hole[] = [];
-  let anchors: MeshPoint[] = [];
+  let anchors: MeshAnchor[] = [];
   const mask = document.createElement("canvas");
   const maskCtx = mask.getContext("2d");
+  // The layer of a light in the box of one anchor: the lit lines draw here first, and a soft ellipse over the box keeps
+  // only the part on that side. Then the layer lands on the canvas in one copy.
+  const region = document.createElement("canvas");
+  const regionCtx = region.getContext("2d");
   let pulses: Pulse[] = [];
   let pulseShare = 0;
   let lastNow = 0;
@@ -194,6 +207,8 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     mask.width = canvas.width;
     mask.height = canvas.height;
+    region.width = canvas.width;
+    region.height = canvas.height;
     layoutStale = true;
   }
 
@@ -221,12 +236,12 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
   }
 
   /* The center of each anchor of the hero, such as a side of the trade on the stage, in the pixels of the canvas. */
-  function readAnchors(): MeshPoint[] {
+  function readAnchors(): MeshAnchor[] {
     if (!content) return [];
     const origin = canvas.getBoundingClientRect();
     return Array.from(content.querySelectorAll("[data-mesh-anchor]"), (el) => {
       const box = el.getBoundingClientRect();
-      return { x: box.left - origin.left + box.width / 2, y: box.top - origin.top + box.height / 2 };
+      return { x: box.left - origin.left + box.width / 2, y: box.top - origin.top + box.height / 2, w: box.width, h: box.height };
     });
   }
 
@@ -296,17 +311,38 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     }
   }
 
-  /* The lines near the point of the flash light up in the pulse color, in proportion to its share. */
-  function drawFlash(path: Path2D, flash: { at: MeshPoint; amount: number }) {
+  /* The lines in the box of one anchor light up in the pulse color at this alpha. The rows of the stage stack only a
+     row apart, so a circle around the center of a row would light the next row too. A soft ellipse over the box keeps
+     the light on its side. */
+  function drawInBox(path: Path2D, at: MeshAnchor, alpha: number) {
+    if (!regionCtx || region.width < 1 || region.height < 1 || alpha < 0.01) return;
     const [r, g, b] = colors.pulse;
-    const peak = FLASH_PEAK * flash.amount;
-    const { x, y } = flash.at;
-    const fill = ctx.createRadialGradient(x, y, 0, x, y, pullSigma(width) * FLASH_REACH);
-    fill.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${peak})`);
-    fill.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${peak * 0.4})`);
-    fill.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-    ctx.strokeStyle = fill;
-    ctx.stroke(path);
+    regionCtx.setTransform(1, 0, 0, 1, 0, 0);
+    regionCtx.globalCompositeOperation = "source-over";
+    regionCtx.clearRect(0, 0, region.width, region.height);
+    regionCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    regionCtx.lineWidth = 1;
+    regionCtx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${Math.min(1, alpha)})`;
+    regionCtx.stroke(path);
+    // destination-in keeps the lines only where the ellipse is, and clears the layer everywhere outside it.
+    regionCtx.globalCompositeOperation = "destination-in";
+    regionCtx.translate(at.x, at.y);
+    regionCtx.scale(at.w / 2 + pitch, at.h / 2 + REGION_PAD_Y);
+    const keep = regionCtx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    keep.addColorStop(0, "#000");
+    keep.addColorStop(REGION_CORE, "#000");
+    keep.addColorStop(1, "rgba(0, 0, 0, 0)");
+    regionCtx.fillStyle = keep;
+    regionCtx.fillRect(-1, -1, 2, 2);
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(region, 0, 0);
+    ctx.restore();
+  }
+
+  /* The lines of the side of the flash light up in the pulse color, in proportion to its share. */
+  function drawFlash(path: Path2D, flash: { at: MeshAnchor; amount: number }) {
+    drawInBox(path, flash.at, FLASH_PEAK * flash.amount);
   }
 
   /* 0 inside a text and its pad, rising to 1 at PULSE_CLEAR pixels out. */
@@ -435,7 +471,9 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
       const nodes = meshNodes(width, height, pitch, weights);
       const path = gridPath(nodes);
       drawGrid(nodes, path);
-      drawWeightLight(path, weights);
+      // A drive that keeps its light on one side lights the box of that side by the pull of its weights.
+      if (drawn.lightIn) drawInBox(path, drawn.lightIn, Math.min(1, Math.max(0, ...weights.map((w) => w.pull)) / WAIT_PULL) * WEIGHT_LIGHT);
+      else drawWeightLight(path, weights);
       if (flash) drawFlash(path, flash);
       drawGlow();
       drawPulses(nodes, weights, pulseWant, step);
