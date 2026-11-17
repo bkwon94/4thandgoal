@@ -103,8 +103,8 @@ function inPage({ scan, limits, scope }: InPage): unknown {
 
   if (scan === "heroes") {
     // Marks each hero and each of its texts, and reads the color and the line boxes of each text, in page coordinates.
-    // A line box is clipped by each box that clips or scrolls above it, so a cut or a screen reader only text, such as
-    // a box of 1px, gives no box. A box under 2px on a side is too small to read and is dropped.
+    // Each box above a text that clips or scrolls also clips its line boxes, so a cut text or a screen reader only text,
+    // such as a box of 1px, gives no box. The scan drops a box under 2px on a side, because it is too small to read.
     const root = scope === undefined ? document.body : document.querySelector(scope);
     // A hero that the layout hides, such as the stage of the Index list under the desktop tier, is not on the page.
     const heroes = [...document.querySelectorAll(limits.heroSelector)].filter((hero) => root !== null && root.contains(hero) && visible(hero));

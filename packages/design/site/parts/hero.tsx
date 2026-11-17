@@ -115,7 +115,7 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
 }
 
 /* The text of a hero sits on the band color, the grid, and the low corner glow of .hero-texture. The glow stays off the
-   text, so the text needs no plate (ADR 0036) and its contrast is checked by the pixel scan of the floor.
+   text, so the text needs no plate (ADR 0036), and the pixel scan of the floor checks its contrast.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art.
    The frame takes free content for the parts of the egg hunt only: the find card, the end card, and the egg word slider.
    Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots.

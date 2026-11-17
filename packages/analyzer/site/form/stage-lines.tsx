@@ -22,7 +22,7 @@ function lineIndex(tick: number, count: number): number {
 }
 
 /* The classes of a line live in globals.css. The sizer is the longest line, so the box keeps one height through each swap.
-   Each new line is measured against its box. A line that fits does not move. A line that does not fit scrolls from
+   The part measures each new line against its box. A line that fits does not move. A line that does not fit scrolls from
    right to left until its end is in view, so no line stays cut off at the edge of the hero. With motion off, the line
    sits in the flow with no sizer, so a long line wraps in full and does not move. */
 export function StageLines({ lines }: { lines: string[] }) {
@@ -46,7 +46,7 @@ export function StageLines({ lines }: { lines: string[] }) {
     const width = live.current?.scrollWidth ?? 0;
     setFit({ tick, over: off ? 0 : Math.max(0, Math.ceil(width - room)) });
   }, [tick, off]);
-  // A new line starts in its enter state and is released after the gap, so the browser paints the start before the move.
+  // A new line starts in its enter state, and the part releases it after the gap, so the browser paints the start before the move.
   const [entered, setEntered] = useState(true);
 
   useEffect(() => {
