@@ -8,7 +8,7 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-17, AT-18, AT-19, AT
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] No file of the site uses the `plate` utility, and the utility is gone.
 - [x] The pixel scan gives 4.5:1 or more for each hero text in `cpc` and `norcal`, at 390 and 1280 px, and the floor passes.
