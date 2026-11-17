@@ -23,6 +23,8 @@ One spec for the hero of the analyzer page. The hero lives in three states, idle
 
 ## NOT YET SPECIFIED
 
+- How does the stage stay compact for a big trade, and where do the trade summary and Edit go under a result? `decisions/06-prototype-compact-stage-and-edit.md`.
+
 
 ## OUT OF SCOPE
 
