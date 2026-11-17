@@ -12,6 +12,7 @@ import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { FoldLine } from "./fold-line";
 import { Hero } from "@cpc/design/parts/hero";
+import { HeroMesh } from "@cpc/design/parts/hero-mesh";
 import { Rise } from "@cpc/design/parts/rise";
 import { GetCard, type GotRow } from "./get-card";
 import { GradeBar } from "./grade-bar";
@@ -21,6 +22,7 @@ import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
 import { TeamsRow } from "./teams-row";
 import { TradeFinder } from "./trade-finder";
+import { TradeOnStage, type StageSide } from "./trade-on-stage";
 import { Button } from "@cpc/design/ui/button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
@@ -100,6 +102,7 @@ function GradingHero({ trade }: { trade: StageTrade }) {
   return (
     <Hero
       label="Grading the Trade"
+      art={<HeroMesh />}
       level={2}
       eyebrow="Live"
       title="Grading the Trade"
@@ -119,14 +122,18 @@ function GradingHero({ trade }: { trade: StageTrade }) {
 }
 
 /* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
-   It keeps the static grid with no scene. The fold hides it while a grade runs and under a result. */
-function TitleHero() {
+   Its ground is the mesh, calm and flat in idle, with no scene. Once a player is in the Stack, the trade shows on the
+   stage as the feature. The fold hides it while a grade runs and under a result. */
+function TitleHero({ stage }: { stage: StageSide[] }) {
+  const hasPlayer = stage.some((side) => side.players.length > 0);
   return (
     <Hero
       label="Trade Analyzer"
+      art={<HeroMesh />}
       eyebrow="Trade Analyzer"
       title="Trade Analyzer"
       meta={<Rise step={1}>Who gets what?</Rise>}
+      feature={hasPlayer ? <TradeOnStage sides={stage} /> : undefined}
     />
   );
 }
@@ -462,7 +469,14 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       )}
     </>
   ) : (
-    <TitleHero />
+    <TitleHero
+      stage={sides.flatMap((side, index) => {
+        const team = teamOf(teams, side.rosterId);
+        if (!team) return [];
+        const players = rowsOf(index).map(({ player }) => ({ id: player.player_id, name: player.name, meta: `${player.position} · ${player.nfl_team}` }));
+        return [{ id: side.id, label: `${team.team} gets`, players }];
+      })}
+    />
   );
 
   return children({ hero, form, result });

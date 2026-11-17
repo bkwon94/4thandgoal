@@ -9,7 +9,7 @@
 - The Open card, the one part that opens and closes a card in place (ADR 0028). Its row look has no frame and no chevron, for a row of a ledger.
 - The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and six hero slots, and no free content; the hero frame, which takes free content for the parts of the egg hunt only; the card; the tile, and the Trend tile with its bars, stepped area, or dots of a week series; the
   round photo frame with its initials; and the rise, the staggered entry of a page. Hero text has no plate (ADR 0036).
-- The hero scene (ADR 0027): the math in `scene-math.ts` and `scene-motion.ts`, the canvas, and the drift in `drift-scene.ts`, which the 404 uses.
+- The hero scene (ADR 0027): the math in `scene-math.ts` and `scene-motion.ts`, the canvas, and the drift in `drift-scene.ts`, which the 404 uses. The mesh, the live grid art that a page passes to a hero as its `art`: the math in `mesh-math.ts` and the runner in `mesh-canvas.ts`.
 
 ## Ports
 

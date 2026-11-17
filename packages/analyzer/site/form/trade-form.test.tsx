@@ -309,10 +309,10 @@ describe("TradeForm", () => {
     expect(slotText(hero, "meta")).toBe("Who gets what?");
   });
 
-  it("keeps the static grid, the glow, and the brackets in the title hero before a grade, with no scene (AT-35, AT-44)", () => {
+  it("keeps the art layer and the brackets in the title hero before a grade, with no scene (AT-35, AT-44)", () => {
     const hero = screen.getByRole("region", { name: "Trade Analyzer" });
     expect(document.querySelectorAll("canvas[data-hero-scene]")).toHaveLength(0);
-    // The static hero: the texture layer holds the grid and the glow, and the four brackets sit in the corners.
+    // The art layer holds the mesh, which draws the grid and the glow, and the four brackets sit in the corners.
     expect(hero.querySelectorAll("[data-hero-art='texture']")).toHaveLength(1);
     expect(hero.querySelectorAll("[data-hero-art='bracket']")).toHaveLength(4);
   });

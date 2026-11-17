@@ -32,6 +32,8 @@ type HeroProps = HeroSlots & {
   // The name of the region, for a screen reader, such as "Page not found" or "Matchup of the Week".
   label: string;
   className?: string;
+  // Live art in place of the static grid and glow, such as the mesh of the analyzer. See HeroFrame.
+  art?: ReactNode;
 };
 
 /* The four corner brackets. Each sits one step in from its corner, so no text sits on a bracket. */
@@ -116,8 +118,12 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
    text, so the text needs no plate (ADR 0036) and its contrast is checked by the pixel scan of the floor.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art.
    The frame takes free content for the parts of the egg hunt only: the find card, the end card, and the egg word slider.
-   Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots. */
-export function HeroFrame({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
+   Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots.
+   `art` replaces the static texture with live art that the page gives, such as the mesh of the analyzer. It is a prop and
+   not a child, so a page can change the ground under the slots and never the slots. The art draws its own grid and glow,
+   and it sits in the same layer with the same marker, so the floor still finds the hero and reads its text by pixels.
+   The content box carries data-hero-content, so live art can find each text that it must keep clear. */
+export function HeroFrame({ label, className, art, children }: { label: string; className?: string; art?: ReactNode; children: ReactNode }) {
   return (
     <section
       aria-label={label}
@@ -127,7 +133,9 @@ export function HeroFrame({ label, className, children }: { label: string; class
       )}
     >
       <div aria-hidden="true">
-        <div data-hero-art="texture" className="hero-texture pointer-events-none absolute inset-0" />
+        <div data-hero-art="texture" className={cn("pointer-events-none absolute inset-0", art === undefined && "hero-texture")}>
+          {art}
+        </div>
         {BRACKETS.map((place) => (
           <span
             key={place}
@@ -136,14 +144,16 @@ export function HeroFrame({ label, className, children }: { label: string; class
           />
         ))}
       </div>
-      <div className="relative">{children}</div>
+      <div data-hero-content className="relative">
+        {children}
+      </div>
     </section>
   );
 }
 
-export function Hero({ label, className, ...slots }: HeroProps) {
+export function Hero({ label, className, art, ...slots }: HeroProps) {
   return (
-    <HeroFrame label={label} className={className}>
+    <HeroFrame label={label} className={className} art={art}>
       <Slots {...slots} />
     </HeroFrame>
   );

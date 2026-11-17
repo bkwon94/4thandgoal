@@ -226,6 +226,10 @@ _Avoid_: Fetcher, reader, data module
 One short line under the analyzer title during a grade wait. It never says that a step is done.
 _Avoid_: Loading message, progress line, status line
 
+**Mesh**:
+The live grid art of the analyzer hero, which weighs the sides of the trade during a grade wait. It is not a hero scene, because it fills the whole hero and sits under text.
+_Avoid_: Grid animation, background, hero scene
+
 ## Pipeline language
 
 The pipeline builds the weekly report page for the Cornerstone fantasy football league. It turns Sleeper and nflverse

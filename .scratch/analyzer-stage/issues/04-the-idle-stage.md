@@ -10,9 +10,9 @@ Spec: `.scratch/analyzer-stage/PRD.md`. Acceptance tests AT-1, AT-2, AT-16, and 
 
 **Status:** ready-for-agent
 
-- [ ] With an empty Stack, two screenshots 2 s apart show the same flat mesh.
-- [ ] After the add of Kenneth Walker III to the side of Bo Girds, the hero shows his name.
-- [ ] The canvas draws no frame while the hero is out of view, and none while the tab is hidden.
-- [ ] Each analyzer hero text reaches 4.5:1 or more in idle, in `cpc` and `norcal`, at 390 and 1280 px.
-- [ ] `GLOSSARY.md` defines "Mesh".
+- [x] With an empty Stack, two screenshots 2 s apart show the same flat mesh.
+- [x] After the add of Kenneth Walker III to the side of Bo Girds, the hero shows his name.
+- [x] The canvas draws no frame while the hero is out of view, and none while the tab is hidden.
+- [x] Each analyzer hero text reaches 4.5:1 or more in idle, in `cpc` and `norcal`, at 390 and 1280 px.
+- [x] `GLOSSARY.md` defines "Mesh".
 - [ ] The design bar skills ran on the idle hero, and Brian checked it on his iPhone.

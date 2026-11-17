@@ -21,8 +21,11 @@ export default defineConfig({
     { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts"] },
     // The project "floor" runs the floor on the static export in out/ of the current CLIENT, and checks the hero scene of
     // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027). It also checks
-    // the layout of the front door.
-    { name: "floor", testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts"] },
+    // the layout of the front door, and the idle mesh of the analyzer hero.
+    {
+      name: "floor",
+      testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts"],
+    },
     // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
     // It also checks the headshot frames of the analyzer result on the same export.
     { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "analyze-headshot.spec.ts"] },
