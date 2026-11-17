@@ -1,11 +1,6 @@
 /**
  * The scans of the readability floor: text size, tap targets, sideways scroll, words split over two lines, and contrast with axe and by pixels.
  * Each scan reads one loaded page and returns its failures as lines that name the element and the measure.
- *
- * A hero is a `section` that carries the hero texture. HeroFrame renders a section whose art layer, a direct child
- * with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
- * names both. A text of a hero is each element of the hero that holds a visible text node of its own, outside an
- * SVG. An aria-hidden text counts, because a sighted reader still reads it. Its box is the box of each line of its text, not the box of the element.
  */
 import { DARK_CLASS, THEME_KEY, type Theme } from "@cpc/design/lib/theme";
 import AxeBuilder from "@axe-core/playwright";
@@ -20,7 +15,10 @@ export const TARGET_MIN_PX = 44;
 const TARGET_SELECTOR =
   "a[href], button, input:not([type=hidden]), select, textarea, summary, label[for], [role=button], [role=link], [role=tab]";
 
-/* The two forms of a hero. See the comment at the top of the file. */
+/* The two forms of a hero. A hero is a `section` that carries the hero texture. HeroFrame renders a section whose art layer, a direct child
+   with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
+   names both. A text of a hero is each element of the hero that holds a visible text node of its own, outside an
+   SVG. An aria-hidden text counts, because a sighted reader still reads it. Its box is the box of each line of its text, not the box of the element. */
 export const HERO_SELECTOR = 'section:has(> [aria-hidden="true"] > [data-hero-art="texture"]), section.hero-texture';
 /* Every hero text reaches 4.5 to 1, large or not (ADR 0036), so a glow that grows can never pass a title at 3 to 1. */
 export const HERO_MIN_RATIO = 4.5;

@@ -1,7 +1,6 @@
 /**
  * Tests for the idle stage of the analyzer hero, on the real rosters of the latest weekly build of cpc.
  * Each side shows on the stage of the title hero with a count of the players it gets, and the hero ground is the mesh (AT-1, AT-2).
- * It sits in the app layer, because it reads the raw files of the client, and a package reads no file (ADR 0012).
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -14,7 +13,8 @@ import { pickPlayers, pickTeam } from "@cpc/analyzer/form/form-steps";
 import { TradeForm } from "@cpc/analyzer/form/trade-form";
 
 /* The teams of trade T, Bo Girds (roster 6) and Teehee (roster 12), from the raw files of the latest week of cpc.
-   The schema of the teams route checks the shape, so a drift of the helper fails here. */
+   The schema of the teams route checks the shape, so a drift of the helper fails here. The test sits in the app layer,
+   because it reads the raw files of the client, and a package reads no file (ADR 0012). */
 const TEAMS: Team[] = teamsResponseSchema.parse({ teams: rawTeams("cpc").filter((team) => [6, 12].includes(team.roster_id)) }).teams;
 
 beforeEach(() => {

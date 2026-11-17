@@ -1,7 +1,6 @@
 /**
- * The stage of the analyzer hero on the static export of the current CLIENT. Idle: the mesh holds still, pauses out of
- * view and in a hidden tab, and each hero text over it reaches 4.5:1. Wait: the mesh weighs each side in turn. Reveal:
- * the mesh flashes and dips toward the favored side, and the parts of the read land in order, in about 1 s.
+ * The stage of the analyzer hero on the static export of the current CLIENT.
+ * The tests cover the idle stage, the wait, the reveal, and the result, with motion on and with motion off.
  */
 import type { Theme } from "@cpc/design/lib/theme";
 import { favoredSide } from "@cpc/analyzer/lib/favored-side";
@@ -87,6 +86,7 @@ async function settle(page: Page) {
   }
 }
 
+/* Idle: the mesh holds still, and it pauses out of view and in a hidden tab. */
 test.describe("with motion on", () => {
   test.use({ reducedMotion: "no-preference" });
 
@@ -135,7 +135,8 @@ test.describe("with motion on", () => {
   });
 });
 
-/* The floor runs with motion off. The idle mesh is the same still mesh either way, so the pixel scan reads idle here. */
+/* Idle: each hero text over the mesh reaches 4.5:1. The floor runs with motion off. The idle mesh is the same still mesh
+   either way, so the pixel scan reads idle here. */
 for (const theme of ["dark", "light"] as const) {
   for (const width of [390, 1280]) {
     test(`idle contrast: ${CLIENT} each hero text over the mesh reaches 4.5:1 with a trade on the stage, ${theme} ${width}px (AT-20)`, async ({ page }, info) => {
@@ -288,6 +289,7 @@ const lineAtRest = (page: Page) =>
 const pulls = (page: Page) =>
   page.locator(WAIT_CANVAS).evaluate((el) => ((el as HTMLCanvasElement).dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number));
 
+/* Wait: the mesh weighs each side in turn. */
 test.describe("the wait, with motion on", () => {
   test.use({ reducedMotion: "no-preference" });
 
@@ -606,6 +608,7 @@ async function gradeAndReveal(page: Page, theme: Theme = "dark"): Promise<{ sent
 const stamps = (sent: number, r: Reveal) =>
   (["lean", "scale", "case", "tabs"] as const).map((key) => `${key} ${r[key] === null ? "never" : `${r[key]! - sent} ms`}`).join(", ");
 
+/* Reveal: the mesh flashes and dips toward the favored side, and the parts of the read land in order, in about 1 s. */
 test.describe("the reveal, with motion on", () => {
   test.use({ reducedMotion: "no-preference" });
 
