@@ -12,7 +12,7 @@ from typing import NamedTuple
 
 from analyzer.finder_search import Anchor, Limit
 from analyzer.trade import ProposedTrade
-from analyzer.week_line import chart_is_fresh, counted_status, last_game_status
+from analyzer.week_line import chart_is_fresh, counted_status
 from league.ranks import due_back_week
 from league.snapshot import Snapshot
 
@@ -47,8 +47,6 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
         # None for a week with no chart, so the first chart post of the week gives a new key and a fresh grade.
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
-        # On a Tuesday and a Wednesday the Week line says "listed Out last week", so a grade of another day misses it.
-        "last_game_status": last_game_status(snapshot),
         # A new depth chart can move a step-up, and a chart that grows too old names none. Decision 02.
         "depth_chart_dt": snapshot.depth_chart_dt.isoformat() if snapshot.depth_chart_dt else None,
         "chart_is_fresh": chart_is_fresh(snapshot),
@@ -59,18 +57,19 @@ def cache_key(trade: ProposedTrade, snapshot: Snapshot) -> str:
 
 
 def _week_line_statuses(snapshot: Snapshot, roster_ids: list[int]) -> dict[str, list]:
-    """The status of each player on the rosters in the trade, and of the player ahead of him on his depth chart.
+    """The statuses of each player on the rosters in the trade, and of the player ahead of him on his depth chart.
 
     The Week line reads both: the first for the absences, the second for a step-up. The player ahead is often on no
-    roster, so no other part of the key holds his status or his return week. A status that the Week line never
-    counts, such as Questionable, reads as None, so a move between two of them keeps the hit.
+    roster, so no other part of the key holds his status or his return week. The statuses are the Sleeper status that
+    the Week line counts and the NFL game status of the trade week. A status that the Week line never counts, such as
+    Questionable, reads as None, so a move between two of them keeps the hit.
     """
     statuses: dict[str, list] = {}
     for player in sorted({pid for roster_id in roster_ids for pid in snapshot.rosters[roster_id]}):
-        entry: list = [counted_status(snapshot.players[player].injury_status)]
+        entry: list = [*counted_status(snapshot, snapshot.players[player])]
         ahead = snapshot.ahead_on_chart.get(player)
         if ahead is not None:
-            entry += [ahead.player_id, counted_status(ahead.injury_status), snapshot.returns.get(ahead.player_id)]
+            entry += [ahead.player_id, *counted_status(snapshot, ahead), snapshot.returns.get(ahead.player_id)]
         statuses[player] = entry
     return statuses
 
