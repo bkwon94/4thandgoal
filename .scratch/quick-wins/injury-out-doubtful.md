@@ -67,8 +67,24 @@ Test verdict: pending
 
 Done condition: The Week line reads a player as out in the trade week for an NFL game status of Out or Doubtful, and never for a Sleeper Out or Doubtful with no NFL game status for the trade week.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `ca308bcb`, `uv run --exact --package cornerstone pytest -q -p no:xdist apps/pipeline/tests/test_week_line.py -k test_the_week_line_reads_the_nfl_game_status`
+
+```text
+FAILED ...[sleeper out with no game status for the trade week]
+FAILED ...[sleeper out with a trade week Questionable]
+FAILED ...[trade week Out]
+FAILED ...[trade week Doubtful]
+4 failed, 2 passed, 33 deselected
+E  AssertionError: assert ('stay at 2.' in 'Week 9: WRs in the top 36 who play stay at 1. ... Egbuka, Samuel and Nacua are listed Out.')
+E  AssertionError: assert ('stay at 1.' in 'Week 9: WRs in the top 36 who play stay at 2. ... Egbuka and Samuel are listed Out.')
+```
+
+Green: at `b94c3ec4`, `uv run --exact --package cornerstone pytest -q -p no:xdist apps/pipeline/tests/test_week_line.py -k test_the_week_line_reads_the_nfl_game_status`
+
+```text
+6 passed, 35 deselected in 1.00s
+```
+
 Test verdict: pending
 
 ## Comments
