@@ -1,13 +1,13 @@
 # The prek hook config of the repo. Install it one time per clone with "prek install".
-# The hook runs "make check-fast" at the root before each commit. That target runs the fast check of the site, the pipeline, and the API.
+# The hook runs root script tests and selects member checks from the commit index.
 # CI runs "make check", the full set.
 repos:
   - repo: local
     hooks:
       # The pipeline subset must stay under 30 seconds. "uv run" syncs the environment itself, so the hook installs nothing.
       - id: check-fast
-        name: make check-fast
-        entry: make check-fast
+        name: make check-fast STAGED=1
+        entry: make check-fast STAGED=1
         language: system
         pass_filenames: false
         always_run: true

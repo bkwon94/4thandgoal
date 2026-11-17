@@ -3,6 +3,10 @@ Tests the selection of scripts/changed_apps.py: which apps and which packages a 
 Each case writes a real workspace of pyproject.toml and package.json files into a temp folder.
 """
 import json
+import os
+import re
+import shlex
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -177,6 +181,39 @@ class TheRepoWorkspace(unittest.TestCase):
         out = subprocess.run(["python3", "-B", str(HERE / "changed_apps.py"), "HEAD"], cwd=REPO,
                              check=True, capture_output=True, text=True).stdout
         self.assertEqual(len(out.splitlines()), 1 if out else 0)
+
+
+class TheStagedCheck(unittest.TestCase):
+    def test_only_staged_paths_choose_the_member_checks(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            # Git exports its index location to hooks. Use the index of this test repository instead.
+            git_vars = subprocess.check_output(["git", "rev-parse", "--local-env-vars"], text=True).splitlines()
+            env = {key: value for key, value in os.environ.items() if key not in git_vars}
+
+            def git(*args: str) -> None:
+                subprocess.run(["git", *args], cwd=root, env=env, check=True, capture_output=True)
+
+            workspace(root)
+            (root / "scripts").mkdir()
+            shutil.copyfile(REPO / "Makefile", root / "Makefile")
+            shutil.copyfile(HERE / "changed_apps.py", root / "scripts/changed_apps.py")
+            write(root, "README.md", "Committed root file\n")
+            git("init", "--quiet", "--template=")
+            git("add", ".")
+            git("-c", "user.name=Test", "-c", "user.email=test@example.com", "-c", "commit.gpgSign=false",
+                "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "-m", "Create the test workspace")
+            write(root, "apps/pipeline/odds.py", "# Staged pipeline change\n")
+            git("add", "apps/pipeline/odds.py")
+            write(root, "README.md", "Unstaged root change\n")
+            write(root, "apps/site/untracked.ts", "// Untracked site file\n")
+
+            # Dry-run the Make command from the hook so this test does not run every member suite.
+            config = (REPO / ".pre-commit-config.yaml").read_text()
+            entry = next(line.split(":", 1)[1] for line in config.splitlines() if line.lstrip().startswith("entry:"))
+            output = subprocess.check_output([*shlex.split(entry), "-n"], cwd=root, env=env, text=True)
+
+            self.assertEqual(re.findall(r'echo "==> (.+?): check-fast"', output), ["scripts", "pipeline", "api"])
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 """
-Prints the apps and the packages that the check must run for the changed files since the merge base of a ref and HEAD,
-on one line. It selects by workspace member: a changed member, and each member that needs it, in both languages.
+Prints the apps and packages to check for staged files or for changes since the merge base of a ref and HEAD.
+It selects a changed workspace member and each member that needs it, in both languages.
 """
 import json
+import os
 import re
 import subprocess
 import sys
@@ -101,9 +102,15 @@ def _changed_files(ref: str) -> list[str]:
     return sorted(set(files))
 
 
+def _staged_files() -> list[str]:
+    """Read the commit index, with both paths of a rename and literal path bytes."""
+    output = subprocess.check_output(["git", "diff", "--cached", "--name-only", "--no-renames", "-z"])
+    return [os.fsdecode(path) for path in output.split(b"\0") if path]
+
+
 def main() -> None:
     root = Path(__file__).resolve().parent.parent
-    files = _changed_files(sys.argv[1])
+    files = _staged_files() if sys.argv[1] == "--staged" else _changed_files(sys.argv[1])
     # The apps come first, then the packages. The root Makefile tells them apart by the app names.
     checks = select_apps(root, files) + select_packages(root, files)
     if checks:

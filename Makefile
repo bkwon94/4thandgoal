@@ -22,11 +22,20 @@ scripts-check = python3 -B -m unittest discover -s scripts -p 'test_*.py'
 
 # With BASE set, only the apps and the packages that a change since the merge base selects run: each changed member,
 # and each member that needs it. A change outside apps/ and packages/, such as a root file, selects every one.
-# See scripts/changed_apps.py. Without BASE, every app and every package runs. The site runs first.
+# The hook sets STAGED=1 to use the commit index. Without either option, run every member. The site runs first.
+# See scripts/changed_apps.py for the shared rules.
 ALL_APPS = site pipeline api
+SELECTION = $(if $(filter 1,$(STAGED)),--staged,$(BASE))
+ifeq ($(STAGED),1)
+CHANGED := $(shell python3 -B scripts/changed_apps.py --staged || echo selection-failed)
+ifeq ($(CHANGED),selection-failed)
+$(error Cannot select staged checks)
+endif
+else
 CHANGED = $(if $(BASE),$(shell python3 -B scripts/changed_apps.py $(BASE)))
-APPS = $(if $(BASE),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
-PACKAGES = $(if $(BASE),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
+endif
+APPS = $(if $(SELECTION),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
+PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
@@ -38,11 +47,11 @@ check: ## Run the full check of every app and package (BASE=<ref> runs only the 
 	echo "==> scripts: check"; $(scripts-check); \
 	$(if $(strip $(APPS) $(PACKAGES)),$(foreach app,$(APPS),echo "==> $(app): check"; $($(app)-check); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check"; $(call package-check,$(pkg),check)),echo "No app or package changed since $(BASE). Nothing to run.")
 
-# The hook runs this target on each commit. Install the hook one time per clone with "prek install".
-check-fast: ## Run the fast check of every app and package (BASE=<ref> runs only the changed ones)
+# The hook calls this target with STAGED=1. Install the hook one time per clone with "prek install".
+check-fast: ## Run fast checks (BASE=<ref> selects changes since the merge base, STAGED=1 selects the commit index)
 	@set -e; \
 	echo "==> scripts: check-fast"; $(scripts-check); \
-	$(if $(strip $(APPS) $(PACKAGES)),$(foreach app,$(APPS),echo "==> $(app): check-fast"; $($(app)-check-fast); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check-fast"; $(call package-check,$(pkg),check-fast)),echo "No app or package changed since $(BASE). Nothing to run.")
+	$(if $(strip $(APPS) $(PACKAGES)),$(foreach app,$(APPS),echo "==> $(app): check-fast"; $($(app)-check-fast); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check-fast"; $(call package-check,$(pkg),check-fast)),echo "$(if $(filter 1,$(STAGED)),No app or package has staged changes.,No app or package changed since $(BASE).) Nothing to run.")
 
 # One target per member, for the CI job of that member. Each one runs the full check of its member and ignores BASE,
 # because CI always runs every member. "make check" runs the same commands in sequence.
