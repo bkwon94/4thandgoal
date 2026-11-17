@@ -1,7 +1,7 @@
 # Select commit checks from staged files
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-staged-member-checks`.
 Source: the session of 2026-11-17.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -41,3 +41,7 @@ OK
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `win-staged-member-checks`. Commits: `26352faa`, `e45a9450`. Date: 2026-11-17.
+One focused test went red, then green, and the fast checks passed 2,071 tests.
+Read 8 files: AGENTS.md, Makefile, .pre-commit-config.yaml, scripts/changed_apps.py, scripts/test_changed_apps.py, .claude/plugin/skills/quick/SKILL.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md.
