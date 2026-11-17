@@ -368,12 +368,15 @@ describe("the Thread of Lil Fridge", () => {
       delete (Element.prototype as Partial<Element>).scrollIntoView;
     });
     render(<HomePage />);
-    await openTopic("Week recap");
+    // The page asks for the scroll in the postRender step of the next motion frame, after the Answer renders. A find of
+    // the Answer can return before that frame, so the test waits for each scroll before it reads the record.
+    const [recap] = await openTopic("Week recap");
+    await waitFor(() => expect(scrolled).toContain(recap));
     scrolled.length = 0;
 
-    await openTopic("Power rankings");
-    const [recap, rankings] = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
-    expect(scrolled.at(-1)).toBe(rankings);
+    const [rankings] = await openTopic("Power rankings");
+    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toEqual([recap, rankings]);
+    await waitFor(() => expect(scrolled.at(-1)).toBe(rankings));
     expect(scrolled).not.toContain(recap);
     expect(rankings.className).toContain("scroll-mt-door-under-head");
     expect(within(recap).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/");

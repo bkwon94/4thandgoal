@@ -1,7 +1,7 @@
 /**
  * The trade analyzer route at /analyze/.
  * It renders the shell above the Stack of the analyzer, in the column of the page.
- * The column keeps the space of the grade bar free at its end, so the bar covers no content.
+ * The grade bar rests inside the Stack, so the column needs no space for it at its end.
  */
 import type { Metadata } from "next";
 import { Analyzer } from "@cpc/analyzer/form/analyzer";
@@ -18,8 +18,7 @@ export default function AnalyzePage() {
   return (
     <>
       <TopBand {...shellProps()} pageHref={analyzeHref()} />
-      {/* The bottom space is the 44px bar and the step above it, so the end of the page scrolls clear of the bar. */}
-      <main className="mx-auto w-full max-w-page px-gutter pt-sp-6 pb-[calc(var(--spacing-touch)+var(--spacing-sp-6))] desktop:pb-[calc(var(--spacing-touch)+var(--spacing-sp-6)+var(--spacing-sp-4))]">
+      <main className="mx-auto w-full max-w-page px-gutter pt-sp-6 pb-sp-6">
         <Analyzer target={apiTarget} finderOn={finderOn} />
       </main>
     </>
