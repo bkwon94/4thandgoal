@@ -21,6 +21,10 @@ Brian decides:
 
 Ticket 01 found that Sleeper blanks each week of an expected absence, so the projections already see a long injury. The level of the team still holds the weeks the star played.
 
+## Input from 07
+
+Decision 07 measured one call with the split and set results at 0.90 to 1.10 s on the Mac, at 6 weeks left. Fly is about 1.2 to 2.2 s, an estimate. Weigh this when you size the machine.
+
 ## Decision
 
 None yet.

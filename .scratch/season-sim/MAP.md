@@ -30,11 +30,11 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 
 - A pick uses a conditional draw with a weight, which is exact up to sample noise. 10,000 runs take 0.64 to 0.92 s on the Mac. Fly is about 1 to 1.5 s on burst and 11 to 15 s at the baseline. The API image needs the `sim` package. Sleeper blanks each week of an absence. `decisions/01-research-pick-draw-speed.md`.
 - The page answers, for Your team: how many more wins you need (the median counts), the four results of this week with the odds after each, and what to root for if you lose. Layout D "Cards": one week page at a time under a week switch. A tap on a result sets a What-if. The replay is three screens on one stage (season in the Race style, playoffs one round at a time, champion), and "Sim the week" shows games then standings. Each screen is tested at 390x660 WebKit, iPad, and 1280. `decisions/04-prototype-the-sim-page.md`.
+- A set result uses the "Your score first" draw with a weight: beat r6 after a win or r5 after a loss. It is exact up to sample noise, 0.90 to 1.10 s on the Mac. One weighted sim with a fixed seed gives each number of the page by a split of its runs. The root-for rows rank with a tolerance of 1 point. The response holds `teams`, `sample`, `effective_runs`, and one `page` block, and sim.json gets `pages`. About 44 KB gzip. `decisions/07-research-median-result-draw.md`.
 
 ## NOT YET SPECIFIED
 
 - How live are the inputs of the What-if, does a season-ending injury lower the level of a team, and what size is the API machine? `decisions/03-grill-live-inputs-injuries.md`.
-- How does the live sim hold a median result, and what does one call return? `decisions/07-research-median-result-draw.md`.
 - What does the Announcement look like? `decisions/05-prototype-the-announcement.md`.
 - What does the weekly report tile show, and how does the page act in the playoff weeks and after the season? `decisions/06-grill-tile-and-season-end.md`.
 
