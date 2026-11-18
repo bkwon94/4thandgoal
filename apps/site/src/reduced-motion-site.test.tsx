@@ -1,6 +1,6 @@
 /**
  * Tests that the launcher, the page card, and the none rows of the Site answer only fade with the reduced-motion media query on (AT-16).
- * The pages come from the real Menu of the cpc build, and the fold opens with no height move.
+ * The pages come from the real Menu of the cpc build, and the fold opens with no height move and only a fade.
  */
 import { cleanup, fireEvent, render, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -52,8 +52,14 @@ describe("Reduced motion on the Site answer (AT-16)", () => {
     expectNoMove(container);
     fireEvent.click(within(container).getByRole("button", { name: "All pages · 5" }));
     const rows = within(container).getByRole("list", { name: "Pages" });
-    // The panel of the fold drops its height move, so it opens at once.
-    expect(rows.closest<HTMLElement>("[data-slot='collapsible-panel']")?.className).toContain("motion-reduce:transition-none");
+    // The panel of the fold never moves its height. Its rise sits behind motion-safe, so reduced motion keeps only the fade.
+    const panel = rows.closest<HTMLElement>("[data-slot='collapsible-panel']")!.className;
+    expect(panel).not.toMatch(/height/);
+    expect(panel).toContain("data-starting-style:opacity-0");
+    expect(panel.split(/\s+/).filter((name) => name.includes("translate"))).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^motion-safe:/)]),
+    );
+    expect(panel.split(/\s+/).filter((name) => name.includes("translate") && !name.startsWith("motion-safe:"))).toEqual([]);
     expectNoMove(container);
     await expectShown(container);
     expectNoMove(container);
