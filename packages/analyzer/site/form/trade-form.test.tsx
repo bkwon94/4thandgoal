@@ -496,22 +496,23 @@ describe("TradeForm", () => {
     expect(await screen.findByText("Grading the Trade")).toBeTruthy();
     expect(screen.getByText("This can take up to a minute.")).toBeTruthy();
     expect(screen.queryByText(/chart/i)).toBeNull();
-    // The label stays while the grade runs, and the button stays pending instead of natively disabled.
-    expect(screen.queryByRole("button", { name: "Grading…" })).toBeNull();
-    expect(submit().getAttribute("aria-busy")).toBe("true");
+    // The label turns to Grading… while the grade runs, and the button stays pending instead of natively disabled.
+    const busy = screen.getByRole("button", { name: "Grading…" }) as HTMLButtonElement;
+    expect(busy.getAttribute("aria-busy")).toBe("true");
+    expect(busy.disabled).toBe(false);
   });
 
-  it("keeps focus on the grade button, with its label, through the wait (AT-4)", async () => {
+  it("keeps focus on the grade button, with the label Grading…, through the wait (AT-4)", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     submit().focus();
     fireEvent.click(submit());
     await screen.findByRole("region", { name: "Grading the Trade" });
-    const busy = submit();
+    const busy = screen.getByRole("button", { name: "Grading…" });
     expect(busy.getAttribute("aria-busy")).toBe("true");
     expect(busy.hasAttribute("data-pending")).toBe(true);
     expect(busy.getAttribute("aria-disabled")).toBe("true");
-    expect(busy.textContent).toBe("Grade the Trade");
+    expect(busy.textContent).toBe("Grading…");
     expect(document.activeElement).toBe(busy);
   });
 
