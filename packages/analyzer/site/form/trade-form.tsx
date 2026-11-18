@@ -432,7 +432,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </>
   );
 
-  const gradeBar = <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />;
+  const gradeBar = <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} inEditSheet={editing} />;
   const form = (
     <>
       {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
@@ -468,15 +468,15 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
         title="Edit the trade"
         onClose={cancelEdit}
         footer={
-          <div className="flex flex-col gap-sp-3">
-            {gradeBar}
+          <div className="flex items-center gap-sp-3">
             <button
               type="button"
               onClick={cancelEdit}
-              className="press flex min-h-touch min-w-touch cursor-pointer items-center justify-center self-center rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="press flex min-h-touch min-w-touch cursor-pointer items-center justify-center rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               Cancel
             </button>
+            {gradeBar}
           </div>
         }
       >

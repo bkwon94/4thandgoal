@@ -39,6 +39,7 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
 const card = (side: SideTitle) => screen.getByRole("region", { name: `${side} gets` });
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 const sheet = () => screen.getByRole("dialog");
+const regrade = () => within(screen.getByRole("dialog", { name: "Edit the trade" })).getByRole("button", { name: "Regrade the Trade" }) as HTMLButtonElement;
 /* A result hides the form, so a test taps Edit in the header of The Sides to change the trade. */
 const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
 /* The elements that asked to scroll into view. jsdom does no layout and has no scrollIntoView, so each test records them. */
@@ -138,7 +139,7 @@ describe("TradeForm", () => {
     expect(result.isConnected).toBe(true);
     expect(screen.getByRole("dialog", { name: "Edit the trade" })).toBe(reopened);
     answer(200, fixtureJson);
-    fireEvent.click(within(reopened).getByRole("button", { name: "Grade the Trade" }));
+    fireEvent.click(regrade());
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     await screen.findByRole("region", { name: "The Read" });
     expect(result.isConnected).toBe(false);
@@ -630,7 +631,7 @@ describe("TradeForm", () => {
     expect(within(editor).getByRole("region", { name: "Who gets what" })).toBeTruthy();
     expect(scrolled).toEqual([]);
     expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
-    expect(submit().disabled).toBe(false);
+    expect(regrade().disabled).toBe(false);
     expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
     expect(screen.getByRole("region", { name: "The Read", hidden: true })).toBeTruthy();
   });
@@ -656,7 +657,7 @@ describe("TradeForm", () => {
     await screen.findByRole("heading", { level: 2, name: "Lean yes" });
     edit();
     expect(controls.some((c) => c.disabled)).toBe(false);
-    expect(submit().hasAttribute("aria-busy")).toBe(false);
+    expect(regrade().hasAttribute("aria-busy")).toBe(false);
     await pickPlayers("Team Two", "Pukancun on 3", "Ana Two");
     expect(removeButton("Ana Two")).toBeTruthy();
   });
@@ -689,7 +690,7 @@ describe("TradeForm", () => {
     edit();
 
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
-    fireEvent.click(submit());
+    fireEvent.click(regrade());
     await screen.findByText("Grading the Trade");
     expect(screen.queryByRole("heading", { level: 2, name: "Lean yes" })).toBeNull();
   });
