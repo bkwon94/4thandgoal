@@ -8,7 +8,7 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-2, AT-3, AT-8, AT-13, A
 
 **Blocked by:** 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] "what tools are there" and "what can this site do" show the list view of CPC with 2 Tools and 4 pages to read (AT-2, AT-3).
 - [x] "is there a waiver page" shows the none case with the 6 pages of CPC (AT-8).
