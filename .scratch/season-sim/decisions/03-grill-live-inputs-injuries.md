@@ -17,7 +17,9 @@ Brian decides:
 1. Does the API run the What-if on the Tuesday inputs, or refetch the injuries and the projections from Sleeper when a manager opens the page?
 2. Does a season-ending injury of a starter also lower the level of the team, and by how much?
 
-Ticket 01 gives the speed of a refetch and how Sleeper projects a long injury.
+3. Does the API machine move from `shared-cpu-1x` to a size with a full CPU, or does the What-if run fewer runs? At the baseline quota of the shared CPU, one call can take 11 to 15 s.
+
+Ticket 01 found that Sleeper blanks each week of an expected absence, so the projections already see a long injury. The level of the team still holds the weeks the star played.
 
 ## Decision
 
