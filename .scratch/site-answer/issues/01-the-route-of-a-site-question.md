@@ -8,7 +8,7 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-9, AT-18, AT-20, AT-22.
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The live route eval routes at least 20 of the 22 site questions to `site` with the right key, keeps each of the 18 traps, and keeps the old bar (AT-9).
 - [x] With the fake Jev, a `site` route returns `page`, makes no Claude call, writes no miss log entry, and leaves each cap count as it was (AT-18).
