@@ -86,8 +86,24 @@ Test verdict: pending
 
 Done condition: `scripts/changed_apps.py` selects only the members whose tests read the changed paths for a change only under `.scratch/` or `docs/`, and any other root path still selects every member.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `024ee32f` with `scripts/test_changed_apps.py` of `6a1c31d0`, `cd scripts && python3 -B -m unittest test_changed_apps.TheRootFolderSelection`
+
+```text
+AssertionError: Lists differ: ['site', 'pipeline', 'api'] != ['site', 'pipeline']
+AssertionError: Lists differ: ['site', 'pipeline', 'api'] != []
+AssertionError: Lists differ: ['site', 'pipeline', 'api'] != ['api']
+Ran 7 tests in 0.017s
+FAILED (failures=7)
+```
+
+Green: at `6a1c31d0`, `cd scripts && python3 -B -m unittest test_changed_apps.TheRootFolderSelection`
+
+```text
+Ran 7 tests in 0.043s
+OK
+```
+
+The hook runs the root script tests, so it rejects a red commit. The loop and the change share the commit `6a1c31d0`. The whole file `test_changed_apps` runs 35 tests and passes. `make check-fast BASE=main` passes. A staged change of only `.scratch/quick-wins/faster-checks.md` makes `python3 -B scripts/changed_apps.py --staged` print `site pipeline`. The site still runs, because `apps/site/src/tracker-rule.test.ts` reads `.scratch/` and `docs/agents/state.md`. The pipeline reads the same files in `apps/pipeline/tests/test_rule_tracker.py`. No test of the API or of a package reads `.scratch/` or `docs/`. A change of only an ADR under `docs/adr/` selects no member. A `CLAUDE.md` or `AGENTS.md` under either folder selects the site and the pipeline, because the rules-file rule reads its name in every folder (`apps/site/src/readme-rule.test.ts`, `apps/pipeline/tests/test_rule_readmes.py`).
 Test verdict: pending
 
 ## Comments
