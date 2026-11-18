@@ -39,8 +39,14 @@ Test verdict: pending
 
 Done condition: The `site` job of `.github/workflows/check.yml` has `timeout-minutes: 25`.
 Method: text only
-Red: pending
-Green: pending
-Test verdict: pending
+Red: none, text only. The Check run `44201201184` on `main` cancelled the `site` job at 15 min 15 s.
+Green: at `084a8126`, the diff of the config:
+
+```text
+-    timeout-minutes: 15
++    timeout-minutes: 25
+```
+
+Test verdict: none
 
 ## Comments
