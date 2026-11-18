@@ -321,7 +321,7 @@ test.describe("the wait, with motion on", () => {
     }
   });
 
-  test(`wait dips: ${CLIENT} the mesh dips under each side in turn, about 1.25 s each, 1280px (AT-5)`, async ({ browser }, info) => {
+  test(`wait dips: ${CLIENT} the mesh dips under each side in turn, about 1.25 s each, 1280px, 8x CPU slowdown (AT-5)`, async ({ browser }, info) => {
     // A page of its own records a video of the wait, which is the recording of AT-5.
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
@@ -331,6 +331,9 @@ test.describe("the wait, with motion on", () => {
     const page = await context.newPage();
     await openAnalyzer(page, stageQuery());
     await settle(page);
+    // The slowdown stands in for the slow runner of CI, where a shot of the wait takes much longer than on a laptop.
+    const cdp = await context.newCDPSession(page);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 8 });
     await tapAndTimeWait(page);
     // The side that pulls hardest at each sample, or -1 when no weight pulls, with the time of the sample.
     const samples: { at: number; side: number }[] = [];
