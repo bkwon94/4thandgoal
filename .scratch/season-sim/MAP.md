@@ -29,11 +29,12 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 - The weekly build writes `week-NN/sim.json`, and the page reads it first and calls the API only for a What-if with a pick. The sim replaces `rankings/odds.py` in full, swings too, at 10,000 runs. The past odds stay. `decisions/02-grill-the-weekly-build.md`.
 
 - A pick uses a conditional draw with a weight, which is exact up to sample noise. 10,000 runs take 0.64 to 0.92 s on the Mac. Fly is about 1 to 1.5 s on burst and 11 to 15 s at the baseline. The API image needs the `sim` package. Sleeper blanks each week of an absence. `decisions/01-research-pick-draw-speed.md`.
+- The page answers, for Your team: how many more wins you need (the median counts), the four results of this week with the odds after each, and what to root for if you lose. Layout D "Cards": one week page at a time under a week switch. A tap on a result sets a What-if. The replay is three screens on one stage (season in the Race style, playoffs one round at a time, champion), and "Sim the week" shows games then standings. Each screen is tested at 390x660 WebKit, iPad, and 1280. `decisions/04-prototype-the-sim-page.md`.
 
 ## NOT YET SPECIFIED
 
 - How live are the inputs of the What-if, does a season-ending injury lower the level of a team, and what size is the API machine? `decisions/03-grill-live-inputs-injuries.md`.
-- What does the sim page look like, with Your team, the 3 games, the picks, and the replay? `decisions/04-prototype-the-sim-page.md`.
+- How does the live sim hold a median result, and what does one call return? `decisions/07-research-median-result-draw.md`.
 - What does the Announcement look like? `decisions/05-prototype-the-announcement.md`.
 - What does the weekly report tile show, and how does the page act in the playoff weeks and after the season? `decisions/06-grill-tile-and-season-end.md`.
 
@@ -43,4 +44,5 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 - A change to the midseason report. It is a published one-time page.
 - A pick of a bracket game whose teams are not set. A tree of choices is hard to show on a phone.
 - A record of a dismissed Announcement on the server. The site has no accounts.
+- A grid to pick any game of any week. Brian's test of round 1 showed that the job of the page is what Your team needs, not a board of every game.
 - A cache of live sim answers. The cost is under 10 minutes of CPU each week.
