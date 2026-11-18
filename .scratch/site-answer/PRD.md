@@ -83,7 +83,7 @@ A soft red Tool tone marks a Tool in both themes. Nothing moves to a page with n
 10. A page is a Tool when its package marks it as one. The packages `analyzer` and `sim` are Tools. Each other package is a page to read, including `managers` (decision 02, Brian's answer on the glossary).
 11. Each package that can show in the list gives a fixed blurb of one line beside its menu link. Code writes each blurb. Claude never writes one. Both clients share the blurbs, so they live with the package, not in `copy.toml`. This settles item 2 of ticket 03. The blurbs:
     - `analyzer`: "Grades a trade between two or more teams."
-    - `sim`: "Plays out the rest of the season for the playoff odds."
+    - `sim`: "Plays out the rest of the season, game by game." The blurb does not say "playoff odds", because those words lifted the trap "where are the playoff odds" to `site` in the live eval.
     - `week`: "The recap, scores, and awards of the week."
     - `rankings`: "Every team ranked, with the weekly moves."
     - `managers`: "Each manager, with the grades of the season."
@@ -127,7 +127,7 @@ The seams, from high to low. Each one exists today.
 
 1. **The live route eval, `pytest -m live`.** Prior art: the AT-17 eval of the route and its fixture of route questions. The fixture gets the 40 questions of decision 01, with a new expect of the shape `site:<key>`, `site:all`, or `site:missing`. The bar holds two parts:
    - At least 20 of the 22 site questions route to `site`. Each one that routes to `site` picks the right key.
-   - Each of the 18 traps keeps its old route. The old bar of AT-17 still holds with `pages` in the state.
+   - Each of the 18 traps stays off `site`. The one exception is "show me the power rankings", which may route to `site:rankings` by item 6. The old bar of AT-17 still holds with `pages` in the state.
 2. **The ask route of the api, with the one fake Jev of the port (ADR 0015).** Prior art: `test_ask.py`. It checks the new row of `decide()`, the `page` field, the 422 on a bad key, and no miss log entry, Claude call, or cap for a `site` route.
 3. **The page of the front door in the site, with Vitest.** Prior art: `page-ask.test.tsx` and `page-free.test.tsx`. A fake ask response of each `page` value renders the list view, the page card, and the none case with the real Menu of each client. It checks each link, the groups, the lead line, the kept Thread after a reload, and a key that the client lacks.
 4. **Screenshots on a phone width, in both themes.** Prior art: the evidence of the front door. They show the Tool tone, no solid white in dark, and no solid black in light.

@@ -44,7 +44,7 @@ App: both
 Stories: 4
 Given: The CPC site and the API run.
 When: The reader types "how do I use the sim" and sends it.
-Then: The page card of the Playoff Sim shows, with the blurb "Plays out the rest of the season for the playoff odds." and the button link `/midseason/2026/#sim`. No step-by-step tutorial shows.
+Then: The page card of the Playoff Sim shows, with the blurb "Plays out the rest of the season, game by game." and the button link `/midseason/2026/#sim`. No step-by-step tutorial shows.
 Evidence: the ask response with `route: "site"` and `page: "sim"`, and screenshots of the card.
 
 AT-5: "take me to the weekly reports" gets the card of Week 10
@@ -84,7 +84,7 @@ App: api
 Stories: 7, 14, 15, 16, 28
 Given: The fixture of route questions holds the 40 questions of decision 01, each with its expected route, and the pages of CPC.
 When: The builder runs `pytest -m live -s` for the route eval in `apps/api`.
-Then: At least 20 of the 22 site questions route to `site` with the right page key, each of the 18 traps keeps its old route, and the old bar of the route eval still holds.
+Then: At least 20 of the 22 site questions route to `site` with the right page key, each of the 18 traps stays off `site`, except that "show me the power rankings" may route to `site:rankings` (PRD item 6), and the old bar of the route eval still holds.
 Evidence: the command and its full output, with the hit count of each part.
 
 AT-10: Nothing moves to a page with no tap
