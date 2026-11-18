@@ -90,6 +90,9 @@ function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team:
     case "cap":
     case "note":
       return { name: item.question, fact: item.line };
+    case "site":
+      // The item holds only its page key, so the turn names the page by that key.
+      return { name: item.question, fact: `A link to the ${item.page} page of the site.` };
   }
 }
 

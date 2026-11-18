@@ -16,7 +16,8 @@ import { topicName } from "./topics";
    trade Topic while it works, then its whole Answer with the key of the rosters it read. A trade Answer kept from before
    the key has none, so it never reads as stale. A free answer streams while its result is null, and keeps its
    checked result once the stream ends. A personal Topic of `team` streams the same way from the API, with its data
-   block first. A miss of a personal Topic keeps that data block. */
+   block first. A miss of a personal Topic keeps that data block. A site item holds only the page that the route gave:
+   a page key, `all`, or `missing`. The Thread builds its links from the Menu of the build when it shows the item. */
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
@@ -25,6 +26,7 @@ export type ThreadItem =
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
   | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null; read?: TradeRead }
   | { kind: "free"; question: string; result: FreeResult | null }
+  | { kind: "site"; question: string; page: string }
   | { kind: "personal"; key: PersonalTopic; team: number; question: string | null; result: PersonalResult | null };
 
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
@@ -106,6 +108,9 @@ export function itemOfRoute(
     case "cap":
       // The API writes the line of each cap, so the site never says a cause or a date that the API did not check.
       return { kind: "cap", question, line: route.line ?? "", closest: route.closest };
+    case "site":
+      // A site route with no page reads as a page that the client lacks, so the Thread shows the none case.
+      return { kind: "site", question, page: route.page ?? "missing" };
   }
 }
 
