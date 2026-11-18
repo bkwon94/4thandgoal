@@ -15,10 +15,10 @@ A first-visit Tour on the front door of each client. It shows a league mate what
 - The Tour has four Stops: the Suggestions, the ask box, the team switch, and the menu button or the pill bar. The menu sheet does not open during the Tour. Grill of 2026-11-18.
 - The Tour is passive. Each Stop has Next and Skip and a count such as "2 of 4". The last Stop says Done. A tap on the dim area goes to the next Stop. The real controls do not respond during the Tour. Skip counts as seen. Grill of 2026-11-18.
 - The glossary names the feature "Tour" and each spotlight "Stop". Grill of 2026-11-18, in `GLOSSARY.md`.
+- The Stop card is a modal ui-sdk `Popover` in a new wrapper of `packages/design/site/ui/`. The spotlight is a `box-shadow` dim that `framer-motion` moves. The motion uses transitions-dev tokens. No scrolltide item fits. `decisions/01-research-the-tour-build.md`.
 
 ## NOT YET SPECIFIED
 
-- Which parts build the Tour: ui-sdk, transitions.dev, a scrolltide item, and `framer-motion`? `decisions/01-research-the-tour-build.md`.
 - What do a Stop and the motion between Stops look like on a phone? `decisions/02-prototype-the-stop-look.md`.
 - What is the line of each Stop, and where does the replay link sit on desktop? `decisions/03-grill-stop-copy-and-replay.md`.
 - What does the Tour do under reduced motion, and what browser key marks it as seen? `decisions/04-spec-reduced-motion-and-key.md`.
