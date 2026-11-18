@@ -18,10 +18,10 @@ One spec: the chat answers a question about the site, such as "where is the trad
 - "How do I use X" shows the card of X with one fixed blurb from the client copy. Code writes the blurb, never Claude. Grill of 2026-11-18.
 - The honest miss does not change, and it gets no page links. Grill of 2026-11-18.
 - The terms Site answer and Tool are in `GLOSSARY.md`. The Menu definition now says "links", because Destination is a term of a trade. Grill of 2026-11-18.
+- The Noul `n5` and the Choice `c1` route 21 of 22 site questions and keep 18 of 18 traps. A clear yes routes to `site` right after `ABUSE`. A Topic wins over a bare page name. `decisions/01-prototype-the-site-route.md`.
 
 ## NOT YET SPECIFIED
 
-- Which wording of the Jev Noul and the Jev Choice routes about 30 real questions right, with the traps such as "where is my team in the standings"? `decisions/01-prototype-the-site-route.md`.
 - What do the list view of the Tools and the "where is X" card look like and move like? `decisions/02-prototype-the-site-blocks.md`.
 - What does the lead line say, what does each blurb say, and what does a client with the front door flag off show? `decisions/03-spec-the-copy-and-the-flag.md`.
 
