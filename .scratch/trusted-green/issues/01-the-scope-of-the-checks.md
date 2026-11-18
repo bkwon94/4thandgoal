@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-32, AT-33 and AT-35.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The scope script prints "records only" on the diff of commit `c9b6282c`, and selects no heavy check.
 - [x] The scope script selects the rebuild on a diff of the pipeline, and the smoke run on a diff of the site.
