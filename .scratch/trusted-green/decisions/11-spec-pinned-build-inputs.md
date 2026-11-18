@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** 10
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The facts diff needs the five changes of ticket 10. The spec sets each one: wher
 
 ## Decision
 
-None yet.
+Recorded in `PRD.md` under Implementation Decisions, approved by Brian on 2026-11-18. Each build saves its extract, slow-source values, and news; a facts-only rebuild reads the clock from `verify.json`.

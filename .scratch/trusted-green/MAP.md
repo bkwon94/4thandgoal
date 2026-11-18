@@ -26,14 +26,15 @@ The ideas come from "How the Claude Code team thinks about verification" (https:
 - A full rebuild is no oracle: it needs two secrets, takes 12.5 min, and never matches. `page-json` matches the latest published week byte for byte in 2 s. `decisions/03-research-rebuild-matches-published.md`.
 - The rebuild diffs the render with `page-json` for the latest week of each client. The facts diff waits on ticket 10. `decisions/09-grill-what-rebuild-diffs.md`.
 - Pinned inputs give the same facts byte for byte, so spec 1 diffs the facts too. The build needs five changes. `decisions/10-research-pinned-facts-match.md`.
+- The list of approved diffs: `REBUILD.md` or a `Rebuild:` block; the changed set must equal the listed set. `decisions/05-spec-approved-diff-list.md`.
+- Eight Hypothesis property tests of the grades, beside each package. `decisions/06-spec-property-test-targets.md`.
+- The re-run job finds the quick file of the PR, runs Red at the red commit and Green at the fix commit, and passes a PR with no quick file. `decisions/07-spec-red-green-rerun-job.md`.
+- Seven flows: front door, passphrase, week report, manager page, analyzer, power rankings, midseason report. `decisions/08-spec-first-flow-list.md`.
+- Each build saves its extract, slow-source values, and news; a facts-only rebuild reads the clock from `verify.json`. `decisions/11-spec-pinned-build-inputs.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the build pin its inputs: the clock, the nflverse extract, the slow sources, the research, and the news? `decisions/11-spec-pinned-build-inputs.md`.
-- Which flows does the first flow list hold, with which globs? `decisions/08-spec-first-flow-list.md`.
-- What shape has the list of approved diffs of the rebuild? `decisions/05-spec-approved-diff-list.md`.
-- Which pure functions get property tests, and which properties? `decisions/06-spec-property-test-targets.md`.
-- How does the re-run job find the quick file, its commands, and its commits? `decisions/07-spec-red-green-rerun-job.md`.
+None.
 
 ## OUT OF SCOPE
 

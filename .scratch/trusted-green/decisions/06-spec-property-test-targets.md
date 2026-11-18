@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Hypothesis tests the pure functions of the grades in the pipeline. The spec name
 
 ## Decision
 
-None yet.
+Recorded in `PRD.md` under Implementation Decisions, approved by Brian on 2026-11-18. Eight Hypothesis property tests of the grades, beside each package.

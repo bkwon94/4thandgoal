@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** 04
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 ## Decision
 
-None yet.
+Recorded in `PRD.md` under Implementation Decisions, approved by Brian on 2026-11-18. Seven flows: front door, passphrase, week report, manager page, analyzer, power rankings, midseason report.

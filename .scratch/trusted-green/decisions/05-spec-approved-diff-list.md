@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** 09
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ A PR that changes the output of a week on purpose must name each approved diff, 
 
 ## Decision
 
-None yet.
+Recorded in `PRD.md` under Implementation Decisions, approved by Brian on 2026-11-18. The list of approved diffs: `REBUILD.md` or a `Rebuild:` block; the changed set must equal the listed set.

@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ A CI job reads its script from `main`, like `verdict.yml`. It runs the command o
 
 ## Decision
 
-None yet.
+Recorded in `PRD.md` under Implementation Decisions, approved by Brian on 2026-11-18. The re-run job finds the quick file of the PR, runs Red at the red commit and Green at the fix commit, and passes a PR with no quick file.
