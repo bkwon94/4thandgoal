@@ -335,21 +335,41 @@ test.describe("the wait, with motion on", () => {
     const cdp = await context.newCDPSession(page);
     await cdp.send("Emulation.setCPUThrottlingRate", { rate: 8 });
     await tapAndTimeWait(page);
-    // The side that pulls hardest at each sample, or -1 when no weight pulls, with the time of the sample.
-    const samples: { at: number; side: number }[] = [];
-    const start = Date.now();
+    // The page samples the side that pulls hardest at each frame for 5 s, or -1 when no weight pulls, with the time of
+    // the frame. The time comes from the page, so a slow shot from the test neither delays a sample nor skips one.
+    const sampled = page.evaluate(
+      (canvas) =>
+        new Promise<{ at: number; side: number }[]>((done) => {
+          const samples: { at: number; side: number }[] = [];
+          const start = performance.now();
+          const tick = (now: number) => {
+            const el = document.querySelector<HTMLCanvasElement>(canvas);
+            const pulls = (el?.dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number);
+            const top = Math.max(0, ...pulls);
+            samples.push({ at: Math.round(now - start), side: top > 0.05 ? pulls.indexOf(top) : -1 });
+            if (now - start < 5000) requestAnimationFrame(tick);
+            else done(samples);
+          };
+          requestAnimationFrame(tick);
+        }),
+      WAIT_CANVAS,
+    );
+    // The test takes a shot at each of the first four dips, while the page samples.
     let shot = 0;
+    let last = -1;
+    const start = Date.now();
     while (Date.now() - start < 5000) {
       const now = await pulls(page);
       const top = Math.max(...now);
       const side = top > 0.05 ? now.indexOf(top) : -1;
-      if (side >= 0 && samples.at(-1)?.side !== side && shot < 4) {
+      if (side >= 0 && side !== last && shot < 4) {
         await page.waitForTimeout(500);
         await page.locator(WAIT_HERO).screenshot({ path: info.outputPath(`wait-dip-${CLIENT}-${shot++}-side-${side}.png`) });
       }
-      samples.push({ at: Date.now() - start, side });
+      if (side >= 0) last = side;
       await page.waitForTimeout(40);
     }
+    const samples = await sampled;
     // The runs of one side, with the time each starts and ends.
     const runs: { side: number; from: number; to: number }[] = [];
     for (const { at, side } of samples) {
@@ -362,8 +382,8 @@ test.describe("the wait, with motion on", () => {
     await context.close();
     console.log(`wait dips: ${CLIENT}: the recording is ${await page.video()?.path()}`);
     expect(runs.map((r) => r.side).slice(0, 4)).toEqual([0, 1, 0, 1]);
-    // Each full turn in the middle of the sample holds about 1.25 s. The turn starts and ends at a small pull, so the
-    // part above the cut is a little shorter than the turn, and the gaps of the samples take some more.
+    // Each full turn in the middle of the sample holds about 1.25 s, from the first frame of one side to the first frame
+    // of the next. The turn starts and ends at a small pull, so each side crosses the cut at the same place in its turn.
     for (const run of runs.slice(1, -1)) {
       const turn = runs[runs.indexOf(run) + 1].from - run.from;
       expect(turn, `side ${run.side} held the weight ${turn} ms`).toBeGreaterThan(1000);
