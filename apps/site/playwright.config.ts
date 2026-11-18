@@ -6,8 +6,9 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "e2e",
-  // A static page loads fast, and two workers keep the run short on the two cores of the CI runner.
-  workers: 2,
+  // A static page loads fast. The CI runner of a public repo has four cores, so CI runs four workers.
+  // A local run keeps two workers, because agents run the checks in many worktrees at once.
+  workers: process.env.CI ? 4 : 2,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   reporter: "list",
