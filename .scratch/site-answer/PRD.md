@@ -5,7 +5,7 @@ Date: 2026-11-18
 Apps: site and api. The api routes a question about the site and picks the page that it asks about. The site builds the Site answer from its own Menu and shows it in the Thread. The pipeline does not change.
 Spec branch: `site-answer`.
 Source: the map `.scratch/site-answer/MAP.md` and decision tickets 01 to 03. The grill and the prototypes of 2026-11-18. ADR 0015, ADR 0021, ADR 0024, ADR 0036.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 03, in `issues/`.
 
 ## Problem Statement
 
