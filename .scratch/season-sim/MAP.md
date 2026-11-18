@@ -32,10 +32,10 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 - The page answers, for Your team: how many more wins you need (the median counts), the four results of this week with the odds after each, and what to root for if you lose. Layout D "Cards": one week page at a time under a week switch. A tap on a result sets a What-if. The replay is three screens on one stage (season in the Race style, playoffs one round at a time, champion), and "Sim the week" shows games then standings. Each screen is tested at 390x660 WebKit, iPad, and 1280. `decisions/04-prototype-the-sim-page.md`.
 - A set result uses the "Your score first" draw with a weight: beat r6 after a win or r5 after a loss. It is exact up to sample noise, 0.90 to 1.10 s on the Mac. One weighted sim with a fixed seed gives each number of the page by a split of its runs. The root-for rows rank with a tolerance of 1 point. The response holds `teams`, `sample`, `effective_runs`, and one `page` block, and sim.json gets `pages`. About 44 KB gzip. `decisions/07-research-median-result-draw.md`.
 - The What-if runs on the Tuesday inputs, with no refetch from Sleeper. A season-ending injury does not change the level: the projection carries half the loss. The API stays on `shared-cpu-1x` at 10,000 runs, at no extra cost. The spec times real calls on Fly, also after a deploy, and the server stops the work of a cancelled call. `decisions/03-grill-live-inputs-injuries.md`.
+- The Announcement is a bottom sheet on the shared Sheet: an art slot, an eyebrow, a title, one line, the link, and "Not now". For the sim, the art shows 3 standings rows around Your team and a What-if chip that the manager can tap. A skipped open is not "seen", so it shows on the next load. `decisions/05-prototype-the-announcement.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the Announcement look like? `decisions/05-prototype-the-announcement.md`.
 - What does the weekly report tile show, and how does the page act in the playoff weeks and after the season? `decisions/06-grill-tile-and-season-end.md`.
 
 ## OUT OF SCOPE
