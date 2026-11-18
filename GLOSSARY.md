@@ -12,7 +12,7 @@ The band at the top of every page with the brand mark and the theme button. On a
 _Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
-The list of the destinations of a client. It shows as the menu sheet on a phone and a tablet, which drops from the top band, and as the pill bar on a desktop.
+The list of the links of a client. It shows as the menu sheet on a phone and a tablet, which drops from the top band, and as the pill bar on a desktop.
 _Avoid_: Drawer, nav, hamburger, navigation
 
 **Pill bar**:
@@ -173,8 +173,16 @@ The list of the questions of a manager and their Answers on the front door, for 
 _Avoid_: Chat, conversation, feed, history
 
 **Route**:
-Where the ask box sends one typed question: a Topic, a free answer, an honest miss, or a calm refusal. Jev answers 7 typed questions in one request, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
+Where the ask box sends one typed question: a Topic, a free answer, a Site answer, an honest miss, or a calm refusal. Jev answers 7 typed questions in one request, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
 _Avoid_: Intent, classification, dispatch
+
+**Site answer**:
+The Answer to a question about the site itself, such as where a page is, what tools exist, or what one tool does. It links to each page it names, and code builds it from the Menu with no Claude text.
+_Avoid_: Help, site map, nav answer, guide
+
+**Tool**:
+A page of a client where the manager puts something in and gets a result, such as the trade analyzer or the sim. A page to read, such as the week or the rankings, is not a Tool.
+_Avoid_: App, feature, widget, utility
 
 **Honest miss**:
 The Answer to a question that this season's data cannot answer, such as injury news or a past season. It says what the site does not have and offers the 3 closest Topics. The API logs each one for 90 days (ADR 0031).
