@@ -12,12 +12,13 @@ import { menuPages } from "./shell-props";
    Tool mark. */
 export type SitePage = { key: PackageName; label: string; href: string; blurb: string; tool: boolean };
 
-/* The label of the sim while it has no Menu link of its own and lives in the sim section of the midseason report. */
+/* The label of the sim when it links to the sim section of the midseason report. A Menu link of the sim brings its
+   own label. */
 const SIM_LABEL = "Playoff Sim";
 
 /* The pages of the Site answer, in the order of the Menu, then the midseason report, then the sim. A package with no
-   site line, or with no page to link yet, gives no page. The sim links to the sim section of the midseason report,
-   `#sim`, until the sim gets a Menu link of its own, which then wins. */
+   site line, or with no page to link yet, gives no page. A Menu link of the sim wins over `#sim`, the sim section of
+   the midseason report, so the sim Tool always opens the best page. */
 export function sitePages(items: MenuItem[], links: MenuLinks, lines: SiteLines, packages: PackageName[]): SitePage[] {
   const pages = menuPages(items, links, homeHref()).flatMap((item): SitePage[] => {
     const line = item.kind === "home" ? undefined : lines[item.kind];
