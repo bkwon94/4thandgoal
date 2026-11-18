@@ -154,6 +154,45 @@ describe("the page card of a site question", () => {
   });
 });
 
+describe("the honest miss next to the Site answer", () => {
+  it("gives 'what's the weather' the honest miss with no page link and no Site answer (AT-22, site half)", async () => {
+    answerWith({ ...siteRoute("all"), route: "miss", page: null, closest: ["next_matchup", "week_recap", "waiver_targets"] });
+    render(<HomePage />);
+    await ask("what's the weather");
+    const miss = await articleWith("what's the weather", "I can't answer that.");
+    expect(miss.textContent).not.toMatch(/The site has|has its own page/);
+    expect(within(miss).queryByRole("link")).toBeNull();
+    expect(within(miss).queryByRole("list", { name: /^(Tools|Pages to read|Pages)$/ })).toBeNull();
+  });
+});
+
+describe("the list view of a site question", () => {
+  it.each([
+    { question: "what tools are there", at: "AT-2" },
+    { question: "what can this site do", at: "AT-3" },
+  ])("shows 2 Tools and 4 pages to read for '$question' ($at)", async ({ question }) => {
+    answerWith(siteRoute("all"));
+    render(<HomePage />);
+    await ask(question);
+    const view = await articleWith(question, "The site has 2 tools and 4 pages to read.");
+    const tiles = (group: string) => within(within(view).getByRole("list", { name: group })).getAllByRole("link");
+    const shown = (group: string) => tiles(group).map((tile) => [tile.textContent, tile.getAttribute("href")]);
+    expect(shown("Tools")).toEqual([
+      ["Trade AnalyzerGrades a trade between two or more teams.", "/analyze/"],
+      ["Playoff SimPlays out the rest of the season, game by game.", "/midseason/2026/#sim"],
+    ]);
+    expect(shown("Pages to read")).toEqual([
+      ["Week 8The recap, scores, and awards of the week.", "/2026/week-08/"],
+      ["Power RankingsEvery team ranked, with the weekly moves.", "/rankings/"],
+      ["ManagersEach manager, with the grades of the season.", "/2026/managers/"],
+      ["Midseason ReportThe midseason awards, grades, and roasts.", "/midseason/2026/"],
+    ]);
+    // The list view is the launcher: no rows of the card, no Home, no egg board, and no past week.
+    expect(within(view).queryByRole("list", { name: "Pages" })).toBeNull();
+    expect(view.textContent).not.toMatch(/Home|Egg|Week 7/);
+  });
+});
+
 describe("the none case of a site question", () => {
   it("shows the none rows of every cpc page for a kept key that the client lacks (AT-21)", async () => {
     localStorage.setItem("cpc.thread", JSON.stringify({ "3": { week: 8, entries: [{ kind: "site", question: "where are the waivers", page: "waiver" }] } }));
@@ -165,11 +204,43 @@ describe("the none case of a site question", () => {
     expect(askCalls()).toHaveLength(0);
   });
 
-  it("shows the none rows for the route page 'missing'", async () => {
+  it("shows the open rows of the 6 pages of cpc for 'is there a waiver page' (AT-8)", async () => {
     answerWith(siteRoute("missing"));
     render(<HomePage />);
     await ask("is there a waiver page");
     const card = await articleWith("is there a waiver page", "The site has no page for that. Here is what it has.");
-    expect(within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link")).toHaveLength(6);
+    // The rows show open, with no fold to tap, no launcher, and no Open button.
+    expect(within(card).queryByRole("button", { name: /^All pages/ })).toBeNull();
+    expect(within(card).queryByRole("list", { name: "Tools" })).toBeNull();
+    expect(within(card).queryByRole("link", { name: /^Open the/ })).toBeNull();
+    const rows = within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link");
+    expect(rows.map((row) => [row.textContent, row.getAttribute("href")])).toEqual(
+      CPC_PAGES.map(({ label, blurb }, index) => [`${label}${blurb}`, ["/2026/week-08/", "/rankings/", "/2026/managers/", "/analyze/", "/midseason/2026/", "/midseason/2026/#sim"][index]]),
+    );
+  });
+
+  it("names no internal part in the list view or the none case (AT-17, list half)", async () => {
+    answerWith(siteRoute("all"));
+    answerWith(siteRoute("missing"));
+    render(<HomePage />);
+    await ask("what tools are there");
+    const view = await articleWith("what tools are there", "The site has 2 tools and 4 pages to read.");
+    await ask("is there a waiver page");
+    const none = await articleWith("is there a waiver page", "The site has no page for that. Here is what it has.");
+    for (const answer of [view, none]) expect(answer.textContent).not.toMatch(/jev|advisor|finder|front door|rival/i);
+  });
+
+  it("keeps the list view after a reload, with the same links and no new ask request (AT-12)", async () => {
+    answerWith(siteRoute("all"));
+    const first = render(<HomePage />);
+    await ask("what tools are there");
+    const before = await articleWith("what tools are there", "The site has 2 tools and 4 pages to read.");
+    const links = () => within(screen.getByRole("article", { name: "what tools are there" })).getAllByRole("link").map((link) => link.getAttribute("href"));
+    const kept = within(before).getAllByRole("link").map((link) => link.getAttribute("href"));
+    first.unmount();
+    render(<HomePage />);
+    await articleWith("what tools are there", "The site has 2 tools and 4 pages to read.");
+    expect(links()).toEqual(kept);
+    expect(askCalls()).toHaveLength(1);
   });
 });

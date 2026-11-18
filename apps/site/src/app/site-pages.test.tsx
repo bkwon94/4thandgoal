@@ -1,10 +1,14 @@
 /**
  * Tests for the pages of the Site answer: the real Menu and the real menu links of the cpc build, with no Home, plus the
- * midseason report and the sim. A Menu link of the sim wins over the sim section of the report (AT-19).
+ * midseason report and the sim. A Menu link of the sim wins over the sim section of the report (AT-19). NorCal reads its own client.toml.
  */
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { parse } from "smol-toml";
 import { cleanup, render, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import type { MenuItem, PackageName } from "@/lib/client-values";
 import { clientValues } from "@/generated/client-values";
 import { menuLinks, siteLines } from "@/generated/registry";
 import { SiteAnswer } from "./front-door/site-answer";
@@ -34,5 +38,50 @@ describe("the pages of the Site answer", () => {
   it("drops the midseason report and the sim for a client with no midseason package", () => {
     const pages = sitePages(items, menuLinks, siteLines, clientValues.packages.filter((name) => name !== "midseason"));
     expect(pages.map((page) => page.key)).toEqual(["week", "rankings", "managers", "analyzer"]);
+  });
+});
+
+/* The repo root, four folders above this file. */
+const REPO = join(__dirname, "..", "..", "..", "..");
+
+/* The package list and the Menu of the real client.toml of NorCal. With the front door on, the Menu is front_door_items. */
+function norcalMenu(): { packages: PackageName[]; items: MenuItem[] } {
+  const values = parse(readFileSync(join(REPO, "clients", "norcal", "client.toml"), "utf8")) as {
+    packages: PackageName[];
+    front_door: boolean;
+    menu: { items?: MenuItem[]; front_door_items?: MenuItem[] };
+  };
+  const items = values.front_door ? (values.menu.front_door_items ?? values.menu.items) : values.menu.items;
+  return { packages: values.packages, items: items ?? [] };
+}
+
+describe("the list view of NorCal (AT-13)", () => {
+  it("holds only the pages of the NorCal Menu, plus its report and its sim, and each link opens a NorCal page", async () => {
+    readFixtureSite("norcal");
+    // The readers of public/ read the working folder when they load, so reset them to read the NorCal data.
+    vi.resetModules();
+    const { sitePages: pagesOf } = await import("./site-pages");
+    const { menuLinks: links, siteLines: lines } = await import("@/generated/registry");
+    const { SiteAnswer: Answer } = await import("./front-door/site-answer");
+    const { packages, items: menu } = norcalMenu();
+    const pages = pagesOf(menu, links, lines, packages);
+    const { container } = render(<Answer question="what tools are there" page="all" pages={pages} />);
+    const hrefs = (group: string) => within(within(container).getByRole("list", { name: group })).getAllByRole("link").map((tile) => tile.getAttribute("href"));
+    expect(container.textContent).toContain("The site has 2 tools and 4 pages to read.");
+    expect(hrefs("Tools")).toEqual(["/analyze/", "/midseason/2026/#sim"]);
+    expect(hrefs("Pages to read")).toEqual(["/2026/week-08/", "/rankings/", "/2026/managers/", "/midseason/2026/"]);
+    // Each link opens a page that the NorCal export holds: a published file of NorCal, or a route of the site.
+    const proof: Record<string, string> = {
+      "/2026/week-08/": fixturePublished("norcal", "2026", "week-08", "page.json"),
+      "/rankings/": fixturePublished("norcal", "2026", "rankings.json"),
+      "/2026/managers/": fixturePublished("norcal", "2026", "managers.json"),
+      "/analyze/": join(__dirname, "(client)", "analyze", "page.tsx"),
+      "/midseason/2026/": fixturePublished("norcal", "2026", "midseason.json"),
+      "/midseason/2026/#sim": fixturePublished("norcal", "2026", "sim.json"),
+    };
+    for (const href of [...hrefs("Tools"), ...hrefs("Pages to read")]) expect(existsSync(proof[href!]), href!).toBe(true);
+    // The week label comes from the NorCal data, and no page of a package outside NorCal shows.
+    expect(container.textContent).toContain("Week 8");
+    expect(container.textContent).not.toMatch(/Egg/);
   });
 });

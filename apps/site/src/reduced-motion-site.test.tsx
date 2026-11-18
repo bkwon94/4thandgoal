@@ -1,5 +1,5 @@
 /**
- * Tests that the page card and the none rows of the Site answer only fade with the reduced-motion media query on (AT-16).
+ * Tests that the launcher, the page card, and the none rows of the Site answer only fade with the reduced-motion media query on (AT-16).
  * The pages come from the real Menu of the cpc build, and the fold opens with no height move.
  */
 import { cleanup, fireEvent, render, waitFor, within } from "@testing-library/react";
@@ -54,6 +54,14 @@ describe("Reduced motion on the Site answer (AT-16)", () => {
     const rows = within(container).getByRole("list", { name: "Pages" });
     // The panel of the fold drops its height move, so it opens at once.
     expect(rows.closest<HTMLElement>("[data-slot='collapsible-panel']")?.className).toContain("motion-reduce:transition-none");
+    expectNoMove(container);
+    await expectShown(container);
+    expectNoMove(container);
+  });
+
+  it("fades the tiles of the launcher in, with no pop from 0.96 and no blur", async () => {
+    const { container } = render(<SiteAnswer question="what tools are there" page="all" pages={clientSitePages()} />);
+    expect(within(container).getAllByRole("link")).toHaveLength(6);
     expectNoMove(container);
     await expectShown(container);
     expectNoMove(container);

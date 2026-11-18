@@ -10,8 +10,8 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-2, AT-3, AT-8, AT-13, A
 
 **Status:** ready-for-agent
 
-- [ ] "what tools are there" and "what can this site do" show the list view of CPC with 2 Tools and 4 pages to read (AT-2, AT-3).
-- [ ] "is there a waiver page" shows the none case with the 6 pages of CPC (AT-8).
-- [ ] The list view of NorCal holds only NorCal pages, and each link opens a page that exists (AT-13).
+- [x] "what tools are there" and "what can this site do" show the list view of CPC with 2 Tools and 4 pages to read (AT-2, AT-3).
+- [x] "is there a waiver page" shows the none case with the 6 pages of CPC (AT-8).
+- [x] The list view of NorCal holds only NorCal pages, and each link opens a page that exists (AT-13).
 - [ ] The list view and the none case have the Tool tone, 44 px targets, fades only with reduced motion, and no internal name (AT-14, AT-15, AT-16, AT-17, list half).
-- [ ] "what's the weather" shows "I can't answer that." and no Site answer (AT-22, site half).
+- [x] "what's the weather" shows "I can't answer that." and no Site answer (AT-22, site half).
