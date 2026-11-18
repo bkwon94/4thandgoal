@@ -35,6 +35,20 @@ describe("the pages of the Site answer", () => {
     expect(within(container).getByRole("link", { name: "Open the Playoff Sim" }).getAttribute("href")).toBe("/sim/2026/");
   });
 
+  it("shows the sim with no Menu link only when the client has both the sim and the midseason packages", () => {
+    const keys = (packages: PackageName[]) => sitePages(items, menuLinks, siteLines, packages).map((page) => page.key);
+    expect(keys(clientValues.packages)).toContain("sim");
+    expect(keys(clientValues.packages.filter((name) => name !== "midseason"))).not.toContain("sim");
+    expect(keys(clientValues.packages.filter((name) => name !== "sim"))).not.toContain("sim");
+  });
+
+  it("shows the sim with its Menu link for a client with the sim package and no midseason package", () => {
+    const links = { ...menuLinks, sim: () => ({ label: "Playoff Sim", href: "/sim/2026/" }) };
+    const pages = sitePages(items, links, siteLines, clientValues.packages.filter((name) => name !== "midseason"));
+    expect(pages.map((page) => [page.key, page.href])).toContainEqual(["sim", "/sim/2026/"]);
+    expect(pages.map((page) => page.key)).not.toContain("midseason");
+  });
+
   it("drops the midseason report and the sim for a client with no midseason package", () => {
     const pages = sitePages(items, menuLinks, siteLines, clientValues.packages.filter((name) => name !== "midseason"));
     expect(pages.map((page) => page.key)).toEqual(["week", "rankings", "managers", "analyzer"]);
