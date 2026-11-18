@@ -2,7 +2,7 @@
 # Run "make help" to list the targets.
 
 .DEFAULT_GOAL := help
-.PHONY: help check check-fast check-scripts check-site check-pipeline check-api check-packages
+.PHONY: help check check-fast check-scripts check-site check-site-unit check-site-browser check-pipeline check-api check-packages
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
@@ -64,6 +64,14 @@ check-scripts: ## Run the full check of the root scripts
 
 check-site: ## Run the full check of the site
 	@echo "==> site: check"; $(site-check)
+
+# CI splits the full check of the site into two jobs that run at the same time. "make check-site" runs both halves in
+# sequence: the unit half first, then the browser half.
+check-site-unit: ## Run the unit half of the site check: the client build, typecheck, and all vitest files
+	@echo "==> site: check:fast"; pnpm --dir apps/site check:fast
+
+check-site-browser: ## Run the browser half of the site check: Playwright and the export of each client
+	@echo "==> site: check:browser"; pnpm --dir apps/site check:browser
 
 check-pipeline: ## Run the full check of the pipeline
 	@echo "==> pipeline: check"; $(pipeline-check)

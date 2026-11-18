@@ -20,7 +20,8 @@
     "evidence": "node scripts/evidence.mjs",
     "check:grade-bar": "CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build && playwright test --project=grade-bar",
     "check:open-card": "playwright test --project=open-card",
-    "check": "pnpm check:fast && pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
+    "check": "pnpm check:fast && pnpm check:browser",
+    "check:browser": "pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
     "check:fast": "CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED",
     "hook:install": "prek install"
   },
