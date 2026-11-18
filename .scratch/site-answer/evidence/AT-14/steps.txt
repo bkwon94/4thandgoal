@@ -1,0 +1,2 @@
+# The files of AT-14 come from the step "AT-14" of extra-evidence.mjs, a Playwright script, because no verb of the runner covers getComputedStyle.
+# The full text of the script, the static server, the build command, and the API command are in evidence/extra-evidence-script.txt.

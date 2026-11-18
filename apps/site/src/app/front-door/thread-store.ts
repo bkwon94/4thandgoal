@@ -13,13 +13,14 @@ export const THREAD_KEY = "cpc.thread";
    from the published week. A miss, a cap line, and a note keep their lines. A question in flight stays out,
    because they mean nothing after a reload. A trade Answer stays once it is whole, because a reread must cost nothing,
    and its steps in flight stay out. A free answer stays once it ends with its checked result, so a reload shows it
-   with no new stream and no cost. A personal Answer stays once it ends checked, for the same reason. */
+   with no new stream and no cost. A personal Answer stays once it ends checked, for the same reason. A Site answer
+   stays with its page key alone, so a reload builds its links from the Menu of the build and asks nothing. */
 export type ThreadEntry =
-  | Extract<ThreadItem, { kind: "topic" | "miss" | "cap" | "note" | "trade" }>
+  | Extract<ThreadItem, { kind: "topic" | "miss" | "cap" | "note" | "trade" | "site" }>
   | (Extract<ThreadItem, { kind: "free" }> & { result: NonNullable<Extract<ThreadItem, { kind: "free" }>["result"]> })
   | (Extract<ThreadItem, { kind: "personal" }> & { result: NonNullable<Extract<ThreadItem, { kind: "personal" }>["result"]> });
 
-const KEPT = new Set(["topic", "miss", "cap", "note"]);
+const KEPT = new Set(["topic", "miss", "cap", "note", "site"]);
 
 /* An entry that means something after a reload. A kept trade Answer must still read as one, so an old shape drops.
    A free answer stays only with its checked result. */

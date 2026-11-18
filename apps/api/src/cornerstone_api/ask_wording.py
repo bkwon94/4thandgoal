@@ -1,5 +1,5 @@
 """
-All the wording of the Jev route of the ask box: the 14 Topics, the data sources, the state, and the 8 typed questions.
+All the wording of the Jev route of the ask box: the 14 Topics, the data sources, the state, and the typed questions.
 The route in ask.py decides with code from the answers. Change a question here and run the live route eval (AT-17).
 """
 import re
@@ -95,6 +95,12 @@ ABUSE = "abuse"
 NAMES_TEAM = "names_team"
 REACTS_TO_ANSWER = "reacts_to_answer"
 TEAM = "team"
+ASKS_FOR_SITE = "asks_for_site"
+SITE_PAGE = "site_page"
+# The two options of the page Choice that name no one page. The site shows the list view for `all` and the none case
+# for `missing`, so one request tells the two apart (the spec of site-answer splits the `none` option of decision 01).
+ALL_PAGES = "all"
+MISSING_PAGE = "missing"
 
 NOULS = {
     FITS_TOPIC: NoulQuestion(
@@ -132,6 +138,24 @@ NOULS = {
 }
 
 
+# The wording of the site Noul, chosen in decision 01 of site-answer: it routed 21 of 22 site questions and kept 18 of 18 traps.
+SITE_NOUL = NoulQuestion(
+    instructions="Does `manager_question` ask for a page or tool of the site, by its name or by what it does?",
+    yes="The manager names a page or tool in `site_pages` as the thing they want, or asks where one is, which ones "
+        "the site has, or how to use one.",
+    no="The manager asks for a fact, a judgment, or advice about the league or its teams, or asks for something "
+       "unrelated to the site.")
+
+
+def site_page_choice(site_pages: dict[str, str]) -> ChoiceQuestion:
+    """The page Choice (decision 01 of site-answer) over the pages of the client, with the two options that name no one page."""
+    return ChoiceQuestion(
+        instructions="Which page in `site_pages` does the manager ask about in `manager_question`?",
+        options={**site_pages,
+                 ALL_PAGES: "No one page: the manager asks about the whole site, or which pages or tools it has.",
+                 MISSING_PAGE: "A page or tool that is not in `site_pages`."})
+
+
 def team_key(name: str) -> str:
     """The option key of a team in the team Choice: its name in lower case, with each run of other signs as one "_".
 
@@ -140,19 +164,32 @@ def team_key(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
 
 
-def route_questions(teams: list[str]) -> dict[str, NoulQuestion | ChoiceQuestion]:
-    """The 8 typed questions of one route request, over the team names of the league."""
+def route_questions(teams: list[str], site_pages: dict[str, str] | None = None
+                    ) -> dict[str, NoulQuestion | ChoiceQuestion]:
+    """The typed questions of one route request, over the team names of the league: 8 base questions. With the pages
+    of the client, the request also asks the site Noul and the page Choice, which makes 10."""
+    site: dict[str, NoulQuestion | ChoiceQuestion] = (
+        {} if site_pages is None else {ASKS_FOR_SITE: SITE_NOUL, SITE_PAGE: site_page_choice(site_pages)})
     return {
         TOPIC: ChoiceQuestion(instructions="Which Topic in `topics` gives what the manager asks for in "
                                            "`manager_question`?", options=dict(TOPICS)),
         **NOULS,
         TEAM: ChoiceQuestion(instructions="Which team in `teams_in_league` does `manager_question` refer to?",
                              options={team_key(name): name for name in teams}),
+        **site,
     }
 
 
-def route_state(question: str, teams: list[str], season: int, week: int) -> dict:
-    """The state of one route request: the question, the Topics, the facts about them, the teams, and the data of
-    `season`, whose latest week is `week`."""
-    return {"context": CONTEXT, "manager_question": question, "topics": topics(week),
-            "about_topics": about_topics(season, week), "teams_in_league": teams, "data_sources": data_sources(season)}
+def route_state(question: str, teams: list[str], season: int, week: int, site_pages: dict[str, str] | None = None
+                ) -> dict:
+    """The state of one route request: the question, the Topics, the facts about them, the teams, the data of
+    `season`, whose latest week is `week`, and the pages of the client with one line about each, when the site sends
+    them."""
+    state = {"context": CONTEXT, "manager_question": question, "topics": topics(week),
+             "about_topics": about_topics(season, week), "teams_in_league": teams, "data_sources": data_sources(season)}
+    return state if site_pages is None else {**state, "site_pages": site_pages}
+
+
+def site_page_line(label: str, blurb: str) -> str:
+    """The line of one page in `site_pages`: its label, then its blurb."""
+    return f"{label}: {blurb}"

@@ -1,0 +1,59 @@
+# A case-blind search of the code of the Site answer for each word. Run in the Spec worktree at cee7caf1, on 2026-11-18 20:44 UTC.
+# The files: each site and design code file that the spec changed (git diff --name-only main...HEAD, tests and READMEs left out):
+#   apps/site/scripts/client-build.mjs
+#   apps/site/src/app/_routes/analyzer/menu.ts
+#   apps/site/src/app/_routes/managers/menu.ts
+#   apps/site/src/app/_routes/midseason/menu.ts
+#   apps/site/src/app/_routes/rankings/menu.ts
+#   apps/site/src/app/_routes/sim/menu.ts
+#   apps/site/src/app/_routes/week/menu.ts
+#   apps/site/src/app/front-door/ask-api.ts
+#   apps/site/src/app/front-door/ask-thread.ts
+#   apps/site/src/app/front-door/chat-turns.ts
+#   apps/site/src/app/front-door/door-page.tsx
+#   apps/site/src/app/front-door/front-door.tsx
+#   apps/site/src/app/front-door/site-answer.tsx
+#   apps/site/src/app/front-door/thread-store.ts
+#   apps/site/src/app/site-pages.ts
+#   apps/site/src/lib/client-values.ts
+#   packages/design/site/ui/collapsible.tsx
+
+$ grep -n -i "Jev" <the files>
+exit: 1 (Jev)
+
+$ grep -n -i "Advisor" <the files>
+exit: 1 (Advisor)
+
+$ grep -n -i "Finder" <the files>
+apps/site/scripts/client-build.mjs:316:    finder: values.values?.analyzer?.finder ?? false,
+apps/site/src/lib/client-values.ts:21:  // The trade finder of the analyzer.
+apps/site/src/lib/client-values.ts:22:  finder: boolean;
+exit: 0 (Finder)
+
+$ grep -n -i "front door" <the files>
+apps/site/src/app/_routes/analyzer/menu.ts:11:/* The line of the page in the Site answer of the front door: a Tool, with its fixed blurb. Code writes it, never Claude. */
+apps/site/src/app/_routes/midseason/menu.ts:19:/* The line of the page in the Site answer of the front door: a page to read, with its fixed blurb. Code writes it, never Claude. */
+apps/site/src/app/_routes/managers/menu.ts:14:/* The line of the page in the Site answer of the front door: a page to read, with its fixed blurb. Code writes it, never Claude. */
+apps/site/src/app/_routes/sim/menu.ts:10:/* The line of the page in the Site answer of the front door: a Tool, with its fixed blurb. Code writes it, never Claude. */
+apps/site/scripts/client-build.mjs:200:/* The hidden route of the front door while the flag front_door of client.toml is off: / stays the home page, and the
+apps/site/scripts/client-build.mjs:201:   commissioner tests the front door on the live site at /ask/. No menu item and no link reach it, and its page has
+apps/site/scripts/client-build.mjs:202:   noindex. With the flag on, the front door is at /, so the build writes no /ask/ route. */
+apps/site/scripts/client-build.mjs:297:   With the front door on, the menu takes front_door_items when [menu] gives them. */
+apps/site/scripts/client-build.mjs:303:/* The flag front_door of client.toml. With none, the front door is off. */
+apps/site/scripts/client-build.mjs:370:/* The rule file of the Cloudflare Worker static assets. With the front door on, the old address /ask/ sends the visitor
+apps/site/src/app/_routes/week/menu.ts:15:/* The line of the page in the Site answer of the front door: a page to read, with its fixed blurb. Code writes it, never Claude. */
+apps/site/src/app/front-door/front-door.tsx:2: * The front door at /: the sheet that asks for Your team on the first visit, then the Thread with the Suggestions and
+apps/site/src/app/front-door/front-door.tsx:45:/* The greeting changes with the hour, so the front door reads as a person and not a page. */
+apps/site/src/app/front-door/front-door.tsx:277:    // Each action of the front door needs the passphrase, a league Topic too, so the first one asks for it in the modal
+apps/site/src/app/_routes/rankings/menu.ts:11:/* The line of the page in the Site answer of the front door: a page to read, with its fixed blurb. Code writes it, never Claude. */
+apps/site/src/lib/client-values.ts:23:  // The front door at /, from front_door of client.toml. Off, / is the home page and the front door sits at /ask/.
+apps/site/src/lib/client-values.ts:26:  // With the front door on, it takes front_door_items when [menu] gives them.
+apps/site/src/lib/client-values.ts:44:/* The line of a page in the Site answer of the front door: its fixed blurb of one line, and whether it is a Tool. A
+apps/site/src/app/front-door/door-page.tsx:2: * The page of the front door: at / with the flag front_door on, else at the hidden /ask/. It asks for Your team, then
+apps/site/src/app/front-door/door-page.tsx:15:/* `pageHref` is the path of the page. The front door is Home, so the hidden /ask/ passes the Home path too, and the Home row shows the check. */
+apps/site/src/app/front-door/ask-thread.ts:118:   retry. The front door takes a wrong passphrase to the passphrase modal before it calls this. */
+apps/site/src/app/site-pages.ts:3: * and the sim. Each page takes the blurb and the Tool mark of its package, and the front door sends the list with each ask.
+exit: 0 (front door)
+
+$ grep -n -i "rival" <the files>
+exit: 1 (rival)
