@@ -21,12 +21,13 @@ The ideas come from "How the Claude Code team thinks about verification" (https:
 - Hypothesis property tests cover the grades, in the pipeline only. `decisions/01-grill-destination-and-seams.md`.
 - `AGENTS.md` holds the rule for a flaky test, and a rule test fails on each retry setting. `decisions/01-grill-destination-and-seams.md`.
 - CI runs `check:grade-bar`. It needs no live API, because the test answers each API call with `route.fulfill`. `decisions/01-grill-destination-and-seams.md`.
+- Codex finds `verify` through one tracked link, `.agents/skills/verify -> ../../.claude/skills/verify`. `decisions/02-research-codex-repo-skill.md`.
+- `flows.json` in the skill picks the flows by the globs of the diff. The evidence runner drives them, with a new verb `expect`. A failed step, error, 4xx or 5xx, or overlap fails the run. iPhone WebKit and desktop sizes; real Claude calls once. A red smoke run stops before the Judge; the quick Judge gets a third question. `decisions/04-grill-what-smoke-run-drives.md`.
 
 ## NOT YET SPECIFIED
 
-- Does Codex find a skill at `.claude/skills/verify/`, as Claude Code does? `decisions/02-research-codex-repo-skill.md`.
 - Does a rebuild with `--no-fetch` give the published files byte for byte, and how long does it take? `decisions/03-research-rebuild-matches-published.md`.
-- What does a smoke run drive for a given diff, and does it reuse the evidence runner? `decisions/04-grill-what-smoke-run-drives.md`.
+- Which flows does the first flow list hold, with which globs? `decisions/08-spec-first-flow-list.md`.
 - What shape has the list of approved diffs of the rebuild? `decisions/05-spec-approved-diff-list.md`.
 - Which pure functions get property tests, and which properties? `decisions/06-spec-property-test-targets.md`.
 - How does the re-run job find the quick file, its commands, and its commits? `decisions/07-spec-red-green-rerun-job.md`.

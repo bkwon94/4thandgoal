@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,6 @@ The `verify` skill lives at `.claude/skills/verify/`. Claude Code finds a skill 
 
 ## Decision
 
-None yet.
+Research on 2026-11-18. Notes: `decisions/02-research-codex-repo-skill.notes.md`.
+
+Codex reads a repo skill only from `.agents/skills/<name>/SKILL.md`. It never reads `.claude/skills/`. The repo already shares the 4ag skills with tracked symlinks, `.agents/skills/4ag-* -> ../../.claude/plugin/skills/*` (`7c4c956a`). So `verify` lives at `.claude/skills/verify/`, with one tracked link `.agents/skills/verify -> ../../.claude/skills/verify`. Both harnesses follow a symlinked skill folder.

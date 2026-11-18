@@ -1268,3 +1268,7 @@ _Avoid_: Smoke test, verify step, sanity check, manual test
 **Flaky test**:
 A test that passes and fails on the same commit with no change. It gets a fix of its cause, or a delete with the reason written down, never a retry.
 _Avoid_: Flake (alone), intermittent test, unstable test
+
+**Flow list**:
+The list of user flows that a smoke run can drive. Each flow names the code it covers, so a diff picks its flows.
+_Avoid_: Feature map, test plan, scenario list
