@@ -150,7 +150,7 @@ Observation: `output.txt` shows the command, "1 passed", and the source of the t
 App: site
 Then: The none case shows, with the rows of the pages of CPC.
 Files: `evidence/AT-21/output.txt`
-Observation: `output.txt` shows the command and "1 passed" for the test that keeps a Site answer with the key `waiver`, renders the Thread, and asserts the none lead and the six cpc rows, with no new ask request.
+Observation: `output.txt` shows the command, "1 passed" with exit 0 at `ca24c17a`, and the source of the test and its helpers. The test puts a kept Thread entry `{ kind: "site", page: "waiver" }` in `cpc.thread`, renders the page, and waits for the lead "The site has no page for that. Here is what it has." It then asserts that the "Pages" list holds the six links of the cpc pages, `/2026/week-08/` to `/midseason/2026/#sim`, that no "Open the" link shows, and that no ask request goes out.
 
 ## AT-22: Out of scope: the honest miss does not change
 

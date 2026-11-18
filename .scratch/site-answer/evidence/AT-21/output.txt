@@ -1,30 +1,56 @@
 $ cd apps/site && CLIENT=cpc node scripts/client-build.mjs && pnpm exec vitest run src/app/page-site.test.tsx -t "AT-21" --reporter=verbose
-# Run in the Spec worktree at cee7caf1, on 2026-11-18 20:55 UTC.
+# Run in the Spec worktree at ca24c17a, on 2026-11-18 22:25 UTC.
+
 
  RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/site-answer/apps/site
 
- ↓ src/app/page-site.test.tsx > the page list of each ask > sends the pages of the cpc Menu with no Home, plus the midseason report and the sim
- ↓ src/app/page-site.test.tsx > the page card of a site question > shows the card of the Trade Analyzer for 'where is the trade analyzer' (AT-1)
- ↓ src/app/page-site.test.tsx > the page card of a site question > shows the card of the Playoff Sim for 'how do I use the sim' (AT-4)
- ↓ src/app/page-site.test.tsx > the page card of a site question > shows the card of the Week 8 for 'take me to the weekly reports' (AT-5)
- ↓ src/app/page-site.test.tsx > the page card of a site question > shows the card of the Midseason Report for 'midseason report?' (AT-6)
- ↓ src/app/page-site.test.tsx > the page card of a site question > shows the card of the Trade Analyzer for 'wheres the trade thing' (AT-7)
- ↓ src/app/page-site.test.tsx > the page card of a site question > stays on / with the card in view, and only the Open link leads to the page (AT-10)
- ↓ src/app/page-site.test.tsx > the page card of a site question > holds the other 5 pages of cpc in the fold 'All pages · 5', each with its blurb and its link (AT-11)
- ↓ src/app/page-site.test.tsx > the page card of a site question > names no internal part in the card or the fold (AT-17, card half)
- ↓ src/app/page-site.test.tsx > the page card of a site question > shows the same card after a reload, with no new ask request (AT-12)
- ↓ src/app/page-site.test.tsx > the honest miss next to the Site answer > gives 'what's the weather' the honest miss with no page link and no Site answer (AT-22, site half)
- ↓ src/app/page-site.test.tsx > the list view of a site question > shows 2 Tools and 4 pages to read for 'what tools are there' (AT-2)
- ↓ src/app/page-site.test.tsx > the list view of a site question > shows 2 Tools and 4 pages to read for 'what can this site do' (AT-3)
- ✓ src/app/page-site.test.tsx > the none case of a site question > shows the none rows of every cpc page for a kept key that the client lacks (AT-21) 166ms
- ↓ src/app/page-site.test.tsx > the none case of a site question > shows the open rows of the 6 pages of cpc for 'is there a waiver page' (AT-8)
- ↓ src/app/page-site.test.tsx > the none case of a site question > shows the none case for a page from the API that is no page key
- ↓ src/app/page-site.test.tsx > the none case of a site question > names no internal part in the list view or the none case (AT-17, list half)
- ↓ src/app/page-site.test.tsx > the none case of a site question > keeps the list view after a reload, with the same links and no new ask request (AT-12)
+ ✓ src/app/page-site.test.tsx > the none case of a site question > shows the none rows of every cpc page for a kept key that the client lacks (AT-21) 161ms
 
  Test Files  1 passed (1)
       Tests  1 passed | 17 skipped (18)
-   Start at  15:55:50
-   Duration  1.04s (import 37%, environment 34%, tests 17%, transform 12%)
+   Start at  17:25:14
+   Duration  1.40s (environment 39%, import 39%, tests 12%, transform 10%)
 
 exit: 0
+
+# The source of the test, from apps/site/src/app/page-site.test.tsx at ca24c17a.
+# The helpers that the test calls (lines 16-19 and 36-58):
+const PASSPHRASE = "cornerstone-test";
+const fetchStub = vi.fn();
+const replies: Response[] = [];
+const askCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/ask"));
+async function articleWith(question: string, text: string) {
+  await waitFor(() => expect(screen.getByRole("article", { name: question }).textContent).toContain(text));
+  return screen.getByRole("article", { name: question });
+}
+
+beforeEach(() => {
+  fetchStub.mockImplementation(async (url: string) =>
+    String(url).endsWith("/ask") ? (replies.shift() ?? new Response("", { status: 500 })) : new Response("", { status: 404 }),
+  );
+  vi.stubGlobal("fetch", fetchStub);
+  localStorage.setItem("cpc.your-team", "3");
+  localStorage.setItem("cpc.passphrase", PASSPHRASE);
+});
+
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+  fetchStub.mockReset();
+  replies.length = 0;
+  vi.unstubAllGlobals();
+});
+
+/* The pages of the cpc Menu with no Home, then the midseason report and the sim, each with its label and its blurb. */
+
+# The test (lines 196-205):
+describe("the none case of a site question", () => {
+  it("shows the none rows of every cpc page for a kept key that the client lacks (AT-21)", async () => {
+    localStorage.setItem("cpc.thread", JSON.stringify({ "3": { week: 8, entries: [{ kind: "site", question: "where are the waivers", page: "waiver" }] } }));
+    render(<HomePage />);
+    const card = await articleWith("where are the waivers", "The site has no page for that. Here is what it has.");
+    const rows = within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link");
+    expect(rows.map((row) => row.getAttribute("href"))).toEqual(["/2026/week-08/", "/rankings/", "/2026/managers/", "/analyze/", "/midseason/2026/", "/midseason/2026/#sim"]);
+    expect(within(card).queryByRole("link", { name: /^Open the/ })).toBeNull();
+    expect(askCalls()).toHaveLength(0);
+  });
