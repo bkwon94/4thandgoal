@@ -1,6 +1,6 @@
 /**
- * The Zod schema of the season sim file that the Python build writes beside the week folders.
- * The pipeline owns the shape in sim/published.py, and this schema follows it (ADRs 0011 and 0013).
+ * The Zod schemas of the sim files that the Python build writes: the season file and the week file with its pages.
+ * The pipeline owns the shapes in sim/published.py and sim/page.py, and these schemas follow them (ADRs 0011 and 0013).
  */
 import { z } from "zod";
 
@@ -57,4 +57,82 @@ export const simSchema = z.object({
   teams: z.record(rosterKey, teamSimSchema),
   sample: z.array(simRunSchema),
   names: z.record(rosterKey, z.string()),
+});
+
+/* A result of a game in a league with a median game sets the median too. A null odds number means no run had it. */
+const gameSchema = z.enum(["win", "loss"]);
+const medianSchema = z.enum(["above", "below"]).nullable();
+const oddsSchema = z.number().int().nullable();
+
+/* One count of more wins in the weeks left, with its playoff odds and its chance in percent of all runs. */
+export const ladderStepSchema = z.object({
+  more_wins: z.number().int(),
+  playoff: oddsSchema,
+  chance: z.number(),
+  // True when the chance times the effective runs is under 400 runs, so the page shows "about".
+  about: z.boolean(),
+});
+
+/* One result of Your team in one week, with the odds after it. */
+export const weekResultSchema = z.object({
+  game: gameSchema,
+  median: medianSchema,
+  wins_added: z.number().int(),
+  playoff: oddsSchema,
+  chance: z.number(),
+  about: z.boolean(),
+});
+
+/* The five reasons of a root-for row (PRD, the page block). */
+export const rootForReasonSchema = z.enum([
+  "2 wins ahead of you",
+  "1 win ahead of you",
+  "Level with you",
+  "1 win behind you",
+  "In the race for the last spot",
+]);
+
+/* One result of another game that lifts the odds of Your team after a loss, to `playoff` in whole points. */
+export const rootForSchema = z.object({
+  winner: z.number(),
+  loser: z.number(),
+  reason: rootForReasonSchema,
+  playoff: z.number().int(),
+  about: z.boolean(),
+});
+
+/* One regular week left for Your team: four results with a median game, two with none, and up to 3 root-for rows. */
+export const pageWeekSchema = z.object({
+  week: z.number(),
+  opponent: z.number(),
+  results: z.array(weekResultSchema),
+  loss_playoff: oddsSchema,
+  loss_about: z.boolean(),
+  root_for: z.array(rootForSchema).max(3),
+});
+
+/* The page block of one team. sim.json and the What-if answer share it, so the page reads one shape. */
+export const simPageSchema = z.object({
+  you: z.number(),
+  playoff: z.number().int(),
+  status: z.enum(["in", "out", "open"]),
+  // The real wins and losses at the start of the sim. The median game counts in both.
+  record: z.tuple([z.number(), z.number()]),
+  weeks_left: z.number().int(),
+  wins_left: z.number().int(),
+  // The smallest count of more wins with playoff odds of 90 or more, which the sentence names.
+  need: z.number().int().nullable(),
+  sentence: z.string(),
+  ladder: z.array(ladderStepSchema),
+  weeks: z.array(pageWeekSchema),
+});
+
+/* The week file, week-NN/sim.json: the season shape with the run weights, a page for each team, and the league fact. */
+export const weekSimSchema = simSchema.extend({
+  effective_runs: z.number(),
+  // The weight of each stored run, in the order of `sample`. The replay picks a run in proportion to its weight.
+  sample_weights: z.array(z.number()),
+  pages: z.record(rosterKey, simPageSchema),
+  // The league fact of the Sim tile for a manager with no team set. Null with no regular week left.
+  fact: z.string().nullable(),
 });

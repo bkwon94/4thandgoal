@@ -11,7 +11,7 @@ import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
 import { midseasonSchema } from "@cpc/midseason/schema/midseason";
 import { rankingsSchema } from "@cpc/rankings/schema/rankings";
-import { simSchema } from "@cpc/sim/schema/sim";
+import { simSchema, weekSimSchema } from "@cpc/sim/schema/sim";
 import { waiverBoardSchema } from "@cpc/waiver/schema";
 import { weekPageSchema } from "@cpc/week/schema/week";
 import { topicsFileSchema } from "./topics-schema";
@@ -42,8 +42,13 @@ function shapeOffenses(schema: ZodType, file: string): Offense[] {
   }));
 }
 
+/* A sim.json in a week folder is the week file. The one beside the week folders is the season file. */
+const WEEK_FOLDER = /[/\\]week-\d+[/\\][^/\\]+$/;
+const inWeek = (file: string) => WEEK_FOLDER.test(file);
+const inSeason = (file: string) => !WEEK_FOLDER.test(file);
+
 /* A count of zero would pass with no file read, so the three files that always exist must be found. */
-describe.each([
+describe.each<[string, ZodType, number, ((file: string) => boolean)?]>([
   ["page.json", weekPageSchema, 1],
   // No waiver.json is published yet. The waiver page tests cover the waiver schema through the component fixture.
   ["waiver.json", waiverBoardSchema, 0],
@@ -56,10 +61,13 @@ describe.each([
   ["midseason.json", midseasonSchema, 0],
   // The midseason publish puts sim.json live beside midseason.json, so the least count is zero too. The sim tests and
   // the floor of the fixture client cover its schema through the package fixture.
-  ["sim.json", simSchema, 0],
-])("%s under public/", (name, schema, least) => {
+  ["sim.json", simSchema, 0, inSeason],
+  // The weekly build writes week-NN/sim.json from week 10 on, with a page for each team. Each publish after the
+  // build puts it live, so the least count is zero until then. The sim tests cover its schema through the fixture.
+  ["sim.json", weekSimSchema, 0, inWeek],
+])("%s under public/", (name, schema, least, where = () => true) => {
   it("parses with its schema", () => {
-    const files = filesNamed(name);
+    const files = filesNamed(name).filter(where);
     expect(files.length).toBeGreaterThanOrEqual(least);
     const found = files.flatMap((file) => shapeOffenses(schema, file));
     if (found.length > 0) throw new Error(report(found));

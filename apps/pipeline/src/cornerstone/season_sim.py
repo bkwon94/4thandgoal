@@ -1,6 +1,6 @@
 """
 The app side of the season sim, the one odds engine: it runs the sim package on the inputs of a week. It gives the
-weekly odds to the week build through the chapter port, and it hands the sim of a saved week to the midseason report.
+weekly odds to the week build through the chapter port, the week sim file to the build, and the sim to the report.
 """
 from pathlib import Path
 from typing import NamedTuple
@@ -80,6 +80,21 @@ def week_sim(
     return _sim(inputs, season, week, client, runs)
 
 
+def week_sim_with_pages(
+    season: int, week: int, history: History, *, client: Client, runs: int = SIM_RUNS,
+) -> SimResult | None:
+    """The sim of the week file after `week`: the sim of `week_sim` with the page block of each team. None when the
+    week gives no odds inputs.
+
+    It reads the bye weeks from the NFL schedule, as `week_sim` and the midseason sim do, so each sim file reads one
+    source. The nflverse extract of the build reads its bye weeks from the same cached schedule file.
+    """
+    inputs = week_inputs(season, week, history, client=client)
+    if inputs is None:
+        return None
+    return _sim(inputs, season, week, client, runs, pages=sorted(inputs.records))
+
+
 def sim_of_week(
     week: Week, history: History | None, *, client: Client, bye_weeks: dict[str, int] | None,
     runs: int = SIM_RUNS,
@@ -89,11 +104,13 @@ def sim_of_week(
     return _sim(inputs, week.season, week.week, client, runs)
 
 
-def _sim(inputs: SimInputs | None, season: int, week: int, client: Client, runs: int) -> SimResult | None:
+def _sim(
+    inputs: SimInputs | None, season: int, week: int, client: Client, runs: int, pages: list[int] | None = None,
+) -> SimResult | None:
     if inputs is None:
         return None
     return season_sim(inputs.scores, inputs.records, inputs.remaining, season=season, week=week,
-                      settings=client.settings, projected=inputs.projected, runs=runs)
+                      settings=client.settings, projected=inputs.projected, runs=runs, pages=pages or ())
 
 
 class SimOdds:

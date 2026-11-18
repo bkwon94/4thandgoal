@@ -6,6 +6,7 @@ Each client and each build reads the fixture provider, so no test calls Sleeper 
 import gzip
 import hashlib
 import json
+import re
 import shutil
 import sys
 from functools import partial
@@ -17,7 +18,7 @@ from cpc import ROOT, cpc_client
 from fakes import FakeWriter, FixtureProvider, no_news
 from test_midseason import CPC_PROVIDER, prime_nflverse
 
-from cornerstone.pipeline import make_bundle, run_midseason
+from cornerstone.pipeline import make_bundle, run_midseason, run_week_sim
 from cornerstone.season_sim import schedule_file, week_inputs, week_sim
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
@@ -260,3 +261,134 @@ def test_the_level_mean_of_each_team_is_its_season_average_shrunk_with_5_weeks_a
         expected = (sum(own) + 5 * league) / (len(own) + 5)
         print(f"AT-13: roster {rid} expected {expected:.2f} sim {sim.parameters.level_mean[rid]}")
         assert sim.parameters.level_mean[rid] == pytest.approx(expected, abs=0.005)
+
+
+def _week_10_client(slug: str, at: Path) -> Client:
+    """The real client `slug` with links to its saved week 10 data and history at `at`, and the NFL schedule of the
+    fixtures in the cache, so the sim step calls no network. No test writes under clients/."""
+    data = client_dir(ROOT, slug) / "data" / "2026"
+    provider = FixtureProvider(raw_dir=data / "week-10" / "raw", history_root=data / "history")
+    real = load_client(ROOT, slug, 2026, provider.fetch_settings, VALUE_MODELS)
+    client = real.model_copy(update={"folder": at, "nfl_dir": at / "data"})
+    week_dir(client.folder, 2026, 10).mkdir(parents=True)
+    for name in ("raw", "facts.json"):
+        (week_dir(client.folder, 2026, 10) / name).symlink_to(data / "week-10" / name)
+    history_root(client.folder, 2026).symlink_to(data / "history")
+    cache = nflverse_cache_dir(client.nfl_dir)
+    cache.mkdir(parents=True)
+    shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
+    return client
+
+
+@pytest.fixture(scope="module")
+def week_10_files(tmp_path_factory) -> dict[str, dict]:
+    """The sim step of the weekly build of 2026 week 10 for CPC and NorCal, read back from each week-10/sim.json."""
+    files = {}
+    for slug in ("cpc", "norcal"):
+        client = _week_10_client(slug, tmp_path_factory.mktemp(slug))
+        out = run_week_sim(2026, 10, client=client)
+        assert out == build_dir(client.folder) / "2026" / "week-10" / "sim.json"
+        files[slug] = json.loads(out.read_text(encoding="utf-8"))
+    return files
+
+
+def _page(files: dict[str, dict], slug: str, name: str) -> dict:
+    sim = files[slug]
+    rid = next(rid for rid, team in sim["names"].items() if team == name)
+    return sim["pages"][rid]
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_sim_step_writes_week_10_sim_json_with_a_page_for_each_team(week_10_files, cpc_week_10):
+    # AT-1, and the odds of the file are the odds of the build (AT-2).
+    sim = week_10_files["cpc"]
+    counts = (sim["runs"], len(sim["teams"]), len(sim["sample"]), len(sim["sample_weights"]), len(sim["pages"]))
+    print(f"AT-1: keys {sorted(sim)} counts {counts}")
+    assert counts == (10_000, 12, 200, 200, 12)
+    assert (sim["season"], sim["week"], sim["effective_runs"]) == (2026, 10, 10_000)
+    assert sim["weeks"] == list(range(11, 18)) and sim["parameters"]["median_game"] is True
+    _, bundle, _, _ = cpc_week_10
+    assert {int(rid): team["playoff"] for rid, team in sim["teams"].items()} == {
+        rid: team.playoff for rid, team in bundle.odds.teams.items()}
+    assert re.fullmatch(r"\d+ managers fight for the last (spot|\d+ spots)|The playoff field is all but set", sim["fact"])
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_ladder_of_bo_girds_names_the_smallest_count_with_odds_of_90_or_more(week_10_files):
+    # AT-6. Four weeks left with the median game give 0 to 8 more wins.
+    page = _page(week_10_files, "cpc", "Bo Girds")
+    print(f"AT-6: {page['sentence']} {[(s['more_wins'], s['playoff'], s['chance']) for s in page['ladder']]}")
+    assert page["record"] == [11, 9] and page["weeks_left"] == 4 and page["wins_left"] == 8
+    assert [step["more_wins"] for step in page["ladder"]] == list(range(9))
+    assert sum(step["chance"] for step in page["ladder"]) == pytest.approx(100, abs=0.5)
+    need = min(step["more_wins"] for step in page["ladder"] if (step["playoff"] or 0) >= 90)
+    assert page["need"] == need
+    assert page["sentence"] == f"Win {need} of the 8 left and you're in."
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_week_11_of_bo_girds_in_cpc_has_four_results_against_maye_dforce_b_with_u(week_10_files):
+    # AT-7.
+    sim = week_10_files["cpc"]
+    week = _page(week_10_files, "cpc", "Bo Girds")["weeks"][0]
+    print(f"AT-7: {week}")
+    assert week["week"] == 11 and sim["names"][str(week["opponent"])] == "Maye d'force B with U"
+    assert [(r["game"], r["median"], r["wins_added"]) for r in week["results"]] == [
+        ("win", "above", 2), ("win", "below", 1), ("loss", "above", 1), ("loss", "below", 0)]
+    assert all(r["playoff"] is not None and r["chance"] > 0 for r in week["results"])
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_week_11_of_bo_girds_in_norcal_has_two_results_against_the_mean_machine(week_10_files):
+    # AT-8. NorCal has no median game.
+    sim = week_10_files["norcal"]
+    page = _page(week_10_files, "norcal", "Bo Girds")
+    week = page["weeks"][0]
+    print(f"AT-8: {week}")
+    assert page["record"] == [5, 5] and page["wins_left"] == 4
+    assert week["week"] == 11 and sim["names"][str(week["opponent"])] == "The Mean Machine"
+    assert [(r["game"], r["median"], r["wins_added"]) for r in week["results"]] == [("win", None, 1), ("loss", None, 0)]
+
+
+REASONS = {"2 wins ahead of you", "1 win ahead of you", "Level with you", "1 win behind you",
+           "In the race for the last spot"}
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_root_for_rows_of_each_page_follow_the_rules_of_the_spec(week_10_files):
+    # AT-9, on Bo Girds and on each other page of both clients.
+    week = _page(week_10_files, "cpc", "Bo Girds")["weeks"][0]
+    print(f"AT-9: loss {week['loss_playoff']} rows "
+          f"{[(r['winner'], r['loser'], r['reason'], r['playoff'], r['playoff'] - week['loss_playoff']) for r in week['root_for']]}")
+    assert week["root_for"]
+    for sim in week_10_files.values():
+        records = {int(rid): record for rid, record in sim["records"].items()}
+        place = {rid: n for n, rid in enumerate(sorted(records, key=lambda r: (-records[r][0], -records[r][2], r)), 1)}
+        for page in sim["pages"].values():
+            for week in page["weeks"]:
+                rows = week["root_for"]
+                assert len(rows) <= 3
+                lifts = [row["playoff"] - week["loss_playoff"] for row in rows]
+                assert all(isinstance(row["playoff"], int) and lift >= 1 for row, lift in zip(rows, lifts, strict=True))
+                assert [(-lift, place[row["loser"]]) for row, lift in zip(rows, lifts, strict=True)] == sorted(
+                    (-lift, place[row["loser"]]) for row, lift in zip(rows, lifts, strict=True))
+                assert {row["reason"] for row in rows} <= REASONS
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_each_result_under_400_effective_runs_has_the_about_flag_and_no_other(week_10_files):
+    # AT-10.
+    sim = week_10_files["cpc"]
+    flagged = plain = 0
+    for page in sim["pages"].values():
+        for week in page["weeks"]:
+            for r in week["results"]:
+                assert r["about"] == (r["chance"] / 100 * sim["effective_runs"] < 400)
+                flagged += r["about"]
+                plain += not r["about"]
+    # At 10,000 runs a result is about under 4 percent. No result of week 10 is that rare, but a step of the ladder is.
+    steps = [step for page in sim["pages"].values() for step in page["ladder"]]
+    assert all(step["about"] == (step["chance"] / 100 * sim["effective_runs"] < 400) for step in steps)
+    print(f"AT-10: {flagged} results with about, {plain} with none; {sum(s['about'] for s in steps)} ladder steps "
+          f"with about")
+    assert plain == 12 * 4 * 4 and any(step["about"] for step in steps)

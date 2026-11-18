@@ -19,3 +19,12 @@ SCORE_DECIMALS = 1
 # The lowest playoff odds, in percent, that show the most likely seed.
 # Below it the seed rests on fewer than half the runs.
 SEED_SHOW_AT = 50
+# A number of the page block shows "about" when its chance times the effective runs is under this count (decision 07).
+ABOUT_RUNS = 400
+# The playoff odds, in percent, at which the sentence of the ladder says "you're in".
+IN_ODDS = 90
+# The lowest playoff odds, in percent, of a team that the league fact counts in the race for the last spots.
+RACE_FLOOR = 10
+# The most root-for rows of one week, and the least lift in whole points that keeps a row (PRD, the page block).
+ROOT_FOR_ROWS = 3
+ROOT_FOR_LIFT = 1

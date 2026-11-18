@@ -18,7 +18,7 @@ from pydantic import TypeAdapter
 from cornerstone.midseason_chapters import ChaptersStopped, InjuryPorts, player_cards, report_chapters
 from cornerstone.render import render_week
 from cornerstone.season_schedule import remaining_schedule
-from cornerstone.season_sim import week_sim
+from cornerstone.season_sim import week_sim, week_sim_with_pages
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
@@ -117,7 +117,7 @@ from midseason.trades import trade_facts, trade_prose_facts
 from midseason.values import MidseasonValues
 from midseason.waivers import waiver_facts, waiver_prose_facts
 from rankings.published import render_rankings
-from sim.published import sim_file, write_sim
+from sim.published import sim_file, week_sim_file, write_sim, write_week_sim
 from sim.tunables import SIM_RUNS
 from waiver.board import waiver_board
 from waiver.price import bid_history
@@ -470,6 +470,10 @@ def run_build(
     site_dir = build_dir(client.folder)
     page = render_week(bundle, blurbs, site_dir, fetch_bytes)
     _write_season_files(client, season, week, raw_path, raw, bundle, blurbs)
+    # The sim step reads the saved history of the week, so it comes after the save of the season files. A week with
+    # no odds gives the sim no inputs, so it writes no sim file.
+    if bundle.odds is not None:
+        _write_week_sim_or_warn(season, week, {rid: team.name for rid, team in bundle.data.teams.items()}, client)
     # The Topic Answers read the page and both season files, so they come last.
     write_topics_or_warn(site_dir, season, week, _league_week(client, week, raw))
     return page
@@ -528,6 +532,39 @@ def _write_season_files(client: Client, season: int, week: int, raw_path: Path, 
                         _season_inputs(season, week, raw, history, client), client)
     except (OSError, ValueError, KeyError) as err:
         log.warning("managers.json not written for week %d: %s", week, err)
+
+
+def run_week_sim(
+    season: int, week: int, *, client: Client, names: dict[int, str] | None = None, sim_runs: int = SIM_RUNS,
+) -> Path | None:
+    """The sim step of the weekly build: write week-NN/sim.json of `week` into the build folder, with the page block
+    of each team and the league fact of the Sim tile. It reads the saved history through `week`, and the team names
+    from the saved facts of the week when `names` is None. It calls no writer and no network, and it writes nothing
+    to published/. None when the week gives the sim no inputs."""
+    history = History(week=week, weeks=load_saved_weeks(history_root(client.folder, season), week,
+                                                        client.settings.points_key))
+    # A gap would drop a week from each record, so the sim waits for a complete history.
+    if not history.complete():
+        raise BuildStopped(HISTORY_GAP.format(week=week))
+    if names is None:
+        facts = week_dir(client.folder, season, week) / "facts.json"
+        if not facts.exists():
+            raise BuildStopped(NO_WEEK_FACTS.format(week=week, slug=client.slug))
+        names = {rid: team.name for rid, team in read_bundle(facts).data.teams.items()}
+    sim = week_sim_with_pages(season, week, history, client=client, runs=sim_runs)
+    return write_week_sim(week_sim_file(sim, names), build_dir(client.folder)) if sim is not None else None
+
+
+def _write_week_sim_or_warn(season: int, week: int, names: dict[int, str], client: Client) -> None:
+    """Write week-NN/sim.json for a client that takes the sim package. A failure only logs a warning, because the
+    page is built by now and a sim file never blocks it."""
+    if "sim" not in client.values.packages:
+        return
+    try:
+        if run_week_sim(season, week, client=client, names=names) is None:
+            log.info("week %d gives the sim no inputs: no week sim.json", week)
+    except (BuildStopped, OSError, ValueError, KeyError) as err:
+        log.warning("week sim.json not written for week %d: %s", week, err)
 
 
 def _takes_managers(client: Client) -> bool:

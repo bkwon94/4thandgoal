@@ -101,6 +101,8 @@ LAYER_OF: dict[str, str] = {
     "sim": "model",
     "sim.values": "model",
     "sim.tunables": "model",
+    "sim.percent": "model",
+    "sim.page": "model",
     "midseason": "model",
     "midseason.values": "model",
     # provider

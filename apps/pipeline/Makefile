@@ -14,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings midseason midseason-publish egg-undo push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings sim midseason midseason-publish egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -73,6 +73,10 @@ page-json: need-client need-week ## Write page.json for a saved week (CLIENT and
 
 rankings: need-client need-week ## Write rankings.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone rankings --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
+# It reads the saved data of the week and calls no writer and no network. It writes only to the build folder.
+sim: need-client need-week ## Write week-NN/sim.json for a saved week, the sim step of the build (CLIENT and WEEK required)
+	$(RUN) cornerstone sim --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 # The report is one edited moment per season, so only this target builds it, never the weekly build.
 # It writes only to the build folder of the season, never to published/.

@@ -3,6 +3,7 @@
 ## Knows
 
 - The Zod schema of `sim.json`, the season sim file, in `sim.ts`.
+- The Zod schema of `week-NN/sim.json`, the week sim file, and of its page block, in `sim.ts`.
 - The types of the sim file in `sim-types.ts`. Each type comes from its schema.
 - Only the parameters of the draw that the replay reads: the playoff spots, the byes, the median game, and the reseed.
 

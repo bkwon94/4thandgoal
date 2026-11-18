@@ -15,6 +15,8 @@ from pydantic import BaseModel
 from league.league_settings import LeagueSettings
 from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
+from sim.page import RunRecord, SimPage, league_fact, team_page
+from sim.percent import shown, tenths
 from sim.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SAMPLE_RUNS, SCORE_DECIMALS, SEED_SHOW_AT, SIM_RUNS
 
 Pair = tuple[int, int]
@@ -121,6 +123,13 @@ class SimResult(BaseModel):
     # The swing of each head-to-head game of the next regular week, in pair order. Empty with no regular week left.
     swings: list[Swing]
     sample: list[SimRun]
+    # The weight of each stored run, in the order of `sample`. Each is 1 with no set result. The replay picks a stored
+    # run with a chance in proportion to its weight, so it follows the set results.
+    sample_weights: list[float] = []
+    # The page block of each team that the call asks for, by roster ID.
+    pages: dict[int, SimPage] = {}
+    # The league fact of the Sim tile. None with no regular week left.
+    fact: str | None = None
 
 
 def season_sim(
@@ -136,6 +145,7 @@ def season_sim(
     sample: int = SAMPLE_RUNS,
     you: int | None = None,
     set_results: Sequence[SetResult] = (),
+    pages: Sequence[int] = (),
 ) -> SimResult:
     """The sim of the rest of the season after week `week`, through the playoff bracket.
 
@@ -151,6 +161,8 @@ def season_sim(
     `set_results` holds the What-if of Your team `you`, at most one result per week. Each run draws the held scores
     cut to the side of each set result, so each run holds them, and the run gets the chance of the cut as a weight
     (decision 07). Each count of the result is a sum of weights. The level of a team has no injury term.
+
+    `pages` holds the roster IDs whose page block the result gives, each by a split of the runs of this one sim.
     """
     spots, bye_count, median_game = settings.playoff_spots, settings.bye_count, settings.median_game
     rosters = sorted(records)
@@ -179,6 +191,9 @@ def season_sim(
     seeds: dict[int, defaultdict[int, float]] = {rid: defaultdict(float) for rid in rosters}
     wins_count: dict[int, defaultdict[int, float]] = {rid: defaultdict(float) for rid in rosters}
     stored: list[SimRun] = []
+    stored_weights: list[float] = []
+    # The page block reads each run again, so the sim keeps a record of each run only when a page is asked for.
+    log: list[RunRecord] = []
     next_pairs = list(remaining[regular[0]]) if regular else []
     # Per next-week pair and per winner, three sums: the runs, the runs side a made it, the runs side b made it.
     halves = {pair: {"a": [0.0, 0.0, 0.0], "b": [0.0, 0.0, 0.0]} for pair in next_pairs}
@@ -203,7 +218,8 @@ def season_sim(
             mean = {rid: level[rid] + shifts[rid][column] for rid in (you, opponent)}
             return _hold_bracket(rng, drawn, column, you, opponent, mean, spread, result, place)
 
-        wins, points = _regular(records, [remaining[w] for w in regular], drawn, median_game)
+        week_log: list[tuple[frozenset[int], frozenset[int]]] | None = [] if pages else None
+        wins, points = _regular(records, [remaining[w] for w in regular], drawn, median_game, week_log)
         table = sorted(rosters, key=lambda rid: (-wins[rid], -points[rid], rid))
         place = {rid: n for n, rid in enumerate(table[:spots], start=1)}
         rounds, factor = _bracket(table[:spots], drawn, len(regular), settings.reseed, hold if held_bracket else None)
@@ -222,6 +238,8 @@ def season_sim(
             for rid in rounds[-1][0]:
                 finals[rid] += weight
         titles[champion] += weight
+        if week_log is not None:
+            log.append(RunRecord(weight=weight, wins=wins, made=frozenset(place), weeks=week_log))
         for a, b in next_pairs:
             # An exact tie is neither a win nor a loss, so the run lands in neither half.
             if drawn[a][0] == drawn[b][0]:
@@ -233,6 +251,7 @@ def season_sim(
         if index < sample:
             stored.append(SimRun(scores=_played(drawn, rounds, len(regular)), table=table, bracket=rounds,
                                  champion=champion))
+            stored_weights.append(weight)
     if not total:
         raise ValueError("the set results hold in no run")
 
@@ -244,20 +263,25 @@ def season_sim(
         status[rid] = (roster_status(rid, dict(records), weeks_left, spots, median_game=median_game) if weeks_left
                        else "in" if made[rid] else "out")
         bye_status = roster_status(rid, dict(records), weeks_left, bye_count, median_game=median_game)
-        playoff = _shown(status[rid], made[rid], total, weeks_left)
-        bye = 0 if status[rid] == "out" else min(_shown(bye_status, byes[rid], total, weeks_left), playoff)
+        playoff = shown(status[rid], made[rid], total, weeks_left)
+        bye = 0 if status[rid] == "out" else min(shown(bye_status, byes[rid], total, weeks_left), playoff)
         # The most common seed; a tie between two seeds goes to the better seed.
         modal = min(seeds[rid], key=lambda n, rid=rid: (-seeds[rid][n], n)) if seeds[rid] else None
         teams[rid] = TeamSim(
             roster_id=rid, playoff=playoff, bye=bye, seed=modal if playoff >= SEED_SHOW_AT else None,
             status=status[rid],
-            final=_tenths(finals[rid], total), title=_tenths(titles[rid], total),
-            seeds={n: _tenths(count, total) for n, count in sorted(seeds[rid].items())},
-            final_wins={n: _tenths(count, total) for n, count in sorted(wins_count[rid].items())},
+            final=tenths(finals[rid], total), title=tenths(titles[rid], total),
+            seeds={n: tenths(count, total) for n, count in sorted(seeds[rid].items())},
+            final_wins={n: tenths(count, total) for n, count in sorted(wins_count[rid].items())},
             mean_wins=round(sum(n * count for n, count in wins_count[rid].items()) / total, 2),
         )
+    effective_runs = round(total * total / squares)
+    blocks = {rid: team_page(rid, log, playoff=teams[rid].playoff, status=teams[rid].status, records=records,
+                             schedule={w: list(remaining[w]) for w in regular}, median_game=median_game,
+                             effective_runs=effective_runs)
+              for rid in sorted(set(pages))}
     return SimResult(
-        season=season, week=week, runs=runs, effective_runs=round(total * total / squares), random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,
+        season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,
         records=dict(records), schedule={w: list(remaining[w]) for w in regular},
         parameters=SimParameters(
             league_mean=round(model.league_mean, 2), spread=round(spread, 2),
@@ -268,7 +292,8 @@ def season_sim(
             bye_count=bye_count, median_game=median_game, reseed=settings.reseed,
         ),
         teams=teams, swings=[_swing(a, b, halves[(a, b)], status, teams, weeks_left) for a, b in next_pairs],
-        sample=stored,
+        sample=stored, sample_weights=stored_weights, pages=blocks,
+        fact=league_fact({rid: t.playoff for rid, t in teams.items()}, spots, weeks_left),
     )
 
 
@@ -428,7 +453,7 @@ def _swing(
         count = runs_and_made[0]
         if not count:
             return teams[rid].playoff
-        return _shown(status[rid], runs_and_made[index], count, weeks_left)
+        return shown(status[rid], runs_and_made[index], count, weeks_left)
 
     return Swing(a=a, b=b, a_win=side(a, half["a"], 1), a_loss=side(a, half["b"], 1), b_win=side(b, half["b"], 2),
                  b_loss=side(b, half["a"], 2))
@@ -436,11 +461,12 @@ def _swing(
 
 def _regular(
     records: Mapping[int, tuple[int, int, float]], order: list[list[Pair]], drawn: dict[int, list[float]],
-    median_game: bool,
+    median_game: bool, log: list[tuple[frozenset[int], frozenset[int]]] | None = None,
 ) -> tuple[dict[int, int], dict[int, float]]:
     """The wins and the points for of each roster at the end of the regular season of one run.
 
     The same rule as the weekly odds: an exact tie gives no win, and the median game counts a win above the line.
+    With `log`, each week appends its winners of the head-to-head games and its rosters above the median.
     """
     wins = {rid: r[0] for rid, r in records.items()}
     points = {rid: r[2] for rid, r in records.items()}
@@ -456,6 +482,10 @@ def _regular(
             if median is not None and score > median:
                 wins[rid] += 1
             points[rid] += score
+        if log is not None:
+            won = frozenset(a if week[a] > week[b] else b for a, b in pairs if week[a] != week[b])
+            above = frozenset(rid for rid, score in week.items() if median is not None and score > median)
+            log.append((won, above))
     return wins, points
 
 
@@ -535,25 +565,3 @@ def _winner(pair: Pair, drawn: dict[int, list[float]], column: int, place: dict[
 def _loser(pair: Pair, drawn: dict[int, list[float]], column: int, place: dict[int, int]) -> int:
     a, b = pair
     return b if _winner(pair, drawn, column, place) == a else a
-
-
-def _shown(status: OddsStatus, count: float, runs: float, weeks_left: int) -> int:
-    """The odds as the weekly odds show them: 100 for `in`, 0 for `out`, else the whole percent clamped to 1 to 99.
-    With no regular week left, the table is final, so the whole percent stands with no clamp."""
-    if not weeks_left:
-        return _percent(count, runs)
-    if status == "in":
-        return 100
-    if status == "out":
-        return 0
-    return min(99, max(1, _percent(count, runs)))
-
-
-def _percent(part: float, total: float) -> int:
-    """`part` over `total` as a whole percent, rounded half up. A whole count gives the exact integer result."""
-    return int((200 * part + total) // (2 * total))
-
-
-def _tenths(part: float, total: float) -> float:
-    """`part` over `total` as a percent with one decimal."""
-    return round(100 * part / total, 1)
