@@ -1,7 +1,7 @@
 # The Check on main fails after the analyzer-stage merge
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-analyzer-stage-check`.
 Source: the handoff file `.handoff/analyzer-stage-deploy.md`.
 Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -50,3 +50,9 @@ Green: at `084a8126`, the diff of the config:
 Test verdict: none
 
 ## Comments
+
+Close, 2026-11-17:
+Closes with the squash merge of the PR of `bug-analyzer-stage-check`. Commits: `3c1ee85d`, `ec304519`, `084a8126`. Date: 2026-11-17.
+`make check-fast BASE=main` passed with 1593 Vitest tests; the loop of item 1 went red at `3c1ee85d`, then green at `ec304519`.
+The e2e test "wait dips" now runs under an 8x CPU slowdown for good; the local run covered cpc only, and CI runs both clients.
+Read at least 12 files: AGENTS.md, apps/site/AGENTS.md, .handoff/analyzer-stage-deploy.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, GLOSSARY.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, apps/site/e2e/analyzer-stage.spec.ts, packages/design/site/parts/mesh-math.ts, .scratch/analyzer-stage/evidence/AT-5/output.txt, .github/workflows/check.yml.
