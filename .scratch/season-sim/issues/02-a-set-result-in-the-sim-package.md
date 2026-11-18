@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-11, AT-12, and AT-13. De
 
 **Blocked by:** 01.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] On the inputs of `cpc` 2026 week 10, Bo Girds set to lose week 11 and miss the median gives playoff odds within 1.5 points of an exact rejection reference (AT-11).
 - [x] Two runs with the same set results give equal output, byte for byte (AT-12).
