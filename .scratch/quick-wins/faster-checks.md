@@ -49,17 +49,17 @@ Test verdict: pending
 
 Done condition: `apps/site/playwright.config.ts` runs 4 workers when `CI` is set and 2 workers when it is not, and its comment names the 4 cores of the runner.
 Method: text only
-Red: pending
-Green: pending
-Test verdict: pending
+Red: none, text only.
+Green: at `872c7a15`, the diff of the text. `apps/site/playwright.config.ts` sets `workers: process.env.CI ? 4 : 2`, and its comment names the four cores of the CI runner. The CI run of the PR shows the time of the browser half.
+Test verdict: none
 
 ### 3. CI runs the site check as two jobs at the same time
 
 Done condition: `.github/workflows/check.yml` runs the unit check of the site and the browser check of the site as two jobs at the same time, the gate job needs both, and `make check-site` still runs the same commands in sequence.
 Method: text only
-Red: pending
-Green: pending
-Test verdict: pending
+Red: none, text only.
+Green: at `b1d75aa5`, the diff of the text. `check.yml` has the jobs `site-unit` and `site-browser`, and the gate needs both. `site-unit` runs `make check-site-unit` with no browser. `site-browser` runs `make check-site-browser`. In `apps/site/package.json`, `check` is `pnpm check:fast && pnpm check:browser`, so `make check-site` runs both halves in sequence. Only `verdict` is a required check, so the new job names break no rule.
+Test verdict: none
 
 ### 4. The egg hunt test uses fake timers
 
