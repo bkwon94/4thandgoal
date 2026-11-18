@@ -49,7 +49,7 @@ Test verdict: PASS
 
 Done condition: `apps/site/playwright.config.ts` runs 4 workers when `CI` is set and 2 workers when it is not, and each floor test that measures wall time runs in a pass of its own with 1 worker, after the parallel pass.
 Method: tdd
-Red: at `7e2ff231`, `cd apps/site && CLIENT=cpc node timing-loop.mjs` (the loop counts the `@timing` tests in `--project=floor` and `--project=floor-timing` of `playwright test --list --reporter=json`; it ran from the session scratch folder, so it is no file of the repo)
+Red: at `7e2ff231`, `cd apps/site && CLIENT=cpc node /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/460d96c4-3301-4786-ad2b-b627d22fad45/scratchpad/timing-loop.mjs`. The loop is a file of the session scratch folder, not of the repo. It counts the `@timing` tests in `--project=floor` and `--project=floor-timing` of `playwright test --list --reporter=json`.
 
 ```text
 project floor-timing: Error: Project(s) "floor-timing" not found. Available projects: "rules", "floor", "grade-bar", "evidence", "open-card", "eggs"
@@ -58,7 +58,7 @@ floor-timing: missing project tests, 0 tagged @timing
 FAIL: the floor pass must hold no @timing test, and floor-timing must hold only them
 ```
 
-Green: at `56ae5166`, the same command
+Green: at `56ae5166`, `cd apps/site && CLIENT=cpc node /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/460d96c4-3301-4786-ad2b-b627d22fad45/scratchpad/timing-loop.mjs`
 
 ```text
 floor: 200 tests, 0 tagged @timing
