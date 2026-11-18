@@ -6,7 +6,7 @@ Map: `.scratch/trusted-green/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,10 @@ The differential rebuild runs `build --no-fetch` for the latest published week o
 
 ## Decision
 
-None yet.
+Research on 2026-11-18. Notes: `decisions/03-research-rebuild-matches-published.notes.md`.
+
+A full `build --no-fetch` is no oracle. It needs `ANTHROPIC_API_KEY` and `TYPESAFE_API_KEY`, takes about 12.5 min per client, and never matches: Claude text, live nflverse data, Sleeper news, and the clock all change. The nflverse cache is gitignored, so CI lacks the input of the facts, and the facts alone differ in about 500 values per client.
+
+`page-json` re-renders the saved facts and blurbs. It matches `published/2026/week-10/` byte for byte for cpc and norcal, in about 2 s, with no secret and no network. Only the latest week is a fair oracle, because later code changes moved weeks 6 to 8.
+
+Item 10 of decision 01 changes. Ticket 09 decides what the differential rebuild diffs.
