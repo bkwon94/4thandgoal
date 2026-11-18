@@ -1,7 +1,7 @@
 # Faster checks
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-faster-checks`.
 Source: the session of 2026-11-18.
 Boundary: holds. 5 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -134,3 +134,5 @@ A later run can follow up on these notes:
 Read 16 files: AGENTS.md, Makefile, .github/workflows/check.yml, .pre-commit-config.yaml, scripts/changed_apps.py, scripts/test_changed_apps.py, scripts/queue.py, scripts/test_queue.py, apps/site/package.json, apps/site/playwright.config.ts, apps/site/vitest.config.ts, apps/site/scripts/build-each-client.mjs, apps/site/e2e/floor-rules.spec.ts, packages/eggs/site/hunt/egg-hunt.test.tsx, apps/pipeline/Makefile, apps/api/Makefile.
 
 The CI run 44393438643 of PR #68 failed one floor test: `e2e/analyzer-stage.spec.ts:300` measured 116 ms against a limit of 100 ms under 4 workers. Brian chose a timing pass of 1 worker for the wall-time tests, so item 2 gets a test and a Judge. The close comment above names the commits before this fix.
+The fix of item 2 is the commit `56ae5166`: 13 wall-time floor tests carry the tag `@timing` and run in the pass `floor-timing` with 1 worker, after the parallel pass. A fresh quick Judge gave item 2 PASS, recorded in `3147907c`.
+The real git hook broke item 1: the hook sets `GIT_DIR` with no `GIT_WORK_TREE`, so `vitest --changed` in `apps/site` saw every file as changed and ran all 160 files. The fix round commit `ef75f8f7` runs the site fast check without the git env of the hook, and a fresh quick Judge gave item 1 PASS on the new loop. After the fix, the hook of a commit of only a `.scratch/` file took 15 s.
