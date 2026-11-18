@@ -88,6 +88,44 @@ class TheAppSelection(unittest.TestCase):
         self.assertEqual(self.select("GLOSSARY.md"), ["site", "pipeline", "api"])
 
 
+class TheRootFolderSelection(unittest.TestCase):
+    """A change only under .scratch/ or docs/ selects the members whose tests read the changed path, and no more."""
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        workspace(self.root)
+
+    def test_a_tracker_note_selects_the_site_and_the_pipeline_that_read_the_tracker(self):
+        files = [".scratch/quick-wins/faster-checks.md"]
+        self.assertEqual(select_apps(self.root, files), ["site", "pipeline"])
+        self.assertEqual(select_packages(self.root, files), [])
+
+    def test_the_state_file_selects_the_site_and_the_pipeline_that_read_it(self):
+        self.assertEqual(select_apps(self.root, ["docs/agents/state.md"]), ["site", "pipeline"])
+
+    def test_an_adr_selects_no_member_because_no_test_reads_it(self):
+        self.assertEqual(select_apps(self.root, ["docs/adr/0033-quick-runs.md"]), [])
+        self.assertEqual(select_packages(self.root, ["docs/adr/0033-quick-runs.md"]), [])
+
+    def test_a_rules_file_under_a_root_folder_selects_the_members_of_the_rules_file_rule(self):
+        for path in ("docs/agents/AGENTS.md", ".scratch/CLAUDE.md"):
+            with self.subTest(path=path):
+                self.assertEqual(select_apps(self.root, [path]), ["site", "pipeline"])
+
+    def test_a_root_folder_file_with_another_root_file_selects_every_app_and_package(self):
+        files = [".scratch/quick-wins/faster-checks.md", "Makefile"]
+        self.assertEqual(select_apps(self.root, files), ["site", "pipeline", "api"])
+        self.assertEqual(select_packages(self.root, files), ["facts", "league", "waiver"])
+
+    def test_a_root_folder_file_with_an_app_file_selects_the_readers_and_the_app(self):
+        self.assertEqual(select_apps(self.root, ["docs/adr/0033-quick-runs.md", "apps/api/src/app.py"]), ["api"])
+        self.assertEqual(select_apps(self.root, [".scratch/a.md", "apps/api/src/app.py"]), ["site", "pipeline", "api"])
+
+    def test_the_repo_tracker_selects_the_site_and_the_pipeline_only(self):
+        self.assertEqual(select_apps(REPO, [".scratch/quick-wins/faster-checks.md"]), ["site", "pipeline"])
+        self.assertEqual(select_packages(REPO, [".scratch/quick-wins/faster-checks.md"]), [])
+
+
 class ThePackageSelection(unittest.TestCase):
     def setUp(self):
         self.root = Path(tempfile.mkdtemp())
@@ -214,6 +252,82 @@ class TheStagedCheck(unittest.TestCase):
             output = subprocess.check_output([*shlex.split(entry), "-n"], cwd=root, env=env, text=True)
 
             self.assertEqual(re.findall(r'echo "==> (.+?): check-fast"', output), ["scripts", "pipeline", "api"])
+
+
+class TheSiteTestSelection(unittest.TestCase):
+    def site_command(self, *options: str) -> str:
+        """The planned command of the site fast check, read from a dry run of the Make command in a real repo."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            git_vars = subprocess.check_output(["git", "rev-parse", "--local-env-vars"], text=True).splitlines()
+            # A hook run of Make passes STAGED=1 to its children, in MAKEFLAGS and in the environment. This dry run sets
+            # its own options.
+            skipped = [*git_vars, "MAKEFLAGS", "MFLAGS", "MAKELEVEL", "STAGED", "BASE"]
+            env = {key: value for key, value in os.environ.items() if key not in skipped}
+
+            def git(*args: str) -> None:
+                subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.com",
+                                "-c", "commit.gpgSign=false", "-c", "core.hooksPath=/dev/null", *args],
+                               cwd=root, env=env, check=True, capture_output=True)
+
+            workspace(root)
+            (root / "scripts").mkdir()
+            shutil.copyfile(REPO / "Makefile", root / "Makefile")
+            shutil.copyfile(HERE / "changed_apps.py", root / "scripts/changed_apps.py")
+            git("init", "--quiet", "--template=")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "Create the test workspace")
+            write(root, "apps/site/page.ts", "// Changed site file\n")
+            git("add", "apps/site/page.ts")
+            if "BASE=HEAD" in options:
+                git("commit", "--quiet", "-m", "Change the site")
+                options = ("BASE=HEAD~1",)
+            output = subprocess.check_output(["make", "-n", "check-fast", *options], cwd=root, env=env, text=True)
+            return next(line for line in output.splitlines() if "check:fast" in line)
+
+    def test_a_staged_run_of_the_site_tests_only_the_changed_files(self):
+        self.assertIn("--changed", self.site_command("STAGED=1"))
+
+    def test_a_base_run_of_the_site_tests_only_the_files_changed_since_the_base(self):
+        self.assertIn("--changed HEAD~1", self.site_command("BASE=HEAD"))
+
+    def test_a_run_with_no_selection_tests_every_site_file(self):
+        self.assertNotIn("--changed", self.site_command())
+
+    def test_a_hook_run_in_a_work_tree_with_git_dir_set_selects_only_the_changed_files(self):
+        """Run the real prefix of the site command with GIT_DIR set as a git hook sets it, with git as the probe.
+
+        Vitest finds the changed files with `git diff --name-only HEAD` from apps/site. A hook sets GIT_DIR and no
+        GIT_WORK_TREE, so git takes apps/site as the top of the work tree and sees every file as changed.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skipped = subprocess.check_output(["git", "rev-parse", "--local-env-vars"], text=True).splitlines()
+            env = {key: value for key, value in os.environ.items() if key not in skipped}
+
+            def git(*args: str) -> str:
+                return subprocess.check_output(["git", "-c", "user.name=Test", "-c", "user.email=test@example.com",
+                                                "-c", "commit.gpgSign=false", "-c", "core.hooksPath=/dev/null", *args],
+                                               cwd=root, env=env, text=True)
+
+            workspace(root)
+            (root / "scripts").mkdir()
+            shutil.copyfile(REPO / "Makefile", root / "Makefile")
+            shutil.copyfile(HERE / "changed_apps.py", root / "scripts/changed_apps.py")
+            git("init", "--quiet", "--template=")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "Create the test workspace")
+            write(root, "apps/site/page.ts", "// Changed site file\n")
+            git("add", "apps/site/page.ts")
+            make_env = {key: value for key, value in env.items() if key not in ("MAKEFLAGS", "MFLAGS", "MAKELEVEL")}
+            plan = subprocess.check_output(["make", "-n", "check-fast", "STAGED=1"], cwd=root, env=make_env, text=True)
+            line = next(line for line in plan.splitlines() if "check:fast" in line)
+            command = line[line.index("VITEST_CHANGED="):]
+            probe = command.replace("pnpm --dir apps/site check:fast", "git diff --name-only HEAD")
+            self.assertNotEqual(command, probe)
+            hook_env = {**env, "GIT_DIR": str(root / ".git"), "GIT_INDEX_FILE": str(root / ".git/index")}
+            output = subprocess.check_output(["sh", "-c", probe], cwd=root / "apps/site", env=hook_env, text=True)
+            self.assertEqual(output.split(), ["apps/site/page.ts"])
 
 
 if __name__ == "__main__":

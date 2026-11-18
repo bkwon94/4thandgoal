@@ -2,11 +2,16 @@
 # Run "make help" to list the targets.
 
 .DEFAULT_GOAL := help
-.PHONY: help check check-fast check-scripts check-site check-pipeline check-api check-packages
+.PHONY: help check check-fast check-scripts check-site check-site-unit check-site-browser check-pipeline check-api check-packages
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
-site-check-fast = pnpm --dir apps/site check:fast
+# A selected run of the site tests only the vitest files that the changed files reach through imports. VITEST_CHANGED is
+# empty without a selection, so the site still runs every vitest file. "make check-site" never sets it, so CI runs all.
+# A git hook sets GIT_DIR and GIT_INDEX_FILE and no GIT_WORK_TREE, so git takes the folder of the command as the top of the
+# work tree. Vitest runs git from apps/site, would see every file as changed, and would select all of them. The env -u
+# calls make git find the work tree from the folder, as it does outside a hook.
+site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 api-check = make -C apps/api check
@@ -21,7 +26,8 @@ package-check = $(if $(wildcard packages/$(1)/python),make -C packages/$(1)/pyth
 scripts-check = python3 -B -m unittest discover -s scripts -p 'test_*.py'
 
 # With BASE set, only the apps and the packages that a change since the merge base selects run: each changed member,
-# and each member that needs it. A change outside apps/ and packages/, such as a root file, selects every one.
+# and each member that needs it. A change outside apps/ and packages/, such as a root file, selects every one,
+# except a change under .scratch/ or docs/, which selects only the members whose tests read it.
 # The hook sets STAGED=1 to use the commit index. Without either option, run every member. The site runs first.
 # See scripts/changed_apps.py for the shared rules.
 ALL_APPS = site pipeline api
@@ -35,6 +41,7 @@ else
 CHANGED = $(if $(BASE),$(shell python3 -B scripts/changed_apps.py $(BASE)))
 endif
 APPS = $(if $(SELECTION),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
+VITEST_CHANGED = $(if $(filter 1,$(STAGED)),--changed,$(if $(BASE),--changed $(BASE)))
 PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
@@ -61,6 +68,14 @@ check-scripts: ## Run the full check of the root scripts
 
 check-site: ## Run the full check of the site
 	@echo "==> site: check"; $(site-check)
+
+# CI splits the full check of the site into two jobs that run at the same time. "make check-site" runs both halves in
+# sequence: the unit half first, then the browser half.
+check-site-unit: ## Run the unit half of the site check: the client build, typecheck, and all vitest files
+	@echo "==> site: check:fast"; pnpm --dir apps/site check:fast
+
+check-site-browser: ## Run the browser half of the site check: Playwright and the export of each client
+	@echo "==> site: check:browser"; pnpm --dir apps/site check:browser
 
 check-pipeline: ## Run the full check of the pipeline
 	@echo "==> pipeline: check"; $(pipeline-check)

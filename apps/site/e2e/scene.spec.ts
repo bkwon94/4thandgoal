@@ -210,7 +210,7 @@ test.describe(`the scene of the week page of ${CLIENT}, at rest`, () => {
 test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
   test.use({ reducedMotion: "no-preference" });
 
-  test("settles in about 1.5 s, and is not in the chart at 0.4 s (AT-16)", async ({ page }) => {
+  test("settles in about 1.5 s, and is not in the chart at 0.4 s (AT-16)", { tag: "@timing" }, async ({ page }) => {
     await page.setViewportSize(PHONE);
     // The page records the first time of each state of the canvas, from the first load on.
     await page.addInitScript(() => {

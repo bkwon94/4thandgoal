@@ -38,7 +38,38 @@ jobs:
       - name: Run the check of the root scripts
         run: make check-scripts
 
-  site:
+  # The site check runs as two jobs at the same time, because the browser half alone takes most of the time.
+  # The unit half needs no browser. "make check-site" runs both halves in sequence.
+  site-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      # The pnpm version comes from the packageManager field of the site package.json.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: apps/site/package.json
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      # One install at the root fills the whole pnpm workspace from the root lock file.
+      - name: Install the site dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run the unit half of the site check
+        run: make check-site-unit
+
+  site-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -93,8 +124,8 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm --dir apps/site exec playwright install-deps chromium webkit
 
-      - name: Run the check of the site
-        run: make check-site
+      - name: Run the browser half of the site check
+        run: make check-site-browser
 
   pipeline:
     runs-on: ubuntu-latest
@@ -173,7 +204,7 @@ jobs:
   # A skipped gate counts as a pass on a PR, so "if: always()" keeps the gate from a skip.
   check:
     if: always()
-    needs: [scripts, site, pipeline, api, packages]
+    needs: [scripts, site-unit, site-browser, pipeline, api, packages]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
