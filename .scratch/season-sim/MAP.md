@@ -26,11 +26,11 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 - The live sim needs no passphrase. A rate cap per visitor stops abuse. Brian, Q15.
 - Each pick runs the sim at once. A new pick cancels the call before it. Brian, Q16.
 - The spec takes the CPU cost on Fly with no cache. Brian, Q17.
+- The weekly build writes `week-NN/sim.json`, and the page reads it first and calls the API only for a What-if with a pick. The sim replaces `rankings/odds.py` in full, swings too, at 10,000 runs. The past odds stay. `decisions/02-grill-the-weekly-build.md`.
 
 ## NOT YET SPECIFIED
 
 - How does a pick fix the winner in the draw, and how fast is a live sim on Fly? How well do the Sleeper projections zero a long injury? `decisions/01-research-pick-draw-speed.md`.
-- Where does each week's `sim.json` live, and how do the rankings odds switch to the sim? `decisions/02-grill-the-weekly-build.md`.
 - How live are the inputs of the What-if, and does a season-ending injury lower the level of a team? `decisions/03-grill-live-inputs-injuries.md`.
 - What does the sim page look like, with Your team, the 3 games, the picks, and the replay? `decisions/04-prototype-the-sim-page.md`.
 - What does the Announcement look like? `decisions/05-prototype-the-announcement.md`.
