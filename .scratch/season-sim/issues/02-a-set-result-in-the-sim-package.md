@@ -10,9 +10,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-11, AT-12, and AT-13. De
 
 **Status:** ready-for-agent
 
-- [ ] On the inputs of `cpc` 2026 week 10, Bo Girds set to lose week 11 and miss the median gives playoff odds within 1.5 points of an exact rejection reference (AT-11).
-- [ ] Two runs with the same set results give equal output, byte for byte (AT-12).
-- [ ] The level mean of each team is its season average shrunk with 5 weeks of weight, with no injury term (AT-13).
-- [ ] A set result in a league with no median game and a set bracket game each have a test.
-- [ ] The sim returns `effective_runs`, and a run with no set result has `effective_runs` equal to `runs`.
-- [ ] `make check-fast` passes.
+- [x] On the inputs of `cpc` 2026 week 10, Bo Girds set to lose week 11 and miss the median gives playoff odds within 1.5 points of an exact rejection reference (AT-11).
+- [x] Two runs with the same set results give equal output, byte for byte (AT-12).
+- [x] The level mean of each team is its season average shrunk with 5 weeks of weight, with no injury term (AT-13).
+- [x] A set result in a league with no median game and a set bracket game each have a test.
+- [x] The sim returns `effective_runs`, and a run with no set result has `effective_runs` equal to `runs`.
+- [x] `make check-fast` passes.

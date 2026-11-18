@@ -3,6 +3,7 @@ The app side of the season sim, the one odds engine: it runs the sim package on 
 weekly odds to the week build through the chapter port, and it hands the sim of a saved week to the midseason report.
 """
 from pathlib import Path
+from typing import NamedTuple
 
 from league.client import Client
 from league.models import Chapter, Fact, History, OddsResult, Week
@@ -29,30 +30,34 @@ def schedule_file(nfl: Path, season: int) -> Path | None:
     return download(SCHEDULES_URL, path)
 
 
-def week_sim(
-    season: int, week: int, history: History, *, client: Client, runs: int = SIM_RUNS,
-) -> SimResult | None:
-    """The sim of the rest of the season after `week`, from the saved raw data of the week and the saved history.
+class SimInputs(NamedTuple):
+    """The inputs of the season sim after one week, in the order of the arguments of `season_sim`."""
+    scores: dict[int, list[float]]
+    records: dict[int, tuple[int, int, float]]
+    remaining: dict[int, list[tuple[int, int]]]
+    projected: dict[int, dict[int, float]]
 
-    The scores and the remaining pairs come from odds_inputs of the weekly odds. The projected totals run through
-    the last bracket week, with the bye weeks of the NFL schedule. None when the week gives no odds inputs.
-    The sim draws `runs` seasons. The real build keeps the default of the sim tunables.
+
+def week_inputs(season: int, week: int, history: History, *, client: Client) -> SimInputs | None:
+    """The inputs of the sim after `week`, from the saved raw data of the week and the saved history.
+
+    The bye weeks come from the NFL schedule. None when the week gives no odds inputs.
     """
     raw = load_raw(raw_dir(client.folder, season, week))
     parsed = parse_week(raw, week=week, team_count=client.settings.team_count, points_key=client.settings.points_key)
     path = schedule_file(client.nfl_dir, season)
     schedules = read_schedules(path, season) if path is not None else None
     bye_weeks = {team: s.bye_week for team, s in schedules.items() if s.bye_week is not None} if schedules else None
-    return sim_of_week(parsed, history, client=client, bye_weeks=bye_weeks, runs=runs)
+    return inputs_of_week(parsed, history, client=client, bye_weeks=bye_weeks)
 
 
-def sim_of_week(
+def inputs_of_week(
     week: Week, history: History | None, *, client: Client, bye_weeks: dict[str, int] | None,
-    runs: int = SIM_RUNS,
-) -> SimResult | None:
-    """The sim of the rest of the season after the parsed `week`. None when the week gives no odds inputs.
+) -> SimInputs | None:
+    """The inputs of the sim after the parsed `week`. None when the week gives no odds inputs.
 
-    `bye_weeks` holds the bye week of each NFL team, so a bye gives no cover in the projected totals.
+    The scores and the remaining pairs come from odds_inputs of the weekly odds. The projected totals run through
+    the last bracket week. `bye_weeks` holds the bye week of each NFL team, so a bye gives no cover in them.
     """
     inputs = odds_inputs(week, history, client)
     if inputs is None or history is None:
@@ -60,8 +65,35 @@ def sim_of_week(
     scores, remaining = inputs
     projected = projected_totals(week, client, bye_weeks, through=client.settings.last_season_week)
     records = season_records(history, week.week, median_game=client.settings.median_game)
-    return season_sim(scores, records, remaining, season=week.season, week=week.week, settings=client.settings,
-                      projected=projected, runs=runs)
+    return SimInputs(scores, records, remaining, projected)
+
+
+def week_sim(
+    season: int, week: int, history: History, *, client: Client, runs: int = SIM_RUNS,
+) -> SimResult | None:
+    """The sim of the rest of the season after `week`, from the saved raw data of the week and the saved history.
+
+    None when the week gives no odds inputs. The sim draws `runs` seasons. The real build keeps the default of the
+    sim tunables.
+    """
+    inputs = week_inputs(season, week, history, client=client)
+    return _sim(inputs, season, week, client, runs)
+
+
+def sim_of_week(
+    week: Week, history: History | None, *, client: Client, bye_weeks: dict[str, int] | None,
+    runs: int = SIM_RUNS,
+) -> SimResult | None:
+    """The sim of the rest of the season after the parsed `week`. None when the week gives no odds inputs."""
+    inputs = inputs_of_week(week, history, client=client, bye_weeks=bye_weeks)
+    return _sim(inputs, week.season, week.week, client, runs)
+
+
+def _sim(inputs: SimInputs | None, season: int, week: int, client: Client, runs: int) -> SimResult | None:
+    if inputs is None:
+        return None
+    return season_sim(inputs.scores, inputs.records, inputs.remaining, season=season, week=week,
+                      settings=client.settings, projected=inputs.projected, runs=runs)
 
 
 class SimOdds:

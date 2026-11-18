@@ -4,8 +4,10 @@ saved CPC and NorCal data of 2026 week 8. The rules of the sim run on small leag
 Each client and each build reads the fixture provider, so no test calls Sleeper (ADR 0015).
 """
 import gzip
+import hashlib
 import json
 import shutil
+import sys
 from functools import partial
 from pathlib import Path
 
@@ -16,7 +18,7 @@ from fakes import FakeWriter, FixtureProvider, no_news
 from test_midseason import CPC_PROVIDER, prime_nflverse
 
 from cornerstone.pipeline import make_bundle, run_midseason
-from cornerstone.season_sim import schedule_file, week_sim
+from cornerstone.season_sim import schedule_file, week_inputs, week_sim
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
 from league.client import Client, load_client
@@ -25,7 +27,12 @@ from league.models import History
 from league.nflverse import SCHEDULES_URL, cache_path
 from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
 from rankings.published import render_rankings
-from sim.season import weekly_odds
+from sim.season import SetResult, season_sim, weekly_odds
+from sim.tunables import LEVEL_SHRINK_WEEKS
+
+# The rejection reference of a What-if lives with the tests of the sim package, which own the method.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "packages" / "sim" / "python" / "tests"))
+from rejection import rejection_odds
 
 # The nflverse schedule of 2026, the same games as the real cache, which git ignores.
 GAMES = Path(__file__).parent / "fixtures" / "nflverse" / "games.csv"
@@ -202,3 +209,54 @@ def test_rankings_json_takes_the_week_10_odds_of_the_sim_and_keeps_the_odds_of_w
     assert {w: after[w] for w in range(1, 10)} == {w: before[w] for w in range(1, 10)}
     assert {rid: row["playoff"] for rid, row in after[10].items()} == {rid: t.playoff for rid, t in sim.teams.items()}
     assert {rid: row["bye"] for rid, row in after[10].items()} == {rid: t.bye for rid, t in sim.teams.items()}
+
+
+# Bo Girds, the What-if team of the acceptance tests.
+BO_GIRDS = 6
+
+
+def _week_10_what_if(cpc_week_10, held: list[SetResult]):
+    client, _, history, _ = cpc_week_10
+    inputs = week_inputs(2026, 10, history, client=client)
+    assert inputs is not None
+    sim = season_sim(inputs.scores, inputs.records, inputs.remaining, season=2026, week=10, settings=client.settings,
+                     projected=inputs.projected, you=BO_GIRDS, set_results=held)
+    return client, inputs, sim
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_a_set_loss_below_the_median_agrees_with_an_exact_rejection_reference(cpc_week_10):
+    # AT-11. The reference draws plain runs of the same model and keeps the runs where Bo Girds loses week 11 and
+    # misses the median. At about 9,000 effective runs and 30,000 kept runs the sample error of the gap is 0.6 points.
+    held = [SetResult(week=11, game="loss", median="below")]
+    client, inputs, sim = _week_10_what_if(cpc_week_10, held)
+    reference, _, kept = rejection_odds(inputs.scores, inputs.records, inputs.remaining, client.settings, BO_GIRDS,
+                                        held, runs=60_000, seed=11, projected=inputs.projected)
+    weighted = sim.teams[BO_GIRDS].playoff
+    print(f"AT-11: weighted {weighted} ({sim.effective_runs} effective runs), reference {reference[BO_GIRDS]:.2f} "
+          f"({kept} kept), gap {abs(weighted - reference[BO_GIRDS]):.2f}")
+    assert abs(weighted - reference[BO_GIRDS]) <= 1.5
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_two_runs_with_the_same_set_results_give_equal_output_byte_for_byte(cpc_week_10):
+    # AT-12.
+    held = [SetResult(week=11, game="win", median="above")]
+    outputs = [_week_10_what_if(cpc_week_10, held)[2].model_dump_json().encode() for _ in range(2)]
+    hashes = [hashlib.sha256(out).hexdigest() for out in outputs]
+    print(f"AT-12: {hashes[0]} {hashes[1]}")
+    assert outputs[0] == outputs[1]
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_level_mean_of_each_team_is_its_season_average_shrunk_with_5_weeks_and_no_injury_term(cpc_week_10):
+    # AT-13. The level reads the played-week scores of the saved history only, so an injury does not move it.
+    _, _, history, sim = cpc_week_10
+    scores = {rid: [history.weeks[n].scores[rid] for n in range(1, 11) if rid in history.weeks[n].scores]
+              for rid in sim.records}
+    league = sum(sum(s) for s in scores.values()) / sum(len(s) for s in scores.values())
+    assert LEVEL_SHRINK_WEEKS == 5
+    for rid, own in scores.items():
+        expected = (sum(own) + 5 * league) / (len(own) + 5)
+        print(f"AT-13: roster {rid} expected {expected:.2f} sim {sim.parameters.level_mean[rid]}")
+        assert sim.parameters.level_mean[rid] == pytest.approx(expected, abs=0.005)
