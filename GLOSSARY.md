@@ -1059,6 +1059,14 @@ _Avoid_: Card, teaser
 One stored season of the sim, with every team's score for each week left. The replay plays one sim run per press.
 _Avoid_: Simulation, sample, scenario
 
+**What-if**:
+A set of game winners that a manager picks for the games left. The sim draws every game the manager did not pick.
+_Avoid_: Scenario, simulation, prediction
+
+**Announcement**:
+The modal that introduces one new feature, once per browser, until the visitor dismisses it or follows its link.
+_Avoid_: Popup, banner, promo
+
 **Points over the line**:
 A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.
 _Avoid_: Points over replacement, VORP, value over replacement
