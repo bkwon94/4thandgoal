@@ -297,7 +297,7 @@ test.describe("the wait, with motion on", () => {
   test.use({ reducedMotion: "no-preference" });
 
   for (const width of [375, 768, 1280]) {
-    test(`wait start: ${CLIENT} the mesh moves and "Weighing the sides" shows within 100 ms of the tap, ${width}px (AT-3)`, async ({ page }, info) => {
+    test(`wait start: ${CLIENT} the mesh moves and "Weighing the sides" shows within 100 ms of the tap, ${width}px (AT-3)`, { tag: "@timing" }, async ({ page }, info) => {
       await page.setViewportSize({ width, height: 900 });
       await openAnalyzer(page, stageQuery());
       await settle(page);
@@ -321,7 +321,7 @@ test.describe("the wait, with motion on", () => {
     }
   });
 
-  test(`wait dips: ${CLIENT} the mesh dips under each side in turn, about 1.25 s each, 1280px, 8x CPU slowdown (AT-5)`, async ({ browser }, info) => {
+  test(`wait dips: ${CLIENT} the mesh dips under each side in turn, about 1.25 s each, 1280px, 8x CPU slowdown (AT-5)`, { tag: "@timing" }, async ({ browser }, info) => {
     // A page of its own records a video of the wait, which is the recording of AT-5.
     const context = await browser.newContext({
       viewport: { width: 1280, height: 900 },
@@ -391,7 +391,7 @@ test.describe("the wait, with motion on", () => {
     }
   });
 
-  test(`wait frames: ${CLIENT} no frame of the wait takes longer than 50 ms after the first second, 375px, 4x CPU slowdown (AT-15)`, async ({ page }, info) => {
+  test(`wait frames: ${CLIENT} no frame of the wait takes longer than 50 ms after the first second, 375px, 4x CPU slowdown (AT-15)`, { tag: "@timing" }, async ({ page }, info) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await openAnalyzer(page, stageQuery());
     await settle(page);
@@ -449,7 +449,7 @@ test.describe("the wait, with motion on", () => {
   }
 
   for (const width of [375, 768, 1280]) {
-    test(`stage rise: ${CLIENT} the headshots of each side rise into its row within 1 s of the tap, ${width}px (AT-29)`, async ({ page }, info) => {
+    test(`stage rise: ${CLIENT} the headshots of each side rise into its row within 1 s of the tap, ${width}px (AT-29)`, { tag: "@timing" }, async ({ page }, info) => {
       const trade = stageTrade(TEAMS);
       await page.setViewportSize({ width, height: 900 });
       await openAnalyzer(page, stageQuery());
@@ -469,7 +469,7 @@ test.describe("the wait, with motion on", () => {
     });
   }
 
-  test(`stage rise: ${CLIENT} on a cold load with slow teams, the headshots rise within 1 s of the tap and no line names a side title, 375px (AT-29)`, async ({ page }) => {
+  test(`stage rise: ${CLIENT} on a cold load with slow teams, the headshots rise within 1 s of the tap and no line names a side title, 375px (AT-29)`, { tag: "@timing" }, async ({ page }) => {
     const trade = stageTrade(TEAMS);
     await page.setViewportSize({ width: 375, height: 900 });
     // The rosters arrive 2 s after the page opens. The reader taps "Grade the Trade" as soon as it turns on.
@@ -753,7 +753,7 @@ test.describe("the reveal, with motion on", () => {
   test.use({ reducedMotion: "no-preference" });
 
   for (const width of [375, 768, 1280]) {
-    test(`reveal order: ${CLIENT} the Lean word lands first, then the scale, then the Case and the side tabs, within about 1 s, ${width}px (AT-10, AT-11)`, async ({ browser }, info) => {
+    test(`reveal order: ${CLIENT} the Lean word lands first, then the scale, then the Case and the side tabs, within about 1 s, ${width}px (AT-10, AT-11)`, { tag: "@timing" }, async ({ browser }, info) => {
       // At 1280 px a page of its own records a video, which is the recording of AT-11 and AT-12.
       const context = await browser.newContext({
         viewport: { width, height: 900 },
