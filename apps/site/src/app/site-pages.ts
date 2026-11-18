@@ -21,8 +21,9 @@ const SIM_LABEL = "Playoff Sim";
    the midseason report, so the sim Tool always opens the best page. */
 export function sitePages(items: MenuItem[], links: MenuLinks, lines: SiteLines, packages: PackageName[]): SitePage[] {
   const pages = menuPages(items, links, homeHref()).flatMap((item): SitePage[] => {
-    const line = item.kind === "home" ? undefined : lines[item.kind];
-    return line ? [{ key: item.kind as PackageName, label: item.label, href: item.href, ...line }] : [];
+    if (item.kind === "home") return [];
+    const line = lines[item.kind];
+    return line ? [{ key: item.kind, label: item.label, href: item.href, ...line }] : [];
   });
   const shown = new Set(pages.map((page) => page.key));
   const add = (key: PackageName, label: string | undefined, href: string | undefined) => {
@@ -34,7 +35,7 @@ export function sitePages(items: MenuItem[], links: MenuLinks, lines: SiteLines,
   if (packages.includes("sim")) {
     const own = links.sim?.();
     if (own) add("sim", own.label, own.href);
-    else if (report && packages.includes("midseason")) add("sim", SIM_LABEL, `${report.href}#sim`);
+    else if (report) add("sim", SIM_LABEL, `${report.href}#sim`);
   }
   return pages;
 }
