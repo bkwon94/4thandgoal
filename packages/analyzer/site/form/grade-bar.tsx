@@ -43,13 +43,17 @@ export function GradeBar({ ready, grading, level, onGrade }: GradeBarProps) {
         {/* The off bar is a plain opaque surface with no opacity, so its text keeps the contrast of its pair. */}
         {/* A native disabled button leaves the tab order, so only the off bar is natively disabled. A grade that the finder
             starts has no press of this button to track, so the press does nothing while grading is true. */}
+        {/* The label and the muted style of the off bar key off grading, not off the pending state of the press, for the
+            same reason: a grade that the finder starts must show on the button too. */}
         <PendingButton
           disabled={!ready}
           pendingAnnouncement="Grading the trade"
           onClick={() => (grading ? undefined : onGrade())}
-          className="press relative min-h-touch w-full cursor-pointer rounded-pill border border-transparent bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:border-rule disabled:bg-raised disabled:text-mute aria-disabled:cursor-progress"
+          className={`press relative min-h-touch w-full rounded-pill border px-sp-4 text-lead font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:border-rule disabled:bg-raised disabled:text-mute aria-disabled:cursor-progress ${
+            grading ? "cursor-progress border-rule bg-raised text-mute" : "cursor-pointer border-transparent bg-accent text-on-dark"
+          }`}
         >
-          Grade the Trade
+          {grading ? "Grading…" : "Grade the Trade"}
         </PendingButton>
       </div>
     </div>
