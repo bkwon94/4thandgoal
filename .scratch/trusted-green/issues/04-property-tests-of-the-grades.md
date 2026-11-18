@@ -10,7 +10,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-27 and AT-28.
 
 **Status:** ready-for-agent
 
-- [ ] Hypothesis is a Python dev dependency in the lock file.
-- [ ] Each of the eight properties of the spec has one test beside the package of its function.
-- [ ] The tests run in the full check of each package.
-- [ ] A seeded `grade_letter` that gives B at 80 fails the letter-order test with a counterexample.
+- [x] Hypothesis is a Python dev dependency in the lock file.
+- [x] Each of the eight properties of the spec has one test beside the package of its function.
+- [x] The tests run in the full check of each package.
+- [x] A seeded `grade_letter` that gives B at 80 fails the letter-order test with a counterexample.
