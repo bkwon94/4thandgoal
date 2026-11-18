@@ -1,7 +1,7 @@
 # Faster checks
 
 Kind: quick-win
-Status: done
+Status: in-progress
 Branch: `win-faster-checks`.
 Source: the session of 2026-11-18.
 Boundary: holds. 5 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -47,11 +47,11 @@ Test verdict: PASS
 
 ### 2. Playwright runs 4 workers on CI
 
-Done condition: `apps/site/playwright.config.ts` runs 4 workers when `CI` is set and 2 workers when it is not, and its comment names the 4 cores of the runner.
-Method: text only
-Red: none, text only.
-Green: at `872c7a15`, the diff of the text. `apps/site/playwright.config.ts` sets `workers: process.env.CI ? 4 : 2`, and its comment names the four cores of the CI runner. The CI run of the PR shows the time of the browser half.
-Test verdict: none
+Done condition: `apps/site/playwright.config.ts` runs 4 workers when `CI` is set and 2 workers when it is not, and each floor test that measures wall time runs in a pass of its own with 1 worker, after the parallel pass.
+Method: tdd
+Red: pending
+Green: pending
+Test verdict: pending
 
 ### 3. CI runs the site check as two jobs at the same time
 
@@ -116,3 +116,5 @@ A later run can follow up on these notes:
 - `scripts/test_queue.py` takes about 6 s on each commit, but the root `Makefile` comment says the root scripts take under a second.
 - A change to `apps/site/package.json` or a Vitest config file reruns all vitest files, because Vitest treats each one as a rerun trigger.
 Read 16 files: AGENTS.md, Makefile, .github/workflows/check.yml, .pre-commit-config.yaml, scripts/changed_apps.py, scripts/test_changed_apps.py, scripts/queue.py, scripts/test_queue.py, apps/site/package.json, apps/site/playwright.config.ts, apps/site/vitest.config.ts, apps/site/scripts/build-each-client.mjs, apps/site/e2e/floor-rules.spec.ts, packages/eggs/site/hunt/egg-hunt.test.tsx, apps/pipeline/Makefile, apps/api/Makefile.
+
+The CI run 44393438643 of PR #68 failed one floor test: `e2e/analyzer-stage.spec.ts:300` measured 116 ms against a limit of 100 ms under 4 workers. Brian chose a timing pass of 1 worker for the wall-time tests, so item 2 gets a test and a Judge. The close comment above names the commits before this fix.
