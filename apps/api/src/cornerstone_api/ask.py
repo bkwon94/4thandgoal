@@ -95,8 +95,8 @@ def decide(answers: JevResponse) -> tuple[RouteKind, str | None, str | None]:
     if level[ABUSE] == "yes":
         return "refuse", None, None
     # A clear yes on the site Noul gives the page of the site, before a Topic can take it (order A of decision 01 of
-    # site-answer). An unsure falls through, so a how-to about Sleeper keeps its old route. A request with no pages
-    # asks no site Noul, so the old table runs as before.
+    # site-answer). An unsure falls through, so a how-to about Sleeper routes on the
+    # base table. A request with no pages asks no site Noul, so the base table decides alone.
     if level.get(ASKS_FOR_SITE) == "yes":
         return "site", None, None
     # A reaction to the last answer, such as "thank you" or "you sure?", gets a free answer that reads the turns.
@@ -211,7 +211,7 @@ class AskRequest(BaseModel):
     """The body of the ask route: the question as the manager typed it, the roster id of Your team, the latest week
     that the site shows, because each Topic Answer of the site covers that week only, and the earlier turns of the
     Thread, oldest first. The pages of the client let the route answer a question about the site. With no pages, the
-    route has no site row, so an older site that sends none gets the same route as before."""
+    route has no site row. A request with no pages asks no site question and routes on the base table."""
 
     question: str = Field(min_length=1, max_length=QUESTION_MAX)
     roster_id: int

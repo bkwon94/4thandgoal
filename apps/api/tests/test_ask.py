@@ -52,7 +52,7 @@ JUDGMENTS = {
                             "topic": "your_season"},
     "thank you": {"fits_topic": 0.03, "data_can_answer": 0.04, "about_league": 0.43, "reacts_to_answer": 0.99,
                   "topic": "start_sit"},
-    # Without the pages, the old table gives this question an honest miss (decision 01 of site-answer).
+    # Without the pages, the base table gives this question an honest miss (decision 01 of site-answer).
     "where is the trade analyzer": {"fits_topic": 0.05, "data_can_answer": 0.1, "about_league": 0.2,
                                     "asks_for_site": 0.9, "topic": "trade_check", "page": "analyzer",
                                     "close": ["trade_ideas", "sell_high"]},
@@ -60,7 +60,7 @@ JUDGMENTS = {
                              "close": ["power_rankings", "trade_check"]},
     "is there a waiver page": {"about_league": 0.6, "asks_for_site": 0.8, "topic": "waiver_targets",
                                "page": "missing", "close": ["week_recap", "trade_ideas"]},
-    # An unsure on the site Noul falls through to the old table (decision 01: 0.51 to 0.56 on this question).
+    # An unsure on the site Noul falls through to the base table (decision 01: 0.51 to 0.56 on this question).
     "how do i set my lineup": {"fits_topic": 0.9, "data_can_answer": 0.8, "about_league": 0.99,
                                "asks_for_site": 0.55, "topic": "start_sit", "page": "all"},
     "what's the weather": {"fits_topic": 0.02, "data_can_answer": 0.03, "about_league": 0.05, "asks_for_site": 0.02,
@@ -340,8 +340,8 @@ def test_a_question_with_pages_asks_the_site_noul_and_the_page_choice_over_the_p
     assert set(request.questions["site_page"].options) == {*request.state["site_pages"], "all", "missing"}
 
 
-def test_a_question_with_no_pages_asks_no_site_question_and_routes_as_before(api, jev):
-    # The site of main sends no pages, so its ask request keeps the old 8 questions and the old route.
+def test_a_question_with_no_pages_asks_no_site_question_and_routes_on_the_base_table(api, jev):
+    # The site of main sends no pages, so its ask request holds the 8 base questions and routes on the base table.
     body = _ask(api, "where is the trade analyzer").json()
     assert "site_pages" not in jev.requests[0].state
     assert set(jev.requests[0].questions) == {"topic", "fits_topic", "data_can_answer", "about_league", "abuse",
@@ -354,14 +354,14 @@ def test_a_question_with_no_pages_asks_no_site_question_and_routes_as_before(api
                                                  ("what tools are there", "all"),
                                                  ("is there a waiver page", "missing")])
 def test_a_clear_yes_on_the_site_noul_routes_to_site_with_its_page_and_no_miss(api, question, page):
-    # AT-18: the site row comes right after the abuse row, so the old miss of the question never shows.
+    # AT-18: the site row comes right after the abuse row, so the miss of the base table never shows.
     body = _ask_with_pages(api, question, CPC_PAGES).json()
     assert (body["route"], body["page"]) == ("site", page)
     assert (body["topic"], body["team"], body["closest"], body["suggestion"]) == (None, None, [], None)
     assert _misses(api) == []
 
 
-def test_an_unsure_on_the_site_noul_falls_through_to_the_old_table(api):
+def test_an_unsure_on_the_site_noul_falls_through_to_the_base_table(api):
     # Decision 01: a question about Sleeper scored 0.51 to 0.56, so only a yes above 0.7 routes to site.
     body = _ask_with_pages(api, "how do i set my lineup", CPC_PAGES).json()
     assert (body["route"], body["topic"], body["page"]) == ("topic", "start_sit", None)
