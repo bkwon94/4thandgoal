@@ -65,8 +65,21 @@ Test verdict: none
 
 Done condition: `packages/eggs/site/hunt/egg-hunt.test.tsx` passes all of its tests with fake timers in place of real waits, and its file time in the vitest JSON report is under 15 s.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `8d4ae5d7`, the parent of the change, with a loop that is not a file. It runs `pnpm exec vitest run ../../packages/eggs/site/hunt/egg-hunt.test.tsx --reporter=json` in `apps/site`, reads the file time from the JSON report, and exits 1 if a test fails or the file time is 15 s or more.
+
+```text
+tests 40 failed 0 file time 77.3 s
+exit 1
+```
+
+Green: at `ffaa7e93`, the same loop.
+
+```text
+tests 40 failed 0 file time 2.1 s
+exit 0
+```
+
+`beforeEach` calls `vi.useFakeTimers({ shouldAdvanceTime: true })` and `afterEach` calls `vi.useRealTimers()`. `wait` is now `act(() => vi.advanceTimersByTimeAsync(ms))`. No assertion changed. Three more runs took 2.1 s, 2.2 s, and 2.4 s with 40 of 40 passed. `make check-fast BASE=main` passes.
 Test verdict: pending
 
 ### 5. A change of the tracker or the docs alone skips the site
