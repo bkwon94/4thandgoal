@@ -216,5 +216,46 @@ class TheStagedCheck(unittest.TestCase):
             self.assertEqual(re.findall(r'echo "==> (.+?): check-fast"', output), ["scripts", "pipeline", "api"])
 
 
+class TheSiteTestSelection(unittest.TestCase):
+    def site_command(self, *options: str) -> str:
+        """The planned command of the site fast check, read from a dry run of the Make command in a real repo."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            git_vars = subprocess.check_output(["git", "rev-parse", "--local-env-vars"], text=True).splitlines()
+            # A hook run of Make passes STAGED=1 to its children, in MAKEFLAGS and in the environment. This dry run sets
+            # its own options.
+            skipped = [*git_vars, "MAKEFLAGS", "MFLAGS", "MAKELEVEL", "STAGED", "BASE"]
+            env = {key: value for key, value in os.environ.items() if key not in skipped}
+
+            def git(*args: str) -> None:
+                subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.com",
+                                "-c", "commit.gpgSign=false", "-c", "core.hooksPath=/dev/null", *args],
+                               cwd=root, env=env, check=True, capture_output=True)
+
+            workspace(root)
+            (root / "scripts").mkdir()
+            shutil.copyfile(REPO / "Makefile", root / "Makefile")
+            shutil.copyfile(HERE / "changed_apps.py", root / "scripts/changed_apps.py")
+            git("init", "--quiet", "--template=")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "Create the test workspace")
+            write(root, "apps/site/page.ts", "// Changed site file\n")
+            git("add", "apps/site/page.ts")
+            if "BASE=HEAD" in options:
+                git("commit", "--quiet", "-m", "Change the site")
+                options = ("BASE=HEAD~1",)
+            output = subprocess.check_output(["make", "-n", "check-fast", *options], cwd=root, env=env, text=True)
+            return next(line for line in output.splitlines() if "check:fast" in line)
+
+    def test_a_staged_run_of_the_site_tests_only_the_changed_files(self):
+        self.assertIn("--changed", self.site_command("STAGED=1"))
+
+    def test_a_base_run_of_the_site_tests_only_the_files_changed_since_the_base(self):
+        self.assertIn("--changed HEAD~1", self.site_command("BASE=HEAD"))
+
+    def test_a_run_with_no_selection_tests_every_site_file(self):
+        self.assertNotIn("--changed", self.site_command())
+
+
 if __name__ == "__main__":
     unittest.main()

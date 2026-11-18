@@ -6,7 +6,9 @@
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
-site-check-fast = pnpm --dir apps/site check:fast
+# A selected run of the site tests only the vitest files that the changed files reach through imports. VITEST_CHANGED is
+# empty without a selection, so the site still runs every vitest file. "make check-site" never sets it, so CI runs all.
+site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 api-check = make -C apps/api check
@@ -35,6 +37,7 @@ else
 CHANGED = $(if $(BASE),$(shell python3 -B scripts/changed_apps.py $(BASE)))
 endif
 APPS = $(if $(SELECTION),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
+VITEST_CHANGED = $(if $(filter 1,$(STAGED)),--changed,$(if $(BASE),--changed $(BASE)))
 PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
