@@ -16,6 +16,7 @@ import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Rise } from "@cpc/design/parts/rise";
 import { GetCard, type GotRow } from "./get-card";
 import { GradeBar } from "./grade-bar";
+import { Sheet } from "./sheet";
 import { StageLines } from "./stage-lines";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
@@ -146,11 +147,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const nextSideId = useRef(EMPTY_SIDES.length);
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
-  // Edit opens the hidden form under a result, so the reader can change the trade and keep the result on the screen.
+  // The sheet edits a draft while the result stays in place. Cancel restores the trade that produced that result.
   const [editing, setEditing] = useState(false);
-  // Edit scrolls to the Stack, because the result sits below it and the reader taps Edit from inside the result.
-  const stackRef = useRef<HTMLElement>(null);
-  const scrollToStack = useRef(false);
+  const savedSides = useRef<Sides>(sides);
   // A late answer from an old trade must not overwrite the state of a new one.
   const request = useRequest();
   // A finder card asks for the full result, so the page scrolls the result into view when the grade ends.
@@ -170,17 +169,16 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     resultRef.current?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
   }, [grade.status, off]);
 
-  // The scroll waits for the Stack to show, because it is hidden until the render after the tap on Edit.
-  useEffect(() => {
-    if (!editing || !scrollToStack.current) return;
-    scrollToStack.current = false;
-    stackRef.current?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
-  }, [editing, off]);
-
-  /* Edit opens the Stack with the graded trade, and scrolls to it. */
+  /* Edit keeps the result in place and saves the trade for each way out without a submit. */
   function edit() {
-    scrollToStack.current = true;
+    savedSides.current = sides;
     setEditing(true);
+  }
+
+  function cancelEdit() {
+    setSides(dropStaleGets(savedSides.current, teams));
+    setSheet(null);
+    setEditing(false);
   }
 
   // The page can swap a stored list for the fresh one while the form shows, so a pick of a traded player drops.
@@ -203,18 +201,18 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const grading = grade.status === "grading";
   // The form hides while the grade runs and under a result, so the hero and the read lead the page. The stage of the
   // hero shows the trade, so no line repeats it.
-  const formHidden = grading || (grade.status === "done" && !editing);
+  const formHidden = grading || grade.status === "done";
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
   // The teams that another side holds. The team sheet of a slot leaves its own team on, so a tap on it changes nothing.
   const taken = sides.flatMap((side, i) => (side.rosterId === null || teamSheet?.slot === i ? [] : [side.rosterId]));
 
-  /* A change to the trade makes the old result stale, so it clears the result and drops a late answer to the old trade. */
+  /* A draft leaves the graded result in place until submit. A page edit clears it and drops a late answer. */
   function changeTrade(update: (current: Sides) => Sides) {
     request.drop();
     setSides(update);
-    setGrade({ status: "idle" });
+    if (!editing) setGrade({ status: "idle" });
   }
 
   /* A new team for a side takes the old roster out of the trade, so each get from that side drops. The players the side
@@ -315,6 +313,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     }, TIMEOUT_MS);
     setGrade({ status: "grading" });
     setEditing(false);
+    setSheet(null);
     countEvent("analyze-grade");
     try {
       const doc = await postAnalyze(target, passphrase, body, controller.signal);
@@ -356,63 +355,90 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
 
   const playerSide = sheet?.kind === "players" ? sheet.side : null;
 
+  const stack = (
+    <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
+      <TeamsRow
+        slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
+        onPickSlot={(slot) => setSheet({ kind: "team", slot })}
+        onAdd={() => setSheet({ kind: "add" })}
+        locked={locked}
+      />
+      {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
+          side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
+      <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
+        {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
+        <AnimatePresence initial={false} mode="popLayout">
+          {sides.map((side, index) => (
+            <motion.div key={side.id} layout={!off} className="min-w-0" {...enterExit(off)}>
+              <GetCard
+                title={SIDE_TITLES[index]}
+                team={teamOf(teams, side.rosterId)}
+                rows={rowsOf(index)}
+                canAdd={side.rosterId !== null && sourcesOf(index).length > 0}
+                onAdd={() => setSheet({ kind: "players", side: index })}
+                onRemovePlayer={(playerId) => removeGet(index, playerId)}
+                // Only the third and fourth sides can leave. A trade always has two sides.
+                onRemove={index >= 2 ? () => removeSide(side.id) : undefined}
+                locked={locked}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+      <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
+      {/* The error box is the last part of the form, so it sits right above the bar. */}
+      {grade.status === "error" && (
+        <div role="group" aria-label="The grade failed">
+          <Card edge className="flex flex-col gap-sp-3">
+            <div className="flex items-start gap-sp-2">
+              <CircleAlertIcon aria-hidden="true" className="mt-sp-0 size-sp-5 flex-none text-accent-ink" />
+              <ErrorLine>{grade.message}</ErrorLine>
+            </div>
+            {/* Every error shows Try Again, so the reader has one next step after a fix to the trade or a wait. */}
+            <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
+              Try Again
+            </Button>
+          </Card>
+        </div>
+      )}
+    </section>
+  );
+
+  // The picker sheets share the editor's Drawer context, so Escape and focus return to the editor first.
+  const pickers = (
+    <>
+      <TeamSheet
+        open={teamSheet !== null}
+        title={teamSheet?.title ?? ""}
+        teams={teams}
+        taken={taken}
+        onPick={(rosterId) => {
+          teamSheet?.pick(rosterId);
+          setSheet(null);
+        }}
+        onClose={() => setSheet(null)}
+      />
+      <PlayerSheet
+        // The key gives each side a fresh tab, search, and chip.
+        key={playerSide === null ? "closed" : sides[playerSide]?.id}
+        open={playerSide !== null && sides[playerSide] !== undefined}
+        title={playerSide === null ? "" : SIDE_TITLES[playerSide]}
+        sources={playerSide === null ? [] : sourcesOf(playerSide)}
+        gets={playerSide === null ? [] : (sides[playerSide]?.gets ?? [])}
+        elsewhere={playerSide === null ? new Map() : elsewhereOf(playerSide)}
+        onToggle={(get) => playerSide !== null && toggleGet(playerSide, get)}
+        onClose={() => setSheet(null)}
+      />
+    </>
+  );
+
+  const gradeBar = <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />;
   const form = (
     <>
-      {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
-          of the form, above the finder. The part holds the form section and the bar, and nothing after them. */}
+      {/* The page keeps its form while a grade runs, so the pending button stays mounted. */}
       <div>
-      {/* The hidden form stays in the page, so the picks, the sheets, and the finder cards keep their state for Edit. */}
-      <div hidden={formHidden}>
-        {/* The scroll margin keeps the top of the Stack clear of the edge of the screen after Edit. */}
-        <section ref={stackRef} aria-label="Who gets what" className="mt-sp-5 flex scroll-mt-sp-5 flex-col gap-sp-4">
-          <TeamsRow
-            slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
-            onPickSlot={(slot) => setSheet({ kind: "team", slot })}
-            onAdd={() => setSheet({ kind: "add" })}
-            locked={locked}
-          />
-          {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
-              side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
-          <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
-            {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
-            <AnimatePresence initial={false} mode="popLayout">
-              {sides.map((side, index) => (
-                <motion.div key={side.id} layout={!off} className="min-w-0" {...enterExit(off)}>
-                  <GetCard
-                    title={SIDE_TITLES[index]}
-                    team={teamOf(teams, side.rosterId)}
-                    rows={rowsOf(index)}
-                    canAdd={side.rosterId !== null && sourcesOf(index).length > 0}
-                    onAdd={() => setSheet({ kind: "players", side: index })}
-                    onRemovePlayer={(playerId) => removeGet(index, playerId)}
-                    // Only the third and fourth sides can leave. A trade always has two sides.
-                    onRemove={index >= 2 ? () => removeSide(side.id) : undefined}
-                    locked={locked}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-          <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
-          {/* The error box is the last part of the form, so it sits right above the bar. */}
-          {grade.status === "error" && (
-            <div role="group" aria-label="The grade failed">
-              <Card edge className="flex flex-col gap-sp-3">
-                <div className="flex items-start gap-sp-2">
-                  <CircleAlertIcon aria-hidden="true" className="mt-sp-0 size-sp-5 flex-none text-accent-ink" />
-                  <ErrorLine>{grade.message}</ErrorLine>
-                </div>
-                {/* Every error shows Try Again, so the reader has one next step after a fix to the trade or a wait. */}
-                <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
-                  Try Again
-                </Button>
-              </Card>
-            </div>
-          )}
-        </section>
-      </div>
-      {/* Under a result the form is hidden and the bar has no trade to grade again, so it hides until Edit. */}
-      {!(formHidden && grade.status === "done") && <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />}
+        <div hidden={formHidden}>{!editing && stack}</div>
+        {grade.status !== "done" && gradeBar}
       </div>
       <div hidden={formHidden}>
         {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
@@ -433,29 +459,22 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
             />
           </div>
         )}
-        <TeamSheet
-          open={teamSheet !== null}
-          title={teamSheet?.title ?? ""}
-          teams={teams}
-          taken={taken}
-          onPick={(rosterId) => {
-            teamSheet?.pick(rosterId);
-            setSheet(null);
-          }}
-          onClose={() => setSheet(null)}
-        />
-        <PlayerSheet
-          // The key gives each side a fresh tab, search, and chip.
-          key={playerSide === null ? "closed" : sides[playerSide]?.id}
-          open={playerSide !== null && sides[playerSide] !== undefined}
-          title={playerSide === null ? "" : SIDE_TITLES[playerSide]}
-          sources={playerSide === null ? [] : sourcesOf(playerSide)}
-          gets={playerSide === null ? [] : (sides[playerSide]?.gets ?? [])}
-          elsewhere={playerSide === null ? new Map() : elsewhereOf(playerSide)}
-          onToggle={(get) => playerSide !== null && toggleGet(playerSide, get)}
-          onClose={() => setSheet(null)}
-        />
+        {!editing && pickers}
       </div>
+      <Sheet
+        open={editing}
+        title="Edit the trade"
+        onClose={cancelEdit}
+        footer={
+          <div className="flex flex-col gap-sp-3">
+            {gradeBar}
+            <Button className="press min-h-touch w-full rounded-pill" onClick={cancelEdit}>Cancel</Button>
+          </div>
+        }
+      >
+        {editing && stack}
+        {editing && pickers}
+      </Sheet>
     </>
   );
 

@@ -17,8 +17,9 @@ export const addPlayer = (side: SideTitle) =>
 
 /* Picks a team in the team sheet that is open, and waits for the sheet to close. */
 export async function chooseTeam(team: string) {
-  fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  const picker = await screen.findByRole("dialog", { name: /^Pick / });
+  fireEvent.click(within(picker).getByRole("button", { name: new RegExp(team) }));
+  await waitFor(() => expect(picker.isConnected).toBe(false));
 }
 
 export async function pickTeam(side: SideTitle, team: string) {
@@ -29,11 +30,11 @@ export async function pickTeam(side: SideTitle, team: string) {
 /* Opens the picker of a side, checks each player on the tab of the source team, and taps Done. */
 export async function pickPlayers(side: SideTitle, from: string, ...names: string[]) {
   fireEvent.click(addPlayer(side));
-  const open = await screen.findByRole("dialog");
+  const open = await screen.findByRole("dialog", { name: `${side} gets` });
   fireEvent.click(within(open).getByRole("tab", { name: from }));
   for (const name of names) fireEvent.click(within(open).getByRole("checkbox", { name: new RegExp(name) }));
   fireEvent.click(within(open).getByRole("button", { name: /^Done/ }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  await waitFor(() => expect(open.isConnected).toBe(false));
 }
 
 /* A trade of two teams with one player for each card. My team gets the player of the other team, and the other team gets mine. */
