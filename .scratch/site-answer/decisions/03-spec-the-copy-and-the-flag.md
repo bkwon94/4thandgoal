@@ -6,7 +6,7 @@ Map: `.scratch/site-answer/MAP.md`.
 
 **Blocked by:** 01, 02
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -22,4 +22,10 @@ The copy names no internal part: no "Jev", "Advisor", "Finder", or "front door".
 
 ## Decision
 
-None yet.
+Brian approved the spec, 2026-11-18. `PRD.md` records each choice under Implementation Decisions:
+
+1. The lead lines are fixed in code: "The site has N tools and M pages to read.", "The <label> has its own page.", and "The site has no page for that. Here is what it has." Decision 15.
+2. Each package gives its blurb beside its menu link, not in `copy.toml`, because both clients share the words. Decision 11.
+3. The page list follows the Menu that the client shows, so the `front_door` flag picks it as it picks the Menu. Decision 9.
+4. The Thread keeps a Site answer as the page key only, and the site builds the links at render time. Decision 13.
+5. Order A holds with no extra row. "power rankings?" and "show me the power rankings" score below 0.7, so they keep the Topic. Decision 6.
