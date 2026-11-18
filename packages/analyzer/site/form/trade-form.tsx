@@ -435,6 +435,8 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const gradeBar = <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} />;
   const form = (
     <>
+      {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
+          of the form, above the finder. The part holds the form section and the bar, and nothing after them. */}
       {/* The page keeps its form while a grade runs, so the pending button stays mounted. */}
       <div>
         <div hidden={formHidden}>{!editing && stack}</div>
