@@ -10,6 +10,6 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-29.
 
 **Status:** ready-for-agent
 
-- [ ] The full site check runs the grade-bar project while the export holds norcal.
+- [x] The full site check runs the grade-bar project while the export holds norcal.
 - [ ] The site job of `Check` on the PR shows grade-bar as passed.
 - [ ] The site job ends in under 25 min, and the ticket notes its time.
