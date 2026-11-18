@@ -67,7 +67,7 @@ OK
 ```
 
 The 13 tagged tests are the wait start (3 widths), wait dips, wait frames, stage rise (3 widths), stage rise cold, and reveal order (3 widths) of `e2e/analyzer-stage.spec.ts`, and the settle of `e2e/scene.spec.ts` (AT-16). `scripts/check-floor.mjs` runs the two passes and hands extra arguments such as `-g midseason` to both. The timing pass has `--pass-with-no-tests`, so a filter with no tagged test passes. A run of `CLIENT=cpc pnpm check:floor` on a local build passed: with `CI=1`, 192 passed and 8 skipped on 4 workers in 1.7 min, then 13 passed on 1 worker in 54 s. Without `CI`, 192 passed and 8 skipped on 2 workers in 2.9 min, then 13 passed in 55 s.
-Test verdict: pending
+Test verdict: PASS
 
 ### 3. CI runs the site check as two jobs at the same time
 
