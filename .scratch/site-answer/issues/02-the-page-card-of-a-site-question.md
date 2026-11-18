@@ -8,7 +8,7 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-1, AT-4, AT-5, AT-6, AT
 
 **Blocked by:** 01.
 
-**Status:** in-review
+**Status:** done
 
 - [x] "where is the trade analyzer", "how do I use the sim", "take me to the weekly reports", "midseason report?", and "wheres the trade thing" each show the right card on the live API (AT-1, AT-4, AT-5, AT-6, AT-7).
 - [x] The address stays `/` until a tap on "Open" (AT-10).
@@ -16,3 +16,10 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-1, AT-4, AT-5, AT-6, AT
 - [x] A reload shows the same card with no new ask request (AT-12).
 - [x] A Menu link of the sim wins over `#sim` (AT-19). A kept key that the client lacks shows the none rows (AT-21).
 - [ ] The card has the Tool tone, 44 px targets, fades only with reduced motion, and no internal name (AT-14, AT-15, AT-16, AT-17, card half).
+
+## Comments
+
+Closes with the squash merge of the spec PR: `site-answer-02` merged into `site-answer` as `9a8e1884` on 2026-11-18.
+The site suite has 1610 passed, with 17 new tests for the page card, the page list, and reduced motion.
+Only the Open button of a Tool gets the red tint, as Brian chose.
+Read 5 files: apps/site/src/app/site-pages.ts, apps/site/src/app/front-door/site-answer.tsx, apps/site/src/app/front-door/ask-thread.ts, apps/site/src/app/front-door/thread-store.ts, packages/design/site/ui/collapsible.tsx.

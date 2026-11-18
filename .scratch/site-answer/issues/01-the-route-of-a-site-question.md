@@ -8,10 +8,17 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-9, AT-18, AT-20, AT-22.
 
 **Blocked by:** none.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The live route eval routes at least 20 of the 22 site questions to `site` with the right key, keeps each of the 18 traps, and keeps the old bar (AT-9).
 - [x] With the fake Jev, a `site` route returns `page`, makes no Claude call, writes no miss log entry, and leaves each cap count as it was (AT-18).
 - [x] An unknown page key, or more than 12 pages, gets a 422 before any Jev request (AT-20).
 - [x] "what's the weather" still routes to an honest miss (AT-22, api half).
 - [x] An ask request with no `pages` field still routes as before, so the site of `main` keeps working until ticket 02.
+
+## Comments
+
+Closes with the squash merge of the spec PR: `site-answer-01` merged into `site-answer` as `928f7035` on 2026-11-18.
+The api suite has 592 passed, and the live route eval passed 3 runs: 21 of 22 site questions and 18 of 18 traps.
+The sim blurb no longer says "playoff odds", because those words sent "where are the playoff odds" to `site`.
+Read 6 files: apps/api/src/cornerstone_api/ask.py, apps/api/src/cornerstone_api/ask_wording.py, apps/api/tests/fixtures/route-questions.json, apps/api/tests/test_ask.py, apps/api/tests/test_ask_eval.py, apps/api/tests/test_caps.py.
