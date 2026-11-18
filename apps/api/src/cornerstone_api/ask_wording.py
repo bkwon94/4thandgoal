@@ -138,7 +138,7 @@ NOULS = {
 }
 
 
-# The wording of decision 01 of site-answer: `n5`, which routed 21 of 22 site questions and kept 18 of 18 traps.
+# The wording of the site Noul, chosen in decision 01 of site-answer: it routed 21 of 22 site questions and kept 18 of 18 traps.
 SITE_NOUL = NoulQuestion(
     instructions="Does `manager_question` ask for a page or tool of the site, by its name or by what it does?",
     yes="The manager names a page or tool in `site_pages` as the thing they want, or asks where one is, which ones "
@@ -148,7 +148,7 @@ SITE_NOUL = NoulQuestion(
 
 
 def site_page_choice(site_pages: dict[str, str]) -> ChoiceQuestion:
-    """The page Choice `c1` of decision 01 over the pages of the client, with the two options that name no one page."""
+    """The page Choice (decision 01 of site-answer) over the pages of the client, with the two options that name no one page."""
     return ChoiceQuestion(
         instructions="Which page in `site_pages` does the manager ask about in `manager_question`?",
         options={**site_pages,

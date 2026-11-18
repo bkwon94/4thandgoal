@@ -94,8 +94,8 @@ def decide(answers: JevResponse) -> tuple[RouteKind, str | None, str | None]:
     top = _ranked(answers.choices[TOPIC])[0]
     if level[ABUSE] == "yes":
         return "refuse", None, None
-    # A clear yes on the site Noul gives the page of the site, before a Topic can take it (order A of decision 01 of
-    # site-answer). An unsure falls through, so a how-to about Sleeper routes on the
+    # A clear yes on the site Noul gives the page of the site, before a Topic can take it (the site row runs right after
+    # the abuse row; decision 01 of site-answer). An unsure falls through, so a how-to about Sleeper routes on the
     # base table. A request with no pages asks no site Noul, so the base table decides alone.
     if level.get(ASKS_FOR_SITE) == "yes":
         return "site", None, None
