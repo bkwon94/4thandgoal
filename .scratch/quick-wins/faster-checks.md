@@ -82,7 +82,7 @@ exit 0
 `beforeEach` calls `vi.useFakeTimers({ shouldAdvanceTime: true })` and `afterEach` calls `vi.useRealTimers()`. `wait` is now `act(() => vi.advanceTimersByTimeAsync(ms))`. No assertion changed. Three more runs took 2.1 s, 2.2 s, and 2.4 s with 40 of 40 passed. `make check-fast BASE=main` passes.
 Test verdict: pending
 
-### 5. A change of the tracker or the docs alone skips the site
+### 5. A change of the tracker or the docs alone selects only the members that read it
 
 Done condition: `scripts/changed_apps.py` selects only the members whose tests read the changed paths for a change only under `.scratch/` or `docs/`, and any other root path still selects every member.
 Method: tdd
