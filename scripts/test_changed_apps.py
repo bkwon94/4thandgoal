@@ -294,6 +294,41 @@ class TheSiteTestSelection(unittest.TestCase):
     def test_a_run_with_no_selection_tests_every_site_file(self):
         self.assertNotIn("--changed", self.site_command())
 
+    def test_a_hook_run_in_a_work_tree_with_git_dir_set_selects_only_the_changed_files(self):
+        """Run the real prefix of the site command with GIT_DIR set as a git hook sets it, with git as the probe.
+
+        Vitest finds the changed files with `git diff --name-only HEAD` from apps/site. A hook sets GIT_DIR and no
+        GIT_WORK_TREE, so git takes apps/site as the top of the work tree and sees every file as changed.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            skipped = subprocess.check_output(["git", "rev-parse", "--local-env-vars"], text=True).splitlines()
+            env = {key: value for key, value in os.environ.items() if key not in skipped}
+
+            def git(*args: str) -> str:
+                return subprocess.check_output(["git", "-c", "user.name=Test", "-c", "user.email=test@example.com",
+                                                "-c", "commit.gpgSign=false", "-c", "core.hooksPath=/dev/null", *args],
+                                               cwd=root, env=env, text=True)
+
+            workspace(root)
+            (root / "scripts").mkdir()
+            shutil.copyfile(REPO / "Makefile", root / "Makefile")
+            shutil.copyfile(HERE / "changed_apps.py", root / "scripts/changed_apps.py")
+            git("init", "--quiet", "--template=")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "Create the test workspace")
+            write(root, "apps/site/page.ts", "// Changed site file\n")
+            git("add", "apps/site/page.ts")
+            make_env = {key: value for key, value in env.items() if key not in ("MAKEFLAGS", "MFLAGS", "MAKELEVEL")}
+            plan = subprocess.check_output(["make", "-n", "check-fast", "STAGED=1"], cwd=root, env=make_env, text=True)
+            line = next(line for line in plan.splitlines() if "check:fast" in line)
+            command = line[line.index("VITEST_CHANGED="):]
+            probe = command.replace("pnpm --dir apps/site check:fast", "git diff --name-only HEAD")
+            self.assertNotEqual(command, probe)
+            hook_env = {**env, "GIT_DIR": str(root / ".git"), "GIT_INDEX_FILE": str(root / ".git/index")}
+            output = subprocess.check_output(["sh", "-c", probe], cwd=root / "apps/site", env=hook_env, text=True)
+            self.assertEqual(output.split(), ["apps/site/page.ts"])
+
 
 if __name__ == "__main__":
     unittest.main()

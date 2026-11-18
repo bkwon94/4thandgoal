@@ -8,7 +8,10 @@
 site-check = pnpm --dir apps/site check
 # A selected run of the site tests only the vitest files that the changed files reach through imports. VITEST_CHANGED is
 # empty without a selection, so the site still runs every vitest file. "make check-site" never sets it, so CI runs all.
-site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" pnpm --dir apps/site check:fast
+# A git hook sets GIT_DIR and GIT_INDEX_FILE and no GIT_WORK_TREE, so git takes the folder of the command as the top of the
+# work tree. Vitest runs git from apps/site, would see every file as changed, and would select all of them. The env -u
+# calls make git find the work tree from the folder, as it does outside a hook.
+site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 api-check = make -C apps/api check
