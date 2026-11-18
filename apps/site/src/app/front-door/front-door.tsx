@@ -14,7 +14,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useKeyboardRaised } from "@cpc/design/shell/keyboard";
 import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
-import { type AskTarget, AskError, askRoute } from "./ask-api";
+import { type AskTarget, AskError, askPagesOf, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
 import { Dock } from "./dock";
 import { turnsBefore } from "./chat-turns";
@@ -332,7 +332,7 @@ export function FrontDoor({
     if (!passphrase) return askPassphrase(false, id, () => void send(id, question));
     try {
       const turns = turnsOf(id);
-      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns, pages: pages.map(({ key, label, blurb }) => ({ key, label, blurb })) });
+      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns, pages: askPagesOf(pages) });
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
       if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));

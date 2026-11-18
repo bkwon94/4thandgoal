@@ -3,7 +3,7 @@
  * from the API. This module only maps it to what the Thread shows, with the copy of each line.
  */
 import type { DoorAnswer } from "@/lib/data/front-door-data";
-import { AskError, type AskAnswer } from "./ask-api";
+import { AskError, MISSING_PAGE, type AskAnswer, type SiteAnswerPage } from "./ask-api";
 import type { Turn } from "./chat-turns";
 import type { TradeAnswer, TradeRead, TradeRequest } from "./trade-api";
 import type { FreeResult } from "./free-stream";
@@ -17,7 +17,7 @@ import { topicName } from "./topics";
    the key has none, so it never reads as stale. A free answer streams while its result is null, and keeps its
    checked result once the stream ends. A personal Topic of `team` streams the same way from the API, with its data
    block first. A miss of a personal Topic keeps that data block. A site item holds only the page that the route gave:
-   a page key, `all`, or `missing`. The Thread builds its links from the Menu of the build when it shows the item. */
+   a page key, ALL_PAGES, or MISSING_PAGE. The Thread builds its links from the Menu of the build when it shows the item. */
 export type ThreadItem =
   | { kind: "topic"; key: string; team: number; question: string | null }
   | { kind: "pending"; question: string }
@@ -26,7 +26,7 @@ export type ThreadItem =
   | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
   | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null; read?: TradeRead }
   | { kind: "free"; question: string; result: FreeResult | null }
-  | { kind: "site"; question: string; page: string }
+  | { kind: "site"; question: string; page: SiteAnswerPage }
   | { kind: "personal"; key: PersonalTopic; team: number; question: string | null; result: PersonalResult | null };
 
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
@@ -110,7 +110,7 @@ export function itemOfRoute(
       return { kind: "cap", question, line: route.line ?? "", closest: route.closest };
     case "site":
       // A site route with no page reads as a page that the client lacks, so the Thread shows the none case.
-      return { kind: "site", question, page: route.page ?? "missing" };
+      return { kind: "site", question, page: route.page ?? MISSING_PAGE };
   }
 }
 

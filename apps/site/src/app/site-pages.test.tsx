@@ -31,8 +31,28 @@ describe("the pages of the Site answer", () => {
     const links = { ...menuLinks, sim: () => ({ label: "Playoff Sim", href: "/sim/2026/" }) };
     const pages = sitePages(items, links, siteLines, clientValues.packages);
     expect(pages.find((page) => page.key === "sim")?.href).toBe("/sim/2026/");
-    const { container } = render(<SiteAnswer question="how do I use the sim" page="sim" pages={pages} />);
-    expect(within(container).getByRole("link", { name: "Open the Playoff Sim" }).getAttribute("href")).toBe("/sim/2026/");
+    // The list view shows the Playoff Sim tile with the Menu link, not with #sim of the midseason report.
+    const list = render(<SiteAnswer question="what tools are there" page="all" pages={pages} />).container;
+    const tools = within(within(list).getByRole("list", { name: "Tools" })).getAllByRole("link");
+    expect(tools.find((tile) => tile.textContent?.includes("Playoff Sim"))?.getAttribute("href")).toBe("/sim/2026/");
+    expect(within(list).getAllByRole("link").map((link) => link.getAttribute("href"))).not.toContain("/midseason/2026/#sim");
+    cleanup();
+    const card = render(<SiteAnswer question="how do I use the sim" page="sim" pages={pages} />).container;
+    expect(within(card).getByRole("link", { name: "Open the Playoff Sim" }).getAttribute("href")).toBe("/sim/2026/");
+  });
+
+  it("shows the sim with no Menu link only when the client has both the sim and the midseason packages", () => {
+    const keys = (packages: PackageName[]) => sitePages(items, menuLinks, siteLines, packages).map((page) => page.key);
+    expect(keys(clientValues.packages)).toContain("sim");
+    expect(keys(clientValues.packages.filter((name) => name !== "midseason"))).not.toContain("sim");
+    expect(keys(clientValues.packages.filter((name) => name !== "sim"))).not.toContain("sim");
+  });
+
+  it("shows the sim with its Menu link for a client with the sim package and no midseason package", () => {
+    const links = { ...menuLinks, sim: () => ({ label: "Playoff Sim", href: "/sim/2026/" }) };
+    const pages = sitePages(items, links, siteLines, clientValues.packages.filter((name) => name !== "midseason"));
+    expect(pages.map((page) => [page.key, page.href])).toContainEqual(["sim", "/sim/2026/"]);
+    expect(pages.map((page) => page.key)).not.toContain("midseason");
   });
 
   it("drops the midseason report and the sim for a client with no midseason package", () => {

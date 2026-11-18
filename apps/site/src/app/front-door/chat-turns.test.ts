@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
+import { ALL_PAGES, MISSING_PAGE } from "./ask-api";
 import type { ThreadItem } from "./ask-thread";
 import { TURNS_MAX_CHARS, TURN_ANSWER_MAX, TURN_QUESTION_MAX, threadTurns, turnsBefore } from "./chat-turns";
 
@@ -67,6 +68,19 @@ describe("threadTurns", () => {
     expect(turns.map((turn) => turn.question)).toEqual(["who won last year", "a poem"]);
     expect(turns[1].answer).toBe("Not a question here.");
     expect(turns[0].answer.length).toBeGreaterThan(0);
+  });
+
+  it("gives each Site answer a true fact: the list view, the page card, and the none case", () => {
+    const items: ThreadItem[] = [
+      { kind: "site", question: "what tools are there", page: ALL_PAGES },
+      { kind: "site", question: "where is the trade analyzer", page: "analyzer" },
+      { kind: "site", question: "is there a waiver page", page: MISSING_PAGE },
+    ];
+    expect(threadTurns(items, answers, teamName).map((turn) => turn.answer)).toEqual([
+      "A list of the pages of the site.",
+      "A link to the analyzer page of the site.",
+      "The site has no page for that.",
+    ]);
   });
 
   it("cuts each turn to the caps of the API", () => {
