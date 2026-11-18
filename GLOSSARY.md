@@ -1260,3 +1260,11 @@ _Avoid_: Tweak, chore, small change, improvement
 **Done condition**:
 The one sentence that says when one item of a quick run is done. The Judge reads it. It is not an acceptance test.
 _Avoid_: Acceptance test, criterion, definition of done
+
+**Smoke run**:
+One run of the `verify` skill that boots the site and the API and drives the flow that a change touches, before the PR opens.
+_Avoid_: Smoke test, verify step, sanity check, manual test
+
+**Flaky test**:
+A test that passes and fails on the same commit with no change. It gets a fix of its cause, or a delete with the reason written down, never a retry.
+_Avoid_: Flake (alone), intermittent test, unstable test
