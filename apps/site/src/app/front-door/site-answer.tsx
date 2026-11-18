@@ -14,8 +14,13 @@ import { ALL_PAGES, type SiteAnswerPage } from "./ask-api";
 import { QuestionBubble, Surface } from "./miss-card";
 import { FAST, QUICK, fadeIn, staggerOf } from "./motion";
 
-/* The lead line of the page card of `label`. */
-export const cardLead = (label: string) => `The ${label} has its own page.`;
+/* The name of `page` in a sentence. The label of the week page, such as "Week 10", is a name that takes no article. */
+const nameOf = (page: SitePage) => (page.key === "week" ? page.label : `the ${page.label}`);
+/* The lead line of the page card of `page`. */
+export const cardLead = (page: SitePage) => {
+  const name = nameOf(page);
+  return `${name.charAt(0).toUpperCase()}${name.slice(1)} has its own page.`;
+};
 /* The lead line of the none case: a page that the client lacks. */
 export const NONE_LEAD = "The site has no page for that. Here is what it has.";
 
@@ -183,7 +188,7 @@ function Launcher({ pages }: { pages: SitePage[] }) {
 function PageCard({ page, others }: { page: SitePage; others: SitePage[] }) {
   return (
     <>
-      <p className="m-0 text-body leading-tight font-semibold text-ink">{cardLead(page.label)}</p>
+      <p className="m-0 text-body leading-tight font-semibold text-ink">{cardLead(page)}</p>
       <div className="flex flex-col gap-sp-3">
         <span className="flex items-center gap-sp-3">
           <span className={`grid size-12 flex-none place-items-center rounded-tile ${page.tool ? TOOL_TINT : READ_ICON_BOX}`}>
@@ -196,7 +201,7 @@ function PageCard({ page, others }: { page: SitePage; others: SitePage[] }) {
           href={page.href}
           className={`press flex min-h-touch items-center justify-center gap-sp-2 rounded-pill px-sp-4 text-body leading-tight font-semibold no-underline ${page.tool ? TOOL_BUTTON : READ_BUTTON}`}
         >
-          Open the {page.label}
+          Open {nameOf(page)}
           <ArrowRightIcon aria-hidden className="size-sp-4" strokeWidth={2.25} />
         </a>
       </div>

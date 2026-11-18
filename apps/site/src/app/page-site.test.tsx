@@ -86,17 +86,17 @@ describe("the page card of a site question", () => {
   });
 
   it.each([
-    { question: "how do I use the sim", page: "sim", label: "Playoff Sim", blurb: "Plays out the rest of the season, game by game.", href: "/midseason/2026/#sim", at: "AT-4" },
-    { question: "take me to the weekly reports", page: "week", label: "Week 8", blurb: "The recap, scores, and awards of the week.", href: "/2026/week-08/", at: "AT-5" },
-    { question: "midseason report?", page: "midseason", label: "Midseason Report", blurb: "The midseason awards, grades, and roasts.", href: "/midseason/2026/", at: "AT-6" },
-    { question: "wheres the trade thing", page: "analyzer", label: "Trade Analyzer", blurb: "Grades a trade between two or more teams.", href: "/analyze/", at: "AT-7" },
-  ])("shows the card of the $label for '$question' ($at)", async ({ question, page, label, blurb, href }) => {
+    { question: "how do I use the sim", page: "sim", label: "Playoff Sim", blurb: "Plays out the rest of the season, game by game.", href: "/midseason/2026/#sim", the: "the ", at: "AT-4" },
+    { question: "take me to the weekly reports", page: "week", label: "Week 8", blurb: "The recap, scores, and awards of the week.", href: "/2026/week-08/", at: "AT-5", the: "" },
+    { question: "midseason report?", page: "midseason", label: "Midseason Report", blurb: "The midseason awards, grades, and roasts.", href: "/midseason/2026/", the: "the ", at: "AT-6" },
+    { question: "wheres the trade thing", page: "analyzer", label: "Trade Analyzer", blurb: "Grades a trade between two or more teams.", href: "/analyze/", the: "the ", at: "AT-7" },
+  ])("shows the card of the $label for '$question' ($at)", async ({ question, page, label, blurb, href, the }) => {
     answerWith(siteRoute(page));
     render(<HomePage />);
     await ask(question);
-    const card = await articleWith(question, `The ${label} has its own page.`);
+    const card = await articleWith(question, the ? `The ${label} has its own page.` : `${label} has its own page.`);
     expect(card.textContent).toContain(blurb);
-    expect(within(card).getByRole("link", { name: `Open the ${label}` }).getAttribute("href")).toBe(href);
+    expect(within(card).getByRole("link", { name: `Open ${the}${label}` }).getAttribute("href")).toBe(href);
     // The card holds no tutorial and no Menu line under the name.
     expect(card.textContent).not.toMatch(/Menu ·|Step 1/);
   });
