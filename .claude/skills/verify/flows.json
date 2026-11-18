@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Week report",
+    "globs": ["apps/site/src/app/_routes/week/**", "packages/week/site/**"],
+    "route": "{latest-week}",
+    "expected": "The title \"Week N\" and the chapters. The chapter rail shows from the rail tier, 1152 px, so the 1280 shot holds it.",
+    "steps": [{ "expect": "[data-hero-slot=eyebrow] >> text=/Week \\d+/" }, { "expect": "#motw" }, { "expect": "#standings" }]
+  }
+]

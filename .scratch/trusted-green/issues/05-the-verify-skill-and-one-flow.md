@@ -12,6 +12,6 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-1, AT-6, AT-8 and AT-
 
 - [ ] The skill lists of Claude Code and of `codex` each name `verify` once, from one source file.
 - [ ] A smoke run of the Week report of cpc 2026 week 10 passes, at 390x660 WebKit and 1280x800, light theme.
-- [ ] A seeded `expect` of "Week 99" fails the run and names the flow and the step.
-- [ ] A seeded overlap fails the run and names the two elements.
-- [ ] An evidence round with no widths still shoots 375, 768, and 1280 in both themes.
+- [x] A seeded `expect` of "Week 99" fails the run and names the flow and the step.
+- [x] A seeded overlap fails the run and names the two elements.
+- [x] An evidence round with no widths still shoots 375, 768, and 1280 in both themes.
