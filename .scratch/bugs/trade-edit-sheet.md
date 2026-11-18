@@ -29,7 +29,7 @@ Test Files  1 passed (1)
 Tests  1 passed | 71 skipped (72)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
 
