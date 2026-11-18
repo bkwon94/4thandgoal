@@ -1,7 +1,7 @@
 # Faster checks
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-faster-checks`.
 Source: the session of 2026-11-18.
 Boundary: holds. 5 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -107,3 +107,12 @@ The hook runs the root script tests, so it rejects a red commit. The loop and th
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `win-faster-checks`. Commits: `771478a6`, `872c7a15`, `b1d75aa5`, `ffaa7e93`, `6a1c31d0`. Date: 2026-11-18.
+The loops of items 1, 4, and 5 went red, then green; `test_changed_apps` runs 35 tests, the egg hunt file passes 40 of 40 in 2.1 s, and `make check-fast BASE=main` passes.
+A later run can follow up on these notes:
+- On a change of only a `.scratch/` ticket, `vitest run --changed` finds no affected file, so the hook skips `apps/site/src/tracker-rule.test.ts` and `apps/site/src/readme-rule.test.ts`. The pipeline twins `test_rule_tracker.py` and `test_rule_readmes.py` still run, and CI runs both.
+- `apps/site/src/app/page-free.test.tsx` (36 s) and `page-personal.test.tsx` (26 s) are the next files for fake timers.
+- `scripts/test_queue.py` takes about 6 s on each commit, but the root `Makefile` comment says the root scripts take under a second.
+- A change to `apps/site/package.json` or a Vitest config file reruns all vitest files, because Vitest treats each one as a rerun trigger.
+Read 16 files: AGENTS.md, Makefile, .github/workflows/check.yml, .pre-commit-config.yaml, scripts/changed_apps.py, scripts/test_changed_apps.py, scripts/queue.py, scripts/test_queue.py, apps/site/package.json, apps/site/playwright.config.ts, apps/site/vitest.config.ts, apps/site/scripts/build-each-client.mjs, apps/site/e2e/floor-rules.spec.ts, packages/eggs/site/hunt/egg-hunt.test.tsx, apps/pipeline/Makefile, apps/api/Makefile.
