@@ -10,8 +10,8 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-32, AT-33 and AT-35.
 
 **Status:** ready-for-agent
 
-- [ ] The scope script prints "records only" on the diff of commit `c9b6282c`, and selects no heavy check.
-- [ ] The scope script selects the rebuild on a diff of the pipeline, and the smoke run on a diff of the site.
-- [ ] A test of the root scripts covers both cases with a real git repo.
-- [ ] ADR 0037 exists and the ADR README lists it.
-- [ ] The hook config and the commit scripts gain no trailer check and no commit gate.
+- [x] The scope script prints "records only" on the diff of commit `c9b6282c`, and selects no heavy check.
+- [x] The scope script selects the rebuild on a diff of the pipeline, and the smoke run on a diff of the site.
+- [x] A test of the root scripts covers both cases with a real git repo.
+- [x] ADR 0037 exists and the ADR README lists it.
+- [x] The hook config and the commit scripts gain no trailer check and no commit gate.
