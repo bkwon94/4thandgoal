@@ -1,5 +1,5 @@
 ACCEPTANCE.md: 51369adcce486fea13be61d362955ab663c4a090
-EVIDENCE.md: 0115dc4cf57c44051bf6fd78189fa58c5f603702
+EVIDENCE.md: bb79b5bb0599a36a63cc0db2be718196b509c7ca
 
 Test verdicts
 AT-1: PASS
@@ -22,5 +22,5 @@ AT-17: PASS
 AT-18: PASS
 AT-19: PASS
 AT-20: PASS
-AT-21: FAIL The Then line needs the none case with the CPC rows for a kept key `waiver`, but `output.txt` shows only the command, a test title, and "1 passed", with no test source, so the Observation's claims about the key `waiver`, the six rows, and no new ask request are not in the files.
+AT-21: PASS
 AT-22: PASS
