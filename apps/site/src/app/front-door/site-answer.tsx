@@ -46,7 +46,7 @@ function PageIcon({ page, className }: { page: SitePage; className: string }) {
   return <Icon aria-hidden className={className} strokeWidth={2} />;
 }
 
-/* The Tool tone of decision 02: a soft tint of the accent in both themes, with the icon and the label in the accent
+/* The Tool tone (decision 02 of site-answer): a soft tint of the accent in both themes, with the icon and the label in the accent
    ink, so red marks only a Tool and no fill is solid. A light tint of the card in light, of the raised surface in dark. */
 const TOOL_TINT = "bg-[color-mix(in_srgb,var(--color-accent)_20%,var(--color-card))] text-accent-ink dark:bg-[color-mix(in_srgb,var(--color-accent)_24%,var(--color-raised))]";
 /* The icon box of a page to read keeps the plain raised surface. */
@@ -161,7 +161,8 @@ function TileGroup({ label, pages, from, wide }: { label: string; pages: SitePag
   );
 }
 
-/* The A launcher of the whole site: the lead line on the Thread, then the Tools and the pages to read as tiles. */
+/* The list view of the whole site, a launcher of tiles (decision 02 of site-answer): the lead line on the Thread, then
+   the Tools and the pages to read as tiles. */
 function Launcher({ pages }: { pages: SitePage[] }) {
   const groups = groupsOf(pages);
   const { tools, reads } = groups;
@@ -176,8 +177,8 @@ function Launcher({ pages }: { pages: SitePage[] }) {
   );
 }
 
-/* The B card of one page: the lead line, the icon box and the name, the blurb, one "Open" button, and the other pages in
-   the "All pages" fold. */
+/* The page card of one page, in the normal Answer card (decision 02 of site-answer): the lead line, the icon box and
+   the name, the blurb, one "Open" button, and the other pages in the "All pages" fold. */
 function PageCard({ page, others }: { page: SitePage; others: SitePage[] }) {
   return (
     <>
@@ -216,8 +217,8 @@ function PageCard({ page, others }: { page: SitePage; others: SitePage[] }) {
   );
 }
 
-/* The Site answer of `question`. ALL_PAGES gives the launcher. A page key of `pages` gives its page card. MISSING_PAGE,
-   or a kept key that the client no longer has, gives the none case: the B card with no page, and the rows of all the
+/* The Site answer of `question`. ALL_PAGES gives the list view. A page key of `pages` gives its page card. MISSING_PAGE,
+   or a kept key that the client no longer has, gives the none case: the page card with no page, and the rows of all the
    pages, open. */
 export const SiteAnswer = forwardRef<HTMLElement, { question: string; page: SiteAnswerPage; pages: SitePage[] }>(function SiteAnswer({ question, page, pages }, ref) {
   const target = pages.find((candidate) => candidate.key === page);
