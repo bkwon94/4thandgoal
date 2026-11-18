@@ -23,8 +23,26 @@ Measured on 2026-11-18 at `6b75d218`.
 
 Done condition: `make check-fast STAGED=1` and `make check-fast BASE=<ref>` run only the vitest files related to the changed files, and a site run with no `STAGED` and no `BASE` still runs all vitest files.
 Method: tdd
-Red: pending
-Green: pending
+Red: at `5dcc8f82` with `scripts/test_changed_apps.py` of `771478a6`, `cd scripts && python3 -B -m unittest test_changed_apps.TheSiteTestSelection`
+
+```text
+FAIL: test_a_base_run_of_the_site_tests_only_the_files_changed_since_the_base
+AssertionError: '--changed HEAD~1' not found in '\techo "==> site: check-fast"; pnpm --dir apps/site check:fast; '
+FAIL: test_a_staged_run_of_the_site_tests_only_the_changed_files
+AssertionError: '--changed' not found in '\techo "==> site: check-fast"; pnpm --dir apps/site check:fast; '
+Ran 3 tests in 0.574s
+FAILED (failures=2)
+```
+
+Green: at `771478a6`, `cd scripts && python3 -B -m unittest test_changed_apps.TheSiteTestSelection`
+
+```text
+...
+Ran 3 tests in 0.541s
+OK
+```
+
+The run with no selection passes at both commits, so the full suite stays the default. `make check-fast BASE=main` passes at `771478a6`. It runs all 160 files, because this change edits `apps/site/package.json`, which Vitest treats as a rerun trigger. A small change selects few files: `vitest run --changed HEAD` after one added comment line in `apps/site/src/lib/config.ts` ran 27 of 160 files in 58 s, against 156 s for all. The same run with `packages/waiver/site/format.ts` ran 3 files in 3 s.
 Test verdict: pending
 
 ### 2. Playwright runs 4 workers on CI
