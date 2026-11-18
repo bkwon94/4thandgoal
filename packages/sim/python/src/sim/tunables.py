@@ -1,6 +1,6 @@
 """
-The tunable table of the season sim: the count of runs, the sample of runs for the replay, and the numbers of the draw.
-The draw numbers equal those of the weekly playoff odds in rankings/tunables.py. The parity test holds the two together.
+The tunable table of the season sim, the one odds engine: the count of runs, the sample of runs for the replay, the
+numbers of the draw, and the show line of the seed.
 """
 
 # The count of runs. At 10,000 runs one percent is 100 runs, so the sample error of a title odds number is under 1 point.
@@ -8,10 +8,14 @@ SIM_RUNS = 10_000
 # The count of runs that sim.json stores for the replay. 200 runs keep the file under 50 KB gzip (PRD, sim.json).
 SAMPLE_RUNS = 200
 # The weight of the league average in a roster's level is k over n plus k, with k this count of weeks.
-# The same number as LEVEL_SHRINK_WEEKS of the weekly odds, so the two draws agree.
+# At 5 with 7 weeks played, the roster's own average carries 58 percent. On week 7, k from 3 to 8 lands within 3 points.
 LEVEL_SHRINK_WEEKS = 5
 # The share of the gap from a team's season average to its projected best-lineup total that moves each drawn score.
-# The same number as PROJECTION_WEIGHT of the weekly odds, so the two draws agree.
+# Past scores know the team's level, and the projection knows that week's roster. Half each, Brian's call.
+# The gap reads from the raw average, so at 1 a draw is the shrunk level plus the full gap, not the projection itself.
 PROJECTION_WEIGHT = 0.5
 # The decimals of each drawn score. The run counts the rounded score, so the stored scores of a run replay exactly.
 SCORE_DECIMALS = 1
+# The lowest playoff odds, in percent, that show the most likely seed.
+# Below it the seed rests on fewer than half the runs.
+SEED_SHOW_AT = 50

@@ -153,7 +153,6 @@ LAYER_OF: dict[str, str] = {
     "week.facts_league": "facts",
     "week.facts_matchup": "facts",
     "week.facts_nflverse": "facts",
-    "rankings.odds": "facts",
     "analyzer.trade": "facts",
     "analyzer.cache": "facts",
     "managers.entries": "facts",

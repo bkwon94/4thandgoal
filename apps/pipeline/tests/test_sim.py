@@ -10,11 +10,12 @@ from functools import partial
 from pathlib import Path
 
 import pytest
-from cpc import ROOT
-from fakes import FakeWriter, FixtureProvider
+from conftest import SAVED, saved_repo
+from cpc import ROOT, cpc_client
+from fakes import FakeWriter, FixtureProvider, no_news
 from test_midseason import CPC_PROVIDER, prime_nflverse
 
-from cornerstone.pipeline import run_midseason
+from cornerstone.pipeline import make_bundle, run_midseason
 from cornerstone.season_sim import schedule_file, week_sim
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
@@ -23,6 +24,8 @@ from league.history import load_saved_weeks
 from league.models import History
 from league.nflverse import SCHEDULES_URL, cache_path
 from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
+from rankings.published import render_rankings
+from sim.season import weekly_odds
 
 # The nflverse schedule of 2026, the same games as the real cache, which git ignores.
 GAMES = Path(__file__).parent / "fixtures" / "nflverse" / "games.csv"
@@ -125,22 +128,77 @@ def test_the_build_leaves_the_published_rankings_unchanged(cpc_sim):
     assert sorted(path.name for path in published.parent.iterdir()) == ["rankings.json"]
 
 
-@pytest.mark.parametrize("slug", ["cpc", "norcal"])
-def test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds(slug, tmp_path):
-    # AT-38: the sim keeps the draw of the weekly odds in its own package, and this test holds the two together.
-    client = _client(slug, tmp_path)
-    history = History(week=8, weeks=load_saved_weeks(history_root(client.folder, 2026), 8, client.settings.points_key))
-    sim = week_sim(2026, 8, history, client=client)
-    assert sim is not None
-    published = _published_week_8_odds(slug)
-    gaps = {rid: abs(sim.teams[rid].playoff - odds) for rid, odds in published.items()}
-    print(f"{slug}: largest gap {max(gaps.values())} points, roster {max(gaps, key=gaps.__getitem__)}")
-    assert max(gaps.values()) <= 2
-
-
 def test_the_sim_reads_the_schedule_at_the_one_cache_path_of_the_nflverse_readers(tmp_path):
     # The chapters of the report read the same file through cache_path, so the build keeps one copy of it.
     cache = nflverse_cache_dir(tmp_path)
     cache.mkdir(parents=True)
     shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
     assert schedule_file(tmp_path, 2026) == cache_path(cache, SCHEDULES_URL, 2026)
+
+
+@pytest.fixture(scope="module")
+def cpc_week_10(tmp_path_factory):
+    """The weekly build of CPC 2026 week 10 from the saved data, and the sim of the same week from its own load.
+
+    The NFL schedule of the fixtures sits in the cache, so the sim calls no network.
+    """
+    repo = saved_repo(tmp_path_factory.mktemp("repo"), 10)
+    client = cpc_client(at=repo)
+    cache = nflverse_cache_dir(client.nfl_dir)
+    cache.mkdir(parents=True)
+    shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
+    bundle, _ = make_bundle(2026, 10, news=no_news, client=client)
+    history = History(week=10, weeks=load_saved_weeks(history_root(client.folder, 2026), 10, client.settings.points_key))
+    sim = week_sim(2026, 10, history, client=client)
+    assert sim is not None
+    return client, bundle, history, sim
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_weekly_build_takes_the_odds_and_the_swings_of_the_sim_at_10000_runs(cpc_week_10):
+    # AT-2: one engine gives the odds of the week.
+    _, bundle, _, sim = cpc_week_10
+    assert sim.runs == 10_000
+    assert bundle.odds == weekly_odds(sim)
+    assert len(bundle.odds.swings) == 6
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_each_odds_fact_of_the_week_quotes_the_number_of_the_sim(cpc_week_10):
+    # AT-3.
+    _, bundle, _, sim = cpc_week_10
+    facts = bundle.sheet.facts
+    for rid, team in sim.teams.items():
+        text = facts[f"ODDS.{rid}"].text
+        if team.status == "open":
+            assert f"in about {team.playoff}% of runs, with a bye in {team.bye}%" in text, text
+        else:
+            assert ("clinched" if team.status == "in" else "out of the playoff race") in text, text
+    swings = {(s.a, s.b): s for s in sim.swings}
+    for fid, fact in facts.items():
+        if fid.startswith("SW."):
+            a, b = (int(x) for x in fid[3:].split("v"))
+            for rid, win, loss in ((a, swings[(a, b)].a_win, swings[(a, b)].a_loss),
+                                   (b, swings[(a, b)].b_win, swings[(a, b)].b_loss)):
+                if sim.teams[rid].status == "open" and abs(win - loss) >= 5:
+                    assert f"at {win}%, a loss at {loss}%" in fact.text, fact.text
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_rankings_json_takes_the_week_10_odds_of_the_sim_and_keeps_the_odds_of_weeks_1_to_9(cpc_week_10, tmp_path):
+    # AT-2 and AT-4. The site folder starts from the published file, as the weekly build does.
+    client, bundle, history, sim = cpc_week_10
+    published = client_dir(ROOT, "cpc") / "published" / "2026" / "rankings.json"
+    (tmp_path / "2026").mkdir()
+    shutil.copy(published, tmp_path / "2026" / "rankings.json")
+    out = render_rankings(history, 2026, bundle.data.teams, tmp_path, 10, None, bundle.odds,
+                          median_game=client.settings.median_game)
+
+    def odds(path: Path) -> dict[int, dict[int, dict]]:
+        body = json.loads(path.read_text(encoding="utf-8"))
+        return {w["week"]: {row["roster_id"]: row.get("odds") for row in w["rows"]} for w in body["weeks"]}
+
+    before, after = odds(published), odds(out)
+    assert {w: after[w] for w in range(1, 10)} == {w: before[w] for w in range(1, 10)}
+    assert {rid: row["playoff"] for rid, row in after[10].items()} == {rid: t.playoff for rid, t in sim.teams.items()}
+    assert {rid: row["bye"] for rid, row in after[10].items()} == {rid: t.bye for rid, t in sim.teams.items()}

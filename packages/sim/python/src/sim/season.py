@@ -1,6 +1,6 @@
 """
-The season sim: a Monte Carlo of the rest of the regular season and the playoff bracket. It gives the odds of each team,
-the seed odds, the final-win odds, and a sample of runs to replay. Pure code: no network and no Claude.
+The season sim: a Monte Carlo of the rest of the regular season and the playoff bracket. It is the one odds engine: it
+gives the weekly odds, the swings, the seed odds, the final-win odds, and a sample of runs. No network and no Claude.
 """
 import math
 import random
@@ -10,9 +10,9 @@ from collections.abc import Mapping
 from pydantic import BaseModel
 
 from league.league_settings import LeagueSettings
-from league.models import OddsStatus
+from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
-from sim.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SAMPLE_RUNS, SCORE_DECIMALS, SIM_RUNS
+from sim.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SAMPLE_RUNS, SCORE_DECIMALS, SEED_SHOW_AT, SIM_RUNS
 
 Pair = tuple[int, int]
 
@@ -36,6 +36,11 @@ class TeamSim(BaseModel):
     # no chance, and 1 to 99 for an open race.
     playoff: int
     bye: int
+    # The most common seed over the runs where the team makes the playoffs, the better seed on a tie. None when the
+    # playoff odds are below SEED_SHOW_AT.
+    seed: int | None
+    # In for a sure spot, out for no chance, and open for a race, by the plain check on wins.
+    status: OddsStatus
     # The odds in percent of all runs, with one decimal: the final, the title, each seed, and each final win total.
     final: float
     title: float
@@ -80,6 +85,8 @@ class SimResult(BaseModel):
     schedule: dict[int, list[Pair]]
     parameters: SimParameters
     teams: dict[int, TeamSim]
+    # The swing of each head-to-head game of the next regular week, in pair order. Empty with no regular week left.
+    swings: list[Swing]
     sample: list[SimRun]
 
 
@@ -135,6 +142,9 @@ def season_sim(
     seeds: dict[int, Counter[int]] = {rid: Counter() for rid in rosters}
     wins_count: dict[int, Counter[int]] = {rid: Counter() for rid in rosters}
     stored: list[SimRun] = []
+    next_pairs = list(remaining[regular[0]]) if regular else []
+    # Per next-week pair and per winner, three counts: the runs, the runs side a made it, the runs side b made it.
+    halves = {pair: {"a": [0, 0, 0], "b": [0, 0, 0]} for pair in next_pairs}
     for index in range(runs):
         # The draws read the rosters in sorted order and the weeks in order, so the seed gives the same runs.
         level = {rid: rng.gauss(level_mean[rid], level_se[rid]) for rid in rosters}
@@ -154,19 +164,33 @@ def season_sim(
         if rounds:
             finals.update(rounds[-1][0])
         titles[champion] += 1
+        for a, b in next_pairs:
+            # An exact tie is neither a win nor a loss, so the run lands in neither half.
+            if drawn[a][0] == drawn[b][0]:
+                continue
+            half = halves[(a, b)]["a" if drawn[a][0] > drawn[b][0] else "b"]
+            half[0] += 1
+            half[1] += a in place
+            half[2] += b in place
         if index < sample:
             stored.append(SimRun(scores=_played(drawn, rounds, len(regular)), table=table, bracket=rounds,
                                  champion=champion))
 
     weeks_left = len(regular)
     teams = {}
+    status: dict[int, OddsStatus] = {}
     for rid in rosters:
-        status = roster_status(rid, dict(records), weeks_left, spots, median_game=median_game)
+        # With no regular week left, the table is final, so each team is in or out.
+        status[rid] = (roster_status(rid, dict(records), weeks_left, spots, median_game=median_game) if weeks_left
+                       else "in" if made[rid] else "out")
         bye_status = roster_status(rid, dict(records), weeks_left, bye_count, median_game=median_game)
-        playoff = _shown(status, made[rid], runs, weeks_left)
-        bye = 0 if status == "out" else min(_shown(bye_status, byes[rid], runs, weeks_left), playoff)
+        playoff = _shown(status[rid], made[rid], runs, weeks_left)
+        bye = 0 if status[rid] == "out" else min(_shown(bye_status, byes[rid], runs, weeks_left), playoff)
+        # The most common seed; a tie between two seeds goes to the better seed.
+        modal = min(seeds[rid], key=lambda n, rid=rid: (-seeds[rid][n], n)) if seeds[rid] else None
         teams[rid] = TeamSim(
-            roster_id=rid, playoff=playoff, bye=bye,
+            roster_id=rid, playoff=playoff, bye=bye, seed=modal if playoff >= SEED_SHOW_AT else None,
+            status=status[rid],
             final=_tenths(finals[rid], runs), title=_tenths(titles[rid], runs),
             seeds={n: _tenths(count, runs) for n, count in sorted(seeds[rid].items())},
             final_wins={n: _tenths(count, runs) for n, count in sorted(wins_count[rid].items())},
@@ -183,8 +207,35 @@ def season_sim(
             projection_weight=PROJECTION_WEIGHT, shrink_weeks=LEVEL_SHRINK_WEEKS, playoff_spots=spots,
             bye_count=bye_count, median_game=median_game, reseed=settings.reseed,
         ),
-        teams=teams, sample=stored,
+        teams=teams, swings=[_swing(a, b, halves[(a, b)], status, teams, weeks_left) for a, b in next_pairs],
+        sample=stored,
     )
+
+
+def weekly_odds(result: SimResult) -> OddsResult:
+    """The weekly odds of the sim: the playoff odds, the bye odds, the seed, and the status of each team, and the swing
+    of each next-week game. The rankings page, the week page, and the facts read them, so each shows one number."""
+    teams = {rid: TeamOdds(roster_id=rid, playoff=t.playoff, bye=t.bye, seed=t.seed, status=t.status)
+             for rid, t in result.teams.items()}
+    return OddsResult(teams=teams, swings=list(result.swings))
+
+
+def _swing(
+    a: int, b: int, half: dict[str, list[int]], status: Mapping[int, OddsStatus], teams: Mapping[int, TeamSim],
+    weeks_left: int,
+) -> Swing:
+    """Both sides' odds in the runs where side a won and in the runs where side b won.
+
+    A half with no run falls back to the full odds, since the runs never saw that result.
+    """
+    def side(rid: int, runs_and_made: list[int], index: int) -> int:
+        count = runs_and_made[0]
+        if not count:
+            return teams[rid].playoff
+        return _shown(status[rid], runs_and_made[index], count, weeks_left)
+
+    return Swing(a=a, b=b, a_win=side(a, half["a"], 1), a_loss=side(a, half["b"], 1), b_win=side(b, half["b"], 2),
+                 b_loss=side(b, half["a"], 2))
 
 
 def _regular(
