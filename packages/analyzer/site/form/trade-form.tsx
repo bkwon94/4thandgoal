@@ -470,7 +470,13 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
         footer={
           <div className="flex flex-col gap-sp-3">
             {gradeBar}
-            <Button className="press min-h-touch w-full rounded-pill" onClick={cancelEdit}>Cancel</Button>
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="press flex min-h-touch min-w-touch cursor-pointer items-center justify-center self-center rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              Cancel
+            </button>
           </div>
         }
       >
