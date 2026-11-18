@@ -33,7 +33,7 @@ wait dips: cpc: side 0 -17-950 ms, side 1 1216-2200 ms, side 0 2483-3450 ms, sid
 ```
 
 A check at `ec304519` with `TURN_MS = 900` and no commit fails the same command: `side 1 held the weight 900 ms`, `Expected: > 1000`.
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The `site` job of the Check has a timeout of 15 minutes, too tight
 
