@@ -4,6 +4,9 @@
  */
 import { defineConfig, devices } from "@playwright/test";
 
+// The specs of the floor. The projects "floor" and "floor-timing" split them by the tag @timing.
+const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts"];
+
 export default defineConfig({
   testDir: "e2e",
   // A static page loads fast. The CI runner of a public repo has four cores, so CI runs four workers.
@@ -22,10 +25,21 @@ export default defineConfig({
     { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts"] },
     // The project "floor" runs the floor on the static export in out/ of the current CLIENT, and checks the hero scene of
     // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027). It also checks
-    // the layout of the front door, and the idle mesh of the analyzer hero.
+    // the layout of the front door, and the idle mesh of the analyzer hero. It skips the tests tagged @timing, which the
+    // project "floor-timing" runs.
     {
       name: "floor",
-      testMatch: ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts"],
+      testMatch: FLOOR_SPECS,
+      grepInvert: /@timing/,
+    },
+    // The project "floor-timing" runs the tests of the floor that assert a wall-time limit. Run it after the project "floor",
+    // with one worker (scripts/check-floor.mjs does both). CPU load from other workers delays a frame, so a limit of 100 ms
+    // fails in a parallel run and holds in a run alone.
+    {
+      name: "floor-timing",
+      testMatch: FLOOR_SPECS,
+      grep: /@timing/,
+      fullyParallel: false,
     },
     // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
     // It also checks the headshot frames of the analyzer result on the same export.

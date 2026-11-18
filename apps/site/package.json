@@ -14,7 +14,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "check:export": "node scripts/check-export.mjs",
-    "check:floor": "playwright test --project=floor",
+    "check:floor": "node scripts/check-floor.mjs",
     "test:floor": "playwright test --project=rules",
     "test:eggs": "playwright test --project=eggs",
     "evidence": "node scripts/evidence.mjs",
