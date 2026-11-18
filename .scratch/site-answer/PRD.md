@@ -97,7 +97,7 @@ A soft red Tool tone marks a Tool in both themes. Nothing moves to a page with n
     - A key that the client no longer has, such as in a kept Thread after a Menu change, gives the none case.
 15. The lead lines, fixed in code. These settle item 1 of ticket 03:
     - The list view: "The site has N tools and M pages to read." With one Tool, the line says "1 tool".
-    - The page card: "The <label> has its own page."
+    - The page card: "The <label> has its own page." The button says "Open the <label>". The Week page takes no "the", because its label is a name: "Week 10 has its own page." and "Open Week 10".
     - The none case: "The site has no page for that. Here is what it has."
 16. The list view is the A launcher of decision 02:
     - Two groups, "Tools" and "Pages to read", each a grid of tiles.

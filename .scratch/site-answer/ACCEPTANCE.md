@@ -124,7 +124,7 @@ App: site
 Stories: 8, 21, 22
 Given: The Site answers of AT-1 and AT-2 show.
 When: The reader views them in the light theme and in the dark theme.
-Then: Each Tool tile, Tool icon box, and "Open" button of a Tool has a red tint. Each page to read, and the "Open" button of a page to read, has the plain card surface. No fill is solid white in dark, and no fill is solid black in light.
+Then: In light, each Tool tile, Tool icon box, and "Open" button of a Tool has a red tint. In dark, each Tool tile is the raised surface with a rule, and each Tool icon box and "Open" button of a Tool has a red tint (PRD item 19). Each page to read, and the "Open" button of a page to read, has a plain surface with no red tint. No fill is solid white in dark, and no fill is solid black in light.
 Evidence: screenshots in both themes, and the computed background of each tile, icon box, and button from `getComputedStyle`.
 
 AT-15: Each tap target is at least 44 px tall
