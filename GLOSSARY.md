@@ -173,7 +173,7 @@ The list of the questions of a manager and their Answers on the front door, for 
 _Avoid_: Chat, conversation, feed, history
 
 **Route**:
-Where the ask box sends one typed question: a Topic, a free answer, a Site answer, an honest miss, or a calm refusal. Jev answers 7 typed questions in one request, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
+Where the ask box sends one typed question: a Topic, a free answer, a Site answer, an honest miss, or a calm refusal. Jev answers 8 typed questions in one request, or 10 when the request holds the pages of the site, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
 _Avoid_: Intent, classification, dispatch
 
 **Site answer**:

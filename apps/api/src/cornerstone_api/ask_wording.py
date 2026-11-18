@@ -166,8 +166,8 @@ def team_key(name: str) -> str:
 
 def route_questions(teams: list[str], site_pages: dict[str, str] | None = None
                     ) -> dict[str, NoulQuestion | ChoiceQuestion]:
-    """The 8 typed questions of one route request, over the team names of the league. With the pages of the client,
-    the request also asks the site Noul and the page Choice."""
+    """The typed questions of one route request, over the team names of the league: 8 base questions. With the pages
+    of the client, the request also asks the site Noul and the page Choice, which makes 10."""
     site: dict[str, NoulQuestion | ChoiceQuestion] = (
         {} if site_pages is None else {ASKS_FOR_SITE: SITE_NOUL, SITE_PAGE: site_page_choice(site_pages)})
     return {
