@@ -32,6 +32,6 @@ Green: at `aee26144`, `pnpm --dir apps/site exec vitest run packages/analyzer/si
  Test Files  1 passed (1)
       Tests  1 passed (1)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
