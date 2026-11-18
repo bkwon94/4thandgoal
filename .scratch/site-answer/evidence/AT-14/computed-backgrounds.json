@@ -1,0 +1,346 @@
+{
+  "light": {
+    "body_bg": "rgb(255, 255, 255)",
+    "page_bg": "rgb(244, 244, 244)",
+    "rows": [
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Week 10",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Power Rankings",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Managers",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Midseason Report",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Playoff Sim",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "open button",
+        "label": "Open the Trade Analyzer",
+        "height": 44,
+        "button_bg": "color(srgb 0.944314 0.840784 0.832941)",
+        "card_icon_bg": "color(srgb 0.944314 0.840784 0.832941)",
+        "card_bg": "rgb(255, 255, 255)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "fold button",
+        "label": "All pages · 5",
+        "height": 44,
+        "button_bg": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "TOOLS",
+        "label": "Trade Analyzer",
+        "height": 156,
+        "tile_bg": "color(srgb 0.972157 0.920392 0.916471)",
+        "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "TOOLS",
+        "label": "Playoff Sim",
+        "height": 156,
+        "tile_bg": "color(srgb 0.972157 0.920392 0.916471)",
+        "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Week 10",
+        "height": 167.2,
+        "tile_bg": "rgb(255, 255, 255)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Power Rankings",
+        "height": 167.2,
+        "tile_bg": "rgb(255, 255, 255)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Managers",
+        "height": 167.2,
+        "tile_bg": "rgb(255, 255, 255)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Midseason Report",
+        "height": 185.6,
+        "tile_bg": "rgb(255, 255, 255)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Week 10",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Power Rankings",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Trade Analyzer",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Midseason Report",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(235, 235, 235)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Playoff Sim",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "open button",
+        "label": "Open the Managers",
+        "height": 44,
+        "button_bg": "rgb(244, 244, 244)",
+        "card_icon_bg": "rgb(235, 235, 235)",
+        "card_bg": "rgb(255, 255, 255)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "fold button",
+        "label": "All pages · 5",
+        "height": 44,
+        "button_bg": "rgb(235, 235, 235)"
+      }
+    ]
+  },
+  "dark": {
+    "body_bg": "rgb(31, 31, 31)",
+    "page_bg": "rgb(20, 20, 20)",
+    "rows": [
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Week 10",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Power Rankings",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Managers",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Midseason Report",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "row",
+        "label": "Playoff Sim",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "open button",
+        "label": "Open the Trade Analyzer",
+        "height": 44,
+        "button_bg": "color(srgb 0.286431 0.162196 0.152784)",
+        "card_icon_bg": "color(srgb 0.286431 0.162196 0.152784)",
+        "card_bg": "rgb(31, 31, 31)"
+      },
+      {
+        "answer": "where is the trade analyzer",
+        "kind": "fold button",
+        "label": "All pages · 5",
+        "height": 44,
+        "button_bg": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "TOOLS",
+        "label": "Trade Analyzer",
+        "height": 156,
+        "tile_bg": "rgb(38, 38, 38)",
+        "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "TOOLS",
+        "label": "Playoff Sim",
+        "height": 156,
+        "tile_bg": "rgb(38, 38, 38)",
+        "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Week 10",
+        "height": 167.2,
+        "tile_bg": "rgb(31, 31, 31)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Power Rankings",
+        "height": 167.2,
+        "tile_bg": "rgb(31, 31, 31)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Managers",
+        "height": 167.2,
+        "tile_bg": "rgb(31, 31, 31)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "what tools are there",
+        "kind": "tile",
+        "group": "PAGES TO READ",
+        "label": "Midseason Report",
+        "height": 185.6,
+        "tile_bg": "rgb(31, 31, 31)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Week 10",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Power Rankings",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Trade Analyzer",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Midseason Report",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "rgb(38, 38, 38)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "row",
+        "label": "Playoff Sim",
+        "height": 56,
+        "row_bg": "rgba(0, 0, 0, 0)",
+        "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "open button",
+        "label": "Open the Managers",
+        "height": 44,
+        "button_bg": "rgb(20, 20, 20)",
+        "card_icon_bg": "rgb(38, 38, 38)",
+        "card_bg": "rgb(31, 31, 31)"
+      },
+      {
+        "answer": "whats the managers page for",
+        "kind": "fold button",
+        "label": "All pages · 5",
+        "height": 44,
+        "button_bg": "rgb(38, 38, 38)"
+      }
+    ]
+  }
+}

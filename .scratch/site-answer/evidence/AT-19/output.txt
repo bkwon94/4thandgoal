@@ -1,0 +1,33 @@
+$ cd apps/site && CLIENT=cpc node scripts/client-build.mjs && pnpm exec vitest run src/app/site-pages.test.tsx -t "AT-19" --reporter=verbose
+# Run in the Spec worktree at cee7caf1, on 2026-11-18 20:57 UTC.
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/site-answer/apps/site
+
+ ↓ src/app/site-pages.test.tsx > the pages of the Site answer > marks the analyzer and the sim as Tools, and each other page as a page to read
+ ✓ src/app/site-pages.test.tsx > the pages of the Site answer > gives the sim its own Menu link over the sim section of the midseason report (AT-19) 133ms
+ ↓ src/app/site-pages.test.tsx > the pages of the Site answer > shows the sim with no Menu link only when the client has both the sim and the midseason packages
+ ↓ src/app/site-pages.test.tsx > the pages of the Site answer > shows the sim with its Menu link for a client with the sim package and no midseason package
+ ↓ src/app/site-pages.test.tsx > the pages of the Site answer > drops the midseason report and the sim for a client with no midseason package
+ ↓ src/app/site-pages.test.tsx > the list view of NorCal (AT-13) > holds only the pages of the NorCal Menu, plus its report and its sim, and each link opens a NorCal page
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 5 skipped (6)
+   Start at  15:57:28
+   Duration  1.70s (environment 44%, import 34%, transform 13%, tests 8%)
+
+exit: 0
+
+# The source of the test at cee7caf1, apps/site/src/app/site-pages.test.tsx lines 30 to 42:
+  it("gives the sim its own Menu link over the sim section of the midseason report (AT-19)", () => {
+    const links = { ...menuLinks, sim: () => ({ label: "Playoff Sim", href: "/sim/2026/" }) };
+    const pages = sitePages(items, links, siteLines, clientValues.packages);
+    expect(pages.find((page) => page.key === "sim")?.href).toBe("/sim/2026/");
+    // The list view shows the Playoff Sim tile with the Menu link, not with #sim of the midseason report.
+    const list = render(<SiteAnswer question="what tools are there" page="all" pages={pages} />).container;
+    const tools = within(within(list).getByRole("list", { name: "Tools" })).getAllByRole("link");
+    expect(tools.find((tile) => tile.textContent?.includes("Playoff Sim"))?.getAttribute("href")).toBe("/sim/2026/");
+    expect(within(list).getAllByRole("link").map((link) => link.getAttribute("href"))).not.toContain("/midseason/2026/#sim");
+    cleanup();
+    const card = render(<SiteAnswer question="how do I use the sim" page="sim" pages={pages} />).container;
+    expect(within(card).getByRole("link", { name: "Open the Playoff Sim" }).getAttribute("href")).toBe("/sim/2026/");
+  });

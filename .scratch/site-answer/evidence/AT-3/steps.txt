@@ -1,0 +1,2 @@
+# ask-response.json comes from the step "responses" of extra-evidence.mjs, a Playwright script that reads the POST /ask request and response of the page, because no verb of the runner saves a network response.
+# The full text of the script is in evidence/extra-evidence-script.txt. The shots come from the runner, with steps.json.

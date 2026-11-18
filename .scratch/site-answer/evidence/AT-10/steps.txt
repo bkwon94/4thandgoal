@@ -1,0 +1,2 @@
+# The files of AT-10 come from the step "AT-10" of extra-evidence.mjs, a Playwright script, because no verb of the runner covers a 5 s watch of the address and a screen recording.
+# The full text of the script, the static server, the build command, and the API command are in evidence/extra-evidence-script.txt.

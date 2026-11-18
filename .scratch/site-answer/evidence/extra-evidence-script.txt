@@ -1,0 +1,342 @@
+# The instrument of the steps that no verb of the runner covers: a Playwright script, run as `node extra-evidence.mjs <step>`
+# from apps/site of a detached worktree of cee7caf1, with Node v24.15.0, on 2026-11-18 near 20:35 to 20:45 UTC.
+# The site: the static export of that worktree, built with `CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build`
+# (and CLIENT=norcal for the step "norcal"), served on http://127.0.0.1:4173 by serve.mjs (below), which answers a missing
+# path with 404.html and the status 404, as the Worker does.
+# The API: `make -C apps/api api-evidence` in the same detached worktree, with ~/.secrets sourced, so each ask calls the live Jev.
+# The passphrase is "localtest", the passphrase of api-evidence. Your team is Lil Fridge for CPC, and the first team of the sheet for NorCal.
+# The steps run: responses, norcal, AT-10, AT-12, AT-14, AT-15, AT-16, AT-17. The script and the server are not committed. Their full text follows.
+
+#### extra-evidence.mjs
+// The evidence of the steps of site-answer that no verb of the runner covers: the ask responses, the address over 5 s,
+// the reload, the computed fills, the target heights, the reduced-motion recordings, and the text of each answer.
+import { chromium } from "@playwright/test";
+import { mkdirSync, writeFileSync, renameSync, existsSync } from "node:fs";
+import { join } from "node:path";
+const E = "/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/site-answer/.scratch/site-answer/evidence";
+const BASE = "http://127.0.0.1:4173";
+const which = process.argv[2];
+const ASK = 'input[aria-label="Ask a question"]';
+const out = (id, name, text) => { mkdirSync(join(E, id), { recursive: true }); writeFileSync(join(E, id, name), text); };
+
+async function open({ width = 375, height = 800, theme = "light", video = null, reduced = "no-preference", url = false, team = "Lil Fridge" } = {}) {
+  const browser = await chromium.launch();
+  const context = await browser.newContext({ viewport: { width, height }, reducedMotion: reduced, ...(video ? { recordVideo: { dir: video, size: { width, height } } } : {}) });
+  await context.addInitScript((t) => localStorage.setItem("cpc.theme", t), theme);
+  if (url) {
+    // A bar on top of the page that shows the address, so the recording holds the address of each moment.
+    await context.addInitScript(() => {
+      const paint = () => {
+        let bar = document.getElementById("evidence-address");
+        if (!bar && document.body) {
+          bar = document.createElement("div");
+          bar.id = "evidence-address";
+          bar.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#111;color:#fff;font:13px monospace;padding:6px 8px;pointer-events:none";
+          document.body.appendChild(bar);
+        }
+        if (bar) bar.textContent = `address: ${location.href}   t=${(performance.now() / 1000).toFixed(1)} s`;
+      };
+      setInterval(paint, 100);
+    });
+  }
+  const page = await context.newPage();
+  page.setDefaultTimeout(90000);
+  const asks = [];
+  page.on("response", async (r) => {
+    if (r.request().method() === "POST" && r.url().endsWith("/ask")) {
+      let body = null; try { body = await r.json(); } catch {}
+      asks.push({ url: r.url(), status: r.status(), request: JSON.parse(r.request().postData() ?? "null"), response: body });
+    }
+  });
+  await page.goto(BASE + "/");
+  await page.locator("text=Which team is yours?").waitFor();
+  await page.waitForTimeout(1200);
+  const pick = team ? page.locator(`[role=dialog] button:has-text("${team}")`) : page.locator("[role=dialog] button[aria-pressed]");
+  await pick.first().click();
+  await page.locator(ASK).waitFor();
+  await page.waitForTimeout(800);
+  return { browser, context, page, asks };
+}
+let passed = false;
+async function ask(page, question, done) {
+  await page.fill(ASK, question);
+  await page.click('button[aria-label="Send"]');
+  if (!passed) {
+    await page.locator("input[type=password]").waitFor();
+    await page.fill("input[type=password]", "localtest");
+    await page.click('button[aria-label="Use this passphrase"]');
+    passed = true;
+  }
+  await page.locator(done).last().waitFor();
+  await page.waitForTimeout(1500);
+}
+const CARD = (label) => `a:has-text("Open the ${label}")`;
+const LIST = "text=Pages to read";
+const NONE = "text=The site has no page for that. Here is what it has.";
+const QUESTIONS = {
+  "AT-1": ["where is the trade analyzer", CARD("Trade Analyzer")],
+  "AT-2": ["what tools are there", LIST],
+  "AT-3": ["what can this site do", LIST],
+  "AT-4": ["how do I use the sim", CARD("Playoff Sim")],
+  "AT-5": ["take me to the weekly reports", CARD("Week 10")],
+  "AT-6": ["midseason report?", CARD("Midseason Report")],
+  "AT-7": ["wheres the trade thing", CARD("Trade Analyzer")],
+  "AT-8": ["is there a waiver page", NONE],
+  "AT-22": ["what's the weather", "text=I can't answer that."],
+};
+const stamp = () => new Date().toISOString();
+
+if (which === "responses") {
+  // One fresh page per question, so each Thread starts empty.
+  for (const [id, [q, done]] of Object.entries(QUESTIONS)) {
+    passed = false;
+    const { browser, page, asks } = await open();
+    await ask(page, q, done);
+    const links = await page.locator("article").last().locator("a").evaluateAll((as) => as.map((a) => ({ text: a.innerText.replace(/\s+/g, " ").trim(), href: a.getAttribute("href") })));
+    const text = await page.locator("article").last().innerText();
+    out(id, "ask-response.json", JSON.stringify({ taken: stamp(), page: BASE + "/", question: q, asks, answer_text: text, answer_links: links }, null, 2) + "\n");
+    console.log(id, asks.map((a) => `${a.status} route=${a.response?.route} page=${a.response?.page}`).join(" | "), "links", links.length);
+    await browser.close();
+  }
+}
+
+if (which === "norcal") {
+  passed = false;
+  const { browser, page, asks } = await open({ team: null });
+  await ask(page, "what tools are there", LIST);
+  const team = await page.locator('button[aria-label^="Your team:"]').first().getAttribute("aria-label").catch(() => null);
+  const links = await page.locator("article").last().locator("a").evaluateAll((as) => as.map((a) => ({ text: a.innerText.replace(/\s+/g, " ").trim(), href: a.getAttribute("href") })));
+  const menu = await page.evaluate(() => [...document.querySelectorAll("nav a, header a")].map((a) => ({ text: a.innerText.replace(/\s+/g, " ").trim(), href: a.getAttribute("href") })));
+  const status = [];
+  for (const l of links) {
+    const r = await page.request.get(BASE + l.href.split("#")[0]);
+    const body = await r.text();
+    const title = (body.match(/<title>([^<]*)<\/title>/) ?? [])[1] ?? "";
+    status.push({ ...l, status: r.status(), title });
+  }
+  out("AT-13", "ask-response.json", JSON.stringify({ taken: stamp(), team, asks }, null, 2) + "\n");
+  out("AT-13", "links.txt", [`# Each link of the NorCal list view, fetched from the NorCal static export on ${BASE}, which answers a missing path with 404.html and status 404.`, `# Taken ${stamp()}. ${team ?? ""}`, ...status.map((s) => `${s.status}  ${s.href}  "${s.text}"  title="${s.title}"`), "", "# The links of the menu and the header of the page, for comparison:", ...menu.map((m) => `${m.href}  "${m.text}"`)].join("\n") + "\n");
+  console.log(status);
+  await browser.close();
+}
+
+if (which === "AT-10") {
+  passed = false;
+  const dir = join(E, "AT-10", "raw");
+  const { browser, context, page } = await open({ video: dir, url: true });
+  await ask(page, "where is the trade analyzer", CARD("Trade Analyzer"));
+  const log = [];
+  const t0 = Date.now();
+  while (Date.now() - t0 < 5000) { log.push(`${((Date.now() - t0) / 1000).toFixed(2)} s  ${page.url()}`); await page.waitForTimeout(250); }
+  log.push(`${((Date.now() - t0) / 1000).toFixed(2)} s  tap "Open the Trade Analyzer"`);
+  await page.click(CARD("Trade Analyzer"));
+  await page.waitForURL(/analyze/, { waitUntil: "commit" });
+  await page.waitForTimeout(2000);
+  log.push(`${((Date.now() - t0) / 1000).toFixed(2)} s  ${page.url()}`);
+  const video = page.video();
+  await context.close(); await browser.close();
+  renameSync(await video.path(), join(E, "AT-10", "375-light.webm"));
+  out("AT-10", "address-log.txt", [`# The address of the page every 250 ms after the Site answer of AT-1 showed, then the tap. Taken ${stamp()}.`, ...log].join("\n") + "\n");
+  console.log(log.join("\n"));
+}
+
+if (which === "AT-12") {
+  const lines = [];
+  for (const theme of ["light", "dark"]) {
+    passed = false;
+    const { browser, page } = await open({ theme });
+    await ask(page, "what tools are there", LIST);
+    const before = await page.locator("article").last().locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    await page.screenshot({ path: join(E, "AT-12", `before-375-${theme}.png`), fullPage: true });
+    const net = [];
+    page.on("request", (r) => net.push(`${r.method()} ${r.url()}`));
+    await page.reload();
+    await page.locator(LIST).last().waitFor();
+    await page.waitForTimeout(3000);
+    const after = await page.locator("article").last().locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    await page.screenshot({ path: join(E, "AT-12", `after-375-${theme}.png`), fullPage: true });
+    const askPosts = net.filter((l) => l.startsWith("POST") && l.endsWith("/ask"));
+    lines.push(`## ${theme}`, `links before the reload: ${JSON.stringify(before)}`, `links after the reload:  ${JSON.stringify(after)}`, `POST .../ask requests during the reload: ${askPosts.length}`, `every request of the reload (${net.length}):`, ...net, "");
+    await browser.close();
+  }
+  out("AT-12", "network-log.txt", [`# The requests of the page from the reload of / until 3 s after the list view showed again. Taken ${stamp()}.`, ...lines].join("\n"));
+  console.log(lines.filter((l) => !l.startsWith("GET")).join("\n"));
+}
+
+// The fill and the size of each tile, icon box, row, and button of the Site answers in the Thread.
+const MEASURE = () => {
+  const box = (el) => { const r = el.getBoundingClientRect(); return Math.round(r.height * 10) / 10; };
+  const bg = (el) => getComputedStyle(el).backgroundColor;
+  const out = [];
+  document.querySelectorAll("article").forEach((art) => {
+    const q = art.getAttribute("aria-label");
+    art.querySelectorAll("ul[aria-labelledby] > li > a").forEach((a) => {
+      const group = document.getElementById(a.closest("ul").getAttribute("aria-labelledby")).innerText;
+      const icon = a.querySelector("span > span.grid");
+      const label = a.querySelector("span.font-bold")?.innerText;
+      out.push({ answer: q, kind: "tile", group, label, height: box(a), tile_bg: bg(a), icon_bg: icon ? bg(icon) : null });
+    });
+    art.querySelectorAll('ul[aria-label="Pages"] > li > a').forEach((a) => {
+      const icon = a.querySelector("span.grid");
+      out.push({ answer: q, kind: "row", label: a.querySelector("span.font-semibold")?.innerText, height: box(a), row_bg: bg(a), icon_bg: icon ? bg(icon) : null });
+    });
+    art.querySelectorAll("a").forEach((a) => {
+      if (!a.innerText.startsWith("Open the")) return;
+      const card = a.parentElement.querySelector("span.grid");
+      let up = a.parentElement; while (up && /rgba\(0, 0, 0, 0\)/.test(bg(up))) up = up.parentElement;
+      out.push({ answer: q, kind: "open button", label: a.innerText.trim(), height: box(a), button_bg: bg(a), card_icon_bg: card ? bg(card) : null, card_bg: up ? bg(up) : null });
+    });
+    art.querySelectorAll("button").forEach((b) => {
+      if (!b.innerText.startsWith("All pages")) return;
+      out.push({ answer: q, kind: "fold button", label: b.innerText.trim(), height: box(b), button_bg: bg(b) });
+    });
+  });
+  const surface = (sel) => { const el = document.querySelector(sel); return el ? bg(el) : null; };
+  const main = document.querySelector("main");
+  let p = main; while (p && /rgba\(0, 0, 0, 0\)/.test(bg(p))) p = p.parentElement;
+  return { body_bg: bg(document.body), page_bg: p ? bg(p) : null, rows: out };
+};
+
+if (which === "AT-14") {
+  const res = {};
+  for (const theme of ["light", "dark"]) {
+    passed = false;
+    const { browser, page } = await open({ theme, width: 1280, height: 900 });
+    await ask(page, "where is the trade analyzer", CARD("Trade Analyzer"));
+    await ask(page, "what tools are there", LIST);
+    await ask(page, "whats the managers page for", CARD("Managers"));
+    // Open each "All pages" fold, so the icon box of each row is measured too.
+    for (const b of await page.locator('button:has-text("All pages")').all()) { await b.click(); await page.waitForTimeout(600); }
+    await page.waitForTimeout(800);
+    res[theme] = await page.evaluate(MEASURE);
+    await page.screenshot({ path: join(E, "AT-14", `measured-1280-${theme}.png`), fullPage: true });
+    await browser.close();
+  }
+  const lines = [`# getComputedStyle(el).backgroundColor of each tile, icon box, row, and "Open" button, at 1280 px. Taken ${stamp()}.`,
+    `# One Thread per theme: "where is the trade analyzer" (AT-1), "what tools are there" (AT-2), "whats the managers page for" (a page card of a page to read). Each "All pages" fold is open.`];
+  for (const theme of ["light", "dark"]) {
+    lines.push("", `## ${theme} (body background ${res[theme].body_bg}, page background ${res[theme].page_bg})`);
+    for (const r of res[theme].rows) {
+      if (r.kind === "tile") lines.push(`${r.answer} | tile | ${r.group} | ${r.label} | tile ${r.tile_bg} | icon box ${r.icon_bg}`);
+      if (r.kind === "row") lines.push(`${r.answer} | row | ${r.label} | row ${r.row_bg} | icon box ${r.icon_bg}`);
+      if (r.kind === "open button") lines.push(`${r.answer} | page card | ${r.label} | button ${r.button_bg} | icon box ${r.card_icon_bg} | card surface ${r.card_bg}`);
+    }
+  }
+  out("AT-14", "computed-backgrounds.txt", lines.join("\n") + "\n");
+  out("AT-14", "computed-backgrounds.json", JSON.stringify(res, null, 2) + "\n");
+  console.log(lines.join("\n"));
+}
+
+if (which === "AT-15") {
+  const res = {};
+  for (const theme of ["light"]) {
+    passed = false;
+    const { browser, page } = await open({ theme });
+    await ask(page, "where is the trade analyzer", CARD("Trade Analyzer"));
+    await page.locator('button:has-text("All pages · 5")').click();
+    await page.waitForTimeout(1000);
+    await ask(page, "what tools are there", LIST);
+    await ask(page, "is there a waiver page", NONE);
+    await page.waitForTimeout(800);
+    res[theme] = await page.evaluate(MEASURE);
+    await page.screenshot({ path: join(E, "AT-15", `measured-375-${theme}.png`), fullPage: true });
+    await browser.close();
+  }
+  const lines = [`# getBoundingClientRect().height of each tile, row, and button of the Site answers, at 375 px. Taken ${stamp()}.`,
+    `# One Thread: "where is the trade analyzer" (AT-1, with its "All pages · 5" fold open), "what tools are there" (AT-2), "is there a waiver page" (AT-8).`];
+  for (const r of res.light.rows) lines.push(`${r.answer} | ${r.kind} | ${r.label} | ${r.height} px`);
+  const hs = res.light.rows.map((r) => r.height);
+  lines.push("", `targets: ${hs.length}, smallest: ${Math.min(...hs)} px`);
+  out("AT-15", "heights.txt", lines.join("\n") + "\n");
+  console.log(lines.join("\n"));
+}
+
+if (which === "AT-16") {
+  const lines = [];
+  for (const reduced of ["reduce", "no-preference"]) {
+    passed = false;
+    const dir = join(E, "AT-16", "raw-" + reduced);
+    const { browser, context, page } = await open({ video: dir, reduced });
+    // Sample the style of each item of a Site answer every animation frame, to show what moves.
+    await page.evaluate(() => {
+      window.__samples = [];
+      const tick = () => {
+        document.querySelectorAll("article li").forEach((li, i) => {
+          const s = getComputedStyle(li);
+          window.__samples.push(`${li.closest("article").getAttribute("aria-label")}#${i} opacity=${(+s.opacity).toFixed(2)} transform=${s.transform} filter=${s.filter}`);
+        });
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    await ask(page, "what tools are there", LIST);
+    await ask(page, "where is the trade analyzer", CARD("Trade Analyzer"));
+    await page.locator('button:has-text("All pages · 5")').last().click();
+    await page.waitForTimeout(1500);
+    const samples = await page.evaluate(() => window.__samples);
+    const video = page.video();
+    await context.close(); await browser.close();
+    renameSync(await video.path(), join(E, "AT-16", `375-${reduced === "reduce" ? "reduced-on" : "reduced-off"}.webm`));
+    const uniq = (re) => [...new Set(samples.map((s) => (s.match(re) ?? [])[1]))];
+    lines.push(`## prefers-reduced-motion: ${reduced}`, `frames sampled: ${samples.length}`,
+      `distinct transform values: ${JSON.stringify(uniq(/transform=(\S+(?: \S+)*?) filter=/))}`,
+      `distinct filter values: ${JSON.stringify(uniq(/filter=(.*)$/))}`,
+      `distinct opacity values (count): ${uniq(/opacity=(\S+)/).length}`, "");
+  }
+  out("AT-16", "motion-samples.txt", [`# The computed opacity, transform, and filter of each tile and row of the Site answers, read on each animation frame at 375 px light, while "what tools are there", then "where is the trade analyzer" showed and its "All pages" fold opened. Taken ${stamp()}.`, ...lines].join("\n"));
+  console.log(lines.join("\n"));
+}
+
+if (which === "AT-17") {
+  passed = false;
+  const { browser, page } = await open();
+  const parts = [];
+  for (const [q, done] of [QUESTIONS["AT-1"], QUESTIONS["AT-2"], QUESTIONS["AT-8"]]) {
+    await ask(page, q, done);
+    if (q.startsWith("where")) { await page.locator('button:has-text("All pages · 5")').click(); await page.waitForTimeout(800); }
+    const art = page.locator(`article[aria-label="${q}"]`).last();
+    const text = await art.innerText();
+    const attrs = await art.evaluate((a) => [...a.querySelectorAll("*")].flatMap((el) => ["aria-label", "title", "alt"].map((k) => el.getAttribute(k)).filter(Boolean)));
+    parts.push(`## "${q}"`, "### innerText", text, "### aria-label, title, and alt values", ...attrs, "");
+  }
+  const all = parts.join("\n");
+  const words = ["Jev", "Advisor", "Finder", "front door", "rival"];
+  const hits = words.map((w) => `${w}: ${(all.match(new RegExp(w, "gi")) ?? []).length} matches in the text above`);
+  out("AT-17", "answer-text.txt", [`# The text of the Site answers of AT-1 (with its fold open), AT-2, and AT-8, read from the page at 375 px light. Taken ${stamp()}.`, ...parts, "## A case-blind count of each word in the text above", ...hits].join("\n") + "\n");
+  console.log(hits.join("\n"));
+  await browser.close();
+}
+
+#### serve.mjs
+// Serves a static export on 127.0.0.1:4173. A missing path gets 404.html with the status 404, as the Worker gives it.
+import { createServer } from "node:http";
+import { readFile, stat } from "node:fs/promises";
+import { join, extname } from "node:path";
+const root = process.argv[2];
+const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".txt": "text/plain", ".woff2": "font/woff2", ".webp": "image/webp", ".ico": "image/x-icon" };
+async function find(path) {
+  for (const p of [path, join(path, "index.html"), path + ".html"]) {
+    try { if ((await stat(p)).isFile()) return p; } catch {}
+  }
+  return null;
+}
+createServer(async (req, res) => {
+  const url = decodeURIComponent(new URL(req.url, "http://x").pathname);
+  const file = await find(join(root, url));
+  if (!file) { res.writeHead(404, { "content-type": "text/html" }); res.end(await readFile(join(root, "404.html"))); return; }
+  res.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream" });
+  res.end(await readFile(file));
+}).listen(4173, "127.0.0.1", () => console.log("serving", root));
+
+#### menu.mjs (the Menu links of AT-1 and AT-5)
+// Reads the links of the Menu of the built site.
+import { chromium } from "@playwright/test";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 375, height: 800 } });
+await page.goto("http://127.0.0.1:4173/2026/week-10/");
+await page.waitForTimeout(1500);
+
+const menu = page.locator('button[aria-label*="enu" i]').first();
+if (await menu.count()) { await menu.click(); await page.waitForTimeout(1200); }
+console.log(await page.locator("[role=dialog] a, nav a").evaluateAll((as) => as.map((a) => `${a.getAttribute("href")}  "${a.innerText.replace(/\s+/g, " ").trim()}"`)));
+await browser.close();
