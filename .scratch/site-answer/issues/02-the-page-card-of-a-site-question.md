@@ -8,7 +8,7 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-1, AT-4, AT-5, AT-6, AT
 
 **Blocked by:** 01.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] "where is the trade analyzer", "how do I use the sim", "take me to the weekly reports", "midseason report?", and "wheres the trade thing" each show the right card on the live API (AT-1, AT-4, AT-5, AT-6, AT-7).
 - [x] The address stays `/` until a tap on "Open" (AT-10).
