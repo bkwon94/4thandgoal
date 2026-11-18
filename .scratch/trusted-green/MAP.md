@@ -25,10 +25,11 @@ The ideas come from "How the Claude Code team thinks about verification" (https:
 - `flows.json` in the skill picks the flows by the globs of the diff. The evidence runner drives them, with a new verb `expect`. A failed step, error, 4xx or 5xx, or overlap fails the run. iPhone WebKit and desktop sizes; real Claude calls once. A red smoke run stops before the Judge; the quick Judge gets a third question. `decisions/04-grill-what-smoke-run-drives.md`.
 - A full rebuild is no oracle: it needs two secrets, takes 12.5 min, and never matches. `page-json` matches the latest published week byte for byte in 2 s. `decisions/03-research-rebuild-matches-published.md`.
 - The rebuild diffs the render with `page-json` for the latest week of each client. The facts diff waits on ticket 10. `decisions/09-grill-what-rebuild-diffs.md`.
+- Pinned inputs give the same facts byte for byte, so spec 1 diffs the facts too. The build needs five changes. `decisions/10-research-pinned-facts-match.md`.
 
 ## NOT YET SPECIFIED
 
-- Do pinned inputs give the same facts of a week on each build? `decisions/10-research-pinned-facts-match.md`.
+- How does the build pin its inputs: the clock, the nflverse extract, the slow sources, the research, and the news? `decisions/11-spec-pinned-build-inputs.md`.
 - Which flows does the first flow list hold, with which globs? `decisions/08-spec-first-flow-list.md`.
 - What shape has the list of approved diffs of the rebuild? `decisions/05-spec-approved-diff-list.md`.
 - Which pure functions get property tests, and which properties? `decisions/06-spec-property-test-targets.md`.
