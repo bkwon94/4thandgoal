@@ -6,6 +6,8 @@ import json
 from collections.abc import Mapping
 from pathlib import Path
 
+from pydantic import Field
+
 from league.files import write_bytes_atomic
 from sim.season import SimResult
 
@@ -18,6 +20,8 @@ class SimFile(SimResult):
     """The whole of sim.json: the sim result and the name of each team."""
     schema_version: int = SIM_SCHEMA_VERSION
     names: dict[int, str]
+    # The season file keeps the shape that the midseason replay reads, so it leaves out the effective runs.
+    effective_runs: int | None = Field(default=None, exclude=True)
 
 
 def sim_file(result: SimResult, names: Mapping[int, str]) -> SimFile:
