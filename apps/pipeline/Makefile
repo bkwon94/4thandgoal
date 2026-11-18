@@ -14,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings midseason midseason-publish egg-undo push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json facts rankings midseason midseason-publish egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -70,6 +70,9 @@ egg-drop: need-client need-week ## Send the confirmed eggs of a week to the API 
 
 page-json: need-client need-week ## Write page.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone page-json --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
+facts: need-client need-week ## Rebuild facts.json of a saved week from its saved inputs (CLIENT and WEEK required)
+	$(RUN) cornerstone facts --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
 rankings: need-client need-week ## Write rankings.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone rankings --client $(CLIENT) --season $(SEASON) --week $(WEEK)
