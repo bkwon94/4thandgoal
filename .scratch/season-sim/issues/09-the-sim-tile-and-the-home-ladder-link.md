@@ -1,0 +1,19 @@
+# 09: The Sim tile and the home ladder link
+
+Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-45 to AT-49. Decision 06.
+
+**App:** both
+
+**What to build:** Each week page gets the Sim tile right after Standings and before Next week. The tile reads the page of Your team from `sim.json` in the browser, and shows its odds and the line of more wins, with a link to the sim page. With no team set, it shows the league fact of the build. In a playoff week, it shows the title odds of a team still in, or the favorite fact for a team that is out. The week 17 tile names the champion. The Playoff race ladder of the home page links to the sim page.
+
+**Blocked by:** 08.
+
+**Status:** ready-for-agent
+
+- [ ] The `cpc` week 10 page with Bo Girds shows the Sim tile between Standings and Next week, with the numbers of the file and a link to `/sim/2026/` (AT-45).
+- [ ] With no team set, the tile shows the league fact of the file (AT-46).
+- [ ] In the playoff fixture, the tile shows the title odds of the top seed, and the favorite fact for the 12th team (AT-47).
+- [ ] The week 17 tile of the season-end fixture names the champion (AT-48).
+- [ ] The link of the Playoff race ladder opens `/sim/2026/` (AT-49).
+- [ ] The site evidence set passes the overlap check at the four sizes.
+- [ ] `make check-fast` passes.

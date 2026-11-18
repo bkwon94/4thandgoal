@@ -33,10 +33,11 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 - A set result uses the "Your score first" draw with a weight: beat r6 after a win or r5 after a loss. It is exact up to sample noise, 0.90 to 1.10 s on the Mac. One weighted sim with a fixed seed gives each number of the page by a split of its runs. The root-for rows rank with a tolerance of 1 point. The response holds `teams`, `sample`, `effective_runs`, and one `page` block, and sim.json gets `pages`. About 44 KB gzip. `decisions/07-research-median-result-draw.md`.
 - The What-if runs on the Tuesday inputs, with no refetch from Sleeper. A season-ending injury does not change the level: the projection carries half the loss. The API stays on `shared-cpu-1x` at 10,000 runs, at no extra cost. The spec times real calls on Fly, also after a deploy, and the server stops the work of a cancelled call. `decisions/03-grill-live-inputs-injuries.md`.
 - The Announcement is a bottom sheet on the shared Sheet: an art slot, an eyebrow, a title, one line, the link, and "Not now". For the sim, the art shows 3 standings rows around Your team and a What-if chip that the manager can tap. A skipped open is not "seen", so it shows on the next load. `decisions/05-prototype-the-announcement.md`.
+- The tile shows Your team's odds, read in the browser, with a league fact when no team is set. It sits after Standings on the week page, and the home page ladder links to the sim too. In the playoffs, the page answers for Your team first, and a team that is out sees the bracket. After the final, the page shows the final bracket and the champion. The page gets a menu item. `decisions/06-grill-tile-and-season-end.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the weekly report tile show, and how does the page act in the playoff weeks and after the season? `decisions/06-grill-tile-and-season-end.md`.
+None. The next step is `build-out.md`.
 
 ## OUT OF SCOPE
 
@@ -46,3 +47,4 @@ A sim page for each client at `/sim/<season>/`, which the weekly build rebuilds,
 - A record of a dismissed Announcement on the server. The site has no accounts.
 - A grid to pick any game of any week. Brian's test of round 1 showed that the job of the page is what Your team needs, not a board of every game.
 - A cache of live sim answers. The cost is under 10 minutes of CPU each week.
+- A chart of how the odds of each team moved by week, after the final. It is a new chart and a new data read for one week of use. Keep it for a later spec.

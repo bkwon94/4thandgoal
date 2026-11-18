@@ -1055,12 +1055,16 @@ _Avoid_: Banner, promo
 The home tile with one big fact and a link to the midseason report. It stays after the takeover ends.
 _Avoid_: Card, teaser
 
+**Sim tile**:
+The tile of each week page, right after Standings, with Your team's playoff odds and a link to the sim page.
+_Avoid_: Report tile, odds card
+
 **Sim run**:
 One stored season of the sim, with every team's score for each week left. The replay plays one sim run per press.
 _Avoid_: Simulation, sample, scenario
 
 **What-if**:
-A set of game winners that a manager picks for the games left. The sim draws every game the manager did not pick.
+A set of results that a manager sets for Your team in the weeks left: a win or a loss, and above or below the median. The sim draws every other game.
 _Avoid_: Scenario, simulation, prediction
 
 **Announcement**:
