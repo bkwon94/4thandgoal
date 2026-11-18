@@ -40,7 +40,7 @@ A soft red Tool tone marks a Tool in both themes. Nothing moves to a page with n
 12. As a manager, I want to ask for a page the site does not have, so that I learn it does not exist and see what does.
 13. As a manager, I want the chat never to move me to a page by itself, so that a wrong guess does not take me away from the Thread.
 14. As a manager, I want "where is my team in the standings" to keep its league answer, so that a "where is" question about the league is not sent to a page list.
-15. As a manager, I want "show me the power rankings" to keep its Topic Answer, so that I get the rankings and the link to their page.
+15. As a manager, I want "show me the power rankings" to get the rankings page, as a Topic Answer or as a Site answer, so that I reach the rankings either way.
 16. As a manager, I want "how do i set my lineup" to keep its old route, so that a question about Sleeper does not get a page of this site.
 17. As a manager, I want the Site answer to show only the pages of my league, so that each link works.
 18. As a manager, I want the Week tile to name the latest week, so that I know which week the link opens.
@@ -69,7 +69,7 @@ A soft red Tool tone marks a Tool in both themes. Nothing moves to a page with n
      - `missing`: "A page or tool that is not in `site_pages`."
    - Decision 01 used one `none` option for both. The spec splits it in two, so the site can tell the list view from the none case with no second request. The live route check proves the split.
 5. The route table of `decide()` gets one new row, after `ABUSE` and before every other row: a yes above 0.7 on the new Noul gives the route kind `site`. An unsure or a no falls through to the old table, unchanged. This is order A of decision 01.
-6. A bare page name that is also a Topic keeps its Topic with no extra rule. Decision 01 measured "show me the power rankings" at 0.70 and "power rankings?" at 0.56 on `n5`. Both are not above 0.7, so the old table gives the Topic. If a later model scores one of them above 0.7, the Site answer still links to the same page. That is acceptable, so no code guards it. This settles item 5 of ticket 03.
+6. A bare page name that is also a Topic keeps its Topic with no extra rule. Decision 01 measured "show me the power rankings" at 0.70 and "power rankings?" at 0.56 on `n5`. The live eval of ticket 01 measured them at 0.78 to 0.83 and 0.58 to 0.70. So "show me the power rankings" gets the Site answer, and "power rankings?" keeps its Topic. When a question scores above 0.7, the Site answer still links to the same page. That is acceptable, so no code guards it. This settles item 5 of ticket 03.
 7. The ask response of a `site` route holds the new field `page`: the key of the top Choice, `all`, or `missing`. The fields `topic`, `team`, `closest`, and `suggestion` are null or empty for it.
 8. A `site` route writes no entry in the miss log, makes no Claude call, and does not touch a cap.
 
@@ -112,7 +112,7 @@ A soft red Tool tone marks a Tool in both themes. Nothing moves to a page with n
 18. The none case is the B card with no page: the lead line, then the rows of all the pages, open.
 19. The Tool tone of decision 02 marks a Tool in both themes. Red marks only a Tool. The pages to read keep the plain card surface.
     - Tool tile: `color-mix(in srgb, var(--color-accent) 10%, var(--color-card))` in light. `bg-raised` with a `border-rule` in dark.
-    - Icon box of a Tool and the "Open" button: `color-mix(in srgb, var(--color-accent) 20%, var(--color-card))` in light. 24% into `var(--color-raised)` in dark. Text and icon in `--color-accent-ink`.
+    - Icon box of a Tool and the "Open" button of a Tool: `color-mix(in srgb, var(--color-accent) 20%, var(--color-card))` in light. 24% into `var(--color-raised)` in dark. Text and icon in `--color-accent-ink`.
     - Hover: 28% in light and 34% in dark, over 150 ms with `ease-out`. The light Tool tile gets the same hover. Press: the `press` utility.
     - No solid white fill in dark. No solid black fill in light.
 20. Each tile, row, and button is a real `<a href>`, at least 44 px tall. Reduced motion keeps only the fades. No code moves to a page with no tap.
