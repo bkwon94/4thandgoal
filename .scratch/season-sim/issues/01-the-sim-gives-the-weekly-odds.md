@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, and AT-5.
 
 **Blocked by:** none.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A rebuild of `cpc` 2026 week 10 writes `rankings.json` with week 10 odds equal to the odds of the sim (AT-2).
 - [x] Each odds number in the facts of `cpc` week 10 equals the number of the sim (AT-3).
