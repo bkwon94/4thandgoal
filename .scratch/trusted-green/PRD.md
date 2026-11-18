@@ -5,7 +5,7 @@ Date: 2026-11-18
 Apps: both. The site gets the smoke run, the verb `expect` of the evidence runner, and grade-bar in CI. The pipeline gets the pinned build inputs, the base and head rebuild, and the property tests of the grades. The root gets the re-run job, the flaky-test rule, and the changes to the `4ag` skills.
 Spec branch: `trusted-green`.
 Source: the map `.scratch/trusted-green/MAP.md` and decision tickets 01 to 11. The article "How the Claude Code team thinks about verification" (https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/). ADRs 0015, 0019, 0025, 0026, 0033.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 11, in `issues/`.
 
 ## Problem Statement
 

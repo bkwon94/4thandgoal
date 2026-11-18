@@ -1,0 +1,16 @@
+# 08: The build saves its inputs
+
+Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-19 and AT-20.
+
+**App:** pipeline
+
+**What to build:** Each build saves the nflverse extract of the week, also a degraded one, the values of the slow sources, and the Sleeper news into the week folder. A facts-only rebuild reads those inputs, the build clock of `verify.json`, and the research of the saved facts, with no Claude call and no network call.
+
+**Blocked by:** none
+
+**Status:** ready-for-agent
+
+- [ ] `build --no-fetch` of cpc 2026 week 10 with no key writes the three inputs before the first Claude call.
+- [ ] Two facts-only rebuilds of cpc week 10 give the same sha256 of `facts.json`.
+- [ ] The facts-only rebuild runs with no secret and makes no network call.
+- [ ] A pipeline test builds the facts of a saved week two times and compares them byte for byte.
