@@ -3,6 +3,7 @@
  * league passphrase. A failed call throws an AskError with its status, so the Thread can show the right line.
  */
 import { z } from "zod";
+import type { SitePage } from "@/app/site-pages";
 import type { PackageName } from "@/lib/client-values";
 import type { Turn } from "./chat-turns";
 
@@ -50,7 +51,11 @@ export type AskAnswer = z.infer<typeof askAnswerSchema>;
 
 /* One page of the client in the ask route: its package name, its label, and its blurb, so the route can answer a
    question about the site. */
-export type AskPage = { key: string; label: string; blurb: string };
+export type AskPage = Pick<SitePage, "key" | "label" | "blurb">;
+
+/* The pages of the ask route: each page of the Site answer with only its key, its label, and its blurb. The link and
+   the Tool mark stay in the site. */
+export const askPagesOf = (pages: SitePage[]): AskPage[] => pages.map(({ key, label, blurb }) => ({ key, label, blurb }));
 
 /* The body of the ask route: the question as typed, the roster id of Your team, the latest week of the site, the
    earlier turns of the Thread, oldest first, and the pages of the client. */
