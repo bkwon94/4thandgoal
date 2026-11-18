@@ -43,7 +43,7 @@ OK
 ```
 
 The run with no selection passes at both commits, so the full suite stays the default. `make check-fast BASE=main` passes at `771478a6`. It runs all 160 files, because this change edits `apps/site/package.json`, which Vitest treats as a rerun trigger. A small change selects few files: `vitest run --changed HEAD` after one added comment line in `apps/site/src/lib/config.ts` ran 27 of 160 files in 58 s, against 156 s for all. The same run with `packages/waiver/site/format.ts` ran 3 files in 3 s.
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. Playwright runs 4 workers on CI
 
@@ -80,7 +80,7 @@ exit 0
 ```
 
 `beforeEach` calls `vi.useFakeTimers({ shouldAdvanceTime: true })` and `afterEach` calls `vi.useRealTimers()`. `wait` is now `act(() => vi.advanceTimersByTimeAsync(ms))`. No assertion changed. Three more runs took 2.1 s, 2.2 s, and 2.4 s with 40 of 40 passed. `make check-fast BASE=main` passes.
-Test verdict: pending
+Test verdict: PASS
 
 ### 5. A change of the tracker or the docs alone selects only the members that read it
 
@@ -104,6 +104,6 @@ OK
 ```
 
 The hook runs the root script tests, so it rejects a red commit. The loop and the change share the commit `6a1c31d0`. The whole file `test_changed_apps` runs 35 tests and passes. `make check-fast BASE=main` passes. A staged change of only `.scratch/quick-wins/faster-checks.md` makes `python3 -B scripts/changed_apps.py --staged` print `site pipeline`. The site still runs, because `apps/site/src/tracker-rule.test.ts` reads `.scratch/` and `docs/agents/state.md`. The pipeline reads the same files in `apps/pipeline/tests/test_rule_tracker.py`. No test of the API or of a package reads `.scratch/` or `docs/`. A change of only an ADR under `docs/adr/` selects no member. A `CLAUDE.md` or `AGENTS.md` under either folder selects the site and the pipeline, because the rules-file rule reads its name in every folder (`apps/site/src/readme-rule.test.ts`, `apps/pipeline/tests/test_rule_readmes.py`).
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
