@@ -46,18 +46,19 @@ function PageIcon({ page, className }: { page: SitePage; className: string }) {
   return <Icon aria-hidden className={className} strokeWidth={2} />;
 }
 
-/* The Tool tone (decision 02 of site-answer): a soft tint of the accent in both themes, with the icon and the label in the accent
-   ink, so red marks only a Tool and no fill is solid. A light tint of the card in light, of the raised surface in dark. */
+/* The Tool tone (decision 02 of site-answer): a soft tint of the accent in both themes, with the icon and the label in
+   the accent ink, so red marks only a Tool and no fill is solid. A light tint of the card in light, of the raised
+   surface in dark. */
 const TOOL_TINT = "bg-[color-mix(in_srgb,var(--color-accent)_20%,var(--color-card))] text-accent-ink dark:bg-[color-mix(in_srgb,var(--color-accent)_24%,var(--color-raised))]";
 /* The icon box of a page to read keeps the plain raised surface. */
 const READ_ICON_BOX = "bg-raised text-ink-2";
-/* The "Open" button of a Tool deepens its tint on hover, on --duration-quick with ease-out. The press utility scales it. */
+/* The "Open" button of a Tool deepens its tint on hover, over 150 ms with ease-out. The press utility scales it. */
 const TOOL_BUTTON = `${TOOL_TINT} transition-[background-color,transform] duration-150 ease-out hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_28%,var(--color-card))] dark:hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_34%,var(--color-raised))]`;
 /* The "Open" button of a page to read keeps the plain surface, so red marks only a Tool. */
 const READ_BUTTON = "border border-rule bg-page text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-raised";
 
-/* The props of a row that rises in from --distance-base with a --blur-small, one --duration-stagger after the row above.
-   With motion off, only the fade stays. */
+/* The props of a row that rises in 8 px with a 2 px blur, over FAST, one STAGGER after the row above. With motion off,
+   only the fade stays. */
 function rowIn(off: boolean, index: number) {
   const transition = fadeIn(FAST, staggerOf(index));
   return off
@@ -99,14 +100,14 @@ export function PageRows({ pages }: { pages: SitePage[] }) {
 }
 
 /* A Tool tile of the launcher: a pale tint of the card in light, and the raised surface with a rule in dark, so no fill
-   is solid. Its hover deepens to the hover tint of the "Open" button, on --duration-quick with ease-out. */
+   is solid. Its hover deepens to the hover tint of the "Open" button, over 150 ms with ease-out. */
 const TOOL_TILE =
   "border border-transparent bg-[color-mix(in_srgb,var(--color-accent)_10%,var(--color-card))] text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_28%,var(--color-card))] dark:border-rule dark:bg-raised dark:hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_34%,var(--color-raised))]";
 /* A tile of a page to read keeps the plain card surface of the Thread. */
 const READ_TILE = "door-sheen border border-door-hair bg-card text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-raised";
 
-/* The props of a tile that pops in from --scale-large with a fade, on --duration-fast, one --duration-stagger after the
-   tile before it. The tiles start after the lead line. With motion off, only the fade stays. */
+/* The props of a tile that pops in from scale 0.96 with a fade, over FAST, one STAGGER after the tile before it. The
+   tiles start after the lead line. With motion off, only the fade stays. */
 function tileIn(off: boolean, index: number) {
   const transition = fadeIn(FAST, QUICK / 2 + staggerOf(index));
   return off
