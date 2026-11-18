@@ -38,7 +38,7 @@
       "click": "button[aria-label=\"Use this passphrase\"]"
     },
     {
-      "wait": "a:has-text(\"Open the Week 10\")"
+      "wait": "a:has-text(\"Open Week 10\")"
     },
     {
       "wait": 1500

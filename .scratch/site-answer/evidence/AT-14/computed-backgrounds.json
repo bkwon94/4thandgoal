@@ -2,6 +2,12 @@
   "light": {
     "body_bg": "rgb(255, 255, 255)",
     "page_bg": "rgb(244, 244, 244)",
+    "tokens": {
+      "raised": "rgb(235, 235, 235)",
+      "card": "rgb(255, 255, 255)",
+      "page": "rgb(244, 244, 244)",
+      "rule": "rgb(224, 224, 224)"
+    },
     "rows": [
       {
         "answer": "where is the trade analyzer",
@@ -49,6 +55,7 @@
         "label": "Open the Trade Analyzer",
         "height": 44,
         "button_bg": "color(srgb 0.944314 0.840784 0.832941)",
+        "button_rule": "0px solid rgb(224, 224, 224)",
         "card_icon_bg": "color(srgb 0.944314 0.840784 0.832941)",
         "card_bg": "rgb(255, 255, 255)"
       },
@@ -66,6 +73,7 @@
         "label": "Trade Analyzer",
         "height": 156,
         "tile_bg": "color(srgb 0.972157 0.920392 0.916471)",
+        "tile_rule": "1px solid rgba(0, 0, 0, 0)",
         "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
       },
       {
@@ -75,6 +83,7 @@
         "label": "Playoff Sim",
         "height": 156,
         "tile_bg": "color(srgb 0.972157 0.920392 0.916471)",
+        "tile_rule": "1px solid rgba(0, 0, 0, 0)",
         "icon_bg": "color(srgb 0.944314 0.840784 0.832941)"
       },
       {
@@ -84,6 +93,7 @@
         "label": "Week 10",
         "height": 167.2,
         "tile_bg": "rgb(255, 255, 255)",
+        "tile_rule": "1px solid rgb(224, 224, 224)",
         "icon_bg": "rgb(235, 235, 235)"
       },
       {
@@ -93,6 +103,7 @@
         "label": "Power Rankings",
         "height": 167.2,
         "tile_bg": "rgb(255, 255, 255)",
+        "tile_rule": "1px solid rgb(224, 224, 224)",
         "icon_bg": "rgb(235, 235, 235)"
       },
       {
@@ -102,6 +113,7 @@
         "label": "Managers",
         "height": 167.2,
         "tile_bg": "rgb(255, 255, 255)",
+        "tile_rule": "1px solid rgb(224, 224, 224)",
         "icon_bg": "rgb(235, 235, 235)"
       },
       {
@@ -111,6 +123,7 @@
         "label": "Midseason Report",
         "height": 185.6,
         "tile_bg": "rgb(255, 255, 255)",
+        "tile_rule": "1px solid rgb(224, 224, 224)",
         "icon_bg": "rgb(235, 235, 235)"
       },
       {
@@ -159,6 +172,7 @@
         "label": "Open the Managers",
         "height": 44,
         "button_bg": "rgb(244, 244, 244)",
+        "button_rule": "1px solid rgb(224, 224, 224)",
         "card_icon_bg": "rgb(235, 235, 235)",
         "card_bg": "rgb(255, 255, 255)"
       },
@@ -174,6 +188,12 @@
   "dark": {
     "body_bg": "rgb(31, 31, 31)",
     "page_bg": "rgb(20, 20, 20)",
+    "tokens": {
+      "raised": "rgb(38, 38, 38)",
+      "card": "rgb(31, 31, 31)",
+      "page": "rgb(20, 20, 20)",
+      "rule": "rgb(51, 51, 51)"
+    },
     "rows": [
       {
         "answer": "where is the trade analyzer",
@@ -221,6 +241,7 @@
         "label": "Open the Trade Analyzer",
         "height": 44,
         "button_bg": "color(srgb 0.286431 0.162196 0.152784)",
+        "button_rule": "0px solid rgb(51, 51, 51)",
         "card_icon_bg": "color(srgb 0.286431 0.162196 0.152784)",
         "card_bg": "rgb(31, 31, 31)"
       },
@@ -238,6 +259,7 @@
         "label": "Trade Analyzer",
         "height": 156,
         "tile_bg": "rgb(38, 38, 38)",
+        "tile_rule": "1px solid rgb(51, 51, 51)",
         "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
       },
       {
@@ -247,6 +269,7 @@
         "label": "Playoff Sim",
         "height": 156,
         "tile_bg": "rgb(38, 38, 38)",
+        "tile_rule": "1px solid rgb(51, 51, 51)",
         "icon_bg": "color(srgb 0.286431 0.162196 0.152784)"
       },
       {
@@ -256,6 +279,7 @@
         "label": "Week 10",
         "height": 167.2,
         "tile_bg": "rgb(31, 31, 31)",
+        "tile_rule": "1px solid color(srgb 1 1 1 / 0.1)",
         "icon_bg": "rgb(38, 38, 38)"
       },
       {
@@ -265,6 +289,7 @@
         "label": "Power Rankings",
         "height": 167.2,
         "tile_bg": "rgb(31, 31, 31)",
+        "tile_rule": "1px solid color(srgb 1 1 1 / 0.1)",
         "icon_bg": "rgb(38, 38, 38)"
       },
       {
@@ -274,6 +299,7 @@
         "label": "Managers",
         "height": 167.2,
         "tile_bg": "rgb(31, 31, 31)",
+        "tile_rule": "1px solid color(srgb 1 1 1 / 0.1)",
         "icon_bg": "rgb(38, 38, 38)"
       },
       {
@@ -283,6 +309,7 @@
         "label": "Midseason Report",
         "height": 185.6,
         "tile_bg": "rgb(31, 31, 31)",
+        "tile_rule": "1px solid color(srgb 1 1 1 / 0.1)",
         "icon_bg": "rgb(38, 38, 38)"
       },
       {
@@ -331,6 +358,7 @@
         "label": "Open the Managers",
         "height": 44,
         "button_bg": "rgb(20, 20, 20)",
+        "button_rule": "1px solid rgb(51, 51, 51)",
         "card_icon_bg": "rgb(38, 38, 38)",
         "card_bg": "rgb(31, 31, 31)"
       },

@@ -1,4 +1,4 @@
-# Each link of `nav a` and of the open dialog on http://127.0.0.1:4173/2026/week-10/ of the cpc build, at 375 px, after a tap on "Open the menu". Taken 2026-11-18T20:37:08Z. Each line is the href, then the text of the link.
+# Each link of `nav a` and of the open dialog on http://127.0.0.1:4173/2026/week-10/ of the cpc build, at 375 px, after a tap on "Open the menu". Taken 2026-11-18T22:14:37Z. Each line is the href, then the text of the link.
 /  "Home"
 /2026/week-10/  "Week 10"
 /rankings/  "Power Rankings"
@@ -12,7 +12,7 @@
 #median  "The median game"
 #standings  "Standings"
 #next-week  "Next week"
-/2026/week-09/  "PREVIOUS Week 9 Nov 5 – Nov 9 2026"
+/2026/week-09/  "PREVIOUS Week 9 Nov 5 – Nov 9, 2026"
 /  "Home Ask about your team"
 /2026/week-10/  "Week 10 Scores and recaps"
 /2026/week-10/  "WK 10"
@@ -20,6 +20,6 @@
 /2026/week-08/  "WK 08"
 /2026/week-07/  "WK 07"
 /2026/week-06/  "WK 06"
-/rankings/  "Power Rankings The league ranked"
+/rankings/  "Power Rankings The league, ranked"
 /2026/managers/  "Managers Grades and records"
 /analyze/  "Trade Analyzer Check a trade"

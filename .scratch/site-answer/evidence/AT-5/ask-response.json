@@ -1,5 +1,5 @@
 {
-  "taken": "2026-11-18T20:36:19.520Z",
+  "taken": "2026-11-18T22:13:58.600Z",
   "page": "http://127.0.0.1:4173/",
   "question": "take me to the weekly reports",
   "asks": [
@@ -55,13 +55,13 @@
         "jev": {
           "model": "jev-1.14.0",
           "nouls": {
-            "fits_topic": 0.95,
+            "fits_topic": 0.96,
             "data_can_answer": 0.98,
             "about_league": 0.99,
             "abuse": 0.01,
             "reacts_to_answer": 0.01,
             "names_team": 0.01,
-            "asks_for_site": 0.84
+            "asks_for_site": 0.83
           },
           "choices": {
             "topic": {
@@ -81,15 +81,15 @@
               "start_sit": 0
             },
             "team": {
-              "the_blue_tent": 0.53,
+              "the_blue_tent": 0.52,
               "all_you_need_is_love": 0.08,
               "lil_fridge": 0.03,
               "nfc_least": 0.04,
-              "puka_deez": 0.01,
+              "puka_deez": 0.02,
               "bo_girds": 0.03,
               "to_infinity_and_bijan": 0.04,
-              "return_of_t_mac": 0.05,
-              "maye_d_force_b_with_u": 0.01,
+              "return_of_t_mac": 0.04,
+              "maye_d_force_b_with_u": 0.02,
               "behold_the_lamb": 0.03,
               "unsolicited_dak_picks": 0.05,
               "teehee": 0.1
@@ -109,10 +109,10 @@
       }
     }
   ],
-  "answer_text": "take me to the weekly reports\n\nThe Week 10 has its own page.\n\nWeek 10\n\nThe recap, scores, and awards of the week.\n\nOpen the Week 10\nAll pages · 5",
+  "answer_text": "take me to the weekly reports\n\nWeek 10 has its own page.\n\nWeek 10\n\nThe recap, scores, and awards of the week.\n\nOpen Week 10\nAll pages · 5",
   "answer_links": [
     {
-      "text": "Open the Week 10",
+      "text": "Open Week 10",
       "href": "/2026/week-10/"
     }
   ]

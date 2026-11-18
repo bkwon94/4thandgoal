@@ -1,8 +1,8 @@
 # Site answer: evidence
 
 Spec: `.scratch/site-answer/PRD.md`. Acceptance tests: `.scratch/site-answer/ACCEPTANCE.md`.
-Built from: `cee7caf1`, on 2026-11-18. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
-Round time: 12 min for 13 site tests. The round output is `evidence/round.txt`. The norcal build of the first round stopped on a Next.js security notice, so AT-13 ran again alone.
+Built from: `9b603d8a`, on 2026-11-18. The agent gives no Test verdict. The Judge gives one for each test in `VERDICTS.md`.
+Round time: 12 min for 13 site tests. The round output is `evidence/round.txt`. The norcal build of the first round stopped on a Next.js security notice, so AT-13 ran again alone. AT-5 and AT-14 ran again from `9b603d8a` in a second round of 2 min; its output is `evidence/round-2.txt`.
 The local API ran with `make -C apps/api api-evidence` and called the live Jev. The files that no runner verb covers come from a Playwright script; see `evidence/extra-evidence-script.txt` and the `steps.txt` of each test.
 
 ## AT-1: "where is the trade analyzer" gets the card of the Trade Analyzer
@@ -38,7 +38,7 @@ Observation: Each shot shows the card of the Playoff Sim with "Plays out the res
 App: both
 Then: The page card of Week 10 shows, and its button links to the Week 10 link of the Menu.
 Files: `evidence/AT-5/1280-dark.png`, `evidence/AT-5/1280-light.png`, `evidence/AT-5/375-dark.png`, `evidence/AT-5/375-light.png`, `evidence/AT-5/768-dark.png`, `evidence/AT-5/768-light.png`, `evidence/AT-5/ask-response.json`, `evidence/AT-5/menu-links.txt`, `evidence/AT-5/steps.json`, `evidence/AT-5/steps.txt`
-Observation: Each shot shows the card of Week 10 with the lead "The Week 10 has its own page." and the button "Open the Week 10". `ask-response.json` holds `route: "site"`, `page: "week"`, and the button href `/2026/week-10/`, the href of the Menu item Week 10 in `menu-links.txt`.
+Observation: Each shot shows the card of Week 10 with the lead "Week 10 has its own page." and the button "Open Week 10". `ask-response.json` holds `route: "site"`, `page: "week"`, and the button href `/2026/week-10/`, the href of the Menu item Week 10 in `menu-links.txt`.
 
 ## AT-6: A bare page name gets its card
 
@@ -99,9 +99,9 @@ Observation: Each shot of the NorCal build shows the list view with Tools Trade 
 ## AT-14: The Tool tone marks only a Tool
 
 App: site
-Then: Each Tool tile, Tool icon box, and "Open" button of a Tool has a red tint. Each page to read, and the "Open" button of a page to read, has the plain card surface. No fill is solid white in dark, and no fill is solid black in light.
+Then: In light, each Tool tile, Tool icon box, and "Open" button of a Tool has a red tint. In dark, each Tool tile is the raised surface with a rule, and each Tool icon box and "Open" button of a Tool has a red tint (PRD item 19). Each page to read, and the "Open" button of a page to read, has a plain surface with no red tint. No fill is solid white in dark, and no fill is solid black in light.
 Files: `evidence/AT-14/1280-dark.png`, `evidence/AT-14/1280-light.png`, `evidence/AT-14/375-dark.png`, `evidence/AT-14/375-light.png`, `evidence/AT-14/768-dark.png`, `evidence/AT-14/768-light.png`, `evidence/AT-14/computed-backgrounds.json`, `evidence/AT-14/computed-backgrounds.txt`, `evidence/AT-14/measured-1280-dark.png`, `evidence/AT-14/measured-1280-light.png`, `evidence/AT-14/steps.json`, `evidence/AT-14/steps.txt`
-Observation: `computed-backgrounds.txt` shows, in light: Tool tiles `rgb(248, 235, 234)`, Tool icon boxes and the Tool "Open" button `rgb(241, 214, 212)`, read tiles `rgb(255, 255, 255)`, read icon boxes `rgb(235, 235, 235)`, and the "Open the Managers" button `rgb(244, 244, 244)` on the card surface `rgb(255, 255, 255)`. In dark: Tool tiles `rgb(38, 38, 38)`, the same fill as the read icon boxes, with no red in the tile fill; Tool icon boxes and the Tool "Open" button `rgb(73, 41, 39)`; read tiles `rgb(31, 31, 31)`; and the "Open the Managers" button `rgb(20, 20, 20)` on the card surface `rgb(31, 31, 31)`. No fill in dark is `rgb(255, 255, 255)` and no fill in light is `rgb(0, 0, 0)`; the runner shots at 768 px show the Thread scroll stitched, so the `measured-1280-*` shots show the whole Thread.
+Observation: `computed-backgrounds.txt` shows, in light: Tool tiles `rgb(248, 235, 234)`, Tool icon boxes and the "Open the Trade Analyzer" button `rgb(241, 214, 212)`, on the card `rgb(255, 255, 255)`. Read tiles are `rgb(255, 255, 255)` with a `1px solid rgb(224, 224, 224)` border, read icon boxes `rgb(235, 235, 235)`, and the "Open the Managers" button `rgb(244, 244, 244)`, the page fill. In dark: Tool tiles `rgb(38, 38, 38)`, the value of `--color-raised`, with a `1px solid rgb(51, 51, 51)` border, the value of `--color-rule`; Tool icon boxes and the Tool "Open" button `rgb(73, 41, 39)`. Read tiles are `rgb(31, 31, 31)`, read icon boxes `rgb(38, 38, 38)`, and the "Open the Managers" button `rgb(20, 20, 20)` on the card `rgb(31, 31, 31)`. No fill in dark is `rgb(255, 255, 255)` and no fill in light is `rgb(0, 0, 0)`; the `measured-1280-*` shots show the whole Thread that was measured.
 
 ## AT-15: Each tap target is at least 44 px tall
 

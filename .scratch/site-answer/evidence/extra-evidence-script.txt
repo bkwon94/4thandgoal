@@ -6,6 +6,10 @@
 # The API: `make -C apps/api api-evidence` in the same detached worktree, with ~/.secrets sourced, so each ask calls the live Jev.
 # The passphrase is "localtest", the passphrase of api-evidence. Your team is Lil Fridge for CPC, and the first team of the sheet for NorCal.
 # The steps run: responses, norcal, AT-10, AT-12, AT-14, AT-15, AT-16, AT-17. The script and the server are not committed. Their full text follows.
+# A second run on 2026-11-18 near 22:13 to 22:15 UTC, from apps/site of a detached worktree of 9b603d8a, with the same Node, build, server, and API,
+# ran the steps "responses AT-5" (the extra arguments name the tests of the step), "AT-14", and menu.mjs. The files of AT-5 and AT-14 come from it.
+# The script below is the text of the second run. Against the first run, it waits for "Open Week 10" in AT-5, takes each "Open" button, and adds
+# the top border of each tile and "Open" button and the resolved tokens raised, card, page, and rule to AT-14.
 
 #### extra-evidence.mjs
 // The evidence of the steps of site-answer that no verb of the runner covers: the ask responses, the address over 5 s,
@@ -71,6 +75,8 @@ async function ask(page, question, done) {
   await page.waitForTimeout(1500);
 }
 const CARD = (label) => `a:has-text("Open the ${label}")`;
+// The week card names its page with no article: "Open Week 10".
+const WEEK_CARD = (label) => `a:has-text("Open ${label}")`;
 const LIST = "text=Pages to read";
 const NONE = "text=The site has no page for that. Here is what it has.";
 const QUESTIONS = {
@@ -78,7 +84,7 @@ const QUESTIONS = {
   "AT-2": ["what tools are there", LIST],
   "AT-3": ["what can this site do", LIST],
   "AT-4": ["how do I use the sim", CARD("Playoff Sim")],
-  "AT-5": ["take me to the weekly reports", CARD("Week 10")],
+  "AT-5": ["take me to the weekly reports", WEEK_CARD("Week 10")],
   "AT-6": ["midseason report?", CARD("Midseason Report")],
   "AT-7": ["wheres the trade thing", CARD("Trade Analyzer")],
   "AT-8": ["is there a waiver page", NONE],
@@ -88,7 +94,9 @@ const stamp = () => new Date().toISOString();
 
 if (which === "responses") {
   // One fresh page per question, so each Thread starts empty.
+  const only = process.argv.slice(3);
   for (const [id, [q, done]] of Object.entries(QUESTIONS)) {
+    if (only.length && !only.includes(id)) continue;
     passed = false;
     const { browser, page, asks } = await open();
     await ask(page, q, done);
@@ -167,6 +175,8 @@ if (which === "AT-12") {
 const MEASURE = () => {
   const box = (el) => { const r = el.getBoundingClientRect(); return Math.round(r.height * 10) / 10; };
   const bg = (el) => getComputedStyle(el).backgroundColor;
+  // The rule of an element: the width, style, and color of its top border.
+  const rule = (el) => { const c = getComputedStyle(el); return `${c.borderTopWidth} ${c.borderTopStyle} ${c.borderTopColor}`; };
   const out = [];
   document.querySelectorAll("article").forEach((art) => {
     const q = art.getAttribute("aria-label");
@@ -174,17 +184,17 @@ const MEASURE = () => {
       const group = document.getElementById(a.closest("ul").getAttribute("aria-labelledby")).innerText;
       const icon = a.querySelector("span > span.grid");
       const label = a.querySelector("span.font-bold")?.innerText;
-      out.push({ answer: q, kind: "tile", group, label, height: box(a), tile_bg: bg(a), icon_bg: icon ? bg(icon) : null });
+      out.push({ answer: q, kind: "tile", group, label, height: box(a), tile_bg: bg(a), tile_rule: rule(a), icon_bg: icon ? bg(icon) : null });
     });
     art.querySelectorAll('ul[aria-label="Pages"] > li > a').forEach((a) => {
       const icon = a.querySelector("span.grid");
       out.push({ answer: q, kind: "row", label: a.querySelector("span.font-semibold")?.innerText, height: box(a), row_bg: bg(a), icon_bg: icon ? bg(icon) : null });
     });
     art.querySelectorAll("a").forEach((a) => {
-      if (!a.innerText.startsWith("Open the")) return;
+      if (!/^Open /.test(a.innerText)) return;
       const card = a.parentElement.querySelector("span.grid");
       let up = a.parentElement; while (up && /rgba\(0, 0, 0, 0\)/.test(bg(up))) up = up.parentElement;
-      out.push({ answer: q, kind: "open button", label: a.innerText.trim(), height: box(a), button_bg: bg(a), card_icon_bg: card ? bg(card) : null, card_bg: up ? bg(up) : null });
+      out.push({ answer: q, kind: "open button", label: a.innerText.trim(), height: box(a), button_bg: bg(a), button_rule: rule(a), card_icon_bg: card ? bg(card) : null, card_bg: up ? bg(up) : null });
     });
     art.querySelectorAll("button").forEach((b) => {
       if (!b.innerText.startsWith("All pages")) return;
@@ -194,7 +204,12 @@ const MEASURE = () => {
   const surface = (sel) => { const el = document.querySelector(sel); return el ? bg(el) : null; };
   const main = document.querySelector("main");
   let p = main; while (p && /rgba\(0, 0, 0, 0\)/.test(bg(p))) p = p.parentElement;
-  return { body_bg: bg(document.body), page_bg: p ? bg(p) : null, rows: out };
+  // The resolved fill of the tokens raised, card, and page, and the color of the token rule, read from a probe element.
+  const probe = document.createElement("div"); document.body.appendChild(probe);
+  const tok = (v, prop) => { probe.style.cssText = `${prop}: var(${v}); border-style: solid; border-width: 1px`; const c = getComputedStyle(probe); return prop === "border-color" ? c.borderTopColor : c.backgroundColor; };
+  const tokens = { raised: tok("--color-raised", "background-color"), card: tok("--color-card", "background-color"), page: tok("--color-page", "background-color"), rule: tok("--color-rule", "border-color") };
+  probe.remove();
+  return { body_bg: bg(document.body), page_bg: p ? bg(p) : null, tokens, rows: out };
 };
 
 if (which === "AT-14") {
@@ -212,16 +227,21 @@ if (which === "AT-14") {
     await page.screenshot({ path: join(E, "AT-14", `measured-1280-${theme}.png`), fullPage: true });
     await browser.close();
   }
-  const lines = [`# getComputedStyle(el).backgroundColor of each tile, icon box, row, and "Open" button, at 1280 px. Taken ${stamp()}.`,
+  const lines = [`# getComputedStyle(el).backgroundColor of each tile, icon box, row, and "Open" button, and the top border of each tile and "Open" button, at 1280 px. Taken ${stamp()}.`,
     `# One Thread per theme: "where is the trade analyzer" (AT-1), "what tools are there" (AT-2), "whats the managers page for" (a page card of a page to read). Each "All pages" fold is open.`];
   for (const theme of ["light", "dark"]) {
-    lines.push("", `## ${theme} (body background ${res[theme].body_bg}, page background ${res[theme].page_bg})`);
+    const t = res[theme].tokens;
+    lines.push("", `## ${theme} (body background ${res[theme].body_bg}, page background ${res[theme].page_bg})`, `tokens: --color-raised ${t.raised} | --color-card ${t.card} | --color-page ${t.page} | --color-rule ${t.rule}`);
     for (const r of res[theme].rows) {
-      if (r.kind === "tile") lines.push(`${r.answer} | tile | ${r.group} | ${r.label} | tile ${r.tile_bg} | icon box ${r.icon_bg}`);
+      if (r.kind === "tile") lines.push(`${r.answer} | tile | ${r.group} | ${r.label} | tile ${r.tile_bg} | tile border ${r.tile_rule} | icon box ${r.icon_bg}`);
       if (r.kind === "row") lines.push(`${r.answer} | row | ${r.label} | row ${r.row_bg} | icon box ${r.icon_bg}`);
-      if (r.kind === "open button") lines.push(`${r.answer} | page card | ${r.label} | button ${r.button_bg} | icon box ${r.card_icon_bg} | card surface ${r.card_bg}`);
+      if (r.kind === "open button") lines.push(`${r.answer} | page card | ${r.label} | button ${r.button_bg} | button border ${r.button_rule} | icon box ${r.card_icon_bg} | card surface ${r.card_bg}`);
     }
   }
+  // Each color(srgb r g b) value gets its 0 to 255 form after it: each channel times 255, rounded.
+  const to255 = (l) => l.replace(/color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)/g, (m, r, g, b) => `${m} (= rgb(${[r, g, b].map((x) => Math.round(Number(x) * 255)).join(", ")}))`);
+  for (let i = 0; i < lines.length; i++) lines[i] = to255(lines[i]);
+  lines.splice(2, 0, "# A color(srgb r g b) value is followed by its 0 to 255 form, each channel times 255, rounded.");
   out("AT-14", "computed-backgrounds.txt", lines.join("\n") + "\n");
   out("AT-14", "computed-backgrounds.json", JSON.stringify(res, null, 2) + "\n");
   console.log(lines.join("\n"));
