@@ -1,7 +1,7 @@
 # The Grade the Trade button shows no change while a grade runs
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-grade-button-pending`.
 Source: the session of 2026-11-17.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -35,3 +35,8 @@ Green: at `aee26144`, `pnpm --dir apps/site exec vitest run packages/analyzer/si
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-grade-button-pending`. Commits: `ab08eb03`, `aee26144`, `7f484a57`, `0c9d03fe`. Date: 2026-11-17.
+`make check-fast BASE=main` passes with 1594 site tests in 161 files and 138 root script tests, and the loop of item 1 went red at `ab08eb03`, then green at `aee26144`.
+The accessible name of the button is "Grading…" during a grade, and the pending announcement "Grading the trade" stays.
+Read 6 files: AGENTS.md, packages/analyzer/site/form/grade-bar.tsx, packages/design/site/ui/pending-button.tsx, packages/analyzer/site/form/trade-form.test.tsx, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md.
