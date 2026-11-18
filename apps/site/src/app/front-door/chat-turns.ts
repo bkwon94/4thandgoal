@@ -4,6 +4,7 @@
  */
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { blockText } from "./answer-block";
+import { ALL_PAGES, MISSING_PAGE, type SiteAnswerPage } from "./ask-api";
 import type { ThreadItem } from "./ask-thread";
 import { MISS_LEAD } from "./miss-card";
 import { personalName } from "./thread";
@@ -73,6 +74,13 @@ function tradeFact(answer: TradeAnswer): string {
   }
 }
 
+/* The one fact of a Site answer. The item holds only its page key, so a page key names the page by that key. */
+function siteFact(page: SiteAnswerPage): string {
+  if (page === ALL_PAGES) return "A list of the pages of the site.";
+  if (page === MISSING_PAGE) return "The site has no page for that.";
+  return `A link to the ${page} page of the site.`;
+}
+
 /* The name and one plain fact of an item that is not a league Topic, or null for an item in flight: a question that
    routes, or a stream that has not ended. A free and a personal answer use only the name here. */
 function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team: number) => string | undefined): { name: string; fact: string } | null {
@@ -91,8 +99,7 @@ function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team:
     case "note":
       return { name: item.question, fact: item.line };
     case "site":
-      // The item holds only its page key, so the turn names the page by that key.
-      return { name: item.question, fact: `A link to the ${item.page} page of the site.` };
+      return { name: item.question, fact: siteFact(item.page) };
   }
 }
 

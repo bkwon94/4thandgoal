@@ -3,15 +3,36 @@
  * league passphrase. A failed call throws an AskError with its status, so the Thread can show the right line.
  */
 import { z } from "zod";
+import type { PackageName } from "@/lib/client-values";
 import type { Turn } from "./chat-turns";
 
 /* The API that a call goes to: its base URL and the slug of the client. The app builds it from its config. */
 export type AskTarget = { url: string; client: string };
 
+/* The page of a Site answer that asks about the whole site, so the Thread shows the list view. */
+export const ALL_PAGES = "all";
+/* The page of a Site answer that asks about a page the client lacks, so the Thread shows the none case. */
+export const MISSING_PAGE = "missing";
+/* The page of a Site answer: a page key, ALL_PAGES, or MISSING_PAGE. */
+export type SiteAnswerPage = PackageName | typeof ALL_PAGES | typeof MISSING_PAGE;
+
+/* Each package name, so a page key from the API reads as a PackageName. The Record type fails the typecheck when a
+   package name is missing here. */
+const PAGE_KEYS: Record<PackageName, true> = { week: true, rankings: true, managers: true, waiver: true, analyzer: true, sim: true, midseason: true, eggs: true };
+
+const isPageKey = (value: string): value is PackageName => Object.hasOwn(PAGE_KEYS, value);
+
+/* The page of the API as a SiteAnswerPage. A value that is no page key reads as MISSING_PAGE, so the Thread shows the
+   none case and not an error. */
+function sitePageOf(value: string): SiteAnswerPage {
+  if (value === ALL_PAGES || value === MISSING_PAGE) return value;
+  return isPageKey(value) ? value : MISSING_PAGE;
+}
+
 /* The route of one question: a Topic, a free answer, an honest miss, a calm refusal, the calm line of a cap in place
    of a free answer, or a Site answer. `team` is the roster id of the team that the question names, or null for Your
    team. `closest` holds the 3 closest Topics of a miss and of a cap. `line` is the line of a cap, else null. `page` is
-   the page of a Site answer: a page key, `all`, or `missing`, else null. */
+   the page of a Site answer, else null. */
 export const askAnswerSchema = z.object({
   route: z.enum(["topic", "free", "miss", "refuse", "cap", "site"]),
   line: z.string().nullable().default(null),
@@ -19,7 +40,11 @@ export const askAnswerSchema = z.object({
   team: z.number().nullable(),
   closest: z.array(z.string()),
   suggestion: z.string().nullable(),
-  page: z.string().nullable().default(null),
+  page: z
+    .string()
+    .nullable()
+    .default(null)
+    .transform((value) => (value === null ? null : sitePageOf(value))),
 });
 export type AskAnswer = z.infer<typeof askAnswerSchema>;
 

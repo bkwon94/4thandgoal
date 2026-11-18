@@ -219,6 +219,14 @@ describe("the none case of a site question", () => {
     );
   });
 
+  it("shows the none case for a page from the API that is no page key", async () => {
+    answerWith(siteRoute("casino"));
+    render(<HomePage />);
+    await ask("where is the casino");
+    const card = await articleWith("where is the casino", "The site has no page for that. Here is what it has.");
+    expect(within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link")).toHaveLength(CPC_PAGES.length);
+  });
+
   it("names no internal part in the list view or the none case (AT-17, list half)", async () => {
     answerWith(siteRoute("all"));
     answerWith(siteRoute("missing"));

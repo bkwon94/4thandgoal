@@ -10,6 +10,7 @@ import { ArrowLeftRightIcon, ArrowRightIcon, ArrowUpRightIcon, BookOpenIcon, Che
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { SitePage } from "@/app/site-pages";
+import { ALL_PAGES, type SiteAnswerPage } from "./ask-api";
 import { QuestionBubble, Surface } from "./miss-card";
 import { FAST, QUICK, fadeIn, staggerOf } from "./motion";
 
@@ -210,14 +211,15 @@ function PageCard({ page, others }: { page: SitePage; others: SitePage[] }) {
   );
 }
 
-/* The Site answer of `question`. `all` gives the launcher. A page key of `pages` gives its page card. `missing`, or a kept
-   key that the client no longer has, gives the none case: the B card with no page, and the rows of all the pages, open. */
-export const SiteAnswer = forwardRef<HTMLElement, { question: string; page: string; pages: SitePage[] }>(function SiteAnswer({ question, page, pages }, ref) {
+/* The Site answer of `question`. ALL_PAGES gives the launcher. A page key of `pages` gives its page card. MISSING_PAGE,
+   or a kept key that the client no longer has, gives the none case: the B card with no page, and the rows of all the
+   pages, open. */
+export const SiteAnswer = forwardRef<HTMLElement, { question: string; page: SiteAnswerPage; pages: SitePage[] }>(function SiteAnswer({ question, page, pages }, ref) {
   const target = pages.find((candidate) => candidate.key === page);
   return (
     <article ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
       <QuestionBubble question={question} />
-      {page === "all" ? (
+      {page === ALL_PAGES ? (
         <Launcher pages={pages} />
       ) : (
         <Surface>
