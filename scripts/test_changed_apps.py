@@ -88,6 +88,44 @@ class TheAppSelection(unittest.TestCase):
         self.assertEqual(self.select("GLOSSARY.md"), ["site", "pipeline", "api"])
 
 
+class TheRootFolderSelection(unittest.TestCase):
+    """A change only under .scratch/ or docs/ selects the members whose tests read the changed path, and no more."""
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        workspace(self.root)
+
+    def test_a_tracker_note_selects_the_site_and_the_pipeline_that_read_the_tracker(self):
+        files = [".scratch/quick-wins/faster-checks.md"]
+        self.assertEqual(select_apps(self.root, files), ["site", "pipeline"])
+        self.assertEqual(select_packages(self.root, files), [])
+
+    def test_the_state_file_selects_the_site_and_the_pipeline_that_read_it(self):
+        self.assertEqual(select_apps(self.root, ["docs/agents/state.md"]), ["site", "pipeline"])
+
+    def test_an_adr_selects_no_member_because_no_test_reads_it(self):
+        self.assertEqual(select_apps(self.root, ["docs/adr/0033-quick-runs.md"]), [])
+        self.assertEqual(select_packages(self.root, ["docs/adr/0033-quick-runs.md"]), [])
+
+    def test_a_rules_file_under_a_root_folder_selects_the_members_of_the_rules_file_rule(self):
+        for path in ("docs/agents/AGENTS.md", ".scratch/CLAUDE.md"):
+            with self.subTest(path=path):
+                self.assertEqual(select_apps(self.root, [path]), ["site", "pipeline"])
+
+    def test_a_root_folder_file_with_another_root_file_selects_every_app_and_package(self):
+        files = [".scratch/quick-wins/faster-checks.md", "Makefile"]
+        self.assertEqual(select_apps(self.root, files), ["site", "pipeline", "api"])
+        self.assertEqual(select_packages(self.root, files), ["facts", "league", "waiver"])
+
+    def test_a_root_folder_file_with_an_app_file_selects_the_readers_and_the_app(self):
+        self.assertEqual(select_apps(self.root, ["docs/adr/0033-quick-runs.md", "apps/api/src/app.py"]), ["api"])
+        self.assertEqual(select_apps(self.root, [".scratch/a.md", "apps/api/src/app.py"]), ["site", "pipeline", "api"])
+
+    def test_the_repo_tracker_selects_the_site_and_the_pipeline_only(self):
+        self.assertEqual(select_apps(REPO, [".scratch/quick-wins/faster-checks.md"]), ["site", "pipeline"])
+        self.assertEqual(select_packages(REPO, [".scratch/quick-wins/faster-checks.md"]), [])
+
+
 class ThePackageSelection(unittest.TestCase):
     def setUp(self):
         self.root = Path(tempfile.mkdtemp())

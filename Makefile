@@ -23,7 +23,8 @@ package-check = $(if $(wildcard packages/$(1)/python),make -C packages/$(1)/pyth
 scripts-check = python3 -B -m unittest discover -s scripts -p 'test_*.py'
 
 # With BASE set, only the apps and the packages that a change since the merge base selects run: each changed member,
-# and each member that needs it. A change outside apps/ and packages/, such as a root file, selects every one.
+# and each member that needs it. A change outside apps/ and packages/, such as a root file, selects every one,
+# except a change under .scratch/ or docs/, which selects only the members whose tests read it.
 # The hook sets STAGED=1 to use the commit index. Without either option, run every member. The site runs first.
 # See scripts/changed_apps.py for the shared rules.
 ALL_APPS = site pipeline api
