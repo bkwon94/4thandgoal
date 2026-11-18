@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-1, AT-6, AT-7, AT-8, AT-
 
 **Blocked by:** 02.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The sim step for `cpc` 2026 week 10 writes `week-10/sim.json` with 10,000 runs, 12 teams, 200 stored runs, and 12 pages (AT-1).
 - [x] The ladder of Bo Girds lists each count of more wins, and the sentence names the smallest count with odds of 90 % or more (AT-6).
