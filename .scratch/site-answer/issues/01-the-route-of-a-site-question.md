@@ -10,8 +10,8 @@ Spec: `.scratch/site-answer/PRD.md`. Acceptance tests AT-9, AT-18, AT-20, AT-22.
 
 **Status:** ready-for-agent
 
-- [ ] The live route eval routes at least 20 of the 22 site questions to `site` with the right key, keeps each of the 18 traps, and keeps the old bar (AT-9).
-- [ ] With the fake Jev, a `site` route returns `page`, makes no Claude call, writes no miss log entry, and leaves each cap count as it was (AT-18).
-- [ ] An unknown page key, or more than 12 pages, gets a 422 before any Jev request (AT-20).
-- [ ] "what's the weather" still routes to an honest miss (AT-22, api half).
-- [ ] An ask request with no `pages` field still routes as before, so the site of `main` keeps working until ticket 02.
+- [x] The live route eval routes at least 20 of the 22 site questions to `site` with the right key, keeps each of the 18 traps, and keeps the old bar (AT-9).
+- [x] With the fake Jev, a `site` route returns `page`, makes no Claude call, writes no miss log entry, and leaves each cap count as it was (AT-18).
+- [x] An unknown page key, or more than 12 pages, gets a 422 before any Jev request (AT-20).
+- [x] "what's the weather" still routes to an honest miss (AT-22, api half).
+- [x] An ask request with no `pages` field still routes as before, so the site of `main` keeps working until ticket 02.
