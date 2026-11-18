@@ -10,7 +10,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Status:** ready-for-agent
 
-- [ ] `AGENTS.md` holds the rule in the words of AT-31.
-- [ ] The rule test fails on a `retries` value above 0 in a Playwright config, and names the file.
-- [ ] The rule test fails on `pytest-rerunfailures` in a lock file or a config, and on a `retry` in a Vitest config.
-- [ ] The rule test passes on the configs of `main`.
+- [x] `AGENTS.md` holds the rule in the words of AT-31.
+- [x] The rule test fails on a `retries` value above 0 in a Playwright config, and names the file.
+- [x] The rule test fails on `pytest-rerunfailures` in a lock file or a config, and on a `retry` in a Vitest config.
+- [x] The rule test passes on the configs of `main`.
