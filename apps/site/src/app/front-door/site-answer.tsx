@@ -19,11 +19,16 @@ export const cardLead = (label: string) => `The ${label} has its own page.`;
 /* The lead line of the none case: a page that the client lacks. */
 export const NONE_LEAD = "The site has no page for that. Here is what it has.";
 
+/* The pages of the site in two groups, each in the order of `pages`: the Tools, and the pages to read. */
+type PageGroups = { tools: SitePage[]; reads: SitePage[] };
+
+function groupsOf(pages: SitePage[]): PageGroups {
+  return { tools: pages.filter((page) => page.tool), reads: pages.filter((page) => !page.tool) };
+}
+
 /* The lead line of the whole site: the count of the Tools and of the pages to read. */
-export function listLead(pages: SitePage[]): string {
-  const tools = pages.filter((page) => page.tool).length;
-  const reads = pages.length - tools;
-  return `The site has ${tools} ${tools === 1 ? "tool" : "tools"} and ${reads} ${reads === 1 ? "page" : "pages"} to read.`;
+function listLead({ tools, reads }: PageGroups): string {
+  return `The site has ${tools.length} ${tools.length === 1 ? "tool" : "tools"} and ${reads.length} ${reads.length === 1 ? "page" : "pages"} to read.`;
 }
 
 /* The mark of each page in its icon box. A page with no mark of its own takes the book. */
@@ -158,12 +163,12 @@ function TileGroup({ label, pages, from, wide }: { label: string; pages: SitePag
 
 /* The A launcher of the whole site: the lead line on the Thread, then the Tools and the pages to read as tiles. */
 function Launcher({ pages }: { pages: SitePage[] }) {
-  const tools = pages.filter((page) => page.tool);
-  const reads = pages.filter((page) => !page.tool);
+  const groups = groupsOf(pages);
+  const { tools, reads } = groups;
   return (
     <div className="flex flex-col gap-sp-4">
       <motion.p className="m-0 text-body leading-body font-semibold text-ink" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={fadeIn(FAST)}>
-        {listLead(pages)}
+        {listLead(groups)}
       </motion.p>
       <TileGroup label="Tools" pages={tools} from={0} wide={false} />
       <TileGroup label="Pages to read" pages={reads} from={tools.length} wide />
