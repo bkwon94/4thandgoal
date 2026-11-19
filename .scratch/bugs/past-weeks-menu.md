@@ -40,9 +40,24 @@ Test verdict: pending
 
 Done condition: When "Past weeks" opens or closes, the top edge of the menu sheet stays still, and only the list of weeks grows or shrinks under the button.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: the ui-sdk Drawer under `Sheet` in `packages/design/site/ui/sheet.tsx` observes the size of the sheet, and on each resize springs it to the new height with a `translate` animation from minus the growth back to `0`. On the `side="top"` sheet of `MenuSheet` in `packages/design/site/shell/menu-sheet.tsx`, that spring moves the top edge up by about 62 px and back while the grid rows of `menu-past` grow or shrink.
+Red: at `63493e53`, after `CLIENT=cpc pnpm build` in `apps/site`, `builtin cd apps/site && pnpm exec playwright test --project=floor e2e/menu-sheet.spec.ts`
+
+```text
+  ✘  1 [floor] › e2e/menu-sheet.spec.ts:36:5 › the top edge of the menu sheet stays still while Past weeks opens and closes (2.8s)
+    Error: the top edge of the menu sheet moves 62.48410415649414px as Past weeks opens
+    Expected: <= 1
+    Received:    62.48410415649414
+  1 failed
+```
+
+Green: at `373a596c`, after `CLIENT=cpc pnpm build` in `apps/site`, `builtin cd apps/site && pnpm exec playwright test --project=floor e2e/menu-sheet.spec.ts`
+
+```text
+  ✓  1 [floor] › e2e/menu-sheet.spec.ts:36:5 › the top edge of the menu sheet stays still while Past weeks opens and closes (2.5s)
+  1 passed (3.0s)
+```
+
 Test verdict: pending
 
 ## Comments
