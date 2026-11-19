@@ -16,10 +16,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - The UI uses `ui-sdk`, parts from scrolltide and transitions.dev, and the design skills of design-bar. Brian, in the Stage 1 grill.
 - Each Finder trade shows the Lean, the Case, and folded Bullets of the Advisor, and opens in the analyzer already graded. Terms: Deadline week, Lock (00:00 Eastern Tue 2026-11-24), Deadline banner, Trade wire, Deadline board. `decisions/04-grill-terms-and-shared-brain.md`.
 - The Finder skips the Partner filter for one picked partner, gives the Shortlist variety, and lets an unsure "spares" answer pass. `decisions/01-research-few-offers.md`.
+- The Finder gets four free cuts (short offer labels, sheets at the same time, paced waves, late log checks) to about 25 s, keeps one pick call, and streams its progress. No prewarm. `decisions/02-research-finder-speed.md`.
 
 ## NOT YET SPECIFIED
 
-- Where does the Finder spend its time, and can it be fast enough without a stream? `decisions/02-research-finder-speed.md`.
 - Where does the live feed of trades get its data, and how often? `decisions/03-research-trade-feed-source.md`.
 - Which Jev questions and which decision trees does the Finder use, and what bar must the backtest pass? `decisions/05-grill-jev-trees-and-backtest.md`.
 - Which issues of the trade tools does the polish fix? `decisions/06-grill-trade-tools-polish-list.md`.
@@ -30,4 +30,6 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 
 - A push alert. Brian said it is not necessary.
 - Norcal. The dinner is a CPC event.
+- A stream of Finder results per partner. It loses the one pick across partners and costs about a day more (decision 02).
+- A prewarm of the Finder cache. It costs $0.85 to $1.70 for each roster change (decision 02).
 - A theme for the whole site. The deadline look stays on the trade pages and the banner.
