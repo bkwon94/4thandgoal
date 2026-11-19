@@ -72,8 +72,10 @@ describe("the ask box of Lil Fridge", () => {
     const [url, init] = askCalls()[0];
     expect(url).toMatch(/\/clients\/cpc\/ask$/);
     expect(init.headers["X-League-Passphrase"]).toBe(PASSPHRASE);
-    // The first question of an empty Thread carries no earlier turn.
-    expect(JSON.parse(init.body)).toEqual({ question: "who am i playing sunday", roster_id: 3, week: 8, turns: [] });
+    // The first question of an empty Thread carries no earlier turn. The pages of the Menu go with each ask.
+    const { pages, ...body } = JSON.parse(init.body);
+    expect(body).toEqual({ question: "who am i playing sunday", roster_id: 3, week: 8, turns: [] });
+    expect(pages.map((page: { key: string }) => page.key)).toEqual(["week", "rankings", "managers", "analyzer", "midseason", "sim"]);
   });
 
   it("sends the earlier turn of the Thread with a follow-up question, so the route reads it as the whole question", async () => {

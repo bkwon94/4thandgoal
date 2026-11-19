@@ -1,0 +1,139 @@
+{
+  "taken": "2026-11-18T20:36:35.930Z",
+  "page": "http://127.0.0.1:4173/",
+  "question": "is there a waiver page",
+  "asks": [
+    {
+      "url": "http://localhost:8080/clients/cpc/ask",
+      "status": 200,
+      "request": {
+        "question": "is there a waiver page",
+        "roster_id": 3,
+        "week": 10,
+        "turns": [],
+        "pages": [
+          {
+            "key": "week",
+            "label": "Week 10",
+            "blurb": "The recap, scores, and awards of the week."
+          },
+          {
+            "key": "rankings",
+            "label": "Power Rankings",
+            "blurb": "Every team ranked, with the weekly moves."
+          },
+          {
+            "key": "managers",
+            "label": "Managers",
+            "blurb": "Each manager, with the grades of the season."
+          },
+          {
+            "key": "analyzer",
+            "label": "Trade Analyzer",
+            "blurb": "Grades a trade between two or more teams."
+          },
+          {
+            "key": "midseason",
+            "label": "Midseason Report",
+            "blurb": "The midseason awards, grades, and roasts."
+          },
+          {
+            "key": "sim",
+            "label": "Playoff Sim",
+            "blurb": "Plays out the rest of the season, game by game."
+          }
+        ]
+      },
+      "response": {
+        "route": "site",
+        "line": null,
+        "topic": null,
+        "team": null,
+        "closest": [],
+        "suggestion": null,
+        "page": "missing",
+        "jev": {
+          "model": "jev-1.14.0",
+          "nouls": {
+            "fits_topic": 0.1,
+            "data_can_answer": 0.13,
+            "about_league": 0.99,
+            "abuse": 0.01,
+            "reacts_to_answer": 0.01,
+            "names_team": 0.01,
+            "asks_for_site": 0.85
+          },
+          "choices": {
+            "topic": {
+              "week_recap": 0,
+              "last_matchup": 0,
+              "next_matchup": 0,
+              "power_rankings": 0,
+              "playoff_race": 0,
+              "your_season": 0,
+              "leaders_trades": 0,
+              "waiver_targets": 1,
+              "stack_up": 0,
+              "weak_spots": 0,
+              "sell_high": 0,
+              "trade_ideas": 0,
+              "trade_check": 0,
+              "start_sit": 0
+            },
+            "team": {
+              "the_blue_tent": 0.5,
+              "all_you_need_is_love": 0.07,
+              "lil_fridge": 0.03,
+              "nfc_least": 0.04,
+              "puka_deez": 0.02,
+              "bo_girds": 0.04,
+              "to_infinity_and_bijan": 0.04,
+              "return_of_t_mac": 0.04,
+              "maye_d_force_b_with_u": 0.02,
+              "behold_the_lamb": 0.04,
+              "unsolicited_dak_picks": 0.05,
+              "teehee": 0.11
+            },
+            "site_page": {
+              "week": 0,
+              "rankings": 0,
+              "managers": 0,
+              "analyzer": 0,
+              "midseason": 0,
+              "sim": 0,
+              "all": 0.08,
+              "missing": 0.92
+            }
+          }
+        }
+      }
+    }
+  ],
+  "answer_text": "is there a waiver page\n\nThe site has no page for that. Here is what it has.\n\nWeek 10\nThe recap, scores, and awards of the week.\nPower Rankings\nEvery team ranked, with the weekly moves.\nManagers\nEach manager, with the grades of the season.\nTrade Analyzer\nGrades a trade between two or more teams.\nMidseason Report\nThe midseason awards, grades, and roasts.\nPlayoff Sim\nPlays out the rest of the season, game by game.",
+  "answer_links": [
+    {
+      "text": "Week 10 The recap, scores, and awards of the week.",
+      "href": "/2026/week-10/"
+    },
+    {
+      "text": "Power Rankings Every team ranked, with the weekly moves.",
+      "href": "/rankings/"
+    },
+    {
+      "text": "Managers Each manager, with the grades of the season.",
+      "href": "/2026/managers/"
+    },
+    {
+      "text": "Trade Analyzer Grades a trade between two or more teams.",
+      "href": "/analyze/"
+    },
+    {
+      "text": "Midseason Report The midseason awards, grades, and roasts.",
+      "href": "/midseason/2026/"
+    },
+    {
+      "text": "Playoff Sim Plays out the rest of the season, game by game.",
+      "href": "/midseason/2026/#sim"
+    }
+  ]
+}

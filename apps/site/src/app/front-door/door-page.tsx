@@ -9,6 +9,7 @@ import { loadFrontDoor } from "@/lib/data/front-door-data";
 import { askTarget } from "@/lib/config";
 import { homeHref } from "@/lib/routes";
 import { shellProps } from "@/app/shell-props";
+import { clientSitePages } from "@/app/site-pages";
 import { FrontDoor } from "@/app/front-door/front-door";
 
 /* `pageHref` is the path of the page. The front door is Home, so the hidden /ask/ passes the Home path too, and the Home row shows the check. */
@@ -26,7 +27,7 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
           pick from, so it shows the name of the league alone. */}
       <main className="bg-page">
         {door ? (
-          <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} answers={door.answers} personalHrefs={door.personalHrefs} askTarget={askTarget} />
+          <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} answers={door.answers} personalHrefs={door.personalHrefs} pages={clientSitePages()} askTarget={askTarget} />
         ) : (
           <h1 className="m-0 px-gutter py-sp-6 text-score leading-tight font-bold">{clientValues.copy.siteName}</h1>
         )}

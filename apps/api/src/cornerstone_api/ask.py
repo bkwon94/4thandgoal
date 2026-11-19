@@ -17,20 +17,24 @@ from pydantic import BaseModel, Field
 from cornerstone_api.ask_wording import (
     ABOUT_LEAGUE,
     ABUSE,
+    ASKS_FOR_SITE,
     DATA_CAN_ANSWER,
     FITS_TOPIC,
     NAMES_TEAM,
     REACTS_TO_ANSWER,
+    SITE_PAGE,
     TEAM,
     TOPIC,
     route_questions,
     route_state,
+    site_page_line,
     team_key,
 )
 from cornerstone_api.caps import Caps
 from cornerstone_api.chat_turns import Turn, Turns, with_turns
 from cornerstone_api.miss_log import MissLog
 from cornerstone_api.named_players import named_players
+from league.client import PackageName
 from league.jev_port import Jev, JevError, JevResponse
 
 logger = logging.getLogger(__name__)
@@ -49,21 +53,24 @@ WEEK_MAX = 18
 # How long the route of a free answer stays kept for its stream. The site calls the stream right after the route.
 FREE_ROUTE_SECONDS = 600
 
-RouteKind = Literal["topic", "free", "miss", "refuse"]
+RouteKind = Literal["topic", "free", "miss", "refuse", "site"]
 # The kinds of the answer of the ask route: a route, or the calm line of a cap in place of a free answer.
-AskKind = Literal["topic", "free", "miss", "refuse", "cap"]
+AskKind = Literal["topic", "free", "miss", "refuse", "site", "cap"]
 # The team name of each roster of the league, by roster id. The app gives the live rosters of the client.
 Rosters = Callable[[], dict[int, str]]
 # The name of each rostered player by player id, for each roster of the league by roster id.
 RosterPlayers = Callable[[], dict[int, dict[str, str]]]
 # The Topic of the lineup of Your team. A typed start question about a player of another roster is not about it.
 START_SIT = "start_sit"
+# No client has more than 12 pages, so a longer list in an ask request is no page list of the site.
+PAGES_MAX = 12
 
 
 @dataclass(frozen=True)
 class Route:
     """The route of one question: its kind, the Topic of a Topic route, the team that the question names, the closest
-    Topics of a miss, the Suggestion under a free answer, and the Jev answers that decided it."""
+    Topics of a miss, the Suggestion under a free answer, the Jev answers that decided it, and the page of a site
+    route: a page key, `all`, or `missing`."""
 
     kind: RouteKind
     topic: str | None
@@ -71,6 +78,7 @@ class Route:
     closest: list[str]
     suggestion: str | None
     jev: JevResponse
+    page: str | None = None
 
 
 def _level(probability: float) -> str:
@@ -86,6 +94,11 @@ def decide(answers: JevResponse) -> tuple[RouteKind, str | None, str | None]:
     top = _ranked(answers.choices[TOPIC])[0]
     if level[ABUSE] == "yes":
         return "refuse", None, None
+    # A clear yes on the site Noul gives the page of the site, before a Topic can take it (the site row runs right after
+    # the abuse row; decision 01 of site-answer). An unsure falls through, so a how-to about Sleeper routes on the
+    # base table. A request with no pages asks no site Noul, so the base table decides alone.
+    if level.get(ASKS_FOR_SITE) == "yes":
+        return "site", None, None
     # A reaction to the last answer, such as "thank you" or "you sure?", gets a free answer that reads the turns.
     reacts = level[REACTS_TO_ANSWER] == "yes"
     # The unsure band of "about the league" is a miss, because "write me a poem about my kicker" scored 0.39.
@@ -108,15 +121,19 @@ def _ranked(probabilities: dict[str, float]) -> list[str]:
 
 
 def route_question(jev: Jev, question: str, teams: list[str], season: int, week: int,
-                   turns: list[Turn] | None = None) -> Route:
+                   turns: list[Turn] | None = None, site_pages: dict[str, str] | None = None) -> Route:
     """One Jev request for `question` over the team names `teams` in week `week` of `season`, and its route.
 
     The earlier `turns` of the Thread go in the state, so a follow-up routes like the whole question would.
-    A failed request raises JevError.
+    The `site_pages` of the client, each key with one line, let the route give a site route. A failed request raises
+    JevError.
     """
-    state = with_turns(route_state(question, teams, season, week), turns or [])
-    answers = jev.ask(state, route_questions(teams))
+    state = with_turns(route_state(question, teams, season, week, site_pages), turns or [])
+    answers = jev.ask(state, route_questions(teams, site_pages))
     kind, topic, suggestion = decide(answers)
+    if kind == "site":
+        return Route(kind=kind, topic=None, team=None, closest=[], suggestion=None, jev=answers,
+                     page=_ranked(answers.choices[SITE_PAGE])[0])
     team = None
     if kind != "refuse" and _level(answers.nouls[NAMES_TEAM]) == "yes":
         by_key = {team_key(name): name for name in teams}
@@ -182,15 +199,25 @@ def client_asker(request: Request) -> Asker:
 ClientAsker = Annotated[Asker, Depends(client_asker)]
 
 
+class SitePage(BaseModel):
+    """One page of the client, as the site sends it from its Menu: its package name, its label, and one line about it."""
+
+    key: PackageName
+    label: str = Field(min_length=1, max_length=40)
+    blurb: str = Field(min_length=1, max_length=120)
+
+
 class AskRequest(BaseModel):
     """The body of the ask route: the question as the manager typed it, the roster id of Your team, the latest week
     that the site shows, because each Topic Answer of the site covers that week only, and the earlier turns of the
-    Thread, oldest first."""
+    Thread, oldest first. The pages of the client let the route answer a question about the site. With no pages, the
+    route has no site row. A request with no pages asks no site question and routes on the base table."""
 
     question: str = Field(min_length=1, max_length=QUESTION_MAX)
     roster_id: int
     week: int = Field(ge=1, le=WEEK_MAX)
     turns: Turns = Field(default_factory=list)
+    pages: list[SitePage] | None = Field(default=None, max_length=PAGES_MAX)
 
 
 def _names_other_rosters(asker: Asker, question: str, roster_id: int) -> bool:
@@ -210,8 +237,11 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
     if body.roster_id not in rosters:
         raise HTTPException(status_code=422, detail="Pick your team again.")
     question = body.question.strip()
+    site_pages = None if body.pages is None else {page.key: site_page_line(page.label, page.blurb)
+                                                  for page in body.pages}
     try:
-        route = route_question(asker.jev, question, list(rosters.values()), asker.season, body.week, body.turns)
+        route = route_question(asker.jev, question, list(rosters.values()), asker.season, body.week, body.turns,
+                               site_pages)
     except JevError as error:
         logger.warning("The route of a question failed (%s)", type(error).__name__)
         raise HTTPException(status_code=503, detail="The question did not go through. Ask again.") from None
@@ -237,5 +267,6 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
         "team": None if route.team is None else by_name[route.team],
         "closest": route.closest,
         "suggestion": route.suggestion,
+        "page": route.page,
         "jev": {"model": route.jev.model, "nouls": route.jev.nouls, "choices": route.jev.choices},
     }

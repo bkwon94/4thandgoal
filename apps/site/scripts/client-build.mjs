@@ -238,6 +238,10 @@ function routeText(slug, route) {
    never moves a part. */
 const HOME_SECTIONS = ["midseason", "rankings", "week"];
 
+/* The packages whose menu file gives a site line, the blurb and the Tool mark of its page in the Site answer. The
+   other packages, such as the egg board, show no page there. */
+const SITE_LINES = ["week", "rankings", "managers", "analyzer", "midseason", "sim"];
+
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
@@ -246,10 +250,12 @@ function registryText(slug, values) {
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
+  const lines = SITE_LINES.filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
+    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
+    ...lines.map((name) => `import { siteLine as ${name}SiteLine } from "@/app/_routes/${name}/menu";`),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
     ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
@@ -259,6 +265,11 @@ function registryText(slug, values) {
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
+    "};",
+    "",
+    "/* The site line of each package of the client that shows in the Site answer. */",
+    "export const siteLines: SiteLines = {",
+    ...lines.map((name) => `  ${name}: ${name}SiteLine,`),
     "};",
     "",
     "/* The home tool of each package of the client that has one, in the order of the Tools chapter. */",

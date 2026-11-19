@@ -1,0 +1,47 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "wait": "text=Which team is yours?"
+    },
+    {
+      "wait": 1200
+    },
+    {
+      "click": "[role=dialog] button:has-text(\"Lil Fridge\")"
+    },
+    {
+      "wait": "input[aria-label=\"Ask a question\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"Ask a question\"]",
+        "value": "is there a waiver page"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Send\"]"
+    },
+    {
+      "wait": "input[type=password]"
+    },
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[aria-label=\"Use this passphrase\"]"
+    },
+    {
+      "wait": "text=The site has no page for that. Here is what it has."
+    },
+    {
+      "wait": 1500
+    }
+  ]
+}

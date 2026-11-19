@@ -1,0 +1,16 @@
+# Each link of the NorCal list view, fetched from the NorCal static export on http://127.0.0.1:4173, which answers a missing path with 404.html and status 404.
+# Taken 2026-11-18T20:44:12.851Z. Your team: Bo Girds. Change the team
+200  /analyze/  "Trade Analyzer Grades a trade between two or more teams."  title="Trade Analyzer · NorCal Apex 6"
+200  /midseason/2026/#sim  "Playoff Sim Plays out the rest of the season, game by game."  title="2026 Midseason Report · NorCal Apex 6"
+200  /2026/week-10/  "Week 10 The recap, scores, and awards of the week."  title="Week 10 · NorCal Apex 6"
+200  /rankings/  "Power Rankings Every team ranked, with the weekly moves."  title="Power Rankings · NorCal Apex 6"
+200  /2026/managers/  "Managers Each manager, with the grades of the season."  title="Managers · NorCal Apex 6"
+200  /midseason/2026/  "Midseason Report The midseason awards, grades, and roasts."  title="2026 Midseason Report · NorCal Apex 6"
+
+# The links of the menu and the header of the page, for comparison:
+/  "NORCAL APEX 6"
+/  "Home"
+/2026/week-10/  "Week 10"
+/rankings/  "Power Rankings"
+/2026/managers/  "Managers"
+/analyze/  "Trade Analyzer"

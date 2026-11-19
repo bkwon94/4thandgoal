@@ -1,0 +1,14 @@
+
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/site-answer/apps/site
+> node scripts/evidence.mjs "site-answer" "AT-5" "AT-14"
+
+
+Running 1 test using 1 worker
+
+build cpc: 6.8 s
+AT-5 / cpc: 6 shots in 50.2 s
+AT-14 / cpc: 6 shots in 55.7 s
+Total: 2 tests of site-answer in 112.7 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of site-answer (1.9m)
+
+  1 passed (1.9m)
