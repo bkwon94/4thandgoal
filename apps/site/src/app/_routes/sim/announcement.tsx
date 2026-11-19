@@ -11,9 +11,9 @@ import { SimPreview } from "@cpc/sim/announcement/sim-preview";
 import { getYourTeam } from "@/app/front-door/your-team-store";
 import { useAnnouncement } from "@/app/use-announcement";
 
-/* The spec sets no release date, so the release is the first weekly publish after the merge of the spec: week 11, on
-   Tuesday 2026-11-24. The Announcement stops 1 week later, from the start of 2026-12-01 in the time of the manager. */
-export const SIM_ANNOUNCEMENT = { id: "season-sim-2026", release: "2026-11-24", stops: "2026-12-01" } as const;
+/* The release is the merge day of the spec, Thursday 2026-11-19, as Brian set. The Announcement stops 1 week later,
+   from the start of 2026-11-26 in the time of the manager. */
+export const SIM_ANNOUNCEMENT = { id: "season-sim-2026", release: "2026-11-19", stops: "2026-11-26" } as const;
 
 const COPY = {
   eyebrow: "New: Season sim",
