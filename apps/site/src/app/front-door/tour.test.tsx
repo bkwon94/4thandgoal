@@ -5,6 +5,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFixtureSite } from "@/fixtures/sites";
+import { StopCard, StopCardContent, StopCardTitle } from "@cpc/design/ui/stop-card";
 import HomePage from "./door-page";
 import { STOPS, dismissStep } from "./tour";
 // The jsdom stand-ins of the browser APIs that the popover and the menu sheet need.
@@ -44,6 +45,7 @@ afterEach(() => {
   cleanup();
   localStorage.clear();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 const findCard = (name: string) => screen.findByRole("dialog", { name }, { timeout: 2000 });
@@ -106,6 +108,16 @@ describe("the Tour of the front door", () => {
     const card = await findCard("Ask");
     fireEvent.keyDown(card, { key: "Escape" });
     await waitFor(() => expect(queryCard()).toBeNull());
+  });
+
+  it("ends on Android Back, through the CloseWatcher of the Stop card (AT-11)", async () => {
+    const watchers = stubCloseWatcher();
+    render(<HomePage />);
+    fireEvent.click(button(await findCard("Suggestions"), "Next"));
+    await findCard("Ask");
+    act(() => watchers.live().close());
+    await waitFor(() => expect(queryCard()).toBeNull());
+    expect(document.querySelector("[data-tour-hole]")).toBeNull();
   });
 
   it("goes to the next Stop on a press outside the card (AT-8)", async () => {
@@ -186,6 +198,70 @@ describe("the Stops of the Tour", () => {
     expect(dismissStep("outside-press", true)).toBe("end");
     expect(dismissStep("escape-key", false)).toBe("end");
     expect(dismissStep("back", false)).toBe("end");
+  });
+});
+
+/* A stand-in for the browser CloseWatcher, which jsdom lacks. A test calls `close` on the live watcher, as Android Back
+   does. A watcher fires its close once, and then it is destroyed. */
+function stubCloseWatcher() {
+  const made: { close: () => void; destroyed: boolean }[] = [];
+  class FakeCloseWatcher {
+    destroyed = false;
+    private listeners: ((event: Event) => void)[] = [];
+    constructor() {
+      made.push(this);
+    }
+    addEventListener(_type: "close", listener: (event: Event) => void) {
+      this.listeners.push(listener);
+    }
+    close() {
+      if (this.destroyed) return;
+      this.destroyed = true;
+      for (const listener of this.listeners) listener(new Event("close"));
+    }
+    destroy() {
+      this.destroyed = true;
+    }
+  }
+  vi.stubGlobal("CloseWatcher", FakeCloseWatcher);
+  return {
+    live: () => {
+      const watcher = made.filter((one) => !one.destroyed).at(-1);
+      if (!watcher) throw new Error("no live CloseWatcher");
+      return watcher;
+    },
+  };
+}
+
+describe("the Stop card", () => {
+  const renderCard = (onDismissAttempt: (details: { reason: string }) => void) =>
+    render(
+      <StopCard open onDismissAttempt={onDismissAttempt}>
+        <StopCardContent>
+          <StopCardTitle>A Stop</StopCardTitle>
+        </StopCardContent>
+      </StopCard>,
+    );
+
+  it("sends the reason back to onDismissAttempt on a close request of the browser (AT-11)", async () => {
+    const watchers = stubCloseWatcher();
+    const onDismissAttempt = vi.fn();
+    renderCard(onDismissAttempt);
+    await screen.findByRole("dialog", { name: "A Stop" });
+    act(() => watchers.live().close());
+    expect(onDismissAttempt.mock.calls.map(([details]) => details.reason)).toEqual(["back"]);
+  });
+
+  it("counts an Escape once, though Chromium sends a close request right after the keydown (AT-10)", async () => {
+    const watchers = stubCloseWatcher();
+    const onDismissAttempt = vi.fn();
+    renderCard(onDismissAttempt);
+    const card = await screen.findByRole("dialog", { name: "A Stop" });
+    act(() => {
+      fireEvent.keyDown(card, { key: "Escape" });
+      watchers.live().close();
+    });
+    expect(onDismissAttempt.mock.calls.map(([details]) => details.reason)).toEqual(["escape-key"]);
   });
 });
 

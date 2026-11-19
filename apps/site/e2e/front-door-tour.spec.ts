@@ -135,6 +135,21 @@ test("the Escape key counts as Skip at 1280 px (AT-10)", async ({ page }) => {
   await expect(hole(page)).toHaveCount(0);
 });
 
+test("a close request of the browser, as Android Back sends, counts as Skip at Stop 2 (AT-11)", async ({ page }) => {
+  await openTour(page, 390, 660);
+  await card(page, "Suggestions").getByRole("button", { name: "Next" }).click();
+  await expect(card(page, "Ask")).toBeVisible();
+  // Chromium has CloseWatcher and sends a close request on Escape, as Android sends one on Back. The page then hears no
+  // Escape keydown, so only the CloseWatcher of the Stop card, with the reason "back", can end the Tour.
+  expect(await page.evaluate(() => typeof (globalThis as { CloseWatcher?: unknown }).CloseWatcher)).toBe("function");
+  await page.evaluate(() =>
+    window.addEventListener("keydown", (event) => event.key === "Escape" && event.stopImmediatePropagation(), { capture: true }),
+  );
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(hole(page)).toHaveCount(0);
+});
+
 test("Stop 4 shows Done and no Next, and Done ends the Tour (AT-12)", async ({ page }) => {
   await openTour(page, 390, 660);
   await nextTo(page, ["Suggestions", "Ask", "Your team"]);
