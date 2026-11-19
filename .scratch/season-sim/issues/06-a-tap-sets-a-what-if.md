@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-33 to AT-36. Decisions 0
 
 **Blocked by:** 04, 05.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A tap on "Win and beat the median" in week 11 of Bo Girds shows the numbers of the API answer and opens Wk 12 (AT-33).
 - [x] Reset clears the set line and shows the numbers of the file again (AT-34).
@@ -16,3 +16,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-33 to AT-36. Decisions 0
 - [x] With the API stopped, the page shows the file and one line on a tap (AT-36).
 - [x] The site evidence set passes the overlap check after a tap, with the set line shown.
 - [x] `make check-fast` passes.
+
+## Comments
+
+Closes with the squash merge of the spec PR: `season-sim-06` (`60cd983d`) merged into `season-sim` as a fast-forward on 2026-11-18.
+AT-33 to AT-36 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 26 files, and the main ones are: apps/site/src/app/_routes/sim/your-sim-page.tsx, apps/site/src/lib/config.ts, packages/design/site/ui/toggle-group.tsx, packages/sim/python/src/sim/page.py, packages/sim/python/src/sim/season.py, packages/sim/site/lib/what-if-api.ts, packages/sim/site/page/ladder-sheet.tsx, packages/sim/site/page/parts.tsx.

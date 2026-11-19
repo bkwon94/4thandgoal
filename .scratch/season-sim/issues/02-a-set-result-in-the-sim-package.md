@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-11, AT-12, and AT-13. De
 
 **Blocked by:** 01.
 
-**Status:** in-review
+**Status:** done
 
 - [x] On the inputs of `cpc` 2026 week 10, Bo Girds set to lose week 11 and miss the median gives playoff odds within 1.5 points of an exact rejection reference (AT-11).
 - [x] Two runs with the same set results give equal output, byte for byte (AT-12).
@@ -16,3 +16,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-11, AT-12, and AT-13. De
 - [x] A set result in a league with no median game and a set bracket game each have a test.
 - [x] The sim returns `effective_runs`, and a run with no set result has `effective_runs` equal to `runs`.
 - [x] `make check-fast` passes.
+
+## Comments
+
+Closes with the squash merge of the spec PR: `season-sim-02` (`658f36c9`) merged into `season-sim` as `a69dbbe3` on 2026-11-18.
+AT-11, AT-12, and AT-13 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 6 files: apps/pipeline/src/cornerstone/season_sim.py, apps/pipeline/tests/test_sim.py, packages/sim/python/src/sim/published.py, packages/sim/python/src/sim/season.py, packages/sim/python/tests/rejection.py, packages/sim/python/tests/test_season.py.

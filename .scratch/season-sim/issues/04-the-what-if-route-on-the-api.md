@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-14 to AT-21, AT-67, and 
 
 **Blocked by:** 03.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A post of Bo Girds and one set result with no passphrase answers 200 with each key of the spec (AT-14).
 - [x] A post with no set result answers the page of Bo Girds in `week-10/sim.json`, equal by a diff (AT-15).
@@ -26,3 +26,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-14 to AT-21, AT-67, and 
 
 - 2026-11-18: The box "The API image builds with the sim package" stays open. The Docker daemon on the Mac hangs. Run `make image` in `apps/api` after a restart of Docker Desktop.
 - 2026-11-18: `make image` built `cpcfantasy-api` (sha256:292cc15d) from the Spec branch at 3a40a99d. In the image, `/opt/venv/bin/python` imports `sim.season`, `sim.page`, `cornerstone_api.what_if`, and `cornerstone_api.app`.
+
+Closes with the squash merge of the spec PR: `season-sim-04` (`bd4f5164`) merged into `season-sim` as a fast-forward on 2026-11-18.
+AT-14 to AT-21, AT-67, and AT-68 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 14 files, and the main ones are: apps/api/Dockerfile, apps/api/Dockerfile.dockerignore, apps/api/pyproject.toml, apps/api/src/cornerstone_api/app.py, apps/api/src/cornerstone_api/what_if.py, packages/sim/python/src/sim/season.py, packages/sim/python/src/sim/tunables.py, apps/api/src/cornerstone_api/README.md.

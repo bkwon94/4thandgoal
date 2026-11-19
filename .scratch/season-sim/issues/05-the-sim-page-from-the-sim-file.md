@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-24 to AT-32, AT-37, AT-5
 
 **Blocked by:** 03.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The `cpc` page with Bo Girds shows the header of AT-24, and the sentence opens the ladder of the file (AT-25).
 - [x] The week switch has Wk 11 to Wk 14 and Playoffs, and each opens its week page (AT-26).
@@ -20,3 +20,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-24 to AT-32, AT-37, AT-5
 - [x] The menu has "Season sim", and it opens `/sim/2026/` (AT-50).
 - [x] The site evidence set passes the overlap check at 390x660, 810x980, 1080x740, and 1280x800, light and dark.
 - [x] `make check-fast` passes.
+
+## Comments
+
+Closes with the squash merge of the spec PR: `season-sim-05` (`5479a0d2`) merged into `season-sim` as `d005ba4b`; fixes `57c2f7a2` and `0a55544c` followed on `season-sim` on 2026-11-18.
+AT-24 to AT-32, AT-37, AT-50, AT-63, and AT-65 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 32 files, and the main ones are: apps/site/scripts/client-build.mjs, apps/site/src/app/_routes/sim/menu.ts, apps/site/src/app/_routes/sim/page.tsx, apps/site/src/app/_routes/sim/your-sim-page.tsx, apps/site/src/app/shell-props.ts, apps/site/src/lib/data/sim-data.ts, apps/site/src/lib/routes.ts, clients/cpc/client.toml.

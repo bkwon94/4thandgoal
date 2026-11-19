@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-51 to AT-61. Decision 05
 
 **Blocked by:** 05.
 
-**Status:** in-review
+**Status:** done
 
 - [x] A fresh browser with Bo Girds opens the sheet with The Blue Tent, Bo Girds, and Return of T Mac, the playoff line, the chip, and the copy of the spec (AT-51).
 - [x] The chip turns off and on with a tap (AT-52), and turns on once by itself after the sheet stops (AT-53).
@@ -21,3 +21,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-51 to AT-61. Decision 05
 - [x] Under reduced motion, the rows and the odds show at once, and the chip does not turn on by itself (AT-61).
 - [x] The site evidence set passes the overlap check at the four sizes.
 - [x] `make check-fast` passes.
+
+## Comments
+
+Closes with the squash merge of the spec PR: `season-sim-10` (`6fa17ec5`) merged into `season-sim` as `3bf34857`; fix `b5de9120` made the Announcement skip the load of the team picker on 2026-11-18.
+AT-51 to AT-61 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 16 files, and the main ones are: apps/site/scripts/client-build.mjs, apps/site/src/app/_routes/sim/announcement.tsx, apps/site/src/app/_routes/sim/home-banner.tsx, apps/site/src/app/use-announcement.ts, apps/site/src/lib/client-values.ts, packages/design/site/parts/announcement.tsx, packages/sim/site/announcement/preview.ts, packages/sim/site/announcement/sim-preview.tsx.

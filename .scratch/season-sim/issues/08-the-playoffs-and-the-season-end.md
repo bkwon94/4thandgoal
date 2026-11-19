@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 
 **Blocked by:** 05.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The build makes the playoff fixture and the season-end fixture by one command, and the evidence names their seeds and champion.
 - [x] With the top seed as Your team, the Playoffs page shows its title odds, its game, and two tiles (AT-42).
@@ -22,3 +22,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 
 - 2026-11-18: The AT-42 box stays open. In the week 14 fixture, the top seed of cpc has a bye, and AT-66 forbids a tile there. The week 15 fixture `week-sim-round-2.json` gives the top seed its semifinal with two tiles. Brian chooses: change the Given of AT-42 to week 15, or accept the bye result.
 - 2026-11-18: Brian chose to change the Given of AT-42 to the round-two fixture `week-sim-round-2.json`. ACCEPTANCE.md now defines that fixture. The shots `AT-42-AT-66-top-seed-game-*` of the ticket 08 run show the top seed with its semifinal and two tiles.
+
+Closes with the squash merge of the spec PR: `season-sim-08` (`5ee204cf`) merged into `season-sim` as `1a2f56ef`; commit `07a7c283` moved AT-42 to the round-two fixture on 2026-11-18.
+AT-42, AT-43, AT-44, AT-66, and AT-69 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 24 files, and the main ones are: apps/pipeline/src/cornerstone/cli.py, apps/pipeline/src/cornerstone/pipeline.py, apps/pipeline/src/cornerstone/season_sim.py, packages/sim/python/src/sim/page.py, packages/sim/python/src/sim/published.py, packages/sim/python/src/sim/season.py, packages/sim/site/page/format.ts, packages/sim/site/page/in-playoffs.tsx.

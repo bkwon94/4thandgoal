@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-1, AT-6, AT-7, AT-8, AT-
 
 **Blocked by:** 02.
 
-**Status:** in-review
+**Status:** done
 
 - [x] The sim step for `cpc` 2026 week 10 writes `week-10/sim.json` with 10,000 runs, 12 teams, 200 stored runs, and 12 pages (AT-1).
 - [x] The ladder of Bo Girds lists each count of more wins, and the sentence names the smallest count with odds of 90 % or more (AT-6).
@@ -19,3 +19,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-1, AT-6, AT-7, AT-8, AT-
 - [x] `git diff main` of the season `sim.json` and `midseason.json` of each client is empty (AT-64).
 - [x] The schema test of the site reads the new `week-10/sim.json` with no error.
 - [x] `make check-fast` passes.
+
+## Comments
+
+Closes with the squash merge of the spec PR: `season-sim-03` (`b92ae8da`) merged into `season-sim` as a fast-forward on 2026-11-18.
+AT-1, AT-6, AT-7, AT-8, AT-9, AT-10, and AT-64 have PASS in `.scratch/season-sim/VERDICTS.md`.
+The builder did not count the files it read; the ticket commits changed 21 files, and the main ones are: apps/pipeline/src/cornerstone/cli.py, apps/pipeline/src/cornerstone/pipeline.py, apps/pipeline/src/cornerstone/season_sim.py, packages/sim/python/src/sim/page.py, packages/sim/python/src/sim/percent.py, packages/sim/python/src/sim/published.py, packages/sim/python/src/sim/season.py, packages/sim/python/src/sim/tunables.py.
