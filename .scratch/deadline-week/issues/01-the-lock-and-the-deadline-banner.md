@@ -15,3 +15,4 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 - [ ] The Deadline banner is one button with the name "Open the Trade Wire" and opens the shared sheet.
 - [ ] Norcal shows no Deadline banner.
 - [ ] The WebKit check passes at 390 by 660, 810 by 980, 1080 by 740, and 1280 by 800, with no horizontal scroll and no overlap.
+- [ ] The front door Tour still shows in full, with no overlap by the Deadline banner, on the first visit.
