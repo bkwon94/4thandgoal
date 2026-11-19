@@ -9,6 +9,8 @@ import { join } from "node:path";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
+import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
+import { YOUR_TEAM_KEY } from "@cpc/analyzer/lib/your-team";
 import WeekPage from "./page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
@@ -431,5 +433,60 @@ describe("WeekPage shows no week chip and shows the menu button (AT-49)", () => 
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
     expect(screen.queryByText("WK 07", { selector: "summary" })).toBeNull();
     expect(screen.getByRole("button", { name: "Open the menu" })).toBeTruthy();
+  });
+});
+
+/* A temp public/ folder with week 10 and its week sim file, the real file of CPC week 10. The page is the week 6 page
+   with the week set to 10, because the fixed copy ends at week 8. Returns the week page read from that folder. */
+async function publicWithWeekSim() {
+  const root = mkdtempSync(join(tmpdir(), "week-page-"));
+  roots.push(root);
+  const folder = join(root, "public", "2026", "week-10");
+  mkdirSync(folder, { recursive: true });
+  writeFileSync(join(folder, "page.json"), weekPageJson({ week: 10 }));
+  writeFileSync(join(folder, "sim.json"), JSON.stringify(weekSimJson));
+  vi.spyOn(process, "cwd").mockReturnValue(root);
+  vi.resetModules();
+  return (await import("./page")).default;
+}
+
+/* Renders week 10 with its sim file. The tile reads Your team after mount, so the render waits for the effects. */
+async function renderWeek10() {
+  const Page = await publicWithWeekSim();
+  const page = await Page({ params: Promise.resolve({ season: "2026", week: "week-10" }) });
+  await act(async () => {
+    render(page);
+  });
+}
+
+describe("WeekPage Sim tile", () => {
+  afterEach(() => localStorage.clear());
+
+  it("sits between Standings and Next week with the odds of Bo Girds and a link to the sim page (AT-45)", async () => {
+    localStorage.setItem(YOUR_TEAM_KEY, "6");
+    await renderWeek10();
+    const standings = document.getElementById("standings")!;
+    const sim = document.getElementById("sim")!;
+    const next = document.getElementById("next-week")!;
+    expect(standings.compareDocumentPosition(sim) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(sim.compareDocumentPosition(next) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const link = within(sim).getByRole("link");
+    expect(link.getAttribute("href")).toBe("/sim/2026/");
+    expect(link.textContent).toContain("58%");
+    expect(link.textContent).toContain("Win 5 of the 8 left and you're in.");
+    // The rail links the tile between the two chapters, with the words of its heading.
+    const labels = within(screen.getByRole("navigation", { name: "Chapters" })).getAllByRole("link").map((item) => item.textContent);
+    expect(labels.slice(labels.indexOf("Standings"), labels.indexOf("Standings") + 3)).toEqual(["Standings", "Season sim", "Next week"]);
+  });
+
+  it("shows the league fact of the file with no team set (AT-46)", async () => {
+    await renderWeek10();
+    expect(within(document.getElementById("sim")!).getByRole("link").textContent).toContain("6 managers fight for the last 4 spots");
+  });
+
+  it("has no tile and no rail link on a week with no sim file", async () => {
+    await renderWeek7();
+    expect(document.getElementById("sim")).toBeNull();
+    expect(screen.queryByText("Season sim")).toBeNull();
   });
 });

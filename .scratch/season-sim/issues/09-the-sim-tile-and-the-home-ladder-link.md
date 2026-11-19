@@ -10,10 +10,10 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-45 to AT-49. Decision 06
 
 **Status:** ready-for-agent
 
-- [ ] The `cpc` week 10 page with Bo Girds shows the Sim tile between Standings and Next week, with the numbers of the file and a link to `/sim/2026/` (AT-45).
-- [ ] With no team set, the tile shows the league fact of the file (AT-46).
-- [ ] In the playoff fixture, the tile shows the title odds of the top seed, and the favorite fact for the 12th team (AT-47).
-- [ ] The week 17 tile of the season-end fixture names the champion (AT-48).
-- [ ] The link of the Playoff race ladder opens `/sim/2026/` (AT-49).
-- [ ] The site evidence set passes the overlap check at the four sizes.
-- [ ] `make check-fast` passes.
+- [x] The `cpc` week 10 page with Bo Girds shows the Sim tile between Standings and Next week, with the numbers of the file and a link to `/sim/2026/` (AT-45).
+- [x] With no team set, the tile shows the league fact of the file (AT-46).
+- [x] In the playoff fixture, the tile shows the title odds of the top seed, and the favorite fact for the 12th team (AT-47).
+- [x] The week 17 tile of the season-end fixture names the champion (AT-48).
+- [x] The link of the Playoff race ladder opens `/sim/2026/` (AT-49).
+- [x] The site evidence set passes the overlap check at the four sizes.
+- [x] `make check-fast` passes.

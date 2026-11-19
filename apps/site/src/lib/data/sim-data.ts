@@ -1,6 +1,6 @@
 /**
  * Reads the sim files from public/ at build time: the season file of the midseason replay, and the newest week file of
- * the sim page, week-NN/sim.json, with a page block for each team.
+ * the sim page, week-NN/sim.json, with a page block for each team, and the week file of one week for its Sim tile.
  */
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -42,4 +42,10 @@ export function weekSimSeasons(): string[] {
 export function latestWeekSim(season: string): WeekSim | null {
   const week = simWeeks(season).at(-1);
   return week === undefined ? null : readPublished(join(publicDir(), season, week, FILE), SCHEMA_VERSION, weekSimSchema);
+}
+
+/* The week sim file of one week folder, such as "week-10", which the Sim tile of that week page reads. A week with no
+   file gives null, so an older week page has no tile. */
+export function loadWeekSim(season: string, week: string): WeekSim | null {
+  return readPublished(join(publicDir(), season, week, FILE), SCHEMA_VERSION, weekSimSchema);
 }
