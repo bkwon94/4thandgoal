@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-27, AT-28, AT-31, a
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] At 375 px, "Show the tour" in the menu sheet closes the sheet, then shows Stop 1 (AT-27).
 - [x] At 1280 px, the "?" button beside the theme button shows Stop 1, and its name is "Show the tour" (AT-28).
