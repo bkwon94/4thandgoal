@@ -181,6 +181,8 @@ for (const viewport of VIEWPORTS) {
         const control = await rectOf(page, "[data-tour-target]");
         // The evidence of AT-16 is the rects and a screenshot of each Stop on each viewport, so the test logs and saves them.
         console.log(`AT-16 ${viewport.name} ${header}: card ${JSON.stringify(cardRect)}, control ${JSON.stringify(control)}, overlap ${overlap(cardRect, control)}`);
+        // The copy of the card cross-fades after the hole rests, so the shot waits for the swap to end.
+        await page.waitForTimeout(1000);
         await page.screenshot({ path: test.info().outputPath(`${viewport.name.split(" ").at(-1)}-${header.replace(" ", "-").toLowerCase()}.png`) });
         expect(overlap(cardRect, control), `${header}: the card ${JSON.stringify(cardRect)} covers its control ${JSON.stringify(control)}`).toBe(false);
         const size = page.viewportSize()!;
@@ -216,6 +218,7 @@ test.describe("iPhone 390x660", () => {
     await goTo(page, "Ask");
     // The evidence of AT-19 is the rects before and after, and a screenshot at each size, so the test logs and saves them.
     console.log(`AT-19 before at 390x660: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`);
+    await page.waitForTimeout(1000);
     await page.screenshot({ path: test.info().outputPath("390x660.png") });
     await page.setViewportSize({ width: 660, height: 390 });
     await expect
@@ -229,6 +232,7 @@ test.describe("iPhone 390x660", () => {
       })
       .toBeLessThanOrEqual(2);
     console.log(`AT-19 after at 660x390: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`);
+    await page.waitForTimeout(1000);
     await page.screenshot({ path: test.info().outputPath("660x390.png") });
   });
 });
