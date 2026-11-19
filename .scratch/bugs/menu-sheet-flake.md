@@ -46,7 +46,7 @@ The spec still fails when the top edge moves. At `f205409d`, with the `motion.fi
     Error: the top edge of the menu sheet moves 60.19310760498047px as Past weeks opens
   2 failed
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
 
