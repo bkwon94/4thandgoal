@@ -111,6 +111,17 @@ describe("the sim Announcement on the home page", () => {
     expect(title()).toBeTruthy();
   });
 
+  it("skips the load of the team picker after a pick before the beat, and opens on the next load (AT-57)", () => {
+    const first = render(<SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />);
+    act(() => vi.advanceTimersByTime(LOAD_BEAT_MS / 2));
+    localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
+    act(() => vi.advanceTimersByTime(LOAD_BEAT_MS * 3));
+    expect(title()).toBeNull();
+    first.unmount();
+    load();
+    expect(title()).toBeTruthy();
+  });
+
   it("does not open with a kept team that is not in the sim file", () => {
     localStorage.setItem(YOUR_TEAM_KEY, "99");
     load();

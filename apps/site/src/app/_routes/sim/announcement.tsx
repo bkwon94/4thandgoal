@@ -1,10 +1,10 @@
 /**
  * The Announcement of the season sim on the home page: the general Announcement with the art of the sim. It reads Your
- * team from local storage at the load beat, and opens only for a team of the week sim file.
+ * team from local storage at load and at the load beat, and opens only for a team of the week sim file kept at load.
  */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Announcement } from "@cpc/design/parts/announcement";
 import type { PreviewData } from "@cpc/sim/announcement/preview";
 import { SimPreview } from "@cpc/sim/announcement/sim-preview";
@@ -24,11 +24,18 @@ const COPY = {
 };
 
 export function SimAnnouncement({ data, siteName, href }: { data: PreviewData; siteName: string; href: string }) {
+  // The team kept when the page loads. A load with no team opens the team picker, so the Announcement skips that load
+  // even when the pick comes before the load beat. The note then shows on the next load (story 51).
+  const keptAtLoad = useRef<number | null>(null);
+  useEffect(() => {
+    keptAtLoad.current = getYourTeam();
+  }, []);
   const { open, data: you, dismiss, follow } = useAnnouncement({
     id: SIM_ANNOUNCEMENT.id,
     href,
     stops: SIM_ANNOUNCEMENT.stops,
     read: () => {
+      if (keptAtLoad.current === null) return null;
       const kept = getYourTeam();
       return kept !== null && data.table.some((row) => row.id === kept) ? kept : null;
     },
