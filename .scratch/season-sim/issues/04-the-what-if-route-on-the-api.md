@@ -19,9 +19,10 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-14 to AT-21, AT-67, and 
 - [x] A set result for week 3 answers 422 with a message that names the week (AT-20).
 - [x] `fly.toml` keeps `shared-cpu-1x` with 1 GB (AT-21).
 - [x] No route reads or writes an Announcement (AT-67), and two equal posts run the sim twice (AT-68).
-- [ ] The API image builds with the sim package.
+- [x] The API image builds with the sim package.
 - [x] `make check-fast` passes.
 
 ## Comments
 
 - 2026-11-18: The box "The API image builds with the sim package" stays open. The Docker daemon on the Mac hangs. Run `make image` in `apps/api` after a restart of Docker Desktop.
+- 2026-11-18: `make image` built `cpcfantasy-api` (sha256:292cc15d) from the Spec branch at 3a40a99d. In the image, `/opt/venv/bin/python` imports `sim.season`, `sim.page`, `cornerstone_api.what_if`, and `cornerstone_api.app`.
