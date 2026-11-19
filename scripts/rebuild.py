@@ -14,6 +14,8 @@ from pathlib import Path
 
 # The files of a week that the render writes. The diff compares each one.
 RENDER_FILES = ("page.json", "topics.json", "waiver.json")
+# Every file that the job diffs. The facts-only rebuild adds facts.json to the render files.
+DIFFED_FILES = ("facts.json", *RENDER_FILES)
 # The saved inputs of a week that the facts-only rebuild reads, by their path in the data folder of the week.
 SAVED_INPUTS = ("verify.json", "raw/nflverse.json", "raw/slow_sources.json", "raw/news.json")
 # The rebuild makes no Claude call and no TypeSafe call, so a run never gets either key, even from a local shell.
@@ -56,7 +58,7 @@ class Result:
 
 # One approved diff per list line: "- <client> <file> <JSON path>: <reason>". Backticks around each part are optional.
 # The same line shape serves REBUILD.md of a spec and the Rebuild: block of a quick file.
-APPROVED_LINE = re.compile(r"^\s*[-*]\s+`?([\w-]+)`?\s+`?(facts\.json|page\.json|topics\.json|waiver\.json)`?"
+APPROVED_LINE = re.compile(r"^\s*[-*]\s+`?([\w-]+)`?\s+`?(" + "|".join(map(re.escape, DIFFED_FILES)) + r")`?"
                            r"\s+`?(\$[^`\s]*)`?\s*:\s*(.+?)\s*$")
 
 
