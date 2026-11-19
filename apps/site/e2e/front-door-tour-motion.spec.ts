@@ -63,6 +63,14 @@ function readFrame() {
   }
   const filters = [card, ...card.querySelectorAll("*")].filter((node) => !["none", ""].includes(getComputedStyle(node).filter)).length;
   const header = card.querySelector("h2, h3, [id]")?.textContent ?? "";
+  // The clock time of this sample goes in a list beside the samples, at the same index, so a sample that holds still
+  // stays equal to the one before it. A new list of samples starts a new list of times.
+  const store = window as unknown as { doorSamples: unknown[]; tourTimesOf?: unknown[]; tourTimes: number[] };
+  if (store.tourTimesOf !== store.doorSamples) {
+    store.tourTimesOf = store.doorSamples;
+    store.tourTimes = [];
+  }
+  store.tourTimes[store.doorSamples.length] = performance.now();
   return {
     hole: rect(document.querySelector("[data-tour-hole]")!),
     card: rect(card),
@@ -93,15 +101,23 @@ test.describe("iPhone 390x660 with motion on", () => {
     await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
     await expect(page.getByRole("dialog", { name: "Ask" })).toBeVisible();
     const samples = await samplesWhenStill<Sample>(page);
-    // The evidence of AT-15 is the frame samples, so the log prints each one.
-    console.log(`AT-15 frame samples:\n${samples.map((sample, index) => `${index} ${JSON.stringify({ ...sample, offset: offsetOf(sample) })}`).join("\n")}`);
+    const times = await page.evaluate((count) => (window as unknown as { tourTimes: number[] }).tourTimes.slice(0, count), samples.length);
+    // The evidence of AT-15 is the frame samples, so the log prints each one with its clock time from the first sample.
+    console.log(`AT-15 frame samples:\n${samples.map((sample, index) => `${index} ${(times[index] - times[0]).toFixed(1)} ms ${JSON.stringify({ ...sample, offset: offsetOf(sample) })}`).join("\n")}`);
     const first = samples[0];
     const last = samples.at(-1)!;
     const rest = offsetOf(first);
     const sideChange = offsetOf(last).below !== rest.below;
-    // The glide shows the hole at places between the two Stops, so the move is not a jump.
-    const between = samples.filter(({ hole }) => Math.min(Math.abs(hole.y - first.hole.y), Math.abs(hole.y - last.hole.y)) > 2);
-    expect(between.length, `the hole tops: ${samples.map(({ hole }) => Math.round(hole.y)).join(", ")}`).toBeGreaterThanOrEqual(3);
+    /* The glide shows the hole at places between the two Stops, so the move is not a jump. The test reads clock time,
+       not a count of frames, because a slow runner draws few frames in the 450 ms of the glide. A frame shows on the
+       screen until the next frame, so each sample between the Stops counts the time up to the next sample. A jump puts
+       the hole at the new Stop in its first frame, so no sample sits between the Stops and the time is 0. The place at
+       rest and the place of a jump are exact, so a place more than 0.5 px from both is a real place of the glide. */
+    const away = (hole: Rect) => Math.min(Math.hypot(hole.x - first.hole.x, hole.y - first.hole.y), Math.hypot(hole.x - last.hole.x, hole.y - last.hole.y));
+    const betweenMs = samples.reduce((sum, { hole }, index) => (index + 1 < samples.length && away(hole) > 0.5 ? sum + times[index + 1] - times[index] : sum), 0);
+    const tops = samples.map(({ hole }, index) => `${Math.round(hole.y)}@${Math.round(times[index] - times[0])}`).join(", ");
+    console.log(`AT-15 time of the hole between the Stops: ${betweenMs.toFixed(1)} ms`);
+    expect(betweenMs, `the hole shows between the Stops for 80 ms or more; the hole tops at each ms: ${tops}`).toBeGreaterThanOrEqual(80);
     // On a change of side the card fades out first, so each frame up to the first frame of that fade counts.
     const shown = sideChange ? samples.slice(0, samples.findIndex((sample) => sample.opacity < 0.99)) : samples;
     if (!sideChange) {
