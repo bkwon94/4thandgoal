@@ -321,13 +321,15 @@ test("the Tour waits while a test modal layer is open, and Stop 1 shows after th
   await expect(page.getByRole("group", { name: "Suggestions" })).toBeVisible();
   const layer = await page.locator('[aria-modal="true"]').evaluateAll((els) => els.map((el) => `${el.id} (${el.getAttribute("aria-label")})`));
   console.log(`AT-38 open modal layers: ${JSON.stringify(layer)}`);
+  const open = await page.locator("#test-modal-layer").evaluate((el) => ({ tag: el.tagName.toLowerCase(), role: el.getAttribute("role"), ariaModal: el.getAttribute("aria-modal") }));
+  console.log(`AT-38 open layer: tag ${open.tag}, role ${open.role}, aria-modal ${open.ariaModal}`);
   await page.waitForTimeout(1200);
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
   await expect(hole(page)).toHaveCount(0);
   // The close runs a real exit: a 300 ms opacity fade. The layer keeps aria-modal until the fade ends.
   const run = await page.evaluate(
     (duration) =>
-      new Promise<{ exitMs: number; exitEnd: number; stop1At: number; framesInExit: number; cardFrames: number; modalFrames: number }>((resolve) => {
+      new Promise<{ exitMs: number; exitEnd: number; stop1At: number; framesInExit: number; cardFrames: number; modalFrames: number; lines: string[] }>((resolve) => {
         const layer = document.getElementById("test-modal-layer")!;
         const hasCard = () => !!document.querySelector("[data-tour-card]");
         let exiting = true;
@@ -335,15 +337,27 @@ test("the Tour waits while a test modal layer is open, and Stop 1 shows after th
         let framesInExit = 0;
         let cardFrames = 0;
         let modalFrames = 0;
+        let postRemovalLogged = false;
+        const lines: string[] = [];
+        const describe = (label: string) =>
+          `${label} t=${performance.now().toFixed(1)} ms; opacity ${layer.isConnected ? getComputedStyle(layer).opacity : "n/a"}; aria-modal ${layer.getAttribute("aria-modal")}; on page ${layer.isConnected}; card ${hasCard()}`;
         const fade = layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing: "linear", fill: "forwards" });
         const frame = () => {
           if (exiting) {
             framesInExit += 1;
+            lines.push(describe(`AT-38 exit frame ${framesInExit}:`));
             if (hasCard()) cardFrames += 1;
             if (layer.isConnected && layer.getAttribute("aria-modal") === "true") modalFrames += 1;
-          } else if (hasCard()) {
-            resolve({ exitMs: duration, exitEnd, stop1At: performance.now(), framesInExit, cardFrames, modalFrames });
-            return;
+          } else {
+            if (!postRemovalLogged) {
+              postRemovalLogged = true;
+              lines.push(describe("AT-38 first frame after removal:"));
+            }
+            if (hasCard()) {
+              lines.push(describe("AT-38 Stop 1 frame:"));
+              resolve({ exitMs: duration, exitEnd, stop1At: performance.now(), framesInExit, cardFrames, modalFrames, lines });
+              return;
+            }
           }
           requestAnimationFrame(frame);
         };
@@ -356,6 +370,7 @@ test("the Tour waits while a test modal layer is open, and Stop 1 shows after th
       }),
     300,
   );
+  for (const line of run.lines) console.log(line);
   console.log(
     `AT-38 layer: ${layer[0]}; exit duration: ${run.exitMs} ms; exit end: ${run.exitEnd.toFixed(1)} ms; Stop 1 shows: ${run.stop1At.toFixed(1)} ms; gap: ${(run.stop1At - run.exitEnd).toFixed(1)} ms; frames in exit with no card: ${run.framesInExit - run.cardFrames} of ${run.framesInExit}`,
   );
