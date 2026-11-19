@@ -68,6 +68,8 @@ STREAM_HEADERS = {"x-vercel-ai-ui-message-stream": "v1", "Cache-Control": "no-ca
 
 # One part of the stream: its type, such as "data-step", and its data.
 Emit = Callable[[str, dict], None]
+# The hand-off of one log-only Jev check, to run after the stream ends.
+Defer = Callable[[Callable[[], None]], None]
 
 TradeTopic = Literal["trade_check", "trade_ideas", "sell_high"]
 
@@ -279,13 +281,14 @@ def _run_later(jobs: list[Callable[[], None]]) -> None:
             logger.exception("A log-only Jev check failed after the Answer went out")
 
 
-def stream(topic: TradeTopic, work: Callable[[Emit], list[Callable[[], None]] | None]) -> StreamingResponse:
+def stream(topic: TradeTopic, work: Callable[[Emit, Defer], None]) -> StreamingResponse:
     """The event stream of one press: `work` runs in its own thread and emits each part as it comes, so each stage of
     the Advisor reaches the site before the whole Answer. A failed press ends the stream with one error part.
 
-    `work` gives back the log-only Jev checks of its press. They run in the same thread after the stream ends, so the
-    stream closes right after the Answer, and a client that reads to the end never sees a cut. The thread, not a
-    background task of the response, runs them, because the response skips its background task after a cut.
+    `work` hands each log-only Jev check of its press to `defer`, one shared list of the stream. The checks run in the
+    same thread after the stream ends, so the stream closes right after the Answer, and a client that reads to the end
+    never sees a cut. The thread, not a background task of the response, runs them, because the response skips its
+    background task after a cut.
 
     A failed stream logs one line with its cause, its last stage, and its seconds since the start, so a failure that a
     manager sees has its cause in the log (decision 06). A press that raises names its error. A client that drops the
@@ -305,7 +308,7 @@ def stream(topic: TradeTopic, work: Callable[[Emit], list[Callable[[], None]] | 
     def run() -> None:
         later: list[Callable[[], None]] = []
         try:
-            later = work(emit) or []
+            work(emit, later.append)
         except HTTPException as error:
             logger.warning(_failed(topic, f"HTTPException-{error.status_code}", stage[0], started))
             emit("data-error", {"status": error.status_code, "line": _line(error)})
@@ -402,7 +405,7 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
     teams = _teams(asker, served, body.roster_id)
     question = body.question.strip()
 
-    def work(emit: Emit) -> None:
+    def work(emit: Emit, defer: Defer) -> None:
         gives, gets, answers = pick_players(asker.jev, question, teams, body.roster_id)
         emit("data-picks", {"model": answers.model, "gives": {**asdict(gives), "sure": gives.sure},
                             "gets": {**asdict(gets), "sure": gets.sure}})
@@ -452,7 +455,7 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
     """
     teams = _teams(asker, served, body.roster_id)
 
-    def work(emit: Emit) -> list[Callable[[], None]]:
+    def work(emit: Emit, defer: Defer) -> None:
         step = _step(emit)
         anchor, partner, limit = None, body.partner, None
         if body.question is not None:
@@ -478,15 +481,13 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
             for line in [] if limit is None else limit_lines(read):
                 step(line)
         pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor, limit=limit)
-        later: list[Callable[[], None]] = []
+        # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
         document = capped_press(asker, body.roster_id, emit,
-                                lambda: analyzer_routes.find_trades(request, pair, served, step, defer=later.append))
+                                lambda: analyzer_routes.find_trades(request, pair, served, step, defer=defer))
         if document is not None:
             _send_key(asker, served, emit, "trade_ideas", body.roster_id, partner)
             emit("data-answer", {"kind": "ideas", "document": document,
                                  "block": ideas_block(document, _points(asker, served))})
-        # The log-only Jev checks run after the stream ends, so they add no time to the wait.
-        return later
 
     return stream("trade_ideas", work)
 
@@ -500,13 +501,11 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
     It counts one grade, as the plain find route does, and the caps of the front door do not apply.
     """
 
-    def work(emit: Emit) -> list[Callable[[], None]]:
-        later: list[Callable[[], None]] = []
-        document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=later.append,
+    def work(emit: Emit, defer: Defer) -> None:
+        # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
+        document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=defer,
                                                read=lambda roster_id: emit("data-team", {"roster_id": roster_id}))
         emit("data-answer", {"kind": "find", "document": document})
-        # The log-only Jev checks run after the stream ends, so they add no time to the wait.
-        return later
 
     return stream("trade_ideas", work)
 
@@ -523,7 +522,7 @@ def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, serve
     Advisor picks the players of the roster to sell from their facts side by side, and writes why."""
     _teams(asker, served, body.roster_id)
 
-    def work(emit: Emit) -> None:
+    def work(emit: Emit, defer: Defer) -> None:
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.sell_high_press(request, asker.season, body.roster_id, served,
                                                                         _step(emit)))
