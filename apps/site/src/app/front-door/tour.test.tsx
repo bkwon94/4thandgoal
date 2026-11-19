@@ -198,6 +198,12 @@ describe("the Stops of the Tour", () => {
     expect(dismissStep("outside-press", true)).toBe("end");
     expect(dismissStep("escape-key", false)).toBe("end");
     expect(dismissStep("back", false)).toBe("end");
+    expect(dismissStep("back", true)).toBe("end");
+  });
+
+  it("does nothing on a refused dismiss that the spec does not name, such as a swipe", () => {
+    expect(dismissStep("swipe", false)).toBeNull();
+    expect(dismissStep("swipe", true)).toBeNull();
   });
 });
 

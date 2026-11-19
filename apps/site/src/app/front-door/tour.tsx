@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { StopCard, StopCardContent, StopCardLine, StopCardTitle } from "@cpc/design/ui/stop-card";
+import { StopCard, StopCardContent, StopCardLine, StopCardTitle, type StopCardDismissReason } from "@cpc/design/ui/stop-card";
 import { BLUR_SMALL, EASE_IN_OUT, FAST, GLIDE, QUICK, SCALE_MEDIUM, SCALE_TINY, SMOOTH, fadeIn } from "./motion";
 import { markTourSeen, tourSeen } from "./tour-store";
 
@@ -65,9 +65,12 @@ const SCROLL_SETTLE_MS = 100;
 const SCROLL_CAP_MS = 1000;
 
 /* What a refused dismiss does. A press on the dim goes to the next Stop, so a stray tap does not end the Tour, and on
-   Stop 4 it ends the Tour. Escape and the Back of Android count as Skip. */
-export function dismissStep(reason: string, last: boolean): "next" | "end" {
-  return reason === "outside-press" && !last ? "next" : "end";
+   Stop 4 it ends the Tour. Escape and the Back of Android count as Skip. Any other reason, such as a swipe, does
+   nothing, because the spec names no other way out. */
+export function dismissStep(reason: StopCardDismissReason, last: boolean): "next" | "end" | null {
+  if (reason === "outside-press") return last ? "end" : "next";
+  if (reason === "escape-key" || reason === "back") return "end";
+  return null;
 }
 
 /* Whether a control shows. The site hides one of the menu button and the pill bar with a class at each width. A browser
@@ -421,7 +424,11 @@ function Stops({ onEnd }: { onEnd: () => void }) {
       <StopCard
         open={open}
         onOpenChangeComplete={(isOpen) => !isOpen && onEnd()}
-        onDismissAttempt={(details) => (dismissStep(details.reason, last) === "next" ? next() : end())}
+        onDismissAttempt={(details) => {
+          const step = dismissStep(details.reason, last);
+          if (step === "next") next();
+          else if (step === "end") end();
+        }}
       >
         {/* The content fills the screen and takes no press, so a press anywhere off the card is a press outside. The
             important inset wins over the inline place that the positioner writes. Its fade on close is the wait of the
