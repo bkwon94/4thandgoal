@@ -198,7 +198,7 @@ Green: at `5432d4f8`, `(CLIENT=cpc pnpm build || CLIENT=cpc pnpm build) > /dev/n
 
 The proof that the check still finds an overlap: the rules test "a modal layer over a text of the page is no overlap, but two texts inside the layer still overlap" in `smoke-rules.spec.ts` passes at `5432d4f8`. With the skip of `findOverlap` turned off for one run and then put back, it fails with "FAIL Week report 390x660 webkit: overlap: <h1> "Week 10" and <p> "Suggestions"". The seeded overlap test with no modal layer still passes.
 
-At `5432d4f8`, the loop with `--repeat-each 5` gives `5 passed`, the four specs `front-door-tour*.spec.ts` give `46 passed`, and `make check-fast BASE=main` passes with `834 passed` in Vitest. The done condition says the card never covers the status line. The card still sits over the dimmed, inert answer by design, so the fix reads that cover as no fault. If Brian wants the Tour to wait until the first answer is read, that is a change of story 42, not of this item.
+At `5432d4f8`, the loop with `--repeat-each 5` gives `5 passed`, the four specs `front-door-tour*.spec.ts` give `46 passed`, and `make check-fast BASE=main` passes with `834 passed` in Vitest.
 Test verdict: pending
 
 ## Smoke
@@ -211,3 +211,4 @@ Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyze
 - Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, call only `skipTour` and not `skipAnnouncements`. They can flake as item 4 did, and need a later run.
 - Brian added item 5 after the quick Judge gave FAIL on items 1 to 4, each on question 3, because of the old overlap of item 5. This is the one fix round.
 - Brian changed the done condition of item 5 on 2026-11-19: the Tour card is a modal layer by design, so the fix is in the overlap check of the smoke run, and the card does not move.
+- The orchestrator removed from the Green block of item 5 a note on the old done condition, after Brian changed it. The note now stands here: the card still sits over the dimmed, inert answer by design; if Brian wants the Tour to wait until the first answer is read, that is a change of story 42 of `front-door-tour`.
