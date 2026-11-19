@@ -36,6 +36,8 @@ async function openTour(page: Page) {
   await page.addInitScript((team) => {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", team);
+    // A kept team lets the season-sim Announcement open first and cover the page, so the setup marks it seen.
+    localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
   }, BO_GIRDS);
   await page.goto(`${server.url}${DOOR}`);
   await expect(page.getByRole("dialog", { name: "Suggestions" })).toBeVisible();

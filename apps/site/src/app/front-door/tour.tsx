@@ -8,6 +8,7 @@ import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { LOAD_BEAT_MS } from "@/app/use-announcement";
 import { StopCard, StopCardContent, StopCardLine, StopCardTitle, type StopCardDismissReason } from "@cpc/design/ui/stop-card";
 import { BLUR_SMALL, EASE_IN_OUT, FAST, GLIDE, QUICK, SCALE_MEDIUM, SCALE_TINY, SMOOTH, fadeIn, orStill } from "./motion";
 import { markTourSeen, tourSeen } from "./tour-store";
@@ -49,6 +50,10 @@ type Hole = Box & { radius: number };
 
 /* The Tour waits for the entrance of the dock to settle, so Stop 1 measures its control at rest. */
 const START_DELAY_MS = 600;
+/* An Announcement checks for an open modal layer once, LOAD_BEAT_MS after the page loads, and skips the load if one is
+   open. Brian chose that the Announcement shows first, so the first start of a visit waits past that beat. The margin
+   gives the Announcement time to render its open sheet, which the modal-layer rule then waits for. */
+const FIRST_START_DELAY_MS = Math.max(START_DELAY_MS, LOAD_BEAT_MS + 200);
 /* The keyboard of a phone closes over about 250 ms. The Tour starts once the viewport holds still this long after a blur. */
 const KEYBOARD_SETTLE_MS = 350;
 /* The room between the visual box of the control and the edge of the hole, on each side. A small box, such as the
@@ -224,13 +229,17 @@ export function Tour({ ready }: { ready: boolean }) {
       window.addEventListener("resize", settle);
       settle();
     };
+    // Only the first check of a visit, with no layer open, waits past the beat of an Announcement. A replay and a start
+    // after the exit of a layer keep the short delay.
+    let delay = phase === "wait" ? FIRST_START_DELAY_MS : START_DELAY_MS;
     // Only a change from open to clear starts the delay again, so the many changes of a busy page do not hold the Tour off.
     const checkModal = () => {
       const now = modalOpen();
       if (now === blocked) return;
       blocked = now;
       window.clearTimeout(timer);
-      if (!now) timer = window.setTimeout(start, START_DELAY_MS);
+      if (!now) timer = window.setTimeout(start, delay);
+      delay = START_DELAY_MS;
     };
     const observer = new MutationObserver(checkModal);
     observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-modal"] });

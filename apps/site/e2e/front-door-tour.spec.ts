@@ -33,6 +33,8 @@ async function openTour(page: Page, width: number, height = 900) {
   await page.addInitScript((team) => {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", team);
+    // A kept team lets the season-sim Announcement open first and cover the page, so the setup marks it seen.
+    localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
   }, BO_GIRDS);
   await page.setViewportSize({ width, height });
   await page.goto(`${server.url}${DOOR}`);
@@ -315,69 +317,98 @@ test("a new browser shows no Tour over the team sheet, then Stop 1 on the Sugges
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
 });
 
-test("the Tour waits while a test modal layer is open, and Stop 1 shows after the layer leaves (AT-38)", async ({ page }) => {
-  await holdWithLayer(page);
-  await openTour(page, 390, 660);
-  await expect(page.getByRole("group", { name: "Suggestions" })).toBeVisible();
-  const layer = await page.locator('[aria-modal="true"]').evaluateAll((els) => els.map((el) => `${el.id} (${el.getAttribute("aria-label")})`));
+/* A browser with Your team set to Bo Girds, a kept passphrase, and no seen key of the Tour or of the Announcement. From
+   the load, each frame counts whether the Announcement and a Stop card show at the same time. */
+async function openWithAnnouncement(page: Page) {
+  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.addInitScript((team) => {
+    localStorage.setItem("cpc.passphrase", "test");
+    localStorage.setItem("cpc.your-team", team);
+    const both = { frames: 0, together: 0 };
+    (window as unknown as { __both: typeof both }).__both = both;
+    const frame = () => {
+      both.frames += 1;
+      if (document.getElementById("announcement-line") && document.querySelector("[data-tour-card]")) both.together += 1;
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }, BO_GIRDS);
+  await page.setViewportSize({ width: 390, height: 660 });
+  await page.goto(`${server.url}${DOOR}`);
+}
+
+test("on a fresh load the season-sim Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38)", async ({ page }) => {
+  await openWithAnnouncement(page);
+  const announcement = page.getByRole("dialog", { name: "See your path to the playoffs" });
+  await expect(announcement).toBeVisible();
+  const layer = await page.locator('[aria-modal="true"]').evaluateAll((els) =>
+    els.map((el) => `${el.getAttribute("role")} "${document.getElementById(el.getAttribute("aria-labelledby") ?? "")?.textContent ?? el.getAttribute("aria-label")}"`),
+  );
   console.log(`AT-38 open modal layers: ${JSON.stringify(layer)}`);
-  const open = await page.locator("#test-modal-layer").evaluate((el) => ({ tag: el.tagName.toLowerCase(), role: el.getAttribute("role"), ariaModal: el.getAttribute("aria-modal") }));
+  const open = await announcement.evaluate((el) => ({ tag: el.tagName.toLowerCase(), role: el.getAttribute("role"), ariaModal: el.getAttribute("aria-modal") }));
   console.log(`AT-38 open layer: tag ${open.tag}, role ${open.role}, aria-modal ${open.ariaModal}`);
   await page.waitForTimeout(1200);
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
   await expect(hole(page)).toHaveCount(0);
-  // The close runs a real exit: a 300 ms opacity fade. The layer keeps aria-modal until the fade ends.
-  const run = await page.evaluate(
-    (duration) =>
-      new Promise<{ exitMs: number; exitEnd: number; stop1At: number; framesInExit: number; cardFrames: number; modalFrames: number; lines: string[] }>((resolve) => {
-        const layer = document.getElementById("test-modal-layer")!;
+  // The sampler starts before the tap on "Not now". Each frame after the tap counts as an exit frame while the sheet is
+  // on the page with aria-modal. The Announcement slides down, so each line prints its opacity and its transform.
+  const sampled = page.evaluate(
+    () =>
+      new Promise<{ tapAt: number; exitEnd: number; stop1At: number; framesInExit: number; cardFrames: number; modalFrames: number; lines: string[] }>((resolve) => {
+        const layer = document.getElementById("announcement-line")!.closest('[aria-modal="true"]') as HTMLElement;
         const hasCard = () => !!document.querySelector("[data-tour-card]");
-        let exiting = true;
+        let tapAt = 0;
         let exitEnd = 0;
         let framesInExit = 0;
         let cardFrames = 0;
         let modalFrames = 0;
         let postRemovalLogged = false;
         const lines: string[] = [];
-        const describe = (label: string) =>
-          `${label} t=${performance.now().toFixed(1)} ms; opacity ${layer.isConnected ? getComputedStyle(layer).opacity : "n/a"}; aria-modal ${layer.getAttribute("aria-modal")}; on page ${layer.isConnected}; card ${hasCard()}`;
-        const fade = layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing: "linear", fill: "forwards" });
+        const modal = () => layer.isConnected && layer.getAttribute("aria-modal") === "true";
+        const describe = (label: string) => {
+          const style = layer.isConnected ? getComputedStyle(layer) : null;
+          return `${label} t=${performance.now().toFixed(1)} ms; opacity ${style ? style.opacity : "n/a"}; transform ${style ? style.transform : "n/a"}; aria-modal ${layer.getAttribute("aria-modal")}; on page ${layer.isConnected}; card ${hasCard()}`;
+        };
+        document.addEventListener("click", () => (tapAt = performance.now()), { capture: true, once: true });
         const frame = () => {
-          if (exiting) {
+          if (tapAt && !exitEnd && modal()) {
             framesInExit += 1;
             lines.push(describe(`AT-38 exit frame ${framesInExit}:`));
             if (hasCard()) cardFrames += 1;
-            if (layer.isConnected && layer.getAttribute("aria-modal") === "true") modalFrames += 1;
-          } else {
+            modalFrames += 1;
+          } else if (tapAt) {
             if (!postRemovalLogged) {
               postRemovalLogged = true;
+              exitEnd = performance.now();
               lines.push(describe("AT-38 first frame after removal:"));
             }
             if (hasCard()) {
               lines.push(describe("AT-38 Stop 1 frame:"));
-              resolve({ exitMs: duration, exitEnd, stop1At: performance.now(), framesInExit, cardFrames, modalFrames, lines });
+              resolve({ tapAt, exitEnd, stop1At: performance.now(), framesInExit, cardFrames, modalFrames, lines });
               return;
             }
           }
           requestAnimationFrame(frame);
         };
         requestAnimationFrame(frame);
-        fade.finished.then(() => {
-          exitEnd = performance.now();
-          exiting = false;
-          layer.remove();
-        });
       }),
-    300,
   );
+  // A reader closes the Announcement with its "Not now" button.
+  await announcement.getByRole("button", { name: "Not now" }).click();
+  const run = await sampled;
   for (const line of run.lines) console.log(line);
+  const both = await page.evaluate(() => (window as unknown as { __both: { frames: number; together: number } }).__both);
+  const seen = await page.evaluate(() => ({ tour: localStorage.getItem("cpc.tour-seen"), announcement: localStorage.getItem("cpc.announcement.season-sim-2026") }));
   console.log(
-    `AT-38 layer: ${layer[0]}; exit duration: ${run.exitMs} ms; exit end: ${run.exitEnd.toFixed(1)} ms; Stop 1 shows: ${run.stop1At.toFixed(1)} ms; gap: ${(run.stop1At - run.exitEnd).toFixed(1)} ms; frames in exit with no card: ${run.framesInExit - run.cardFrames} of ${run.framesInExit}`,
+    `AT-38 layer: ${layer[0]}; tap on Not now: ${run.tapAt.toFixed(1)} ms; exit end: ${run.exitEnd.toFixed(1)} ms; exit duration: ${(run.exitEnd - run.tapAt).toFixed(1)} ms; Stop 1 shows: ${run.stop1At.toFixed(1)} ms; gap: ${(run.stop1At - run.exitEnd).toFixed(1)} ms; frames in exit with no card: ${run.framesInExit - run.cardFrames} of ${run.framesInExit}`,
   );
+  console.log(`AT-38 frames since load with the Announcement and a Stop card together: ${both.together} of ${both.frames}`);
+  console.log(`AT-38 seen keys: ${JSON.stringify(seen)}`);
   expect(run.framesInExit).toBeGreaterThan(5);
   expect(run.cardFrames).toBe(0);
   expect(run.modalFrames).toBe(run.framesInExit);
   expect(run.stop1At).toBeGreaterThan(run.exitEnd);
+  expect(both.together).toBe(0);
   await expect(card(page, "Suggestions")).toContainText("1 of 4");
 });
 
