@@ -7,6 +7,8 @@
 - `week-sim.json`, the week sim file in the exact shape the pipeline writes, from the sim step of CPC 2026 week 10.
 - `week-sim-norcal.json`, the week sim file of NorCal 2026 week 10, a league with no median game.
 - `weekSim` and `norcalWeekSim`, the two week files parsed with the schema.
+- `week-sim-playoffs.json`, `week-sim-round-2.json`, and `week-sim-final.json`, the playoff fixtures of the season-sim acceptance tests. Each takes the inputs of CPC 2026 week 10 and plays the later weeks as stored run 1, then runs as week 14, 15, and 17. `make sim-fixtures` in `apps/pipeline` writes them.
+- `playoffsWeekSim`, `roundTwoWeekSim`, and `finalWeekSim`, the three playoff fixtures parsed with the schema.
 
 ## Ports
 

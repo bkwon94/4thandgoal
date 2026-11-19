@@ -40,3 +40,19 @@ export const chanceText = (chance: number) => `${Math.round(chance)}% likely`;
 
 /* The wins a result adds: one for the game, one for the median. */
 export const winsText = (wins: number) => (wins === 0 ? "No wins" : wins === 1 ? "+1 win" : `+${wins} wins`);
+
+/* The name of a bracket round by its place from the end: "Final", "Semifinals", else "Round 1" and on. */
+export function roundName(index: number, count: number): string {
+  if (index === count - 1) return "Final";
+  if (index === count - 2) return "Semifinals";
+  return `Round ${index + 1}`;
+}
+
+/* What a win of the round `index` gives, as the start of the sentence of the game card. */
+export function winText(index: number, count: number): string {
+  if (index === count - 1) return "Win and you take the title.";
+  return `Win and you reach the ${roundName(index + 1, count).toLowerCase()}.`;
+}
+
+/* A score of a played bracket game, with its one decimal, such as "131.9". */
+export const scoreText = (score: number) => score.toFixed(1);

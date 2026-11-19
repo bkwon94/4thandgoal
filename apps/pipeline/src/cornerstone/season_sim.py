@@ -2,6 +2,7 @@
 The app side of the season sim, the one odds engine: it runs the sim package on the inputs of a week. It gives the
 weekly odds to the week build through the chapter port, the week sim file to the build, and the sim to the report.
 """
+from decimal import Decimal
 from pathlib import Path
 from typing import NamedTuple
 
@@ -13,7 +14,7 @@ from league.paths import nflverse_cache_dir, raw_dir
 from league.provider.sleeper import load_raw
 from league.standings_table import season_records
 from rankings.chapter import odds_inputs
-from sim.season import SimResult, season_sim, weekly_odds
+from sim.season import SimResult, SimRun, season_sim, weekly_odds
 from sim.tunables import SIM_RUNS
 from week.sheet import Context, projected_totals
 
@@ -36,6 +37,8 @@ class SimInputs(NamedTuple):
     records: dict[int, tuple[int, int, float]]
     remaining: dict[int, list[tuple[int, int]]]
     projected: dict[int, dict[int, float]]
+    # The real scores of each played bracket week, by week and roster ID. Empty in the regular season.
+    played: dict[int, dict[int, float]]
 
 
 def week_inputs(season: int, week: int, history: History, *, client: Client) -> SimInputs | None:
@@ -64,8 +67,12 @@ def inputs_of_week(
         return None
     scores, remaining = inputs
     projected = projected_totals(week, client, bye_weeks, through=client.settings.last_season_week)
-    records = season_records(history, week.week, median_game=client.settings.median_game)
-    return SimInputs(scores, records, remaining, projected)
+    # A bracket week is no game of the regular season, so the records stop at the last regular week, and the scores of
+    # each played bracket week hold the bracket of the sim.
+    last = client.settings.last_regular_week
+    records = season_records(history, min(week.week, last), median_game=client.settings.median_game)
+    played = {w: dict(history.weeks[w].scores) for w in range(last + 1, week.week + 1)}
+    return SimInputs(scores, records, remaining, projected, played)
 
 
 def week_sim(
@@ -110,7 +117,87 @@ def _sim(
     if inputs is None:
         return None
     return season_sim(inputs.scores, inputs.records, inputs.remaining, season=season, week=week,
-                      settings=client.settings, projected=inputs.projected, runs=runs, pages=pages or ())
+                      settings=client.settings, projected=inputs.projected, runs=runs, pages=pages or (),
+                      played=inputs.played)
+
+
+# The weeks of the playoff fixtures of ACCEPTANCE.md: the bracket of week 15 set, the bracket of week 16 set after a
+# played round, and the season end. The fixtures of the site tests carry these names.
+FIXTURE_WEEKS = {14: "week-sim-playoffs.json", 15: "week-sim-round-2.json", 17: "week-sim-final.json"}
+
+
+def fixture_inputs(inputs: SimInputs, run: SimRun, through: int, client: Client) -> SimInputs:
+    """The inputs of the sim after week `through` when the weeks after the week of `inputs` play out as the stored `run`.
+
+    The regular weeks of the run add to the scores and the records, as `season_records` counts them: a tie gives
+    neither a win nor a loss, and the median game counts against the mean of the two middle scores. The bracket weeks
+    of the run up to `through` become played weeks, with the scores of the rosters that played.
+    """
+    settings = client.settings
+    regular = sorted(inputs.remaining)
+    scores = {rid: list(own) for rid, own in inputs.scores.items()}
+    wins = {rid: r[0] for rid, r in inputs.records.items()}
+    losses = {rid: r[1] for rid, r in inputs.records.items()}
+    points = {rid: Decimal(str(r[2])) for rid, r in inputs.records.items()}
+
+    def settle(rid: int, mine: float, theirs: float) -> None:
+        if mine > theirs:
+            wins[rid] += 1
+        elif mine < theirs:
+            losses[rid] += 1
+
+    for column, w in enumerate(regular):
+        if w > through:
+            break
+        week_scores = {rid: _regular_score(run, rid, column) for rid in scores}
+        for a, b in inputs.remaining[w]:
+            settle(a, week_scores[a], week_scores[b])
+            settle(b, week_scores[b], week_scores[a])
+        ordered = sorted(week_scores.values(), reverse=True)
+        median = (ordered[len(ordered) // 2 - 1] + ordered[len(ordered) // 2]) / 2
+        for rid, score in week_scores.items():
+            if settings.median_game:
+                settle(rid, score, median)
+            points[rid] += Decimal(str(score))
+            scores[rid].append(score)
+    played = {}
+    for column, w in enumerate(range(settings.last_regular_week + 1, through + 1), start=len(regular)):
+        played[w] = {rid: s[column] for rid, s in run.scores.items() if s[column] is not None}
+    records = {rid: (wins[rid], losses[rid], round(float(points[rid]), 2)) for rid in scores}
+    return SimInputs(scores, records, {w: p for w, p in inputs.remaining.items() if w > through}, inputs.projected,
+                     played)
+
+
+def _regular_score(run: SimRun, rid: int, column: int) -> float:
+    """The score of `rid` in a regular week of the stored `run`. Each roster plays each regular week."""
+    score = run.scores[rid][column]
+    if score is None:
+        raise ValueError(f"roster {rid} has no score in column {column} of the run")
+    return score
+
+
+def playoff_fixtures(
+    season: int, week: int, history: History, *, client: Client, runs: int = SIM_RUNS,
+) -> dict[int, tuple[SimResult, SimRun]]:
+    """The sims of the playoff fixtures by the week of each, each with the stored run 1 that fills it.
+
+    Each takes the inputs of `week` and plays the weeks after it as stored run 1 of the sim of `week`. The first stored
+    run is the first draw of the seed of the week, so a sim of one run gives the run 1 of the week file.
+    """
+    inputs = week_inputs(season, week, history, client=client)
+    if inputs is None:
+        raise ValueError(f"week {week} gives the sim no inputs")
+    first = _sim(inputs, season, week, client, 1)
+    assert first is not None
+    run = first.sample[0]
+    out = {}
+    for through in FIXTURE_WEEKS:
+        filled = fixture_inputs(inputs, run, through, client)
+        sim = season_sim(filled.scores, filled.records, filled.remaining, season=season, week=through,
+                         settings=client.settings, projected=filled.projected, runs=runs, pages=sorted(filled.records),
+                         played=filled.played)
+        out[through] = (sim, run)
+    return out
 
 
 class SimOdds:

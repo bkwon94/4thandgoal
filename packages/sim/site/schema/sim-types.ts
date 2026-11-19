@@ -10,3 +10,4 @@ export type TeamSim = z.infer<typeof schema.teamSimSchema>;
 export type Sim = z.infer<typeof schema.simSchema>;
 export type SimPage = z.infer<typeof schema.simPageSchema>;
 export type WeekSim = z.infer<typeof schema.weekSimSchema>;
+export type Playoffs = z.infer<typeof schema.playoffsSchema>;

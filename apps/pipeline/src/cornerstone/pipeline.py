@@ -18,7 +18,7 @@ from pydantic import TypeAdapter
 from cornerstone.midseason_chapters import ChaptersStopped, InjuryPorts, player_cards, report_chapters
 from cornerstone.render import render_week
 from cornerstone.season_schedule import remaining_schedule
-from cornerstone.season_sim import week_sim, week_sim_with_pages
+from cornerstone.season_sim import FIXTURE_WEEKS, playoff_fixtures, week_sim, week_sim_with_pages
 from cornerstone.sheet import (
     build_bundle,
     check_week_is_buildable,
@@ -553,6 +553,33 @@ def run_week_sim(
         names = {rid: team.name for rid, team in read_bundle(facts).data.teams.items()}
     sim = week_sim_with_pages(season, week, history, client=client, runs=sim_runs)
     return write_week_sim(week_sim_file(sim, names), build_dir(client.folder)) if sim is not None else None
+
+
+def run_sim_fixtures(season: int, week: int, out: Path, *, client: Client) -> list[str]:
+    """Write the playoff fixtures of the sim page tests into `out`: the week files of the playoff weeks and the season
+    end, each from the inputs of `week` with the later weeks played as stored run 1 (ACCEPTANCE.md). It reads the
+    saved history and facts of `week`, calls no writer and no network, and writes nothing to published/ or build/.
+    It gives one line per file with its seeds and its champion."""
+    history = History(week=week, weeks=load_saved_weeks(history_root(client.folder, season), week,
+                                                        client.settings.points_key))
+    if not history.complete():
+        raise BuildStopped(HISTORY_GAP.format(week=week))
+    facts = week_dir(client.folder, season, week) / "facts.json"
+    if not facts.exists():
+        raise BuildStopped(NO_WEEK_FACTS.format(week=week, slug=client.slug))
+    names = {rid: team.name for rid, team in read_bundle(facts).data.teams.items()}
+    lines = []
+    for through, (sim, run) in playoff_fixtures(season, week, history, client=client).items():
+        path = out / FIXTURE_WEEKS[through]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        body = week_sim_file(sim, names).model_dump(mode="json")
+        path.write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+        page = next(iter(sim.pages.values())).playoffs
+        seeds = ", ".join(f"{t.seed} {names[t.roster_id]}" for t in page.teams) if page else "none"
+        champion = names[page.champion] if page and page.champion is not None else "not yet"
+        lines.append(f"{path}: week {through}, seeds {seeds}; champion {champion}; run 1 champion "
+                     f"{names[run.champion]}")
+    return lines
 
 
 def _write_week_sim_or_warn(season: int, week: int, names: dict[int, str], client: Client) -> None:

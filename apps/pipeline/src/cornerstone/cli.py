@@ -29,6 +29,7 @@ from cornerstone.pipeline import (
     run_page_json,
     run_rankings,
     run_rewrite,
+    run_sim_fixtures,
     run_week_sim,
 )
 from cornerstone.publish import PublishError, run_midseason_publish, run_publish, site_page_url
@@ -86,6 +87,12 @@ def build_parser() -> argparse.ArgumentParser:
                          help="write week-NN/sim.json of a saved week into the build folder, the sim step of the build")
     sim.add_argument("--week", type=int)
     sim.add_argument("--season", type=int)
+
+    fixtures = sub.add_parser("sim-fixtures", parents=[named],
+                              help="write the playoff and season-end fixtures of the sim page tests from a saved week")
+    fixtures.add_argument("--week", type=int)
+    fixtures.add_argument("--season", type=int)
+    fixtures.add_argument("--out", type=Path, required=True)
 
     midseason = sub.add_parser("midseason", parents=[named],
                                help="write the midseason report of a saved week into the build folder of the season")
@@ -400,6 +407,9 @@ def main(
         elif args.command == "sim":
             out = run_week_sim(season, week, client=client)
             print(out if out is not None else f"Week {week} gives the sim no inputs. No sim.json written.")
+        elif args.command == "sim-fixtures":
+            for line in run_sim_fixtures(season, week, args.out, client=client):
+                print(line)
         elif args.command == "midseason":
             print(run_midseason(season, week, call, client=client, provider=provider))
         elif args.command == "midseason-publish":
