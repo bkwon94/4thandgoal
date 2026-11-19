@@ -36,9 +36,23 @@ Test verdict: PASS
 
 Done condition: The rerun check in `scripts/rerun.py` matches a quoted Red line when the output of the loop holds ANSI color codes, as Vitest prints them on GitHub Actions.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: `normal` in `scripts/rerun.py` keeps the ANSI color codes of the loop output, so `shows` cannot find a quoted Red line inside the colored line that Vitest prints on GitHub Actions.
+Red: at `14d2782b` with `scripts/test_rerun.py` of `7bf53c46`, `python3 -B -m unittest scripts.test_rerun.TheRerun.test_a_quoted_line_matches_output_with_ansi_color_codes`
+
+```text
+  Red at 7cdf0d14: exit 1
+FAIL item 1 (add gives the sum): the Red output has no line `Test Files  1 failed (1)`
+AssertionError: 1 != 0 : quick file: .scratch/bugs/add.md
+Ran 1 test in 0.419s
+FAILED (failures=1)
+```
+
+Green: at `7bf53c46`, `python3 -B -m unittest scripts.test_rerun.TheRerun.test_a_quoted_line_matches_output_with_ansi_color_codes`
+
+```text
+Ran 1 test in 0.316s
+OK
+```
 Test verdict: pending
 
 ## Smoke
