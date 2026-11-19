@@ -68,6 +68,37 @@ class TheSavedInputs(unittest.TestCase):
         self.assertFalse(rebuild.has_saved_inputs(root, week))
 
 
+class TheFactsWeek(unittest.TestCase):
+    def client(self, weeks: dict[int, list[str]]) -> Path:
+        """A client with one published week per key. Each value names the files of its data folder."""
+        root = Path(tempfile.mkdtemp())
+        client = root / "clients" / "x"
+        client.mkdir(parents=True)
+        (client / "client.toml").write_text("")
+        for number, names in weeks.items():
+            week = rebuild.Week("x", 2026, number)
+            (client / "published" / "2026" / f"week-{number:02d}").mkdir(parents=True)
+            (rebuild.data_week(root, week) / "raw").mkdir(parents=True)
+            for name in names:
+                (rebuild.data_week(root, week) / name).write_text("{}")
+        return root
+
+    ALL = ["facts.json", "blurbs.json", "verify.json", "raw/nflverse.json", "raw/slow_sources.json", "raw/news.json"]
+    RENDER = ["facts.json", "blurbs.json"]
+
+    def test_the_facts_week_is_the_latest_week_that_holds_every_saved_input(self):
+        root = self.client({3: self.ALL, 4: self.RENDER, 5: self.ALL[:-1]})
+        render = rebuild.latest_weeks(root)
+        self.assertEqual(render, [rebuild.Week("x", 2026, 5)])
+        self.assertEqual(rebuild.facts_week(root, render[0]), rebuild.Week("x", 2026, 3))
+
+    def test_a_client_with_no_week_that_holds_every_saved_input_has_no_facts_week(self):
+        root = self.client({3: self.RENDER, 4: self.RENDER})
+        render = rebuild.latest_weeks(root)
+        self.assertEqual(render, [rebuild.Week("x", 2026, 4)])
+        self.assertIsNone(rebuild.facts_week(root, render[0]))
+
+
 class TheMode(unittest.TestCase):
     def test_a_base_with_no_facts_command_gets_the_render_diff_only(self):
         self.assertFalse(rebuild.base_rebuilds_facts(Path(tempfile.mkdtemp())))
