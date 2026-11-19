@@ -10,8 +10,8 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-
 
 **Status:** ready-for-agent
 
-- [ ] On a real git repo with a true red commit and fix commit, the script exits 0.
-- [ ] A Red command that passes at the red commit fails the job and names the item.
-- [ ] A quoted failure line that the command does not print fails the job and names the item and the line.
+- [x] On a real git repo with a true red commit and fix commit, the script exits 0.
+- [x] A Red command that passes at the red commit fails the job and names the item.
+- [x] A quoted failure line that the command does not print fails the job and names the item and the line.
 - [ ] The job on the PR of this spec passes with the note "no quick file".
-- [ ] The workflow checks out its script from the default branch and names no model key.
+- [x] The workflow checks out its script from the default branch and names no model key.
