@@ -4,9 +4,12 @@
  */
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { StopCard, StopCardContent, StopCardLine, StopCardTitle } from "@cpc/design/ui/stop-card";
+import { BLUR_SMALL, EASE_IN_OUT, FAST, GLIDE, QUICK, SCALE_MEDIUM, SCALE_TINY, SMOOTH, fadeIn } from "./motion";
 import { markTourSeen, tourSeen } from "./tour-store";
 
 /* The four Stops in order, with the copy of decision 03. Each target has an accessible name already, so the Tour finds it
@@ -57,6 +60,9 @@ const SCREEN_INSET = 8;
 /* The gap between the hole and the card, and the least room between the card and the edge of the screen. */
 const CARD_GAP = 12;
 const CARD_EDGE = 16;
+/* A smooth scroll ends when no part of the page scrolls for this long. The cap ends the wait if a scroll never settles. */
+const SCROLL_SETTLE_MS = 100;
+const SCROLL_CAP_MS = 1000;
 
 /* What a refused dismiss does. A press on the dim goes to the next Stop, so a stray tap does not end the Tour, and on
    Stop 4 it ends the Tour. Escape and the Back of Android count as Skip. */
@@ -241,14 +247,91 @@ export function Tour({ ready }: { ready: boolean }) {
   return phase === "on" ? <Stops onEnd={() => setPhase("done")} /> : null;
 }
 
+/* Move a control into view, then call `done` once the page holds still. A control that is in view already calls `done`
+   at once, so the Stop shows in the same frame. Under reduced motion the scroll is not smooth. The return stops the wait. */
+function scrollThen(el: HTMLElement, smooth: boolean, done: () => void): () => void {
+  const rect = el.getBoundingClientRect();
+  const inView = rect.top >= 0 && rect.bottom <= window.innerHeight && rect.left >= -1 && rect.right <= window.innerWidth + 1;
+  el.scrollIntoView?.({ block: "nearest", inline: "nearest", behavior: smooth ? "smooth" : "instant" });
+  if (inView) {
+    done();
+    return () => {};
+  }
+  // WebKit sends no scrollend, so the wait counts the time since the last scroll of any part of the page.
+  const start = performance.now();
+  let moved = start;
+  let frame = 0;
+  const onScroll = () => (moved = performance.now());
+  const stop = () => {
+    cancelAnimationFrame(frame);
+    document.removeEventListener("scroll", onScroll, true);
+  };
+  const check = () => {
+    const now = performance.now();
+    if (now - moved < SCROLL_SETTLE_MS && now - start < SCROLL_CAP_MS) frame = requestAnimationFrame(check);
+    else {
+      stop();
+      done();
+    }
+  };
+  document.addEventListener("scroll", onScroll, true);
+  frame = requestAnimationFrame(check);
+  return stop;
+}
+
+/* The side of its control that the card takes: under a control in the top half of the screen, and over a control in the
+   bottom half, so it never covers the control. */
+const sideOf = (hole: Hole) => (hole.y + hole.height / 2 <= window.innerHeight / 2 ? "below" : "above");
+
+/* Text swap soft (34): the old text and the new text cross-blur in one cell, with no move. Under reduced motion only
+   the opacity changes. The old text is hidden from a screen reader while it leaves, so the card has one name. */
+function Swap({ id, off, className = "", children }: { id: string | number; off: boolean; className?: string; children: ReactNode }) {
+  return (
+    <span className={`grid ${className}`}>
+      <AnimatePresence initial={false}>
+        <SwapText key={id} off={off}>
+          {children}
+        </SwapText>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+function SwapText({ off, children }: { off: boolean; children: ReactNode }) {
+  const present = useIsPresent();
+  const blur = off ? undefined : { filter: BLUR_SMALL };
+  const sharp = off ? undefined : { filter: "blur(0px)" };
+  return (
+    <motion.span
+      aria-hidden={present ? undefined : true}
+      className="[grid-area:1/1]"
+      initial={{ opacity: 0, ...blur }}
+      animate={{ opacity: 1, ...sharp }}
+      exit={{ opacity: 0, ...blur }}
+      transition={{ duration: QUICK, ease: EASE_IN_OUT }}
+    >
+      {children}
+    </motion.span>
+  );
+}
+
 function Stops({ onEnd }: { onEnd: () => void }) {
+  const off = useMotionOff();
   const [targets] = useState(findTargets);
+  // `index` is the Stop that Next steps through. `at` is the Stop of the hole: it takes `index` once the scroll ends.
+  // `cardAt` is the Stop of the card copy: it takes `at` with the glide, or once the card is back after a fade.
   const [index, setIndex] = useState(0);
+  const [at, setAt] = useState<number | null>(null);
+  const [cardAt, setCardAt] = useState(0);
   const [open, setOpen] = useState(true);
-  const target = targets[index];
+  const target = at === null ? undefined : targets[at];
   const last = index === targets.length - 1;
-  // The target scrolls into view in the layout effect below, before the first frame reads the hole.
   const hole = useHole(target?.el ?? null);
+  const [side, setSide] = useState<"below" | "above" | null>(null);
+  const [snap, setSnap] = useState(false);
+  const held = useRef<{ x: number; y: number } | null>(null);
+  const holeLanded = useRef(true);
+  const cardOut = useRef(false);
 
   // Stop 1 writes the seen key, so Done, Skip, and a reload during the Tour each count as seen.
   useEffect(() => {
@@ -257,95 +340,177 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   useEffect(() => {
     if (targets.length === 0) onEnd();
   }, [targets, onEnd]);
-  // Each Stop moves its control into view, so each Stop is on the screen. The hole then reads the control in place.
+  // Each Stop moves its control into view, so each Stop is on the screen. The scroll ends first, and then the hole
+  // reads the control in place and glides. So the hole never chases a control that still moves.
+  useLayoutEffect(() => {
+    const goal = targets[index];
+    if (!goal) return;
+    return scrollThen(goal.el, !off, () => setAt(index));
+  }, [targets, index, off]);
   useLayoutEffect(() => {
     if (!target) return;
-    target.el.scrollIntoView?.({ block: "nearest", inline: "nearest" });
     target.el.setAttribute("data-tour-target", "");
+    holeLanded.current = false;
+    cardOut.current = false;
     return () => target.el.removeAttribute("data-tour-target");
   }, [target]);
 
-  if (!target || !hole) return null;
+  const wanted = hole ? sideOf(hole) : null;
+  // The card leaves and comes back when it must change side, so it never sweeps across the hole. Under reduced motion it
+  // leaves on each move, because it does not glide: it fades out at the old Stop and fades in at the new one.
+  const away = hole !== null && side !== null && at !== null && (wanted !== side || (off && cardAt !== at));
+  // A move on the same side keeps the card: the copy changes with the glide.
+  useLayoutEffect(() => {
+    if (wanted === null || at === null) return;
+    if (side === null) setSide(wanted);
+    else if (!away && cardAt !== at) setCardAt(at);
+  }, [wanted, side, away, cardAt, at]);
+  // After the snap to the new place, the next move glides again.
+  useEffect(() => {
+    if (!snap) return;
+    const frame = requestAnimationFrame(() => setSnap(false));
+    return () => cancelAnimationFrame(frame);
+  }, [snap]);
+  // The card comes back once it is out and the hole has landed: it snaps to the new side, and then fades in.
+  const land = () => {
+    if (!away || !holeLanded.current || !cardOut.current || at === null) return;
+    cardOut.current = false;
+    setSide(wanted);
+    setCardAt(at);
+    setSnap(true);
+  };
+
+  if (!target || !hole || side === null) return null;
+  const shown = targets[cardAt];
   const next = () => (last ? setOpen(false) : setIndex(index + 1));
   const end = () => setOpen(false);
-  // The card sits under a control in the top half of the screen, and over a control in the bottom half, so it never
-  // covers the control. A card over the control sets its bottom edge, so it needs no measure of its own height.
-  const below = hole.y + hole.height / 2 <= window.innerHeight / 2;
   const width = Math.min(320, window.innerWidth - CARD_EDGE * 2);
-  const left = Math.min(Math.max(CARD_EDGE, hole.x + hole.width / 2 - width / 2), window.innerWidth - CARD_EDGE - width);
-  const place = below ? { top: hole.y + hole.height + CARD_GAP } : { bottom: window.innerHeight - hole.y + CARD_GAP };
+  // The anchor of the card is the middle of its edge on the side of the hole. A card over the control draws up from its
+  // anchor, so it needs no measure of its own height.
+  const place = {
+    x: Math.min(Math.max(CARD_EDGE, hole.x + hole.width / 2 - width / 2), window.innerWidth - CARD_EDGE - width),
+    y: side === "below" ? hole.y + hole.height + CARD_GAP : hole.y - CARD_GAP,
+  };
+  // While the card is away, it holds its place, so it does not sweep across the hole as it fades.
+  const card = away && held.current ? held.current : place;
+  held.current = card;
+  // The hole and the card ride the same spring, so the two never part. Under reduced motion the hole jumps.
+  const move = off || snap ? { duration: 0 } : GLIDE;
 
   return (
     <>
       {/* The spotlight sits above the top band and below the card. Its wide shadow is the dim, and it takes no press. It
           carries no stable id, so a hold on the dim sends no egg check. */}
-      {open &&
-        createPortal(
-          <div
-            aria-hidden
-            data-tour-hole=""
-            className="pointer-events-none fixed z-[60]"
-            style={{ left: hole.x, top: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius, boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
-          />,
-          document.body,
-        )}
+      {createPortal(
+        <motion.div
+          aria-hidden
+          data-tour-hole=""
+          className="pointer-events-none fixed top-0 left-0 z-[60]"
+          style={{ boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
+          initial={{ opacity: 0, x: hole.x, y: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius }}
+          animate={{ opacity: open ? 1 : 0, x: hole.x, y: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius }}
+          transition={{ default: off ? { duration: 0 } : GLIDE, opacity: fadeIn(open ? FAST : QUICK) }}
+          onAnimationComplete={() => {
+            holeLanded.current = true;
+            land();
+          }}
+        />,
+        document.body,
+      )}
       <StopCard
         open={open}
         onOpenChangeComplete={(isOpen) => !isOpen && onEnd()}
         onDismissAttempt={(details) => (dismissStep(details.reason, last) === "next" ? next() : end())}
       >
         {/* The content fills the screen and takes no press, so a press anywhere off the card is a press outside. The
-            important inset wins over the inline place that the positioner writes. */}
-        <StopCardContent anchor={{ x: 0, y: 0 }} className="pointer-events-none !inset-0 h-dvh w-screen">
-          <div
-            data-tour-card=""
-            className="pointer-events-auto fixed flex flex-col gap-sp-2 rounded-card border border-door-hair bg-card p-sp-4 pt-sp-3 shadow-drop"
-            style={{ left, width, ...place }}
+            important inset wins over the inline place that the positioner writes. Its fade on close is the wait of the
+            exit, so the card and the dim leave together on QUICK. */}
+        <StopCardContent
+          anchor={{ x: 0, y: 0 }}
+          className="pointer-events-none !inset-0 h-dvh w-screen transition-opacity data-[ending-style]:opacity-0"
+          style={{ transitionDuration: `${QUICK}s`, transitionTimingFunction: `cubic-bezier(${SMOOTH.join(", ")})` }}
+        >
+          {/* Menu dropdown (05): the card grows from its edge on the side of the hole at 0.97 on FAST, and leaves at 0.99
+              on QUICK. Under reduced motion it keeps a scale of 1. */}
+          <motion.div
+            className="pointer-events-none fixed top-0 left-0"
+            style={{ width, transformOrigin: "50% 0%" }}
+            initial={{ ...card, opacity: 0, scale: off ? 1 : SCALE_MEDIUM }}
+            animate={{ ...card, opacity: away ? 0 : 1, scale: open || off ? 1 : SCALE_TINY }}
+            transition={{
+              x: move,
+              y: move,
+              opacity: fadeIn(away ? QUICK : FAST),
+              scale: { duration: open ? FAST : QUICK, ease: SMOOTH },
+            }}
+            onAnimationComplete={() => {
+              if (!away) return;
+              cardOut.current = true;
+              land();
+            }}
           >
-            <div className="flex items-baseline justify-between gap-sp-3">
-              <StopCardTitle className="m-0 text-body leading-tight font-semibold text-ink">{target.header}</StopCardTitle>
-              <span className="flex-none font-mono text-meta leading-tight tracking-caps text-mute uppercase tabular-nums">
-                {`${index + 1} of ${targets.length}`}
-              </span>
-            </div>
-            {/* Each line sits hidden in the same cell, so the card always takes the height of the longest line, and a
-                short line never moves Next under the thumb. The hidden lines draw from an attribute, so a search of the text finds
-                each line once. */}
-            <div className="grid text-lead leading-snug text-pretty">
-              {targets.map((stop) => (
-                <span key={stop.key} aria-hidden data-line={stop.line} className="invisible [grid-area:1/1] after:content-[attr(data-line)]" />
-              ))}
-              <StopCardLine className="m-0 text-ink-2 [grid-area:1/1]">{target.line}</StopCardLine>
-            </div>
-            <div className="mt-sp-1 flex items-center justify-between gap-sp-2">
-              <span aria-hidden className="flex items-center gap-sp-1">
-                {targets.map((stop, at) => (
-                  <span
-                    key={stop.key}
-                    data-tour-dot=""
-                    data-current={at === index ? "" : undefined}
-                    className={`h-1.5 rounded-pill bg-ink ${at === index ? "w-[18px]" : "w-1.5 opacity-25"}`}
-                  />
+            <div
+              data-tour-card=""
+              className="pointer-events-auto flex flex-col gap-sp-2 rounded-card border border-door-hair bg-card p-sp-4 pt-sp-3 shadow-drop"
+              style={{ translate: side === "above" ? "0 -100%" : undefined }}
+            >
+              <div className="flex items-baseline justify-between gap-sp-3">
+                <StopCardTitle className="m-0 text-body leading-tight font-semibold text-ink">
+                  <Swap id={shown.key} off={off}>
+                    {shown.header}
+                  </Swap>
+                </StopCardTitle>
+                <span className="flex-none font-mono text-meta leading-tight tracking-caps text-mute uppercase tabular-nums">
+                  <Swap id={cardAt} off={off}>{`${cardAt + 1} of ${targets.length}`}</Swap>
+                </span>
+              </div>
+              {/* Each line sits hidden in the same cell, so the card always takes the height of the longest line, and a
+                  short line never moves Next under the thumb. The hidden lines draw from an attribute, so a search of the text finds
+                  each line once. */}
+              <div className="grid text-lead leading-snug text-pretty">
+                {targets.map((stop) => (
+                  <span key={stop.key} aria-hidden data-line={stop.line} className="invisible [grid-area:1/1] after:content-[attr(data-line)]" />
                 ))}
-              </span>
-              <div className="flex items-center gap-sp-1">
-                <button
-                  type="button"
-                  onClick={end}
-                  className="press flex min-h-touch items-center rounded-pill px-sp-3 text-body font-semibold text-mute hover-fine:text-ink"
-                >
-                  Skip
-                </button>
-                <button
-                  type="button"
-                  onClick={next}
-                  className="press flex min-h-touch min-w-[5.5rem] items-center justify-center rounded-pill bg-accent px-sp-5 text-body font-semibold text-on-dark"
-                >
-                  {last ? "Done" : "Next"}
-                </button>
+                <StopCardLine className="m-0 text-ink-2 [grid-area:1/1]">
+                  <Swap id={shown.key} off={off}>
+                    {shown.line}
+                  </Swap>
+                </StopCardLine>
+              </div>
+              <div className="mt-sp-1 flex items-center justify-between gap-sp-2">
+                {/* The current dot stretches into a short bar, on the slide of Tabs sliding (16). */}
+                <span aria-hidden className="flex items-center gap-sp-1">
+                  {targets.map((stop, dot) => (
+                    <motion.span
+                      key={stop.key}
+                      data-tour-dot=""
+                      data-current={dot === cardAt ? "" : undefined}
+                      className="h-1.5 rounded-pill bg-ink"
+                      initial={false}
+                      animate={{ width: dot === cardAt ? 18 : 6, opacity: dot === cardAt ? 1 : 0.25 }}
+                      transition={off ? { duration: 0 } : { duration: FAST, ease: SMOOTH }}
+                    />
+                  ))}
+                </span>
+                <div className="flex items-center gap-sp-1">
+                  <button
+                    type="button"
+                    onClick={end}
+                    className="press flex min-h-touch items-center rounded-pill px-sp-3 text-body font-semibold text-mute hover-fine:text-ink"
+                  >
+                    Skip
+                  </button>
+                  <button
+                    type="button"
+                    onClick={next}
+                    className="press flex min-h-touch min-w-[5.5rem] items-center justify-center rounded-pill bg-accent px-sp-5 text-body font-semibold text-on-dark"
+                  >
+                    {cardAt === targets.length - 1 ? "Done" : "Next"}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </StopCardContent>
       </StopCard>
     </>

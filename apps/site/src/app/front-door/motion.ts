@@ -38,6 +38,14 @@ export const FAST = 0.25;
 export const SLOW = 0.4;
 export const VERY_SLOW = 0.5;
 
+/* --ease-in-out, for a text swap. */
+export const EASE_IN_OUT = "easeInOut";
+
+/* --scale-medium for a dropdown open, --scale-tiny for a dropdown close, and --blur-small for a text swap. */
+export const SCALE_MEDIUM = 0.97;
+export const SCALE_TINY = 0.99;
+export const BLUR_SMALL = "blur(2px)";
+
 /* The rows of a long list stop their stagger at the seventh row, so the last row never shows late. */
 export const staggerOf = (index: number) => Math.min(index, 6) * STAGGER;
 
