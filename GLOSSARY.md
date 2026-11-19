@@ -579,8 +579,8 @@ two states: fair and lopsided. A lopsided trade names the side that gives more.
 _Avoid_: balance, even trade
 
 **Finder**:
-The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. The
-partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
+The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. With
+no picked partner, the partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
 every one-for-one, two-for-one, and one-for-two trade from the targets only, and Jev makes the shortlist. The Advisor then
 picks up to three trades from the shortlist that are good for both, and writes why each one works. The trades share no player. A
 handcuff, a player out with no return week, and an unlisted player are never in a trade. The chart lists no
@@ -588,10 +588,9 @@ kicker and no defense, so they are always unlisted.
 _Avoid_: suggested trades, counters (a counter changes one trade for one side)
 
 **Partner filter**:
-The first step of the finder: four Jev questions for each partner. Does he have a player at the asker's need
-who would start for the asker? Can he give that player up with no hole in his lineup? Does the asker have a
-player at his need who would start for him? Can the asker give that player up with no hole? Code counts the
-depth, and only a partner with four yes answers goes on. With no partner left, the finder says so plainly.
+The first step of the finder with no picked partner: the Spares tree on both sides of each pair. A partner goes
+on unless a side lists no player, or each listed player of a side gets a clear no. A search with one picked
+partner or with an anchor skips it. With no partner left, the finder says so plainly.
 _Avoid_: prefilter, screen
 
 **Target**:
@@ -604,7 +603,8 @@ A trade that the finder builds from the targets of both sides, before Jev makes 
 _Avoid_: proposal, option
 
 **Shortlist**:
-The trades of the finder that pass the Jev questions, for the Advisor to read.
+The trades of the finder that pass the Jev questions, for the Advisor to read. It holds the best offer for each
+player that the asker gives and for each partner, before more forms of the same trade.
 _Avoid_: candidates, top trades
 
 **Jev tree**:
@@ -614,7 +614,7 @@ _Avoid_: classifier, Jev decision
 
 **Spares tree**:
 The Jev tree that says if a team can spare a player at a weak starting slot of another team. Code lists the players
-at those positions who have a backup above the line. Jev asks of each one if he would start over the weak starter,
+at those positions who have a backup above the line who can play now. A player who is Out is never cover. Jev asks of each one if he would start over the weak starter,
 with the chart values as facts. A side stops only on no listed player, or on a clear no for each one.
 _Avoid_: spares question, spares gate
 

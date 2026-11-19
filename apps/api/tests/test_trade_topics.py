@@ -714,7 +714,9 @@ def test_the_find_stream_sends_one_step_line_as_each_of_the_five_steps_ends(api)
     parts = _find_stream(api)
     done = live_then_done(_of(parts, "data-step"))
     assert done[0] == "Read 11 teams"
-    assert re.fullmatch(r"Found \d+ players who fit", done[1]), done
+    # In the week 6 fixture the one weak slot of Bo Girds is QB and no team has a QB to spare, so the Spares tree stops
+    # each pair and the wider pass builds the offers. The line still says how many players fit.
+    assert re.fullmatch(r"Found (\d+ players who fit|one player who fits|no players who fit)", done[1]), done
     assert re.fullmatch(r"Built \d+ offers", done[2]), done
     assert re.fullmatch(r"Made a shortlist of \d+", done[3]), done
     assert done[4:] == ["Picked the best 3"]

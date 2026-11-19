@@ -1,5 +1,5 @@
 """
-Tests for the Finder search: the partner filter, the targets, the offers, and the shortlist that Jev narrows.
+Tests for the Finder search: the partner filter (the Spares tree), the targets, the offers, and the shortlist that Jev narrows.
 They read the week 6 snapshot and use FakeJev, so no test calls TypeSafe.
 """
 import logging
@@ -22,6 +22,7 @@ from analyzer.finder_search import (
 )
 from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
 from analyzer.measures import is_handcuff, trade_handcuffs
+from analyzer.spares_tree import pair_spares
 from analyzer.trade_jev import TRADE_POSITIONS, weak_slot_rows
 from league.jev_port import JevError, NoulQuestion
 from league.slow_sources import load_slow_sources
@@ -40,46 +41,71 @@ def snap(fixture_raw_dir, fixture_history_root, chart_week6, fixture_nflverse_di
 
 
 def _filter_requests(jev):
-    return [r for r in jev.requests if set(r.questions) == {"partner_has", "partner_spares", "asker_has", "asker_spares"}]
+    return [r for r in jev.requests if r.questions and all(key.startswith("spare:") for key in r.questions)]
 
 
-def test_with_no_partner_the_partner_filter_asks_four_questions_of_every_other_team(snap):
+def test_with_no_partner_the_spares_tree_reads_every_other_team_on_both_sides(snap):
     jev = FakeJev()
     found = search(ASKER, None, snap, jev)
     others = sorted(rid for rid in snap.rosters if rid != ASKER)
     assert len(others) == 11
-    asked = sorted(r.state["teams"]["partner"]["roster_id"] for r in _filter_requests(jev))
-    assert asked == others
     assert sorted(read.roster_id for read in found.partners) == others
-    assert all(read.passed for read in found.partners)
+    # One request per pair with a listed player, with one question per listed player of both sides.
+    for request in _filter_requests(jev):
+        partner = request.state["teams"]["partner"]["roster_id"]
+        spares = pair_spares(snap, ASKER, partner)
+        assert set(request.questions) == {spare.key for side in spares.values() for spare in side}
+    # Each answer is a clear yes, so a pair passes when each side lists a player.
+    for read in found.partners:
+        spares = pair_spares(snap, ASKER, read.roster_id)
+        assert read.passed == bool(spares["partner"] and spares["asker"])
+    assert sum(read.passed for read in found.partners) >= 6
 
 
 def _target_requests(jev):
     return [r for r in jev.requests if r.questions and all("." in key and "|" not in key for key in r.questions)]
 
 
-def test_a_picked_partner_keeps_the_filter_and_every_offer_to_that_partner(snap):
-    jev = FakeJev()
-    found = search(ASKER, PARTNER, snap, jev)
-    assert [r.state["teams"]["partner"]["roster_id"] for r in _filter_requests(jev)] == [PARTNER]
-    assert found.offers and found.shortlist
+def test_a_picked_partner_skips_the_partner_filter_and_keeps_every_offer_to_that_partner(snap, caplog):
+    # Each Spares tree answer is a clear no, so a filter would stop the partner.
+    def answer(key, question, state):
+        return 0.1 if key.startswith("spare:") else 0.9
+
+    jev = FakeJev(answer=answer)
+    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
+        found = search(ASKER, PARTNER, snap, jev)
+    assert _filter_requests(jev) == []
+    assert not any("Partner filter" in r.getMessage() for r in caplog.records)
+    assert [read.roster_id for read in found.partners if read.passed] == [PARTNER]
+    assert len(found.shortlist) >= 2 and not found.wider
     for trade in found.offers + [offer.trade for offer in found.shortlist]:
         assert [side.roster_id for side in trade.sides] == [ASKER, PARTNER]
 
 
-def test_only_a_partner_with_four_yes_answers_gets_the_full_search(snap):
-    stopped = 7
+def _both_sides(snap):
+    """The other teams whose pair with the asker lists a player on each side, in roster order."""
+    return [rid for rid in sorted(snap.rosters) if rid != ASKER
+            and all(pair_spares(snap, ASKER, rid).values())]
+
+
+def test_a_clear_no_for_each_player_of_one_side_stops_the_partner_and_unsure_passes(snap):
+    stopped, unsure = _both_sides(snap)[:2]
 
     def answer(key, question, state):
-        # One no of the four stops the partner. "Unsure" is not a yes either.
-        if key == "asker_spares" and state["teams"]["partner"]["roster_id"] == stopped:
+        _, giver, _ = key.split(":") if key.startswith("spare:") else ("", "", "")
+        # Each player of `stopped` reads a clear no. Each player of `unsure` reads unsure, which passes.
+        if giver == str(stopped):
+            return 0.2
+        if giver == str(unsure):
             return 0.5
         return 0.9
 
     jev = FakeJev(answer=answer)
     found = search(ASKER, None, snap, jev)
     read = next(read for read in found.partners if read.roster_id == stopped)
-    assert not read.passed and read.answers["asker_spares"] == 0.5
+    assert not read.passed and not read.failed
+    assert next(read for read in found.partners if read.roster_id == unsure).passed
+    assert unsure in found.targets
     assert stopped not in found.targets
     assert all(trade.sides[1].roster_id != stopped for trade in found.offers)
     assert stopped not in [r.state["teams"]["partner"]["roster_id"] for r in _target_requests(jev)]
@@ -158,28 +184,58 @@ def test_no_offer_breaks_a_hard_rule_and_every_offer_is_small(snap):
     assert any(snap.players[pid].position in ("K", "DEF") for roster in snap.rosters.values() for pid in roster)
 
 
-def test_the_shortlist_keeps_the_ten_offers_with_the_highest_product_of_fair_and_need(snap):
-    def answer(key, question, state):
-        number, _, kind = key.partition("|")
-        if not kind:
-            return 0.9
-        n = int(number)
-        if kind == "fair":
-            return 0.99 - 0.001 * n
-        # The first offer is fair but fills no need of the asker, so the product drops it.
-        return 0.1 if n == 0 and kind == f"need.{ASKER}" else 0.9
+def _rising_fair(key, question, state):
+    """The fair answer falls a little with each offer, so the first offers of each partner rate highest."""
+    number, _, kind = key.partition("|")
+    if not kind:
+        return 0.9
+    return 0.99 - 0.001 * int(number) if kind == "fair" else 0.9
 
-    found = search(ASKER, PARTNER, snap, FakeJev(answer=answer))
+
+def _assert_varied(found):
+    """No player of the asker and no partner shows in a second offer before each one with an offer shows once."""
+    all_players = {pid for trade in found.offers for pid in trade.sides[0].player_ids}
+    all_partners = {trade.sides[1].roster_id for trade in found.offers}
+    seen_players: set[str] = set()
+    seen_partners: set[int] = set()
+    for offer in found.shortlist:
+        players, partner = set(offer.trade.sides[0].player_ids), offer.trade.sides[1].roster_id
+        if players & seen_players:
+            assert seen_players >= all_players, offer.offer_id
+        if partner in seen_partners:
+            assert seen_partners >= all_partners, offer.offer_id
+        seen_players |= players
+        seen_partners.add(partner)
+
+
+def test_the_shortlist_holds_the_best_offer_for_each_player_of_the_asker_before_more_forms(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=_rising_fair))
     assert len(found.offers) > SHORTLIST_KEEP
-    assert [offer.offer_id for offer in found.shortlist] == [offer_id(t) for t in found.offers[1:SHORTLIST_KEEP + 1]]
+    assert len(found.shortlist) == SHORTLIST_KEEP
+    _assert_varied(found)
+    givers = {pid for trade in found.offers for pid in trade.sides[0].player_ids}
+    # The top offer by the product still leads, and each player the asker gives has an offer on the list.
+    assert found.shortlist[0].offer_id == offer_id(found.offers[0])
+    assert givers <= {pid for offer in found.shortlist for pid in offer.trade.sides[0].player_ids}
     top = found.shortlist[0]
     assert top.score == pytest.approx(top.fair * top.needs[ASKER] * top.needs[PARTNER])
     assert set(top.needs) == {ASKER, PARTNER}
 
 
+def test_the_shortlist_holds_an_offer_for_each_partner_before_more_forms(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_rising_fair))
+    _assert_varied(found)
+    partners = {trade.sides[1].roster_id for trade in found.offers}
+    assert len(partners) >= 2
+    shown = [offer.trade.sides[1].roster_id for offer in found.shortlist]
+    assert len(set(shown)) == min(len(partners), len(shown))
+
+
 def test_a_failed_jev_request_drops_the_partner_and_never_raises(snap):
     found = search(ASKER, None, snap, FakeJev(error=JevError("429 Too Many Requests")))
-    assert all(read.failed and not read.passed for read in found.partners)
+    # A failed call is an error, never a stop: each pair with a question is marked failed.
+    assert not any(read.passed for read in found.partners)
+    assert all(read.failed for read in found.partners if any(pair_spares(snap, ASKER, read.roster_id).values()))
     assert found.offers == [] and found.shortlist == []
 
 
@@ -216,7 +272,7 @@ def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_o
 def test_an_anchored_search_skips_the_partner_filter_and_the_plain_search_keeps_it(snap):
     # Each filter question reads no here, so a filter would stop every partner.
     def answer(key, question, state):
-        return 0.1 if key in ("partner_has", "partner_spares", "asker_has", "asker_spares") else 0.9
+        return 0.1 if key.startswith("spare:") else 0.9
 
     others = sorted(rid for rid in snap.rosters if rid != ASKER)
     anchor = _last_pool_player(snap, ASKER)
@@ -228,7 +284,7 @@ def test_an_anchored_search_skips_the_partner_filter_and_the_plain_search_keeps_
     assert sorted(found.targets) == others
     jev = FakeJev(answer=answer)
     found = search(ASKER, None, snap, jev)
-    assert len(_filter_requests(jev)) == len(others)
+    assert len(_filter_requests(jev)) == sum(any(pair_spares(snap, ASKER, rid).values()) for rid in others)
     # No partner passed, so no target question asks. The wider pass gives the ideas that the pick weighs.
     assert not any(read.passed for read in found.partners) and found.targets == {}
     assert _target_requests(jev) == [] and found.wider
