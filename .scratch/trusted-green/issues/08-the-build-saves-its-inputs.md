@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-19 and AT-20.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `build --no-fetch` of cpc 2026 week 10 with no key writes the three inputs before the first Claude call.
 - [x] Two facts-only rebuilds of cpc week 10 give the same sha256 of `facts.json`.
