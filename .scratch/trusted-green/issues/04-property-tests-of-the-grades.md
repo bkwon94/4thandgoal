@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-27 and AT-28.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Hypothesis is a Python dev dependency in the lock file.
 - [x] Each of the eight properties of the spec has one test beside the package of its function.
