@@ -453,7 +453,7 @@ Observation: `at62-rendered.txt` shows no hit of any banned word in the rendered
 ## AT-63: The site has no copy of the sim
 
 App: site
-Then: no site module draws a score, and each What-if number comes from the API.
+Then: no site module draws a score. Each What-if number on the sim page comes from the API, and the chip of the Announcement reads `sim.json`.
 Files: `evidence/AT-63/search.txt`, `evidence/AT-63/chip.txt`, `evidence/AT-63/api.txt`, `evidence/AT-63/what-if-answer.json`, `evidence/AT-63/output.txt`, `evidence/AT-63/steps.txt`
 Observation: `search.txt` greps `apps/site/src`, `packages/sim/site`, and `packages/design/site` for `Math.random`, `random(`, gauss, normal, randn, Box-Muller, seeded sources such as mulberry and xorshift, and `getRandomValues`. Each hit is in one of these places:
 - `pickRun` in `stage/pick.ts`, `randomRun` in `replay/sim-replay.tsx`, and the default `random = Math.random` in `page/sim-page.tsx`. Each returns or passes on the index of one stored run.

@@ -513,7 +513,7 @@ App: site
 Stories: none
 Given: the branch.
 When: the reader searches the site code and the sim package site code for a draw of a score.
-Then: no site module draws a score, and each What-if number comes from the API.
+Then: no site module draws a score. Each What-if number on the sim page comes from the API, and the chip of the Announcement reads `sim.json`.
 Evidence: the search command and its output.
 
 AT-64: The midseason report does not change
