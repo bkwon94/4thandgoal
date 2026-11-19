@@ -324,8 +324,45 @@ test("the Tour waits while a test modal layer is open, and Stop 1 shows after th
   await page.waitForTimeout(1200);
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
   await expect(hole(page)).toHaveCount(0);
-  await page.evaluate(() => document.getElementById("test-modal-layer")?.remove());
-  await expect(card(page, "Suggestions")).toBeVisible();
+  // The close runs a real exit: a 300 ms opacity fade. The layer keeps aria-modal until the fade ends.
+  const run = await page.evaluate(
+    (duration) =>
+      new Promise<{ exitMs: number; exitEnd: number; stop1At: number; framesInExit: number; cardFrames: number; modalFrames: number }>((resolve) => {
+        const layer = document.getElementById("test-modal-layer")!;
+        const hasCard = () => !!document.querySelector("[data-tour-card]");
+        let exiting = true;
+        let exitEnd = 0;
+        let framesInExit = 0;
+        let cardFrames = 0;
+        let modalFrames = 0;
+        const fade = layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration, easing: "linear", fill: "forwards" });
+        const frame = () => {
+          if (exiting) {
+            framesInExit += 1;
+            if (hasCard()) cardFrames += 1;
+            if (layer.isConnected && layer.getAttribute("aria-modal") === "true") modalFrames += 1;
+          } else if (hasCard()) {
+            resolve({ exitMs: duration, exitEnd, stop1At: performance.now(), framesInExit, cardFrames, modalFrames });
+            return;
+          }
+          requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+        fade.finished.then(() => {
+          exitEnd = performance.now();
+          exiting = false;
+          layer.remove();
+        });
+      }),
+    300,
+  );
+  console.log(
+    `AT-38 layer: ${layer[0]}; exit duration: ${run.exitMs} ms; exit end: ${run.exitEnd.toFixed(1)} ms; Stop 1 shows: ${run.stop1At.toFixed(1)} ms; gap: ${(run.stop1At - run.exitEnd).toFixed(1)} ms; frames in exit with no card: ${run.framesInExit - run.cardFrames} of ${run.framesInExit}`,
+  );
+  expect(run.framesInExit).toBeGreaterThan(5);
+  expect(run.cardFrames).toBe(0);
+  expect(run.modalFrames).toBe(run.framesInExit);
+  expect(run.stop1At).toBeGreaterThan(run.exitEnd);
   await expect(card(page, "Suggestions")).toContainText("1 of 4");
 });
 
