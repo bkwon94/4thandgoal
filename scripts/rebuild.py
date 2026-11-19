@@ -104,7 +104,7 @@ def has_saved_inputs(root: Path, week: Week) -> bool:
 
 
 def base_rebuilds_facts(base: Path) -> bool:
-    """True when the CLI of the base has the facts-only rebuild. Until then the job can diff the render only."""
+    """True when the CLI of the base has the facts-only rebuild. A base without it gets the render diff only."""
     cli = base / PIPELINE_CLI
     return cli.is_file() and 'add_parser("facts"' in cli.read_text(encoding="utf-8")
 

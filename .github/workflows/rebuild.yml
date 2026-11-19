@@ -46,10 +46,10 @@ jobs:
           BASE_REF: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
-          # The first PR of the job finds no script on main yet. It passes and says why.
+          # A main with no rebuild script cannot run the job, so the job passes and says why.
           for script in scope.py rebuild.py; do
             if [ ! -f "base/scripts/$script" ]; then
-              echo "main has no scripts/$script yet, so the rebuild does not run."
+              echo "main has no scripts/$script, so the rebuild does not run."
               echo "run=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
