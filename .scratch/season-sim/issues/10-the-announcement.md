@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-51 to AT-61. Decision 05
 
 **Blocked by:** 05.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fresh browser with Bo Girds opens the sheet with The Blue Tent, Bo Girds, and Return of T Mac, the playoff line, the chip, and the copy of the spec (AT-51).
 - [x] The chip turns off and on with a tap (AT-52), and turns on once by itself after the sheet stops (AT-53).
