@@ -1,6 +1,7 @@
 """
-Runs the base and head rebuild of the latest week of each client: facts and page-json with the code of the base and of the head,
-then a diff of facts.json, page.json, topics.json, and waiver.json by JSON path, checked against the approved diffs (ADR 0037).
+Rebuild the latest week of each client with the code of the base and with the code of the head.
+Diff facts.json, page.json, topics.json, and waiver.json by JSON path.
+Check each diff against the approved diffs (ADR 0037).
 """
 import argparse
 import json
