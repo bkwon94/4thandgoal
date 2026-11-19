@@ -1,5 +1,5 @@
 /**
- * The menu link of the sim package: the sim page of the season of the newest published week, "Season sim".
+ * The menu link of the sim package: the sim page of the season of the newest published week, "Season Sim".
  * It also gives the line of its page in the Site answer. The registry imports it only when the client takes sim.
  */
 import type { Destination } from "@cpc/design/shell/nav";
@@ -11,7 +11,7 @@ import { simHref } from "@/lib/routes";
 /* A client with no published week, or a latest season with no week sim file, has no sim link yet. */
 export const menuLink = (): Destination | null => {
   const latest = listWeeks().sort((a, b) => Number(b.season) - Number(a.season))[0];
-  return latest && weekSimSeasons().includes(latest.season) ? { label: "Season sim", href: simHref(latest.season) } : null;
+  return latest && weekSimSeasons().includes(latest.season) ? { label: "Season Sim", href: simHref(latest.season) } : null;
 };
 
 /* The line of the page in the Site answer of the front door: a Tool, with its fixed blurb. Code writes it, never Claude. */
