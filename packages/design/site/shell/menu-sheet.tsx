@@ -66,6 +66,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
+  const sheet = useRef<HTMLDivElement>(null);
 
   // The desktop tier hides the sheet and its button. A modal sheet left open there keeps the page inert under a hidden
   // sheet, with no way out, so the sheet closes once the window reaches the desktop tier.
@@ -78,6 +79,30 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
     closeOnDesktop();
     desktop.addEventListener("change", closeOnDesktop);
     return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [open]);
+
+  // The Drawer springs a sheet to each new height of its content. On a sheet from the top that spring moves the top edge
+  // up by the growth and back down, so the top edge jumps while "Past weeks" opens or closes. Each later resize of the
+  // open sheet ends that spring at once, so the top edge stays still and only the bottom edge follows the list. The
+  // first call of the observer is its measure on open, which must not end the drop of the sheet, and a drag keeps its
+  // own motion.
+  useEffect(() => {
+    const el = sheet.current;
+    if (!open || !el) return;
+    let first = true;
+    const observer = new ResizeObserver(() => {
+      if (first) {
+        first = false;
+        return;
+      }
+      if (el.hasAttribute("data-dragging")) return;
+      for (const motion of el.getAnimations()) {
+        const frames = (motion.effect as KeyframeEffect | null)?.getKeyframes() ?? [];
+        if (frames.some((frame) => "translate" in frame)) motion.finish();
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [open]);
 
   // The modal sheet makes the page inert. The band stays usable, so its X closes the sheet.
@@ -118,6 +143,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
       {/* data-menu-sheet lets globals.css move the top edge of the sheet and the dim to the bottom of the band, so the
           band stays on top. */}
       <SheetContent
+        ref={sheet}
         data-menu-sheet=""
         className="flex w-full flex-col desktop:hidden"
       >
