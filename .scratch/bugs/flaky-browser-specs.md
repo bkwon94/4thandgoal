@@ -1,7 +1,7 @@
 # Flaky browser specs that block deploys
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-flaky-browser-specs`.
 Source: the handoff file `.handoff/flaky-specs.md`, Run 1.
 Boundary: holds. 5 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -212,3 +212,7 @@ Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyze
 - Brian added item 5 after the quick Judge gave FAIL on items 1 to 4, each on question 3, because of the old overlap of item 5. This is the one fix round.
 - Brian changed the done condition of item 5 on 2026-11-19: the Tour card is a modal layer by design, so the fix is in the overlap check of the smoke run, and the card does not move.
 - The orchestrator removed from the Green block of item 5 a note on the old done condition, after Brian changed it. The note now stands here: the card still sits over the dimmed, inert answer by design; if Brian wants the Tour to wait until the first answer is read, that is a change of story 42 of `front-door-tour`.
+- Closes with the squash merge of the PR of `bug-flaky-browser-specs`. Commits: `1c9baeaa`, `c3c54350`, `bdbdb00d`, `faf63b79`, `3374a9aa`, `25c08da3`, `9790fdb0`, `59d623e0`, `e2598f3d`, `5432d4f8`. Date: 2026-11-19.
+- The loop of each of the 5 items went red, then green on the same command; `make check-fast BASE=main` passes with 834 Vitest tests; the smoke run gives "Smoke run: 7 flows, 7 passed, 0 failed"; the second quick Judge gave PASS on all 5 items.
+- Later runs: handoff item 5 (AT-5 of `analyzer-stage.spec.ts`), handoff item 6 (`startSamples` stacks frame loops), `skipAnnouncements` for the other front-door specs with a kept team, and a merge of `main` into `bug-menu-sheet-flake` for PR #77.
+- Read 8 files: AGENTS.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, GLOSSARY.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, .claude/plugin/skills/implement/build.md, .handoff/flaky-specs.md; the counts of the five builder subagents are not in this line.
