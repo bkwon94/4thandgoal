@@ -1,18 +1,28 @@
 /**
- * The Playoffs page of the sim page before the playoffs start: the odds of Your team to make the playoffs, to get a bye,
- * and to win the title, then each week left with its opponent, which opens that week.
+ * The Playoffs page of the sim page before the playoffs start: the odds of Your team to make the playoffs, to get a bye, and to win
+ * the title, from the What-if answer when one is set and from the file otherwise, then each week left, which opens that week.
  */
 "use client";
 
 import { ChevronRight } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@cpc/design/lib/utils";
-import type { WeekSim } from "../schema/sim-types";
+import type { SimPage, TeamSim, WeekSim } from "../schema/sim-types";
 import { CARD, PRESS, nameOf, oddsText } from "./format";
+import { SoftText } from "./parts";
 
-export function PlayoffsPage({ sim, you, onOpen }: { sim: WeekSim; you: number; onOpen: (week: number) => void }) {
-  const page = sim.pages[you];
-  const team = sim.teams[you];
+/* `page` and `team` are the page block and the team odds that the page shows: those of the What-if answer, or the file. */
+export function PlayoffsPage({
+  sim,
+  page,
+  team,
+  onOpen,
+}: {
+  sim: WeekSim;
+  page: SimPage;
+  team: TeamSim;
+  onOpen: (week: number) => void;
+}) {
   const odds = useId();
   const weeks = useId();
   // The title odds have one decimal in the file. The page shows whole percent, as the other odds.
@@ -29,7 +39,9 @@ export function PlayoffsPage({ sim, you, onOpen }: { sim: WeekSim; you: number; 
           {stats.map((stat) => (
             <div key={stat.label} className="flex min-w-0 flex-col-reverse justify-end gap-sp-1 rounded-report bg-page p-sp-3">
               <dt className="text-meta leading-tight text-pretty text-mute">{stat.label}</dt>
-              <dd className="m-0 font-mono text-stat leading-none font-bold tabular-nums">{oddsText(stat.value)}</dd>
+              <dd className="m-0 font-mono text-stat leading-none font-bold tabular-nums">
+                <SoftText text={oddsText(stat.value)} />
+              </dd>
             </div>
           ))}
         </dl>

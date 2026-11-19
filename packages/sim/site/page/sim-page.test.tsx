@@ -1,7 +1,6 @@
 /**
- * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team.
- * They check the header, the ladder, the week switch, the week card, the root-for card, the "about" numbers, and the
- * What-if, over two answers of the local API and a real call to an API that is down.
+ * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team: the header, the ladder, the week
+ * switch, the week card, the root-for card, the "about" numbers, and the What-if, over two local API answers and an API that is down.
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
@@ -220,6 +219,29 @@ describe("the What-if", () => {
     fireEvent.click(weekItem("Wk 11"));
     expect(tile("Win, beat median").getAttribute("aria-pressed")).toBe("true");
     expect(tile("Lose, miss median").getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("shows the odds of the answer on the Playoffs page after a set result, and the file after a Reset", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    const stats = () => screen.getByRole("article", { name: "Your playoff odds" });
+    const stat = (label: string) => within(stats()).getByText(label).parentElement!.textContent;
+    fireEvent.click(weekItem("Playoffs"));
+    // The file: 58% to make the playoffs, 10% to get a bye, and 9.7% to win the title, which shows as 10%.
+    expect(stat("Make the playoffs")).toContain("58%");
+    expect(stat("Get a bye")).toContain("10%");
+    expect(stat("Win the title")).toContain("10%");
+    fireEvent.click(weekItem("Wk 11"));
+    fireEvent.click(tile("Win, beat median"));
+    await waitFor(() => expect(yourTeam().textContent).toContain("86%"));
+    fireEvent.click(weekItem("Playoffs"));
+    // The answer: 86%, 27%, and 17.0%, so the page agrees with the header.
+    expect(stat("Make the playoffs")).toContain("86%");
+    expect(stat("Get a bye")).toContain("27%");
+    expect(stat("Win the title")).toContain("17%");
+    fireEvent.click(within(setLine()!).getByRole("button", { name: "Reset" }));
+    await waitFor(() => expect(stat("Make the playoffs")).toContain("58%"));
+    expect(stat("Get a bye")).toContain("10%");
   });
 
   it("clears the set line on Reset and shows the numbers of the file again, with no call", async () => {

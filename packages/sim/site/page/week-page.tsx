@@ -1,7 +1,6 @@
 /**
- * One week page of the sim page: the week card with a tile for each result of Your team, and the root-for card.
- * A tap on a tile sets that result as a What-if, and a tap on the set tile clears it.
- * On a phone the root-for card opens from one row. From the tablet tier it always shows, and on desktop it sits beside the week card.
+ * One week page of the sim page: the week card with a tile for each result of Your team, which a tap sets or clears as a What-if, and
+ * the root-for card, which opens from one row on a phone, always shows from the tablet tier, and sits beside the week card on desktop.
  */
 "use client";
 
@@ -17,6 +16,15 @@ import type { Choice } from "./use-what-if";
 type PageWeek = WeekSim["pages"][number]["weeks"][number];
 type WeekResult = PageWeek["results"][number];
 type RootFor = PageWeek["root_for"][number];
+
+/* The look of a result tile, which the tiles of a bracket game share. The press of PRESS scales the tile. The fill of
+   the set result fades with it, in the same 140 ms, so the tap shows before the answer comes. */
+export const TILE = cn(
+  PRESS,
+  "group flex min-h-touch flex-col gap-sp-1 rounded-report border px-sp-3 py-sp-3 text-left",
+  "[transition:var(--press),background-color_140ms_ease-out,border-color_140ms_ease-out,color_140ms_ease-out]",
+  "border-rule bg-page text-ink hover-fine:border-ink-2 data-pressed:border-accent data-pressed:bg-accent data-pressed:text-on-dark hover-fine:data-pressed:border-accent",
+);
 
 /* The value of a result in the toggle group, such as "win-above", or "win" with no median game. */
 const keyOf = ({ game, median }: Pick<WeekResult, "game" | "median">) => (median === null ? game : `${game}-${median}`);
@@ -65,16 +73,7 @@ export function WeekPage({
    of the week. It fills with the accent at the press, so the tap shows before the answer comes. */
 function ResultTile({ result, value }: { result: WeekResult; value: string }) {
   return (
-    <Toggle
-      value={value}
-      className={cn(
-        PRESS,
-        "group flex min-h-touch flex-col gap-sp-1 rounded-report border px-sp-3 py-sp-3 text-left",
-        // The press of PRESS scales the tile. The fill of the set result fades with it, in the same 140 ms.
-        "[transition:var(--press),background-color_140ms_ease-out,border-color_140ms_ease-out,color_140ms_ease-out]",
-        "border-rule bg-page text-ink hover-fine:border-ink-2 data-pressed:border-accent data-pressed:bg-accent data-pressed:text-on-dark hover-fine:data-pressed:border-accent",
-      )}
-    >
+    <Toggle value={value} className={TILE}>
       <span data-result-name className="text-row leading-tight font-bold">
         {resultName(result)}
       </span>

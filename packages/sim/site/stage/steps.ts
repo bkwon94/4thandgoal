@@ -26,10 +26,17 @@ export function stepsOf(season: ReplaySeason, mode: "season" | "week"): Step[] {
       { screen: "week", kind: "after", ms: 0 },
     ];
   }
+  // With no regular week left, the playoff field is already set, so the replay starts on the bracket.
+  const regular: Step[] =
+    season.weeks.length === 0
+      ? []
+      : [
+          { screen: "season", kind: "start", index: -1, ms: HOLD.start },
+          ...season.weeks.map((_, index) => ({ screen: "season" as const, kind: "week" as const, index, ms: HOLD.week })),
+          { screen: "season", kind: "cut", index: season.weeks.length - 1, ms: HOLD.cut },
+        ];
   return [
-    { screen: "season", kind: "start", index: -1, ms: HOLD.start },
-    ...season.weeks.map((_, index) => ({ screen: "season" as const, kind: "week" as const, index, ms: HOLD.week })),
-    { screen: "season", kind: "cut", index: season.weeks.length - 1, ms: HOLD.cut },
+    ...regular,
     ...season.rounds.flatMap((_, round) => [
       { screen: "bracket" as const, round, decided: false, ms: round === 0 ? HOLD.firstDraw : HOLD.draw },
       { screen: "bracket" as const, round, decided: true, ms: HOLD.result },

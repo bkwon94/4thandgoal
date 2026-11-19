@@ -1,7 +1,6 @@
 /**
- * The sim page of Your team, layout D "Cards" (decision 04): the header with the odds, the sentence that opens the ladder,
- * the set line of the What-if, the week switch, one page per week with the week card and the root-for card, and the
- * two buttons that open the replay.
+ * The sim page of Your team, layout D "Cards" (decision 04): the header with the odds, the sentence that opens the ladder, the set
+ * line of the What-if, the week switch, one page per week with the week card and the root-for card, and the two replay buttons.
  */
 "use client";
 
@@ -49,33 +48,84 @@ export function SimPage({
   whatIf?: WhatIfApi;
   random?: () => number;
 }) {
-  if (sim.pages[you].playoffs) return <PlayoffSimPage sim={sim} you={you} avatars={avatars} />;
+  if (sim.pages[you].playoffs) return <PlayoffSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
   return <RegularSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
 }
 
 /* The sim page with no regular week left: Your team with its title odds, then the playoff cards. No week switch and no
-   ladder, because no regular week is left to win. */
-function PlayoffSimPage({ sim, you, avatars }: { sim: WeekSim; you: number; avatars: Avatars }) {
-  const page = sim.pages[you];
-  const playoffs = page.playoffs!;
+   ladder, because no regular week is left to win. A tap on a tile of the bracket game of Your team sets a What-if, with
+   the set line and the line of a failed call of the regular weeks. Before the final, "Sim the season" replays the
+   playoffs. After the final, no replay is left to play. */
+function PlayoffSimPage({
+  sim,
+  you,
+  avatars,
+  whatIf,
+  random,
+}: {
+  sim: WeekSim;
+  you: number;
+  avatars: Avatars;
+  whatIf?: WhatIfApi;
+  random: () => number;
+}) {
+  const file = sim.pages[you];
+  const playoffs = file.playoffs!;
+  const what = useWhatIf(file, whatIf);
+  const shown = what.page.playoffs ?? playoffs;
   const name = nameOf(sim, you);
   const live = playoffs.alive && playoffs.champion === null;
+  const game = playoffs.game;
+  const chosen = game === null ? null : (what.set.find((result) => result.week === game.week) ?? null);
+  const [replay, setReplay] = useState<StageAsk | null>(null);
   return (
     <div className="flex flex-col gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
-      <section aria-label="Your team" className="flex w-full items-center gap-sp-3">
-        <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
-        <div className="min-w-0 flex-1">
-          <h1 className="m-0 text-stat leading-tight font-bold text-balance">{name}</h1>
-          <p className="m-0 text-meta text-pretty text-mute tabular-nums">{`${recordText(page.record)} · ${seasonLine(playoffs, you)}`}</p>
-        </div>
-        {live && (
-          <div className="flex flex-none flex-col items-end">
-            <span className="font-mono text-score leading-none font-bold tabular-nums">{oddsText(playoffs.title)}</span>
-            <span className={cn(LABEL, "pt-sp-1 text-mute")}>Title odds</span>
+      <section aria-label="Your team" aria-busy={what.pending} className="flex w-full flex-col gap-sp-3">
+        <div className="flex items-center gap-sp-3">
+          <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
+          <div className="min-w-0 flex-1">
+            <h1 className="m-0 text-stat leading-tight font-bold text-balance">{name}</h1>
+            <p className="m-0 text-meta text-pretty text-mute tabular-nums">{`${recordText(file.record)} · ${seasonLine(playoffs, you)}`}</p>
           </div>
+          {live && (
+            <div className="flex flex-none flex-col items-end">
+              <SoftText
+                text={oddsText(shown.title)}
+                className={cn(
+                  "justify-items-end font-mono text-score leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
+                  what.pending && "opacity-50",
+                )}
+              />
+              <span className={cn(LABEL, "pt-sp-1 text-mute")}>Title odds</span>
+            </div>
+          )}
+        </div>
+        <SetLine set={what.set} onReset={what.reset} />
+        {what.down && (
+          <p role="status" className="m-0 text-meta text-pretty text-mute">
+            The What-if is not available now.
+          </p>
         )}
       </section>
-      <InPlayoffs sim={sim} you={you} avatars={avatars} />
+      <InPlayoffs
+        sim={sim}
+        you={you}
+        avatars={avatars}
+        shown={shown}
+        whatIf={{ chosen, title: what.runs === null ? null : shown.title, onChoose: (choice) => game !== null && what.choose(game.week, choice) }}
+      />
+      {playoffs.champion === null && <SimButtons week={null} waiting={what.pending} onAsk={setReplay} />}
+      {replay !== null && (
+        <SimStage
+          sim={sim}
+          runs={what.runs ?? sim}
+          avatars={avatars}
+          yourTeam={you}
+          ask={replay}
+          random={random}
+          onDone={() => setReplay(null)}
+        />
+      )}
     </div>
   );
 }
@@ -169,7 +219,7 @@ function RegularSimPage({
         {week !== undefined ? (
           <WeekPage sim={sim} week={week} chosen={chosen ?? null} onChoose={(choice) => choose(week.week, choice)} />
         ) : (
-          <PlayoffsPage sim={sim} you={you} onOpen={openItem} />
+          <PlayoffsPage sim={sim} page={page} team={(what.runs?.teams ?? sim.teams)[you]} onOpen={openItem} />
         )}
       </motion.div>
 
@@ -189,8 +239,8 @@ function RegularSimPage({
   );
 }
 
-/* The two buttons of the replay, in the flow under the week page and never fixed over content. The Playoffs page has
-   only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
+/* The two buttons of the replay, in the flow under the week page and never fixed over content. The Playoffs page and
+   the playoff weeks have only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
 function SimButtons({ week, waiting, onAsk }: { week: number | null; waiting: boolean; onAsk: (ask: StageAsk) => void }) {
   const base = cn(
     PRESS,

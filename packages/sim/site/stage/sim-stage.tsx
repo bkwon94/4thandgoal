@@ -170,8 +170,9 @@ function Player({
   };
 
   // The tabs of the header, each with the range of steps it covers: the three screens of a season, or the two parts of a week.
-  const tabs = mode === "season" ? SCREENS : PARTS;
+  // A screen with no step, such as Season with no regular week left, has no tab.
   const firstOf = (id: string) => steps.findIndex((s) => partOf(s) === id);
+  const tabs = (mode === "season" ? SCREENS : PARTS).filter((t) => firstOf(t.id) >= 0);
   const lastOf = (id: string) => steps.findLastIndex((s) => partOf(s) === id);
   const tabAt = tabs.findIndex((t) => t.id === part);
   const tabOpen = tabs.map((t) => firstOf(t.id) >= 0 && firstOf(t.id) <= reached);
