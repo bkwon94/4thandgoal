@@ -196,7 +196,10 @@ const findPartSchema = z.discriminatedUnion("type", [
 /* The find press as a stream: each step and each team read go to `events` as they come, and the document ends it.
    The finder grades every small swap of the pair, so a cold call can be slow. The caller owns the AbortSignal, as with postAnalyze.
    The stream reads the body of the find route. An error part throws an ApiError with its status and its line, so the
-   finder shows the same error line as for a failed response. A stream with no document is a 502. */
+   finder shows the same error line as for a failed response. A stream with no document is a 502.
+   The document returns at once, and the rest of the body drains to its end with no part read. The API closes the
+   stream right after the document, so the drain ends at once, and a later abort of the page cuts no open stream that
+   the API logs as a failure. */
 export async function streamFind(target: ApiTarget, passphrase: string, body: FindRequest, events: FindEvents, signal: AbortSignal): Promise<FindResponse> {
   const response = await fetch(`${clientBase(target)}/find-stream`, {
     method: "POST",
@@ -223,8 +226,21 @@ export async function streamFind(target: ApiTarget, passphrase: string, body: Fi
       if (type === "data-step") events.onStep(data.line, data.live ?? false);
       if (type === "data-team") events.onTeam(data.roster_id);
       if (type === "data-error") throw new ApiError(data.status, data.line, undefined, data.line);
-      if (type === "data-answer") return data.document;
+      if (type === "data-answer") {
+        void drain(reader);
+        return data.document;
+      }
     }
     if (done) throw new ApiError(502, "The find stream ended with no document.");
+  }
+}
+
+/* Read the rest of a stream to its end and drop it. An abort or a network error during the drain only ends it,
+   because the caller has its document already. */
+async function drain(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<void> {
+  try {
+    while (!(await reader.read()).done);
+  } catch {
+    // The caller has its document, so a failed drain changes nothing.
   }
 }
