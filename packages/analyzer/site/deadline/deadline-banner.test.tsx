@@ -1,7 +1,6 @@
 /**
  * Tests of the Deadline banner: its text in each phase, its tick, its one button, and the Trade Wire sheet it opens.
- * The clock and the answer of the Trade Wire route are fixed test inputs: the real Lock of CPC, and the real route answer
- * of leg 9 of CPC, which holds trade W. Each expected text comes from the spec.
+ * The clock and the route answer are fixed inputs: the real Lock of CPC and the real answer of leg 9, which holds trade W.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
