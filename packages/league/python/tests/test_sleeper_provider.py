@@ -8,7 +8,7 @@ from pathlib import Path
 import httpx
 
 from league.provider.base import Provider
-from league.provider.sleeper import SleeperProvider
+from league.provider.sleeper import SleeperProvider, fetch_current_transactions
 
 PLAYERS = {"4046": {"position": "QB", "team": "BUF"}}
 
@@ -84,3 +84,17 @@ def test_the_draft_fetch_gives_the_draft_type_and_each_pick_with_its_price_and_s
         (CPC_DRAFT / "picks.json").read_text())
     assert json.loads((tmp_path / "draft" / "draft.json").read_text())["type"] == "auction"
     assert calls == [f"/v1/league/{CPC_LEAGUE_ID}", f"/v1/draft/{CPC_DRAFT_ID}", f"/v1/draft/{CPC_DRAFT_ID}/picks"]
+
+
+def test_the_current_transactions_read_the_leg_of_the_state_with_a_query_string_that_skips_the_cdn_cache():
+    urls: list[httpx.URL] = []
+    trade = json.loads(Path(__file__).parents[4].joinpath(
+        "apps/api/tests/fixtures/trade-wire/cpc-week-9-transactions.json").read_text())
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        urls.append(request.url)
+        return httpx.Response(200, json={"leg": 9} if request.url.path.endswith("/state/nfl") else trade)
+
+    leg, transactions = fetch_current_transactions("123", httpx.MockTransport(handler))
+    assert leg == 9 and len(transactions) == len(trade)
+    assert urls[1].path == "/v1/league/123/transactions/9" and "t" in urls[1].params

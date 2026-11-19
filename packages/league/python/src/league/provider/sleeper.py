@@ -282,6 +282,18 @@ def fetch_live_raw(
     return RawWeek.model_validate(data), fetched
 
 
+def fetch_current_transactions(
+        league_id: str, transport: httpx.BaseTransport | None = None) -> tuple[int, list[RawTransaction]]:
+    """The leg that Sleeper is in, and the transactions of that leg read now.
+
+    The read has a query string, so the Sleeper CDN cache, which keeps a plain read up to 5 minutes, does not serve it.
+    """
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
+        leg = int(_get(client, f"{OFFICIAL_URL}/state/nfl")["leg"])
+        answer = _get(client, f"{OFFICIAL_URL}/league/{league_id}/transactions/{leg}", {"t": time.time_ns()})
+    return leg, [RawTransaction.model_validate(each) for each in answer]
+
+
 def fetch_past_week(
         league_id: str, season: int, week: int, out_dir: Path, transport: httpx.BaseTransport | None = None,
 ) -> RawPastWeek:
