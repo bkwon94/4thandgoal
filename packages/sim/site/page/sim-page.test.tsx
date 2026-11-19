@@ -196,7 +196,7 @@ const setLine = () => screen.queryByRole("region", { name: "What-if" });
 const weekItem = (label: string) => within(weekSwitch()).getByRole("button", { name: new RegExp(`^${label}`) });
 
 describe("the What-if", () => {
-  it("sets a result on a tap, shows the numbers of the API answer, and opens the next week", async () => {
+  it("sets a result on a tap, shows the numbers of the API answer, and stays on its week", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
     expect(yourTeam().textContent).toContain("58%");
@@ -206,7 +206,11 @@ describe("the What-if", () => {
     await waitFor(() => expect(yourTeam().textContent).toContain("86%"));
     expect(yourTeam().textContent).toContain("Win 3 of the 6 left and you're in.");
     expect(within(setLine()!).getByText(/Wk 11/).textContent).toContain("Wk 11 win, beat median");
-    await waitFor(() => expect(weekItem("Wk 12").getAttribute("aria-current")).toBe("page"));
+    // Well past the old beat of 400 ms, the tapped week is still open.
+    await new Promise((done) => setTimeout(done, 700));
+    expect(weekItem("Wk 11").getAttribute("aria-current")).toBe("page");
+    expect(weekItem("Wk 12").getAttribute("aria-current")).toBeNull();
+    fireEvent.click(weekItem("Wk 12"));
     expect(within(weekCard()).getByRole("heading").textContent).toBe(`Week 12 vs ${weekSim.names[5]}`);
     // The root-for card of week 12 takes the numbers of the answer: 71% after a loss, and 75% if roster 10 wins.
     const card = screen.getByRole("article", { name: "If you lose, you drop to 71%" });

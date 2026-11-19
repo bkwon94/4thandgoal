@@ -6,7 +6,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, RotateCcw, Shuffle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { cn } from "@cpc/design/lib/utils";
@@ -18,7 +18,7 @@ import { InPlayoffs, seasonLine } from "./in-playoffs";
 import { LadderSheet } from "./ladder-sheet";
 import { SoftText } from "./parts";
 import { PlayoffsPage } from "./playoffs-page";
-import { useWhatIf, type Choice } from "./use-what-if";
+import { useWhatIf } from "./use-what-if";
 import { PLAYOFFS, WeekSwitch, type WeekItem } from "./week-switch";
 import { WeekPage } from "./week-page";
 
@@ -27,9 +27,6 @@ export type Avatars = Record<string, string>;
 
 /* The entry of a week page: the page slide of transitions-dev, a short move from the side of the item with a soft blur. */
 const ENTER = { duration: 0.25, ease: [0.22, 1, 0.36, 1] } as const;
-
-/* The beat between a tap on a tile and the open of the next week, so the press of the tile shows first. */
-const ADVANCE_MS = 400;
 
 /* The line of the set results, such as "Wk 11 win, beat median · Wk 12 lose". */
 const setText = (set: SetResult[]) => set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
@@ -153,24 +150,11 @@ function RegularSimPage({
   const [{ open, side }, setView] = useState<{ open: WeekItem; side: number }>({ open: items[0], side: 0 });
   const off = useMotionOff();
   const [replay, setReplay] = useState<StageAsk | null>(null);
-  const advance = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(advance.current), []);
-  // A failed What-if keeps the reader on the week of the tap, beside the line that says so.
-  useEffect(() => {
-    if (what.down) window.clearTimeout(advance.current);
-  }, [what.down]);
 
   const openItem = (item: WeekItem) => {
-    window.clearTimeout(advance.current);
     setView((was) =>
       item === was.open ? was : { open: item, side: items.indexOf(item) > items.indexOf(was.open) ? 1 : -1 },
     );
-  };
-  const choose = (week: number, choice: Choice) => {
-    what.choose(week, choice);
-    window.clearTimeout(advance.current);
-    const next = items[items.indexOf(week) + 1];
-    if (choice !== null && next !== undefined) advance.current = window.setTimeout(() => openItem(next), ADVANCE_MS);
   };
   const week = typeof open === "number" ? what.weekOf(open) : undefined;
   const chosen = typeof open === "number" ? what.set.find((result) => result.week === open) : undefined;
@@ -217,7 +201,7 @@ function RegularSimPage({
         transition={off ? { duration: 0.15 } : ENTER}
       >
         {week !== undefined ? (
-          <WeekPage sim={sim} week={week} chosen={chosen ?? null} onChoose={(choice) => choose(week.week, choice)} />
+          <WeekPage sim={sim} week={week} chosen={chosen ?? null} onChoose={(choice) => what.choose(week.week, choice)} />
         ) : (
           <PlayoffsPage sim={sim} page={page} team={(what.runs?.teams ?? sim.teams)[you]} onOpen={openItem} />
         )}
