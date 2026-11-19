@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, A
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The hole pad is even on all four sides to 1 px, with a circle on the menu button and a pill on each other control (AT-14).
 - [x] The card does not overlap its control on the four viewports of the iPhone rule (AT-16).
