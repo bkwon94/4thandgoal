@@ -17,7 +17,7 @@ router = APIRouter()
 TRADE_WIRE_CACHE_SECONDS = 5
 
 
-def new_cache() -> TeamsCache:
+def trade_wire_cache() -> TeamsCache:
     """The cache of one client. It keeps its answer by season, and the build of a stale entry reads Sleeper again."""
     return TeamsCache(TRADE_WIRE_CACHE_SECONDS)
 

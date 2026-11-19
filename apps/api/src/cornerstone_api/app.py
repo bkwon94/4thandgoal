@@ -281,7 +281,7 @@ def create_app(
     # The live league of each client, so the tap on a Suggestion reads the league of the open and no Sleeper data.
     app.state.live = {client.slug: LiveCache(LIVE_CACHE_SECONDS) for client in clients}
     # The accepted trades of the current leg of each client, kept for a few seconds so all phones share one Sleeper read.
-    app.state.trade_wires = {client.slug: trade_wire.new_cache() for client in clients}
+    app.state.trade_wires = {client.slug: trade_wire.trade_wire_cache() for client in clients}
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
