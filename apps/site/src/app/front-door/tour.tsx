@@ -40,12 +40,18 @@ export const STOPS = [
 
 type Stop = (typeof STOPS)[number];
 type Target = Stop & { el: HTMLElement };
-type Hole = { x: number; y: number; width: number; height: number };
+type Box = { x: number; y: number; width: number; height: number };
+type Hole = Box & { radius: number };
 
 /* The Tour waits for the entrance of the dock to settle, so Stop 1 measures its control at rest. */
 const START_DELAY_MS = 600;
-/* The room between the control and the edge of the hole. */
+/* The room between the visual box of the control and the edge of the hole, on each side. A small box, such as the
+   menu icon, gets more room, so its hole reads as a shape and not as a ring. */
 const HOLE_PAD = 6;
+const SMALL_PAD = 10;
+const SMALL_BOX = 28;
+/* The Suggestions row bleeds to both edges and scrolls, so its visual box stops this far inside the screen. */
+const SCREEN_INSET = 8;
 /* The gap between the hole and the card, and the least room between the card and the edge of the screen. */
 const CARD_GAP = 12;
 const CARD_EDGE = 16;
@@ -73,9 +79,90 @@ function findTargets(): Target[] {
   });
 }
 
+/* Whether a part paints its own surface: a fill with some alpha, a border, or a shadow. */
+function painted(el: Element): boolean {
+  const style = getComputedStyle(el);
+  const fill = style.backgroundColor;
+  const clear = fill === "transparent" || /rgba\(.*,\s*0\)$/.test(fill);
+  return !clear || parseFloat(style.borderTopWidth) > 0 || style.boxShadow !== "none";
+}
+
+/* The rects that the eye sees in a control. A control that paints its own surface counts whole, as the ask box does.
+   A plain control counts only the parts inside it that show: the icon of the menu button, and the avatar, the name, and
+   the mark of the team switch. Inside a row, each link and each button counts whole, as a chip does. */
+function visualRects(el: Element, depth = 0): DOMRect[] {
+  if (painted(el) || (depth > 0 && el.matches("a, button, svg, img"))) return [el.getBoundingClientRect()];
+  const rects: DOMRect[] = [];
+  for (const node of el.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      // jsdom gives a range no rect, so a test there falls back to the box of the control.
+      if (typeof range.getBoundingClientRect === "function") rects.push(range.getBoundingClientRect());
+    } else if (node instanceof HTMLElement || node instanceof SVGElement) {
+      if (getComputedStyle(node).display !== "none" && getComputedStyle(node).opacity !== "0") rects.push(...visualRects(node, depth + 1));
+    }
+  }
+  return rects.filter((rect) => rect.width > 0 && rect.height > 0);
+}
+
+/* The visual box of a control, not its hit box, kept inside the screen. */
+function visualBox(el: HTMLElement): Box {
+  const own = el.getBoundingClientRect();
+  const rects = visualRects(el);
+  const all = rects.length > 0 ? rects : [own];
+  const left = Math.max(SCREEN_INSET, Math.min(...all.map((r) => r.left)));
+  const right = Math.min(window.innerWidth - SCREEN_INSET, Math.max(...all.map((r) => r.right)));
+  const top = Math.min(...all.map((r) => r.top));
+  const bottom = Math.max(...all.map((r) => r.bottom));
+  return { x: left, y: top, width: right - left, height: bottom - top };
+}
+
+/* The hole: the visual box with the same pad on each side. Each control on the front door is a pill or a circle, so
+   the radius is half the height. A square box, as the menu icon, then gets a circle. */
 function measure(el: HTMLElement): Hole {
-  const rect = el.getBoundingClientRect();
-  return { x: rect.left - HOLE_PAD, y: rect.top - HOLE_PAD, width: rect.width + HOLE_PAD * 2, height: rect.height + HOLE_PAD * 2 };
+  const box = visualBox(el);
+  const pad = box.height < SMALL_BOX ? SMALL_PAD : HOLE_PAD;
+  const height = box.height + pad * 2;
+  return { x: box.x - pad, y: box.y - pad, width: box.width + pad * 2, height, radius: height / 2 };
+}
+
+const sameHole = (a: Hole | null, b: Hole) =>
+  a !== null && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+
+/* The hole of a control, read again when the control changes size, the window or the visual viewport changes, or any
+   part of the page scrolls. So the hole follows a resize, a turn of the phone, a zoom, and a scroll. One frame per
+   burst of events gives one read. CSS anchor positioning is out, because iOS 18 Safari does not support it. */
+function useHole(el: HTMLElement | null): Hole | null {
+  const [hole, setHole] = useState<Hole | null>(null);
+  useLayoutEffect(() => {
+    if (!el) return;
+    let frame = 0;
+    const read = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const next = measure(el);
+        setHole((old) => (sameHole(old, next) ? old : next));
+      });
+    };
+    setHole(measure(el));
+    const observer = typeof ResizeObserver === "function" ? new ResizeObserver(read) : null;
+    observer?.observe(el);
+    const viewport = window.visualViewport;
+    window.addEventListener("resize", read);
+    document.addEventListener("scroll", read, true);
+    viewport?.addEventListener("resize", read);
+    viewport?.addEventListener("scroll", read);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("resize", read);
+      document.removeEventListener("scroll", read, true);
+      viewport?.removeEventListener("resize", read);
+      viewport?.removeEventListener("scroll", read);
+    };
+  }, [el]);
+  return hole;
 }
 
 /* `ready` is true while Your team is set and no team sheet and no passphrase modal shows. The Tour decides once, on the
@@ -98,9 +185,10 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   const [targets] = useState(findTargets);
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(true);
-  const [hole, setHole] = useState<Hole | null>(null);
   const target = targets[index];
   const last = index === targets.length - 1;
+  // The target scrolls into view in the layout effect below, before the first frame reads the hole.
+  const hole = useHole(target?.el ?? null);
 
   // Stop 1 writes the seen key, so Done, Skip, and a reload during the Tour each count as seen.
   useEffect(() => {
@@ -109,12 +197,11 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   useEffect(() => {
     if (targets.length === 0) onEnd();
   }, [targets, onEnd]);
-  // Each Stop moves its control into view, then measures it. The hole jumps to the new control.
+  // Each Stop moves its control into view, so each Stop is on the screen. The hole then reads the control in place.
   useLayoutEffect(() => {
     if (!target) return;
     target.el.scrollIntoView?.({ block: "nearest", inline: "nearest" });
     target.el.setAttribute("data-tour-target", "");
-    setHole(measure(target.el));
     return () => target.el.removeAttribute("data-tour-target");
   }, [target]);
 
@@ -137,8 +224,8 @@ function Stops({ onEnd }: { onEnd: () => void }) {
           <div
             aria-hidden
             data-tour-hole=""
-            className="pointer-events-none fixed z-[60] rounded-pill"
-            style={{ left: hole.x, top: hole.y, width: hole.width, height: hole.height, boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
+            className="pointer-events-none fixed z-[60]"
+            style={{ left: hole.x, top: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius, boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
           />,
           document.body,
         )}
@@ -161,7 +248,15 @@ function Stops({ onEnd }: { onEnd: () => void }) {
                 {`${index + 1} of ${targets.length}`}
               </span>
             </div>
-            <StopCardLine className="m-0 text-lead leading-snug text-pretty text-ink-2">{target.line}</StopCardLine>
+            {/* Each line sits hidden in the same cell, so the card always takes the height of the longest line, and a
+                short line never moves Next under the thumb. The hidden lines draw from an attribute, so a search of the text finds
+                each line once. */}
+            <div className="grid text-lead leading-snug text-pretty">
+              {targets.map((stop) => (
+                <span key={stop.key} aria-hidden data-line={stop.line} className="invisible [grid-area:1/1] after:content-[attr(data-line)]" />
+              ))}
+              <StopCardLine className="m-0 text-ink-2 [grid-area:1/1]">{target.line}</StopCardLine>
+            </div>
             <div className="mt-sp-1 flex items-center justify-between gap-sp-2">
               <span aria-hidden className="flex items-center gap-sp-1">
                 {targets.map((stop, at) => (
