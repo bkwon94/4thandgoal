@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-13, AT-14, AT-15, AT-
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A route test with a recorded Sleeper answer shows trade W of week 9 with both teams, the players, the positions, and $5 of FAAB to roster 8.
 - [x] A route test shows only `complete` trades of the leg, newest first.
