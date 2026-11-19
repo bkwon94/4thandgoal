@@ -4,7 +4,7 @@ and the ranks of the rosters and of the positions. Hypothesis draws the inputs, 
 """
 import random
 
-from hypothesis import given, settings
+from hypothesis import example, given, settings
 from hypothesis import strategies as st
 
 from managers.grade import (
@@ -17,7 +17,7 @@ from managers.grade import (
     grade_score,
     position_ranks,
 )
-from managers.tunables import GRADE_WEIGHTS
+from managers.tunables import GRADE_BANDS, GRADE_WEIGHTS
 
 unit = st.floats(min_value=0.0, max_value=1.0)
 # A whole score is a likely edge of a band, so the draw mixes whole scores with any float.
@@ -36,8 +36,21 @@ def test_the_score_stays_in_0_to_100_when_each_part_is_in_0_to_1(projection, pro
     assert 0 <= score <= 100
 
 
-# A band edge sits on a whole score, so one step of 1 from a whole score reaches each edge from below. There are only
-# 100 whole scores, so 500 examples cover each of them.
+# A band edge sits on a whole score, so one step of 1 from a whole score reaches each edge from below. The examples
+# hit each cut, the score just below it, and the two ends in every run, so a bug at a cut never hides behind a draw.
+# Each whole score from 0 to 99 is an example too, because a bug may sit on a score that is not a cut.
+def _each_cut_and_end():
+    cuts = [float(lowest) for _, lowest in GRADE_BANDS]
+    return [*cuts, *(cut - 1.0 for cut in cuts), 0.0, 100.0, *(float(whole) for whole in range(100))]
+
+
+def _hit_each_cut(test):
+    for low in _each_cut_and_end():
+        test = example(low=low, step=1.0)(test)
+    return test
+
+
+@_hit_each_cut
 @settings(max_examples=500)
 @given(scores, st.one_of(st.just(1.0), st.floats(min_value=0.0, max_value=100.0)))
 def test_the_letter_never_gets_worse_as_the_score_goes_up(low, step):
