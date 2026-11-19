@@ -4,6 +4,7 @@ It also holds the attribution guard: a Bullet that cites a NEWS fact must name t
 """
 import logging
 import re
+import threading
 import time
 from collections.abc import Callable, Iterable
 from datetime import UTC, datetime, timedelta
@@ -43,8 +44,18 @@ class NewsFeed:
         self.clock = clock
         self.now = now
         self._kept: dict[str, tuple[float, list[dict]]] = {}
+        # One lock per player. The sheets of a press build at the same time, and one player sits on many offers, so
+        # the lock makes the second sheet wait for the first fetch and read it from the cache.
+        self._locks: dict[str, threading.Lock] = {}
+        self._locks_lock = threading.Lock()
 
     def items(self, player_id: str) -> list[dict]:
+        with self._locks_lock:
+            lock = self._locks.setdefault(player_id, threading.Lock())
+        with lock:
+            return self._items(player_id)
+
+    def _items(self, player_id: str) -> list[dict]:
         kept = self._kept.get(player_id)
         if kept is not None and self.clock() - kept[0] < CACHE_SECONDS:
             log.info("News of player %s from the cache", player_id)
