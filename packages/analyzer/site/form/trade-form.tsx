@@ -29,7 +29,8 @@ import { Button } from "@cpc/design/ui/button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
 import { stageLines, type StageTrade } from "../lib/stage-lines";
-import type { AnalyzeResponse, FinderTrade } from "../lib/analyze-types";
+import type { AnalyzeResponse, FindResponse, FinderTrade } from "../lib/analyze-types";
+import { finderRead } from "../lib/finder-read";
 import type { AnalyzerMode } from "../lib/mode";
 import { ApiError, type ApiTarget, postAnalyze, toErrorLine, type Team } from "../lib/api";
 import {
@@ -99,14 +100,15 @@ type TradeToGrade = { sides: Sides; season: number };
 /* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
 type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
-/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the wait as the feature.
+/* The hero while the grade runs, in the hero slots: the eyebrow and the locked switch of the page, the title, the line,
+   and the wait as the feature. The Find wait shows the same eyebrow and switch, so the two waits read as one.
    The read that replaces it opens with a level-two heading, so this title is level two too. The stage lines run under
    the title, in a part of their own. A screen reader skips them. The page holds one status, the pending announcement
    "Grading the trade" of the grade button, so the hero holds none, and a screen reader hears one message. The trade stays
    on the stage, and the mesh weighs each side in turn under it, so the wait shows what the grade does. The drive starts
    with the hero, so the mesh moves on the first frame after the tap. The trade is read once, because the grade locks
    the form. With motion off, the mesh stays still and flat. */
-function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }) {
+function GradingHero({ trade, stage, eyebrow, toggle }: { trade: StageTrade; stage: StageSide[]; eyebrow: ReactNode; toggle?: ReactNode }) {
   const [lines] = useState(() => stageLines(trade));
   const [drive] = useState(() => waitDrive(performance.now()));
   return (
@@ -114,7 +116,8 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
       label="Grading the Trade"
       art={<HeroMesh drive={drive} />}
       level={2}
-      eyebrow="Live"
+      eyebrow={eyebrow}
+      toggle={toggle}
       title="Grading the Trade"
       meta="This can take up to a minute."
       feature={
@@ -306,8 +309,9 @@ export function TradeForm({
   }
 
   /* A finder card opens its full result here, so the form shows the picks of the trade and the result matches them.
-     The form already owns the grade, so the card reuses this submit and needs no query or route of its own. */
-  function openTrade(trade: FinderTrade, tradeSeason: number) {
+     The find sent the read of each pick, so the card shows that read with no second grade. A trade of a fallback has
+     no read, so it reuses this submit and needs no query or route of its own. */
+  function openTrade(trade: FinderTrade, find: FindResponse) {
     const partner = trade.sides.find((side) => side.roster_id !== asker);
     const own = trade.sides.find((side) => side.roster_id === asker);
     if (asker === null || !own || !partner) return;
@@ -322,9 +326,19 @@ export function TradeForm({
     setSides(next);
     // The grade of a card shows in Grade mode, so the address and the switch name the mode of the result.
     onModeChange?.("grade");
+    const read = finderRead(trade, find);
+    if (read !== null) {
+      // A late answer of an earlier grade must not replace the read of the card.
+      request.drop();
+      setEditing(false);
+      setSheet(null);
+      scrollToResult.current = true;
+      setGrade({ status: "done", doc: read });
+      return;
+    }
     // The new picks are not in state until the next render, so the submit gets them as an argument.
     // The season is the one of the finder document, so the grade matches the trade the card shows.
-    submit({ sides: next, season: tradeSeason });
+    submit({ sides: next, season: find.season });
   }
 
   // The trade comes from the state by default. A finder card passes its own, because its picks land in state one render later.
@@ -531,6 +545,8 @@ export function TradeForm({
         gets: rows.map((row) => ({ name: row.player.name, position: row.player.position })),
       }))}
       stage={stage}
+      eyebrow={eyebrow}
+      toggle={toggle}
     />
   ) : findMode ? (
     // The key resets the partner, the chip, and the cards when the asker changes.

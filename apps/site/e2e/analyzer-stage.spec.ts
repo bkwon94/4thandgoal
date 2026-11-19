@@ -62,7 +62,7 @@ async function openAnalyzer(page: Page, query = "", theme: Theme = "dark", onAna
     const path = new URL(request.url()).pathname;
     // The grade and the search are held: the route answers the preflight and never answers the POST, so the wait
     // runs for as long as the test samples it. The page closes with the request still open.
-    const held = path.endsWith("/analyze") || path.endsWith("/find");
+    const held = path.endsWith("/analyze") || path.endsWith("/find-stream");
     if (held && request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
     if (held && path.endsWith("/analyze")) return onAnalyze?.(route);
     if (held) return;

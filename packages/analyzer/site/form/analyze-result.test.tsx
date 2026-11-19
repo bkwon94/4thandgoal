@@ -208,6 +208,17 @@ describe("AnalyzeResult", () => {
     expect(within(openPanel()).queryByText(fixture.sides[1].bullets[1].text)).toBeNull();
   });
 
+  it("gives no tab to a side with no read, and no box of Week lines to a side with none, as on the read of a finder card", () => {
+    const [mine, other] = fixture.sides;
+    const doc: AnalyzeResponse = { ...fixture, sides: [{ ...mine, week_lines: [] }, { ...other, bullets: [], week_lines: [] }] };
+    render(<AnalyzeResult doc={doc} />);
+    expect(tabNames()).toEqual(["Pukancun on 3"]);
+    expect(within(openPanel()).getByText(ANALYSIS)).toBeTruthy();
+    expect(screen.queryByRole("region", { name: "This week and next" })).toBeNull();
+    // The trade on the stage still shows both teams.
+    expect(screen.getByRole("region", { name: "The Read" }).textContent).toContain("Amon-Ra Dawg");
+  });
+
   it("shows the Bullets of the other team after a tap on its tab", () => {
     render(<AnalyzeResult doc={fixture} />);
     const panel = openTab("Amon-Ra Dawg Your Team");

@@ -8,7 +8,7 @@ import logging
 import math
 import time
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from league.jev_port import Jev, JevError, JevResponse, NoulQuestion
@@ -82,9 +82,13 @@ class JevWaves:
             # The oldest wave leaves the second first, so its end is the soonest time that can make room.
             self.sleep(self._sent[0][0] + WAVE_SECONDS - now)
 
-    def ask(self, requests: dict[str, WaveRequest], label: str) -> dict[str, JevResponse | None]:
+    def ask(self, requests: dict[str, WaveRequest], label: str,
+            answered: Callable[[str], None] | None = None) -> dict[str, JevResponse | None]:
         """The answer of each request by key. A failed request gives None, and it logs, so one failure never stops
         the press. A caller never reads None as a no.
+
+        With `answered`, each key goes to it as its request ends, in the order the answers come, so a stream can
+        report each read as it happens. A failed request is read too, because the press is done with it.
         """
         answers: dict[str, JevResponse | None] = {}
         for keys in plan_waves(requests):
@@ -95,6 +99,10 @@ class JevWaves:
             log.info("Jev wave %d (%s): %d requests, about %d tokens", self.waves_sent, label, len(keys), tokens)
             with ThreadPoolExecutor(max_workers=len(keys)) as pool:
                 futures = {key: pool.submit(self._one, requests[key]) for key in keys}
+                if answered is not None:
+                    keys_of = {future: key for key, future in futures.items()}
+                    for future in as_completed(keys_of):
+                        answered(keys_of[future])
             for key, future in futures.items():
                 result = future.result()
                 if isinstance(result, JevError):

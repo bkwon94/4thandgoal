@@ -2125,7 +2125,7 @@ def _assert_the_shortlist_fallback(doc, user):
     assert labels == list(LABELS[:len(labels)])
     assert len(doc["trades"]) == len(labels)
     for item in doc["trades"]:
-        assert item["lean"] is None and item["case"] is None and item["headline"] is None
+        assert item["lean"] is None and item["case"] is None and "headline" not in item
         assert item["bullets"] == []
         players = [player["name"] for side in item["sides"] for player in side["gives"]]
         # One plain line per traded player, from his fact on the sheet, in the order of the sides.

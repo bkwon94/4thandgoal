@@ -132,13 +132,16 @@ export const analyzeResponseSchema = z.object({
 });
 
 /* One trade of the finder. The sides share the analyze document's side shape, and the Bullets share its Bullet shape,
-   so the site renders a side and a row one way. A pick has a headline and 2 to 4 Bullets, and no fact line.
-   After a fallback, the headline is null, no Bullet stands, and fact_lines holds plain facts of the offer. */
+   so the site renders a side and a row one way. A pick has the Lean, the Case, and 2 to 4 Bullets, and no fact line.
+   After a fallback, the Lean and the Case are null, no Bullet stands, and fact_lines holds plain facts of the offer. */
 export const finderTradeSchema = z.object({
   // The id of the offer on the shortlist, such as "2:10213-10:10235". The card keys on it.
   offer_id: z.string(),
   sides: z.array(tradeSideSchema),
-  headline: z.string().nullable(),
+  // The Lean of the pick for the asker: Send it, Lean yes, or Gut call. The read of the analyzer uses the same scale.
+  lean: leanSchema.nullable(),
+  // The Case under the Lean: at most 3 sentences, the condition first.
+  case: z.string().nullable(),
   bullets: z.array(bulletSchema),
   fact_lines: z.array(z.string()),
 });
@@ -167,7 +170,7 @@ export const findResponseSchema = z.object({
   // The plain line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
   empty: z.string().nullable(),
   as_of: asOfSchema,
-  // True when the pick call failed twice, so the trades are the shortlist with fact lines and no headline.
+  // True when the pick call failed twice, so the trades are the shortlist with fact lines and no Lean.
   fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),

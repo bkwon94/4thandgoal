@@ -3,6 +3,7 @@ The Finder search: the partner filter (the Spares tree), the targets, the offers
 Jev judgments narrow each list, in waves under the rate limits. Code builds the offers and keeps only the hard rules.
 """
 import logging
+from collections.abc import Callable
 from itertools import combinations
 from typing import Literal
 
@@ -380,8 +381,13 @@ def _log_target_questions(snapshot: Snapshot, partner: int, keys: list[str], nou
              ", failed request" if nouls is None else "", asked)
 
 
+def _no_read(roster_id: int) -> None:
+    """The default read callback: it drops the roster id, because a search with no stream has no one to tell."""
+
+
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
-           stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None) -> Shortlist:
+           stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None,
+           read: Callable[[int], None] = _no_read) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner filter: the Spares tree of `spares_tree.py` on both sides of each pair. A partner goes on unless a
@@ -400,7 +406,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
        the pick has ideas to weigh. It asks no target question, and it skips a partner whose filter request failed.
     `stage` gets a live line as each of four steps starts and a done line as it ends: the teams read, the players who
     fit, the offers, and the shortlist. The lines name no inner tool, because the site shows them. The default drops
-    them.
+    them. `read` gets the roster id of each partner as the first step reads it, so the site can light each team in
+    turn. The default drops it.
     """
     waves = waves or JevWaves(jev)
     if anchor is not None and anchor.side == "gets":
@@ -416,13 +423,19 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         # stop there left one plain offer (decision 01). So every partner goes on to the targets.
         reads = [PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True, failed=False)
                  for rid in partners]
+        for rid in partners:
+            read(rid)
         log.info("Spares tree of %s: skipped for %s", snapshot.teams[asker].name,
                  "the anchor" if anchor is not None else "one picked partner")
     else:
         spares = {rid: pair_spares(snapshot, asker, rid) for rid in partners}
         requests = {str(rid): pair_request(snapshot, asker, rid, spares[rid]) for rid in partners}
+        # A partner with no request needs no Jev answer, so the stream reports it as read at once.
+        for key, request in requests.items():
+            if request is None:
+                read(int(key))
         filtered = waves.ask({key: request for key, request in requests.items() if request is not None},
-                             "spares tree")
+                             "spares tree", answered=lambda key: read(int(key)))
         for rid in partners:
             response = filtered.get(str(rid))
             if requests[str(rid)] is not None and response is None:

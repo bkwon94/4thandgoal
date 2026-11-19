@@ -1,6 +1,7 @@
 /**
  * Tests for the switch of the analyzer hero, Grade a trade and Find a trade: the mode of the link, the Find hero with its
- * partner choice and position chips, the find body of a chip, and the deadline eyebrow. fetch is a test stub.
+ * partner choice and position chips, the find body of a chip, the lock of the switch in a wait, the open of a card with
+ * its read, and the deadline eyebrow. fetch is a test stub, and a find answers with a real event stream.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -27,6 +28,25 @@ const fetchStub = vi.fn();
 
 function answer(status: number, body: unknown) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status }));
+}
+
+/* One part of the find stream as a `data:` line. */
+const encoded = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`);
+
+/* A find stream that the test feeds part by part. With `doc`, the stream sends the document and ends at once. */
+function findStream(doc?: unknown) {
+  let controller!: ReadableStreamDefaultController<Uint8Array>;
+  const body = new ReadableStream<Uint8Array>({
+    start(c) {
+      controller = c;
+      if (doc === undefined) return;
+      c.enqueue(encoded({ type: "data-step", data: { line: "Reading every team", live: true } }));
+      c.enqueue(encoded({ type: "data-answer", data: { kind: "find", document: doc } }));
+      c.close();
+    },
+  });
+  fetchStub.mockResolvedValueOnce(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+  return { send: (part: unknown) => controller.enqueue(encoded(part)), end: () => controller.close() };
 }
 
 /* The page at the address of a link, with the passphrase stored and the teams answer queued. */
@@ -140,18 +160,18 @@ describe("Find mode", () => {
     const chips = screen.getByRole("radiogroup", { name: "Position" });
     fireEvent.click(within(chips).getByRole("radio", { name: "RB" }));
     await waitFor(() => expect(within(chips).getByRole("radio", { name: "RB" }).getAttribute("aria-checked")).toBe("true"));
-    answer(200, findResponse);
+    findStream(findResponse);
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await waitFor(() => expect(fetchStub).toHaveBeenCalledTimes(2));
     const [url, init] = fetchStub.mock.calls[1];
-    expect(url).toBe("https://api.example.test/clients/cpc/find");
+    expect(url).toBe("https://api.example.test/clients/cpc/find-stream");
     expect(JSON.parse(init.body)).toEqual({ season: 2026, asker: 6, limit: { aim_position: "RB" } });
   });
 
   it("sends no limit for the chip Any", async () => {
     open("?mode=find&team=6");
     await waitFor(() => expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false));
-    answer(200, findResponse);
+    findStream(findResponse);
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await waitFor(() => expect(fetchStub).toHaveBeenCalledTimes(2));
     expect(JSON.parse(fetchStub.mock.calls[1][1].body)).toEqual({ season: 2026, asker: 6 });
@@ -166,6 +186,104 @@ describe("Find mode", () => {
     fireEvent.click(rows.find((row) => row.textContent?.includes("Bo Girds")) as HTMLElement);
     await waitFor(() => expect(screen.getByRole("button", { name: /Your team/ }).textContent).toContain("Bo Girds"));
     expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false);
+  });
+});
+
+describe("The Find wait and the cards", () => {
+  /* Find mode for the asker of the fixture find, ready to find. */
+  async function ready() {
+    open("?mode=find&team=2");
+    await waitFor(() => expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false));
+    await waitFor(() => expect(checked("Find a trade")).toBe(true));
+  }
+
+  it("keeps the switch on Find and locked during the wait, and a tap on Grade a trade does not stop it", async () => {
+    // AT-32.
+    await ready();
+    const stream = findStream();
+    fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
+    await screen.findByRole("heading", { level: 2, name: "Finding Trades" });
+    expect(checked("Find a trade")).toBe(true);
+    expect(modeSwitch().getAttribute("aria-disabled") === "true" || half("Grade a trade").hasAttribute("disabled")).toBe(true);
+    fireEvent.click(half("Grade a trade"));
+    expect(window.location.search).toContain("mode=find");
+    expect(checked("Find a trade")).toBe(true);
+    expect(screen.getByRole("heading", { level: 2, name: "Finding Trades" })).toBeTruthy();
+    await act(async () => {
+      stream.send({ type: "data-answer", data: { kind: "find", document: findResponse } });
+      stream.end();
+    });
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(3));
+  });
+
+  it("opens a card in Grade mode with its read, and sends no analyze request", async () => {
+    // AT-39. jsdom does no layout and has no scrollIntoView, so the test records the scroll to the read.
+    const scrolled = vi.fn();
+    Element.prototype.scrollIntoView = scrolled;
+    await ready();
+    findStream(findResponse);
+    fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(3));
+    fireEvent.click(within(screen.getAllByRole("article")[0]).getByRole("button", { name: "See the Full Result" }));
+    const read = await screen.findByRole("region", { name: "The Read" });
+    const [trade] = findResponse.trades;
+    expect(read.textContent).toContain(trade.case!);
+    expect(within(read).getByRole("listitem", { current: "step" }).textContent).toBe(trade.lean);
+    await waitFor(() => expect(window.location.search).not.toContain("mode=find"));
+    // The teams and the find stream are the only requests. The read comes from the find.
+    expect(fetchStub.mock.calls.map(([url]) => url)).toEqual([
+      "https://api.example.test/clients/cpc/teams?season=2026",
+      "https://api.example.test/clients/cpc/find-stream",
+    ]);
+    expect(scrolled).toHaveBeenCalled();
+    delete (Element.prototype as Partial<Element>).scrollIntoView;
+  });
+});
+
+describe("The plain words of the analyzer (AT-12)", () => {
+  // The words that no text of a page holds in Deadline week. "Lock" stays a word of the code and the config only.
+  const BANNED = /\b(lock|rosters are locked|deadline board|feed|jev|advisor|finder|brian)\b/i;
+
+  /* The visible text and each accessible name on the page. */
+  function pageText(): string {
+    const names = [...document.querySelectorAll("[aria-label]")].map((el) => el.getAttribute("aria-label"));
+    return [document.body.textContent, ...names].join(" ");
+  }
+
+  it.each([
+    ["09:55:00 Eastern on Sat 2026-11-21", "2026-11-21T14:55:00Z"],
+    ["21:18:50 Eastern on Mon 2026-11-23", "2026-11-24T02:18:50Z"],
+    ["00:00:01 Eastern on Tue 2026-11-24", "2026-11-24T05:00:01Z"],
+  ])("holds no banned word in Grade, the Find wait, the cards, the read of a card, or a failed find, at %s", async (_, iso) => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(iso));
+    Element.prototype.scrollIntoView = vi.fn();
+    open("?mode=find&team=2", { lock: LOCK });
+    await waitFor(() => expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false));
+    expect(pageText()).not.toMatch(BANNED);
+
+    answer(500, {});
+    fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
+    await screen.findByRole("button", { name: "Try Again" });
+    expect(pageText()).not.toMatch(BANNED);
+
+    const stream = findStream();
+    fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
+    await screen.findByRole("heading", { level: 2, name: "Finding Trades" });
+    await act(async () => stream.send({ type: "data-step", data: { line: "Making a shortlist", live: true } }));
+    expect(pageText()).not.toMatch(BANNED);
+    await act(async () => {
+      stream.send({ type: "data-answer", data: { kind: "find", document: findResponse } });
+      stream.end();
+    });
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(3));
+    for (const fold of screen.getAllByRole("button", { name: /Why it works/ })) fireEvent.click(fold);
+    expect(pageText()).not.toMatch(BANNED);
+
+    fireEvent.click(within(screen.getAllByRole("article")[0]).getByRole("button", { name: "See the Full Result" }));
+    await screen.findByRole("region", { name: "The Read" });
+    expect(pageText()).not.toMatch(BANNED);
+    delete (Element.prototype as Partial<Element>).scrollIntoView;
   });
 });
 
