@@ -9,7 +9,7 @@ import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "re
 import { createPortal } from "react-dom";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { StopCard, StopCardContent, StopCardLine, StopCardTitle, type StopCardDismissReason } from "@cpc/design/ui/stop-card";
-import { BLUR_SMALL, EASE_IN_OUT, FAST, GLIDE, QUICK, SCALE_MEDIUM, SCALE_TINY, SMOOTH, fadeIn } from "./motion";
+import { BLUR_SMALL, EASE_IN_OUT, FAST, GLIDE, QUICK, SCALE_MEDIUM, SCALE_TINY, SMOOTH, fadeIn, orStill } from "./motion";
 import { markTourSeen, tourSeen } from "./tour-store";
 
 /* The four Stops in order, with the copy of decision 03. Each target has an accessible name already, so the Tour finds it
@@ -399,7 +399,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   const card = away && held.current ? held.current : place;
   held.current = card;
   // The hole and the card ride the same spring, so the two never part. Under reduced motion the hole jumps.
-  const move = off || snap ? { duration: 0 } : GLIDE;
+  const move = orStill(off || snap, GLIDE);
 
   return (
     <>
@@ -413,7 +413,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
           style={{ boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
           initial={{ opacity: 0, x: hole.x, y: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius }}
           animate={{ opacity: open ? 1 : 0, x: hole.x, y: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius }}
-          transition={{ default: off ? { duration: 0 } : GLIDE, opacity: fadeIn(open ? FAST : QUICK) }}
+          transition={{ default: orStill(off, GLIDE), opacity: fadeIn(open ? FAST : QUICK) }}
           onAnimationComplete={() => {
             holeLanded.current = true;
             land();
@@ -496,7 +496,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
                       className="h-1.5 rounded-pill bg-ink"
                       initial={false}
                       animate={{ width: dot === cardAt ? 18 : 6, opacity: dot === cardAt ? 1 : 0.25 }}
-                      transition={off ? { duration: 0 } : { duration: FAST, ease: SMOOTH }}
+                      transition={orStill(off, { duration: FAST, ease: SMOOTH })}
                     />
                   ))}
                 </span>

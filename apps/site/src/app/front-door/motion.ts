@@ -49,6 +49,9 @@ export const BLUR_SMALL = "blur(2px)";
 /* The rows of a long list stop their stagger at the seventh row, so the last row never shows late. */
 export const staggerOf = (index: number) => Math.min(index, 6) * STAGGER;
 
+/* A move that jumps when `still` is true, as under reduced motion, and otherwise runs on `transition`. */
+export const orStill = (still: boolean, transition: Transition): Transition => (still ? { duration: 0 } : transition);
+
 /* A short fade-in, the same with motion on or off, so reduced motion keeps the fade. */
 export const fadeIn = (duration: number, delay = 0): Transition => ({ duration, ease: SMOOTH, delay });
 
