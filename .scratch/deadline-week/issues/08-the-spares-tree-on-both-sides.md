@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, and
 
 **Blocked by:** 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test on fixed rosters lists no starter whose only backup is Out, and lists each listed player with a backup who can play now.
 - [x] A test with fixed Jev answers of 0.2, 0.5, and a failed call shows a stop, a pass, and an error.
