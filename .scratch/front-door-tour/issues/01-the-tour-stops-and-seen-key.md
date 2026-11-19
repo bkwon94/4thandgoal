@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-7
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A browser with Your team and no seen key sees Stop 1 on load (AT-2).
 - [x] The four Stops show the copy of the PRD table word for word, with "n of 4" and four dots (AT-3).
