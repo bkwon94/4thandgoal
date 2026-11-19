@@ -309,10 +309,10 @@ Evidence: the command and its output.
 AT-38: The Tour waits for an open modal layer
 App: site
 Stories: 42
-Given: A browser with Your team set to Bo Girds and no seen key, with an `[aria-modal="true"]` layer open on the cpc front door. Before 2026-12-01 the layer is the Announcement. From that date the test opens its own modal layer on the page.
+Given: A browser with Your team set to Bo Girds and no seen key, with a modal layer open on the cpc front door. The layer is the test's own element with role `dialog` and `aria-modal="true"`, with an exit fade of at least 200 ms. It keeps `aria-modal="true"` until the fade ends. When the season-sim Announcement is on `main`, the test uses the Announcement.
 When: The reader closes the modal layer.
-Then: No Stop card shows while the layer is open, and Stop 1 shows after the layer finishes its exit.
-Evidence: the Playwright test name and output, with the name of the layer that the test used.
+Then: No Stop card shows while the layer is open or in its exit, and Stop 1 shows after the layer finishes its exit.
+Evidence: the Playwright test name and output, with the name of the layer, the time the exit ends, and the time Stop 1 shows.
 
 AT-39: The Stop card is a modal layer
 App: site
@@ -378,3 +378,4 @@ Out of scope "A tour library such as `driver.js`": AT-36
 ## Revisions
 
 - 2026-11-18: Brian approved the layer rule from the season-sim Announcement. Story 42 now covers each modal layer. AT-38 and AT-39 are new.
+- 2026-11-19: Brian approved a change of AT-38. The season-sim Announcement is not on `main`, so the test uses its own modal layer with a real exit fade until the Announcement merges.
