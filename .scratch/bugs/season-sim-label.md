@@ -30,7 +30,7 @@ Green: at `efa25ec6`, `cd apps/site && pnpm exec vitest run src/app/_routes/sim/
  Test Files  1 passed (1)
       Tests  4 passed (4)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
