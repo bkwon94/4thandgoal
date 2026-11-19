@@ -52,10 +52,20 @@ async function holdPastTaps(page: Page, frames: number) {
   }, frames);
 }
 
-/* Tap "Past weeks", sample the sheet on each frame until it stands still, and return the samples. */
-async function togglePast(page: Page) {
-  await startSamples(page, readSheet);
-  await page.getByRole("button", { name: "Past weeks" }).click();
+/* Tap "Past weeks", wait for the list of weeks to move, sample the sheet on each frame until it stands still, and return
+   the samples. The one loop of startSamples keeps on, and each tap only clears its samples. A second loop would push
+   two samples per frame, so the 20 still samples would be only 10 frames. The wait for the move keeps the still frames
+   before a late motion out of the still check. */
+async function togglePast(page: Page, expanded: boolean) {
+  const button = page.getByRole("button", { name: "Past weeks" });
+  const listHeight = () => page.evaluate(() => document.querySelector(".menu-past")!.getBoundingClientRect().height);
+  const before = await listHeight();
+  await page.evaluate(() => {
+    (window as unknown as { doorSamples: unknown[] }).doorSamples = [];
+  });
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", String(expanded));
+  await expect.poll(listHeight).not.toBe(before);
   return samplesWhenStill<{ top: number; list: number }>(page);
 }
 
@@ -72,7 +82,7 @@ async function checkTopEdge(page: Page, hold: number) {
   if (hold > 0) await holdPastTaps(page, hold);
 
   for (const step of ["opens", "closes"]) {
-    const samples = await togglePast(page);
+    const samples = await togglePast(page, step === "opens");
     const lists = samples.map((sample) => sample.list);
     // The list of weeks moves, so the samples hold the frames of the motion.
     expect(Math.max(...lists) - Math.min(...lists), `the list of weeks grows or shrinks as Past weeks ${step}`).toBeGreaterThan(20);
