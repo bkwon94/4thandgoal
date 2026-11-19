@@ -49,6 +49,25 @@ class TheLatestWeek(unittest.TestCase):
         self.assertEqual(rebuild.latest_weeks(root), [rebuild.Week("x", 2026, 3)])
 
 
+class TheSavedInputs(unittest.TestCase):
+    def week_folder(self, names: list[str]) -> tuple[Path, rebuild.Week]:
+        root = Path(tempfile.mkdtemp())
+        week = rebuild.Week("x", 2026, 10)
+        folder = rebuild.data_week(root, week)
+        (folder / "raw").mkdir(parents=True)
+        for name in names:
+            (folder / name).write_text("{}")
+        return root, week
+
+    def test_a_week_with_verify_and_the_three_raw_inputs_can_rebuild_its_facts(self):
+        root, week = self.week_folder(["verify.json", "raw/nflverse.json", "raw/slow_sources.json", "raw/news.json"])
+        self.assertTrue(rebuild.has_saved_inputs(root, week))
+
+    def test_a_week_that_lacks_one_raw_input_cannot(self):
+        root, week = self.week_folder(["verify.json", "raw/nflverse.json", "raw/slow_sources.json"])
+        self.assertFalse(rebuild.has_saved_inputs(root, week))
+
+
 class TheMode(unittest.TestCase):
     def tree(self, cli_text: str) -> Path:
         root = Path(tempfile.mkdtemp())
@@ -87,6 +106,52 @@ class TheDiff(unittest.TestCase):
         self.assertEqual(rebuild.file_diff(folder / "topics.json", folder / "absent.json"), ["$"])
 
 
+REBUILD_MD = """# Approved diffs
+
+The change lifts the score of the first add.
+
+- cpc `waiver.json` `$.buckets.best_adds[0].board_score`: The new usage weight lifts the score of Ronnie Rivers.
+- norcal page.json $.title: The title names the week.
+"""
+
+
+class TheApprovedList(unittest.TestCase):
+    def test_each_list_line_gives_the_client_the_file_the_path_and_the_reason(self):
+        self.assertEqual(rebuild.read_approved(REBUILD_MD), {
+            rebuild.Change("cpc", "waiver.json", "$.buckets.best_adds[0].board_score"):
+                "The new usage weight lifts the score of Ronnie Rivers.",
+            rebuild.Change("norcal", "page.json", "$.title"): "The title names the week.",
+        })
+
+    def test_a_rebuild_block_of_a_quick_file_reads_the_same_way(self):
+        quick = "# Fix\n\n## Items\n\n### 1. Score\n\nRebuild:\n- cpc facts.json $.waiver.x: The fix moves x.\n"
+        self.assertEqual(rebuild.read_approved(quick),
+                         {rebuild.Change("cpc", "facts.json", "$.waiver.x"): "The fix moves x."})
+
+    def test_a_list_line_with_no_known_file_is_no_entry(self):
+        self.assertEqual(rebuild.read_approved("- cpc notes.txt $.a: no.\n- Run the tests.\n"), {})
+
+
+class TheCheck(unittest.TestCase):
+    score = rebuild.Change("cpc", "waiver.json", "$.buckets.best_adds[0].board_score")
+    title = rebuild.Change("norcal", "page.json", "$.title")
+
+    def test_an_unlisted_change_fails(self):
+        result = rebuild.check([self.score], {})
+        self.assertEqual((result.unlisted, result.unchanged), ([self.score], []))
+        self.assertFalse(result.passed)
+
+    def test_a_listed_change_passes(self):
+        result = rebuild.check([self.score], {self.score: "Why."})
+        self.assertEqual((result.unlisted, result.unchanged), ([], []))
+        self.assertTrue(result.passed)
+
+    def test_a_listed_path_that_does_not_change_fails(self):
+        result = rebuild.check([self.score], {self.score: "Why.", self.title: "Why not."})
+        self.assertEqual((result.unlisted, result.unchanged), ([], [self.title]))
+        self.assertFalse(result.passed)
+
+
 class TheWorkflow(unittest.TestCase):
     workflow = (ROOT / ".github" / "workflows" / "rebuild.yml").read_text(encoding="utf-8")
 
@@ -94,6 +159,10 @@ class TheWorkflow(unittest.TestCase):
         self.assertIn("ref: ${{ github.event.repository.default_branch }}\n          path: base", self.workflow)
         self.assertIn("python3 -B base/scripts/rebuild.py --base base --head head", self.workflow)
         self.assertIn("../base/scripts/scope.py", self.workflow)
+
+    def test_the_workflow_passes_each_list_of_approved_diffs_that_the_pr_adds_or_changes(self):
+        self.assertIn("'.scratch/*/REBUILD.md' '.scratch/bugs/*.md' '.scratch/quick-wins/*.md'", self.workflow)
+        self.assertIn('--approved "head/$list"', self.workflow)
 
     def test_the_workflow_names_no_secret_of_claude_or_typesafe(self):
         for secret in rebuild.SECRETS:

@@ -1,11 +1,12 @@
 """
-Runs the base and head rebuild of the latest week of each client: page-json with the code of the base and of the head,
-then a diff of page.json, topics.json, and waiver.json by JSON path. Any diff fails the run (ADR 0037).
+Runs the base and head rebuild of the latest week of each client: facts and page-json with the code of the base and of the head,
+then a diff of facts.json, page.json, topics.json, and waiver.json by JSON path, checked against the approved diffs (ADR 0037).
 """
 import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -13,6 +14,8 @@ from pathlib import Path
 
 # The files of a week that the render writes. The diff compares each one.
 RENDER_FILES = ("page.json", "topics.json", "waiver.json")
+# The saved inputs of a week that the facts-only rebuild reads, by their path in the data folder of the week.
+SAVED_INPUTS = ("verify.json", "raw/nflverse.json", "raw/slow_sources.json", "raw/news.json")
 PIPELINE_CLI = Path("apps/pipeline/src/cornerstone/cli.py")
 # The rebuild makes no Claude call and no TypeSafe call, so a run never gets either key, even from a local shell.
 SECRETS = ("ANTHROPIC_API_KEY", "TYPESAFE_API_KEY")
@@ -27,6 +30,45 @@ class Week:
 
     def __str__(self) -> str:
         return f"{self.slug} {self.season} week {self.week}"
+
+
+@dataclass(frozen=True, order=True)
+class Change:
+    """One changed value of the output: the client, the file, and the JSON path in the file."""
+    slug: str
+    name: str
+    path: str
+
+    def __str__(self) -> str:
+        return f"{self.slug} {self.name} {self.path}"
+
+
+@dataclass(frozen=True)
+class Result:
+    unlisted: list[Change]
+    unchanged: list[Change]
+
+    @property
+    def passed(self) -> bool:
+        return not self.unlisted and not self.unchanged
+
+
+# One approved diff per list line: "- <client> <file> <JSON path>: <reason>". Backticks around each part are optional.
+# The same line shape serves REBUILD.md of a spec and the Rebuild: block of a quick file.
+APPROVED_LINE = re.compile(r"^\s*[-*]\s+`?([\w-]+)`?\s+`?(facts\.json|page\.json|topics\.json|waiver\.json)`?"
+                           r"\s+`?(\$[^`\s]*)`?\s*:\s*(.+?)\s*$")
+
+
+def read_approved(text: str) -> dict[Change, str]:
+    """The approved diffs of one list file, each with its reason."""
+    return {Change(m.group(1), m.group(2), m.group(3)): m.group(4)
+            for line in text.splitlines() if (m := APPROVED_LINE.match(line))}
+
+
+def check(changed: list[Change], approved: dict[Change, str]) -> Result:
+    """The job passes only when the set of changed paths equals the listed set (ADR 0037)."""
+    return Result(unlisted=[c for c in changed if c not in approved],
+                  unchanged=sorted(c for c in approved if c not in set(changed)))
 
 
 def data_week(root: Path, week: Week) -> Path:
@@ -56,6 +98,11 @@ def latest_weeks(root: Path) -> list[Week]:
     return weeks
 
 
+def has_saved_inputs(root: Path, week: Week) -> bool:
+    """True when the data folder of the week holds each input of the facts-only rebuild."""
+    return all((data_week(root, week) / name).is_file() for name in SAVED_INPUTS)
+
+
 def base_rebuilds_facts(base: Path) -> bool:
     """True when the CLI of the base has the facts-only rebuild. Until then the job can diff the render only."""
     cli = base / PIPELINE_CLI
@@ -83,42 +130,84 @@ def file_diff(before: Path, after: Path) -> list[str]:
     return json_diff(json.loads(before.read_text(encoding="utf-8")), json.loads(after.read_text(encoding="utf-8")))
 
 
-def render(checkout: Path, week: Week) -> None:
-    """Run page-json of one week with the code of one checkout. It writes into the build folder of that checkout."""
+def cornerstone(checkout: Path, command: str, week: Week) -> None:
+    """Run one command of the pipeline CLI on one week with the code of one checkout. It writes into that checkout:
+    facts writes facts.json into the data folder, and page-json writes the build folder."""
     env = {key: value for key, value in os.environ.items() if key not in SECRETS}
-    subprocess.run(["uv", "run", "--quiet", "--exact", "--package", "cornerstone", "cornerstone", "page-json",
+    subprocess.run(["uv", "run", "--quiet", "--exact", "--package", "cornerstone", "cornerstone", command,
                     "--client", week.slug, "--season", str(week.season), "--week", str(week.week)],
                    cwd=checkout, env=env, check=True, stdout=subprocess.DEVNULL)
+
+
+def share_inputs(base: Path, head: Path, week: Week) -> None:
+    """Copy the saved week of the head into the base, so both codes read the same inputs.
+    The base can lag the head, or lack the week, when main got the week after the PR merged main."""
+    if base != head:
+        shutil.copytree(data_week(head, week), data_week(base, week), dirs_exist_ok=True)
+
+
+def diff_week(base: Path, head: Path, week: Week, with_facts: bool) -> list[Change]:
+    """Rebuild one week with the code of the base and of the head, and give each changed value."""
+    share_inputs(base, head, week)
+    files = [(name, build_week) for name in RENDER_FILES]
+    if with_facts:
+        cornerstone(base, "facts", week)
+        cornerstone(head, "facts", week)
+        files.insert(0, ("facts.json", data_week))
+    cornerstone(base, "page-json", week)
+    cornerstone(head, "page-json", week)
+    return [Change(week.slug, name, path) for name, folder in files
+            for path in file_diff(folder(base, week) / name, folder(head, week) / name)]
+
+
+def report(week: Week, changed: list[Change], approved: dict[Change, str], with_facts: bool) -> None:
+    names = (("facts.json",) if with_facts else ()) + RENDER_FILES
+    for name in names:
+        paths = [c for c in changed if c.name == name]
+        print(f"{week} {name}: {len(paths)} diffs")
+        for change in paths:
+            note = f"approved: {approved[change]}" if change in approved else "not listed"
+            print(f"  {change.path}  ({note})")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", type=Path, required=True, help="a checkout of the base, such as main")
     parser.add_argument("--head", type=Path, required=True, help="a checkout of the PR")
+    parser.add_argument("--approved", type=Path, action="append", default=[],
+                        help="a REBUILD.md or a quick file whose list names the approved diffs; repeat for more")
     args = parser.parse_args()
     base, head = args.base.resolve(), args.head.resolve()
 
-    if not base_rebuilds_facts(base):
+    approved: dict[Change, str] = {}
+    for path in args.approved:
+        approved.update(read_approved(path.read_text(encoding="utf-8")))
+        print(f"approved diffs: {path}")
+
+    base_has_facts = base_rebuilds_facts(base)
+    if not base_has_facts:
         print("render only: the base has no facts-only rebuild")
-    else:
-        print("render only: the job has no facts diff")
 
     weeks = latest_weeks(head)
     if not weeks:
         print("No client has a published week with saved facts. Nothing to diff.")
-        return 0
-    total = 0
+    changed: list[Change] = []
     for week in weeks:
-        render(base, week)
-        render(head, week)
-        for name in RENDER_FILES:
-            paths = file_diff(build_week(base, week) / name, build_week(head, week) / name)
-            total += len(paths)
-            print(f"{week} {name}: {len(paths)} diffs")
-            for path in paths:
-                print(f"  {path}")
-    print(f"render diff: {total} diffs")
-    return 1 if total else 0
+        with_facts = base_has_facts and has_saved_inputs(head, week)
+        if base_has_facts and not with_facts:
+            print(f"render only: {week} has no saved inputs of the facts")
+        week_changed = diff_week(base, head, week, with_facts)
+        report(week, week_changed, approved, with_facts)
+        changed += week_changed
+
+    result = check(changed, approved)
+    for change in result.unlisted:
+        print(f"changed but not listed: {change}")
+    for change in result.unchanged:
+        print(f"listed but not changed: {change}")
+    print(f"rebuild diff: {len(changed)} diffs, {len(changed) - len(result.unlisted)} listed, "
+          f"{len(result.unlisted)} not listed, {len(result.unchanged)} listed but not changed")
+    return 0 if result.passed else 1
 
 
 if __name__ == "__main__":

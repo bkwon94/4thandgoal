@@ -10,7 +10,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-21, AT-22, AT-23 and 
 
 **Status:** ready-for-agent
 
-- [ ] A base and head rebuild with no change of code reports 0 diffs for each client.
-- [ ] A seeded change of one waiver score of cpc fails and names cpc, `waiver.json`, and the JSON path.
-- [ ] The same change passes when `REBUILD.md` lists it, and the output prints the reason.
-- [ ] A listed path that does not change fails and is named.
+- [x] A base and head rebuild with no change of code reports 0 diffs for each client.
+- [x] A seeded change of one waiver score of cpc fails and names cpc, `waiver.json`, and the JSON path.
+- [x] The same change passes when `REBUILD.md` lists it, and the output prints the reason.
+- [x] A listed path that does not change fails and is named.
