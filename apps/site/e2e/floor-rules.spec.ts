@@ -3,7 +3,7 @@
  * Each page is plain HTML that the browser lays out, so the scans measure real boxes, sizes, and colors.
  */
 import { BOOT_SCRIPT, DARK_CLASS } from "@cpc/design/lib/theme";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -170,6 +170,41 @@ test("axe color-contrast with a scope checks only the open part, so text that th
   </main>`);
   const failures = await scanContrast(page, "nav.strip");
   expect(failures).toEqual([expect.stringMatching(/^violation: a .*contrast.*#bbbbbb/)]);
+});
+
+/*
+ * A sticky band with a title that an ellipsis cuts by 1px, over a page scrolled under the band, as the top band shows at
+ * 1280px when the pill bar takes all the room. Chromium gives such a title two text boxes: the full text and the cut text.
+ * The tile under the band ends between the centers of the two boxes, so axe finds a different stack under each box.
+ */
+async function bandOverScrolledPage(page: Page, titleColor: string) {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.setContent(`<body style="margin:0;background:#fff">
+    <header style="position:sticky;top:0;z-index:1;background:#fff;padding:16px">
+      <span class="title" style="display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:700 16px sans-serif;color:${titleColor}">Cornerstone Fantasy Football League</span>
+    </header>
+    <main style="height:3000px;padding-top:600px"><div class="tile" style="height:400px;background:#eee"></div></main>
+  </body>`);
+  await page.evaluate(() => {
+    const title = document.querySelector(".title") as HTMLElement;
+    const range = document.createRange();
+    range.selectNodeContents(title.firstChild as Text);
+    title.style.width = `${range.getBoundingClientRect().width - 1}px`;
+    const centers = [...range.getClientRects()].map((rect) => (rect.left + rect.right) / 2);
+    const tile = document.querySelector(".tile") as HTMLElement;
+    tile.style.width = `${(Math.min(...centers) + Math.max(...centers)) / 2}px`;
+    window.scrollTo({ top: tile.getBoundingClientRect().top + window.scrollY - 20, behavior: "instant" });
+  });
+}
+
+test("a band title cut by an ellipsis over a scrolled page passes, because its opaque band hides the page under it", async ({ page }) => {
+  await bandOverScrolledPage(page, "#111");
+  expect(await scanContrast(page)).toEqual([]);
+});
+
+test("a faint band title cut by an ellipsis over a scrolled page still fails", async ({ page }) => {
+  await bandOverScrolledPage(page, "#bbb");
+  expect(await scanContrast(page)).toEqual([expect.stringMatching(/^violation: span .*contrast.*#bbbbbb/)]);
 });
 
 test("the full axe scan counts the violations and the incomplete items apart, and passes a clean part", async ({ page }) => {
