@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-11[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:143:5 › a close request of the browser, as Android Back sends, counts as Skip at Stop 2 (AT-11) (1.5s)
+
+  1 passed (1.8s)

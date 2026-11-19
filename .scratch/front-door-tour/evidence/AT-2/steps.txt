@@ -1,0 +1,13 @@
+No runner verb sets Your team before the page loads, so agent-browser took these shots.
+
+1. The cpc round of `pnpm --dir apps/site evidence front-door-tour` built `apps/site/out`, with NEXT_PUBLIC_API_URL=http://localhost:8080.
+2. Serve `apps/site/out` on http://127.0.0.1:4173. A missing path gets 404.html with the status 404.
+3. For each width 375, 768, 1280 and each theme light, dark, in the session `fdt-evidence`:
+   1. `agent-browser set viewport <width> 900`
+   2. `agent-browser open http://127.0.0.1:4173/`
+   3. `agent-browser eval "localStorage.clear(); localStorage.setItem('cpc.theme','<theme>'); localStorage.setItem('cpc.your-team','6')"`
+   4. `agent-browser reload`, then `agent-browser wait "[data-tour-card]"`, then `agent-browser wait 1500`
+   5. `agent-browser screenshot <evidence>/AT-2/stop-1-<width>-<theme>.png` (viewport shot)
+4. `agent-browser close`
+
+The browser has Your team set to Bo Girds (roster 6) and no seen key `cpc.tour-seen` before the reload.

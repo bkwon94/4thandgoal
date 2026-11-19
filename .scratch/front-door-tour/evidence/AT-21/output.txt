@@ -1,0 +1,77 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-21[,)]"
+
+Running 1 test using 1 worker
+
+AT-21 frame samples of filter and transform:
+0 {"filters":0,"scale":1,"opacity":1,"header":"Suggestions"}
+1 {"filters":0,"scale":1,"opacity":1,"header":"Suggestions"}
+2 {"filters":0,"scale":1,"opacity":1,"header":"Suggestions"}
+3 {"filters":0,"scale":1,"opacity":1,"header":"Suggestions"}
+4 {"filters":0,"scale":1,"opacity":1,"header":"Suggestions"}
+5 {"filters":0,"scale":1,"opacity":1,"header":"Suggestions"}
+6 {"filters":0,"scale":1,"opacity":0.85,"header":"Suggestions"}
+7 {"filters":0,"scale":1,"opacity":0.85,"header":"Suggestions"}
+8 {"filters":0,"scale":1,"opacity":0.42,"header":"Suggestions"}
+9 {"filters":0,"scale":1,"opacity":0.42,"header":"Suggestions"}
+10 {"filters":0,"scale":1,"opacity":0.23,"header":"Suggestions"}
+11 {"filters":0,"scale":1,"opacity":0.23,"header":"Suggestions"}
+12 {"filters":0,"scale":1,"opacity":0.11,"header":"Suggestions"}
+13 {"filters":0,"scale":1,"opacity":0.11,"header":"Suggestions"}
+14 {"filters":0,"scale":1,"opacity":0.04,"header":"Suggestions"}
+15 {"filters":0,"scale":1,"opacity":0.04,"header":"Suggestions"}
+16 {"filters":0,"scale":1,"opacity":0.02,"header":"Suggestions"}
+17 {"filters":0,"scale":1,"opacity":0.02,"header":"Suggestions"}
+18 {"filters":0,"scale":1,"opacity":0.01,"header":"Suggestions"}
+19 {"filters":0,"scale":1,"opacity":0.01,"header":"Suggestions"}
+20 {"filters":0,"scale":1,"opacity":0,"header":"Suggestions"}
+21 {"filters":0,"scale":1,"opacity":0,"header":"Suggestions"}
+22 {"filters":0,"scale":1,"opacity":0,"header":"Suggestions"}
+23 {"filters":0,"scale":1,"opacity":0,"header":"Suggestions"}
+24 {"filters":0,"scale":1,"opacity":0,"header":"Suggestions"}
+25 {"filters":0,"scale":1,"opacity":0,"header":"Suggestions"}
+26 {"filters":0,"scale":1,"opacity":0.22,"header":"SuggestionsAsk"}
+27 {"filters":0,"scale":1,"opacity":0.22,"header":"SuggestionsAsk"}
+28 {"filters":0,"scale":1,"opacity":0.47,"header":"SuggestionsAsk"}
+29 {"filters":0,"scale":1,"opacity":0.47,"header":"SuggestionsAsk"}
+30 {"filters":0,"scale":1,"opacity":0.65,"header":"SuggestionsAsk"}
+31 {"filters":0,"scale":1,"opacity":0.65,"header":"SuggestionsAsk"}
+32 {"filters":0,"scale":1,"opacity":0.76,"header":"SuggestionsAsk"}
+33 {"filters":0,"scale":1,"opacity":0.76,"header":"SuggestionsAsk"}
+34 {"filters":0,"scale":1,"opacity":0.85,"header":"SuggestionsAsk"}
+35 {"filters":0,"scale":1,"opacity":0.85,"header":"SuggestionsAsk"}
+36 {"filters":0,"scale":1,"opacity":0.91,"header":"SuggestionsAsk"}
+37 {"filters":0,"scale":1,"opacity":0.91,"header":"SuggestionsAsk"}
+38 {"filters":0,"scale":1,"opacity":0.94,"header":"SuggestionsAsk"}
+39 {"filters":0,"scale":1,"opacity":0.94,"header":"SuggestionsAsk"}
+40 {"filters":0,"scale":1,"opacity":0.97,"header":"SuggestionsAsk"}
+41 {"filters":0,"scale":1,"opacity":0.97,"header":"SuggestionsAsk"}
+42 {"filters":0,"scale":1,"opacity":0.98,"header":"SuggestionsAsk"}
+43 {"filters":0,"scale":1,"opacity":0.98,"header":"SuggestionsAsk"}
+44 {"filters":0,"scale":1,"opacity":0.99,"header":"SuggestionsAsk"}
+45 {"filters":0,"scale":1,"opacity":0.99,"header":"SuggestionsAsk"}
+46 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+47 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+48 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+49 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+50 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+51 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+52 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+53 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+54 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+55 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+56 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+57 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+58 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+59 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+60 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+61 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+62 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+63 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+64 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+65 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+66 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+67 {"filters":0,"scale":1,"opacity":1,"header":"Ask"}
+AT-21 samples: 68, most parts with a filter: 0, scales: 1
+  ✓  1 [floor] › e2e/front-door-tour-motion.spec.ts:217:7 › iPhone 375x660 under reduced motion › the card swaps with no blur and no scale (AT-21) (2.1s)
+
+  1 passed (2.6s)

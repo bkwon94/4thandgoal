@@ -1,0 +1,6 @@
+375 light: "{\"card\":0,\"hole\":0,\"seen\":\"1\"}"
+375 dark: "{\"card\":0,\"hole\":0,\"seen\":\"1\"}"
+768 light: "{\"card\":0,\"hole\":0,\"seen\":\"1\"}"
+768 dark: "{\"card\":0,\"hole\":0,\"seen\":\"1\"}"
+1280 light: "{\"card\":0,\"hole\":0,\"seen\":\"1\"}"
+1280 dark: "{\"card\":0,\"hole\":0,\"seen\":\"1\"}"

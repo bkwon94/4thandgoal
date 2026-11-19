@@ -1,0 +1,12 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-22[,)]"
+
+Running 2 tests using 2 workers
+
+AT-22 dark: tokens accent and on-dark {"fill":"rgb(184, 52, 42)","text":"rgb(255, 255, 255)"}, Next {"fill":"rgb(184, 52, 42)","text":"rgb(255, 255, 255)"}
+AT-22 light: tokens accent and on-dark {"fill":"rgb(184, 52, 42)","text":"rgb(255, 255, 255)"}, Next {"fill":"rgb(184, 52, 42)","text":"rgb(255, 255, 255)"}
+AT-22 dark: Done {"fill":"rgb(184, 52, 42)","text":"rgb(255, 255, 255)"}
+AT-22 light: Done {"fill":"rgb(184, 52, 42)","text":"rgb(255, 255, 255)"}
+  ✓  2 [floor] › e2e/front-door-tour-look.spec.ts:241:7 › Next and Done fill with the accent token and use the on-dark text in the light theme (AT-22) (2.0s)
+  ✓  1 [floor] › e2e/front-door-tour-look.spec.ts:241:7 › Next and Done fill with the accent token and use the on-dark text in the dark theme (AT-22) (2.0s)
+
+  2 passed (2.5s)
