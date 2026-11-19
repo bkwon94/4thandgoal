@@ -66,7 +66,7 @@ CLIENT_PREFIX = "/clients/{slug}"
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
 COMMISSIONER_HEADER = "X-Commissioner-Key"
-# The prefix of the eggs routes of each client. Only the clients paths serve them, because no old page calls them.
+# The prefix of the eggs routes of each client. Only the clients paths serve them, because the pages of the site call only the clients paths.
 EGGS_PREFIX = f"{CLIENT_PREFIX}/eggs"
 # The file of the daily grade counts of a client, in the result cache dir of the client.
 GRADE_COUNTS_FILE = "grade-counts.json"
@@ -339,7 +339,7 @@ def create_app(
     app.include_router(eggs_routes.commissioner_router, prefix=EGGS_PREFIX, dependencies=[Depends(_commissioner_guard)])
 
     # The What-if is open, so a manager can use it from any link, and it has its own limit of each address. Only the
-    # clients paths serve it, because no old page calls it.
+    # clients paths serve it, because the pages of the site call only the clients paths.
     app.include_router(what_if_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_what_if_limit)])
 
     @app.get("/health")
