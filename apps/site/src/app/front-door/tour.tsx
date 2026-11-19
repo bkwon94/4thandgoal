@@ -78,6 +78,13 @@ function measure(el: HTMLElement): Hole {
   return { x: rect.left - HOLE_PAD, y: rect.top - HOLE_PAD, width: rect.width + HOLE_PAD * 2, height: rect.height + HOLE_PAD * 2 };
 }
 
+/* The replay controls sit in the shell, outside the front door, so they reach the Tour by one window event. */
+const REPLAY_EVENT = "cpc:tour-replay";
+
+export function replayTour() {
+  window.dispatchEvent(new Event(REPLAY_EVENT));
+}
+
 /* `ready` is true while Your team is set and no team sheet and no passphrase modal shows. The Tour decides once, on the
    first ready render: a browser with the seen key, or with a store that throws, gets no Tour. */
 export function Tour({ ready }: { ready: boolean }) {
@@ -91,6 +98,13 @@ export function Tour({ ready }: { ready: boolean }) {
     const timer = window.setTimeout(() => setPhase("on"), START_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [ready, phase]);
+  // A replay starts at Stop 1 and does not read the seen key. A replay during the Tour changes nothing.
+  useEffect(() => {
+    if (!ready) return;
+    const replay = () => setPhase("on");
+    window.addEventListener(REPLAY_EVENT, replay);
+    return () => window.removeEventListener(REPLAY_EVENT, replay);
+  }, [ready]);
   return phase === "on" ? <Stops onEnd={() => setPhase("done")} /> : null;
 }
 
