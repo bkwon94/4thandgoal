@@ -10,10 +10,10 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 
 **Status:** ready-for-agent
 
-- [ ] The build makes the playoff fixture and the season-end fixture by one command, and the evidence names their seeds and champion.
+- [x] The build makes the playoff fixture and the season-end fixture by one command, and the evidence names their seeds and champion.
 - [ ] With the top seed as Your team, the Playoffs page shows its title odds, its game, and two tiles (AT-42).
-- [ ] With the 12th team as Your team, the page says "Out of the playoffs" and shows the bracket with title odds (AT-43).
-- [ ] The season-end page shows the final bracket and the champion, with no tile and no sim button (AT-44).
-- [ ] No later round has a tile (AT-66), and the season-end page has no chart of odds by week (AT-69).
-- [ ] The site evidence set passes the overlap check at the four sizes.
-- [ ] `make check-fast` passes.
+- [x] With the 12th team as Your team, the page says "Out of the playoffs" and shows the bracket with title odds (AT-43).
+- [x] The season-end page shows the final bracket and the champion, with no tile and no sim button (AT-44).
+- [x] No later round has a tile (AT-66), and the season-end page has no chart of odds by week (AT-69).
+- [x] The site evidence set passes the overlap check at the four sizes.
+- [x] `make check-fast` passes.

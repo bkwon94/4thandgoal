@@ -111,6 +111,56 @@ export const pageWeekSchema = z.object({
   root_for: z.array(rootForSchema).max(3),
 });
 
+/* One result of Your team in its bracket game of this round, with the title odds after it in whole percent. */
+export const playoffResultSchema = z.object({
+  game: gameSchema,
+  title: oddsSchema,
+  chance: z.number(),
+  about: z.boolean(),
+});
+
+/* The bracket game of Your team in this round. It exists only when both of its teams are set. */
+export const playoffGameSchema = z.object({
+  week: z.number(),
+  opponent: z.number(),
+  results: z.array(playoffResultSchema),
+});
+
+/* One game of a bracket round, the higher seed first. A null side is a team that is not set yet. */
+export const bracketGameSchema = z.object({
+  teams: z.tuple([z.number().nullable(), z.number().nullable()]),
+  scores: z.tuple([z.number(), z.number()]).nullable(),
+  winner: z.number().nullable(),
+});
+
+export const bracketRoundSchema = z.object({
+  week: z.number(),
+  played: z.boolean(),
+  games: z.array(bracketGameSchema),
+});
+
+/* One seed of the bracket with its title odds in whole percent. A team that lost a played game is not alive. */
+export const bracketTeamSchema = z.object({
+  roster_id: z.number(),
+  seed: z.number().int(),
+  title: z.number().int(),
+  alive: z.boolean(),
+});
+
+/* The playoff part of the page block, with no regular week left: Your team first, then the bracket. */
+export const playoffsSchema = z.object({
+  seed: z.number().int().nullable(),
+  alive: z.boolean(),
+  title: z.number().int(),
+  // The week of the round to play. Null after the final.
+  week: z.number().nullable(),
+  bye: z.boolean(),
+  game: playoffGameSchema.nullable(),
+  teams: z.array(bracketTeamSchema),
+  rounds: z.array(bracketRoundSchema),
+  champion: z.number().nullable(),
+});
+
 /* The page block of one team. sim.json and the What-if answer share it, so the page reads one shape. */
 export const simPageSchema = z.object({
   you: z.number(),
@@ -125,6 +175,8 @@ export const simPageSchema = z.object({
   sentence: z.string(),
   ladder: z.array(ladderStepSchema),
   weeks: z.array(pageWeekSchema),
+  // The playoff part, with no regular week left. Null in the regular season. An older file has no key.
+  playoffs: playoffsSchema.nullable().default(null),
 });
 
 /* The week file, week-NN/sim.json: the season shape with the run weights, a page for each team, and the league fact. */
@@ -133,6 +185,8 @@ export const weekSimSchema = simSchema.extend({
   // The weight of each stored run, in the order of `sample`. The replay picks a run in proportion to its weight.
   sample_weights: z.array(z.number()),
   pages: z.record(rosterKey, simPageSchema),
-  // The league fact of the Sim tile for a manager with no team set. Null with no regular week left.
+  // The league fact of the Sim tile for a manager with no team set: the race, the favorite, or the champion.
   fact: z.string().nullable(),
+  // The real scores of each played bracket week, by week and roster id. An older file has no key.
+  played: z.record(rosterKey, z.record(rosterKey, z.number())).default({}),
 });

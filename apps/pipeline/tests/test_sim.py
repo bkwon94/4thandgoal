@@ -18,7 +18,7 @@ from cpc import ROOT, cpc_client
 from fakes import FakeWriter, FixtureProvider, no_news
 from test_midseason import CPC_PROVIDER, prime_nflverse
 
-from cornerstone.pipeline import make_bundle, run_midseason, run_week_sim
+from cornerstone.pipeline import make_bundle, run_midseason, run_sim_fixtures, run_week_sim
 from cornerstone.season_sim import schedule_file, week_inputs, week_sim
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
@@ -402,3 +402,41 @@ def test_each_result_under_400_effective_runs_has_the_about_flag_and_no_other(we
     print(f"AT-10: {flagged} results with about, {plain} with none; {sum(s['about'] for s in steps)} ladder steps "
           f"with about")
     assert plain == 12 * 4 * 4 and any(step["about"] for step in steps)
+
+
+# The playoff fixtures of the sim page tests, which `make sim-fixtures` writes (season-sim ACCEPTANCE.md).
+SITE_FIXTURES = Path(__file__).resolve().parents[3] / "packages" / "sim" / "site" / "fixtures"
+
+
+@pytest.fixture(scope="module")
+def playoff_fixture_files(tmp_path_factory) -> tuple[list[str], Path]:
+    out = tmp_path_factory.mktemp("fixtures")
+    client = _week_10_client("cpc", tmp_path_factory.mktemp("cpc"))
+    return run_sim_fixtures(2026, 10, out, client=client), out
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_playoff_fixtures_play_out_stored_run_1_and_name_the_seeds_and_the_champion(playoff_fixture_files):
+    lines, out = playoff_fixture_files
+    for line in lines:
+        print(f"AT-42 AT-43 AT-44 fixture: {line}")
+    week_10 = json.loads(API_WEEK_10_SIM.read_text(encoding="utf-8"))
+    run = week_10["sample"][0]
+    for name, week in (("week-sim-playoffs.json", 14), ("week-sim-round-2.json", 15), ("week-sim-final.json", 17)):
+        sim = json.loads((out / name).read_text(encoding="utf-8"))
+        assert sim["week"] == week and sim["schedule"] == {}
+        playoffs = sim["pages"]["1"]["playoffs"]
+        # The seeds are the top 6 of the table of run 1, so the fixture plays out the run.
+        assert [t["roster_id"] for t in playoffs["teams"]] == run["table"][:6]
+    final = json.loads((out / "week-sim-final.json").read_text(encoding="utf-8"))
+    assert final["pages"]["1"]["playoffs"]["champion"] == run["champion"]
+    assert final["teams"][str(run["champion"])]["title"] == 100.0
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_playoff_fixtures_of_the_site_tests_equal_a_fresh_fixture_build(playoff_fixture_files):
+    # Run `make sim-fixtures` in apps/pipeline if this fails.
+    _, out = playoff_fixture_files
+    for name in ("week-sim-playoffs.json", "week-sim-round-2.json", "week-sim-final.json"):
+        assert json.loads((SITE_FIXTURES / name).read_text(encoding="utf-8")) == json.loads(
+            (out / name).read_text(encoding="utf-8"))

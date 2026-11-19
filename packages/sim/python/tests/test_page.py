@@ -8,7 +8,7 @@ import pytest
 
 from league.league_settings import LeagueSettings
 from sim.published import read_week_sim, sim_file, week_sim_file, write_sim, write_week_sim
-from sim.season import SetResult, season_sim
+from sim.season import SetResult, rerun, season_sim
 
 SEASON = 2026
 ROSTERS = range(1, 9)
@@ -189,3 +189,132 @@ def test_the_sentence_with_every_week_left_set_says_so():
     sim = _sim(you=1, set_results=held, runs=2_000)
     if sim.pages[1].status == "open":
         assert sim.pages[1].sentence == "Every week left is set."
+
+
+# The same league after its regular season: no regular week left, and a bracket of 4 in weeks 5 and 6. The records
+# set the seeds: roster 8 first, then 7, 6, and 5. Roster 1 is out.
+FINAL_RECORDS = {rid: (rid, 8 - rid, 400.0 + rid) for rid in ROSTERS}
+
+
+def _near(whole: int, tenth: float) -> bool:
+    """True when a whole percent of the page is the title odds of the team, which has one decimal, rounded."""
+    return abs(whole - tenth) <= 0.55
+
+
+def _playoff_sim(played=None, runs: int = 2_000, **kwargs):
+    return season_sim(SCORES, FINAL_RECORDS, {}, season=SEASON, week=4 + len(played or {}),
+                      settings=_settings(median_game=True), runs=runs, pages=list(ROSTERS), played=played or {},
+                      **kwargs)
+
+
+def test_a_team_in_the_playoffs_gets_its_title_odds_its_game_and_two_results():
+    sim = _playoff_sim()
+    top = sim.pages[8].playoffs
+    assert top is not None
+    assert (top.seed, top.alive, top.week, top.bye, top.champion) == (1, True, 5, False, None)
+    assert _near(top.title, sim.teams[8].title)
+    assert top.game is not None and (top.game.week, top.game.opponent) == (5, 5)
+    win, loss = top.game.results
+    assert (win.game, loss.game) == ("win", "loss")
+    assert loss.title == 0
+    assert win.title is not None and win.title >= top.title
+    assert win.chance + loss.chance == pytest.approx(100, abs=0.2)
+    assert sim.pages[8].weeks == []
+
+
+def test_a_team_out_of_the_playoffs_gets_the_bracket_with_the_title_odds_of_each_team_left():
+    sim = _playoff_sim()
+    out = sim.pages[1].playoffs
+    assert out is not None
+    assert (out.seed, out.alive, out.game) == (None, False, None)
+    assert [(t.roster_id, t.seed, t.alive) for t in out.teams] == [(8, 1, True), (7, 2, True), (6, 3, True),
+                                                                    (5, 4, True)]
+    assert all(_near(t.title, sim.teams[t.roster_id].title) for t in out.teams)
+    # Round 1 has its two games set. The final has no set side, so it offers no result.
+    first, final = out.rounds
+    assert (first.week, first.played, final.week, final.played) == (5, False, 6, False)
+    assert sorted(g.teams for g in first.games) == [(7, 6), (8, 5)]
+    assert [g.teams for g in final.games] == [(None, None)]
+
+
+def test_a_played_round_shows_its_scores_and_winners_and_sets_the_game_of_the_next_round():
+    played = {5: {8: 130.0, 5: 100.0, 7: 90.0, 6: 110.0}}
+    sim = _playoff_sim(played)
+    page = sim.pages[8].playoffs
+    assert page is not None and page.week == 6
+    first, final = page.rounds
+    assert first.played and not final.played
+    games = {g.teams: g for g in first.games}
+    assert (games[(8, 5)].scores, games[(8, 5)].winner) == ((130.0, 100.0), 8)
+    assert (games[(7, 6)].scores, games[(7, 6)].winner) == ((90.0, 110.0), 6)
+    assert [g.teams for g in final.games] == [(8, 6)]
+    assert page.game is not None and (page.game.week, page.game.opponent) == (6, 6)
+    # A team that lost a played game is out, with title odds of 0.
+    lost = sim.pages[7].playoffs
+    assert lost is not None and (lost.seed, lost.alive, lost.title, lost.game) == (2, False, 0, None)
+    assert [t.roster_id for t in page.teams if t.alive] == [8, 6]
+
+
+def test_after_the_final_the_page_shows_the_final_bracket_and_the_champion():
+    played = {5: {8: 130.0, 5: 100.0, 7: 90.0, 6: 110.0}, 6: {8: 95.0, 6: 120.0}}
+    sim = _playoff_sim(played, runs=200)
+    for rid in ROSTERS:
+        page = sim.pages[rid].playoffs
+        assert page is not None
+        assert (page.champion, page.week, page.game, page.bye) == (6, None, None, False)
+        assert all(r.played for r in page.rounds)
+        assert page.rounds[-1].games[0].winner == 6
+    champion = sim.pages[6].playoffs
+    assert champion is not None and champion.title == 100
+    assert sim.teams[6].title == 100.0
+
+
+def test_a_top_seed_with_a_bye_has_no_game_and_no_result_until_its_opponent_is_set():
+    six = LeagueSettings(
+        team_count=8, playoff_spots=6, bye_count=2, star_rank_by_position={}, roster_slots=("QB",),
+        last_regular_week=4, reception_points=0.5, median_game=True, reseed=False,
+    )
+    sim = season_sim(SCORES, FINAL_RECORDS, {}, season=SEASON, week=4, settings=six, runs=1_000, pages=[8, 6])
+    top = sim.pages[8].playoffs
+    assert top is not None
+    assert (top.seed, top.alive, top.bye, top.week, top.game) == (1, True, True, 5, None)
+    # The bye team sits in round 2 with an open side, so no later round offers a result.
+    second = top.rounds[1]
+    assert any(g.teams[0] == 8 and g.teams[1] is None for g in second.games)
+    third = sim.pages[6].playoffs
+    assert third is not None and third.game is not None and third.game.opponent == 3
+
+
+def test_a_set_result_of_a_bracket_game_holds_in_the_playoff_page():
+    sim = _playoff_sim(you=8, set_results=[SetResult(week=5, game="win")])
+    page = sim.pages[8].playoffs
+    assert page is not None and page.game is not None
+    win, loss = page.game.results
+    assert (win.chance, loss.chance) == (100.0, 0.0)
+    assert loss.title is None
+
+
+def test_the_league_fact_names_the_favorite_in_the_playoffs_and_the_champion_after_the_final():
+    names = {rid: f"Team {rid}" for rid in ROSTERS}
+    sim = _playoff_sim()
+    favorite = max((8, 7, 6, 5), key=lambda rid: sim.teams[rid].title)
+    page = sim.pages[1].playoffs
+    assert page is not None
+    shown = next(t.title for t in page.teams if t.roster_id == favorite)
+    assert week_sim_file(sim, names).fact == f"4 teams left, Team {favorite} is the favorite at {shown}%"
+    done = _playoff_sim({5: {8: 130.0, 5: 100.0, 7: 90.0, 6: 110.0}, 6: {8: 95.0, 6: 120.0}}, runs=100)
+    assert week_sim_file(done, names).fact == "Team 6 is the 2026 champion"
+
+
+def test_a_played_bracket_week_takes_no_set_result():
+    with pytest.raises(ValueError, match="played"):
+        _playoff_sim({5: {8: 130.0, 5: 100.0, 7: 90.0, 6: 110.0}}, runs=100, you=8,
+                     set_results=[SetResult(week=5, game="win")])
+
+
+def test_a_rerun_of_a_playoff_week_keeps_its_played_rounds():
+    played = {5: {8: 130.0, 5: 100.0, 7: 90.0, 6: 110.0}}
+    sim = _playoff_sim(played, runs=300)
+    again = rerun(sim, pages=list(ROSTERS))
+    assert again.played == sim.played
+    assert again.pages == sim.pages

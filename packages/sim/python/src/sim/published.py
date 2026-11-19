@@ -10,7 +10,7 @@ from pydantic import Field
 
 from league.files import write_bytes_atomic
 from league.paths import site_week_dir
-from sim.page import SimPage
+from sim.page import SimPage, playoff_fact
 from sim.season import SimResult
 
 # The season file has its own version, so a change to one file never breaks the reader of another.
@@ -29,6 +29,7 @@ class SimFile(SimResult):
     sample_weights: list[float] = Field(default_factory=list, exclude=True)
     pages: dict[int, SimPage] = Field(default_factory=dict, exclude=True)
     fact: str | None = Field(default=None, exclude=True)
+    played: dict[int, dict[int, float]] = Field(default_factory=dict, exclude=True)
 
 
 class WeekSimFile(SimResult):
@@ -43,7 +44,12 @@ def sim_file(result: SimResult, names: Mapping[int, str]) -> SimFile:
 
 
 def week_sim_file(result: SimResult, names: Mapping[int, str]) -> WeekSimFile:
-    return WeekSimFile(**dict(result), names=dict(names))
+    """The week file of `result`. With no regular week left, the league fact names the favorite of the teams left, or
+    the champion, by the names of the teams."""
+    fact = result.fact
+    if fact is None and result.pages:
+        fact = playoff_fact(next(iter(result.pages.values())), names, result.season)
+    return WeekSimFile(**{**dict(result), "fact": fact}, names=dict(names))
 
 
 def read_sim(season_build: Path) -> SimFile:

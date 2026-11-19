@@ -149,8 +149,11 @@ class SimResult(BaseModel):
     sample_weights: list[float] = []
     # The page block of each team that the call asks for, by roster ID.
     pages: dict[int, SimPage] = {}
-    # The league fact of the Sim tile. None with no regular week left.
+    # The league fact of the Sim tile. None with no regular week left: the week file then writes the playoff fact.
     fact: str | None = None
+    # The real scores of each played bracket week, by week and roster ID. Each run keeps them, so the bracket of a
+    # played round is the real one in each run.
+    played: dict[int, dict[int, float]] = {}
 
 
 def season_sim(
@@ -168,6 +171,7 @@ def season_sim(
     set_results: Sequence[SetResult] = (),
     pages: Sequence[int] = (),
     stop: Callable[[], bool] | None = None,
+    played: Mapping[int, Mapping[int, float]] | None = None,
 ) -> SimResult:
     """The sim of the rest of the season after week `week`, through the playoff bracket.
 
@@ -186,13 +190,14 @@ def season_sim(
 
     `pages` holds the roster IDs whose page block the result gives, each by a split of the runs of this one sim.
     `stop` runs every STOP_CHECK_RUNS runs. When it gives True, the sim raises SimStopped.
+    `played` holds the real scores of each bracket week already played, by week and roster ID. Each run keeps them.
     """
     bracket_weeks = list(range(settings.last_regular_week + 1, settings.last_season_week + 1))
     model = draw_model(scores, records, sorted(remaining) + bracket_weeks, projected)
     return _season_sim(model, records, remaining, season=season, week=week, spots=settings.playoff_spots,
                        bye_count=settings.bye_count, median_game=settings.median_game, reseed=settings.reseed,
                        bracket_weeks=bracket_weeks, runs=runs, sample=sample, you=you, set_results=set_results,
-                       pages=pages, stop=stop)
+                       pages=pages, stop=stop, played=played or {})
 
 
 def rerun(
@@ -211,7 +216,7 @@ def rerun(
     return _season_sim(model, result.records, remaining, season=result.season, week=result.week,
                        spots=p.playoff_spots, bye_count=p.bye_count, median_game=p.median_game, reseed=p.reseed,
                        bracket_weeks=list(result.bracket_weeks), runs=result.runs, sample=len(result.sample), you=you,
-                       set_results=set_results, pages=pages, stop=stop)
+                       set_results=set_results, pages=pages, stop=stop, played=result.played)
 
 
 def _season_sim(
@@ -232,6 +237,7 @@ def _season_sim(
     set_results: Sequence[SetResult],
     pages: Sequence[int],
     stop: Callable[[], bool] | None,
+    played: Mapping[int, Mapping[int, float]],
 ) -> SimResult:
     """The sim of `season_sim` on the numbers `model` of its draw."""
     rosters = sorted(records)
@@ -240,7 +246,11 @@ def _season_sim(
     seed = season * 100 + week
     rng = random.Random(seed)
     spread, level_mean, level_se, shifts = model.spread, model.level_mean, model.level_se, model.shifts
-    held = _checked(set_results, you, rosters, remaining, bracket_weeks, median_game)
+    if not set(played) <= set(bracket_weeks):
+        raise ValueError("a played week must be a bracket week")
+    # The column of each played bracket week, and its real scores.
+    kept = [(weeks.index(w), dict(scores)) for w, scores in sorted(played.items())]
+    held = _checked(set_results, you, rosters, remaining, bracket_weeks, median_game, frozenset(played))
     # The set results of the regular weeks, as (column, opponent, result), in week order.
     held_regular = [(weeks.index(r.week), _opponent(remaining[r.week], you), r) for r in held if r.week in remaining]
     held_bracket = {weeks.index(r.week): r for r in held if r.week not in remaining}
@@ -271,6 +281,10 @@ def _season_sim(
         level = {rid: rng.gauss(level_mean[rid], level_se[rid]) for rid in rosters}
         drawn = {rid: [round(rng.gauss(level[rid], spread) + shift, SCORE_DECIMALS) for shift in shifts[rid]]
                  for rid in rosters}
+        # A played bracket week keeps its real scores. The draws above still run, so the seed gives the same runs.
+        for column, real in kept:
+            for rid, score in real.items():
+                drawn[rid][column] = score
         weight = 1.0
         for column, opponent, result in held_regular:
             assert you is not None
@@ -308,7 +322,9 @@ def _season_sim(
                 finals[rid] += weight
         titles[champion] += weight
         if week_log is not None:
-            log.append(RunRecord(weight=weight, wins=wins, made=frozenset(place), weeks=week_log))
+            log.append(RunRecord(weight=weight, wins=wins, made=frozenset(place), weeks=week_log,
+                                 seeds=tuple(table[:spots]), rounds=tuple(tuple(r) for r in rounds),
+                                 champion=champion))
         for a, b in next_pairs:
             # An exact tie is neither a win nor a loss, so the run lands in neither half.
             if drawn[a][0] == drawn[b][0]:
@@ -350,7 +366,8 @@ def _season_sim(
                              effective_runs=effective_runs,
                              set_weeks=len(held_regular) if rid == you else 0,
                              set_wins=sum((r.game == "win") + (r.median == "above") for _, _, r in held_regular)
-                             if rid == you else 0)
+                             if rid == you else 0,
+                             bracket_weeks=bracket_weeks, played=played)
               for rid in sorted(set(pages))}
     return SimResult(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,
@@ -364,6 +381,7 @@ def _season_sim(
         teams=teams, swings=[_swing(a, b, halves[(a, b)], status, teams, weeks_left) for a, b in next_pairs],
         sample=stored, sample_weights=stored_weights, pages=blocks,
         fact=league_fact({rid: t.playoff for rid, t in teams.items()}, spots, weeks_left),
+        played={w: dict(scores) for w, scores in played.items()},
     )
 
 
@@ -403,7 +421,7 @@ def weekly_odds(result: SimResult) -> OddsResult:
 
 def _checked(
     set_results: Sequence[SetResult], you: int | None, rosters: list[int], remaining: Mapping[int, list[Pair]],
-    bracket_weeks: list[int], median_game: bool,
+    bracket_weeks: list[int], median_game: bool, played: frozenset[int] = frozenset(),
 ) -> list[SetResult]:
     """The set results in week order, after a check of each against the league. A bad one raises ValueError."""
     if set_results and you not in rosters:
@@ -418,6 +436,8 @@ def _checked(
                 raise ValueError(f"the set result of week {r.week} needs above or below the median")
             if not median_game and r.median is not None:
                 raise ValueError(f"the league has no median game, so week {r.week} sets a win or a loss only")
+        elif r.week in played:
+            raise ValueError(f"week {r.week} is played, so it takes no set result")
         elif r.week in bracket_weeks:
             if r.median is not None:
                 raise ValueError(f"week {r.week} is a bracket week, so it sets a win or a loss only")

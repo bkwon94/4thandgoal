@@ -14,6 +14,10 @@
 - A set week keeps its tiles and its root-for card as they were at the tap, so the tiles still show the odds of each other result.
 - The set line lists each set result, with a Reset back to the numbers of the file.
 - A failed call goes back to the set results of the last answer, and one line says "The What-if is not available now."
+- With no regular week left, the page reads the playoff part of the page block (`in-playoffs.tsx`). The header shows the title odds, and the page has no week switch and no ladder.
+- In the playoffs, a team still in sees its game of the round with two tiles, the title odds after a win and after a loss. A team on a bye sees its bye, with no tile.
+- A team out of the playoffs sees "Out of the playoffs". Each playoff page shows the title odds of each team left and the bracket.
+- After the final, the page shows the champion and the final bracket, with no tile.
 
 ## Ports
 
@@ -24,4 +28,5 @@
 - It draws no score and runs no sim. Each number comes from the page block of `sim.json` or of a What-if answer.
 - It makes no call with no set result, and no call of its own. The port of the app makes the call.
 - It has no grid of every game. The only result tiles are those of Your team.
+- It offers no tile for a bracket game whose two teams are not set, and no chart of the odds by week.
 - It reads no file, no env, no config, and no storage (ADR 0012). The app reads Your team.

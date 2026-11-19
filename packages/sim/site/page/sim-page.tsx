@@ -13,6 +13,7 @@ import { cn } from "@cpc/design/lib/utils";
 import type { SetResult, WeekSim } from "../schema/sim-types";
 import type { WhatIfApi } from "../lib/what-if-api";
 import { LABEL, PRESS, nameOf, oddsText, recordText, resultName } from "./format";
+import { InPlayoffs, seasonLine } from "./in-playoffs";
 import { LadderSheet } from "./ladder-sheet";
 import { SoftText } from "./parts";
 import { PlayoffsPage } from "./playoffs-page";
@@ -33,6 +34,38 @@ const ADVANCE_MS = 400;
 const setText = (set: SetResult[]) => set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
 
 export function SimPage({ sim, you, avatars = {}, whatIf }: { sim: WeekSim; you: number; avatars?: Avatars; whatIf?: WhatIfApi }) {
+  if (sim.pages[you].playoffs) return <PlayoffSimPage sim={sim} you={you} avatars={avatars} />;
+  return <RegularSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} />;
+}
+
+/* The sim page with no regular week left: Your team with its title odds, then the playoff cards. No week switch and no
+   ladder, because no regular week is left to win. */
+function PlayoffSimPage({ sim, you, avatars }: { sim: WeekSim; you: number; avatars: Avatars }) {
+  const page = sim.pages[you];
+  const playoffs = page.playoffs!;
+  const name = nameOf(sim, you);
+  const live = playoffs.alive && playoffs.champion === null;
+  return (
+    <div className="flex flex-col gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
+      <section aria-label="Your team" className="flex w-full items-center gap-sp-3">
+        <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
+        <div className="min-w-0 flex-1">
+          <h1 className="m-0 text-stat leading-tight font-bold text-balance">{name}</h1>
+          <p className="m-0 text-meta text-pretty text-mute tabular-nums">{`${recordText(page.record)} · ${seasonLine(playoffs, you)}`}</p>
+        </div>
+        {live && (
+          <div className="flex flex-none flex-col items-end">
+            <span className="font-mono text-score leading-none font-bold tabular-nums">{oddsText(playoffs.title)}</span>
+            <span className={cn(LABEL, "pt-sp-1 text-mute")}>Title odds</span>
+          </div>
+        )}
+      </section>
+      <InPlayoffs sim={sim} you={you} avatars={avatars} />
+    </div>
+  );
+}
+
+function RegularSimPage({ sim, you, avatars, whatIf }: { sim: WeekSim; you: number; avatars: Avatars; whatIf?: WhatIfApi }) {
   const file = sim.pages[you];
   const name = nameOf(sim, you);
   const what = useWhatIf(file, whatIf);
