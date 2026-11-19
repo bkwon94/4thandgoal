@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-5, AT-6, AT-18, AT-19
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Deadline banner has the name "Open the Trade Wire, N new trades", and the badge matches the count of the route.
 - [x] A new trade from the route shows at the top within 15 s, with the slide of transitions-dev, and no slide under reduced motion.
