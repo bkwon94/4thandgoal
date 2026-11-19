@@ -10,10 +10,11 @@ import { Sheet, SheetBackdrop, SheetTrigger } from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import type { ApiTarget } from "../lib/api";
-import type { Deadline, DeadlinePhase } from "../lib/deadline";
+import { type Deadline, type DeadlinePhase, PASSED_TEXT } from "../lib/deadline";
 import { useDeadline } from "../lib/use-deadline";
 import { useTradeWire } from "../lib/use-trade-wire";
-import { LiveDot, SMOOTH_OUT, type TradeLinks, WireSheet } from "./wire-sheet";
+import { SMOOTH_OUT } from "@cpc/design/lib/motion";
+import { LiveDot, type TradeLinks, WireSheet } from "./wire-sheet";
 
 /* The surface of each phase, from the theme tokens only, so the banner reads in light and in dark. */
 const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {
@@ -22,7 +23,7 @@ const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {
   closed: "border-rule bg-raised text-ink",
 };
 
-const PASSED = "The trade deadline has passed. Good luck in the playoffs.";
+const PASSED = `${PASSED_TEXT}. Good luck in the playoffs.`;
 
 /* The banner for the Lock `lock`, in ms since the epoch. The app passes it only for a client with a Lock. It also passes
    the API of the Trade Wire route and the trade links, because the package reads no config. findHref is null while the
@@ -70,7 +71,7 @@ function Placeholder() {
 
 /* The name of the button. Before the first read the count is not known, so the name gives none. */
 function nameOf(closed: boolean, count: number | null): string {
-  if (closed) return "Open the Trade Wire, final. The trade deadline has passed.";
+  if (closed) return `Open the Trade Wire, final. ${PASSED_TEXT}.`;
   if (count === null) return "Open the Trade Wire";
   return `Open the Trade Wire, ${count} new ${count === 1 ? "trade" : "trades"}`;
 }

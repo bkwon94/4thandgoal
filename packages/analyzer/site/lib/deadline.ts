@@ -11,6 +11,9 @@ export type DeadlinePhase = "open" | "last-hours" | "closed" | "ended";
    Monday night games. After the Lock there is no countdown. */
 export type Deadline = { phase: DeadlinePhase; countdown: string | null };
 
+/* The text of the closed state, in one place. The banner, its button name, and the eyebrow of the hero all show it. */
+export const PASSED_TEXT = "The trade deadline has passed";
+
 const SECOND = 1000;
 const HOUR = 3600 * SECOND;
 const DAY = 24 * HOUR;

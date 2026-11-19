@@ -1,7 +1,6 @@
 /**
- * Tests for the switch of the analyzer hero, Grade a trade and Find a trade: the mode of the link, the Find hero with its
- * partner choice and position chips, the find body of a chip, the lock of the switch in a wait, the open of a card with
- * its read, and the deadline eyebrow. fetch is a test stub, and a find answers with a real event stream.
+ * Tests for the switch of the analyzer hero: the mode of the link, the Find hero, the chips, the disabled switch in a wait,
+ * the open of a card, and the deadline eyebrow. fetch is a test stub, and a find answers with a real event stream.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -197,7 +196,7 @@ describe("The Find wait and the cards", () => {
     await waitFor(() => expect(checked("Find a trade")).toBe(true));
   }
 
-  it("keeps the switch on Find and locked during the wait, and a tap on Grade a trade does not stop it", async () => {
+  it("keeps the switch on Find and disabled during the wait, and a tap on Grade a trade does not stop it", async () => {
     // AT-32.
     await ready();
     const stream = findStream();

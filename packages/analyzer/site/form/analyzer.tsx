@@ -14,7 +14,7 @@ import { Button } from "@cpc/design/ui/button";
 import { useRequest } from "./use-request";
 import { ApiError, type ApiTarget, retryText, type Team } from "../lib/api";
 import { DURATION } from "@cpc/design/lib/motion";
-import type { Deadline } from "../lib/deadline";
+import { type Deadline, PASSED_TEXT } from "../lib/deadline";
 import { useDeadline } from "../lib/use-deadline";
 import { type AnalyzerMode, readMode, withMode } from "../lib/mode";
 import { clearPassphrase, getPassphrase, setPassphrase } from "../lib/passphrase";
@@ -39,7 +39,7 @@ const NO_TEAMS: Team[] = [];
    its lower case in the caps of the eyebrow, so "~2d 14h 05m" reads as a time. Undefined outside Deadline week. */
 function deadlineEyebrow(deadline: Deadline | null): ReactNode {
   if (deadline === null || deadline.phase === "ended") return undefined;
-  if (deadline.countdown === null) return "The trade deadline has passed";
+  if (deadline.countdown === null) return PASSED_TEXT;
   return (
     <>
       Trade deadline <span className="normal-case tabular-nums">{deadline.countdown}</span>

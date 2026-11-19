@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronDown, RotateCcw, Users } from "lucide-react";
-import { type ReactNode, useEffect, useId, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { AsOfLine, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
 import { BulletRows } from "./bullet-rows";
 import { ErrorLine } from "@cpc/design/parts/error-line";
@@ -16,10 +16,11 @@ import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Sheet } from "./sheet";
 import { StageLines } from "./stage-lines";
 import { Button } from "@cpc/design/ui/button";
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { PendingButton } from "@cpc/design/ui/pending-button";
 import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "@cpc/design/ui/segmented-control";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { EASE_OUT } from "@cpc/design/lib/motion";
+import { EASE_OUT, SMOOTH_OUT } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
@@ -271,42 +272,26 @@ function LeanWord({ lean }: { lean: Lean }) {
   return <h3 className={cn("m-0 text-score leading-tight font-black tracking-tight", yes ? "text-accent-ink" : "text-ink")}>{lean}</h3>;
 }
 
-/* The Bullets fold under the Case, so the card stays short. One tap opens them. The height grows from 0fr to 1fr in
-   250 ms with the smooth-out ease, as the accordion recipe of transitions.dev, and the chevron flips. The closed panel is
-   inert, so a keyboard skips its rows. With motion off it opens at once. */
+/* The Bullets fold under the Case, so the card stays short. One tap opens them. The panel of the shared Collapsible
+   fades in with a small rise, and the chevron flips. The closed panel is hidden, so a keyboard skips its rows. With
+   motion off it opens at once. */
 function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }) {
-  const [open, setOpen] = useState(false);
-  const panel = useId();
   return (
-    <div className="flex flex-col">
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={panel}
-        onClick={() => setOpen((shown) => !shown)}
-        className="press -mx-sp-2 flex min-h-touch w-fit cursor-pointer items-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent"
-      >
+    <Collapsible className="flex flex-col">
+      <CollapsibleTrigger className="press group -mx-sp-2 flex min-h-touch w-fit cursor-pointer items-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent">
         Why it works · {trade.bullets.length}
         <ChevronDown
           aria-hidden="true"
-          className={cn("size-sp-4 transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none", open && "-scale-y-100")}
+          style={{ transitionTimingFunction: `cubic-bezier(${SMOOTH_OUT.join(",")})` }}
+          className="size-sp-4 transition-transform duration-250 group-data-open:-scale-y-100 motion-reduce:transition-none"
         />
-      </button>
-      <div
-        id={panel}
-        inert={!open}
-        className={cn(
-          "grid transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-        )}
-      >
-        <div className="min-h-0 overflow-hidden">
-          <div className="pt-sp-2 pb-sp-1">
-            <BulletRows bullets={trade.bullets} idBase={idBase} />
-          </div>
+      </CollapsibleTrigger>
+      <CollapsiblePanel>
+        <div className="pt-sp-2 pb-sp-1">
+          <BulletRows bullets={trade.bullets} idBase={idBase} />
         </div>
-      </div>
-    </div>
+      </CollapsiblePanel>
+    </Collapsible>
   );
 }
 
@@ -314,7 +299,7 @@ function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }
    Bullets. The pick writes no headline, so one voice speaks. After a fallback the trade has no Lean and no Bullet, so
    the card lists its plain fact lines. The cards rise in one after another, 80 ms apart, as the texts reveal of
    transitions.dev. With motion off, they show at once. */
-function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; locked: boolean }) {
+function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; disabled: boolean }) {
   const off = useMotionOff();
   const sides = swapSides(trade, asker);
   const partner = sides.find((side) => !side.mine);
@@ -346,7 +331,7 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
           ))}
         </ul>
       )}
-      <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={locked} onClick={onOpen}>
+      <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={disabled} onClick={onOpen}>
         See the Full Result
       </Button>
     </motion.article>
@@ -354,7 +339,7 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
 }
 
 /* The finder result: the cards in one list, or the empty line, then the as-of line. */
-function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; locked: boolean }) {
+function FinderResult({ doc, onOpen, disabled }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; disabled: boolean }) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
     <div className="flex flex-col gap-sp-4 pt-sp-5">
@@ -367,7 +352,7 @@ function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (tra
         <ol aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {doc.trades.map((trade, i) => (
             <li key={trade.offer_id}>
-              <FinderCard trade={trade} asker={asker} index={i} count={doc.trades.length} onOpen={() => onOpen(trade, doc)} locked={locked} />
+              <FinderCard trade={trade} asker={asker} index={i} count={doc.trades.length} onOpen={() => onOpen(trade, doc)} disabled={disabled} />
             </li>
           ))}
         </ol>
@@ -515,7 +500,7 @@ export function TradeFinder({
       ) : (
         <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
       )}
-      {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} locked={locked} />}
+      {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} disabled={locked} />}
     </section>
   );
 }

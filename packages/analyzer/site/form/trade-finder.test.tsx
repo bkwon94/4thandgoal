@@ -279,11 +279,11 @@ describe("TradeFinder", () => {
     const trade = fixture.trades[0];
     const fold = within(card).getByRole("button", { name: `Why it works · ${trade.bullets.length}` });
     expect(fold.getAttribute("aria-expanded")).toBe("false");
-    const panel = document.getElementById(fold.getAttribute("aria-controls")!) as HTMLElement;
-    expect(panel.hasAttribute("inert")).toBe(true);
+    expect(within(card).queryByRole("button", { name: new RegExp(trade.bullets[0].text) })).toBeNull();
     fireEvent.click(fold);
     expect(fold.getAttribute("aria-expanded")).toBe("true");
-    expect(panel.hasAttribute("inert")).toBe(false);
+    const panel = document.getElementById(fold.getAttribute("aria-controls")!) as HTMLElement;
+    expect(panel.hasAttribute("hidden")).toBe(false);
     const rows = within(panel).getAllByRole("button", { expanded: false });
     expect(rows).toHaveLength(trade.bullets.length);
     trade.bullets.forEach((bullet, n) => {
