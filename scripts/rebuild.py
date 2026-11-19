@@ -1,6 +1,7 @@
 """
-Runs the base and head rebuild of the latest week of each client: facts and page-json with the code of the base and of the head,
-then a diff of facts.json, page.json, topics.json, and waiver.json by JSON path, checked against the approved diffs (ADR 0037).
+Rebuild the latest week of each client with the code of the base and with the code of the head.
+Diff facts.json, page.json, topics.json, and waiver.json by JSON path.
+Check each diff against the approved diffs (ADR 0037).
 """
 import argparse
 import json
@@ -14,11 +15,14 @@ from pathlib import Path
 
 # The files of a week that the render writes. The diff compares each one.
 RENDER_FILES = ("page.json", "topics.json", "waiver.json")
+# Every file that the job diffs. The facts-only rebuild adds facts.json to the render files.
+DIFFED_FILES = ("facts.json", *RENDER_FILES)
 # The saved inputs of a week that the facts-only rebuild reads, by their path in the data folder of the week.
 SAVED_INPUTS = ("verify.json", "raw/nflverse.json", "raw/slow_sources.json", "raw/news.json")
-PIPELINE_CLI = Path("apps/pipeline/src/cornerstone/cli.py")
 # The rebuild makes no Claude call and no TypeSafe call, so a run never gets either key, even from a local shell.
 SECRETS = ("ANTHROPIC_API_KEY", "TYPESAFE_API_KEY")
+# The command line that runs the pipeline CLI of one checkout.
+CORNERSTONE = ["uv", "run", "--quiet", "--exact", "--package", "cornerstone", "cornerstone"]
 WEEK_FOLDER = re.compile(r"week-(\d{2})")
 
 
@@ -55,7 +59,7 @@ class Result:
 
 # One approved diff per list line: "- <client> <file> <JSON path>: <reason>". Backticks around each part are optional.
 # The same line shape serves REBUILD.md of a spec and the Rebuild: block of a quick file.
-APPROVED_LINE = re.compile(r"^\s*[-*]\s+`?([\w-]+)`?\s+`?(facts\.json|page\.json|topics\.json|waiver\.json)`?"
+APPROVED_LINE = re.compile(r"^\s*[-*]\s+`?([\w-]+)`?\s+`?(" + "|".join(map(re.escape, DIFFED_FILES)) + r")`?"
                            r"\s+`?(\$[^`\s]*)`?\s*:\s*(.+?)\s*$")
 
 
@@ -79,22 +83,27 @@ def build_week(root: Path, week: Week) -> Path:
     return root / "clients" / week.slug / "build" / str(week.season) / f"week-{week.week:02d}"
 
 
+def published_weeks(root: Path, slug: str) -> list[Week]:
+    """The published weeks of one client, the latest first."""
+    published = root / "clients" / slug / "published"
+    seasons = sorted((int(p.name) for p in published.glob("[0-9]*") if p.is_dir()), reverse=True)
+    weeks = []
+    for season in seasons:
+        matches = (WEEK_FOLDER.fullmatch(p.name) for p in (published / str(season)).iterdir())
+        weeks += [Week(slug, season, n) for n in sorted((int(m.group(1)) for m in matches if m), reverse=True)]
+    return weeks
+
+
 def latest_weeks(root: Path) -> list[Week]:
     """The latest published week of each client whose saved facts and blurbs let page-json render it again."""
     weeks = []
     for client in sorted((root / "clients").iterdir()):
         if not (client / "client.toml").is_file():
             continue
-        seasons = sorted((int(p.name) for p in (client / "published").glob("[0-9]*") if p.is_dir()), reverse=True)
-        for season in seasons:
-            numbers = sorted((int(m.group(1)) for p in (client / "published" / str(season)).iterdir()
-                              if (m := WEEK_FOLDER.fullmatch(p.name))), reverse=True)
-            found = next((Week(client.name, season, n) for n in numbers
-                          if all((data_week(root, Week(client.name, season, n)) / name).is_file()
-                                 for name in ("facts.json", "blurbs.json"))), None)
-            if found:
-                weeks.append(found)
-                break
+        found = next((week for week in published_weeks(root, client.name)
+                      if all((data_week(root, week) / name).is_file() for name in ("facts.json", "blurbs.json"))), None)
+        if found:
+            weeks.append(found)
     return weeks
 
 
@@ -103,10 +112,19 @@ def has_saved_inputs(root: Path, week: Week) -> bool:
     return all((data_week(root, week) / name).is_file() for name in SAVED_INPUTS)
 
 
+def facts_week(root: Path, render_week: Week) -> Week | None:
+    """The latest published week of the client of `render_week` that holds every saved input, or None.
+    The facts diff needs those inputs. page-json also reads blurbs.json, so the week must hold it too."""
+    return next((week for week in published_weeks(root, render_week.slug)
+                 if has_saved_inputs(root, week) and (data_week(root, week) / "blurbs.json").is_file()), None)
+
+
 def base_rebuilds_facts(base: Path) -> bool:
-    """True when the CLI of the base has the facts-only rebuild. Until then the job can diff the render only."""
-    cli = base / PIPELINE_CLI
-    return cli.is_file() and 'add_parser("facts"' in cli.read_text(encoding="utf-8")
+    """True when the CLI of the base has the facts-only rebuild. A base without it gets the render diff only.
+    The probe runs the command as the rebuild does, so a rename or a reformat of the CLI source cannot fool it."""
+    probe = subprocess.run([*CORNERSTONE, "facts", "--help"], cwd=base, env=clean_env(),
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return probe.returncode == 0
 
 
 def json_diff(before, after, path: str = "$") -> list[str]:
@@ -130,13 +148,16 @@ def file_diff(before: Path, after: Path) -> list[str]:
     return json_diff(json.loads(before.read_text(encoding="utf-8")), json.loads(after.read_text(encoding="utf-8")))
 
 
+def clean_env() -> dict[str, str]:
+    return {key: value for key, value in os.environ.items() if key not in SECRETS}
+
+
 def cornerstone(checkout: Path, command: str, week: Week) -> None:
     """Run one command of the pipeline CLI on one week with the code of one checkout. It writes into that checkout:
     facts writes facts.json into the data folder, and page-json writes the build folder."""
-    env = {key: value for key, value in os.environ.items() if key not in SECRETS}
-    subprocess.run(["uv", "run", "--quiet", "--exact", "--package", "cornerstone", "cornerstone", command,
-                    "--client", week.slug, "--season", str(week.season), "--week", str(week.week)],
-                   cwd=checkout, env=env, check=True, stdout=subprocess.DEVNULL)
+    subprocess.run([*CORNERSTONE, command, "--client", week.slug, "--season", str(week.season),
+                    "--week", str(week.week)],
+                   cwd=checkout, env=clean_env(), check=True, stdout=subprocess.DEVNULL)
 
 
 def share_inputs(base: Path, head: Path, week: Week) -> None:
@@ -192,8 +213,12 @@ def main() -> int:
     if not weeks:
         print("No client has a published week with saved facts. Nothing to diff.")
     changed: list[Change] = []
-    for week in weeks:
-        with_facts = base_has_facts and has_saved_inputs(head, week)
+    for render_week in weeks:
+        # A client with a week that holds every saved input gets the facts diff on that week. Any other client keeps
+        # the render diff of its latest week.
+        with_facts_week = facts_week(head, render_week) if base_has_facts else None
+        week = with_facts_week or render_week
+        with_facts = with_facts_week is not None
         if base_has_facts and not with_facts:
             print(f"render only: {week} has no saved inputs of the facts")
         week_changed = diff_week(base, head, week, with_facts)

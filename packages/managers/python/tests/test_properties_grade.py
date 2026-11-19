@@ -1,6 +1,6 @@
 """
 Property tests of the pure functions of the roster grade: the score, the letter, the depth word, the league scale,
-and the ranks of the rosters and of the positions. Hypothesis draws the inputs, so edge cases get tested too.
+and the ranks of the rosters and of the positions. Hypothesis draws the inputs, so the tests cover edge cases too.
 """
 import random
 

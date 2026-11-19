@@ -20,6 +20,7 @@ from cpc import cli_root, cpc_client
 from fakes import FakeJev, fixture_nflverse, no_claims, no_network, no_news
 
 from cornerstone.pipeline import (
+    SAVED_INPUTS,
     BuildStopped,
     _nflverse_for_week,
     _write_managers,
@@ -1198,9 +1199,6 @@ def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, cap
     bundle = read_bundle(week_dir(repo, 2026, 6) / "facts.json")
     assert bundle.data.drop_source == "nflverse"
     assert "nflverse refetch failed" in caplog.text
-
-
-SAVED_INPUTS = ("nflverse.json", "slow_sources.json", "news.json")
 
 
 def _repo_with_cache(tmp_path, fixture_raw_dir):
