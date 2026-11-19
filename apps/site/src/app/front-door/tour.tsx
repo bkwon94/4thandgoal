@@ -356,7 +356,6 @@ function Stops({ onEnd }: { onEnd: () => void }) {
     if (!target) return;
     target.el.setAttribute("data-tour-target", "");
     holeLanded.current = false;
-    cardOut.current = false;
     return () => target.el.removeAttribute("data-tour-target");
   }, [target]);
 
@@ -370,6 +369,12 @@ function Stops({ onEnd }: { onEnd: () => void }) {
     if (side === null) setSide(wanted);
     else if (!away && cardAt !== at) setCardAt(at);
   }, [wanted, side, away, cardAt, at]);
+  // `cardOut` says the card is out of sight. Only a render that shows the card again clears it. A `land` may read a side
+  // that a scroll has already flipped back, and then the card stays away at opacity 0 with no fade to end. The card
+  // still counts as out, so the next landing of the hole brings it back.
+  useLayoutEffect(() => {
+    if (!away) cardOut.current = false;
+  }, [away]);
   // After the snap to the new place, the next move glides again.
   useEffect(() => {
     if (!snap) return;
@@ -379,7 +384,6 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   // The card comes back once it is out and the hole has landed: it snaps to the new side, and then fades in.
   const land = () => {
     if (!away || !holeLanded.current || !cardOut.current || at === null) return;
-    cardOut.current = false;
     setSide(wanted);
     setCardAt(at);
     setSnap(true);

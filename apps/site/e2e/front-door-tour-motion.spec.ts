@@ -1,8 +1,9 @@
 /**
  * The motion of the Tour of the front door on the static export in out/ of the current CLIENT, in WebKit, as Safari runs.
- * With motion on, the hole and the card glide together. Under reduced motion, the hole jumps and the card only fades.
+ * With motion on, the hole and the card glide together, and a burst of scroll leaves the card shown. Under reduced motion,
+ * the hole jumps and the card only fades.
  */
-import { type Page, devices, expect, test } from "@playwright/test";
+import { type Page, chromium, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { samplesWhenStill, startSamples } from "./door-motion";
@@ -143,6 +144,49 @@ test.describe("iPhone 390x660 with motion on", () => {
     expect(strays, "the card moves while it shows, before the hole lands").toEqual([]);
     expect(Math.min(...samples.map((sample) => sample.opacity)), "the card fades out").toBeLessThanOrEqual(0.01);
     expect(last.opacity, "the card shows at the end").toBe(1);
+  });
+});
+
+/* Short scrolls down and back. The control crosses the middle line of the screen, so the side of the card flips. A
+   pause near the fade of the card lets the card fade out, and the scroll back flips the side again before the card
+   comes back. The pause that does it moves with the load of the machine, so the test steps through the pauses around
+   the fade. After each scroll the card must show again within 3 s, beside its hole, and never over its control. */
+async function cardShowsAfterScrollBursts(page: Page) {
+  for (let pause = 120; pause <= 220; pause += 5) {
+    await page.evaluate(async (wait) => {
+      window.scrollTo(0, 60);
+      await new Promise((done) => setTimeout(done, wait));
+      window.scrollTo(0, 0);
+    }, pause);
+    await expect
+      .poll(() => page.evaluate(readFrame).then(({ opacity }) => opacity), { message: `the card shows again after a scroll with a pause of ${pause} ms`, timeout: 3000 })
+      .toBe(1);
+    const frame: Sample = await page.evaluate(readFrame);
+    const { below, gap } = offsetOf(frame);
+    // The card sits under a control in the top half of the screen and over a control in the bottom half.
+    const holeInTopHalf = frame.hole.y + frame.hole.height / 2 <= page.viewportSize()!.height / 2;
+    console.log(`E1 card at rest after a scroll with a pause of ${pause} ms: ${JSON.stringify({ hole: frame.hole, card: frame.card, opacity: frame.opacity, below, gap })}`);
+    expect(below, `the card takes the side of its control after a pause of ${pause} ms`).toBe(holeInTopHalf);
+    expect(gap, `the card does not cover its control after a pause of ${pause} ms`).toBeGreaterThanOrEqual(0);
+  }
+}
+
+test.describe("a burst of scroll at phone width with motion on", () => {
+  const { defaultBrowserType: _browser, ...iphone } = devices["iPhone 15"];
+  test.use({ ...iphone, viewport: { width: 390, height: 660 }, reducedMotion: "no-preference" });
+
+  test("WebKit 390x660: the card shows again beside its hole", async ({ page }) => {
+    await openTour(page);
+    await cardShowsAfterScrollBursts(page);
+  });
+
+  // The file runs in WebKit, so this test launches its own Chromium.
+  test("Chromium 375x900: the card shows again beside its hole", async () => {
+    const browser = await chromium.launch();
+    const page = await browser.newPage({ viewport: { width: 375, height: 900 }, reducedMotion: "no-preference" });
+    await openTour(page);
+    await cardShowsAfterScrollBursts(page);
+    await browser.close();
   });
 });
 
