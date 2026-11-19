@@ -28,6 +28,20 @@ Before the push, read the result of the run.
 - Fix a red run before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
 - If a test of the spec covers the background check, record the start time, the end time, and the last lines of the log in its evidence.
 
+## The smoke run
+
+Run one smoke run after the last ticket merge, before the first site test and before the Judge. Skip it only when the diff of the spec against `main` has no change to `apps/site/` or `apps/api/`. See the `verify` skill.
+
+1. Pick the flows: `pnpm --dir apps/site pick --base main`.
+2. Start the local API in the background: `make -C apps/api api-evidence`.
+3. Run the flows: `pnpm --dir apps/site smoke --out .scratch/<slug>/evidence/smoke <flow name> ...`.
+4. Stop the API.
+5. Put the last line of `smoke.log` at the top of `EVIDENCE.md`, with the path of the smoke folder `evidence/smoke/`.
+
+The folder `evidence/smoke/` holds `smoke.log` and the shots of each flow.
+
+A red smoke run is a red check. Fix the cause with a fix group, and run the smoke run again once. If it is still red, stop before the Judge. Tell Brian the log. Start no Judge and open no PR.
+
 ## A site test
 
 The instrument is the evidence runner, a Playwright project of the site. One command takes every shot of every site test of the feature.

@@ -154,11 +154,22 @@ The brief of a Quick win is the brief of a Bug, with these changes:
 - Step 8 has no Cause line.
 - The `NEEDS SCREENSHOT` line goes away.
 
-## Step 7: the quick Judge
+## Step 7: the smoke run
+
+Run one smoke run after the last item, before the quick Judge. Skip it for a run with no change to `apps/site/` or `apps/api/`, and write `Smoke: none, no site or API change.` in the quick file. See the `verify` skill and [`format.md`](format.md#the-smoke-block).
+
+1. Pick the flows: `pnpm --dir apps/site pick --base main`.
+2. Start the local API: `make -C apps/api api-evidence`. Run it in the background.
+3. Run the flows: `pnpm --dir apps/site smoke --out .scratch/<folder>/<slug>/smoke <flow name> ...`.
+4. Write the `Smoke:` block of the quick file. Commit it with the shots.
+
+**Stop rule of step 7.** A red smoke run is a red check. Give it one fix round. If it is still red, stop before the Judge. Tell Brian the log. Open no PR.
+
+## Step 8: the quick Judge
 
 Run the quick Judge once over each item whose method is not `text only`. See [`judge.md`](judge.md). A text-only item gets `Test verdict: none` and no Judge.
 
-## Step 8: close and open the PR
+## Step 9: close and open the PR
 
 1. Close the quick file, as [`format.md`](format.md#the-close) shows. Commit with the message `Close the quick run <slug>`. This is the last commit before the push.
 2. Push the branch: `git push -u origin <branch>`.
@@ -168,7 +179,7 @@ Run the quick Judge once over each item whose method is not `text only`. See [`j
 6. Run `python3 scripts/queue.py wait <folder> merge-pr <PR number>`. The folder is `bugs` or `quick-wins`. The wait task lands in `Bugs` or `Quick Wins`.
 7. Wait for the CI check: `gh pr checks <PR number> --watch`. If the check `Check` fails, read the log with `gh run view <run id> --log-failed`. Fix the cause in its own commit, then push.
 
-**Stop rule of step 8.** If the push or `gh pr create` fails, stop. Tell Brian the command and its error. If the check `Check` fails two times, stop. Tell Brian the failed test.
+**Stop rule of step 9.** If the push or `gh pr create` fails, stop. Tell Brian the command and its error. If the check `Check` fails two times, stop. Tell Brian the failed test.
 
 ## The boundary stop
 
