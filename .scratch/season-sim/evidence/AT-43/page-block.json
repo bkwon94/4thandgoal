@@ -1,0 +1,129 @@
+{
+  "you": 4,
+  "playoff": 0,
+  "status": "out",
+  "record": [
+    7,
+    21
+  ],
+  "weeks_left": 0,
+  "wins_left": 0,
+  "need": null,
+  "sentence": "You're out of the playoff race.",
+  "ladder": [
+    {
+      "more_wins": 0,
+      "playoff": 0,
+      "chance": 100.0,
+      "about": false
+    }
+  ],
+  "weeks": [],
+  "playoffs": {
+    "seed": null,
+    "alive": false,
+    "title": 0,
+    "week": 15,
+    "bye": false,
+    "game": null,
+    "teams": [
+      {
+        "roster_id": 2,
+        "seed": 1,
+        "title": 17,
+        "alive": true
+      },
+      {
+        "roster_id": 3,
+        "seed": 2,
+        "title": 23,
+        "alive": true
+      },
+      {
+        "roster_id": 9,
+        "seed": 3,
+        "title": 17,
+        "alive": true
+      },
+      {
+        "roster_id": 8,
+        "seed": 4,
+        "title": 12,
+        "alive": true
+      },
+      {
+        "roster_id": 12,
+        "seed": 5,
+        "title": 16,
+        "alive": true
+      },
+      {
+        "roster_id": 1,
+        "seed": 6,
+        "title": 14,
+        "alive": true
+      }
+    ],
+    "rounds": [
+      {
+        "week": 15,
+        "played": false,
+        "games": [
+          {
+            "teams": [
+              9,
+              1
+            ],
+            "scores": null,
+            "winner": null
+          },
+          {
+            "teams": [
+              8,
+              12
+            ],
+            "scores": null,
+            "winner": null
+          }
+        ]
+      },
+      {
+        "week": 16,
+        "played": false,
+        "games": [
+          {
+            "teams": [
+              2,
+              null
+            ],
+            "scores": null,
+            "winner": null
+          },
+          {
+            "teams": [
+              3,
+              null
+            ],
+            "scores": null,
+            "winner": null
+          }
+        ]
+      },
+      {
+        "week": 17,
+        "played": false,
+        "games": [
+          {
+            "teams": [
+              null,
+              null
+            ],
+            "scores": null,
+            "winner": null
+          }
+        ]
+      }
+    ],
+    "champion": null
+  }
+}

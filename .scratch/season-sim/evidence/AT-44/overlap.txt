@@ -1,0 +1,8 @@
+season-end-390x660-light.png (full page): no overlap, no cover, no side scroll
+season-end-390x660-dark.png (full page): no overlap, no cover, no side scroll
+season-end-810x980-light.png (full page): no overlap, no cover, no side scroll
+season-end-810x980-dark.png (full page): no overlap, no cover, no side scroll
+season-end-1080x740-light.png (full page): no overlap, no cover, no side scroll
+season-end-1080x740-dark.png (full page): no overlap, no cover, no side scroll
+season-end-1280x800-light.png (full page): no overlap, no cover, no side scroll
+season-end-1280x800-dark.png (full page): no overlap, no cover, no side scroll

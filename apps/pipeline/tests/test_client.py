@@ -38,6 +38,15 @@ def _copy(tmp_path: Path, old: str, new: str) -> Path:
     return folder
 
 
+def _drop_sim_menu_item(folder: Path) -> None:
+    """Remove the sim items from both menus of the client.toml in the folder."""
+    path = folder / "client.toml"
+    text = path.read_text(encoding="utf-8")
+    item = '  { package = "sim" },\n'
+    assert item in text
+    path.write_text(text.replace(item, ""), encoding="utf-8")
+
+
 def test_the_cpc_client_reads_the_values_of_the_spec():
     values = read_client_values(CPC, VALUE_MODELS)
     assert values.packages == ["week", "rankings", "managers", "analyzer", "midseason", "sim", "eggs"]
@@ -48,10 +57,10 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.package(AnalyzerValues).finder is False
     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
     assert [item.package or item.page for item in values.menu.items] == [
-        "home", "week", "rankings", "midseason", "managers", "analyzer"]
+        "home", "week", "rankings", "sim", "midseason", "managers", "analyzer"]
     assert values.front_door is True
     assert [item.package or item.page for item in values.menu.front_door_items or []] == [
-        "home", "week", "rankings", "managers", "analyzer"]
+        "home", "week", "rankings", "sim", "managers", "analyzer"]
 
 
 def test_each_client_of_the_repo_turns_the_front_door_on():
@@ -119,6 +128,8 @@ def test_a_client_with_midseason_and_no_sim_fails_and_names_sim(tmp_path):
     # AT-48: the report ends on the sim, so a client that takes midseason takes sim too.
     folder = _copy(tmp_path, 'packages = ["week", "rankings", "managers", "analyzer", "midseason", "sim", "eggs"]',
                    'packages = ["week", "rankings", "managers", "analyzer", "midseason", "eggs"]')
+    # The menu items for sim go too, so only the midseason rule fails.
+    _drop_sim_menu_item(folder)
     with pytest.raises(ClientError) as err:
         read_client_values(folder, VALUE_MODELS)
     assert "- The midseason package needs the sim package. Add sim to the package list." in str(err.value)

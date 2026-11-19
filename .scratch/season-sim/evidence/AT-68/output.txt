@@ -1,0 +1,25 @@
+$ for n in 1 2; do curl -sS -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @win-above.json -o at68-answer-$n.json -w "call $n status %{http_code} time %{time_total}s\n"; done
+call 1 status 200 time 3.790034s
+call 2 status 200 time 2.734098s
+[exit 0]
+
+$ cat win-above.json
+{"you": 6, "set": [{"week": 11, "game": "win", "median": "above"}]}
+[exit 0]
+
+$ sed -n '55,$p' /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/api-8791.log
+INFO:     cornerstone_api.what_if: What-if of cpc ran 10000 runs in 3.69 s, set weeks [11]
+INFO:     127.0.0.1:65447 - "POST /clients/cpc/sim/what-if HTTP/1.1" 200 OK
+INFO:     cornerstone_api.what_if: What-if of cpc ran 10000 runs in 2.68 s, set weeks [11]
+INFO:     127.0.0.1:65480 - "POST /clients/cpc/sim/what-if HTTP/1.1" 200 OK
+[exit 0]
+
+$ sed -n '55,$p' /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/api-8791.log | grep -c 'What-if of cpc ran'
+2
+[exit 0]
+
+$ shasum -a 256 at68-answer-1.json at68-answer-2.json
+9df30b9e5bc66c745a2049d49d435e49f0f7347f0fdabf37e2199e2796397e43  at68-answer-1.json
+9df30b9e5bc66c745a2049d49d435e49f0f7347f0fdabf37e2199e2796397e43  at68-answer-2.json
+[exit 0]
+

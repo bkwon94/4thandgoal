@@ -1,0 +1,4 @@
+header text: Bo Girds | 5-5 · 4 weeks left | 57% | PLAYOFF ODDS | Win 3 of the 4 left and you're in. | Tap for all.
+week card heading: Week 11 vs The Mean Machine
+tile: Win | 67% | 72% likely | +1 win
+tile: Lose | 30% | 28% likely | No wins

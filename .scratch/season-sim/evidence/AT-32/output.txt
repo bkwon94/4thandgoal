@@ -1,0 +1,70 @@
+# In the Spec worktree at 42644789.
+
+$ python3 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/about-count.py clients/*/published/2026/week-10/sim.json packages/sim/site/fixtures/week-sim*.json
+clients/cpc/published/2026/week-10/sim.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 22
+  roster 6 ladder steps with about: [{'more_wins': 0, 'playoff': 1, 'chance': 2.6, 'about': True}, {'more_wins': 8, 'playoff': 99, 'chance': 2.1, 'about': True}]
+clients/norcal/published/2026/week-10/sim.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 7
+  roster 6 ladder steps with about: []
+packages/sim/site/fixtures/week-sim-final.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 0
+  roster 6 ladder steps with about: []
+packages/sim/site/fixtures/week-sim-norcal.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 7
+  roster 6 ladder steps with about: []
+packages/sim/site/fixtures/week-sim-playoffs.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 0
+  roster 6 ladder steps with about: []
+packages/sim/site/fixtures/week-sim-round-2.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 0
+  roster 6 ladder steps with about: []
+packages/sim/site/fixtures/week-sim.json: week result tiles with about 0, playoff game tiles with about 0, ladder steps with about 22
+  roster 6 ladder steps with about: [{'more_wins': 0, 'playoff': 1, 'chance': 2.6, 'about': True}, {'more_wins': 8, 'playoff': 99, 'chance': 2.1, 'about': True}]
+(exit 0)
+
+$ grep -n -B2 -A3 'result.about' packages/sim/site/page/week-page.tsx
+80-      <span className="flex w-full flex-wrap items-end justify-between gap-x-sp-2 gap-y-sp-1">
+81-        <span className="font-mono text-stat leading-none font-bold tabular-nums">
+82:          {result.about && (
+83-            <span className="block pb-sp-0 font-sans text-meta font-normal text-mute group-data-pressed:text-on-dark">about </span>
+84-          )}
+85-          {oddsText(result.playoff)}
+(exit 0)
+
+$ grep -rn 'about' packages/sim/site/page/sim-page.test.tsx | head -20
+packages/sim/site/page/sim-page.test.tsx:3: * switch, the week card, the root-for card, the "about" numbers, and the What-if, over two local API answers and an API that is down.
+packages/sim/site/page/sim-page.test.tsx:37:/* The text of an odds number as the page writes it: "about 1%" when the file flags it, else "58%". */
+packages/sim/site/page/sim-page.test.tsx:38:const odds = (value: number | null, about: boolean) => (value === null ? "–" : about ? `about ${value}%` : `${value}%`);
+packages/sim/site/page/sim-page.test.tsx:52:      expect(row.textContent).toContain(odds(step.playoff, step.about));
+packages/sim/site/page/sim-page.test.tsx:94:      expect(tile.textContent).toContain(odds(result.playoff, result.about));
+packages/sim/site/page/sim-page.test.tsx:109:  it("reads a flagged number as about X%", () => {
+packages/sim/site/page/sim-page.test.tsx:112:    const flagged = { ...week, results: week.results.map((result, index) => ({ ...result, about: index === 0 })) };
+packages/sim/site/page/sim-page.test.tsx:115:    expect(tiles()[0].textContent).toContain(`about ${week.results[0].playoff}%`);
+packages/sim/site/page/sim-page.test.tsx:116:    expect(tiles()[1].textContent).not.toContain("about");
+(exit 0)
+
+$ cd apps/site && pnpm exec vitest run --reporter=verbose packages/sim/site/page/sim-page.test.tsx -t "about"   (detached worktree at 42644789)
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-site/apps/site
+
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the sim page header > shows the avatar, the name, the record, the weeks left, and the playoff odds of Your team
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the sentence of more wins > shows the sentence of the file and opens the ladder with each count, its odds, and its chance
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the week switch > has Wk 11 to Wk 14, then Playoffs, and opens on Wk 11
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the week switch > opens the week page of each item
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the week card > shows four tiles in CPC, each with the odds after, the chance, and the wins it adds
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the week card > shows two tiles in NorCal, a win and a loss
+ ✓ ../../packages/sim/site/page/sim-page.test.tsx > the week card > reads a flagged number as about X% 131ms
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the week card > holds only the tiles of Your team, and no list of every game
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the root-for card > says what a loss costs, then each result with its reason and the odds after it
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the root-for card > opens from one row on a phone
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the root-for card > shows in full from the tablet tier, with no toggle
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the root-for card > writes a long team name in full, with no cut
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the calls of the page > makes no call on load or on a switch of weeks
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the What-if > sets a result on a tap, shows the numbers of the API answer, and opens the next week
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the What-if > shows the odds of the answer on the Playoffs page after a set result, and the file after a Reset
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the What-if > clears the set line on Reset and shows the numbers of the file again, with no call
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the What-if > cancels the call before a new tap and shows the answer of the last tap
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the What-if > clears the result of a week on a second tap of its tile, with no call
+ ↓ ../../packages/sim/site/page/sim-page.test.tsx > the What-if > keeps the numbers of the file and shows one line when the API is down
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 18 skipped (19)
+   Start at  22:07:41
+   Duration  2.14s (environment 40%, import 36%, transform 17%, tests 7%)
+
+(exit 0)

@@ -1,0 +1,19 @@
+$ cd apps/site && pnpm exec vitest run --reporter=verbose packages/design/site/parts/announcement.test.tsx   (detached worktree at 42644789)
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-site/apps/site
+
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > shows the art slot, the eyebrow, the title, the line, the link, and Not now, in that order 224ms
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > names the site for a screen reader, with no site name on the screen 23ms
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > closes on Not now 28ms
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > closes on Escape 26ms
+Not implemented: navigation to another Document
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > closes on a tap on the dim 35ms
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > closes on a drag down 36ms
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > reports once that the sheet stopped on open, so the art can start its move 32ms
+ ✓ ../../packages/design/site/parts/announcement.test.tsx > the Announcement (AT-60) > reports a press of the link as a follow 14ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  22:02:19
+   Duration  3.49s (import 41%, environment 40%, tests 13%, transform 6%)
+

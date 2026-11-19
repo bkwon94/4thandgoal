@@ -14,6 +14,7 @@ dependencies = [
     "cpc-facts",
     "cpc-league",
     "cpc-managers",
+    "cpc-sim",
     "fastapi>=0.158.0",
     "httpx>=0.28.1",
     "pydantic>=2.14.1",
@@ -30,6 +31,7 @@ cpc-eggs = { workspace = true }
 cpc-facts = { workspace = true }
 cpc-league = { workspace = true }
 cpc-managers = { workspace = true }
+cpc-sim = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.8.18,<0.9.0"]
@@ -53,10 +55,10 @@ addopts = "-m 'not live'"
 [tool.ruff]
 line-length = 120
 
-# The API imports the analyzer, the eggs, the league, and the facts packages as its own code, so each sorts as first
-# party.
+# The API imports the analyzer, the eggs, the league, the facts, the managers, and the sim packages as its own code, so
+# each sorts as first party.
 [tool.ruff.lint.isort]
-known-first-party = ["analyzer", "cornerstone_api", "eggs", "facts", "league", "managers"]
+known-first-party = ["analyzer", "cornerstone_api", "eggs", "facts", "league", "managers", "sim"]
 
 # Pyright checks only the listed modules in basic mode. Each ticket adds the modules it touches.
 [tool.pyright]
@@ -69,7 +71,8 @@ include = ["src/cornerstone_api/app.py", "src/cornerstone_api/refresh.py", "src/
            "src/cornerstone_api/personal_facts.py", "src/cornerstone_api/personal_wording.py",
            "src/cornerstone_api/answer_store.py", "src/cornerstone_api/chat_turns.py",
            "src/cornerstone_api/waiver_targets.py", "src/cornerstone_api/sources.py",
-           "src/cornerstone_api/game_lock.py", "src/cornerstone_api/week_lineup.py", "src/cornerstone_api/start_sit.py"]
+           "src/cornerstone_api/game_lock.py", "src/cornerstone_api/week_lineup.py", "src/cornerstone_api/start_sit.py",
+           "src/cornerstone_api/what_if.py"]
 
 [tool.uv.build-backend]
 module-name = "cornerstone_api"

@@ -566,7 +566,7 @@ def test_a_rewrite_reads_the_saved_odds_and_never_runs_the_engine(tmp_path, fixt
     def no_engine(*args, **kwargs):
         raise AssertionError("a rewrite ran the odds engine")
 
-    monkeypatch.setattr("rankings.chapter.playoff_odds", no_engine)
+    monkeypatch.setattr("cornerstone.season_sim.season_sim", no_engine)
     run_rewrite(repo, 2026, 6, "next_week", _fake, **_without_jev(offline), client=cpc_client(at=repo))
     after = read_bundle(week_dir(repo, 2026, 6) / "facts.json").sheet.facts
     assert {fid: after[fid] for fid in odds} == odds

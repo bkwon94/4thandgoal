@@ -1,0 +1,152 @@
+{
+  "you": 2,
+  "playoff": 100,
+  "status": "in",
+  "record": [
+    18,
+    10
+  ],
+  "weeks_left": 0,
+  "wins_left": 0,
+  "need": 0,
+  "sentence": "You're in.",
+  "ladder": [
+    {
+      "more_wins": 0,
+      "playoff": 100,
+      "chance": 100.0,
+      "about": false
+    }
+  ],
+  "weeks": [],
+  "playoffs": {
+    "seed": 1,
+    "alive": true,
+    "title": 19,
+    "week": 16,
+    "bye": false,
+    "game": {
+      "week": 16,
+      "opponent": 1,
+      "results": [
+        {
+          "game": "win",
+          "title": 43,
+          "chance": 44.8,
+          "about": false
+        },
+        {
+          "game": "loss",
+          "title": 0,
+          "chance": 55.2,
+          "about": false
+        }
+      ]
+    },
+    "teams": [
+      {
+        "roster_id": 2,
+        "seed": 1,
+        "title": 19,
+        "alive": true
+      },
+      {
+        "roster_id": 3,
+        "seed": 2,
+        "title": 27,
+        "alive": true
+      },
+      {
+        "roster_id": 9,
+        "seed": 3,
+        "title": 0,
+        "alive": false
+      },
+      {
+        "roster_id": 8,
+        "seed": 4,
+        "title": 26,
+        "alive": true
+      },
+      {
+        "roster_id": 12,
+        "seed": 5,
+        "title": 0,
+        "alive": false
+      },
+      {
+        "roster_id": 1,
+        "seed": 6,
+        "title": 28,
+        "alive": true
+      }
+    ],
+    "rounds": [
+      {
+        "week": 15,
+        "played": true,
+        "games": [
+          {
+            "teams": [
+              9,
+              1
+            ],
+            "scores": [
+              88.9,
+              139.3
+            ],
+            "winner": 1
+          },
+          {
+            "teams": [
+              8,
+              12
+            ],
+            "scores": [
+              97.2,
+              92.1
+            ],
+            "winner": 8
+          }
+        ]
+      },
+      {
+        "week": 16,
+        "played": false,
+        "games": [
+          {
+            "teams": [
+              2,
+              1
+            ],
+            "scores": null,
+            "winner": null
+          },
+          {
+            "teams": [
+              3,
+              8
+            ],
+            "scores": null,
+            "winner": null
+          }
+        ]
+      },
+      {
+        "week": 17,
+        "played": false,
+        "games": [
+          {
+            "teams": [
+              null,
+              null
+            ],
+            "scores": null,
+            "winner": null
+          }
+        ]
+      }
+    ],
+    "champion": null
+  }
+}

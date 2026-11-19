@@ -1,0 +1,34 @@
+# The trace of the What-if number of the Announcement chip, at the Spec head 49404be3.
+
+## 1. The home page builds the art data from the week sim file at build time.
+$ grep -n "previewOf" apps/site/src/app/_routes/sim/home-banner.tsx
+5:import { previewOf } from "@cpc/sim/announcement/preview";
+18:  return <SimAnnouncement data={previewOf(sim)} siteName={clientValues.copy.siteName} href={simHref(season)} />;
+
+## 2. previewOf reads the What-if odds of each team from the file: pages[id].weeks[0], the result with game win and median not below.
+$ sed -n 30,36p packages/sim/site/announcement/preview.ts
+    .map((id, index) => ({ id, name: nameOf(sim, id), place: index + 1, odds: sim.pages[id]?.playoff ?? sim.teams[id].playoff }));
+  const whatIf = Object.fromEntries(
+    Object.entries(sim.pages).map(([id, page]) => {
+      const win = page.weeks[0]?.results.find((result) => result.game === "win" && result.median !== "below");
+      return [Number(id), win?.playoff ?? null];
+    }),
+  );
+
+## 3. The chip shows data.whatIf[you]; with the chip on, the odds show it.
+$ grep -n "whatIfOdds\|const yours" packages/sim/site/announcement/sim-preview.tsx
+64:  const whatIfOdds = data.whatIf[you] ?? null;
+65:  const whatIf = whatIfOdds === null ? null : { label: `What-if: ${own.name} win${data.median ? " both" : ""}`, odds: whatIfOdds };
+81:  const yours = on && whatIf ? whatIf.odds : own.odds;
+
+## 4. The value in the file for roster 6.
+$ jq -r '.names["6"]' clients/cpc/published/2026/week-10/sim.json
+Bo Girds
+$ jq -c '.pages["6"] | {playoff, week: .weeks[0].week, results: [.weeks[0].results[] | {game, median, playoff}]}' clients/cpc/published/2026/week-10/sim.json
+{"playoff":58,"week":11,"results":[{"game":"win","median":"above","playoff":86},{"game":"win","median":"below","playoff":65},{"game":"loss","median":"above","playoff":67},{"game":"loss","median":"below","playoff":41}]}
+$ jq '[.pages["6"].weeks[0].results[] | select(.game == "win" and .median != "below")][0].playoff' clients/cpc/published/2026/week-10/sim.json
+86
+
+## 5. The built cpc home page (ev3 export of 49404be3) holds the art data with whatIf 6 = 86.
+$ grep -o 'whatIf[^}]\{0,200\}' out-cpc/index.html | head -1
+whatIf\":{\"1\":94,\"2\":95,\"3\":99,\"4\":1,\"5\":94,\"6\":86,\"7\":13,\"8\":72,\"9\":98,\"10\":7,\"11\":1,\"12\":80

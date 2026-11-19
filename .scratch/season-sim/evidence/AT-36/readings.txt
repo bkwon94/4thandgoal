@@ -1,0 +1,4 @@
+light on open, header: Bo Girds | 11-9 · 4 weeks left | 58% | PLAYOFF ODDS | Win 5 of the 8 left and you're in. | Game wins and median wins both count. Tap for all.
+light after the tap, lines "The What-if is not available now.": 1; header: Bo Girds | 11-9 · 4 weeks left | 58% | PLAYOFF ODDS | Win 5 of the 8 left and you're in. | Game wins and median wins both count. Tap for all. | The What-if is not available now.
+dark on open, header: Bo Girds | 11-9 · 4 weeks left | 58% | PLAYOFF ODDS | Win 5 of the 8 left and you're in. | Game wins and median wins both count. Tap for all.
+dark after the tap, lines "The What-if is not available now.": 1; header: Bo Girds | 11-9 · 4 weeks left | 58% | PLAYOFF ODDS | Win 5 of the 8 left and you're in. | Game wins and median wins both count. Tap for all. | The What-if is not available now.

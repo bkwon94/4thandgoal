@@ -1,0 +1,5 @@
+390x660: open menu dialog 1; dialog name "null"; visible links named "Season sim" in the menu: 1, href /sim/2026/, visible true
+URL after a tap on "Season sim" in the menu: http://127.0.0.1:4173/sim/2026/
+810x980: open menu dialog 1; dialog name "null"; visible links named "Season sim" in the menu: 1, href /sim/2026/, visible true
+1080x740: open menu dialog 0; dialog name ""; visible links named "Season sim" in the menu: 2, href /sim/2026/, visible true
+1280x800: open menu dialog 0; dialog name ""; visible links named "Season sim" in the menu: 3, href /sim/2026/, visible true

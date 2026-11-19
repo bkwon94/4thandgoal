@@ -1,0 +1,112 @@
+$ git rev-parse --short HEAD && git rev-parse --short origin/main
+42644789
+33da78a4
+[exit 0]
+$ git diff origin/main -- clients/cpc/published/2026/rankings.json
+[exit 0]
+
+$ git diff origin/main --stat -- clients/cpc/published/2026/rankings.json clients/cpc/build/2026/rankings.json
+ clients/cpc/build/2026/rankings.json | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+[exit 0]
+
+$ python3 -I /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/scripts/at4_odds.py origin/main:clients/cpc/published/2026/rankings.json clients/cpc/published/2026/rankings.json
+week 1: 12 rows, 0 with odds, 0 odds values changed
+week 2: 12 rows, 0 with odds, 0 odds values changed
+week 3: 12 rows, 0 with odds, 0 odds values changed
+week 4: 12 rows, 0 with odds, 0 odds values changed
+week 5: 12 rows, 0 with odds, 0 odds values changed
+week 6: 12 rows, 12 with odds, 0 odds values changed
+week 7: 12 rows, 12 with odds, 0 odds values changed
+week 8: 12 rows, 12 with odds, 0 odds values changed
+week 9: 12 rows, 12 with odds, 0 odds values changed
+odds values changed in weeks 1 to 9: 0
+[exit 0]
+
+# The fresh rankings.json of the AT-2 run (the build folder, with the week 10 odds of the sim) against the published file of main:
+$ python3 -I /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/scripts/at4_odds.py origin/main:clients/cpc/published/2026/rankings.json clients/cpc/build/2026/rankings.json
+week 1: 12 rows, 0 with odds, 0 odds values changed
+week 2: 12 rows, 0 with odds, 0 odds values changed
+week 3: 12 rows, 0 with odds, 0 odds values changed
+week 4: 12 rows, 0 with odds, 0 odds values changed
+week 5: 12 rows, 0 with odds, 0 odds values changed
+week 6: 12 rows, 12 with odds, 0 odds values changed
+week 7: 12 rows, 12 with odds, 0 odds values changed
+week 8: 12 rows, 12 with odds, 0 odds values changed
+week 9: 12 rows, 12 with odds, 0 odds values changed
+odds values changed in weeks 1 to 9: 0
+[exit 0]
+
+$ git diff origin/main -- clients/cpc/build/2026/rankings.json
+diff --git a/clients/cpc/build/2026/rankings.json b/clients/cpc/build/2026/rankings.json
+index de2f24ae..7adb81fb 100644
+--- a/clients/cpc/build/2026/rankings.json
++++ b/clients/cpc/build/2026/rankings.json
+@@ -2793,8 +2793,8 @@
+             }
+           ],
+           "odds": {
+-            "playoff": 92,
+-            "bye": 48,
++            "playoff": 93,
++            "bye": 47,
+             "seed": 1,
+             "status": "open"
+           }
+@@ -2836,7 +2836,7 @@
+           "odds": {
+             "playoff": 66,
+             "bye": 10,
+-            "seed": 6,
++            "seed": 5,
+             "status": "open"
+           }
+         },
+@@ -2950,8 +2950,8 @@
+             }
+           ],
+           "odds": {
+-            "playoff": 83,
+-            "bye": 26,
++            "playoff": 81,
++            "bye": 24,
+             "seed": 3,
+             "status": "open"
+           }
+@@ -2992,7 +2992,7 @@
+           ],
+           "odds": {
+             "playoff": 81,
+-            "bye": 25,
++            "bye": 26,
+             "seed": 4,
+             "status": "open"
+           }
+@@ -3033,7 +3033,7 @@
+             }
+           ],
+           "odds": {
+-            "playoff": 38,
++            "playoff": 39,
+             "bye": 4,
+             "seed": null,
+             "status": "open"
+@@ -3075,7 +3075,7 @@
+             }
+           ],
+           "odds": {
+-            "playoff": 57,
++            "playoff": 58,
+             "bye": 10,
+             "seed": 6,
+             "status": "open"
+@@ -3151,7 +3151,7 @@
+             }
+           ],
+           "odds": {
+-            "playoff": 2,
++            "playoff": 3,
+             "bye": 1,
+             "seed": null,
+             "status": "open"
+[exit 0]

@@ -135,7 +135,30 @@ describe("the client build", () => {
     expect(registry).toContain('import { BandPart as eggsBandPart } from "@/app/_routes/eggs/band";');
     expect(registry).toContain("export const bandParts: BandPart[] = [eggsBandPart];");
     expect(registry).toContain('import { HomeBanner as eggsHomeBanner } from "@/app/_routes/eggs/home-banner";');
-    expect(registry).toContain("export const homeBanners: HomeBanner[] = [eggsHomeBanner];");
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [eggsHomeBanner, simHomeBanner];");
+  });
+
+  it("gives a client of the sim package the Announcement of the season sim on the home page", () => {
+    const toml = ['packages = ["week", "sim"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "sim-home");
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { HomeBanner as simHomeBanner } from "@/app/_routes/sim/home-banner";');
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [simHomeBanner];");
+  });
+
+  it("gives a client of the sim package the Sim tile on each week page, and a client without it none", () => {
+    const toml = (packages) => [`packages = ${packages}`, 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const withSim = tempRepo(toml('["week", "sim"]'), "sim-tile");
+    buildClient(withSim);
+    const registry = readFileSync(join(withSim.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { weekTile as simWeekTile } from "@/app/_routes/sim/week-tile";');
+    expect(registry).toContain("export const weekTiles: WeekTile[] = [simWeekTile];");
+    const weekOnly = tempRepo(toml('["week"]'), "week-only");
+    buildClient(weekOnly);
+    const plain = readFileSync(join(weekOnly.site, "src", "generated", "registry.ts"), "utf8");
+    expect(plain).not.toContain("sim");
+    expect(plain).toContain("export const weekTiles: WeekTile[] = [];");
   });
 
   it("gives a client without the eggs package no /eggs/ route and no egg hunt", () => {
@@ -146,7 +169,8 @@ describe("the client build", () => {
     expect(registry).not.toContain("eggs");
     expect(registry).toContain("export const pageParts: PagePart[] = [];");
     expect(registry).toContain("export const bandParts: BandPart[] = [];");
-    expect(registry).toContain("export const homeBanners: HomeBanner[] = [];");
+    // The client still takes sim, so its home page keeps the Announcement of the season sim.
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [simHomeBanner];");
   });
 
   it("starts each generated file with a GENERATED line that names the client file", () => {
@@ -251,10 +275,30 @@ describe("the client build", () => {
     const route = readFileSync(join(repo.site, "src", "app", "(client)", "midseason", "[season]", "page.tsx"), "utf8");
     expect(route).toContain('export { default, generateStaticParams, generateMetadata } from "@/app/_routes/midseason/page";');
     expect(route).toContain("export const dynamicParams = false;");
-    // The report adds no menu item: its menu link and the sim's give null, so the menu has no entry for either.
+    // The registry imports the menu link of each package. The shell leaves out the report item, and keeps the sim item.
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     expect(registry).toContain('import { menuLink as midseasonMenuLink } from "@/app/_routes/midseason/menu";');
     expect(registry).toContain('import { menuLink as simMenuLink } from "@/app/_routes/sim/menu";');
+  });
+
+  it("gives a client with sim the sim route only with a published week sim file", () => {
+    const toml = ['packages = ["week", "sim"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "sim-page");
+    published(repo.root, "sim-page", "2026/week-10/page.json");
+    // The season file of the midseason replay is no week sim file, so it gives no sim route.
+    published(repo.root, "sim-page", "2026/sim.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx", "(client)/ask/page.tsx"]);
+    published(repo.root, "sim-page", "2026/week-10/sim.json");
+    buildClient(repo);
+    expect(routeFiles(repo.site)).toEqual([
+      "(client)/[season]/[week]/page.tsx",
+      "(client)/ask/page.tsx",
+      "(client)/sim/[season]/page.tsx",
+    ]);
+    const route = readFileSync(join(repo.site, "src", "app", "(client)", "sim", "[season]", "page.tsx"), "utf8");
+    expect(route).toContain('export { default, generateStaticParams, generateMetadata } from "@/app/_routes/sim/page";');
+    expect(route).toContain("export const dynamicParams = false;");
   });
 
   it("lists the home part of midseason first, so its takeover and its tile reach the home page", () => {
@@ -299,6 +343,7 @@ describe("the client build", () => {
         { page: "home", label: "Home" },
         { package: "week" },
         { package: "rankings", label: "Power Rankings" },
+        { package: "sim" },
         { package: "midseason", label: "Midseason Report" },
         { package: "managers", label: "Managers" },
         { package: "analyzer", label: "Trade Analyzer" },
@@ -306,12 +351,13 @@ describe("the client build", () => {
     });
   });
 
-  /* The 4 items of the menu with the front door on (AT-48). */
+  /* The items of the menu with the front door on (AT-48), with the sim page of season-sim (AT-50). */
   const FRONT_DOOR_MENU = {
     items: [
       { page: "home", label: "Home" },
       { package: "week" },
       { package: "rankings", label: "Power Rankings" },
+      { package: "sim" },
       { package: "managers", label: "Managers" },
       { package: "analyzer", label: "Trade Analyzer" },
     ],
@@ -330,6 +376,7 @@ describe("the client build", () => {
         { page: "home", label: "Home" },
         { package: "week" },
         { package: "rankings", label: "Power Rankings" },
+        { package: "sim" },
         { package: "midseason", label: "Midseason Report" },
         { package: "managers", label: "Managers" },
         { package: "analyzer", label: "Trade Analyzer" },
@@ -363,7 +410,7 @@ describe("the client build", () => {
     }
   });
 
-  it("gives each client of the repo Home, the week, Power Rankings, Managers, and Trade Analyzer with the front door on (AT-48)", () => {
+  it("gives each client of the repo Home, the week, Power Rankings, Season sim, Managers, and Trade Analyzer with the front door on (AT-48, AT-50)", () => {
     for (const slug of ["cpc", "norcal"]) {
       const repo = repoClient(slug, true);
       buildClient(repo);

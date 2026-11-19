@@ -1,0 +1,64 @@
+$ cd apps/pipeline && make sim-fixtures
+# Run in a detached worktree at 42644789. Recorded 2026-11-19T02:58:20Z.
+uv run --exact --package cornerstone cornerstone sim-fixtures --client cpc --season 2026 --week 10 --out ../../packages/sim/site/fixtures
+../../packages/sim/site/fixtures/week-sim-playoffs.json: week 14, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+../../packages/sim/site/fixtures/week-sim-round-2.json: week 15, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+../../packages/sim/site/fixtures/week-sim-final.json: week 17, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion Lil Fridge; run 1 champion Lil Fridge
+[exit 0]
+
+$ git status --short -- packages/sim/site/fixtures && echo 'git status shows no change: the fresh fixtures equal the committed fixtures byte for byte'
+git status shows no change: the fresh fixtures equal the committed fixtures byte for byte
+[exit 0]
+
+$ jq '{week, played: (.played|keys), fact}' packages/sim/site/fixtures/week-sim-final.json
+{
+  "week": 17,
+  "played": [
+    "15",
+    "16",
+    "17"
+  ],
+  "fact": "Lil Fridge is the 2026 champion"
+}
+[exit 0]
+
+$ jq -r '"champion: roster \(.pages["6"].playoffs.champion), \(.names[(.pages["6"].playoffs.champion|tostring)])"' packages/sim/site/fixtures/week-sim-final.json
+champion: roster 3, Lil Fridge
+[exit 0]
+
+$ jq '.pages["6"] | {you, status, record, sentence, weeks, playoffs: (.playoffs | {seed, alive, title, week, bye, game, champion})}' packages/sim/site/fixtures/week-sim-final.json
+{
+  "you": 6,
+  "status": "out",
+  "record": [
+    13,
+    15
+  ],
+  "sentence": "You're out of the playoff race.",
+  "weeks": [],
+  "playoffs": {
+    "seed": null,
+    "alive": false,
+    "title": 0,
+    "week": null,
+    "bye": false,
+    "game": null,
+    "champion": 3
+  }
+}
+[exit 0]
+
+$ jq -r '.names as $n | .pages["6"].playoffs.rounds[] | "week \(.week) played \(.played): \([.games[] | "\(.teams | map($n[(.|tostring)]) | join(" vs ")) \(.scores // [] | map(tostring) | join("-")), winner \($n[(.winner|tostring)])"] | join("; "))"' packages/sim/site/fixtures/week-sim-final.json
+week 15 played true: Maye d'force B with U vs The Blue Tent 88.9-139.3, winner The Blue Tent; Return of T Mac vs Teehee 97.2-92.1, winner Return of T Mac
+week 16 played true: All You Need Is Love vs The Blue Tent 111.6-106.9, winner All You Need Is Love; Lil Fridge vs Return of T Mac 140.9-114.1, winner Lil Fridge
+week 17 played true: All You Need Is Love vs Lil Fridge 119.1-131.9, winner Lil Fridge
+[exit 0]
+
+$ jq -c '[.pages[] | .playoffs.champion] | unique' packages/sim/site/fixtures/week-sim-final.json
+[3]
+[exit 0]
+
+$ jq -c '[.pages[] | .playoffs.game] | unique' packages/sim/site/fixtures/week-sim-final.json
+[null]
+[exit 0]
+

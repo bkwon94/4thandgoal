@@ -1,0 +1,2 @@
+after both answers, header: Bo Girds | 11-9 · 4 weeks left | 42% | PLAYOFF ODDS | Win 5 of the 6 left and you're in. | Game wins and median wins both count. Tap for all. | What-if: Wk 11 lose, miss median | Reset
+after both answers, set line: What-if: Wk 11 lose, miss median | Reset

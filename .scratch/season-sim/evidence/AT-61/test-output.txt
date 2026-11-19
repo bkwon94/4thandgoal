@@ -1,0 +1,33 @@
+$ node announcement.mjs   (WebKit, cpc export of 42644789 on http://127.0.0.1:4173)
+observed true   390x660-light-reduced open  (26 text boxes, 0 fixed parts)
+observed true   390x660-light-reduced chip stays off
+observed true   390x660-light-reduced Not now closes
+observed true   390x660-light-reduced after close  (19 text boxes, 0 fixed parts)
+observed true   810x980-light-reduced open  (26 text boxes, 0 fixed parts)
+observed true   810x980-light-reduced chip stays off
+observed true   810x980-light-reduced Not now closes
+observed true   810x980-light-reduced after close  (19 text boxes, 0 fixed parts)
+observed true   1080x740-light-reduced open  (26 text boxes, 0 fixed parts)
+observed true   1080x740-light-reduced chip stays off
+observed true   1080x740-light-reduced Not now closes
+observed true   1080x740-light-reduced after close  (25 text boxes, 0 fixed parts)
+observed true   1280x800-light-reduced open  (26 text boxes, 0 fixed parts)
+observed true   1280x800-light-reduced chip stays off
+observed true   1280x800-light-reduced Not now closes
+observed true   1280x800-light-reduced after close  (26 text boxes, 0 fixed parts)
+observed true   390x660-dark-reduced open  (26 text boxes, 0 fixed parts)
+observed true   390x660-dark-reduced chip stays off
+observed true   390x660-dark-reduced Not now closes
+observed true   390x660-dark-reduced after close  (19 text boxes, 0 fixed parts)
+observed true   810x980-dark-reduced open  (26 text boxes, 0 fixed parts)
+observed true   810x980-dark-reduced chip stays off
+observed true   810x980-dark-reduced Not now closes
+observed true   810x980-dark-reduced after close  (19 text boxes, 0 fixed parts)
+observed true   1080x740-dark-reduced open  (26 text boxes, 0 fixed parts)
+observed true   1080x740-dark-reduced chip stays off
+observed true   1080x740-dark-reduced Not now closes
+observed true   1080x740-dark-reduced after close  (25 text boxes, 0 fixed parts)
+observed true   1280x800-dark-reduced open  (26 text boxes, 0 fixed parts)
+observed true   1280x800-dark-reduced chip stays off
+observed true   1280x800-dark-reduced Not now closes
+observed true   1280x800-dark-reduced after close  (26 text boxes, 0 fixed parts)

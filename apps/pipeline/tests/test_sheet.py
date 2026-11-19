@@ -11,6 +11,7 @@ from decimal import ROUND_HALF_UP, Decimal
 import pytest
 from cpc import cpc_client
 
+from cornerstone import season_sim as app_sim
 from cornerstone.sheet import (
     Context,
     build_bundle,
@@ -32,8 +33,9 @@ from league.models import History, NextMatchup, OddsResult, PowerRow, Standing, 
 from league.parse import parse_week
 from league.provider.sleeper import load_raw
 from league.snapshot import week_snapshot
+from league.standings_table import season_records
 from rankings import chapter as rankings_chapter
-from rankings.odds import playoff_odds
+from sim.season import season_sim, weekly_odds
 from week.sheet import standings
 
 CLIENT = cpc_client()
@@ -769,27 +771,30 @@ def test_an_injured_flex_starter_takes_a_pool_player_at_any_flex_position(fixtur
     assert total == 29.0
 
 
-def test_the_facts_step_passes_the_projected_totals_to_the_engine(monkeypatch, fixture_raw_dir, fixture_history_root):
+def test_the_facts_step_passes_the_projected_totals_to_the_sim(monkeypatch, fixture_raw_dir, fixture_history_root):
     seen = {}
 
     def engine(*args, **kwargs):
         seen.update(kwargs)
-        return playoff_odds(*args, **kwargs)
+        return season_sim(*args, **kwargs)
 
-    monkeypatch.setattr(rankings_chapter, "playoff_odds", engine)
+    monkeypatch.setattr(app_sim, "season_sim", engine)
     raw = load_raw(fixture_raw_dir)
     week = parse_week(raw)
     build_bundle(week, news=lambda pid: [], history=load_history(fixture_history_root, raw, week=6), client=CLIENT)
-    assert seen["projected"] == projected_totals(week, client=CLIENT)
+    # The totals run through the bracket weeks, so the sim draws each playoff week with its projection too.
+    assert seen["projected"] == projected_totals(week, client=CLIENT, through=CLIENT.settings.last_season_week)
 
 
 def test_a_week_with_no_projections_file_gives_the_odds_with_no_shift(fixture_raw_dir, fixture_history_root):
     raw = load_raw(fixture_raw_dir)
     raw.projections_ahead = None
     week, history = parse_week(raw), load_history(fixture_history_root, raw, week=6)
-    inputs = rankings_chapter.odds_inputs(week, history, client=CLIENT)
-    plain = rankings_chapter.week_odds(week, history, inputs, projected_totals(week, client=CLIENT), client=CLIENT)
-    assert rankings_chapter.week_odds(week, history, inputs, None, client=CLIENT) == plain
+    built = app_sim.sim_of_week(week, history, client=CLIENT, bye_weeks=None)
+    scores, remaining = rankings_chapter.odds_inputs(week, history, client=CLIENT)
+    records = season_records(history, 6)
+    plain = season_sim(scores, records, remaining, season=week.season, week=6, settings=CLIENT.settings)
+    assert built is not None and weekly_odds(built) == weekly_odds(plain)
 
 
 def _why_inputs(fixture_raw_dir, fixture_history_root):

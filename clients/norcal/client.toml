@@ -24,12 +24,13 @@ chart = "1QB1.0PPR4pt"
 finder = true
 
 # The [menu] has no items, so the menu takes the home page, then the package list in its order.
-# With the front door on, the menu is front_door_items: the same five items as CPC (front-door PRD).
+# With the front door on, the menu is front_door_items: the same six items as CPC, with the sim page.
 [menu]
 front_door_items = [
   { page = "home", label = "Home" },
   { package = "week" },
   { package = "rankings", label = "Power Rankings" },
+  { package = "sim" },
   { package = "managers", label = "Managers" },
   { package = "analyzer", label = "Trade Analyzer" },
 ]

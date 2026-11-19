@@ -9,6 +9,7 @@ import {
   CalendarDaysIcon,
   CheckIcon,
   ChevronDownIcon,
+  DicesIcon,
   HouseIcon,
   MenuIcon,
   TrophyIcon,
@@ -39,6 +40,7 @@ export const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
   managers: UsersIcon,
   analyzer: ArrowLeftRightIcon,
   waiver: WalletIcon,
+  sim: DicesIcon,
 };
 
 /* The desktop tier, the same breakpoint as the desktop variant, --breakpoint-desktop in globals.css. */
@@ -52,6 +54,7 @@ const NOTES: Record<SheetKind, string> = {
   managers: "Grades and records",
   analyzer: "Check a trade",
   waiver: "Adds worth a claim",
+  sim: "Your path to the playoffs",
 };
 
 type MenuSheetProps = {

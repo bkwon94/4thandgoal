@@ -1,0 +1,87 @@
+$ ls packages/rankings/python/src/rankings/odds.py
+ls: packages/rankings/python/src/rankings/odds.py: No such file or directory
+[exit 1]
+
+$ git ls-files | grep -E '(^|/)odds\.py$|test_.*odds.*parity|parity.*odds|test_odds' || echo 'no tracked file matches'
+no tracked file matches
+[exit 0]
+
+$ git grep -n -E 'rankings\.odds|from rankings import .*odds|import rankings\.odds' -- '*.py' '*.toml' || echo 'no match'
+no match
+[exit 0]
+
+$ git grep -n -E 'rankings\.odds|odds\.py' -- ':!*.md' ':!.scratch' || echo 'no match outside markdown and the tracker'
+apps/pipeline/tests/test_layers.py:701:    (src / PACKAGE / "odds.py").write_text("")
+scripts/test_changed_apps.py:68:        self.assertEqual(self.select("apps/pipeline/src/cornerstone/odds.py"), ["pipeline", "api"])
+scripts/test_changed_apps.py:148:        self.assertEqual(self.select("apps/pipeline/src/cornerstone/odds.py"), [])
+scripts/test_changed_apps.py:165:        self.assertEqual(select_apps(REPO, ["apps/pipeline/src/cornerstone/odds.py"]), ["pipeline", "api"])
+scripts/test_changed_apps.py:244:            write(root, "apps/pipeline/odds.py", "# Staged pipeline change\n")
+scripts/test_changed_apps.py:245:            git("add", "apps/pipeline/odds.py")
+[exit 0]
+
+$ git grep -n -E 'rankings\.odds|odds\.py' -- '*.md' | head -20
+.scratch/midseason-report/MAP.md:26:- The sim keeps the `odds.py` draw and adds the bracket, with CPC reseeded, plus full counts and 10,000 runs. It orders by mean wins with a seed heat map, and stores 200 sample runs and the parameters. `decisions/07-research-the-sim-model.md`.
+.scratch/midseason-report/PRD.md:281:2. **The rules of each package.** Each chapter rule has one rule test, `test_rule_<topic>.py` in its package, with small hand-built leagues for the edge cases. Examples: a tie counts half, the self-meet rule, a $0 add is never a miss, Too soon under 2 weeks, the reseed after round 1, and the best and worst schedule of each team with its ties. Prior art: `test_rule_rankings.py` and `test_odds.py`.
+.scratch/midseason-report/decisions/07-research-the-sim-model.md:13:`packages/rankings/python/src/rankings/odds.py` already runs playoff odds, with the head-to-head game and the median game. The sim chapter needs more: the odds of the title, of each seed, of the bye, and of each final record, plus the most likely final table. Find out: how `odds.py` draws a team score, which inputs it reads, and which more inputs help, such as `projections_ahead.json`, injuries, byes, and the bracket. Also find the cost of 10,000 runs per client, and what a run must store for a replay in the browser. Write the notes at `decisions/07-research-the-sim-model.notes.md`.
+.scratch/midseason-report/decisions/07-research-the-sim-model.md:19:- The sim keeps the draw of `odds.py`: a level per team shrunk to the league mean, a normal weekly score, and the pull toward the projected best lineup. It already reads the projections ahead, the byes, the rosters, and the injury return weeks.
+.scratch/midseason-report/decisions/07-research-the-sim-model.notes.md:3:Summary: keep the draw of `odds.py`, because its projected shift already reads rest-of-season projections, byes, injuries, return weeks, and the current rosters.
+.scratch/midseason-report/decisions/07-research-the-sim-model.notes.md:8:## 1. How `odds.py` works now
+.scratch/midseason-report/decisions/07-research-the-sim-model.notes.md:10:Source: `packages/rankings/python/src/rankings/odds.py`. Tunables: `packages/rankings/python/src/rankings/tunables.py`, lines 17 to 32.
+.scratch/midseason-report/decisions/07-research-the-sim-model.notes.md:22:- **Tests.** `apps/pipeline/tests/test_odds.py` has 34 tests. Some examples: the same seed gives the same odds (line 41), both games count (59), the tiebreakers (69, 76), the bye clamp (100 to 139), the projections (237 to 261), the full league in under 10 s (272), and the week 7 match to the prototype within 3 points (334).
+.scratch/midseason-report/decisions/07-research-the-sim-model.notes.md:82:1. Keep the draw of `odds.py` and its inputs. Add the projections of weeks 15 to 17 and a 3-round bracket, fixed for NorCal and reseeded for CPC after a check.
+.scratch/odds-level/issues/01-the-level-draw.md:3:**What to build:** In `src/cornerstone/odds.py`, replace the bootstrap draw with a level draw. Per run, each roster's level is `rng.gauss(mean, se)`, where `mean` is the shrunk season average and `se` is the league spread over the square root of `n + k`. Each remaining week's score is `rng.gauss(level, spread)` plus the projection shift the engine already computes. `spread` is the population standard deviation of every played score from its own roster's average, pooled over the league. `k` is a new tunable `LEVEL_SHRINK_WEEKS = 5` in `tunables.py`, with a comment that says why 5. Remove `_draw_weights`, `RECENT_WEEKS`, and `RECENT_WEIGHT`, and every reader of them. Update the odds docstring and any doc, ADR, or glossary line that says the odds draw from past scores. Run `make golden` and commit the rewritten files with the code.
+.scratch/odds-level/issues/02-the-pooled-spread-divides-by-the-degrees-of-freedom.md:5:**What to build:** In `src/cornerstone/odds.py`, the pooled spread divides the sum of squares by the count of
+.scratch/odds-level/issues/02-the-pooled-spread-divides-by-the-degrees-of-freedom.md:31:- 2026-11-02: merged into `main` from branch `odds-level-02-spread-divisor`, commits f062979, f79e0bd, 14b65e2, and b173494, with `--no-ff`. 1475 passed, 9 deselected. Golden change: `facts.json` and `rankings.json` only, in the `ODDS.` and `SW.` facts and the odds rows of week 6. Top three 96, 96, 91 to 96, 95, 90. Bottom three 18, 6, 1 to 18, 7, 1. Middle teams move 1 to 2 points toward 50. `page.json` and `managers.json` unchanged. Week 7 saved data: top three 94 to 93, every team within 2 points of the Level column. The wide-against-narrow gap is 0 at 5000 runs, so the test allows 3. The divisor is `sum(n_i - 1)`, not the formula the ticket first gave; the Choice bullet says why. Two reviewers passed it after one fix pass. Read 10 files: .scratch/odds-level/issues/02-the-pooled-spread-divides-by-the-degrees-of-freedom.md, .scratch/odds-level/PRD.md, .scratch/odds-level/issues/01-the-level-draw.md, src/cornerstone/odds.py, tests/test_odds.py, src/cornerstone/tunables.py, Makefile, tests/golden.py, tests/test_golden.py, pyproject.toml.
+.scratch/season-sim/ACCEPTANCE.md:51:When: the reader searches the repo for `rankings.odds` and `odds.py`.
+.scratch/season-sim/ACCEPTANCE.md:52:Then: `packages/rankings/python/src/rankings/odds.py` and its parity test do not exist, and no module imports `rankings.odds`.
+.scratch/season-sim/MAP.md:29:- The weekly build writes `week-NN/sim.json`, and the page reads it first and calls the API only for a What-if with a pick. The sim replaces `rankings/odds.py` in full, swings too, at 10,000 runs. The past odds stay. `decisions/02-grill-the-weekly-build.md`.
+.scratch/season-sim/PRD.md:14:The site also has two odds engines of one model: `rankings/odds.py` and the sim package. Sample noise lets two pages show two numbers for one team.
+.scratch/season-sim/PRD.md:120:- The sim package is the one odds engine (ADR 0037). It gives the playoff odds, the bye odds, the seeds, the title odds, and the swing of each game next week. `rankings/odds.py` and its parity test go away.
+.scratch/season-sim/PRD.md:210:   - Prior art: `packages/sim/python/tests/test_season.py` and `apps/pipeline/tests/test_odds.py`.
+.scratch/season-sim/decisions/02-grill-the-weekly-build.md:16:2. How the playoff odds of the rankings page come from the sim in place of `rankings/odds.py`, and what happens to the parity test.
+.scratch/season-sim/decisions/02-grill-the-weekly-build.md:24:2. **The sim replaces the weekly odds engine in full.** The sim also gives the swing of each game next week, by a split of its runs on the winner of each game, as `rankings/odds.py` does now. Then `odds.py` and the parity test go away. ADR 0037 records it.
+[exit 0]
+
+$ git ls-tree --name-only origin/main packages/rankings/python/src/rankings/ | grep odds; git ls-tree -r --name-only origin/main | grep -i 'odds' | grep -i test
+packages/rankings/python/src/rankings/odds.py
+apps/pipeline/tests/test_odds.py
+[exit 0]
+
+$ git ls-tree --name-only HEAD packages/rankings/python/src/rankings/
+packages/rankings/python/src/rankings/__init__.py
+packages/rankings/python/src/rankings/chapter.py
+packages/rankings/python/src/rankings/power_rankings.py
+packages/rankings/python/src/rankings/published.py
+packages/rankings/python/src/rankings/tunables.py
+packages/rankings/python/src/rankings/values.py
+packages/rankings/python/src/rankings/values.schema.json
+[exit 0]
+
+$ git ls-tree -r --name-only origin/main | grep -i parity
+[exit 1]
+
+$ git ls-tree -r --name-only HEAD | grep -i -E 'parity|test_odds' || echo 'no tracked file matches at HEAD'
+no tracked file matches at HEAD
+[exit 0]
+
+$ git grep -l -i 'parity' origin/main -- '*.py' | head
+origin/main:packages/sim/python/src/sim/tunables.py
+[exit 0]
+
+$ git grep -n -i 'parity' HEAD -- '*.py' | head
+[exit 0]
+
+$ git grep -n 'def test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds' origin/main -- '*.py'
+origin/main:apps/pipeline/tests/test_sim.py:129:def test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds(slug, tmp_path):
+[exit 0]
+
+$ git grep -n 'def test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds' HEAD -- '*.py' || echo 'no match at HEAD'
+no match at HEAD
+[exit 0]
+
+$ git diff --stat origin/main HEAD -- packages/rankings/python/src/rankings/odds.py apps/pipeline/tests/test_odds.py
+ apps/pipeline/tests/test_odds.py              | 349 --------------------------
+ packages/rankings/python/src/rankings/odds.py | 265 -------------------
+ 2 files changed, 614 deletions(-)
+[exit 0]
+

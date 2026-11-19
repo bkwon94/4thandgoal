@@ -1,0 +1,2 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   AT-53 chip turns on once by itself  0852ms:false 1420ms:false 2013ms:false 2604ms:false 3199ms:true 3790ms:true 4378ms:true 4969ms:true 5584ms:true 6181ms:true 6779ms:true

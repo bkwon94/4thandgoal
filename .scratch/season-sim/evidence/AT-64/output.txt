@@ -1,0 +1,22 @@
+$ git diff origin/main -- 'clients/*/published/2026/sim.json' 'clients/*/published/2026/midseason.json'
+[exit 0]
+
+$ git diff --stat origin/main -- 'clients/*/published/2026/sim.json' 'clients/*/published/2026/midseason.json' | tail -1; echo "(stat lines above: none means no change)"
+(stat lines above: none means no change)
+[exit 0]
+
+$ git ls-files 'clients/*/published/2026/sim.json' 'clients/*/published/2026/midseason.json'
+clients/cpc/published/2026/midseason.json
+clients/cpc/published/2026/sim.json
+clients/norcal/published/2026/midseason.json
+clients/norcal/published/2026/sim.json
+[exit 0]
+
+$ git rev-parse --short origin/main; git rev-parse --short $(git merge-base HEAD origin/main); git rev-parse --short HEAD
+33da78a4
+33da78a4
+42644789
+[exit 0]
+$ git diff $(git merge-base HEAD origin/main) HEAD --stat -- 'clients/*/published/2026/sim.json' 'clients/*/published/2026/midseason.json'
+[exit 0]
+
