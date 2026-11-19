@@ -59,6 +59,25 @@ async function fakeViewport(page: Page) {
   });
 }
 
+/* A loaded runner or a slow phone can draw no frame for a few hundred ms, while each motion still runs. The Drawer lifts
+   the sheet over the keyboard with a slide of 250 ms from its old place to "0 0". So the keyboard slide freezes at 60 ms
+   for 600 ms, still in its running state, and then plays to its end. The box must still come to rest above the keyboard. */
+async function stallKeyboardSlide(page: Page) {
+  await page.addInitScript(() => {
+    const animate = Element.prototype.animate;
+    Element.prototype.animate = function (keyframes, options) {
+      const animation = animate.call(this, keyframes, options);
+      const to = keyframes && !Array.isArray(keyframes) ? keyframes.translate : undefined;
+      if (Array.isArray(to) && to.at(-1) === "0 0") {
+        animation.currentTime = 60;
+        animation.playbackRate = 0;
+        window.setTimeout(() => (animation.playbackRate = 1), 600);
+      }
+      return animation;
+    };
+  });
+}
+
 /* The box of the passphrase and the top of the keyboard, in px of the page, read once the sheet comes to rest. */
 async function boxAndKeyboard(page: Page) {
   const field = page.getByRole("dialog").getByLabel("League passphrase", { exact: true }).and(page.locator("input"));
@@ -115,6 +134,7 @@ async function askForPassphrase(page: Page) {
 test.describe("the passphrase box of the passphrase modal with the iOS keyboard (AT-51)", () => {
   test("the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap", async ({ page }) => {
     await fakeViewport(page);
+    await stallKeyboardSlide(page);
     await startClock(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
@@ -133,6 +153,7 @@ test.describe("the passphrase box of the passphrase modal with the iOS keyboard 
 
   test("the box sits above the keyboard with a kept team and no kept passphrase", async ({ page }) => {
     await fakeViewport(page);
+    await stallKeyboardSlide(page);
     await startClock(page);
     // A kept team lets an Announcement open on the load beat.
     await page.addInitScript(() => localStorage.setItem("cpc.your-team", "1"));
