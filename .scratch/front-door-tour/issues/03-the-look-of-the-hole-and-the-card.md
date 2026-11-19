@@ -10,10 +10,10 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, A
 
 **Status:** ready-for-agent
 
-- [ ] The hole pad is even on all four sides to 1 px, with a circle on the menu button and a pill on each other control (AT-14).
-- [ ] The card does not overlap its control on the four viewports of the iPhone rule (AT-16).
-- [ ] The card height is the same at all four Stops to 1 px, at 375 and 1280 px (AT-17).
-- [ ] At 390x660, each control is inside the visual viewport when its Stop shows (AT-18).
-- [ ] After a resize from 390x660 to 660x390 at Stop 2, the hole center is within 2 px of the ask box center (AT-19).
-- [ ] Next and Done fill with the `accent` token and use the `on-dark` text in both themes (AT-22).
+- [x] The hole pad is even on all four sides to 1 px, with a circle on the menu button and a pill on each other control (AT-14).
+- [x] The card does not overlap its control on the four viewports of the iPhone rule (AT-16).
+- [x] The card height is the same at all four Stops to 1 px, at 375 and 1280 px (AT-17).
+- [x] At 390x660, each control is inside the visual viewport when its Stop shows (AT-18).
+- [x] After a resize from 390x660 to 660x390 at Stop 2, the hole center is within 2 px of the ask box center (AT-19).
+- [x] Next and Done fill with the `accent` token and use the `on-dark` text in both themes (AT-22).
 - [ ] The ticket uses the design bar: `transitions-dev`, scrolltide, `apple-design`, `animate`, `critique`, and `polish`.
