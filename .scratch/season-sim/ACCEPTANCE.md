@@ -8,7 +8,7 @@ The Test verdict: the Judge gives one for each test in `VERDICTS.md`. The Judge 
 
 **The data.** `cpc` 2026 week 10 has the median game. Your team there is Bo Girds, 6th at 11-9, and week 11 is Bo Girds vs Maye d'force B with U. `norcal` 2026 week 10 has no median game. Your team there is Bo Girds, 7th at 5-5, and week 11 is The Mean Machine vs Bo Girds.
 
-**The playoff fixture.** No real playoff week exists before the merge. The fixture takes the inputs of `cpc` 2026 week 10 and fills weeks 11 to 14 with the scores of stored run 1 of `week-10/sim.json`. The build then runs as week 14, so the bracket of week 15 is set. **The season-end fixture** fills weeks 11 to 17 the same way. The evidence names the seeds and the champion of each fixture.
+**The playoff fixture.** No real playoff week exists before the merge. The fixture takes the inputs of `cpc` 2026 week 10 and fills weeks 11 to 14 with the scores of stored run 1 of `week-10/sim.json`. The build then runs as week 14, so the bracket of week 15 is set. **The round-two fixture** fills weeks 11 to 15 the same way and runs as week 15, so round 1 is played and the top seed has its semifinal. In `cpc`, the top seed has a bye in week 15, so only this fixture gives it a game with a set opponent. **The season-end fixture** fills weeks 11 to 17 the same way. The evidence names the seeds and the champion of each fixture.
 
 ## Tests
 
@@ -343,7 +343,7 @@ Evidence: the screenshots and the output of a motion check.
 AT-42: A team in the playoffs sees its title odds and its game
 App: both
 Stories: 35, 36
-Given: the playoff fixture, with the top seed as Your team.
+Given: the round-two fixture, with the top seed as Your team.
 When: the reader opens the Playoffs page of the sim page.
 Then: the page shows the title odds of that team, its game of the round, and two tiles with the odds after a win and after a loss.
 Evidence: the command of the fixture build, the page block, and the site evidence set.

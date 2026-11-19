@@ -11,7 +11,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 **Status:** in-review
 
 - [x] The build makes the playoff fixture and the season-end fixture by one command, and the evidence names their seeds and champion.
-- [ ] With the top seed as Your team, the Playoffs page shows its title odds, its game, and two tiles (AT-42).
+- [x] With the top seed as Your team, the Playoffs page shows its title odds, its game, and two tiles (AT-42).
 - [x] With the 12th team as Your team, the page says "Out of the playoffs" and shows the bracket with title odds (AT-43).
 - [x] The season-end page shows the final bracket and the champion, with no tile and no sim button (AT-44).
 - [x] No later round has a tile (AT-66), and the season-end page has no chart of odds by week (AT-69).
@@ -21,3 +21,4 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 ## Comments
 
 - 2026-11-18: The AT-42 box stays open. In the week 14 fixture, the top seed of cpc has a bye, and AT-66 forbids a tile there. The week 15 fixture `week-sim-round-2.json` gives the top seed its semifinal with two tiles. Brian chooses: change the Given of AT-42 to week 15, or accept the bye result.
+- 2026-11-18: Brian chose to change the Given of AT-42 to the round-two fixture `week-sim-round-2.json`. ACCEPTANCE.md now defines that fixture. The shots `AT-42-AT-66-top-seed-game-*` of the ticket 08 run show the top seed with its semifinal and two tiles.
