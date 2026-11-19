@@ -34,6 +34,7 @@ The cost: the pick call writes a Lean and a Case for each trade, about 1 to 2 s 
 - Deadline week: the event, from its deploy until one day after the Lock.
 - Lock: the time when Sleeper closes trades. For CPC it is 00:00 Eastern on Tue 2026-11-24, as one value in `clients/cpc/client.toml`. Brian chose this tight time over 03:00 Eastern. The risk: a trade between the end of the last game and Sleeper's real lock shows after the banner says closed.
 - Deadline banner: the strip under the top band, with the countdown to the Lock.
+  The countdown carries a caveat, from Brian after the grill: trades stay open until the Monday night games end, with the Lock as the estimate. Example copy: "Trades close after the Monday night games, about 12:00 AM ET." The exact copy waits for prototype 08.
 - Trade wire: the live list of trades that Sleeper accepts.
 - Deadline board: the page of each team with its race group, needs, and spares.
 

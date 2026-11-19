@@ -1181,7 +1181,7 @@ The time when Sleeper closes trades for the season, as one value in the client c
 _Avoid_: Deadline (alone), cutoff, close
 
 **Deadline banner**:
-The slim strip under the top band of each page during Deadline week. It counts down to the Lock and links to the trade tools. After the Lock it says that trades are closed.
+The slim strip under the top band of each page during Deadline week. It counts down to the Lock, says that the Lock is an estimate for the end of the Monday night games, and links to the trade tools. After the Lock it says that trades are closed.
 _Avoid_: Banner (alone), countdown bar, alert, announcement
 
 **Trade wire**:
