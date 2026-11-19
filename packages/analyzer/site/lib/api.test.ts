@@ -151,6 +151,35 @@ describe("streamFind", () => {
     await expect(streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {} }, new AbortController().signal)).rejects.toMatchObject({ status: 500 });
   });
 
+  it("drains the stream to its end after the document, so it leaves no open stream for an abort to cut", async () => {
+    const encoder = new TextEncoder();
+    const chunks = [
+      { type: "data-answer", data: { kind: "find", document: findResponse } },
+      { type: "data-error", data: { status: 500, line: "late" } },
+      { type: "finish" },
+    ].map((part) => encoder.encode(`data: ${JSON.stringify(part)}\n\n`));
+    chunks.push(encoder.encode("data: [DONE]\n\n"));
+    const cancel = vi.fn();
+    let reads = 0;
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        reads += 1;
+        const chunk = chunks.shift();
+        if (chunk) controller.enqueue(chunk);
+        else controller.close();
+      },
+      cancel,
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(body, { headers: { "content-type": "text/event-stream" } })));
+    const controller = new AbortController();
+    const doc = await streamFind(TARGET, "pw", { season: 2026, asker: 6 }, { onStep: () => {}, onTeam: () => {} }, controller.signal);
+    expect(doc.trades).toHaveLength(findResponse.trades.length);
+    await vi.waitFor(() => expect(reads).toBeGreaterThanOrEqual(5));
+    expect(chunks).toHaveLength(0);
+    controller.abort();
+    expect(cancel).not.toHaveBeenCalled();
+  });
+
   it("throws a 502 for a stream that ends with no document", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamOf([{ type: "data-step", data: { line: "Reading every team", live: true } }])));
     await expect(streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {} }, new AbortController().signal)).rejects.toMatchObject({ status: 502 });

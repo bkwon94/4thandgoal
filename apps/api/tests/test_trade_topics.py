@@ -881,3 +881,108 @@ def test_a_press_that_fails_logs_one_line_with_its_cause_its_stage_and_its_secon
     assert "cause=TimeoutError" in line
     assert f'stage="{_of(parts, "data-step")[-1]["line"]}"' in line
     assert re.search(r"seconds=[0-9]+\.[0-9]", line)
+
+
+class DeferredPick:
+    """A Finder pick that hands the route one more log-only check, `job`, next to its own checks."""
+
+    def __init__(self, pick, job):
+        self.pick = pick
+        self.job = job
+
+    def __call__(self, *args, defer, **kwargs):
+        picks = self.pick(*args, defer=defer, **kwargs)
+        defer(self.job)
+        return picks
+
+
+def _deferred_app(settings, sources, jev, job):
+    news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    pick = functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair())
+    return create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                      finder_search=functools.partial(search, jev=jev), finder_pick=DeferredPick(pick, job))
+
+
+@pytest.mark.parametrize(("path", "body"), [
+    (IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}),
+    (FIND_STREAM, {"season": 2026, "asker": BO_GIRDS, "partner": LIL_FRIDGE}),
+])
+def test_the_stream_ends_right_after_the_answer_and_the_log_only_checks_run_after_it(settings, sources, jev, path,
+                                                                                     body):
+    # The spec: the log-only Jev checks run after the Answer goes out. A check that holds keeps no stream open.
+    release, ran = threading.Event(), threading.Event()
+
+    def held_check():
+        release.wait(timeout=10)
+        ran.set()
+
+    client = TestClient(_deferred_app(settings, sources, jev, held_check))
+    try:
+        response = client.post(path, json=body, headers=HEADERS)
+        assert not ran.is_set()
+    finally:
+        release.set()
+    assert [part["type"] for part in _parts(response)][-2:] == ["data-answer", "finish"]
+    assert response.text.endswith("data: [DONE]\n\n")
+    assert ran.wait(timeout=10)
+
+
+def test_a_log_only_check_that_fails_logs_and_never_reaches_the_client(settings, sources, jev, caplog):
+    # A deferred check may raise more than JevError. The manager still gets the Answer and no error part after it.
+    caplog.set_level(logging.INFO)
+    failed = threading.Event()
+
+    def broken_check():
+        failed.set()
+        raise ValueError("the check broke")
+
+    client = TestClient(_deferred_app(settings, sources, jev, broken_check))
+    parts = _parts(client.post(IDEAS, json={"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, headers=HEADERS))
+    assert failed.wait(timeout=10)
+    end = time.monotonic() + LOG_WAIT_SECONDS
+    while "A log-only Jev check failed" not in caplog.text and time.monotonic() < end:
+        time.sleep(0.05)
+    assert [part["type"] for part in parts][-2:] == ["data-answer", "finish"]
+    assert not _of(parts, "data-error")
+    assert "A log-only Jev check failed after the Answer went out" in caplog.text
+    assert not _failed_lines(caplog)
+
+
+def _read_to_done(port: int, path: str, body: dict, seconds: float) -> str:
+    """Post `body` to `path` on a raw socket and read until the end mark of the stream, or for `seconds`, then close
+    the socket, as the find stream of the site does after the Answer. The text that came before the close."""
+    payload = json.dumps(body).encode()
+    head = (f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
+            f"X-League-Passphrase: {HEADERS['X-League-Passphrase']}\r\nContent-Length: {len(payload)}\r\n\r\n")
+    received = b""
+    with socket.create_connection(("127.0.0.1", port)) as client:
+        client.sendall(head.encode() + payload)
+        end = time.monotonic() + seconds
+        while b"data: [DONE]" not in received and (left := end - time.monotonic()) > 0:
+            client.settimeout(left)
+            try:
+                chunk = client.recv(65536)
+            except TimeoutError:
+                break
+            if not chunk:
+                break
+            received += chunk
+    return received.decode(errors="replace")
+
+
+def test_a_client_that_closes_after_the_answer_logs_no_cut(settings, sources, jev, caplog):
+    # A page that leaves after the Answer is no failed stream, even while a log-only check still runs.
+    caplog.set_level(logging.INFO)
+    release = threading.Event()
+    app = _deferred_app(settings, sources, jev, lambda: release.wait(timeout=30))
+    with _served(app) as port:
+        try:
+            received = _read_to_done(port, FIND_STREAM, {"season": 2026, "asker": BO_GIRDS, "partner": LIL_FRIDGE},
+                                     CUT_SECONDS)
+            time.sleep(1)
+            lines = _failed_lines(caplog)
+        finally:
+            release.set()
+    assert '"type": "data-answer"' in received
+    assert "data: [DONE]" in received
+    assert not lines, lines
