@@ -1,8 +1,10 @@
 $ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-38[,)]"
 
+
 Running 1 test using 1 worker
 
 AT-38 open modal layers: ["test-modal-layer (A test modal layer)"]
-  ✓  1 [floor] › e2e/front-door-tour.spec.ts:318:5 › the Tour waits while a test modal layer is open, and Stop 1 shows after the layer leaves (AT-38) (2.2s)
+AT-38 layer: test-modal-layer (A test modal layer); exit duration: 300 ms; exit end: 1722.4 ms; Stop 1 shows: 2338.7 ms; gap: 616.3 ms; frames in exit with no card: 19 of 19
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:318:5 › the Tour waits while a test modal layer is open, and Stop 1 shows after the layer leaves (AT-38) (2.5s)
 
-  1 passed (2.6s)
+  1 passed (3.2s)

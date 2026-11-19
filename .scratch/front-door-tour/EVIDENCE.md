@@ -267,9 +267,9 @@ Observation: The output lists 43 changed files under `apps/site/`, `packages/des
 ## AT-38: The Tour waits for an open modal layer
 
 App: site
-Then: No Stop card shows while the layer is open, and Stop 1 shows after the layer finishes its exit.
+Then: No Stop card shows while the layer is open or in its exit, and Stop 1 shows after the layer finishes its exit.
 Files: `evidence/AT-38/output.txt`
-Observation: The output prints "AT-38 open modal layers: [\"test-modal-layer (A test modal layer)\"]". The layer is the test's own `div` with role `dialog` and `aria-modal="true"`, because no Announcement ships yet. The test found no card while the layer was open, and Stop 1 "1 of 4" after the test removed the layer.
+Observation: The output prints the layer "test-modal-layer (A test modal layer)", the test's own `div` with role `dialog` and `aria-modal="true"`. The close runs a 300 ms opacity fade, and the layer keeps `aria-modal="true"` and stays on the page until the fade ends. The exit ends at 1722.4 ms. Stop 1 shows at 2338.7 ms, a gap of 616.3 ms after the exit end. The test sampled 19 frames during the exit and found no `[data-tour-card]` in any of them. The test passed.
 
 ## AT-39: The Stop card is a modal layer
 
