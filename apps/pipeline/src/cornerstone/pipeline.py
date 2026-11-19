@@ -121,6 +121,7 @@ from sim.published import sim_file, write_sim
 from sim.tunables import SIM_RUNS
 from waiver.board import waiver_board
 from waiver.price import bid_history
+from waiver.render import render_waiver
 from waiver.research import SearchCall, research_board, saved_research, search_call
 from week.median import median_terms
 from week.page import download_bytes, render_page_json
@@ -805,9 +806,11 @@ def run_rewrite(
 
 
 def run_page_json(repo: Path, season: int, week: int, *, client: Client) -> Path:
-    """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
+    """Write page.json and waiver.json for a saved week from its facts and blurbs. It calls no writer and no network."""
     bundle, blurbs = _load_saved_week(client, season, week)
     page = render_page_json(bundle, blurbs, build_dir(client.folder))
+    # The render diff of the rebuild job compares waiver.json too, so the command renders each file of the week.
+    render_waiver(bundle, build_dir(client.folder))
     write_topics_or_warn(build_dir(client.folder), season, week, _saved_league_week(client, season, week))
     return page
 
