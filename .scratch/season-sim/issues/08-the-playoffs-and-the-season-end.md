@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 
 **Blocked by:** 05.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The build makes the playoff fixture and the season-end fixture by one command, and the evidence names their seeds and champion.
 - [ ] With the top seed as Your team, the Playoffs page shows its title odds, its game, and two tiles (AT-42).
@@ -17,3 +17,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, AT-66,
 - [x] No later round has a tile (AT-66), and the season-end page has no chart of odds by week (AT-69).
 - [x] The site evidence set passes the overlap check at the four sizes.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- 2026-11-18: The AT-42 box stays open. In the week 14 fixture, the top seed of cpc has a bye, and AT-66 forbids a tile there. The week 15 fixture `week-sim-round-2.json` gives the top seed its semifinal with two tiles. Brian chooses: change the Given of AT-42 to week 15, or accept the bye result.
