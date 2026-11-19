@@ -6,7 +6,7 @@ Map: `.scratch/deadline-week/MAP.md`.
 
 **Blocked by:** 10
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -18,3 +18,5 @@ With the facts of decision 10, Brian decides:
 4. If it ships with the event on Fri 2026-11-20 night, or later but before the Lock.
 
 ## Decision
+
+None. Brian scrapped the three-team Finder on 2026-11-19 (decision 10).

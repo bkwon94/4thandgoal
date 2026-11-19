@@ -26,8 +26,7 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 ## NOT YET SPECIFIED
 
 - What do the Deadline banner, the deadline look, the deadline board, and the feed look like? `decisions/08-prototype-event-look.md`.
-- How can the Finder find a three-team trade, and at what cost and speed? Brian wants it in. `decisions/10-research-three-team-finder.md`.
-- What does a manager pick for a three-team trade, and when does it ship? `decisions/11-grill-three-team-finder.md`.
+- Which reading of the code list of the Spares tree does the Finder use? `decisions/12-spec-spares-tree-reading.md`.
 
 ## OUT OF SCOPE
 
@@ -39,3 +38,4 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - The Accept tree ("would the other manager accept?" split per the playbook). Real trades give only accepted labels, so it needs made-up rejects and its own backtest. After the event (decision 05).
 - The split of the target question into "would start" and "would fill a weak spot". After the event (decision 05).
 - A Jev tree for fair. A tree that combines fair answers ranks trades by a score, against `no-math-filters` (decision 05).
+- A Finder for three-team trades. About $0.11 and 31 to 33 s for each press, and 3 to 4 days of build. Brian scrapped it (decisions 10, 11).

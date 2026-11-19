@@ -6,7 +6,7 @@ Map: `.scratch/deadline-week/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -23,3 +23,5 @@ Find out:
 The findings go beside this ticket, at `10-research-three-team-finder.notes.md`. The league data stays out of the repo except player names that a Backtest mark already names.
 
 ## Decision
+
+Brian scrapped the three-team Finder on 2026-11-19, after the research notes (`10-research-three-team-finder.notes.md`): about 31 to 33 s and $0.11 for each press, and 3 to 4 days of build, with no safe ship before the Lock. The notes keep one fact for the spec: the code list of the Spares tree has two readings (decision 12).
