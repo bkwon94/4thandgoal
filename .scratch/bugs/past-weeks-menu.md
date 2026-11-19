@@ -1,7 +1,7 @@
 # Past weeks in the menu sheet
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-past-weeks-menu`.
 Source: the session of 2026-11-19.
 Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -61,3 +61,9 @@ Green: at `373a596c`, after `CLIENT=cpc pnpm build` in `apps/site`, `builtin cd 
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-past-weeks-menu`. Commits: `5d27ac80`, `63493e53`, `373a596c`. Date: 2026-11-19.
+Item 1 went red with 3 failed of 32 in `top-band.test.tsx`, then green with 32 of 32; item 2 went red at 62 px in `e2e/menu-sheet.spec.ts`, then green; `make check-fast BASE=main` passed with 486 of 486 site tests.
+The fix of item 2 calls `finish()` on the `translate` animation of the ui-sdk Drawer, an internal detail, so a later ui-sdk version can break it, and the floor spec then goes red.
+Nobody checked item 2 on a real iPhone in Safari yet.
+Read 9 files: AGENTS.md, docs/agents/issue-tracker.md, docs/adr/0033-a-quick-run-skips-the-spec-flow.md, GLOSSARY.md, packages/design/site/shell/menu-sheet.tsx, packages/design/site/shell/top-band.test.tsx, packages/design/site/ui/sheet.tsx, apps/site/src/app/globals.css, apps/site/playwright.config.ts.
