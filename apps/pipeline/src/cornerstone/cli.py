@@ -24,6 +24,7 @@ from cornerstone.pipeline import (
     preview,
     resolve_week,
     run_build,
+    run_facts,
     run_history,
     run_midseason,
     run_page_json,
@@ -76,6 +77,11 @@ def build_parser() -> argparse.ArgumentParser:
     page_json = sub.add_parser("page-json", parents=[named], help="write page.json for a saved week")
     page_json.add_argument("--week", type=int)
     page_json.add_argument("--season", type=int)
+
+    facts = sub.add_parser("facts", parents=[named],
+                           help="rebuild facts.json of a saved week from its saved inputs, with no Claude or network call")
+    facts.add_argument("--week", type=int)
+    facts.add_argument("--season", type=int)
 
     rankings = sub.add_parser("rankings", parents=[named], help="write the rankings blurb and rankings.json for a saved week")
     rankings.add_argument("--week", type=int)
@@ -387,6 +393,8 @@ def main(
             preview(page)
         elif args.command == "chart":
             return run_chart(client, season, week, writer, fetch_state)
+        elif args.command == "facts":
+            print(run_facts(season, week, client=client))
         elif args.command == "page-json":
             print(run_page_json(repo, season, week, client=client))
         elif args.command == "rankings":

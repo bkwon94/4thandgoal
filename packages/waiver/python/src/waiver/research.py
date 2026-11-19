@@ -113,3 +113,21 @@ def research_board(board: WaiverBoard, call: SearchCall, prompts_dir: Path) -> W
                 p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]})
             )
     return board.model_copy(update={"buckets": buckets, "experts_missing": missing})
+
+
+def saved_research(board: WaiverBoard, saved: WaiverBoard | None) -> WaiverBoard:
+    """The board with the research claims of the `saved` board, as `research_board` adds them, with no Claude call.
+
+    A facts-only rebuild reads the claims of the saved facts, so its facts match the build of record. A player that
+    the saved board does not hold gets no claim, so a diff shows him as a change of the board.
+    """
+    claims = {p.player_id: p.research for bucket in (saved.buckets.values() if saved else []) for p in bucket}
+    buckets: dict[str, list[WaiverPlayer]] = {}
+    for key, bucket in board.buckets.items():
+        buckets[key] = []
+        for p in bucket:
+            found = claims.get(p.player_id, [])
+            buckets[key].append(
+                p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]})
+            )
+    return board.model_copy(update={"buckets": buckets, "experts_missing": bool(saved and saved.experts_missing)})

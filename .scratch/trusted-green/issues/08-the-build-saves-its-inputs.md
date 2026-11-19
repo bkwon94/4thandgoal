@@ -10,7 +10,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-19 and AT-20.
 
 **Status:** ready-for-agent
 
-- [ ] `build --no-fetch` of cpc 2026 week 10 with no key writes the three inputs before the first Claude call.
-- [ ] Two facts-only rebuilds of cpc week 10 give the same sha256 of `facts.json`.
-- [ ] The facts-only rebuild runs with no secret and makes no network call.
-- [ ] A pipeline test builds the facts of a saved week two times and compares them byte for byte.
+- [x] `build --no-fetch` of cpc 2026 week 10 with no key writes the three inputs before the first Claude call.
+- [x] Two facts-only rebuilds of cpc week 10 give the same sha256 of `facts.json`.
+- [x] The facts-only rebuild runs with no secret and makes no network call.
+- [x] A pipeline test builds the facts of a saved week two times and compares them byte for byte.

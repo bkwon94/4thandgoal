@@ -27,6 +27,7 @@ from cornerstone.pipeline import (
     make_bundle,
     read_verify,
     run_build,
+    run_facts,
     run_page_json,
     run_rankings,
     run_rewrite,
@@ -47,7 +48,7 @@ from league.models import (
 )
 from league.nflverse import nflverse_week
 from league.parse import parse_week
-from league.paths import build_dir, history_dir, history_root, week_dir
+from league.paths import build_dir, history_dir, history_root, nflverse_cache_dir, week_dir
 from league.provider.sleeper import load_raw
 from league.season_inputs import SeasonInputs
 from rankings.power_rankings import power_rankings
@@ -954,10 +955,12 @@ def test_nflverse_down_still_builds(tmp_path, fixture_raw_dir, offline):
     assert page.exists() and "count only this week" not in page.read_text()
 
 
-def test_degraded_extract_is_not_saved_and_the_next_build_fetches(tmp_path, fixture_raw_dir, offline):
+def test_degraded_extract_is_saved_and_the_next_build_fetches_again(tmp_path, fixture_raw_dir, offline):
     repo = _repo(tmp_path, fixture_raw_dir)
     run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "nflverse": _down_nflverse}, client=cpc_client(at=repo))
-    assert not _nflverse_path(repo).exists()
+    # The build keeps the extract it read, so a facts-only rebuild reads the same one.
+    degraded = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
+    assert not any(degraded.sources.values())
     run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
     saved = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
     assert all(saved.sources.values())
@@ -1027,7 +1030,13 @@ def test_build_gives_the_fetch_the_teams_that_played(tmp_path, fixture_raw_dir, 
     assert record_.sources["nflverse_pbp"] is True
 
 
-def test_partial_week_is_not_saved(tmp_path, fixture_raw_dir):
+def _saved_flags(repo):
+    """The source flags of the saved extract, with the history flag of None, as a build record holds no such key."""
+    saved = NflverseWeek.model_validate_json(_nflverse_path(repo).read_text())
+    return {**{key: saved.sources.get(key) for key in NFLVERSE_KEYS}, "history": None}
+
+
+def test_partial_week_is_saved_with_its_flag_false(tmp_path, fixture_raw_dir):
     # Both files lack the ARI and LA game, so the started players of ARI and LAR have no game in them.
     def partial(season, week, player_ids, players, teams, scoring):
         cache = Path(tempfile.mkdtemp())
@@ -1044,10 +1053,10 @@ def test_partial_week_is_not_saved(tmp_path, fixture_raw_dir):
     repo = _repo(tmp_path, fixture_raw_dir)
     _, record = make_bundle(2026, 6, news=no_news, nflverse=partial, client=cpc_client(at=repo))
     assert record.sources["nflverse_pbp"] is False
-    assert not _nflverse_path(repo).exists()
+    assert _saved_flags(repo) == record.sources | {"history": None}
 
 
-def test_a_file_without_the_monday_night_game_is_not_saved(tmp_path, fixture_raw_dir):
+def test_a_file_without_the_monday_night_game_is_saved_with_its_flag_false(tmp_path, fixture_raw_dir):
     # The expected points file lacks the WAS and SF game, so it reads through week 5 and the build goes on.
     def lagged(season, week, player_ids, players, teams, scoring):
         cache = Path(tempfile.mkdtemp())
@@ -1060,10 +1069,10 @@ def test_a_file_without_the_monday_night_game_is_not_saved(tmp_path, fixture_raw
     repo = _repo(tmp_path, fixture_raw_dir)
     _, record = make_bundle(2026, 6, news=no_news, nflverse=lagged, client=cpc_client(at=repo))
     assert record.sources["ffopportunity"] is False and record.sources["nflverse_pbp"] is True
-    assert not _nflverse_path(repo).exists()
+    assert _saved_flags(repo) == record.sources | {"history": None}
 
 
-def test_a_missing_player_file_sets_its_flag_false_and_is_not_saved(tmp_path, fixture_raw_dir):
+def test_a_missing_player_file_sets_its_flag_false_and_is_saved(tmp_path, fixture_raw_dir):
     def no_player_file(season, week, player_ids, players, teams, scoring):
         cache = Path(tempfile.mkdtemp())
         for f in NFLVERSE_FIXTURES.iterdir():
@@ -1075,7 +1084,7 @@ def test_a_missing_player_file_sets_its_flag_false_and_is_not_saved(tmp_path, fi
     repo = _repo(tmp_path, fixture_raw_dir)
     _, record = make_bundle(2026, 6, news=no_news, nflverse=no_player_file, client=cpc_client(at=repo))
     assert record.sources["nflverse_stats_player"] is False and record.sources["nflverse_pbp"] is True
-    assert not _nflverse_path(repo).exists()
+    assert _saved_flags(repo) == record.sources | {"history": None}
 
 
 def test_corrupt_fetch_files_fall_back_with_a_warning(tmp_path, fixture_raw_dir, fixture_history_root, caplog, offline):
@@ -1181,6 +1190,67 @@ def test_a_failed_refetch_keeps_the_saved_extract(tmp_path, fixture_raw_dir, cap
     assert "nflverse refetch failed" in caplog.text
 
 
+SAVED_INPUTS = ("nflverse.json", "slow_sources.json", "news.json")
+
+
+def _repo_with_cache(tmp_path, fixture_raw_dir):
+    """The free agent repo with the recorded nflverse files in the cache of the client, so the slow sources read
+    real values. The nflverse fetch of `offline` fills its own cache, so this one stands for the cache of the build
+    day."""
+    repo = _repo_with_free_agent(tmp_path, fixture_raw_dir)
+    cache = nflverse_cache_dir(cpc_client(at=repo).nfl_dir)
+    shutil.copytree(NFLVERSE_FIXTURES, cache)
+    return repo
+
+
+def _news_of_every_player(player_id):
+    return [{"published": "1760000000000", "metadata": {"description": f"News of player {player_id}."}}]
+
+
+def test_the_build_saves_its_three_inputs_before_the_first_claude_call(tmp_path, fixture_raw_dir, offline):
+    repo = _repo_with_cache(tmp_path, fixture_raw_dir)
+    raw = week_dir(repo, 2026, 6) / "raw"
+    seen = []
+
+    # The research call is the first Claude call of the build.
+    def search(system, user):
+        seen.append({name: (raw / name).exists() for name in SAVED_INPUTS})
+        return ResearchOut(claims=[])
+
+    run_build(repo, 2026, 6, _fake, fetch=False, **{**offline, "news": _news_of_every_player, "research": search},
+              client=cpc_client(at=repo))
+    assert seen and all(all(files.values()) for files in seen)
+    news = json.loads((raw / "news.json").read_text())
+    assert news and all(items == _news_of_every_player(pid) for pid, items in news.items())
+    slow = json.loads((raw / "slow_sources.json").read_text())
+    assert slow["schedules"] and slow["id_map"] and slow["depth_charts"]
+
+
+def test_a_facts_only_rebuild_gives_the_facts_of_the_build_byte_for_byte(tmp_path, fixture_raw_dir, offline):
+    repo = _repo_with_cache(tmp_path, fixture_raw_dir)
+    asked = []
+    run_build(repo, 2026, 6, _fake, fetch=False,
+              **{**offline, "news": _news_of_every_player, "research": _one_claim(asked)}, client=cpc_client(at=repo))
+    facts = week_dir(repo, 2026, 6) / "facts.json"
+    built = facts.read_bytes()
+    assert b"WV.research.80001.1" in built and b"News of player" in built
+    # The cache of the build day is gone, so the rebuild reads only the saved inputs.
+    shutil.rmtree(nflverse_cache_dir(cpc_client(at=repo).nfl_dir))
+
+    assert run_facts(2026, 6, client=cpc_client(at=repo)) == facts
+    first = facts.read_bytes()
+    run_facts(2026, 6, client=cpc_client(at=repo))
+    assert first == facts.read_bytes() == built
+
+
+def test_a_facts_only_rebuild_stops_on_a_missing_input(tmp_path, fixture_raw_dir, offline):
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    (week_dir(repo, 2026, 6) / "raw" / "slow_sources.json").unlink()
+    with pytest.raises(BuildStopped, match="slow_sources.json"):
+        run_facts(2026, 6, client=cpc_client(at=repo))
+
+
 def test_page_json_command_writes_a_saved_week_with_no_writer_call(
         tmp_path, fixture_raw_dir, monkeypatch, offline, fake_writer):
     from cornerstone import cli
@@ -1201,6 +1271,24 @@ def test_page_json_command_writes_a_saved_week_with_no_writer_call(
     assert data["schema_version"] == 2
     assert data["week"] == 6
     assert len(data["matchups"]) == 6
+
+
+def test_facts_command_rebuilds_a_saved_week_with_no_writer_call(
+        tmp_path, fixture_raw_dir, monkeypatch, offline, fake_writer, capsys):
+    from cornerstone import cli
+
+    repo = cli_root(tmp_path)
+    client = cpc_client(root=repo)
+    shutil.copytree(fixture_raw_dir, week_dir(client.folder, 2026, 6) / "raw")
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=client)
+    facts = week_dir(client.folder, 2026, 6) / "facts.json"
+    built = facts.read_bytes()
+    monkeypatch.chdir(repo)
+
+    assert cli.main(["facts", "--client", "cpc", "--season", "2026", "--week", "6"], writer=fake_writer) == 0
+    assert fake_writer.calls == []
+    assert facts.read_bytes() == built
+    assert str(facts) in capsys.readouterr().out
 
 
 def test_a_build_with_no_search_sends_the_research_through_the_writer(
