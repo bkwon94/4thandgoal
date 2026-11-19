@@ -219,12 +219,19 @@ def parse_drops(transactions: list[RawTransaction]) -> list[Drop]:
     ]
 
 
+def _accepted(transaction: RawTransaction) -> datetime | None:
+    """The aware time that Sleeper accepted a complete trade, from `status_updated`, the milliseconds of its last
+    status change. The field stays an extra of `RawTransaction`, because the feed and the waiver rules read it there."""
+    epoch_ms = (transaction.model_extra or {}).get("status_updated")
+    return None if epoch_ms is None else datetime.fromtimestamp(epoch_ms / 1000, tz=UTC)
+
+
 def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
     return [
         Trade(
             transaction_id=t.transaction_id,
             created=datetime.fromtimestamp(t.created / 1000, tz=UTC),
-            accepted=None if t.status_updated is None else datetime.fromtimestamp(t.status_updated / 1000, tz=UTC),
+            accepted=_accepted(t),
             roster_ids=t.roster_ids,
             adds=t.adds or {},
             drops=t.drops or {},

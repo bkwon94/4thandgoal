@@ -1,11 +1,12 @@
 """
-The Trade Wire route: the accepted trades of the current leg of one client, newest first, with the team names, the
+The Trade Wire route: the accepted trades of the week of the Lock of one client, newest first, with the team names, the
 players each team gets, and the FAAB each team gets. It reads Sleeper itself and keeps its answer for a few seconds.
 """
 from fastapi import APIRouter, Request
 
 from analyzer import routes as analyzer_routes
 from analyzer.cache import TeamsCache
+from analyzer.values import AnalyzerValues
 from cornerstone_api.sources import Sources
 from league.models import Trade
 from league.parse import parse_trades
@@ -17,7 +18,7 @@ router = APIRouter()
 TRADE_WIRE_CACHE_SECONDS = 5
 
 
-def new_cache() -> TeamsCache:
+def trade_wire_cache() -> TeamsCache:
     """The cache of one client. It keeps its answer by season, and the build of a stale entry reads Sleeper again."""
     return TeamsCache(TRADE_WIRE_CACHE_SECONDS)
 
@@ -39,7 +40,9 @@ def _team(roster_id: int, trade: Trade, teams: dict[int, dict], players: dict[st
 
 
 def _build(sources: Sources, served: analyzer_routes.Served, season: int) -> dict:
-    leg, transactions = sources.fetch_transactions(served.client.current_league_id)
+    # Sleeper moves to the next leg before the banner ends, one day after the Lock, so the Lock caps the leg.
+    lock = served.client.values.package(AnalyzerValues).lock
+    leg, transactions = sources.fetch_transactions(served.client.current_league_id, until=lock)
     # Sleeper gives one leg, but a transaction of another leg never belongs in the list of this one.
     trades = sorted(parse_trades([each for each in transactions if each.leg == leg]),
                     key=lambda trade: trade.accepted or trade.created, reverse=True)
@@ -59,7 +62,7 @@ def _build(sources: Sources, served: analyzer_routes.Served, season: int) -> dic
 
 @router.get("/deadline/trades")
 def trades(request: Request, served: analyzer_routes.ServedClient) -> dict:
-    """The accepted trades of the current leg, newest first by the time Sleeper accepted them."""
+    """The accepted trades of the leg that Sleeper is in, capped at the week of the Lock, newest first by the time Sleeper accepted them."""
     slug = served.client.slug
     season = served.client.values.latest_season
     return request.app.state.trade_wires[slug].get_or_build(
