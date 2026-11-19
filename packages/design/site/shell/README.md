@@ -2,7 +2,7 @@
 
 ## Knows
 
-- The top band: the brand mark, the pill bar, the actions, and the theme button. It is sticky, so it stays on screen at every scroll. The actions are the button of each package of the client, such as the egg button, which the app passes.
+- The top band: the brand mark, the pill bar, the actions, and the theme button. It is sticky, so it stays on screen at every scroll. The actions are the button of each package of the client, such as the egg button, which the app passes. The menu foot is the rows of the open page at the foot of the menu sheet, which the page passes. A row calls `useCloseMenuSheet` to close the sheet, then run its step once the sheet finishes its exit.
 - The pill bar: each destination with its full label, from the desktop tier up. The menu sheet: below the desktop tier, a menu button in the top band opens a sheet of the pages under the band, on the ui-sdk sheet wrapper of `site/ui/sheet.tsx`. The sheet closes by a drag or a flick up, the X, a tap on the dimmed page, or Escape. A field that calls `useKeyboardField` of `keyboard.ts` marks the keyboard open while it has the focus, and the root then holds `data-keyboard` and `--keyboard-inset`, so a part that sticks to the foot sits right above the keyboard. `useKeyboardRaised` is true while that inset is a real keyboard, so a part that does not stick to the foot, such as the foot of an empty Thread, can pin itself above it.
 - The open destination: `currentHref` in `nav.ts` marks the item of the open page, a page under it, or any week.
 - The theme button. Every brand has both sets, so every top band shows it.
