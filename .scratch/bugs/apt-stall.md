@@ -40,3 +40,4 @@ Smoke: none, no site or API change.
 - The rule went red on 3 steps at `ec4d4c6e` and green at `60737881`; `make check-fast BASE=main` passes, with 217 script tests.
 - Later: the first CI run of the PR is a cache miss that saves the .deb files, and the second run shows the hit; `apt-get update` still reads the package lists from the mirror.
 - Read 3 files: AGENTS.md, .github/workflows/check.yml, .claude/plugin/skills/quick/format.md; the count of the builder subagent is not in this line.
+- CI showed that `actions/cache` saves only on a green job, so the save is now its own step with `if: always()`.
