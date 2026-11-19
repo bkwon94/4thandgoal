@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-26, AT-28, AT-31, AT-
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The switch is the wrapper of the ui-sdk SegmentedControl, and its two halves differ in width by 1 px or less.
 - [x] A link with the Find mode opens the analyzer in Find mode, and a link with the Grade mode opens Grade mode.
