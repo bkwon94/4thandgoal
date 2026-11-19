@@ -24,7 +24,7 @@ Red: <the Red block, word for word, with its output>
 Green: <the Green block, word for word, with its output>
 ````
 
-For an item that touches the site or the API, add its `Smoke:` line, word for word, under its Green block. For an item whose quick file has a `Rebuild:` block, add the block, word for word, and the output of the rebuild run, word for word, under the `Smoke:` line. Copy nothing else. Leave out the output of the rebuild run for an item with no `Rebuild:` block. Leave out the `Method:`, `Cause:`, and `Test verdict:` lines, the `Boundary:` line, and the comments. Leave out each text-only item.
+For an item that touches the site or the API, add its `Smoke:` line, word for word, under its Green block. Under the `Smoke:` line, add the path of `smoke.log` and the path of each shot in the smoke folder, one path on each line. For an item whose quick file has a `Rebuild:` block, add the block, word for word, and the output of the rebuild run, word for word, under the `Smoke:` line. Copy nothing else. Leave out the output of the rebuild run for an item with no `Rebuild:` block. Leave out the `Method:`, `Cause:`, and `Test verdict:` lines, the `Boundary:` line, and the comments. Leave out each text-only item.
 
 ## Start the Judge
 
@@ -49,7 +49,7 @@ The brief:
 ````text
 You are the quick Judge of one quick run. You did not build the work. Give each item a Test verdict from its evidence only.
 
-Run no command. Read no code, no diff, and no git history. Read no file, with one exception: open an image file that a Red block or a Green block names, to see its screenshot. Open no other file. The items below are all that you judge.
+Run no command. Read no code, no diff, and no git history. Read no file, with one exception: open an image file that a Red block or a Green block names, to see its screenshot. Also open the `smoke.log` file and the shots whose paths a `Smoke:` line lists. Open no other file. The items below are all that you judge.
 
 For each item, answer two questions. For an item that has a `Smoke:` line, answer a third:
 

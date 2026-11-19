@@ -44,6 +44,11 @@ class ImplementSmokeTest(unittest.TestCase):
         self.assertIn("REBUILD.md", judge)
         self.assertIn("evidence/rebuild.log", judge)
 
+    def test_implement_judge_may_open_the_smoke_run(self):
+        judge = text(IMPLEMENT / "judge.md")
+        self.assertIn("evidence/smoke/", judge)
+        self.assertIn("smoke.log", judge)
+
 
 class QuickSmokeTest(unittest.TestCase):
     def test_format_names_the_smoke_block_and_the_rebuild_block(self):
@@ -63,6 +68,11 @@ class QuickSmokeTest(unittest.TestCase):
         judge = text(QUICK / "judge.md")
         self.assertIn("`Rebuild:` block", judge)
         self.assertIn("output of the rebuild run", judge)
+
+    def test_quick_judge_gets_the_paths_of_the_smoke_files(self):
+        judge = text(QUICK / "judge.md")
+        self.assertIn("the path of `smoke.log` and the path of each shot", judge)
+        self.assertIn("Also open the `smoke.log` file", judge)
 
     def test_skill_runs_the_smoke_run_before_the_quick_judge(self):
         skill = text(QUICK / "SKILL.md")
