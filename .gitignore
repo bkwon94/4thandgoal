@@ -24,3 +24,5 @@ data/eggs/
 # The API stores the miss log of the ask box of each client here when CORNERSTONE_ASK_DIR is not set. Each entry holds
 # a question as a manager typed it, and the repo is public, so no commit may hold these files (ADR 0031).
 data/ask/
+# Hypothesis writes its example database here when a property test runs.
+.hypothesis/
