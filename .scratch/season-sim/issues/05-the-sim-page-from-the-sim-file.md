@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-24 to AT-32, AT-37, AT-5
 
 **Blocked by:** 03.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `cpc` page with Bo Girds shows the header of AT-24, and the sentence opens the ladder of the file (AT-25).
 - [x] The week switch has Wk 11 to Wk 14 and Playoffs, and each opens its week page (AT-26).
