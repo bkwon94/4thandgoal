@@ -44,7 +44,7 @@ test(`the smoke run of ${CLIENT}`, async () => {
   // The fixed port of the evidence server, because the local API allows only its origin.
   const server = await serveDir(join(process.cwd(), "out"), EVIDENCE_PORT);
   try {
-    const { failures } = await runSmoke({ flows, url: server.url, out: OUT, log: (line) => console.log(line) });
+    const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, out: OUT, log: (line) => console.log(line) });
     if (failures.length > 0) throw new Error(`The smoke run is red:\n${failures.join("\n")}`);
   } finally {
     await server.close();

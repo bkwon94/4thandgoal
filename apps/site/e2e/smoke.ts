@@ -60,6 +60,8 @@ const OVERLAP_PX = 2;
 
 export type SmokeOptions = {
   flows: readonly Flow[];
+  // The slug of the client that the run built. Its test labels and file names use it. The default is cpc.
+  client?: string;
   // The origin of the served export of the client.
   url: string;
   // The origin of the API. A response of 4xx or 5xx from it fails the flow. The default is the local API of the evidence run.
@@ -224,10 +226,10 @@ async function findOverlap(page: Page): Promise<string | null> {
  * Runs one flow at one size in a fresh context. It gives the causes of a failure, or an empty list for a pass.
  * The page listens for errors from the first load, so an error before the first step still fails the flow.
  */
-async function runFlow(browser: Browser, size: Size, flow: Flow, url: string, api: string, out: string): Promise<string[]> {
+async function runFlow(browser: Browser, size: Size, flow: Flow, client: string, url: string, api: string, out: string): Promise<string[]> {
   const folder = join(out, flowSlug(flow.name));
   mkdirSync(folder, { recursive: true });
-  const test: EvidenceTest = { id: flow.name, file: "", folder, route: flow.route, steps: flow.steps, widths: [size.width], themes: [THEME], clients: ["cpc"] };
+  const test: EvidenceTest = { id: flow.name, file: "", folder, route: flow.route, steps: flow.steps, widths: [size.width], themes: [THEME], clients: [client] };
   const context = await browser.newContext({ ...size.context, reducedMotion: "no-preference" });
   const page = await context.newPage();
   page.setDefaultTimeout(flow.claude ? CLAUDE_STEP_MS : STEP_MS);
@@ -248,7 +250,7 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, url: string, ap
   try {
     await openPage(page, `${url}${flow.route}`, THEME);
     await page.waitForLoadState("networkidle");
-    await runSteps(page, test, "cpc", size.width, THEME);
+    await runSteps(page, test, client, size.width, THEME);
     const overlap = await findOverlap(page);
     if (overlap) causes.push(`overlap: ${overlap}`);
   } catch (error) {
@@ -290,7 +292,7 @@ export async function runSmoke(options: SmokeOptions): Promise<{ failures: strin
       let green = true;
       for (const size of sizesOf(flow)) {
         const start = Date.now();
-        const causes = await runFlow(browsers[size.browser], size, flow, options.url, options.api ?? LOCAL_API, options.out);
+        const causes = await runFlow(browsers[size.browser], size, flow, options.client ?? "cpc", options.url, options.api ?? LOCAL_API, options.out);
         const where = `${flow.name} ${size.name} ${size.browser}`;
         if (causes.length === 0) log(`PASS ${where} in ${seconds(start)}`);
         for (const cause of causes) {
