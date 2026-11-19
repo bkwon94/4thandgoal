@@ -4,7 +4,7 @@ Kind: bug
 Status: in-progress
 Branch: `bug-flaky-browser-specs`.
 Source: the handoff file `.handoff/flaky-specs.md`, Run 1.
-Boundary: holds. 4 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
+Boundary: holds. 5 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
 
 ## Items
 
@@ -171,6 +171,15 @@ the box spans 494 to 548 px, and the keyboard starts at 516 px
 At `59d623e0`, the two AT-51 tests with `--repeat-each 5` give `10 passed`, the full spec `front-door-passphrase.spec.ts` gives `2 passed`, and `make check-fast BASE=main` passes. Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, still call only `skipTour`; a later run can give them `skipAnnouncements` too.
 Test verdict: FAIL Question 3: the Passphrase flow passed, but `smoke.log` shows the Front door flow failed, so not each flow passed.
 
+### 5. The Tour card covers the status of the first answer at phone width
+
+Done condition: In WebKit at 390x660, the card of each Tour Stop never covers the status line of the first answer, and the `Front door` smoke flow passes.
+Method: diagnosing-bugs
+Cause: pending
+Red: pending
+Green: pending
+Test verdict: pending
+
 ## Smoke
 
 Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 6 passed, 1 failed". Shots in `.scratch/bugs/flaky-browser-specs/smoke/`. The one failure is "FAIL Front door 390x660 webkit: overlap: <span> "Suggestions" and <span> "Checked"". The same flow on `main` at `8780eefb`, in a clean worktree, gives the same failure and "Smoke run: 1 flow, 0 passed, 1 failed", so this run did not cause it.
@@ -179,3 +188,4 @@ Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyze
 
 - The smoke run found an old bug on `main`: at 390x660, the Suggestions Stop of the Tour opens over the "Checked" status of the first answer. It needs its own quick run.
 - Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, call only `skipTour` and not `skipAnnouncements`. They can flake as item 4 did, and need a later run.
+- Brian added item 5 after the quick Judge gave FAIL on items 1 to 4, each on question 3, because of the old overlap of item 5. This is the one fix round.
