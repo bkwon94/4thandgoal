@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-25[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:210:5 › a reload during the Tour does not start it again (AT-25) (2.5s)
+
+  1 passed (2.8s)

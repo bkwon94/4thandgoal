@@ -1,0 +1,27 @@
+# 03: The look of the hole and the card
+
+Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, AT-18, AT-19, and AT-22.
+
+**App:** site
+
+**What to build:** The Tour gets the look that Brian chose in decision 02. The hole sits on the visual box of its control with an even pad: 6 px, or 10 px for a box under 28 px tall. The menu button gets a circle, and each other control gets a pill. The card places itself beside the hole and never covers its control. The card header holds the name and the count on one line, and the card keeps one height at all four Stops. Next and Done use the brand accent in both themes. Before each Stop, the Tour scrolls its control into view. The hole and the card follow their control on a resize, a turn of the phone, a zoom, and a scroll.
+
+**Blocked by:** 01
+
+**Status:** done
+
+- [x] The hole pad is even on all four sides to 1 px, with a circle on the menu button and a pill on each other control (AT-14).
+- [x] The card does not overlap its control on the four viewports of the iPhone rule (AT-16).
+- [x] The card height is the same at all four Stops to 1 px, at 375 and 1280 px (AT-17).
+- [x] At 390x660, each control is inside the visual viewport when its Stop shows (AT-18).
+- [x] After a resize from 390x660 to 660x390 at Stop 2, the hole center is within 2 px of the ask box center (AT-19).
+- [x] Next and Done fill with the `accent` token and use the `on-dark` text in both themes (AT-22).
+- [ ] The ticket uses the design bar: `transitions-dev`, scrolltide, `apple-design`, `animate`, `critique`, and `polish`.
+
+## Comments
+
+- Closes with the squash merge of the spec PR.
+- The branch front-door-tour-03 merged into front-door-tour on 2026-11-18 as e2fcd771.
+- 12 Playwright tests in WebKit cover the pad, the shape, the overlap on the four viewports, the height, the scroll, and the resize.
+- The design bar passes of scrolltide, animate, critique, and polish did not run, because they need a visual check.
+- Read 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/front-door-tour/PRD.md, .scratch/front-door-tour/ACCEPTANCE.md, .scratch/front-door-tour/issues/03-the-look-of-the-hole-and-the-card.md.

@@ -1,0 +1,56 @@
+{
+  "route": "/",
+  "clients": [
+    "norcal"
+  ],
+  "widths": [
+    375
+  ],
+  "themes": [
+    "light"
+  ],
+  "steps": [
+    {
+      "wait": "[role=\"dialog\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "[role=\"dialog\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[data-tour-card]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "stop-1"
+    },
+    {
+      "click": "[data-tour-card] button:has-text(\"Next\")"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "stop-2"
+    },
+    {
+      "click": "[data-tour-card] button:has-text(\"Next\")"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "stop-3"
+    },
+    {
+      "click": "[data-tour-card] button:has-text(\"Next\")"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "shot": "stop-4"
+    }
+  ]
+}

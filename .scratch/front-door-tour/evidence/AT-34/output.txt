@@ -1,0 +1,8 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-34[,)]"
+
+Running 2 tests using 2 workers
+
+  ✓  1 [floor] › e2e/front-door-tour-replay.spec.ts:129:7 › /analyze/ shows no Tour and no replay control, and sets no seen key (AT-34) (1.5s)
+  ✓  2 [floor] › e2e/front-door-tour-replay.spec.ts:129:7 › /2026/week-10/ shows no Tour and no replay control, and sets no seen key (AT-34) (1.5s)
+
+  2 passed (1.9s)

@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-28[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour-replay.spec.ts:97:5 › at 1280 px the "?" button beside the theme button shows Stop 1, and its name is "Show the tour" (AT-28) (1.0s)
+
+  1 passed (1.4s)

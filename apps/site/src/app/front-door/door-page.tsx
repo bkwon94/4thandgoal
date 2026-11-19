@@ -11,6 +11,7 @@ import { homeHref } from "@/lib/routes";
 import { shellProps } from "@/app/shell-props";
 import { clientSitePages } from "@/app/site-pages";
 import { FrontDoor } from "@/app/front-door/front-door";
+import { TourButton, TourRow } from "@/app/front-door/tour-replay";
 import { SimLinkProvider } from "@/app/front-door/sim-link";
 
 /* `pageHref` is the path of the page. The front door is Home, so the hidden /ask/ passes the Home path too, and the Home row shows the check. */
@@ -19,7 +20,14 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
   const shell = shellProps();
   return (
     <>
-      <TopBand {...shell} pageHref={pageHref} />
+      {/* Only the front door has a Tour, so only it passes the replay controls into the shell. The "?" sits last, beside
+          the theme button. */}
+      <TopBand
+        {...shell}
+        pageHref={pageHref}
+        actions={door ? <>{shell.actions}<TourButton /></> : shell.actions}
+        menuFoot={door ? <TourRow /> : undefined}
+      />
       {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
       {homeBanners.map((Banner, index) => (
         <Banner key={index} />

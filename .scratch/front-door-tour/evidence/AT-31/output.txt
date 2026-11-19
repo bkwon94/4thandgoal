@@ -1,0 +1,8 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-31[,)]"
+
+Running 1 test using 1 worker
+
+AT-31 focused element after Done: BUTTON aria-label="Show the tour"
+  ✓  1 [floor] › e2e/front-door-tour-replay.spec.ts:111:5 › after a keyboard replay from the "?" button, Done puts focus back on the "?" button (AT-31) (1.9s)
+
+  1 passed (2.3s)

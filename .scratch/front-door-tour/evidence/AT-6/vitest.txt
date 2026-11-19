@@ -1,0 +1,11 @@
+$ cd apps/site && pnpm exec vitest run --reporter=verbose src/app/front-door/tour-norcal.test.tsx
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/cba45791-aaaf-40ba-a72e-eeb444d7dbe5/scratchpad/front-door-tour-flags/apps/site
+
+ ✓ src/app/front-door/tour-norcal.test.tsx > the Tour of the norcal front door > shows the same four Stops, copy, and counts after the pick of Bo Girds on a new browser (AT-6) 1310ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  00:27:18
+   Duration  2.03s (tests 67%, import 15%, environment 14%, transform 4%)
+

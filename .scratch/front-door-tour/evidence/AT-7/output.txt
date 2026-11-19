@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-7[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:107:5 › Next goes to Stop 2 on the ask box, a tap on the dim goes on, and a tap on the dim at Stop 4 ends the Tour (AT-7, AT-8) (1.9s)
+
+  1 passed (2.3s)

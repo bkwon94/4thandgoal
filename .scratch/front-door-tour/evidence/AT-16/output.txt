@@ -1,0 +1,26 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-16[,)]"
+
+Running 4 tests using 2 workers
+
+AT-16 iPhone 390x660 Suggestions: card {"x":39,"y":133.390625,"width":320,"height":176.09375}, control {"x":0,"y":323.390625,"width":390,"height":52}, overlap false
+AT-16 iPad 1080x740 Suggestions: card {"x":322.4765625,"y":152.828125,"width":320,"height":211.390625}, control {"x":260,"y":378.328125,"width":560,"height":52}, overlap false
+AT-16 iPad 1080x740 Ask: card {"x":380,"y":208.828125,"width":320,"height":211.390625}, control {"x":276,"y":438.328125,"width":528,"height":54}, overlap false
+AT-16 iPhone 390x660 Ask: card {"x":35,"y":189.390625,"width":320,"height":176.09375}, control {"x":16,"y":383.390625,"width":358,"height":54}, overlap false
+AT-16 iPhone 390x660 Your team: card {"x":16,"y":263.390625,"width":320,"height":176.09375}, control {"x":8,"y":449.390625,"width":192.8125,"height":44}, overlap false
+AT-16 iPad 1080x740 Your team: card {"x":216.8037109375,"y":282.828125,"width":320,"height":211.390625}, control {"x":268,"y":504.328125,"width":217.609375,"height":44}, overlap false
+AT-16 iPhone 390x660 Menu: card {"x":54,"y":62,"width":320,"height":176.09375}, control {"x":342,"y":8,"width":44,"height":44}, overlap false
+AT-16 iPad 1080x740 Menu: card {"x":353.9921875,"y":70,"width":320,"height":211.390625}, control {"x":72,"y":8,"width":884,"height":44}, overlap false
+  ✓  2 [floor] › e2e/front-door-tour-look.spec.ts:176:9 › iPhone 390x660 › the card does not overlap its control at any Stop (AT-16) (6.7s)
+  ✓  1 [floor] › e2e/front-door-tour-look.spec.ts:176:9 › iPad 1080x740 › the card does not overlap its control at any Stop (AT-16) (6.7s)
+AT-16 iPad 810x980 Suggestions: card {"x":180.203125,"y":299.953125,"width":320,"height":181.375}, control {"x":125,"y":495.453125,"width":560,"height":52}, overlap false
+AT-16 desktop 1280x800 Suggestions: card {"x":422.4765625,"y":183.328125,"width":320,"height":211.390625}, control {"x":360,"y":408.328125,"width":560,"height":52}, overlap false
+AT-16 desktop 1280x800 Ask: card {"x":480,"y":239.328125,"width":320,"height":211.390625}, control {"x":376,"y":468.328125,"width":528,"height":54}, overlap false
+AT-16 iPad 810x980 Ask: card {"x":245,"y":355.953125,"width":320,"height":181.375}, control {"x":141,"y":555.453125,"width":528,"height":54}, overlap false
+AT-16 desktop 1280x800 Your team: card {"x":316.8037109375,"y":313.328125,"width":320,"height":211.390625}, control {"x":368,"y":534.328125,"width":217.609375,"height":44}, overlap false
+AT-16 iPad 810x980 Your team: card {"x":75.60595703125,"y":429.953125,"width":320,"height":181.375}, control {"x":133,"y":621.453125,"width":205.21875,"height":44}, overlap false
+AT-16 desktop 1280x800 Menu: card {"x":633.3359375,"y":70,"width":320,"height":211.390625}, control {"x":470.671875,"y":8,"width":645.328125,"height":44}, overlap false
+AT-16 iPad 810x980 Menu: card {"x":474,"y":62,"width":320,"height":181.375}, control {"x":762,"y":8,"width":44,"height":44}, overlap false
+  ✓  4 [floor] › e2e/front-door-tour-look.spec.ts:176:9 › desktop 1280x800 › the card does not overlap its control at any Stop (AT-16) (6.1s)
+  ✓  3 [floor] › e2e/front-door-tour-look.spec.ts:176:9 › iPad 810x980 › the card does not overlap its control at any Stop (AT-16) (6.2s)
+
+  4 passed (13.4s)

@@ -1,0 +1,16 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-23[,)]"
+
+Running 1 test using 1 worker
+
+AT-29, AT-39 accessibility snapshot of the card:
+- dialog "Suggestions":
+  - heading "Suggestions" [level=2]
+  - text: 1 of 4
+  - paragraph: Picks for your team right now. Tap one to open it, or tap More for the full list.
+  - button "Skip"
+  - button "Next"
+AT-39 role: dialog, aria-modal: true
+AT-23 localStorage cpc.tour-seen: "1"
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:74:5 › a browser with Your team and no seen key sees Stop 1 on load, as a modal card, and Stop 1 writes the seen key (AT-2, AT-23, AT-29, AT-39) (1.1s)
+
+  1 passed (1.6s)

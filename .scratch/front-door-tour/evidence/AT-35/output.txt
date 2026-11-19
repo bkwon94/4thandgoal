@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-35[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:187:5 › a tap on the menu button in the hole at Stop 4 opens no menu sheet (AT-35) (1.9s)
+
+  1 passed (2.3s)
