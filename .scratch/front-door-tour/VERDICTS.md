@@ -1,5 +1,5 @@
-ACCEPTANCE.md: d0e23c8c84df759711160ac6848f6bdf35e746cb
-EVIDENCE.md: 8e33660c046a2c7384eb17a51502acaa963f6488
+ACCEPTANCE.md: 61a43e9fa3742ec0135c04703c59d71bbceba2ea
+EVIDENCE.md: 13c5fbf53f4221dee5f49b2310a47e2be77bd81e
 
 Test verdicts
 AT-1: PASS
@@ -39,5 +39,5 @@ AT-34: PASS
 AT-35: PASS
 AT-36: PASS
 AT-37: PASS
-AT-38: FAIL The Given line says the layer before 2026-12-01 is the Announcement, but output.txt names only "test-modal-layer", which the test removed, so the files do not show a Stop 1 after the Announcement finishes its exit.
+AT-38: BLOCKED The Observation says the layer is a `div` with role `dialog` that keeps `aria-modal="true"` until the 300 ms opacity fade ends, but output.txt shows only the layer name, the exit times, and the frame count, not those facts.
 AT-39: PASS
