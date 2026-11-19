@@ -5,10 +5,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { SetResult, SimPage } from "../schema/sim-types";
+import type { SetResult, SimPage, WhatIfAnswer } from "../schema/sim-types";
 import type { WhatIfApi } from "../lib/what-if-api";
 
 type PageWeek = SimPage["weeks"][number];
+
+/* The stored runs of an answer, which each hold its set results, and their weights. The replay picks from them. */
+export type AnswerRuns = Pick<WhatIfAnswer, "teams" | "sample" | "sample_weights">;
 
 /* The result of a tile, or null to clear the week. */
 export type Choice = Pick<SetResult, "game" | "median"> | null;
@@ -17,7 +20,7 @@ type State = {
   // The set results that the page assumes, in week order.
   set: SetResult[];
   // The page block of the last answer, and the set results it holds. Null with no answer, so the page shows the file.
-  answer: { page: SimPage; set: SetResult[] } | null;
+  answer: { page: SimPage; set: SetResult[]; runs: AnswerRuns } | null;
   // The block of each set week as the page showed it at the tap, so its tiles keep the odds of each other result.
   held: Record<number, PageWeek>;
   pending: boolean;
@@ -42,6 +45,8 @@ export type WhatIf = {
   set: SetResult[];
   // The page block that the page shows: the answer of the set results, or the file.
   page: SimPage;
+  // The stored runs of the answer that `page` shows, or null when the page shows the file.
+  runs: AnswerRuns | null;
   // The block of a week as the page shows it: the held block of a set week, or the week of `page`.
   weekOf: (week: number) => PageWeek | undefined;
   pending: boolean;
@@ -61,7 +66,8 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
   };
   useEffect(() => cancel, []);
 
-  const shown = state.set.length > 0 && state.answer !== null ? state.answer.page : file;
+  const answered = state.set.length > 0 && state.answer !== null ? state.answer : null;
+  const shown = answered?.page ?? file;
 
   const choose = useCallback(
     (week: number, choice: Choice) => {
@@ -99,7 +105,7 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
           call.current = null;
           setState((was) => ({
             ...was,
-            answer: { page: answer.page, set },
+            answer: { page: answer.page, set, runs: { teams: answer.teams, sample: answer.sample, sample_weights: answer.sample_weights } },
             held: choice === null ? was.held : withOdds(was.held, week, choice, answer.page),
             pending: false,
             down: false,
@@ -123,5 +129,5 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
 
   const weekOf = (week: number) => state.held[week] ?? shown.weeks.find((entry) => entry.week === week);
 
-  return { set: state.set, page: shown, weekOf, pending: state.pending, down: state.down, choose, reset };
+  return { set: state.set, page: shown, runs: answered?.runs ?? null, weekOf, pending: state.pending, down: state.down, choose, reset };
 }

@@ -10,9 +10,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-38 to AT-41. Decision 04
 
 **Status:** ready-for-agent
 
-- [ ] "Sim week 11" plays the games with Bo Girds first and one median line, then the standings in the Race style (AT-38).
-- [ ] "Sim the season" plays Season, Playoffs, and Champion with no scroll, and the controls stay in their own row (AT-39).
-- [ ] With Bo Girds set to win week 11 and beat the median, "Sim week 11" shows that result (AT-40).
-- [ ] Under reduced motion, no element moves its position (AT-41).
-- [ ] The site evidence set of each screen passes the overlap check at the four sizes.
-- [ ] `make check-fast` passes.
+- [x] "Sim week 11" plays the games with Bo Girds first and one median line, then the standings in the Race style (AT-38).
+- [x] "Sim the season" plays Season, Playoffs, and Champion with no scroll, and the controls stay in their own row (AT-39).
+- [x] With Bo Girds set to win week 11 and beat the median, "Sim week 11" shows that result (AT-40).
+- [x] Under reduced motion, no element moves its position (AT-41).
+- [x] The site evidence set of each screen passes the overlap check at the four sizes.
+- [x] `make check-fast` passes.

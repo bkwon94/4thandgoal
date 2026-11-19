@@ -18,6 +18,7 @@
 - In the playoffs, a team still in sees its game of the round with two tiles, the title odds after a win and after a loss. A team on a bye sees its bye, with no tile.
 - A team out of the playoffs sees "Out of the playoffs". Each playoff page shows the title odds of each team left and the bracket.
 - After the final, the page shows the champion and the final bracket, with no tile.
+- "Sim week N" and "Sim the season" sit in the flow under the week page, and open the replay of `stage/`. The Playoffs page has only "Sim the season". While a call runs, both wait, so the replay plays a run of the set line.
 
 ## Ports
 
