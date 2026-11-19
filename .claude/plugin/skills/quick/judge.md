@@ -24,7 +24,7 @@ Red: <the Red block, word for word, with its output>
 Green: <the Green block, word for word, with its output>
 ````
 
-For an item that touches the site or the API, add its `Smoke:` line, word for word, under its Green block. Copy nothing else. Leave out the `Method:`, `Cause:`, and `Test verdict:` lines, the `Boundary:` line, and the comments. Leave out each text-only item.
+For an item that touches the site or the API, add its `Smoke:` line, word for word, under its Green block. For an item whose quick file has a `Rebuild:` block, add the block, word for word, and the output of the rebuild run, word for word, under the `Smoke:` line. Copy nothing else. Leave out the output of the rebuild run for an item with no `Rebuild:` block. Leave out the `Method:`, `Cause:`, and `Test verdict:` lines, the `Boundary:` line, and the comments. Leave out each text-only item.
 
 ## Start the Judge
 

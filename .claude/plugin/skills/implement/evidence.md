@@ -42,6 +42,17 @@ The folder `evidence/smoke/` holds `smoke.log` and the shots of each flow.
 
 A red smoke run is a red check. Fix the cause with a fix group, and run the smoke run again once. If it is still red, stop before the Judge. Tell Brian the log. Start no Judge and open no PR.
 
+## The rebuild list
+
+Skip this part when the spec does not change the output of the pipeline on purpose.
+
+1. Write `.scratch/<slug>/REBUILD.md`. It lists each value that the spec changes on purpose.
+2. Write one value on each line, in this shape: `- <client> <file> <JSON path>: <reason>`. The check `scripts/rebuild.py` reads these lines.
+3. Run the rebuild after the last ticket merge. Save its output as `.scratch/<slug>/evidence/rebuild.log`.
+4. Name `REBUILD.md` and `evidence/rebuild.log` in `EVIDENCE.md`.
+
+The Judge reads the list and the rebuild output. It checks each reason against the test.
+
 ## A site test
 
 The instrument is the evidence runner, a Playwright project of the site. One command takes every shot of every site test of the feature.

@@ -33,6 +33,17 @@ class ImplementSmokeTest(unittest.TestCase):
         self.assertRegex(evidence, r"(?i)red smoke run")
         self.assertRegex(evidence, r"(?i)stop[^\n]*before the Judge|before the Judge[^\n]*stop")
 
+    def test_evidence_tells_the_builder_to_write_the_rebuild_list(self):
+        evidence = text(IMPLEMENT / "evidence.md")
+        self.assertIn(".scratch/<slug>/REBUILD.md", evidence)
+        self.assertIn("- <client> <file> <JSON path>: <reason>", evidence)
+        self.assertIn("evidence/rebuild.log", evidence)
+
+    def test_implement_judge_reads_the_rebuild_list(self):
+        judge = text(IMPLEMENT / "judge.md")
+        self.assertIn("REBUILD.md", judge)
+        self.assertIn("evidence/rebuild.log", judge)
+
 
 class QuickSmokeTest(unittest.TestCase):
     def test_format_names_the_smoke_block_and_the_rebuild_block(self):
@@ -47,6 +58,11 @@ class QuickSmokeTest(unittest.TestCase):
     def test_judge_brief_asks_the_third_question(self):
         judge = text(QUICK / "judge.md")
         self.assertIn("Does the smoke run show the changed flow at work?", judge)
+
+    def test_quick_judge_gets_the_rebuild_block_and_output(self):
+        judge = text(QUICK / "judge.md")
+        self.assertIn("`Rebuild:` block", judge)
+        self.assertIn("output of the rebuild run", judge)
 
     def test_skill_runs_the_smoke_run_before_the_quick_judge(self):
         skill = text(QUICK / "SKILL.md")

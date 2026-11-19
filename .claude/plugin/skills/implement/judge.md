@@ -26,6 +26,9 @@ Read only these paths:
 - <worktree>/.scratch/<slug>/ACCEPTANCE.md
 - <worktree>/.scratch/<slug>/EVIDENCE.md
 - <worktree>/.scratch/<slug>/evidence/
+- <worktree>/.scratch/<slug>/REBUILD.md, if the file exists
+
+If REBUILD.md exists, read it and read evidence/rebuild.log. Check that each reason on its lines fits the Then line of the test that it serves. Give FAIL if a reason names a change that no test asks for.
 
 Read no other file. Run no git command. Read no code, no diff, no ticket, and no PRD.
 
