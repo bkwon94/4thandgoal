@@ -59,6 +59,34 @@ for (const width of [375, 768]) {
   });
 }
 
+test("at 390x660 a replay from the menu sheet waits for the sheet to leave, and blurs a focused ask box before Stop 1 (AT-32)", async ({ page }) => {
+  await openSeen(page, 390, 660);
+  // The page at the moment the Stop card joins it, before the card moves the focus into itself.
+  await page.evaluate(() => {
+    const observer = new MutationObserver(() => {
+      if (!document.querySelector("[data-tour-card]")) return;
+      observer.disconnect();
+      const focus = document.activeElement;
+      (window as { atCard?: object }).atCard = {
+        field: !!focus && focus.matches("input, textarea, [contenteditable]"),
+        sheet: document.querySelector('nav[aria-label="Pages"]') !== null,
+      };
+    });
+    observer.observe(document.body, { subtree: true, childList: true });
+  });
+  await page.getByRole("button", { name: "Open the menu" }).click();
+  const sheet = page.getByRole("dialog").filter({ has: page.getByRole("navigation", { name: "Pages" }) });
+  await sheet.getByRole("button", { name: "Show the tour" }).click();
+  // Once the sheet leaves, the reader taps the ask box before Stop 1 shows.
+  await expect(page.getByRole("navigation", { name: "Pages" })).toHaveCount(0);
+  const field = page.getByRole("textbox", { name: "Ask a question" });
+  await field.focus();
+  await expect(card(page, "Suggestions")).toBeVisible();
+  expect(await page.evaluate(() => (window as { atCard?: object }).atCard)).toEqual({ field: false, sheet: false });
+  const focusedField = await page.evaluate(() => !!document.activeElement?.matches("input, textarea, [contenteditable]"));
+  expect(focusedField).toBe(false);
+});
+
 test('at 1280 px the "?" button beside the theme button shows Stop 1, and its name is "Show the tour" (AT-28)', async ({ page }) => {
   await openSeen(page, 1280, 800);
   const replay = tourButton(page);

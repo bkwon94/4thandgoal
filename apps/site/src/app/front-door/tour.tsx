@@ -194,12 +194,13 @@ export function replayTour() {
 
 /* `ready` is true while Your team is set and no team sheet and no passphrase modal shows. The Tour decides once, on the
    first ready render: a browser with the seen key, or with a store that throws, gets no Tour. Then it waits until no
-   modal layer is open. A layer leaves the page only after its exit, so the delay counts from the end of the last exit. */
+   modal layer is open. A layer leaves the page only after its exit, so the delay counts from the end of the last exit.
+   A replay passes the same start gate in the phase "replay", but it does not read the seen key. */
 export function Tour({ ready }: { ready: boolean }) {
-  const [phase, setPhase] = useState<"wait" | "on" | "done">("wait");
+  const [phase, setPhase] = useState<"wait" | "replay" | "on" | "done">("wait");
   useEffect(() => {
-    if (!ready || phase !== "wait") return;
-    if (tourSeen()) {
+    if (!ready || (phase !== "wait" && phase !== "replay")) return;
+    if (phase === "wait" && tourSeen()) {
       setPhase("done");
       return;
     }
@@ -240,7 +241,7 @@ export function Tour({ ready }: { ready: boolean }) {
   // A replay starts at Stop 1 and does not read the seen key. A replay during the Tour changes nothing.
   useEffect(() => {
     if (!ready) return;
-    const replay = () => setPhase("on");
+    const replay = () => setPhase((now) => (now === "on" ? now : "replay"));
     window.addEventListener(REPLAY_EVENT, replay);
     return () => window.removeEventListener(REPLAY_EVENT, replay);
   }, [ready]);

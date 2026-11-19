@@ -56,6 +56,34 @@ describe("the replay of the Tour", () => {
     expect(localStorage.getItem("cpc.tour-seen")).toBe("1");
   });
 
+  it("waits for the menu sheet to leave, and blurs a focused ask box, before a replay shows Stop 1 (AT-32)", async () => {
+    // The page at the moment the Stop card joins it, before the card moves the focus into itself.
+    let atCard: { focus: Element | null; sheet: boolean } | undefined;
+    const observer = new MutationObserver(() => {
+      if (atCard !== undefined || !document.querySelector("[data-tour-card]")) return;
+      atCard = { focus: document.activeElement, sheet: screen.queryByRole("navigation", { name: "Pages" }) !== null };
+    });
+    observer.observe(document.body, { subtree: true, childList: true });
+    render(<HomePage />);
+    await screen.findByRole("group", { name: "Suggestions" });
+    fireEvent.click(within(band()).getByRole("button", { name: "Open the menu" }));
+    const sheet = screen.getByRole("navigation", { name: "Pages" }).closest<HTMLElement>('[role="dialog"]')!;
+    fireEvent.click(within(sheet).getByRole("button", { name: "Show the tour" }));
+    // Once the sheet leaves, the reader taps the ask box before Stop 1 shows.
+    const field = screen.getByRole("textbox", { name: "Ask a question" });
+    await waitFor(() => {
+      expect(screen.queryByRole("navigation", { name: "Pages" })).toBeNull();
+      field.focus();
+      expect(document.activeElement).toBe(field);
+    });
+    await findCard("Suggestions");
+    observer.disconnect();
+    const textField = (el: Element | null | undefined) => !!el && el.matches("input, textarea, [contenteditable]");
+    expect(atCard?.sheet).toBe(false);
+    expect(textField(atCard?.focus)).toBe(false);
+    expect(textField(document.activeElement)).toBe(false);
+  });
+
   it("shows a \"?\" button named \"Show the tour\" right before the theme button, and it shows Stop 1 (AT-28)", async () => {
     render(<HomePage />);
     await screen.findByRole("group", { name: "Suggestions" });
