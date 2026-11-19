@@ -10,14 +10,14 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-51 to AT-61. Decision 05
 
 **Status:** ready-for-agent
 
-- [ ] A fresh browser with Bo Girds opens the sheet with The Blue Tent, Bo Girds, and Return of T Mac, the playoff line, the chip, and the copy of the spec (AT-51).
-- [ ] The chip turns off and on with a tap (AT-52), and turns on once by itself after the sheet stops (AT-53).
-- [ ] A drag down, "Not now", Escape, and a tap on the dim each close it (AT-54).
-- [ ] A dismiss or a press of the link hides it on a reload (AT-55).
-- [ ] It does not open on `/sim/2026/` or over the menu sheet (AT-56).
-- [ ] A first visit shows only the team picker, and the next load shows the Announcement (AT-57). With no team set, it does not open (AT-58).
-- [ ] It does not open 1 day past its end date (AT-59).
-- [ ] The component renders a test art slot and test copy with the same close rules (AT-60).
-- [ ] Under reduced motion, the rows and the odds show at once, and the chip does not turn on by itself (AT-61).
-- [ ] The site evidence set passes the overlap check at the four sizes.
-- [ ] `make check-fast` passes.
+- [x] A fresh browser with Bo Girds opens the sheet with The Blue Tent, Bo Girds, and Return of T Mac, the playoff line, the chip, and the copy of the spec (AT-51).
+- [x] The chip turns off and on with a tap (AT-52), and turns on once by itself after the sheet stops (AT-53).
+- [x] A drag down, "Not now", Escape, and a tap on the dim each close it (AT-54).
+- [x] A dismiss or a press of the link hides it on a reload (AT-55).
+- [x] It does not open on `/sim/2026/` or over the menu sheet (AT-56).
+- [x] A first visit shows only the team picker, and the next load shows the Announcement (AT-57). With no team set, it does not open (AT-58).
+- [x] It does not open 1 day past its end date (AT-59).
+- [x] The component renders a test art slot and test copy with the same close rules (AT-60).
+- [x] Under reduced motion, the rows and the odds show at once, and the chip does not turn on by itself (AT-61).
+- [x] The site evidence set passes the overlap check at the four sizes.
+- [x] `make check-fast` passes.

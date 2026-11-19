@@ -8,7 +8,7 @@
 - The rule of the shown odds in `percent.py`, which the team odds, the swings, and the page block share.
 - The numbers of the draw in `tunables.py`.
 - The shapes of the season `sim.json` and of the week `week-NN/sim.json`, and their writers, in `published.py`.
-- The site part in `site/`: the replay of one stored run beside the odds of all runs, and the sim page of Your team. The replay reads `sim.json` and nothing of the report. The page reads the page block of `week-NN/sim.json`.
+- The site part in `site/`: the replay of one stored run beside the odds of all runs, and the sim page of Your team. The replay reads `sim.json` and nothing of the report. The page reads the page block of `week-NN/sim.json`. The art of the sim Announcement reads a few numbers of `week-NN/sim.json`.
 
 ## Ports
 
