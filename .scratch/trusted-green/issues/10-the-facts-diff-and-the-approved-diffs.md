@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-21, AT-22, AT-23 and 
 
 **Blocked by:** 08, 09
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A base and head rebuild with no change of code reports 0 diffs for each client.
 - [x] A seeded change of one waiver score of cpc fails and names cpc, `waiver.json`, and the JSON path.
