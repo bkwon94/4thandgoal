@@ -108,8 +108,9 @@ jobs:
           echo "image=$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
 
       - name: Restore the apt packages of Chromium and WebKit
+        id: apt-cache
         if: steps.needs.outputs.site == 'true'
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ~/.cache/apt-archives
           key: ${{ runner.os }}-${{ steps.playwright.outputs.image }}-apt-playwright-${{ steps.playwright.outputs.version }}
@@ -127,6 +128,14 @@ jobs:
           find ~/.cache/apt-archives -name '*.deb' -exec sudo cp -t /var/cache/apt/archives/ {} +
           pnpm --dir apps/site exec playwright install --with-deps chromium webkit
           find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp -t ~/.cache/apt-archives/ {} +
+
+      # The save runs on a red job too, so a failed test does not keep the cache empty.
+      - name: Save the apt packages of Chromium and WebKit
+        if: steps.needs.outputs.site == 'true' && always() && steps.apt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/apt-archives
+          key: ${{ runner.os }}-${{ steps.playwright.outputs.image }}-apt-playwright-${{ steps.playwright.outputs.version }}
 
       - name: Set up uv
         if: steps.needs.outputs.python == 'true'
