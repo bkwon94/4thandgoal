@@ -173,7 +173,7 @@ Test verdict: FAIL Question 3: the Passphrase flow passed, but `smoke.log` shows
 
 ### 5. The Tour card covers the status of the first answer at phone width
 
-Done condition: In WebKit at 390x660, the card of each Tour Stop never covers the status line of the first answer, and the `Front door` smoke flow passes.
+Done condition: In WebKit at 390x660, the overlap check of the smoke run ignores the inert page under an open Tour Stop but still finds a real overlap, and the `Front door` smoke flow passes.
 Method: diagnosing-bugs
 Cause: `findOverlap` in `apps/site/e2e/smoke.ts` reads each visible text of the page, so it reads the text of the inert page under the modal Stop card as an overlap. This is a smoke-check bug, not a product bug: the Stop card is a modal layer by design (AT-39, and "The Stop card" in the PRD of `front-door-tour`). It dims the page, makes it inert, and sits beside its hole. At 390x660 the hole of Stop 1 is the Suggestions row at the foot of the screen, so the card must sit over the page above it, and after a first answer that page is the answer. The Tour starts after the passphrase modal exits, by story 42 of the same PRD, so the smoke flow meets the Tour over its answer. The card covers its own control on no Stop (AT-16), and a person reads the answer after Done or Skip. The fix counts only the texts inside an open `[aria-modal="true"]` layer while one shows, the layer rule that `modalOpen` in `tour.tsx` uses. The loop drives the real front door with the fake of the API port of `front-door-scroll.spec.ts` and the recorded stream `fix.sse`, replays the Tour from the menu, and runs `findOverlap` on each Stop.
 Red: at `e2598f3d`, `(CLIENT=cpc pnpm build || CLIENT=cpc pnpm build) > /dev/null 2>&1 && pnpm exec playwright test --project=floor e2e/front-door-tour-look.spec.ts -g "overlap check of the smoke run"` in `apps/site`
@@ -210,3 +210,4 @@ Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyze
 - The smoke run found an old bug on `main`: at 390x660, the Suggestions Stop of the Tour opens over the "Checked" status of the first answer. It needs its own quick run.
 - Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, call only `skipTour` and not `skipAnnouncements`. They can flake as item 4 did, and need a later run.
 - Brian added item 5 after the quick Judge gave FAIL on items 1 to 4, each on question 3, because of the old overlap of item 5. This is the one fix round.
+- Brian changed the done condition of item 5 on 2026-11-19: the Tour card is a modal layer by design, so the fix is in the overlap check of the smoke run, and the card does not move.
