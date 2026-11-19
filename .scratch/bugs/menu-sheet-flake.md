@@ -1,7 +1,7 @@
 # The menu sheet spec fails when the motion starts late
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-menu-sheet-flake`.
 Source: the session of 2026-11-19, after the `Check` run 44585015323 on `main` failed in the "closes" step of `apps/site/e2e/menu-sheet.spec.ts`.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; the done condition is one sentence.
@@ -49,3 +49,8 @@ The spec still fails when the top edge moves. At `f205409d`, with the `motion.fi
 Test verdict: PASS
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-menu-sheet-flake`. Commits: `a99928f0`, `f205409d`. Date: 2026-11-19.
+The late-start test went red at `a99928f0` with "Received: 0", then the spec gave 2 passed 5 times of 5 at `f205409d`, and `make check-fast BASE=main` passed.
+The shared `startSamples` of `apps/site/e2e/door-motion.ts` still stacks one frame loop per call, so another spec that calls it twice can hit the same race.
+Read 5 files: .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, apps/site/e2e/menu-sheet.spec.ts, apps/site/e2e/door-motion.ts, packages/design/site/shell/menu-sheet.tsx.
