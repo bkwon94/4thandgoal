@@ -2,9 +2,8 @@
 
 ## Knows
 
-- The chapter, the label, the tag, and the blurb.
+- The chapter, the label, the tag, the blurb, and the team name.
 - The page column, which a wide page widens to the top band from the desktop tier, and the chapter rail.
-- The team name.
 - The one reveal of the site, the week line of a page with no hero, and the error line.
 - The Announcement, the bottom sheet on the shared Sheet that introduces one new feature: an art slot, an eyebrow, a title, one line, the link, and "Not now". The use fills the art and the copy, and passes the site name.
 - The Open card, the one part that opens and closes a card in place (ADR 0028). Its row look has no frame and no chevron, for a row of a ledger.
