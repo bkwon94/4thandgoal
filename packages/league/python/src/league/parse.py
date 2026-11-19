@@ -10,6 +10,7 @@ from league.league_settings import DEFAULT_POINTS_KEY
 from league.models import (
     DraftPick,
     Drop,
+    FaabTransfer,
     Matchup,
     Move,
     PastWeek,
@@ -223,10 +224,12 @@ def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
         Trade(
             transaction_id=t.transaction_id,
             created=datetime.fromtimestamp(t.created / 1000, tz=UTC),
+            accepted=None if t.status_updated is None else datetime.fromtimestamp(t.status_updated / 1000, tz=UTC),
             roster_ids=t.roster_ids,
             adds=t.adds or {},
             drops=t.drops or {},
             draft_picks=[DraftPick(**pick) for pick in t.draft_picks or []],
+            faab=[FaabTransfer(**transfer) for transfer in t.waiver_budget or []],
         )
         for t in transactions
         if t.type == "trade" and t.status == "complete"

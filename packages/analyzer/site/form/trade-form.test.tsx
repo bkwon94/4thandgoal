@@ -3,11 +3,13 @@
  * fetch is a test stub, and each test reads the screen. A test opens a sheet with a click on its button.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
+import type { AnalyzerMode } from "../lib/mode";
 import { addPlayer, chooseTeam, pickPlayers, pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
 import { TradeForm } from "./trade-form";
 
@@ -955,7 +957,8 @@ describe("TradeForm with three or four sides", () => {
   });
 });
 
-/* The finder cards hand their trade to the form. Each fixture finder trade is between roster 2 and one partner, so these tests render those teams. */
+/* The finder cards hand their trade to the form. Each fixture finder trade is between roster 2 and one partner, so these tests render those teams.
+   The page owns the mode of the switch, so the tests hold it in a small parent, as the page does. */
 describe("TradeForm with the finder", () => {
   afterEach(() => {
     finderOn = false;
@@ -978,51 +981,95 @@ describe("TradeForm with the finder", () => {
     { roster_id: 99, team: "Third Wheel", manager: "Tess", avatar: null, players: [player("p99", "Tess One")] },
   ];
 
+  function WithModes() {
+    const [mode, setMode] = useState<AnalyzerMode>("grade");
+    return (
+      <TradeForm
+        teams={pairTeams}
+        target={apiTarget}
+        finderOn={finderOn}
+        passphrase="localtest"
+        onUnauthorized={onUnauthorized}
+        mode={mode}
+        onModeChange={setMode}
+      />
+    );
+  }
+
+  const modeHalf = (name: string) => within(screen.getByRole("radiogroup", { name: "Mode" })).getByRole("radio", { name });
+  const partnerButton = () => screen.getByRole("button", { name: /Trade with/ });
+
+  /* Taps "Find a trade" on the switch and waits for the Find hero. */
+  async function toFind() {
+    fireEvent.click(modeHalf("Find a trade"));
+    await screen.findByRole("heading", { level: 1, name: "Trade Ideas" });
+    // The pill of the new hero moves to Find one frame after the swap.
+    await waitFor(() => expect(modeHalf("Find a trade").getAttribute("aria-checked")).toBe("true"));
+  }
+
+  /* Picks the fixture partner in the sheet of Find and waits for the sheet to close. */
+  async function pickPartner() {
+    fireEvent.click(partnerButton());
+    const rows = within(await screen.findByRole("list", { name: "Partners" })).getAllByRole("button");
+    fireEvent.click(rows.find((row) => partnerRow.test(row.textContent ?? "")) as HTMLElement);
+    await waitFor(() => expect(screen.queryByRole("list", { name: "Partners" })).toBeNull());
+  }
+
   beforeEach(() => {
     cleanup();
     finderOn = true;
-    render(<TradeForm teams={pairTeams} target={apiTarget} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+    render(<WithModes />);
   });
 
-  it("shows the finder when the flag is on", async () => {
+  it("shows the switch on Grade a trade when the flag is on", () => {
+    expect(modeHalf("Grade a trade").getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+  });
+
+  it("puts Find in the hero in place of the form, with no finder under the cards", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
-    expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Trade with/ })).toBeNull();
+    await toFind();
+    expect(partnerButton()).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
+    fireEvent.click(modeHalf("Grade a trade"));
+    expect(await screen.findByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(card("Your Team")).toBeTruthy();
   });
 
-  it("titles the finder in title case and puts it after the cards", async () => {
-    await pickTeam("Your Team", "All You Need Is Love");
-    const heading = screen.getByRole("heading", { level: 2, name: "Find a Trade" });
-    expect(card("Team Two").compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-  });
-
-  it("hides the finder when the flag is off, with my team picked", async () => {
+  it("shows no switch when the flag is off", async () => {
     finderOn = false;
     cleanup();
-    render(<TradeForm teams={pairTeams} target={apiTarget} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+    render(<WithModes />);
     await pickTeam("Your Team", "All You Need Is Love");
-    expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
+    expect(screen.queryByRole("radiogroup", { name: "Mode" })).toBeNull();
   });
 
-  it("hides the finder once the trade has a third side, and shows it again at two", async () => {
+  it("keeps Find on with a third side in Grade mode", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     await pickTeam("Team Two", partnerName);
     await addTeam("Third Wheel");
-    expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
-    await waitFor(() => expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy());
+    await toFind();
+    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it("shows no finder until my team is picked", async () => {
-    expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
-    await pickTeam("Your Team", "All You Need Is Love");
-    expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy();
+  it("keeps Find off until my team is picked, and Your team of Find picks the team of Grade", async () => {
+    await toFind();
+    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
+    const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
+    fireEvent.click(rows.find((row) => row.textContent?.includes("All You Need Is Love")) as HTMLElement);
+    await waitFor(() => expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(modeHalf("Grade a trade"));
+    await waitFor(() => expect(slot("Your Team").getAttribute("aria-label")).toContain("All You Need Is Love"));
   });
 
   /* Finds with the fixture partner and taps "See the Full Result" on a card. */
   async function openCard(finderDoc: unknown, index: number) {
     await pickTeam("Your Team", "All You Need Is Love");
+    await toFind();
+    await pickPartner();
     answer(200, finderDoc);
-    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: partnerRow }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
     answer(200, fixtureJson);
@@ -1032,15 +1079,18 @@ describe("TradeForm with the finder", () => {
 
   it("resets the partner and the cards when my team changes", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
+    await toFind();
+    await pickPartner();
     answer(200, findJson);
-    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: partnerRow }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await screen.findAllByRole("article");
 
-    await pickTeam("Your Team", partnerName);
+    fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
+    const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
+    fireEvent.click(rows.find((row) => partnerRow.test(row.textContent ?? "")) as HTMLElement);
+    await waitFor(() => expect(screen.getByRole("button", { name: /Your team/ }).textContent).toContain(partnerName));
     expect(screen.queryAllByRole("article")).toHaveLength(0);
-    const partners = within(screen.getByRole("group", { name: "Trade Partner" })).getAllByRole("radio") as HTMLInputElement[];
-    expect(partners.every((p) => !p.checked)).toBe(true);
+    expect(partnerButton().textContent).toContain("Every team");
     // With no partner, the search runs over every other team, so Find stays on.
     expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false);
   });
@@ -1063,8 +1113,9 @@ describe("TradeForm with the finder", () => {
   it("grades the trade of a card through the analyze route and shows the full result", async () => {
     Element.prototype.scrollIntoView = vi.fn();
     await pickTeam("Your Team", "All You Need Is Love");
+    await toFind();
+    await pickPartner();
     answer(200, findJson);
-    fireEvent.click(within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", { name: partnerRow }));
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
     expect(cards).toHaveLength(3);
@@ -1084,6 +1135,8 @@ describe("TradeForm with the finder", () => {
         { roster_id: theirs.roster_id, gives: theirs.gives.map((p) => ({ player_id: p.player_id, to: 2 })) },
       ],
     });
+    // The grade of a card shows in Grade mode, so Find leaves the page.
+    expect(screen.queryByRole("heading", { name: "Trade Ideas" })).toBeNull();
     // The form shows the trade of the card, so the picks match the result.
     edit();
     expect(slot("Team Two").getAttribute("aria-label")).toContain(partnerName);

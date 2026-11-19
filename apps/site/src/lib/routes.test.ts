@@ -15,6 +15,8 @@ const builders: [string, (routes: Routes) => string, string][] = [
   ["homeHref", (r) => r.homeHref(), "/"],
   ["rankingsHref", (r) => r.rankingsHref(), "/rankings/"],
   ["analyzeHref", (r) => r.analyzeHref(), "/analyze/"],
+  ["analyzeHref grade", (r) => r.analyzeHref("grade"), "/analyze/?mode=grade"],
+  ["analyzeHref find", (r) => r.analyzeHref("find"), "/analyze/?mode=find"],
   ["weekHref", (r) => r.weekHref("2026", "week-06"), "/2026/week-06/"],
   ["waiverHref", (r) => r.waiverHref("2026", "week-06"), "/2026/week-06/waiver/"],
   ["managersHref", (r) => r.managersHref("2026"), "/2026/managers/"],

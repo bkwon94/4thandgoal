@@ -7,6 +7,7 @@
 - The motion timings and the helpers of Framer Motion, in `motion.ts`.
 - The spring sampler of the Open card, in `spring.ts`: a damped spring as a CSS `linear()` curve.
 - The count URL and the event call of GoatCounter, in `usage.ts`.
+- The state of Deadline week and the countdown text from the time and the Lock, in `deadline.ts`: open, last hours, closed, and ended.
 - The `cn` class-name helper of the shadcn primitives, in `utils.ts`.
 - The stable id of an element that the egg hunt can name, and the marks of the state that an egg check reads, in `stable-id.ts`. Each content package tags its elements with them, so no content package imports the eggs package.
 

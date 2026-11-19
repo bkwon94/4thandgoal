@@ -8,10 +8,12 @@ import json
 import logging
 import queue
 import threading
-from collections.abc import Callable, Iterator
+import time
+from collections.abc import AsyncIterator, Callable
 from dataclasses import asdict, dataclass
 from typing import Literal
 
+import anyio
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -262,24 +264,41 @@ def _part(kind: str, data: dict | None = None) -> str:
     return f"data: {json.dumps(body)}\n\n"
 
 
-def stream(work: Callable[[Emit], None]) -> StreamingResponse:
+def _failed(topic: TradeTopic, cause: str, stage: str, started: float) -> str:
+    """The one log line of a failed stream: its Topic, its cause, its last stage, and the seconds since its start."""
+    return f'Trade stream failed: topic={topic} cause={cause} stage="{stage}" seconds={time.monotonic() - started:.1f}'
+
+
+def stream(topic: TradeTopic, work: Callable[[Emit], None]) -> StreamingResponse:
     """The event stream of one press: `work` runs in its own thread and emits each part as it comes, so each stage of
-    the Advisor reaches the site before the whole Answer. A failed press ends the stream with one error part."""
+    the Advisor reaches the site before the whole Answer. A failed press ends the stream with one error part.
+
+    A failed stream logs one line with its cause, its last stage, and its seconds since the start, so a failure that a
+    manager sees has its cause in the log (decision 06). A press that raises names its error. A client that drops the
+    stream before its end, such as a phone that loses the page, is the cause `client-cut`. The press goes on after a
+    cut, so its Answer goes to the cache and a retry reads it.
+    """
     parts: queue.Queue[str | None] = queue.Queue()
+    started = time.monotonic()
+    # The last step line, or "start" before the first step, so the log line says where the stream stood.
+    stage = ["start"]
 
     def emit(kind: str, data: dict) -> None:
+        if kind == "data-step":
+            stage[0] = data["line"]
         parts.put(_part(kind, data))
 
     def run() -> None:
         try:
             work(emit)
         except HTTPException as error:
+            logger.warning(_failed(topic, f"HTTPException-{error.status_code}", stage[0], started))
             emit("data-error", {"status": error.status_code, "line": _line(error)})
         except JevError as error:
-            logger.warning("The player pick of a trade check failed (%s)", type(error).__name__)
+            logger.warning(_failed(topic, type(error).__name__, stage[0], started))
             emit("data-error", {"status": 503, "line": RETRY_LINE})
-        except Exception:
-            logger.exception("A trade press of the front door failed")
+        except Exception as error:
+            logger.exception(_failed(topic, type(error).__name__, stage[0], started))
             emit("data-error", {"status": 500, "line": RETRY_LINE})
         finally:
             parts.put(None)
@@ -287,12 +306,19 @@ def stream(work: Callable[[Emit], None]) -> StreamingResponse:
     # The copy of the context carries the press meter, so the cost line of the press counts each Claude call.
     threading.Thread(target=contextvars.copy_context().run, args=(run,), name="trade-press", daemon=True).start()
 
-    def events() -> Iterator[str]:
-        yield _part("start")
-        while (part := parts.get()) is not None:
-            yield part
-        yield _part("finish")
-        yield "data: [DONE]\n\n"
+    async def events() -> AsyncIterator[str]:
+        ended = False
+        try:
+            yield _part("start")
+            # The wait for a part leaves its thread on a cut, so the cut ends the stream at once and logs its line.
+            while (part := await anyio.to_thread.run_sync(parts.get, abandon_on_cancel=True)) is not None:
+                yield part
+            yield _part("finish")
+            yield "data: [DONE]\n\n"
+            ended = True
+        finally:
+            if not ended:
+                logger.warning(_failed(topic, "client-cut", stage[0], started))
 
     return StreamingResponse(events(), media_type="text/event-stream", headers=STREAM_HEADERS)
 
@@ -384,7 +410,7 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
             emit("data-answer", {"kind": "check", "document": document,
                                  "block": check_block(document, _points(asker, served))})
 
-    return stream(work)
+    return stream("trade_check", work)
 
 
 class TradeIdeasRequest(BaseModel):
@@ -447,7 +473,7 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
         for job in later:
             job()
 
-    return stream(work)
+    return stream("trade_ideas", work)
 
 
 @router.post("/find-stream")
@@ -466,7 +492,7 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
         for job in later:
             job()
 
-    return stream(work)
+    return stream("trade_ideas", work)
 
 
 class SellHighRequest(BaseModel):
@@ -490,4 +516,4 @@ def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, serve
             emit("data-block", sell_list(document))
             emit("data-answer", {"kind": "sell", "document": document})
 
-    return stream(work)
+    return stream("sell_high", work)

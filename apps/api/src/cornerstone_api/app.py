@@ -35,7 +35,7 @@ from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
-from cornerstone_api import next_matchup, personal_topics, suggestions, trade_topics
+from cornerstone_api import next_matchup, personal_topics, suggestions, trade_topics, trade_wire
 from cornerstone_api import refresh as refresh_routes
 from cornerstone_api import what_if as what_if_routes
 from cornerstone_api.answer_store import AnswerStore
@@ -280,6 +280,8 @@ def create_app(
     app.state.personal_model = None
     # The live league of each client, so the tap on a Suggestion reads the league of the open and no Sleeper data.
     app.state.live = {client.slug: LiveCache(LIVE_CACHE_SECONDS) for client in clients}
+    # The accepted trades of the current leg of each client, kept for a few seconds so all phones share one Sleeper read.
+    app.state.trade_wires = {client.slug: trade_wire.new_cache() for client in clients}
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
@@ -329,6 +331,8 @@ def create_app(
     app.include_router(next_matchup.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     # The Suggestions and the key check are reads that cost no Claude call, so they check the passphrase and no limit.
     app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
+    # The phones at the dinner may share one IP, so the Trade Wire checks the passphrase and counts no limit.
+    app.include_router(trade_wire.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

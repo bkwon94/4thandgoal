@@ -10,7 +10,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-26, AT-28, AT-31, AT-
 
 **Status:** ready-for-agent
 
-- [ ] The switch is the wrapper of the ui-sdk SegmentedControl, and its two halves differ in width by 1 px or less.
-- [ ] A link with the Find mode opens the analyzer in Find mode, and a link with the Grade mode opens Grade mode.
-- [ ] The chip "RB" sends `aim_position` "RB", the same value as the typed question "trade ideas for an RB".
-- [ ] The eyebrow reads the countdown during Deadline week and the passed line after the Lock.
+- [x] The switch is the wrapper of the ui-sdk SegmentedControl, and its two halves differ in width by 1 px or less.
+- [x] A link with the Find mode opens the analyzer in Find mode, and a link with the Grade mode opens Grade mode.
+- [x] The chip "RB" sends `aim_position` "RB", the same value as the typed question "trade ideas for an RB".
+- [x] The eyebrow reads the countdown during Deadline week and the passed line after the Lock.
