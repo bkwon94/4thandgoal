@@ -8,11 +8,16 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { SIM_ANNOUNCEMENT } from "../src/app/_routes/sim/announcement";
 import { LOAD_BEAT_MS } from "../src/app/use-announcement";
+import { skipAnnouncements } from "./announcement";
 import { serveDir } from "./serve";
 import { skipTour } from "./tour";
 
-/* Each test starts as a league mate who already saw the Tour, so the Tour never covers the front door that it checks. */
-test.beforeEach(({ page }) => skipTour(page));
+/* Each test starts as a league mate who already saw the Tour and each Announcement, so no layer of the load beat covers
+   the front door that it checks. */
+test.beforeEach(async ({ page }) => {
+  await skipTour(page);
+  await skipAnnouncements(page);
+});
 
 const OUT = join(process.cwd(), "out");
 // The client build writes the hidden /ask/ route only while the flag front_door is off. Then / is the home page.
