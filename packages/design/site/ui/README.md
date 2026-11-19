@@ -2,8 +2,7 @@
 
 ## Knows
 
-- The button, the collapsible, the dialog, the input, the label, the popover, the select, the sheet, and the stop card.
-- Most of them wrap a Base UI primitive and add the site styles.
+- The button, the collapsible, the dialog, the input, the label, the popover, the select, the sheet, and the stop card. Most of them wrap a Base UI primitive and add the site styles.
 - The sheet wraps the ui-sdk `Drawer`: root, trigger, backdrop, content, grip, title, and close. `sheet.tsx` imports `@ui-sdk`.
 - The pending button wraps the ui-sdk `Button`. `pending-button.tsx` is the second file that imports `@ui-sdk`. It has its own name because `button.tsx` is the shadcn button.
 - The collapsible wraps the ui-sdk `Collapsible`: root, trigger, and panel. `collapsible.tsx` imports `@ui-sdk`. The panel animates its height, and reduced motion opens it at once.
