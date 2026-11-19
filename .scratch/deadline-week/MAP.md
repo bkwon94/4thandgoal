@@ -26,6 +26,8 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 ## NOT YET SPECIFIED
 
 - What do the Deadline banner, the deadline look, the deadline board, and the feed look like? `decisions/08-prototype-event-look.md`.
+- How can the Finder find a three-team trade, and at what cost and speed? Brian wants it in. `decisions/10-research-three-team-finder.md`.
+- What does a manager pick for a three-team trade, and when does it ship? `decisions/11-grill-three-team-finder.md`.
 
 ## OUT OF SCOPE
 
