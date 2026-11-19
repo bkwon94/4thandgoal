@@ -8,11 +8,13 @@ import shutil
 
 import pytest
 from cpc import cpc_client
-from fakes import FakeJev
+from fakes import FakeJev, no_news
 
+from analyzer.finder_pick import offer_sheet
 from analyzer.finder_search import (
     SHORTLIST_KEEP,
     TARGET_MAX,
+    UNSURE,
     WIDER_MAX,
     Anchor,
     Limit,
@@ -24,7 +26,8 @@ from analyzer.finder_search import (
 from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import pair_spares
-from analyzer.trade_jev import TRADE_POSITIONS, weak_slot_rows
+from analyzer.trade_jev import FACT_PREFIX, TRADE_POSITIONS, weak_slot_rows
+from analyzer.trade_news import NewsFeed
 from league.jev_port import JevError, NoulQuestion
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
@@ -232,12 +235,46 @@ def test_the_shortlist_holds_an_offer_for_each_partner_before_more_forms(snap):
     assert len(set(shown)) == min(len(partners), len(shown))
 
 
-def test_a_failed_jev_request_drops_the_partner_and_never_raises(snap):
+def test_a_failed_jev_request_on_every_step_never_raises_and_never_hides_a_partner(snap):
     found = search(ASKER, None, snap, FakeJev(error=JevError("429 Too Many Requests")))
-    # A failed call is an error, never a stop: each pair with a question is marked failed.
-    assert not any(read.passed for read in found.partners)
+    # A failed call is an error, never a stop: each pair with a question is marked failed, and each goes on.
+    assert all(read.passed for read in found.partners)
     assert all(read.failed for read in found.partners if any(pair_spares(snap, ASKER, read.roster_id).values()))
-    assert found.offers == [] and found.shortlist == []
+    # The targets fail too, so the wider pass builds the ideas, and the failed shortlist keeps them as unsure.
+    assert found.wider and found.offers and found.shortlist
+    assert all(offer.failed for offer in found.shortlist) and found.dropped == []
+
+
+class _SparesTreeFails(FakeJev):
+    """A Jev whose Spares tree request fails for one partner. Each other request answers as FakeJev does."""
+
+    def __init__(self, partner: int, **kwargs):
+        super().__init__(**kwargs)
+        self.partner = partner
+
+    def ask(self, state, questions):
+        if (any(key.startswith("spare:") for key in questions)
+                and state["teams"]["partner"]["roster_id"] == self.partner):
+            super().ask(state, questions)
+            raise JevError("429 Too Many Requests")
+        return super().ask(state, questions)
+
+
+def _partner_with_spares(snap):
+    return next(rid for rid in sorted(snap.rosters) if rid != ASKER and any(pair_spares(snap, ASKER, rid).values()))
+
+
+def test_a_failed_spares_tree_request_lets_the_partner_go_on_to_the_targets_and_logs(snap, caplog):
+    failed = _partner_with_spares(snap)
+    jev = _SparesTreeFails(failed)
+    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
+        found = search(ASKER, None, snap, jev)
+    read = next(read for read in found.partners if read.roster_id == failed)
+    assert read.failed and read.passed
+    assert failed in found.targets
+    assert failed in [r.state["teams"]["partner"]["roster_id"] for r in _target_requests(jev)]
+    assert any("Spares tree of" in line and snap.teams[failed].name in line and "failed request" in line
+               for line in caplog.messages)
 
 
 def _gain_of_first_offer(p: float, side: int):
@@ -300,15 +337,31 @@ def test_the_gain_state_holds_the_lineup_points_of_each_side_before_and_after_ea
             assert word in line, line
 
 
-def test_a_failed_shortlist_request_drops_its_offers_and_never_reads_as_a_no(snap):
-    class ShortlistFails(FakeJev):
-        def ask(self, state, questions):
-            if any("|" in key for key in questions):
-                raise JevError("timeout")
-            return super().ask(state, questions)
+class _ShortlistFails(FakeJev):
+    def ask(self, state, questions):
+        if any("|" in key for key in questions):
+            raise JevError("timeout")
+        return super().ask(state, questions)
 
-    found = search(ASKER, PARTNER, snap, ShortlistFails())
-    assert found.offers and found.shortlist == [] and found.dropped == []
+
+def test_a_failed_shortlist_request_keeps_its_offers_as_unsure_and_never_reads_as_a_no(snap, caplog):
+    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
+        found = search(ASKER, PARTNER, snap, _ShortlistFails())
+    assert found.offers and found.shortlist and found.dropped == []
+    assert len(found.shortlist) == min(len(found.offers), SHORTLIST_KEEP)
+    for offer in found.shortlist:
+        assert offer.failed
+        assert offer.fair == UNSURE and set(offer.needs.values()) == {UNSURE} and set(offer.gains.values()) == {UNSURE}
+    assert any("Finder shortlist with" in line and "failed request" in line for line in caplog.messages)
+
+
+def test_the_pick_sheet_of_an_offer_with_a_failed_shortlist_request_states_no_jev_answer(snap):
+    failed = search(ASKER, PARTNER, snap, _ShortlistFails()).shortlist[0]
+    sheet = offer_sheet(failed, snap, NewsFeed(fetch=no_news))
+    # The call never answered, so the pick never reads "unsure" for it.
+    assert sheet and not any(key.startswith(FACT_PREFIX) for key in sheet)
+    answered = search(ASKER, PARTNER, snap, FakeJev()).shortlist[0]
+    assert any(key.startswith(FACT_PREFIX) for key in offer_sheet(answered, snap, NewsFeed(fetch=no_news)))
 
 
 def _last_pool_player(snap, roster_id):
@@ -461,10 +514,13 @@ def test_the_wider_pass_keeps_the_limit_of_the_manager(snap):
         assert all(snap.players[pid].position not in kept for pid in trade.sides[0].player_ids)
 
 
-def test_the_wider_pass_skips_a_partner_whose_request_failed(snap):
-    # A failed request is never a no, and it drops what it would judge, so the wider pass builds nothing for it.
-    found = search(ASKER, None, snap, FakeJev(error=JevError("429 Too Many Requests")))
-    assert found.offers == [] and found.shortlist == []
+def test_the_wider_pass_keeps_a_partner_whose_spares_tree_request_failed(snap):
+    # A failed request is never a no, so the wider pass weighs the partner as it weighs each other partner.
+    failed = _partner_with_spares(snap)
+    found = search(ASKER, None, snap, _SparesTreeFails(failed, answer=_no_target))
+    assert next(read for read in found.partners if read.roster_id == failed).failed
+    assert found.wider
+    assert failed in {trade.sides[1].roster_id for trade in found.offers}
 
 
 def _tiny(n):

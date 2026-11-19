@@ -16,7 +16,7 @@ from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
 from analyzer.stage import Stage, quiet
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
-from analyzer.trade_jev import NO_AT, TRADE_POSITIONS, trade_jev_questions, weak_slot_rows, weak_starting_slots
+from analyzer.trade_jev import NO_AT, TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_slot_rows, weak_starting_slots
 from league.history import season_rank
 from league.jev_port import Jev, NoulQuestion
 from league.lineup import lineup_now, lineup_slots
@@ -49,6 +49,9 @@ GAIN = {
 TARGET_AT = 0.6      # a player is a target at this probability or more
 TARGET_MAX = 4       # at most this many targets per side, by probability
 SHORTLIST_KEEP = 10  # the offers that Jev rates highest, by the product of the fair and the need answers
+# The answer that an offer holds after a failed shortlist request: the middle of the unsure band. A failed call is an
+# error, never a no, so the offer goes on as an unsure answer does, and the pick sheet states no Jev answer for it.
+UNSURE = (NO_AT + YES_AT) / 2
 # The wider pass of a search that built no offer: one 1-for-1 idea per partner, so the pick sheet stays small.
 WIDER_MAX = 12
 
@@ -75,8 +78,9 @@ class PartnerRead(BaseModel):
     roster_id: int
     team: str
     answers: dict[str, float]
-    # True when no side of the Spares tree stops. False after a failed request, which is an error and never a no.
+    # True when no side of the Spares tree stops. True after a failed request too, which is an error and never a no.
     passed: bool
+    # True after a failed request, so the log and the evidence show the error.
     failed: bool = False
 
 
@@ -91,6 +95,8 @@ class ShortlistOffer(BaseModel):
     # The probability that each side starts a better lineup after the trade, by roster id.
     gains: dict[int, float] = {}
     score: float
+    # True after a failed shortlist request: each answer is UNSURE, and the pick sheet states no Jev answer for it.
+    failed: bool = False
 
 
 class Shortlist(BaseModel):
@@ -450,6 +456,11 @@ def _log_target_questions(snapshot: Snapshot, partner: int, keys: list[str], nou
              ", failed request" if nouls is None else "", asked)
 
 
+def _answer(nouls: dict[str, float] | None, key: str) -> float:
+    """The Jev answer of a shortlist question, or UNSURE after a failed request, which is never a no."""
+    return UNSURE if nouls is None else nouls[key]
+
+
 def _no_read(roster_id: int) -> None:
     """The default read callback: it drops the roster id, because a search with no stream has no one to tell."""
 
@@ -467,13 +478,16 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     4. The shortlist: Jev asks the fair, the need, and the gain questions of each offer. A clear no on the gain of a
        side drops the offer, and an unsure answer stays. `varied` keeps SHORTLIST_KEEP offers:
        the best offer for each player that the asker gives and for each partner, before more forms of one trade.
-    A failed Jev request drops what it would judge, and it logs. It never reads as a no and never stops the press.
+    A failed Jev request logs, and it never reads as a no and never stops the press. A failed Spares tree request lets
+    the partner go on to the targets. A failed shortlist request lets its offers go on, each as an unsure answer. A
+    failed target request builds no offer for its partner.
     With an `anchor`, he is a target of his side, and each offer holds him on that side (a hard rule). An anchor that
     the asker gets keeps the search to his roster, because only that roster can give him.
     With a `limit`, no offer sends a player that the manager keeps, and each offer brings back the position that he
     aims at (a hard rule, because the manager set it).
     5. The wider pass: when the targets build no offer, `wider_offers` gives at most one plain idea per partner, so
-       the pick has ideas to weigh. It asks no target question, and it skips a partner whose filter request failed.
+       the pick has ideas to weigh. It asks no target question. It weighs each partner, one that the filter stopped
+       and one whose filter request failed too.
     `stage` gets a live line as each of four steps starts and a done line as it ends: the teams read, the players who
     fit, the offers, and the shortlist. The lines name no inner tool, because the site shows them. The default drops
     them. `read` gets the roster id of each partner as the first step reads it, so the site can light each team in
@@ -509,8 +523,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         for rid in partners:
             response = filtered.get(str(rid))
             if requests[str(rid)] is not None and response is None:
-                # A failed call is an error, never a stop, so the read says failed and the wider pass skips him.
-                reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=False,
+                # A failed call is an error, never a stop, so the read says failed and the partner goes on.
+                reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True,
                                          failed=True))
                 log.info("Spares tree of %s with %s: failed request", snapshot.teams[asker].name,
                          snapshot.teams[rid].name)
@@ -559,7 +573,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     stage("Looking wider for ideas" if wider else "Building offers", live=True)
     if wider:
         offers_by_partner = {}
-        for trade in wider_offers(asker, [read.roster_id for read in reads if not read.failed], snapshot,
+        for trade in wider_offers(asker, [read.roster_id for read in reads], snapshot,
                                   anchor, limit):
             offers_by_partner.setdefault(trade.sides[1].roster_id, []).append(trade)
         offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
@@ -576,17 +590,20 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     dropped = []
     for rid, partner_offers in offers_by_partner.items():
         response = judged.get(str(rid))
-        if response is None:
-            continue
+        nouls = None if response is None else response.nouls
+        if nouls is None:
+            # A failed call is an error, never a no, so each offer goes on as an unsure answer does.
+            log.info("Finder shortlist with %s: failed request, %d offers go on as unsure", snapshot.teams[rid].name,
+                     len(partner_offers))
         for n, trade in enumerate(partner_offers):
-            fair = response.nouls[f"{n}|fair"]
-            needs = {side.roster_id: response.nouls[f"{n}|need.{side.roster_id}"] for side in trade.sides}
-            gains = {side.roster_id: response.nouls[f"{n}|gain.{side.roster_id}"] for side in trade.sides}
+            fair = _answer(nouls, f"{n}|fair")
+            needs = {side.roster_id: _answer(nouls, f"{n}|need.{side.roster_id}") for side in trade.sides}
+            gains = {side.roster_id: _answer(nouls, f"{n}|gain.{side.roster_id}") for side in trade.sides}
             score = fair
             for p in needs.values():
                 score *= p
             offer = ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=fair, needs=needs, gains=gains,
-                                   score=score)
+                                   score=score, failed=nouls is None)
             # A clear no on the gain of any side drops the offer. An unsure answer stays (decision 09).
             if any(p < NO_AT for p in gains.values()):
                 dropped.append(offer)
