@@ -1,7 +1,7 @@
 # Next.js security patch
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-next-security-patch`.
 Source: the session of 2026-11-19.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -45,3 +45,8 @@ bp-norcal-2 exit=0 next=Next.js 16.4.5 SecurityFatalError=0
 Test verdict: PASS
 
 ## Comments
+
+- Closes with the squash merge of the PR of `bug-next-security-patch`. Commits: `dec02a0b`, `cae51993`, `85c4f43c`. Date: 2026-11-19.
+- The audit loop went red with 2 advisories of `next` at `dec02a0b`, then green with 0 at `cae51993`, and 1731 site tests pass.
+- Four builds of both clients on Next.js 16.4.5 printed no `SecurityFatalError`; 16.4.6 also exists and needs no change now.
+- Read 4 files: AGENTS.md, apps/site/AGENTS.md, apps/site/package.json, .scratch/bugs/next-security-patch.md.
