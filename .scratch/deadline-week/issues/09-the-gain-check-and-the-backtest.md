@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-46, AT-47, AT-51, and
 
 **Blocked by:** 08
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] A real press for Bo Girds and every team shows neither of the two bad trades on the Shortlist or among the 3 trades.
 - [ ] The list of about 30 lines goes to Brian, and his marks are saved as Backtest marks.
