@@ -3,11 +3,14 @@ Tests for the Sleeper adapter of the provider port: the cache dir it takes in it
 of the projections ahead. Each test passes an httpx.MockTransport, so no test calls the network (ADR 0015).
 """
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 
+from league.parse import parse_trades
 from league.provider.base import Provider
+from league.provider.raw import RawTransaction
 from league.provider.sleeper import SleeperProvider, fetch_current_transactions
 
 PLAYERS = {"4046": {"position": "QB", "team": "BUF"}}
@@ -98,3 +101,15 @@ def test_the_current_transactions_read_the_leg_of_the_state_with_a_query_string_
     leg, transactions = fetch_current_transactions("123", httpx.MockTransport(handler))
     assert leg == 9 and len(transactions) == len(trade)
     assert urls[1].path == "/v1/league/123/transactions/9" and "t" in urls[1].params
+
+
+def test_a_transaction_keeps_status_updated_as_an_extra_and_the_trade_takes_its_accept_time_from_it():
+    # The move feed and the waiver rules read `status_updated` from the extras, so a declared field would hide it.
+    trade = json.loads(Path(__file__).parents[4].joinpath(
+        "apps/api/tests/fixtures/trade-wire/cpc-week-9-transactions.json").read_text())
+    raw = [RawTransaction.model_validate(each) for each in trade]
+    assert [(each.model_extra or {}).get("status_updated") for each in raw] == [each["status_updated"] for each in trade]
+    sent = {each["transaction_id"]: each["status_updated"] for each in trade}
+    trades = parse_trades(raw)
+    assert trades and all(
+        each.accepted == datetime.fromtimestamp(sent[each.transaction_id] / 1000, tz=UTC) for each in trades)
