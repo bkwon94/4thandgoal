@@ -1,9 +1,10 @@
 /**
- * Tests for the trade finder: the optional partner, the find post, the pick cards from the fixture finder document, and each error state.
+ * Tests for Find mode: the hero, the optional partner, the find post, the pick cards from the fixture finder document, and each error state.
  * fetch is a test stub, and each test reads the screen.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, findResponse as fixtureJson } from "../lib/fixtures/api";
 import type { FindResponse } from "../lib/analyze-types";
 import type { Team } from "../lib/api";
@@ -27,18 +28,32 @@ const fetchStub = vi.fn();
 const onUnauthorized = vi.fn();
 const onOpen = vi.fn();
 const onRostersStale = vi.fn();
+const onAsker = vi.fn();
 
 function answer(status: number, body: unknown = {}, headers: Record<string, string> = {}) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
 }
 
-const picker = () => screen.getByRole("group", { name: "Trade Partner" });
+const partnerButton = () => screen.getByRole("button", { name: /Trade with/ });
 const findButton = () => screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement;
 const cards = () => screen.queryAllByRole("article");
 
+/* Opens the partner sheet and returns its rows: Every team, then the other teams. */
+async function partnerRows() {
+  fireEvent.click(partnerButton());
+  return within(await screen.findByRole("list", { name: "Partners" })).getAllByRole("button");
+}
+
+/* Picks a row of the partner sheet by its name, and waits for the sheet to close. */
+async function pickPartner(name: RegExp) {
+  const rows = await partnerRows();
+  fireEvent.click(rows.find((row) => name.test(row.textContent ?? "")) as HTMLElement);
+  await waitFor(() => expect(screen.queryByRole("list", { name: "Partners" })).toBeNull());
+}
+
 /* Picks a partner and taps "Find a Trade". */
-function findWithPartner() {
-  fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
+async function findWithPartner() {
+  await pickPartner(/Lil Fridge/);
   fireEvent.click(findButton());
 }
 
@@ -52,8 +67,20 @@ beforeEach(() => {
   onUnauthorized.mockReset();
   onOpen.mockReset();
   onRostersStale.mockReset();
+  onAsker.mockReset();
   vi.stubGlobal("fetch", fetchStub);
-  render(<TradeFinder teams={TEAMS} target={apiTarget} asker={2} passphrase="localtest" onUnauthorized={onUnauthorized} onRostersStale={onRostersStale} onOpen={onOpen} />);
+  render(
+    <TradeFinder
+      teams={TEAMS}
+      target={apiTarget}
+      asker={2}
+      onAsker={onAsker}
+      passphrase="localtest"
+      onUnauthorized={onUnauthorized}
+      onRostersStale={onRostersStale}
+      onOpen={onOpen}
+    />,
+  );
 });
 
 afterEach(() => {
@@ -69,24 +96,25 @@ describe("TradeFinder", () => {
     expect(screen.queryByText(/chart/i)).toBeNull();
   });
 
-  it("shows the sweep and Finding… while the search runs", async () => {
+  it("shows the sweep and a busy find button while the search runs", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     find();
-    expect(await screen.findByRole("button", { name: "Finding…" })).toBeTruthy();
+    await waitFor(() => expect(findButton().getAttribute("aria-busy")).toBe("true"));
     // The sweep sits with the status line. The track is aria-hidden, so the query includes hidden elements.
     const wait = screen.getByRole("status").parentElement as HTMLElement;
     expect(within(wait).getByRole("presentation", { hidden: true })).toBeTruthy();
   });
 
-  it("lists the eleven other teams and not the asker", () => {
-    const radios = within(picker()).getAllByRole("radio");
-    expect(radios).toHaveLength(11);
-    expect(within(picker()).queryByRole("radio", { name: /All You Need Is Love/ })).toBeNull();
+  it("lists Every team first, then the eleven other teams and not the asker", async () => {
+    const rows = await partnerRows();
+    expect(rows).toHaveLength(12);
+    expect(rows[0].textContent).toContain("Every team");
+    expect(rows.some((row) => row.textContent?.includes("All You Need Is Love"))).toBe(false);
   });
 
-  it("keeps the find button on with no partner picked", () => {
+  it("keeps the find button on with no partner picked", async () => {
     expect(findButton().disabled).toBe(false);
-    fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
+    await pickPartner(/Lil Fridge/);
     expect(findButton().disabled).toBe(false);
   });
 
@@ -101,13 +129,14 @@ describe("TradeFinder", () => {
     expect(JSON.parse(init.body)).toEqual({ season: 2026, asker: 2 });
   });
 
-  it("posts the picked partner, and Search Every Team clears it", async () => {
+  it("posts the picked partner, and Every team clears it", async () => {
     answer(200, fixture);
-    findWithPartner();
+    await findWithPartner();
     await waitFor(() => expect(cards()).toHaveLength(3));
     expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({ season: 2026, asker: 2, partner: 3 });
-    fireEvent.click(screen.getByRole("button", { name: "Search Every Team" }));
+    await pickPartner(/Every team/);
     expect(cards()).toHaveLength(0);
+    expect(partnerButton().textContent).toContain("Every team");
     answer(200, fixture);
     fireEvent.click(findButton());
     await waitFor(() => expect(cards()).toHaveLength(3));
@@ -151,16 +180,23 @@ describe("TradeFinder", () => {
     for (const card of cards()) expect(card.textContent).not.toMatch(LETTER);
   });
 
-  it("shows the finder as one card with its title, the copy, the partner row, and the button", async () => {
-    const finder = screen.getByRole("region", { name: "Find a Trade" });
-    expect(within(finder).getByText("Pick a partner, or search every team. The search finds up to 3 trades.")).toBeTruthy();
-    expect(within(finder).getByRole("group", { name: "Trade Partner" })).toBeTruthy();
-    expect(within(finder).getByRole("button", { name: "Find a Trade" })).toBeTruthy();
-    fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
-    // A pick folds the list to the partner row with Change.
-    // The other rows animate out, so the test waits for them to leave.
-    await waitFor(() => expect(within(picker()).getAllByRole("radio")).toHaveLength(1));
-    expect(within(finder).getByRole("button", { name: "Change trade partner" })).toBeTruthy();
+  it("shows Find in one hero with its title, the line, Your team, the partner, the chips, and the button", async () => {
+    const hero = screen.getAllByRole("region", { name: "Trade Ideas" }).at(-1) as HTMLElement;
+    expect(within(hero).getByRole("heading", { level: 1, name: "Trade Ideas" })).toBeTruthy();
+    expect(within(hero).getByText("Who has a trade for you?")).toBeTruthy();
+    expect(within(hero).getByRole("button", { name: /Your team/ }).textContent).toContain("All You Need Is Love");
+    expect(within(hero).getByRole("button", { name: /Trade with/ }).textContent).toContain("Every team");
+    expect(within(hero).getByRole("radiogroup", { name: "Position" })).toBeTruthy();
+    expect(within(hero).getByRole("button", { name: "Find a Trade" })).toBeTruthy();
+    await pickPartner(/Lil Fridge/);
+    expect(within(hero).getByRole("button", { name: /Trade with/ }).textContent).toContain("Lil Fridge");
+  });
+
+  it("hands a pick of Your team to the form", async () => {
+    fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
+    const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
+    fireEvent.click(rows.find((row) => row.textContent?.includes("Lil Fridge")) as HTMLElement);
+    expect(onAsker).toHaveBeenCalledWith(3);
   });
 
   it("names each result card by its place, with See the Full Result", async () => {

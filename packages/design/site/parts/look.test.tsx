@@ -45,7 +45,7 @@ afterAll(() => vi.unstubAllGlobals());
 describe("Hero", () => {
   it("takes no free content, and renders a hero with only a title in a region named by its label (AT-14)", () => {
     // The typecheck proves the rule: if Hero took children, this directive would be unused and tsc would fail.
-    // @ts-expect-error Hero takes the six slots and no children.
+    // @ts-expect-error Hero takes the seven slots and no children.
     void (<Hero label="Page not found">404</Hero>);
     render(<Hero label="Page not found" title="Page not found" />);
     const hero = screen.getByRole("region", { name: "Page not found" });
@@ -87,6 +87,16 @@ describe("Hero slots", () => {
     expect(slotsOf(container)).toEqual(["eyebrow", "title", "meta", "feature", "stats", "action"]);
     const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
     expect(hero.textContent).toBe("7-9 · 9th of 12To Infinity and Bijanbjpicard96Week chipsPlayoff 41%Week 8");
+  });
+
+  it("renders the toggle under the eyebrow and above the title, in a full row of its own", () => {
+    const { container } = render(
+      <Hero label="Trade Analyzer" title="Trade Analyzer" eyebrow="Trade deadline" toggle={<button type="button">Mode</button>} meta="Who gets what?" />,
+    );
+    expect(slotsOf(container)).toEqual(["eyebrow", "toggle", "title", "meta"]);
+    const row = container.querySelector('[data-hero-slot="toggle"]')!.parentElement!;
+    expect(row.className).toContain("tablet:col-span-2");
+    expect(row.querySelector('[data-hero-slot="eyebrow"]')).not.toBeNull();
   });
 
   it("renders no element for an absent slot, and no hairline with no stats", () => {

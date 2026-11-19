@@ -156,8 +156,9 @@ export function postAnalyze(
 }
 
 /* The body of the find route: the season, the roster that asks, and the partner roster. With no partner, the search
-   runs over every other team. */
-export type FindRequest = { season: number; asker: number; partner?: number };
+   runs over every other team. With a limit, each offer brings back a player at aim_position, the same field of the
+   Limit that a typed question of trade ideas sets. */
+export type FindRequest = { season: number; asker: number; partner?: number; limit?: { aim_position: string } };
 
 /* The finder grades every small swap of the pair, so a cold call can be slow. The caller owns the AbortSignal, as with postAnalyze. */
 export function postFind(target: ApiTarget, passphrase: string, body: FindRequest, signal: AbortSignal): Promise<FindResponse> {

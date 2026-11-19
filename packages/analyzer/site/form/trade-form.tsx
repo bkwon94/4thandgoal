@@ -1,6 +1,7 @@
 /**
  * The trade form, the Stack: the hero, the teams row, one card for each side that says what it gets, the sheets, and the grade bar.
- * It owns the trade and the grade state, and it posts the trade to the analyze route with the finder and the result after it.
+ * It owns the trade and the grade state, and it posts the trade to the analyze route. With the finder on, the switch of the
+ * hero moves between Grade a trade and Find a trade, and Find mode takes the place of the hero and the form.
  */
 "use client";
 
@@ -21,6 +22,7 @@ import { StageLines } from "./stage-lines";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
 import { TeamsRow } from "./teams-row";
+import { ModeSwitch } from "./mode-switch";
 import { TradeFinder } from "./trade-finder";
 import { TradeOnStage, type StageSide } from "./trade-on-stage";
 import { Button } from "@cpc/design/ui/button";
@@ -28,6 +30,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
 import { stageLines, type StageTrade } from "../lib/stage-lines";
 import type { AnalyzeResponse, FinderTrade } from "../lib/analyze-types";
+import type { AnalyzerMode } from "../lib/mode";
 import { ApiError, type ApiTarget, postAnalyze, toErrorLine, type Team } from "../lib/api";
 import {
   analyzeRequest,
@@ -70,9 +73,15 @@ type TradeFormProps = {
   /* The page places the parts, so it can put its own lines, such as a failed fetch, between the hero and the form.
      The form keeps the grade state, so it hands the parts out and does not lift the state. */
   children?: (parts: FormParts) => ReactNode;
+  // The half of the switch on the screen. The page owns it, because the address of the page names it. Find needs the
+  // finder flag, so with the flag off the form shows Grade and no switch.
+  mode?: AnalyzerMode;
+  onModeChange?: (mode: AnalyzerMode) => void;
+  // The eyebrow of the hero in both modes, such as the countdown to the trade deadline. With none, it names the tool.
+  eyebrow?: ReactNode;
 };
 
-/* The hero, the form with the finder, and the result of a done grade. */
+/* The hero, the form, and the result of a done grade. In Find mode the hero holds Find and its cards, and the form hides. */
 type FormParts = { hero: ReactNode; form: ReactNode; result: ReactNode };
 
 /* With no layout from the page, the parts follow in order. */
@@ -123,17 +132,18 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
   );
 }
 
-/* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
+/* The hero of the page, in the hero slots: the name of the tool or the deadline as the eyebrow, the switch, the title, and the question of the Stack as the meta line.
    Its ground is the mesh, calm and flat in idle, with no scene. Once a player is in the Stack, the trade shows on the
    stage as the feature, one row per side with a count of its players. The cards of the Stack below show each player, so
    the stage waits for the grade to show the faces. The grading hero and the read take its place while a grade runs and under a result. */
-function TitleHero({ stage }: { stage: StageSide[] }) {
+function TitleHero({ stage, eyebrow, toggle }: { stage: StageSide[]; eyebrow: ReactNode; toggle?: ReactNode }) {
   const hasPlayer = stage.some((side) => side.players.length > 0);
   return (
     <Hero
       label="Trade Analyzer"
       art={<HeroMesh />}
-      eyebrow="Trade Analyzer"
+      eyebrow={eyebrow}
+      toggle={toggle}
       title="Trade Analyzer"
       meta={<Rise step={1}>Who gets what?</Rise>}
       feature={hasPlayer ? <TradeOnStage sides={stage} show="count" /> : undefined}
@@ -141,12 +151,31 @@ function TitleHero({ stage }: { stage: StageSide[] }) {
   );
 }
 
-export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized, onRostersStale, prefill = null, children = stackParts }: TradeFormProps) {
+export function TradeForm({
+  teams,
+  target,
+  finderOn,
+  passphrase,
+  onUnauthorized,
+  onRostersStale,
+  prefill = null,
+  children = stackParts,
+  mode = "grade",
+  onModeChange,
+  eyebrow = "Trade Analyzer",
+}: TradeFormProps) {
   const [sides, setSides] = useState<Sides>(EMPTY_SIDES);
   // The id of the next added side. EMPTY_SIDES holds ids 0 and 1, and an id is never reused, so a key never repeats.
   const nextSideId = useRef(EMPTY_SIDES.length);
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
+  // A search of Find mode runs, so the switch stays on Find until it ends.
+  const [finding, setFinding] = useState(false);
+  // The mode of the last render. The switch of a new hero starts from it, so its pill slides from the old half.
+  const shownMode = useRef(mode);
+  useEffect(() => {
+    shownMode.current = mode;
+  }, [mode]);
   // The sheet edits a draft while the result stays in place. Cancel restores the trade that produced that result.
   const [editing, setEditing] = useState(false);
   const savedSides = useRef<Sides>(sides);
@@ -195,13 +224,12 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   // A link can fill a whole trade before the rosters arrive. The stage and the stage lines read the teams, so a grade
   // that starts before them shows an empty stage and names "Your Team" in place of a manager. The bar waits for the teams.
   const ready = teams.length > 0 && everySideTrades(sides);
-  // The finder grades two sides, so it hides once the trade has a third side.
-  const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
-  // The form hides while the grade runs and under a result, so the hero and the read lead the page. The stage of the
-  // hero shows the trade, so no line repeats it.
-  const formHidden = grading || grade.status === "done";
+  const findMode = finderOn && mode === "find";
+  // The form hides while the grade runs, under a result, and in Find mode, so the hero and the read lead the page. The
+  // stage of the hero shows the trade, so no line repeats it.
+  const formHidden = grading || grade.status === "done" || findMode;
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
@@ -283,7 +311,7 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     const partner = trade.sides.find((side) => side.roster_id !== asker);
     const own = trade.sides.find((side) => side.roster_id === asker);
     if (asker === null || !own || !partner) return;
-    // The finder shows only at two sides, so the card fills the two sides that are there.
+    // A finder trade has two sides, so the card fills the first two sides, and a third side leaves the trade.
     const [mine, theirs] = sides;
     const toGets = (side: { gives: { player_id: string }[] }, fromSide: number) =>
       side.gives.map((p) => ({ playerId: p.player_id, fromSide }));
@@ -292,6 +320,8 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       { id: theirs.id, rosterId: partner.roster_id, gets: toGets(own, mine.id) },
     ];
     setSides(next);
+    // The grade of a card shows in Grade mode, so the address and the switch name the mode of the result.
+    onModeChange?.("grade");
     // The new picks are not in state until the next render, so the submit gets them as an argument.
     // The season is the one of the finder document, so the grade matches the trade the card shows.
     submit({ sides: next, season: tradeSeason });
@@ -440,27 +470,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       {/* The page keeps its form while a grade runs, so the pending button stays mounted. */}
       <div>
         <div hidden={formHidden}>{!editing && stack}</div>
-        {grade.status !== "done" && gradeBar}
+        {grade.status !== "done" && !findMode && gradeBar}
       </div>
       <div hidden={formHidden}>
-        {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
-            The finder grades two sides, so it hides at three or four. */}
-        {/* The finder is off by default because the page felt crowded. */}
-        {finderOn && myTeam && twoSides && (
-          <div className="mt-sp-6">
-            <TradeFinder
-              key={myTeam.roster_id}
-              teams={teams}
-              target={target}
-              asker={myTeam.roster_id}
-              passphrase={passphrase}
-              onUnauthorized={onUnauthorized}
-              onRostersStale={onRostersStale}
-              onOpen={openTrade}
-              locked={grading}
-            />
-          </div>
-        )}
         {!editing && pickers}
       </div>
       <Sheet
@@ -505,6 +517,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
   });
 
+  // The switch shows only with the finder on. A wait locks it, so a wait always ends in the mode that started it.
+  const toggle = finderOn ? (
+    <ModeSwitch value={mode} from={shownMode.current} onChange={(next) => onModeChange?.(next)} disabled={grading || finding} />
+  ) : undefined;
+
   // Under a result the read is the hero, so the form puts no hero of its own above it.
   const hero = grading ? (
     <GradingHero
@@ -515,8 +532,24 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       }))}
       stage={stage}
     />
+  ) : findMode ? (
+    // The key resets the partner, the chip, and the cards when the asker changes.
+    <TradeFinder
+      key={myTeam?.roster_id ?? "none"}
+      teams={teams}
+      target={target}
+      asker={myTeam?.roster_id ?? null}
+      onAsker={(rosterId) => pickTeam(0, rosterId)}
+      passphrase={passphrase}
+      onUnauthorized={onUnauthorized}
+      onRostersStale={onRostersStale}
+      onOpen={openTrade}
+      onFindingChange={setFinding}
+      eyebrow={eyebrow}
+      toggle={toggle}
+    />
   ) : formHidden ? null : (
-    <TitleHero stage={stage} />
+    <TitleHero stage={stage} eyebrow={eyebrow} toggle={toggle} />
   );
 
   return children({ hero, form, result });
