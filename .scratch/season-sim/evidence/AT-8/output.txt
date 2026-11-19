@@ -1,0 +1,106 @@
+$ cd apps/pipeline && make sim CLIENT=norcal WEEK=10
+uv run --exact --package cornerstone cornerstone sim --client norcal --season 2026 --week 10
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/clients/norcal/build/2026/week-10/sim.json
+[exit 0]
+
+$ cmp clients/norcal/build/2026/week-10/sim.json clients/norcal/published/2026/week-10/sim.json && echo 'fresh build file equals the committed published file byte for byte'
+fresh build file equals the committed published file byte for byte
+[exit 0]
+
+$ jq '.names' clients/norcal/published/2026/week-10/sim.json
+{
+  "1": "puurdygood",
+  "2": "VarsityBlue2",
+  "3": "BobBuckstein",
+  "4": "The Mean Machine",
+  "5": "Skol Daddy",
+  "6": "Mitseeker5000",
+  "7": "Bo Girds",
+  "8": "Hock Tua 💦",
+  "9": "kaiedmonds",
+  "10": "Davlionman",
+  "11": "Breece Mode",
+  "12": "The Dart Side"
+}
+[exit 0]
+
+$ jq -r '.names | to_entries[] | select(.value == "Bo Girds") | .key' clients/norcal/published/2026/week-10/sim.json
+7
+[exit 0]
+
+$ jq '.pages["7"] | {you, record, playoff, weeks_left}' clients/norcal/published/2026/week-10/sim.json
+{
+  "you": 7,
+  "record": [
+    5,
+    5
+  ],
+  "playoff": 57,
+  "weeks_left": 4
+}
+[exit 0]
+
+$ jq '.pages["7"].weeks[] | select(.week == 11)' clients/norcal/published/2026/week-10/sim.json
+{
+  "week": 11,
+  "opponent": 4,
+  "results": [
+    {
+      "game": "win",
+      "median": null,
+      "wins_added": 1,
+      "playoff": 67,
+      "chance": 71.7,
+      "about": false
+    },
+    {
+      "game": "loss",
+      "median": null,
+      "wins_added": 0,
+      "playoff": 30,
+      "chance": 28.3,
+      "about": false
+    }
+  ],
+  "loss_playoff": 30,
+  "loss_about": false,
+  "root_for": [
+    {
+      "winner": 1,
+      "loser": 10,
+      "reason": "1 win ahead of you",
+      "playoff": 32,
+      "about": false
+    },
+    {
+      "winner": 6,
+      "loser": 5,
+      "reason": "Level with you",
+      "playoff": 32,
+      "about": false
+    },
+    {
+      "winner": 12,
+      "loser": 9,
+      "reason": "Level with you",
+      "playoff": 32,
+      "about": false
+    }
+  ]
+}
+[exit 0]
+
+$ jq -r --argjson o "$(jq '.pages["7"].weeks[] | select(.week==11) | .opponent' clients/norcal/published/2026/week-10/sim.json)" '.names[($o|tostring)]' clients/norcal/published/2026/week-10/sim.json
+The Mean Machine
+[exit 0]
+
+$ jq '.parameters.median_game' clients/norcal/published/2026/week-10/sim.json
+false
+[exit 0]
+
+$ jq -r '.pages["7"].weeks[] | select(.week == 11) | .results | "result count: \(length)", (.[] | "\(.game): odds after \(.playoff) %, chance \(.chance) %")' clients/norcal/published/2026/week-10/sim.json
+result count: 2
+win: odds after 67 %, chance 71.7 %
+loss: odds after 30 %, chance 28.3 %
+[exit 0]
+

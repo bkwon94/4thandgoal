@@ -1,0 +1,317 @@
+{
+  "ladder": [
+    {
+      "about": true,
+      "chance": 2.6,
+      "more_wins": 0,
+      "playoff": 1
+    },
+    {
+      "about": false,
+      "chance": 6.5,
+      "more_wins": 1,
+      "playoff": 1
+    },
+    {
+      "about": false,
+      "chance": 14.5,
+      "more_wins": 2,
+      "playoff": 3
+    },
+    {
+      "about": false,
+      "chance": 17.3,
+      "more_wins": 3,
+      "playoff": 26
+    },
+    {
+      "about": false,
+      "chance": 22.1,
+      "more_wins": 4,
+      "playoff": 75
+    },
+    {
+      "about": false,
+      "chance": 16.1,
+      "more_wins": 5,
+      "playoff": 99
+    },
+    {
+      "about": false,
+      "chance": 13.4,
+      "more_wins": 6,
+      "playoff": 99
+    },
+    {
+      "about": false,
+      "chance": 5.3,
+      "more_wins": 7,
+      "playoff": 99
+    },
+    {
+      "about": true,
+      "chance": 2.1,
+      "more_wins": 8,
+      "playoff": 99
+    }
+  ],
+  "need": 5,
+  "playoff": 58,
+  "playoffs": null,
+  "record": [
+    11,
+    9
+  ],
+  "sentence": "Win 5 of the 8 left and you're in.",
+  "status": "open",
+  "weeks": [
+    {
+      "loss_about": false,
+      "loss_playoff": 48,
+      "opponent": 9,
+      "results": [
+        {
+          "about": false,
+          "chance": 24.1,
+          "game": "win",
+          "median": "above",
+          "playoff": 86,
+          "wins_added": 2
+        },
+        {
+          "about": false,
+          "chance": 5.2,
+          "game": "win",
+          "median": "below",
+          "playoff": 65,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 19.7,
+          "game": "loss",
+          "median": "above",
+          "playoff": 67,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 51.0,
+          "game": "loss",
+          "median": "below",
+          "playoff": 41,
+          "wins_added": 0
+        }
+      ],
+      "root_for": [
+        {
+          "about": false,
+          "loser": 1,
+          "playoff": 51,
+          "reason": "1 win ahead of you",
+          "winner": 11
+        },
+        {
+          "about": false,
+          "loser": 5,
+          "playoff": 50,
+          "reason": "1 win ahead of you",
+          "winner": 4
+        },
+        {
+          "about": false,
+          "loser": 12,
+          "playoff": 50,
+          "reason": "1 win behind you",
+          "winner": 8
+        }
+      ],
+      "week": 11
+    },
+    {
+      "loss_about": false,
+      "loss_playoff": 37,
+      "opponent": 5,
+      "results": [
+        {
+          "about": false,
+          "chance": 48.1,
+          "game": "win",
+          "median": "above",
+          "playoff": 78,
+          "wins_added": 2
+        },
+        {
+          "about": false,
+          "chance": 10.8,
+          "game": "win",
+          "median": "below",
+          "playoff": 52,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 10.2,
+          "game": "loss",
+          "median": "above",
+          "playoff": 58,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 30.9,
+          "game": "loss",
+          "median": "below",
+          "playoff": 30,
+          "wins_added": 0
+        }
+      ],
+      "root_for": [
+        {
+          "about": false,
+          "loser": 12,
+          "playoff": 41,
+          "reason": "1 win behind you",
+          "winner": 10
+        },
+        {
+          "about": false,
+          "loser": 3,
+          "playoff": 40,
+          "reason": "2 wins ahead of you",
+          "winner": 4
+        },
+        {
+          "about": false,
+          "loser": 2,
+          "playoff": 38,
+          "reason": "2 wins ahead of you",
+          "winner": 7
+        }
+      ],
+      "week": 12
+    },
+    {
+      "loss_about": false,
+      "loss_playoff": 40,
+      "opponent": 4,
+      "results": [
+        {
+          "about": false,
+          "chance": 43.6,
+          "game": "win",
+          "median": "above",
+          "playoff": 78,
+          "wins_added": 2
+        },
+        {
+          "about": false,
+          "chance": 14.4,
+          "game": "win",
+          "median": "below",
+          "playoff": 52,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 8.7,
+          "game": "loss",
+          "median": "above",
+          "playoff": 63,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 33.3,
+          "game": "loss",
+          "median": "below",
+          "playoff": 33,
+          "wins_added": 0
+        }
+      ],
+      "root_for": [
+        {
+          "about": false,
+          "loser": 5,
+          "playoff": 46,
+          "reason": "1 win ahead of you",
+          "winner": 11
+        },
+        {
+          "about": false,
+          "loser": 3,
+          "playoff": 42,
+          "reason": "2 wins ahead of you",
+          "winner": 7
+        },
+        {
+          "about": false,
+          "loser": 1,
+          "playoff": 42,
+          "reason": "1 win ahead of you",
+          "winner": 10
+        }
+      ],
+      "week": 13
+    },
+    {
+      "loss_about": false,
+      "loss_playoff": 44,
+      "opponent": 3,
+      "results": [
+        {
+          "about": false,
+          "chance": 34.1,
+          "game": "win",
+          "median": "above",
+          "playoff": 82,
+          "wins_added": 2
+        },
+        {
+          "about": false,
+          "chance": 8.3,
+          "game": "win",
+          "median": "below",
+          "playoff": 59,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 14.0,
+          "game": "loss",
+          "median": "above",
+          "playoff": 62,
+          "wins_added": 1
+        },
+        {
+          "about": false,
+          "chance": 43.5,
+          "game": "loss",
+          "median": "below",
+          "playoff": 38,
+          "wins_added": 0
+        }
+      ],
+      "root_for": [
+        {
+          "about": false,
+          "loser": 12,
+          "playoff": 48,
+          "reason": "1 win behind you",
+          "winner": 7
+        },
+        {
+          "about": false,
+          "loser": 1,
+          "playoff": 45,
+          "reason": "1 win ahead of you",
+          "winner": 2
+        }
+      ],
+      "week": 14
+    }
+  ],
+  "weeks_left": 4,
+  "wins_left": 8,
+  "you": 6
+}

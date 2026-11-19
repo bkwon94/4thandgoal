@@ -1,0 +1,79 @@
+$ jq '.names["6"]' clients/cpc/published/2026/week-10/sim.json
+"Bo Girds"
+[exit 0]
+
+$ jq '.pages["6"] | {you, playoff, record, weeks_left, wins_left, need, sentence, ladder}' clients/cpc/published/2026/week-10/sim.json
+{
+  "you": 6,
+  "playoff": 58,
+  "record": [
+    11,
+    9
+  ],
+  "weeks_left": 4,
+  "wins_left": 8,
+  "need": 5,
+  "sentence": "Win 5 of the 8 left and you're in.",
+  "ladder": [
+    {
+      "more_wins": 0,
+      "playoff": 1,
+      "chance": 2.6,
+      "about": true
+    },
+    {
+      "more_wins": 1,
+      "playoff": 1,
+      "chance": 6.5,
+      "about": false
+    },
+    {
+      "more_wins": 2,
+      "playoff": 3,
+      "chance": 14.5,
+      "about": false
+    },
+    {
+      "more_wins": 3,
+      "playoff": 26,
+      "chance": 17.3,
+      "about": false
+    },
+    {
+      "more_wins": 4,
+      "playoff": 75,
+      "chance": 22.1,
+      "about": false
+    },
+    {
+      "more_wins": 5,
+      "playoff": 99,
+      "chance": 16.1,
+      "about": false
+    },
+    {
+      "more_wins": 6,
+      "playoff": 99,
+      "chance": 13.4,
+      "about": false
+    },
+    {
+      "more_wins": 7,
+      "playoff": 99,
+      "chance": 5.3,
+      "about": false
+    },
+    {
+      "more_wins": 8,
+      "playoff": 99,
+      "chance": 2.1,
+      "about": true
+    }
+  ]
+}
+[exit 0]
+
+$ jq -r '.pages["6"].ladder | map(select(.playoff >= 90)) | min_by(.more_wins) | "smallest count with odds of 90 % or more: \(.more_wins) more wins, odds \(.playoff) %"' clients/cpc/published/2026/week-10/sim.json
+smallest count with odds of 90 % or more: 5 more wins, odds 99 %
+[exit 0]
+

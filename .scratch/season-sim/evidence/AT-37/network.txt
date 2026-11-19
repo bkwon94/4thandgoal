@@ -1,0 +1,8 @@
+request off the static server: GET https://gc.zgo.at/count.js
+request off the static server: GET http://localhost:8080/clients/cpc/eggs/board
+tapped Wk 12
+tapped Wk 13
+tapped Wk 14
+tapped Playoffs
+tapped Wk 11
+requests in all: 17; requests that name what-if: see lines above (none means no such line)

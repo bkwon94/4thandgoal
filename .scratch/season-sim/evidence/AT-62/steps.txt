@@ -1,0 +1,2 @@
+Script: at62.mjs in this folder, from the run of ticket 11 on the cpc and norcal exports.
+at62.txt holds the search of the built HTML and the source files. at62-rendered.txt holds the rendered text of the sim page, the replay, the Sim tile, and the Announcement of each client, and the hits of each banned word.

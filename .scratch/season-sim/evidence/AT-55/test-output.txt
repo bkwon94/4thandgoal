@@ -1,0 +1,4 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   AT-55 a dismiss hides it on a reload
+observed true   AT-55 the link opens /sim/2026/
+observed true   AT-55 a press of the link hides it on a reload

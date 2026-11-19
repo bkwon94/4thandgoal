@@ -1,0 +1,6 @@
+before the tap, header: Bo Girds | 11-9 · 4 weeks left | 58% | PLAYOFF ODDS | Win 5 of the 8 left and you're in. | Game wins and median wins both count. Tap for all.
+before the tap, root-for: If you lose, you drop to 48% | 3 games
+after the tap, header: Bo Girds | 11-9 · 4 weeks left | 86% | PLAYOFF ODDS | Win 3 of the 6 left and you're in. | Game wins and median wins both count. Tap for all. | What-if: Wk 11 win, beat median | Reset
+after the tap, current week item: Wk 12
+after the tap, set line: What-if: Wk 11 win, beat median | Reset
+after the tap, root-for: If you lose, you drop to 71% | 3 games

@@ -1,0 +1,14 @@
+$ curl -sS -i -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @week-3.json
+HTTP/1.1 422 Unprocessable Entity
+date: Thu, 19 Nov 2026 03:00:25 GMT
+server: uvicorn
+content-length: 49
+content-type: application/json
+vary: Origin
+
+{"detail":"week 3 is not a week left of the sim"}[exit 0]
+
+$ cat week-3.json
+{"you": 6, "set": [{"week": 3, "game": "win", "median": "above"}]}
+[exit 0]
+

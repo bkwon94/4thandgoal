@@ -1,0 +1,10 @@
+ladder-390x660-light.png (view): no overlap, no cover, no side scroll
+after-tap-390x660-light.png (view): no overlap, no cover, no side scroll
+ladder-390x660-dark.png (view): no overlap, no cover, no side scroll
+after-tap-390x660-dark.png (view): no overlap, no cover, no side scroll
+ladder-810x980-light.png (view): 1 issues: overlap "Clear" / "Playoff race"
+ladder-810x980-dark.png (view): 1 issues: overlap "Clear" / "Playoff race"
+ladder-1080x740-light.png (view): no overlap, no cover, no side scroll
+ladder-1080x740-dark.png (view): no overlap, no cover, no side scroll
+ladder-1280x800-light.png (view): no overlap, no cover, no side scroll
+ladder-1280x800-dark.png (view): no overlap, no cover, no side scroll

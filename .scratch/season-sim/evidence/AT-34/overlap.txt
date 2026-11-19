@@ -1,0 +1,4 @@
+before-reset-390x660-light.png (full page): no overlap, no cover, no side scroll
+after-reset-390x660-light.png (full page): no overlap, no cover, no side scroll
+before-reset-390x660-dark.png (full page): no overlap, no cover, no side scroll
+after-reset-390x660-dark.png (full page): no overlap, no cover, no side scroll

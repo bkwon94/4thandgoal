@@ -1,0 +1,2 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   AT-59 no Announcement on 2026-12-02

@@ -1,0 +1,108 @@
+$ date -u +%H:%M:%S; for n in $(seq 1 31); do curl -sS -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @week-3.json -o /dev/null -w "what-if $n status %{http_code}\n"; done; date -u +%H:%M:%S
+03:03:50
+what-if 1 status 422
+what-if 2 status 422
+what-if 3 status 422
+what-if 4 status 422
+what-if 5 status 422
+what-if 6 status 422
+what-if 7 status 422
+what-if 8 status 422
+what-if 9 status 422
+what-if 10 status 422
+what-if 11 status 422
+what-if 12 status 422
+what-if 13 status 422
+what-if 14 status 422
+what-if 15 status 422
+what-if 16 status 422
+what-if 17 status 422
+what-if 18 status 422
+what-if 19 status 422
+what-if 20 status 422
+what-if 21 status 422
+what-if 22 status 422
+what-if 23 status 422
+what-if 24 status 422
+what-if 25 status 422
+what-if 26 status 422
+what-if 27 status 422
+what-if 28 status 422
+what-if 29 status 422
+what-if 30 status 422
+what-if 31 status 429
+03:03:51
+[exit 0]
+
+$ curl -sS -i -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @win-above.json
+HTTP/1.1 429 Too Many Requests
+date: Thu, 19 Nov 2026 03:03:50 GMT
+server: uvicorn
+retry-after: 59
+content-length: 48
+content-type: application/json
+vary: Origin
+
+{"detail":"Too many requests. Try again later."}[exit 0]
+
+$ curl -sS -i http://127.0.0.1:8791/health
+HTTP/1.1 200 OK
+date: Thu, 19 Nov 2026 03:03:50 GMT
+server: uvicorn
+content-length: 15
+content-type: application/json
+vary: Origin
+
+{"status":"ok"}[exit 0]
+
+$ curl -sS -o teams.json -w 'analyzer /clients/cpc/teams status %{http_code} time %{time_total}s\n' 'http://127.0.0.1:8791/clients/cpc/teams?season=2026' -H 'X-League-Passphrase: localtest'; jq -c 'if type=="array" then {teams: length} else keys end' teams.json; date -u +%H:%M:%S
+analyzer /clients/cpc/teams status 200 time 4.554583s
+["teams"]
+03:03:55
+[exit 0]
+
+$ cat week-3.json
+{"you": 6, "set": [{"week": 3, "game": "win", "median": "above"}]}
+[exit 0]
+
+$ grep -n 'WHAT_IFS_PER_MINUTE =' /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/apps/api/src/cornerstone_api/what_if.py
+24:WHAT_IFS_PER_MINUTE = 30
+[exit 0]
+
+$ sed -n '61,$p' /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/api-8791.log | grep -v 'httpx: HTTP Request' | cut -c1-200
+INFO:     127.0.0.1:49664 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49665 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49666 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49667 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49668 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49669 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49670 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49671 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49672 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49673 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49674 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49675 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49676 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49677 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49678 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49679 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49680 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49681 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49682 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49683 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49684 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49685 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49686 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49687 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49688 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49689 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49690 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49691 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49692 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49693 - "POST /clients/cpc/sim/what-if HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:49694 - "POST /clients/cpc/sim/what-if HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:49695 - "POST /clients/cpc/sim/what-if HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:49696 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49697 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+[exit 0]
+

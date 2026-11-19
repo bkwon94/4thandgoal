@@ -1,0 +1,28 @@
+$ cd apps/pipeline && make sim-fixtures
+# Run in a detached worktree at 42644789. Recorded 2026-11-19T02:58:21Z.
+uv run --exact --package cornerstone cornerstone sim-fixtures --client cpc --season 2026 --week 10 --out ../../packages/sim/site/fixtures
+../../packages/sim/site/fixtures/week-sim-playoffs.json: week 14, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+../../packages/sim/site/fixtures/week-sim-round-2.json: week 15, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+../../packages/sim/site/fixtures/week-sim-final.json: week 17, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion Lil Fridge; run 1 champion Lil Fridge
+[exit 0]
+
+$ git status --short -- packages/sim/site/fixtures && echo 'git status shows no change: the fresh fixtures equal the committed fixtures byte for byte'
+git status shows no change: the fresh fixtures equal the committed fixtures byte for byte
+[exit 0]
+
+$ jq '{week, played: (.played|keys), fact}' packages/sim/site/fixtures/week-sim-final.json
+{
+  "week": 17,
+  "played": [
+    "15",
+    "16",
+    "17"
+  ],
+  "fact": "Lil Fridge is the 2026 champion"
+}
+[exit 0]
+
+$ jq -r '"champion: \(.names[(.pages["6"].playoffs.champion|tostring)])"' packages/sim/site/fixtures/week-sim-final.json
+champion: Lil Fridge
+[exit 0]
+

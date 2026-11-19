@@ -1,0 +1,52 @@
+$ jq '.pages["6"].weeks[] | select(.week == 11) | {week, opponent, results}' clients/cpc/published/2026/week-10/sim.json
+{
+  "week": 11,
+  "opponent": 9,
+  "results": [
+    {
+      "game": "win",
+      "median": "above",
+      "wins_added": 2,
+      "playoff": 86,
+      "chance": 24.1,
+      "about": false
+    },
+    {
+      "game": "win",
+      "median": "below",
+      "wins_added": 1,
+      "playoff": 65,
+      "chance": 5.2,
+      "about": false
+    },
+    {
+      "game": "loss",
+      "median": "above",
+      "wins_added": 1,
+      "playoff": 67,
+      "chance": 19.7,
+      "about": false
+    },
+    {
+      "game": "loss",
+      "median": "below",
+      "wins_added": 0,
+      "playoff": 41,
+      "chance": 51.0,
+      "about": false
+    }
+  ]
+}
+[exit 0]
+
+$ jq -r --argjson o "$(jq '.pages["6"].weeks[] | select(.week==11) | .opponent' clients/cpc/published/2026/week-10/sim.json)" '.names[($o|tostring)]' clients/cpc/published/2026/week-10/sim.json
+Maye d'force B with U
+[exit 0]
+
+$ jq -r '.pages["6"].weeks[] | select(.week == 11) | .results[] | "\(.game) \(.median): wins_added \(.wins_added), odds after \(.playoff) %, chance \(.chance) %"' clients/cpc/published/2026/week-10/sim.json
+win above: wins_added 2, odds after 86 %, chance 24.1 %
+win below: wins_added 1, odds after 65 %, chance 5.2 %
+loss above: wins_added 1, odds after 67 %, chance 19.7 %
+loss below: wins_added 0, odds after 41 %, chance 51.0 %
+[exit 0]
+

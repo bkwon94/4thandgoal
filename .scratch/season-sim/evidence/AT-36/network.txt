@@ -1,0 +1,8 @@
+light +238 ms start GET http://localhost:8080/clients/cpc/eggs/board 
+light +272 ms failed "Could not connect to the server." http://localhost:8080/clients/cpc/eggs/board
+light +2144 ms start POST http://localhost:8080/clients/cpc/sim/what-if {"you":6,"set":[{"week":11,"game":"win","median":"above"}]}
+light +2159 ms failed "Could not connect to the server." http://localhost:8080/clients/cpc/sim/what-if
+dark +229 ms start GET http://localhost:8080/clients/cpc/eggs/board 
+dark +259 ms failed "Could not connect to the server." http://localhost:8080/clients/cpc/eggs/board
+dark +2124 ms start POST http://localhost:8080/clients/cpc/sim/what-if {"you":6,"set":[{"week":11,"game":"win","median":"above"}]}
+dark +2146 ms failed "Could not connect to the server." http://localhost:8080/clients/cpc/sim/what-if

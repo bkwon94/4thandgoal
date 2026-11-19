@@ -1,0 +1,16 @@
+AT-40/at40-1-games-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-810x980-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-810x980-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-810x980-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-810x980-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-1080x740-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-1080x740-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-1080x740-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-1080x740-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-1280x800-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-1280x800-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-1-games-1280x800-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-40/at40-2-standings-1280x800-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
