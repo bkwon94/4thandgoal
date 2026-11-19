@@ -339,11 +339,11 @@ def test_trade_ideas_run_in_a_client_with_the_finder_off_and_give_the_find_docum
 
 
 def test_the_steps_of_trade_ideas_count_the_offers_before_the_whole_answer(api):
-    # AT-28: plain steps such as "Weighed 6 offers" show before the Answer.
+    # AT-28: plain steps such as "Built 42 offers" show before the Answer.
     parts = _parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS))
     lines = [step["line"] for step in _of(parts, "data-step")]
-    assert any(line.startswith("Checked 11 teams") for line in lines)
-    assert any(line.startswith("Weighed ") and line.endswith(" offers") for line in lines)
+    assert "Read 11 teams" in lines
+    assert any(line.startswith("Built ") and line.endswith(" offers") for line in lines)
     kinds = [part["type"] for part in parts]
     assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
 
@@ -577,9 +577,10 @@ def live_then_done(steps: list[dict]) -> list[str]:
 def test_each_stage_of_trade_ideas_sends_a_live_line_then_its_done_line(api):
     steps = _of(_ideas(api), "data-step")
     assert [step["line"] for step in steps if step["live"]] == [
-        "Checking 11 teams for a fit", "Building offers", "Weighing the offers", "Picking the best offers"]
+        "Reading every team", "Looking for players who fit", "Building offers", "Making a shortlist",
+        "Picking the best 3"]
     done = live_then_done(steps)
-    assert done[0] == "Checked 11 teams for a fit" and done[-1] == "Picked the best 3"
+    assert done[0] == "Read 11 teams" and done[-1] == "Picked the best 3"
 
 
 def test_each_stage_of_a_trade_check_sends_a_live_line_then_its_done_line(api):
@@ -680,7 +681,8 @@ def test_a_trade_check_sends_the_trade_card_with_the_lean_the_case_and_the_point
 
 
 def test_trade_ideas_send_one_trade_card_with_a_row_per_offer(api):
-    # AT-33: one card, one offer per pick, each with its partner, its headline as the gist, and the points of each side.
+    # AT-33: one card, one offer per pick, each with its partner, the swap as the gist, the Lean and the Case of the
+    # pick, and the points of each side.
     [answer] = _of(_parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS)), "data-answer")
     document, block = answer["document"], answer["block"]
     assert block["kind"] == "trade"
@@ -688,12 +690,57 @@ def test_trade_ideas_send_one_trade_card_with_a_row_per_offer(api):
     for offer, trade in zip(block["offers"], document["trades"], strict=True):
         partner = next(side for side in trade["sides"] if side["roster_id"] != LIL_FRIDGE)
         assert offer["partner"] == partner["team"]
-        assert offer["gist"] == trade["headline"]
-        assert offer["lean"] is None and offer["bullets"] == trade["bullets"][:2]
+        gives = ", ".join(p["name"] for p in trade["sides"][0]["gives"])
+        assert offer["gist"].startswith(f"{gives} for ")
+        assert offer["lean"] == trade["lean"] and offer["case"] == trade["case"]
+        assert offer["bullets"] == trade["bullets"][:2]
         assert offer["sides"][0]["yours"] and offer["sides"][0]["roster_id"] == LIL_FRIDGE
         for side in offer["sides"]:
             assert side["gets"] and side["total"] == round(sum(p["points"] for p in side["gets"]), 2)
             assert all(p["points"] > 0 for p in side["gets"])
+
+
+# The find stream of the analyzer page: the same stream as trade ideas, for the body of the plain find route.
+FIND_STREAM = "/clients/cpc/find-stream"
+
+
+def _find_stream(api, **body):
+    return _parts(api.post(FIND_STREAM, json={"season": 2026, "asker": BO_GIRDS, **body}, headers=HEADERS))
+
+
+def test_the_find_stream_sends_one_step_line_as_each_of_the_five_steps_ends(api):
+    # AT-41 and ticket 06: "Read 11 teams", "Found 18 players who fit", "Built 42 offers", "Made a shortlist of 9",
+    # "Picked the best 3".
+    parts = _find_stream(api)
+    done = live_then_done(_of(parts, "data-step"))
+    assert done[0] == "Read 11 teams"
+    assert re.fullmatch(r"Found \d+ players who fit", done[1]), done
+    assert re.fullmatch(r"Built \d+ offers", done[2]), done
+    assert re.fullmatch(r"Made a shortlist of \d+", done[3]), done
+    assert done[4:] == ["Picked the best 3"]
+    kinds = [part["type"] for part in parts]
+    assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
+
+
+def test_the_step_lines_of_a_find_with_one_partner_name_the_team_it_read(api):
+    done = live_then_done(_of(_find_stream(api, partner=LIL_FRIDGE), "data-step"))
+    assert done[0] == "Read Lil Fridge"
+
+
+def test_the_step_lines_of_the_find_stream_name_no_inner_tool(api):
+    lines = [step["line"].lower() for step in _of(_find_stream(api), "data-step")]
+    assert lines and not [line for line in lines for word in INNER_NAMES if word in line]
+
+
+def test_the_find_stream_sends_the_lean_and_the_case_with_each_trade(api):
+    [answer] = _of(_find_stream(api), "data-answer")
+    assert answer["kind"] == "find"
+    trades = answer["document"]["trades"]
+    assert len(trades) == 3
+    for trade in trades:
+        assert trade["lean"] in ("Send it", "Lean yes", "Gut call")
+        assert trade["case"] == test_api.PICK_CASE
+        assert trade["bullets"]
 
 
 # The time after which the client of AT-48 cuts the stream, and the most time that a log line may take to show.
