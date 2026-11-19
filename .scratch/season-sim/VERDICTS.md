@@ -1,5 +1,5 @@
-ACCEPTANCE.md: 59c6c5a2eee218dc0aee49288a0fab7dd762891c
-EVIDENCE.md: b2181c9eb4d188895108787ca6868cf20a75b746
+ACCEPTANCE.md: 0d3300fd4731af006b8cb6420dc428e43266d788
+EVIDENCE.md: c27d6a46026e1154bc74a3d310e7976479c7ec5b
 
 Test verdicts
 AT-1: PASS
@@ -62,9 +62,9 @@ AT-57: PASS
 AT-58: PASS
 AT-59: PASS
 AT-60: PASS
-AT-61: BLOCKED On the Then line "the rows and the odds show at once", sample-0s-390x660-light.png and sample-0s-390x660-dark.png show the home page with no sheet, no rows, and no odds, but samples.txt gives the rows at opacity 1.00 at t=0.01 s.
+AT-61: PASS
 AT-62: PASS
-AT-63: BLOCKED On the Then line "each What-if number comes from the API", chip.txt shows that the What-if number of the Announcement chip comes from the published sim.json file at build time, and api.txt shows only that the file value equals one local API answer.
+AT-63: PASS
 AT-64: PASS
 AT-65: PASS
 AT-66: PASS
