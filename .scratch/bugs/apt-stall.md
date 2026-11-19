@@ -1,7 +1,7 @@
 # The apt step of site-browser stalls on a slow mirror
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-apt-stall`.
 Source: the session of 2026-11-19. PR #80 failed `site-browser` because the apt step took 18.7 min.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -36,3 +36,7 @@ Smoke: none, no site or API change.
 ## Comments
 
 - Run 44626873845 of PR #80: "Fetched 140 MB in 17min 59s (130 kB/s)" in the step "Install the system packages of Chromium and WebKit", so the 25 min job limit stopped the browser tests. Run 44599815183 took 15.1 min in the same step. Other runs took under 1 min.
+- Closes with the squash merge of the PR of `bug-apt-stall`. Commits: `60737881`. Date: 2026-11-19.
+- The rule went red on 3 steps at `ec4d4c6e` and green at `60737881`; `make check-fast BASE=main` passes, with 217 script tests.
+- Later: the first CI run of the PR is a cache miss that saves the .deb files, and the second run shows the hit; `apt-get update` still reads the package lists from the mirror.
+- Read 3 files: AGENTS.md, .github/workflows/check.yml, .claude/plugin/skills/quick/format.md; the count of the builder subagent is not in this line.
