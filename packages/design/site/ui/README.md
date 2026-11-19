@@ -3,8 +3,7 @@
 ## Knows
 
 - The button, the collapsible, the dialog, the input, the label, the popover, the segmented control, the select, the sheet, the stop card, and the toggle group. Most of them wrap a Base UI primitive and add the site styles.
-- The sheet wraps the ui-sdk `Drawer`: root, trigger, backdrop, content, grip, title, and close. `sheet.tsx` imports `@ui-sdk`.
-- The content of a top or bottom sheet has a bleed past its anchored edge. A drag past the open height stretches the sheet a little, and the bleed keeps that edge on the screen.
+- The sheet wraps the ui-sdk `Drawer`: root, trigger, backdrop, content, grip, title, and close. `sheet.tsx` imports `@ui-sdk`. The content of a top or bottom sheet has a bleed past its anchored edge. A drag past the open height stretches the sheet a little, and the bleed keeps that edge on the screen.
 - The pending button wraps the ui-sdk `Button`. `pending-button.tsx` is the second file that imports `@ui-sdk`. It has its own name because `button.tsx` is the shadcn button.
 - The toggle group wraps the ui-sdk `Toggle` and `ToggleGroup`. `toggle-group.tsx` is the third file that imports `@ui-sdk`.
 - The segmented control wraps the ui-sdk `SegmentedControl`: root, sliding indicator, and items. `segmented-control.tsx` imports `@ui-sdk`. The items split the full width in equal parts, the pill slides in 250 ms with the brand ease-out, and `tone="dark"` sets it on a hero.
@@ -20,7 +19,6 @@ None.
 ## Does not do
 
 - It knows no league term. A component that shows a team, a player, or a week is a part in `site/parts/`, or it lives in its page folder.
-- It holds no state of the site.
-- It holds no `cn` helper. `site/lib/utils.ts` holds it.
+- It holds no state of the site and no `cn` helper. `site/lib/utils.ts` holds the helper.
 - No file outside this folder imports `@ui-sdk`. The rule test `apps/site/src/ui-sdk-rule.test.ts` fails on one.
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).

@@ -15,11 +15,9 @@
 
 ## Ports
 
-- The site API, at `<url>/clients/<slug>/teams`, `/analyze`, and `/find`.
-- Local storage and session storage, through `passphrase.ts` and `teams-store.ts`.
+- The site API, at `<url>/clients/<slug>/teams`, `/analyze`, and `/find`. Local storage and session storage, through `passphrase.ts` and `teams-store.ts`.
 
 ## Does not do
 
 - It reads no env and no config, and it imports no app. The app builds the target from its config.
-- It owns no shape. The pydantic models of the analyzer own each answer, and a schema here follows them (ADR 0013).
-- It holds no component and returns no markup. `../form/` holds the parts.
+- It owns no shape. The pydantic models of the analyzer own each answer, and a schema here follows them (ADR 0013). It holds no component and returns no markup. `../form/` holds the parts.
