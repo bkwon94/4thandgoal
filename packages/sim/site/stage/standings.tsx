@@ -19,6 +19,12 @@ export const FLIP: Transition = { type: "spring", bounce: 0, duration: 0.55 };
 export const FLIGHT: Transition = { type: "spring", bounce: 0.12, duration: 0.7 };
 const SWAP: Transition = { duration: 0.2, ease: EASE_OUT };
 
+/* The cross-fade under reduced motion, on the motion tokens of transitions-dev: the old state leaves on
+   --duration-quick (150 ms) and the new state comes in on --duration-fast (250 ms), both on --ease-in-out. A part that
+   would move or step to a new state fades out, changes, and fades in, so the new place shows only through a fade. */
+export const FADE_OUT: Transition = { duration: 0.15, ease: "easeInOut" };
+export const FADE_IN: Transition = { duration: 0.25, ease: "easeInOut" };
+
 export const MONO = "font-mono tabular-nums";
 export const EYEBROW = "font-mono text-meta leading-tight font-bold tracking-caps uppercase";
 
@@ -82,7 +88,8 @@ function ResultFlash({ mark, week, show }: { mark: Mark | null; week: number | n
 }
 
 /* A zone rule between two rows: a dashed rule under the bye seeds, and the red playoff line under the last seed.
-   It sits in the gap between rows and carries no label, so it never covers a row. Under reduced motion it jumps. */
+   It sits in the gap between rows and carries no label, so it never covers a row. Under reduced motion it is a plain
+   box, and a new place of the rule comes only with a new list, which fades in. */
 function ZoneRule({ at, rows, kind, off }: { at: number; rows: number; kind: "bye" | "playoff"; off: boolean }) {
   const top = `${(at / rows) * 100}%`;
   const className = cn(
@@ -164,9 +171,9 @@ function FoldLine({ item }: { item: Extract<Item, { kind: "fold" }> }) {
 }
 
 /* The live standings in the Race style: one row per team near the playoff line, which moves to its new place each
-   week with a FLIP motion. Under reduced motion, a row takes its new place at once. At the cut, the teams under the
-   playoff line dim. Each team carries a shared id, so each seed flies from its row into the bracket. Each row is at
-   most one touch target high, so a tall stage keeps the rows together at the top. */
+   week with a FLIP motion. Under reduced motion, the list fades out, takes the new order, and fades in. At the cut,
+   the teams under the playoff line dim. Each team carries a shared id, so each seed flies from its row into the
+   bracket. Each row is at most one touch target high, so a tall stage keeps the rows together at the top. */
 export function Standings({
   rows,
   marks,
@@ -192,12 +199,13 @@ export function Standings({
   const items = itemsOf(rows, spots, byes, yourTeam, cut);
   const count = items.length;
   const fade = off ? { duration: 0.2 } : { duration: 0.25, ease: EASE_OUT };
-  return (
-    <ol
-      aria-label="Standings"
-      className="relative m-0 grid min-h-0 w-full flex-1 list-none grid-cols-1 p-0"
-      style={{ gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`, maxHeight: `calc(${count} * var(--spacing-touch))` }}
-    >
+  const list = {
+    "aria-label": "Standings",
+    className: "relative m-0 grid min-h-0 w-full flex-1 list-none grid-cols-1 p-0",
+    style: { gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`, maxHeight: `calc(${count} * var(--spacing-touch))` },
+  };
+  const body = (
+    <>
       {byes > 0 && <ZoneRule at={itemsAbove(items, byes)} rows={count} kind="bye" off={off} />}
       <ZoneRule at={itemsAbove(items, spots)} rows={count} kind="playoff" off={off} />
       <AnimatePresence initial={false} mode="popLayout">
@@ -262,7 +270,27 @@ export function Standings({
           );
         })}
       </AnimatePresence>
-    </ol>
+    </>
+  );
+  if (!off) return <ol {...list}>{body}</ol>;
+  // Under reduced motion, each new order, and each new place of a rule, is a new list. The old list fades out before
+  // the new one fades in, so no row and no rule jumps to its new place at full opacity.
+  const order = items
+    .map((item) => (item.kind === "row" ? `${item.row.roster_id}:${item.row.place}` : `${item.side}:${item.rows.length}`))
+    .join(",");
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.ol
+        key={`${order}${cut ? ":cut" : ""}`}
+        {...list}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: FADE_OUT }}
+        transition={FADE_IN}
+      >
+        {body}
+      </motion.ol>
+    </AnimatePresence>
   );
 }
 

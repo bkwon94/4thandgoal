@@ -11,7 +11,7 @@
 - A tab of a screen that has played goes back to it. A tab of a screen not yet played is off.
 - The pick in `pick.ts`: a stored run comes up with a chance in proportion to its weight, so the replay of a What-if follows its set results.
 - The timeline in `steps.ts`: each step and its hold.
-- Under reduced motion, each change is a fade. No part moves.
+- Under reduced motion, each change is a fade. No part moves. A new order of the standings, a tab that turns on, and the swap of the controls at the end each fade out the old state and fade in the new one.
 
 ## Ports
 

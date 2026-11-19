@@ -15,7 +15,7 @@ import { replaySeason, type ReplaySeason } from "../replay/season";
 import type { WeekSim } from "../schema/sim-types";
 import { BracketScreen, ChampionScreen } from "./bracket";
 import { pickRun } from "./pick";
-import { EYEBROW, Standings, SwapText, WeekGames, ZoneKey } from "./standings";
+import { EYEBROW, FADE_IN, FADE_OUT, Standings, SwapText, WeekGames, ZoneKey } from "./standings";
 import { marksOf, stepsOf, type Step } from "./steps";
 
 /* What the reader asked to play: the rest of the season, or one regular week. */
@@ -46,7 +46,8 @@ const CONTROL = cn(
 const QUIET = "border border-rule-dark text-on-dark hover-fine:bg-chip-dark";
 
 /* The tabs of the header: the screen or the part on the stage takes the red mark, which slides between them. A tab of a
-   screen that has played goes back to it. A tab of a screen not yet played stays off and looks off. */
+   screen that has played goes back to it. A tab of a screen not yet played stays off and looks off. Under reduced
+   motion, a tab fades from off to on, and the red mark fades in on its tab. */
 function Tabs({
   items,
   at,
@@ -67,8 +68,13 @@ function Tabs({
     <ol aria-label={label} className="m-0 flex min-w-0 list-none items-center gap-sp-1 p-0">
       {items.map((s, i) => (
         <li key={s.id}>
-          <button
+          {/* The reduced-motion rule of the site stops the CSS transition of the opacity, so under reduced motion the
+              fade from off to on is an inline motion of its own. */}
+          <motion.button
             type="button"
+            initial={false}
+            animate={off ? { opacity: open[i] ? 1 : 0.4 } : undefined}
+            transition={FADE_IN}
             aria-current={i === at ? "step" : undefined}
             disabled={!open[i]}
             onClick={() => onGo(i)}
@@ -82,11 +88,13 @@ function Tabs({
             {i === at && (
               <motion.span
                 layoutId={off ? undefined : "stage-mark"}
-                transition={{ type: "spring", bounce: 0, duration: 0.35 }}
+                initial={off ? { opacity: 0 } : undefined}
+                animate={off ? { opacity: 1 } : undefined}
+                transition={off ? FADE_IN : { type: "spring", bounce: 0, duration: 0.35 }}
                 className="absolute inset-x-sp-2 bottom-sp-2 h-0.5 rounded-report bg-accent"
               />
             )}
-          </button>
+          </motion.button>
         </li>
       ))}
     </ol>
@@ -282,6 +290,34 @@ function Player({
           transition: { duration: 0.4, ease: EASE_OUT, delay: 0.1 },
         };
 
+  // The controls of the end, or of the replay while it plays.
+  const controls = ended ? (
+    <>
+      <button type="button" onClick={onAgain} className={cn(CONTROL, "bg-accent text-on-dark hover-fine:opacity-90")}>
+        <RotateCcw aria-hidden />
+        Sim again
+      </button>
+      <button type="button" onClick={onClose} className={cn(CONTROL, QUIET)}>
+        Done
+      </button>
+    </>
+  ) : (
+    <>
+      <button type="button" aria-label={playing ? "Pause" : "Play"} onClick={() => setPlaying((now) => !now)} className={cn(CONTROL, QUIET, "px-0")}>
+        {playing ? <Pause aria-hidden /> : <Play aria-hidden />}
+      </button>
+      <button type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
+        <SkipForward aria-hidden />
+        Skip
+      </button>
+      {/* During the replay, "Sim again" stays quiet. It takes the brand red only at the end, where it is the next step. */}
+      <button type="button" onClick={onAgain} className={cn(CONTROL, QUIET, "ml-auto")}>
+        <RotateCcw aria-hidden />
+        Sim again
+      </button>
+    </>
+  );
+
   return (
     <>
       <p role="status" className="sr-only">
@@ -307,31 +343,23 @@ function Player({
         aria-label="Replay controls"
         className="flex flex-none items-center gap-sp-2 pt-sp-3 pb-[max(var(--spacing-sp-3),var(--spacing-door-safe))]"
       >
-        {ended ? (
-          <>
-            <button type="button" onClick={onAgain} className={cn(CONTROL, "bg-accent text-on-dark hover-fine:opacity-90")}>
-              <RotateCcw aria-hidden />
-              Sim again
-            </button>
-            <button type="button" onClick={onClose} className={cn(CONTROL, QUIET)}>
-              Done
-            </button>
-          </>
+        {off ? (
+          // Under reduced motion, the end swaps the controls through a fade: the old set fades out before the new set
+          // fades in, so no control jumps to a new place and none takes the node of another.
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={ended ? "end" : "play"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: FADE_OUT }}
+              transition={FADE_IN}
+              className="flex min-w-0 flex-1 items-center gap-sp-2"
+            >
+              {controls}
+            </motion.div>
+          </AnimatePresence>
         ) : (
-          <>
-            <button type="button" aria-label={playing ? "Pause" : "Play"} onClick={() => setPlaying((now) => !now)} className={cn(CONTROL, QUIET, "px-0")}>
-              {playing ? <Pause aria-hidden /> : <Play aria-hidden />}
-            </button>
-            <button type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
-              <SkipForward aria-hidden />
-              Skip
-            </button>
-            {/* During the replay, "Sim again" stays quiet. It takes the brand red only at the end, where it is the next step. */}
-            <button type="button" onClick={onAgain} className={cn(CONTROL, QUIET, "ml-auto")}>
-              <RotateCcw aria-hidden />
-              Sim again
-            </button>
-          </>
+          controls
         )}
       </div>
     </>
