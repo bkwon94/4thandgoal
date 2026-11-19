@@ -25,9 +25,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 
 - No Deadline Board. The whole Deadline banner opens the Trade Wire in a sheet, with "Grade a trade" and "Find a trade" at its top. Week 11 trades only, a 5 s cache and a 10 s poll. Copy says "trade deadline", never "Lock". `decisions/08-prototype-event-look.md`.
 
+- The Spares tree lists a player when his team has a backup above the line behind him who can play now: 117 of 132 pairs. `decisions/12-spec-spares-tree-reading.md`.
+
 ## NOT YET SPECIFIED
 
-- Which reading of the code list of the Spares tree does the Finder use? `decisions/12-spec-spares-tree-reading.md`.
 
 ## OUT OF SCOPE
 
