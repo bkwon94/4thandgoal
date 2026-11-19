@@ -21,10 +21,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - One Jev tree, the Spares tree: per-player Nouls "would he start over the weak starter?", chart values as facts, code decides. It replaces the Partner filter questions and feeds the Deadline board. The backtest set is Brian's marks on one week 11 run plus each later bad trade. A change breaks no mark, never lowers the count, and never fits thresholds or names players. `decisions/05-grill-jev-trees-and-backtest.md`.
 - The polish fixes two issues from Brian's phone walk: the cause of a failed first call of a trade Topic, with one log line per failed stream, and the bad trade ideas (Walker for Mahomes, Flowers for Goff), which are the first two Backtest marks. `decisions/06-grill-trade-tools-polish-list.md`.
 - No step asked what the asker gives up. The Spares tree runs on the give side, with a depth count of players who can play now, and the Shortlist gets one gain Noul per side with lineup points as facts. A clear no drops the offer. The target split stays out. `decisions/09-research-qb-targets.md`.
+- The analyzer hero gets a switch, "Grade a trade · Find a trade", and the Finder takes the Stage look. Its wait uses the same `StageLines` as the grade, fed by the real steps, plus team avatars that light up. `decisions/07-prototype-finder-look.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the Finder look like, and how does it show progress while it runs? `decisions/07-prototype-finder-look.md`.
 - What do the Deadline banner, the deadline look, the deadline board, and the feed look like? `decisions/08-prototype-event-look.md`.
 
 ## OUT OF SCOPE

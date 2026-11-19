@@ -6,7 +6,7 @@ Map: `.scratch/deadline-week/MAP.md`.
 
 **Blocked by:** 02, 04
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,14 @@ Brian says the UI of the Finder is not great. It should match the analyzer stage
 
 ## Decision
 
-None yet.
+Brian chose on 2026-11-19, after four looks on the phone: A · Stage, B · Focus, C · Thread, and D · Deck. "Consistency is key." The prototype is on the branch `deadline-week-07-proto` at `2eaadb70`, in `apps/site/src/app/_routes/analyzer/finder-proto/`. It stays off `main` as the primary source.
+
+1. **One hero, with a switch.** The analyzer hero has a switch at its top: "Grade a trade · Find a trade". The Finder and the grade share one stage, so the Finder never sits below the form or above it. About half a day of build more than a Finder below the form.
+2. **The look of A · Stage.** The Finder takes the dark hero of the analyzer. The trades land as cards under the hero, all 3 in one list, so a manager can compare them.
+3. **One wait for both modes.** The Finder wait uses the same `StageLines` part as the grade (`stage-lines.tsx`): one line under the title, the same swap and timing. The Finder lines are its real steps from the stream, such as "4 of 5 · Making a shortlist". The grade lines stay as they are, because a grade is one call with no real steps.
+4. **The avatars.** The one extra part of the Finder wait: the avatars of the teams light up in turn as the teams are read.
+5. **The rest from the ticket.** The partner choice (one team or every team), the position chips `Any · RB · WR · TE · QB` that set `aim_position`, the Lean, a Case of up to 3 lines, folded Bullets, no headline, the empty line, and the error with Try Again. A tap opens the trade in the analyzer, already graded.
+
+Out: the dot path of B (a second wait pattern), the full-screen sheet of B, the thread of C (the front door is already a thread), and the deck of D (it hides 2 of 3 trades).
+
+The step lines name no Jev and no Advisor (`no-internal-names`): "Read 11 teams", "Found 18 players who fit", "Built 42 offers", "Made a shortlist of 9", "Picked the best 3".
