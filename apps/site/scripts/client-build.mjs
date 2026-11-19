@@ -177,8 +177,16 @@ const ROUTES = {
     },
   ],
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
-  // The sim has no page of its own. The report page mounts its replay.
-  sim: [],
+  // The sim page reads the newest week sim file, week-NN/sim.json. The season file of the midseason replay gives no route.
+  sim: [
+    {
+      path: "sim/[season]/page.tsx",
+      source: "@/app/_routes/sim/page",
+      exports: ["default", "generateStaticParams", "generateMetadata"],
+      dynamic: true,
+      needs: (published) => hasFile(published, (path) => /(^|[\\/])week-\d{2}[\\/]sim\.json$/.test(path)),
+    },
+  ],
   // The egg board renders in the browser from the API, so it needs no published file.
   eggs: [{ path: "eggs/page.tsx", source: "@/app/_routes/eggs/page", exports: ["default", "metadata"] }],
   midseason: [

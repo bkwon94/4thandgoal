@@ -10,13 +10,13 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-24 to AT-32, AT-37, AT-5
 
 **Status:** ready-for-agent
 
-- [ ] The `cpc` page with Bo Girds shows the header of AT-24, and the sentence opens the ladder of the file (AT-25).
-- [ ] The week switch has Wk 11 to Wk 14 and Playoffs, and each opens its week page (AT-26).
-- [ ] Week 11 in `cpc` shows four tiles against Maye d'force B with U (AT-27), and in `norcal` two tiles against The Mean Machine (AT-28).
-- [ ] The root-for card says "If you lose, you drop to X%", with "→ Y%" on each row (AT-29), opens from one row at 390x660, and shows in full at 1080x740 (AT-30).
-- [ ] "Maye d'force B with U" shows with no cut word in a root-for row at 390x660 (AT-31), and a flagged number reads "about X%" (AT-32).
-- [ ] The page makes no What-if call on load or on a switch of weeks (AT-37), and no site module draws a score (AT-63).
-- [ ] The only result tiles are those of Your team, and no grid lists every game (AT-65).
-- [ ] The menu has "Season sim", and it opens `/sim/2026/` (AT-50).
-- [ ] The site evidence set passes the overlap check at 390x660, 810x980, 1080x740, and 1280x800, light and dark.
-- [ ] `make check-fast` passes.
+- [x] The `cpc` page with Bo Girds shows the header of AT-24, and the sentence opens the ladder of the file (AT-25).
+- [x] The week switch has Wk 11 to Wk 14 and Playoffs, and each opens its week page (AT-26).
+- [x] Week 11 in `cpc` shows four tiles against Maye d'force B with U (AT-27), and in `norcal` two tiles against The Mean Machine (AT-28).
+- [x] The root-for card says "If you lose, you drop to X%", with "→ Y%" on each row (AT-29), opens from one row at 390x660, and shows in full at 1080x740 (AT-30).
+- [x] "Maye d'force B with U" shows with no cut word in a root-for row at 390x660 (AT-31), and a flagged number reads "about X%" (AT-32).
+- [x] The page makes no What-if call on load or on a switch of weeks (AT-37), and no site module draws a score (AT-63).
+- [x] The only result tiles are those of Your team, and no grid lists every game (AT-65).
+- [x] The menu has "Season sim", and it opens `/sim/2026/` (AT-50).
+- [x] The site evidence set passes the overlap check at 390x660, 810x980, 1080x740, and 1280x800, light and dark.
+- [x] `make check-fast` passes.
