@@ -76,6 +76,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
+  const sheet = useRef<HTMLDivElement>(null);
   // The step that a foot row asks to run once the sheet is closed.
   const afterClose = useRef<(() => void) | null>(null);
   const closeThen = (then: () => void) => {
@@ -102,6 +103,30 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
     return () => desktop.removeEventListener("change", closeOnDesktop);
   }, [open]);
 
+  // The Drawer springs a sheet to each new height of its content. On a sheet from the top that spring moves the top edge
+  // up by the growth and back down, so the top edge jumps while "Past weeks" opens or closes. Each later resize of the
+  // open sheet ends that spring at once, so the top edge stays still and only the bottom edge follows the list. The
+  // first call of the observer is its measure on open, which must not end the drop of the sheet, and a drag keeps its
+  // own motion.
+  useEffect(() => {
+    const el = sheet.current;
+    if (!open || !el) return;
+    let first = true;
+    const observer = new ResizeObserver(() => {
+      if (first) {
+        first = false;
+        return;
+      }
+      if (el.hasAttribute("data-dragging")) return;
+      for (const motion of el.getAnimations()) {
+        const frames = (motion.effect as KeyframeEffect | null)?.getKeyframes() ?? [];
+        if (frames.some((frame) => "translate" in frame)) motion.finish();
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [open]);
+
   // The modal sheet makes the page inert. The band stays usable, so its X closes the sheet.
   const band = () => {
     const header = button.current?.closest("header");
@@ -109,6 +134,8 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
   };
 
   const week = items.find((item) => item.kind === "week");
+  // The week row opens the newest week, so "Past weeks" holds only the older weeks.
+  const past = weeks.slice(1);
   // The container moves the dim and the sheet out of the band to the body. In place they sit inside the band, and the
   // Drawer then takes a tap on the dim as a tap on the persistent band, so the tap does not close the sheet. The dim and
   // the sheet render only once open, in the browser, so the server never reads document.
@@ -139,6 +166,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
       {/* data-menu-sheet lets globals.css move the top edge of the sheet and the dim to the bottom of the band, so the
           band stays on top. */}
       <SheetContent
+        ref={sheet}
         data-menu-sheet=""
         className="flex w-full flex-col desktop:hidden"
       >
@@ -164,8 +192,8 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
                     </span>
                     {here && <CheckIcon aria-hidden data-check="" className="size-sp-5 flex-none text-accent-ink" strokeWidth={2.5} />}
                   </a>
-                  {item === week && weeks.length > 0 && (
-                    <PastWeeks weeks={weeks} pageHref={pageHref} open={pastOpen} onToggle={() => setPastOpen((was) => !was)} />
+                  {item === week && past.length > 0 && (
+                    <PastWeeks weeks={past} pageHref={pageHref} open={pastOpen} onToggle={() => setPastOpen((was) => !was)} />
                   )}
                 </li>
               );
@@ -186,7 +214,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
 
 type PastWeeksProps = { weeks: WeekLink[]; pageHref?: string; open: boolean; onToggle: () => void };
 
-/* "Past weeks" under the week row, and the chips of every week that it opens, newest first. The list grows on the
+/* "Past weeks" under the week row, and the chips of each week older than the newest that it opens, newest first. The list grows on the
    grid rows, so it pushes the rows under it down and never covers them. */
 function PastWeeks({ weeks, pageHref, open, onToggle }: PastWeeksProps) {
   const id = useId();

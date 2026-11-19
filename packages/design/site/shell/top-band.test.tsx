@@ -184,7 +184,6 @@ describe("The top band has no week chip (AT-11)", () => {
     expect(within(sheet()).getByRole("link", { name: /^Week 8/ })).toBeTruthy();
     fireEvent.click(within(sheet()).getByRole("button", { name: "Past weeks" }));
     expect(linksIn(screen.getByRole("list", { name: "Past weeks" }))).toEqual([
-      ["WK 08", "/2026/week-08/"],
       ["WK 07", "/2026/week-07/"],
       ["WK 06", "/2026/week-06/"],
     ]);
@@ -269,7 +268,7 @@ describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () 
     expect(sheet().querySelector("[data-check]")).toBeNull();
   });
 
-  it("opens the latest report from the week row, and lists every week under Past weeks", () => {
+  it("opens the latest report from the week row, and lists each older week under Past weeks", () => {
     renderDoorBand("/");
     fireEvent.click(menuButton());
     expect(within(sheet()).getByRole("link", { name: /^Week 8/ }).getAttribute("href")).toBe("/2026/week-08/");
@@ -280,10 +279,16 @@ describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () 
     expect(past.getAttribute("aria-expanded")).toBe("true");
     const weeks = screen.getByRole("list", { name: "Past weeks" });
     expect(linksIn(weeks)).toEqual([
-      ["WK 08", "/2026/week-08/"],
       ["WK 07", "/2026/week-07/"],
       ["WK 06", "/2026/week-06/"],
     ]);
+  });
+
+  it("shows no Past weeks when the newest week is the one published week", () => {
+    renderDoorBand("/", { items: MENU.items, weeks: MENU.weeks.slice(0, 1) });
+    fireEvent.click(menuButton());
+    expect(within(sheet()).getByRole("link", { name: /^Week 8/ })).toBeTruthy();
+    expect(within(sheet()).queryByRole("button", { name: "Past weeks" })).toBeNull();
   });
 
   it("shows no Past weeks for a client with no published week", () => {
