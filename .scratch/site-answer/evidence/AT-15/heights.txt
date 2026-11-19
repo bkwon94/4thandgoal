@@ -1,0 +1,23 @@
+# getBoundingClientRect().height of each tile, row, and button of the Site answers, at 375 px. Taken 2026-11-18T20:41:52.897Z.
+# One Thread: "where is the trade analyzer" (AT-1, with its "All pages · 5" fold open), "what tools are there" (AT-2), "is there a waiver page" (AT-8).
+where is the trade analyzer | row | Week 10 | 67.7 px
+where is the trade analyzer | row | Power Rankings | 67.7 px
+where is the trade analyzer | row | Managers | 67.7 px
+where is the trade analyzer | row | Midseason Report | 67.7 px
+where is the trade analyzer | row | Playoff Sim | 67.7 px
+where is the trade analyzer | open button | Open the Trade Analyzer | 44 px
+where is the trade analyzer | fold button | All pages · 5 | 44 px
+what tools are there | tile | Trade Analyzer | 158.8 px
+what tools are there | tile | Playoff Sim | 158.8 px
+what tools are there | tile | Week 10 | 156.5 px
+what tools are there | tile | Power Rankings | 156.5 px
+what tools are there | tile | Managers | 156.5 px
+what tools are there | tile | Midseason Report | 156.5 px
+is there a waiver page | row | Week 10 | 67.7 px
+is there a waiver page | row | Power Rankings | 67.7 px
+is there a waiver page | row | Managers | 67.7 px
+is there a waiver page | row | Trade Analyzer | 67.7 px
+is there a waiver page | row | Midseason Report | 67.7 px
+is there a waiver page | row | Playoff Sim | 67.7 px
+
+targets: 19, smallest: 44 px

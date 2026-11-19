@@ -1,0 +1,48 @@
+# The requests of the page from the reload of / until 3 s after the list view showed again. Taken 2026-11-18T20:39:21.683Z.
+## light
+links before the reload: ["/analyze/","/midseason/2026/#sim","/2026/week-10/","/rankings/","/2026/managers/","/midseason/2026/"]
+links after the reload:  ["/analyze/","/midseason/2026/#sim","/2026/week-10/","/rankings/","/2026/managers/","/midseason/2026/"]
+POST .../ask requests during the reload: 0
+every request of the reload (18):
+GET http://127.0.0.1:4173/
+GET http://127.0.0.1:4173/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2
+GET http://127.0.0.1:4173/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2
+GET http://127.0.0.1:4173/brand/logo.png
+GET http://127.0.0.1:4173/_next/static/chunks/32oiw3j32zn-w.css
+GET http://127.0.0.1:4173/_next/static/chunks/08wqf82sdpkgs.js
+GET http://127.0.0.1:4173/_next/static/chunks/225om3pb6rgq3.js
+GET http://127.0.0.1:4173/_next/static/chunks/3sc26kxz0wnj9.js
+GET http://127.0.0.1:4173/_next/static/chunks/turbopack-3-ry682tkyiqk.js
+GET http://127.0.0.1:4173/_next/static/chunks/2x-7epk9nhgnj.js
+GET http://127.0.0.1:4173/_next/static/chunks/2akbdxe42i-zr.js
+GET http://127.0.0.1:4173/_next/static/chunks/1ya_byy7vs3pv.js
+GET http://127.0.0.1:4173/_next/static/chunks/00a0yjvukwihz.js
+GET http://127.0.0.1:4173/_next/static/chunks/0w25b7asg-kf2.js
+GET https://gc.zgo.at/count.js
+GET http://localhost:8080/clients/cpc/eggs/board
+GET http://127.0.0.1:4173/2026/week-10/avatars/3.jpg
+POST http://localhost:8080/clients/cpc/suggestions
+
+## dark
+links before the reload: ["/analyze/","/midseason/2026/#sim","/2026/week-10/","/rankings/","/2026/managers/","/midseason/2026/"]
+links after the reload:  ["/analyze/","/midseason/2026/#sim","/2026/week-10/","/rankings/","/2026/managers/","/midseason/2026/"]
+POST .../ask requests during the reload: 0
+every request of the reload (18):
+GET http://127.0.0.1:4173/
+GET http://127.0.0.1:4173/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2
+GET http://127.0.0.1:4173/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2
+GET http://127.0.0.1:4173/brand/logo.png
+GET http://127.0.0.1:4173/_next/static/chunks/32oiw3j32zn-w.css
+GET http://127.0.0.1:4173/_next/static/chunks/08wqf82sdpkgs.js
+GET http://127.0.0.1:4173/_next/static/chunks/225om3pb6rgq3.js
+GET http://127.0.0.1:4173/_next/static/chunks/3sc26kxz0wnj9.js
+GET http://127.0.0.1:4173/_next/static/chunks/turbopack-3-ry682tkyiqk.js
+GET http://127.0.0.1:4173/_next/static/chunks/2x-7epk9nhgnj.js
+GET http://127.0.0.1:4173/_next/static/chunks/2akbdxe42i-zr.js
+GET http://127.0.0.1:4173/_next/static/chunks/1ya_byy7vs3pv.js
+GET http://127.0.0.1:4173/_next/static/chunks/00a0yjvukwihz.js
+GET http://127.0.0.1:4173/_next/static/chunks/0w25b7asg-kf2.js
+GET https://gc.zgo.at/count.js
+GET http://localhost:8080/clients/cpc/eggs/board
+GET http://127.0.0.1:4173/2026/week-10/avatars/3.jpg
+POST http://localhost:8080/clients/cpc/suggestions

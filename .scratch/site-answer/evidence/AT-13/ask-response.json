@@ -1,0 +1,111 @@
+{
+  "taken": "2026-11-18T20:44:12.850Z",
+  "team": "Your team: Bo Girds. Change the team",
+  "asks": [
+    {
+      "url": "http://localhost:8080/clients/norcal/ask",
+      "status": 200,
+      "request": {
+        "question": "what tools are there",
+        "roster_id": 7,
+        "week": 10,
+        "turns": [],
+        "pages": [
+          {
+            "key": "week",
+            "label": "Week 10",
+            "blurb": "The recap, scores, and awards of the week."
+          },
+          {
+            "key": "rankings",
+            "label": "Power Rankings",
+            "blurb": "Every team ranked, with the weekly moves."
+          },
+          {
+            "key": "managers",
+            "label": "Managers",
+            "blurb": "Each manager, with the grades of the season."
+          },
+          {
+            "key": "analyzer",
+            "label": "Trade Analyzer",
+            "blurb": "Grades a trade between two or more teams."
+          },
+          {
+            "key": "midseason",
+            "label": "Midseason Report",
+            "blurb": "The midseason awards, grades, and roasts."
+          },
+          {
+            "key": "sim",
+            "label": "Playoff Sim",
+            "blurb": "Plays out the rest of the season, game by game."
+          }
+        ]
+      },
+      "response": {
+        "route": "site",
+        "line": null,
+        "topic": null,
+        "team": null,
+        "closest": [],
+        "suggestion": null,
+        "page": "all",
+        "jev": {
+          "model": "jev-1.14.0",
+          "nouls": {
+            "fits_topic": 0.05,
+            "data_can_answer": 0.19,
+            "about_league": 0.84,
+            "abuse": 0.01,
+            "reacts_to_answer": 0.02,
+            "names_team": 0.01,
+            "asks_for_site": 0.97
+          },
+          "choices": {
+            "topic": {
+              "week_recap": 0.25,
+              "last_matchup": 0,
+              "next_matchup": 0.01,
+              "power_rankings": 0.24,
+              "playoff_race": 0.03,
+              "your_season": 0.03,
+              "leaders_trades": 0.08,
+              "waiver_targets": 0.03,
+              "stack_up": 0.09,
+              "weak_spots": 0.01,
+              "sell_high": 0.01,
+              "trade_ideas": 0.13,
+              "trade_check": 0.07,
+              "start_sit": 0.02
+            },
+            "team": {
+              "puurdygood": 0.58,
+              "varsityblue2": 0.07,
+              "bobbuckstein": 0.04,
+              "the_mean_machine": 0.06,
+              "skol_daddy": 0.01,
+              "mitseeker5000": 0.04,
+              "bo_girds": 0.02,
+              "hock_tua": 0.02,
+              "kaiedmonds": 0.04,
+              "davlionman": 0.04,
+              "breece_mode": 0.03,
+              "the_dart_side": 0.05
+            },
+            "site_page": {
+              "week": 0,
+              "rankings": 0,
+              "managers": 0,
+              "analyzer": 0,
+              "midseason": 0,
+              "sim": 0,
+              "all": 1,
+              "missing": 0
+            }
+          }
+        }
+      }
+    }
+  ]
+}
