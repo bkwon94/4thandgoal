@@ -168,7 +168,7 @@ function RegularSimPage({
         {week !== undefined ? (
           <WeekPage sim={sim} week={week} chosen={chosen ?? null} onChoose={(choice) => choose(week.week, choice)} />
         ) : (
-          <PlayoffsPage sim={sim} you={you} onOpen={openItem} />
+          <PlayoffsPage sim={sim} page={page} team={(what.runs?.teams ?? sim.teams)[you]} onOpen={openItem} />
         )}
       </motion.div>
 
