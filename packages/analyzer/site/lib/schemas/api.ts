@@ -1,5 +1,5 @@
 /**
- * The Zod schemas of the site API responses for the teams, analyze, and find calls.
+ * The Zod schemas of the site API responses for the teams, analyze, find, and Trade Wire calls.
  * They follow the fixtures at .scratch/site-react/fixtures/analyze-response.json and find-response.json.
  */
 import { z } from "zod";
@@ -172,3 +172,23 @@ export const findResponseSchema = z.object({
   missing: z.array(z.string()),
   stale: z.array(z.string()),
 });
+
+/* One side of a trade of the Trade Wire: the team, its avatar, the players it gets, and the FAAB it gets. Sleeper may
+   give a team no avatar. */
+export const wireSideSchema = z.object({
+  roster_id: z.number(),
+  team: z.string(),
+  avatar: z.string().nullable(),
+  players: z.array(z.object({ player_id: z.string(), name: z.string(), position: z.string() })),
+  faab: z.number(),
+});
+
+/* One accepted trade of the Trade Wire, with the time Sleeper accepted it. */
+export const wireTradeSchema = z.object({
+  transaction_id: z.string(),
+  accepted_at: z.string(),
+  teams: z.array(wireSideSchema),
+});
+
+/* The answer of the Trade Wire route: the accepted trades of the current leg, newest first. */
+export const tradeWireResponseSchema = z.object({ leg: z.number(), trades: z.array(wireTradeSchema) });

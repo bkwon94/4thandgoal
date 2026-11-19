@@ -10,6 +10,7 @@ import { TopBand } from "@cpc/design/shell/top-band";
 import type { MenuLinks } from "@/lib/client-values";
 import "@cpc/design/ui/sheet-jsdom";
 import { DeadlineBanner } from "@cpc/analyzer/deadline/deadline-banner";
+import { apiTarget, finderOn } from "@/lib/config";
 import { BandPart } from "./_routes/eggs/band";
 import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
@@ -117,9 +118,14 @@ describe("shellProps of cpc", () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     try {
       vi.setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
-      const strip = shellProps().strip as ReactElement<{ lock: number }>;
+      const strip = shellProps().strip as ReactElement<{ lock: number; api: unknown; gradeHref: string; findHref: string | null }>;
       expect(strip.type).toBe(DeadlineBanner);
       expect(strip.props.lock).toBe(Date.parse("2026-11-24T00:00:00-05:00"));
+      // The banner reads the Trade Wire of the client, and its links open the two modes of the analyzer. The finder
+      // flag of cpc is off, so the banner gets no Find link (AT-27).
+      expect(strip.props.api).toEqual(apiTarget);
+      expect(strip.props.gradeHref).toBe("/analyze/?mode=grade");
+      expect(strip.props.findHref).toBe(finderOn ? "/analyze/?mode=find" : null);
       // A build one day after the Lock has no Deadline week, so its pages hold no banner.
       vi.setSystemTime(new Date("2026-11-25T00:00:00-05:00"));
       expect(shellProps().strip).toBeNull();
