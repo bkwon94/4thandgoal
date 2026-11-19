@@ -12,7 +12,7 @@
 
 ## Ports
 
-- It declares no port. `season_sim` takes the scores, the records, the pairs left, and the projected totals as data. An app loads them and runs the sim. It hands the weekly odds to the week through the chapter port, and the result to the report through the port of `midseason`.
+- It declares no port. `season_sim` takes the scores, the records, the pairs left, and the projected totals as data. An app loads them and runs the sim. `rerun` runs the sim of a week file again on the numbers of its draw, so the What-if of the API needs no league data. A `stop` check between blocks of runs lets an app stop the sim. It hands the weekly odds to the week through the chapter port, and the result to the report through the port of `midseason`.
 
 ## Does not do
 

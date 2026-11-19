@@ -17,7 +17,15 @@ from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
 from sim.page import RunRecord, SimPage, league_fact, team_page
 from sim.percent import shown, tenths
-from sim.tunables import LEVEL_SHRINK_WEEKS, PROJECTION_WEIGHT, SAMPLE_RUNS, SCORE_DECIMALS, SEED_SHOW_AT, SIM_RUNS
+from sim.tunables import (
+    LEVEL_SHRINK_WEEKS,
+    PROJECTION_WEIGHT,
+    SAMPLE_RUNS,
+    SCORE_DECIMALS,
+    SEED_SHOW_AT,
+    SIM_RUNS,
+    STOP_CHECK_RUNS,
+)
 
 Pair = tuple[int, int]
 # A bracket hold sets the scores of one round before its winners count, and gives the weight of that round.
@@ -39,9 +47,18 @@ class SetResult(BaseModel):
     median: Literal["above", "below"] | None = None
 
 
+class SimStopped(Exception):
+    """The sim stopped on a stop check before it ran all its runs. A What-if stops so when its client went away."""
+
+    def __init__(self, done: int, runs: int) -> None:
+        super().__init__(f"the sim stopped after {done} of {runs} runs")
+        self.done = done
+        self.runs = runs
+
+
 @dataclass(frozen=True)
 class DrawModel:
-    """The numbers of the draw, unrounded: `SimParameters` holds them rounded for the file."""
+    """The numbers of the draw. `SimParameters` holds the same numbers for the file."""
     league_mean: float
     spread: float
     level_mean: dict[int, float]
@@ -84,7 +101,11 @@ class TeamSim(BaseModel):
 
 
 class SimParameters(BaseModel):
-    """The numbers of the draw, so a live sim in the browser can draw the same model later."""
+    """The numbers of the draw, so a live sim in the browser can draw the same model later.
+
+    Each number is unrounded. A JSON float reads back to the same float, so a rerun of the week file draws the same
+    runs as the build, and a What-if with no set result gives the numbers of the file.
+    """
     league_mean: float
     # The league spread of a weekly score around a roster's level.
     spread: float
@@ -146,6 +167,7 @@ def season_sim(
     you: int | None = None,
     set_results: Sequence[SetResult] = (),
     pages: Sequence[int] = (),
+    stop: Callable[[], bool] | None = None,
 ) -> SimResult:
     """The sim of the rest of the season after week `week`, through the playoff bracket.
 
@@ -163,15 +185,60 @@ def season_sim(
     (decision 07). Each count of the result is a sum of weights. The level of a team has no injury term.
 
     `pages` holds the roster IDs whose page block the result gives, each by a split of the runs of this one sim.
+    `stop` runs every STOP_CHECK_RUNS runs. When it gives True, the sim raises SimStopped.
     """
-    spots, bye_count, median_game = settings.playoff_spots, settings.bye_count, settings.median_game
+    bracket_weeks = list(range(settings.last_regular_week + 1, settings.last_season_week + 1))
+    model = draw_model(scores, records, sorted(remaining) + bracket_weeks, projected)
+    return _season_sim(model, records, remaining, season=season, week=week, spots=settings.playoff_spots,
+                       bye_count=settings.bye_count, median_game=settings.median_game, reseed=settings.reseed,
+                       bracket_weeks=bracket_weeks, runs=runs, sample=sample, you=you, set_results=set_results,
+                       pages=pages, stop=stop)
+
+
+def rerun(
+    result: SimResult, *, you: int | None = None, set_results: Sequence[SetResult] = (), pages: Sequence[int] = (),
+    stop: Callable[[], bool] | None = None,
+) -> SimResult:
+    """The sim of `result` again, on the numbers of its draw, with the What-if `set_results` of Your team `you`.
+
+    The What-if of the API reads the week file and calls no network (decision 03). The draw has the same numbers, the
+    same seed, and the same count of runs, so with no set result it gives the numbers of `result` again.
+    """
+    p = result.parameters
+    model = DrawModel(league_mean=p.league_mean, spread=p.spread, level_mean=dict(p.level_mean),
+                      level_se=dict(p.level_se), shifts={rid: list(values) for rid, values in p.shifts.items()})
+    remaining = {w: [(a, b) for a, b in pairs] for w, pairs in result.schedule.items()}
+    return _season_sim(model, result.records, remaining, season=result.season, week=result.week,
+                       spots=p.playoff_spots, bye_count=p.bye_count, median_game=p.median_game, reseed=p.reseed,
+                       bracket_weeks=list(result.bracket_weeks), runs=result.runs, sample=len(result.sample), you=you,
+                       set_results=set_results, pages=pages, stop=stop)
+
+
+def _season_sim(
+    model: DrawModel,
+    records: Mapping[int, tuple[int, int, float]],
+    remaining: Mapping[int, list[Pair]],
+    *,
+    season: int,
+    week: int,
+    spots: int,
+    bye_count: int,
+    median_game: bool,
+    reseed: bool,
+    bracket_weeks: list[int],
+    runs: int,
+    sample: int,
+    you: int | None,
+    set_results: Sequence[SetResult],
+    pages: Sequence[int],
+    stop: Callable[[], bool] | None,
+) -> SimResult:
+    """The sim of `season_sim` on the numbers `model` of its draw."""
     rosters = sorted(records)
     regular = sorted(remaining)
-    bracket_weeks = list(range(settings.last_regular_week + 1, settings.last_season_week + 1))
     weeks = regular + bracket_weeks
     seed = season * 100 + week
     rng = random.Random(seed)
-    model = draw_model(scores, records, weeks, projected)
     spread, level_mean, level_se, shifts = model.spread, model.level_mean, model.level_se, model.shifts
     held = _checked(set_results, you, rosters, remaining, bracket_weeks, median_game)
     # The set results of the regular weeks, as (column, opponent, result), in week order.
@@ -198,6 +265,8 @@ def season_sim(
     # Per next-week pair and per winner, three sums: the runs, the runs side a made it, the runs side b made it.
     halves = {pair: {"a": [0.0, 0.0, 0.0], "b": [0.0, 0.0, 0.0]} for pair in next_pairs}
     for index in range(runs):
+        if stop is not None and index and index % STOP_CHECK_RUNS == 0 and stop():
+            raise SimStopped(index, runs)
         # The draws read the rosters in sorted order and the weeks in order, so the seed gives the same runs.
         level = {rid: rng.gauss(level_mean[rid], level_se[rid]) for rid in rosters}
         drawn = {rid: [round(rng.gauss(level[rid], spread) + shift, SCORE_DECIMALS) for shift in shifts[rid]]
@@ -222,7 +291,7 @@ def season_sim(
         wins, points = _regular(records, [remaining[w] for w in regular], drawn, median_game, week_log)
         table = sorted(rosters, key=lambda rid: (-wins[rid], -points[rid], rid))
         place = {rid: n for n, rid in enumerate(table[:spots], start=1)}
-        rounds, factor = _bracket(table[:spots], drawn, len(regular), settings.reseed, hold if held_bracket else None)
+        rounds, factor = _bracket(table[:spots], drawn, len(regular), reseed, hold if held_bracket else None)
         weight *= factor
         champion = _winner(rounds[-1][0], drawn, len(regular) + len(rounds) - 1, place) if rounds else table[0]
         total += weight
@@ -284,12 +353,10 @@ def season_sim(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,
         records=dict(records), schedule={w: list(remaining[w]) for w in regular},
         parameters=SimParameters(
-            league_mean=round(model.league_mean, 2), spread=round(spread, 2),
-            level_mean={rid: round(v, 2) for rid, v in level_mean.items()},
-            level_se={rid: round(v, 2) for rid, v in level_se.items()},
-            shifts={rid: [round(s, 2) for s in values] for rid, values in shifts.items()},
+            league_mean=model.league_mean, spread=spread, level_mean=dict(level_mean), level_se=dict(level_se),
+            shifts={rid: list(values) for rid, values in shifts.items()},
             projection_weight=PROJECTION_WEIGHT, shrink_weeks=LEVEL_SHRINK_WEEKS, playoff_spots=spots,
-            bye_count=bye_count, median_game=median_game, reseed=settings.reseed,
+            bye_count=bye_count, median_game=median_game, reseed=reseed,
         ),
         teams=teams, swings=[_swing(a, b, halves[(a, b)], status, teams, weeks_left) for a, b in next_pairs],
         sample=stored, sample_weights=stored_weights, pages=blocks,

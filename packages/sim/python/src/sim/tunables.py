@@ -28,3 +28,5 @@ RACE_FLOOR = 10
 # The most root-for rows of one week, and the least lift in whole points that keeps a row (PRD, the page block).
 ROOT_FOR_ROWS = 3
 ROOT_FOR_LIFT = 1
+# The runs between two checks for a stop. A What-if checks for a client that went away about every 25 ms on the Mac.
+STOP_CHECK_RUNS = 250

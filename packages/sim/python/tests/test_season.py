@@ -6,8 +6,8 @@ import pytest
 from rejection import rejection_odds
 
 from league.league_settings import LeagueSettings
-from sim.published import SIM_FILE, read_sim, sim_file, write_sim
-from sim.season import SetResult, season_sim
+from sim.published import SIM_FILE, read_sim, read_week_sim, sim_file, week_sim_file, write_sim, write_week_sim
+from sim.season import SetResult, SimStopped, rerun, season_sim
 
 SEASON = 2026
 # Eight rosters, 6 playoff spots and 2 byes, as in CPC and NorCal. The regular season ends at week 4.
@@ -235,3 +235,38 @@ def test_the_same_set_results_give_the_same_output_byte_for_byte():
 def test_a_bad_set_result_raises_a_value_error_that_names_it(held, message):
     with pytest.raises(ValueError, match=message):
         _sim(you=1, set_results=held)
+
+
+def _week_file(tmp_path, **kwargs):
+    """The sim of the week, written to its week file and read back, as the What-if of the API reads it."""
+    result = _sim(pages=list(ROSTERS), **kwargs)
+    out = write_week_sim(week_sim_file(result, {rid: f"Team {rid}" for rid in ROSTERS}), tmp_path)
+    return result, read_week_sim(out)
+
+
+def test_a_rerun_of_the_week_file_with_no_set_result_gives_the_numbers_of_the_file(tmp_path):
+    result, file = _week_file(tmp_path)
+    again = rerun(file, pages=[1])
+    assert again.pages[1] == result.pages[1] == file.pages[1]
+    assert again.teams == result.teams
+    assert again.sample == result.sample
+
+
+def test_a_rerun_of_the_week_file_with_a_set_result_equals_the_sim_of_the_week_with_it(tmp_path):
+    held = [SetResult(week=3, game="win", median="above")]
+    _, file = _week_file(tmp_path)
+    expected = _sim(you=1, set_results=held, pages=[1])
+    again = rerun(file, you=1, set_results=held, pages=[1])
+    assert again.model_dump_json() == expected.model_dump_json()
+
+
+def test_a_stop_ends_the_sim_between_blocks_before_all_its_runs():
+    checks = []
+
+    def stop() -> bool:
+        checks.append(1)
+        return len(checks) > 1
+
+    with pytest.raises(SimStopped) as stopped:
+        _sim(runs=5_000, stop=stop)
+    assert 0 < stopped.value.done < 5_000

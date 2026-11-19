@@ -313,6 +313,16 @@ def test_the_sim_step_writes_week_10_sim_json_with_a_page_for_each_team(week_10_
     assert re.fullmatch(r"\d+ managers fight for the last (spot|\d+ spots)|The playoff field is all but set", sim["fact"])
 
 
+# The What-if tests of the API read a saved copy of the week 10 sim file of CPC, because the API env holds no build.
+API_WEEK_10_SIM = Path(__file__).resolve().parents[2] / "api" / "tests" / "fixtures" / "sim" / "cpc-week-10-sim.json"
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_week_10_sim_file_of_the_api_tests_equals_a_fresh_sim_step(week_10_files):
+    # Run `make sim CLIENT=cpc WEEK=10` and copy the file of the build folder to the fixture if this fails.
+    assert json.loads(API_WEEK_10_SIM.read_text(encoding="utf-8")) == week_10_files["cpc"]
+
+
 @pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
 def test_the_ladder_of_bo_girds_names_the_smallest_count_with_odds_of_90_or_more(week_10_files):
     # AT-6. Four weeks left with the median game give 0 to 8 more wins.
