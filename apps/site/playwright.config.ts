@@ -5,7 +5,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // The specs of the floor. The projects "floor" and "floor-timing" split them by the tag @timing.
-const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts"];
+const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts", "menu-sheet.spec.ts"];
 
 export default defineConfig({
   testDir: "e2e",
