@@ -1,7 +1,6 @@
 /**
- * One week page of the sim page: the week card with a tile for each result of Your team, and the root-for card.
- * A tap on a tile sets that result as a What-if, and a tap on the set tile clears it.
- * On a phone the root-for card opens from one row. From the tablet tier it always shows, and on desktop it sits beside the week card.
+ * One week page of the sim page: the week card with a tile for each result of Your team, which a tap sets or clears as a What-if, and
+ * the root-for card, which opens from one row on a phone, always shows from the tablet tier, and sits beside the week card on desktop.
  */
 "use client";
 

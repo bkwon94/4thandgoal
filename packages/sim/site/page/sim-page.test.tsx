@@ -1,7 +1,6 @@
 /**
- * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team.
- * They check the header, the ladder, the week switch, the week card, the root-for card, the "about" numbers, and the
- * What-if, over two answers of the local API and a real call to an API that is down.
+ * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team: the header, the ladder, the week
+ * switch, the week card, the root-for card, the "about" numbers, and the What-if, over two local API answers and an API that is down.
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";

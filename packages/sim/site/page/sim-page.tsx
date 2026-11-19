@@ -1,7 +1,6 @@
 /**
- * The sim page of Your team, layout D "Cards" (decision 04): the header with the odds, the sentence that opens the ladder,
- * the set line of the What-if, the week switch, one page per week with the week card and the root-for card, and the
- * two buttons that open the replay.
+ * The sim page of Your team, layout D "Cards" (decision 04): the header with the odds, the sentence that opens the ladder, the set
+ * line of the What-if, the week switch, one page per week with the week card and the root-for card, and the two replay buttons.
  */
 "use client";
 
