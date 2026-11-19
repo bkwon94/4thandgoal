@@ -1,7 +1,7 @@
 # The menu label of the season sim is not title case
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-season-sim-label`.
 Source: the session of 2026-11-19.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -37,3 +37,8 @@ Test verdict: PASS
 Smoke: none. `pnpm --dir apps/site pick --base main` printed "No flow: no file of the diff matches a glob of the flow list."
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-season-sim-label`. Commits: `efa25ec6`, `b3e45062`. Date: 2026-11-19.
+The loop `menu.test.ts` went red at `2e799df4` and green at `efa25ec6`, and `make check-fast BASE=main` passed with 430 site tests and 63 root tests.
+The page title, the chapter label of the week tile, and the Announcement eyebrow still read "Season sim", and no smoke flow covers `_routes/sim/`.
+Read 6 files: AGENTS.md, apps/site/AGENTS.md, .scratch/bugs/season-sim-label.md, .claude/plugin/skills/quick/format.md, apps/site/src/app/_routes/sim/menu.ts, apps/site/src/app/_routes/sim/menu.test.ts.
