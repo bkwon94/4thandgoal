@@ -153,9 +153,9 @@ class FinderPicks(BaseModel):
 def offer_sheet(offer: ShortlistOffer, snapshot: Snapshot, news: NewsFeed) -> dict[str, Fact]:
     """The facts of one shortlist offer by id: the measured facts of its trade, with the news of its players only,
     the lineup now of the asker, then the Jev answers of the shortlist as JEV facts, so the pick makes no new Jev
-    call."""
+    call. After a failed shortlist request the offer holds no Jev answer, so the sheet states none, never "unsure"."""
     trade = offer.trade
-    nouls = {"fair": offer.fair, **{f"need.{rid}": p for rid, p in offer.needs.items()}}
+    nouls = {} if offer.failed else {"fair": offer.fair, **{f"need.{rid}": p for rid, p in offer.needs.items()}}
     questions = trade_jev_questions(trade, snapshot)
     now = lineup_now_fact(snapshot, trade.asker)
     return {**measured_sheet(trade, snapshot, news), **({} if now is None else {now.id: now}),
