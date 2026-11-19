@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-45 to AT-49. Decision 06
 
 **Blocked by:** 08.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The `cpc` week 10 page with Bo Girds shows the Sim tile between Standings and Next week, with the numbers of the file and a link to `/sim/2026/` (AT-45).
 - [x] With no team set, the tile shows the league fact of the file (AT-46).
