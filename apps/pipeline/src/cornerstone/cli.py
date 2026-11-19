@@ -1,7 +1,8 @@
 """
 Command line entry point for Cornerstone Weekly.
 It defines the build, publish, rewrite, page-json, rankings, sim, midseason, midseason-publish, history, chart,
-advisor-eval, egg-draft, egg-drop, check-client, evidence-flags, and evidence-flags-eval subcommands.
+advisor-eval, spares-list, backtest, egg-draft, egg-drop, check-client, evidence-flags, and evidence-flags-eval
+subcommands.
 """
 import argparse
 import logging
@@ -13,7 +14,8 @@ from pathlib import Path
 
 import httpx
 
-from cornerstone.advisor_eval import Meter, fetch_press_sources, load_test_set, run_eval, summary_lines
+from analyzer.backtest import backtest_lines, check_marks, list_lines, load_marks, run_spares
+from cornerstone.advisor_eval import Meter, MeteredJev, fetch_press_sources, load_test_set, run_eval, summary_lines
 from cornerstone.egg_draft import run_egg_draft
 from cornerstone.egg_drop import drop_after_publish, drop_from_env
 from cornerstone.evidence_eval import DEFAULT_LABELS, run_evidence_eval
@@ -131,6 +133,20 @@ def build_parser() -> argparse.ArgumentParser:
     advisor_eval.add_argument("--out", type=Path, required=True, help="the folder for the saved sheets and reads")
     advisor_eval.add_argument("--workers", type=int, default=4, help="how many trades to read at one time")
 
+    spares = sub.add_parser(
+        "spares-list", parents=[named], help="run the Spares tree on every pair of the live week with the live Jev",
+        description="Run the Spares tree on both sides of every pair of teams of the live snapshot, and print about 30 "
+                    "numbered lines, each one stop or pass with the Jev answer that decided it. Brian marks the wrong "
+                    "lines, and each wrong line with his fix is a Backtest mark.")
+    spares.add_argument("--season", type=int)
+    spares.add_argument("--lines", type=int, default=30, help="the most numbered lines")
+    backtest = sub.add_parser(
+        "backtest", parents=[named], help="check each Backtest mark against the tree with the live Jev",
+        description="Check each mark of the marks file against the Spares tree and the gain check of the live "
+                    "snapshot, and print each mark with its result. The exit code is 1 when a mark is wrong.")
+    backtest.add_argument("--season", type=int)
+    backtest.add_argument("--marks", type=Path, required=True, help="the JSON file of the Backtest marks")
+
     settings = sub.add_parser("settings", parents=[named], help="print the League settings and the sizes of a season")
     settings.add_argument("--season", type=int)
 
@@ -243,6 +259,41 @@ def run_advisor_eval(
                        workers=args.workers)
     print("\n".join(summary_lines(summary)))
     return 1 if summary["errors"] else 0
+
+
+def _live_snapshot(client: Client, season: int, provider: Provider) -> Snapshot:
+    """The live snapshot of the league now, as a press of the API reads it."""
+    # Imported here: only the live commands read the live week, so the other commands load no chart reader.
+    from datetime import datetime
+
+    from league.chart import chart_values
+    from league.live import live_snapshot
+
+    return live_snapshot(season, client=client, now=datetime.now(client.tz), fetch_sleeper=provider.fetch_live,
+                         fetch_past=http_get, read_chart=partial(chart_values, read=claude_reader(parse_call)))
+
+
+def run_spares_list(client: Client, season: int, lines: int, provider: Provider, jev: Jev) -> int:
+    """Print the numbered list of Spares tree stops and passes of the live week, and the Jev spend."""
+    snapshot = _live_snapshot(client, season, provider)
+    meter = Meter()
+    print(f"Spares tree list of {client.slug}, week {snapshot.week} of {season}.")
+    for line in list_lines(snapshot, run_spares(snapshot, MeteredJev(jev, meter)), limit=lines):
+        print(line)
+    print(f"Jev: {meter.jev_requests} requests, ${meter.jev_usd:.4f}.")
+    return 0
+
+
+def run_backtest(client: Client, season: int, marks: Path, provider: Provider, jev: Jev) -> int:
+    """Print each Backtest mark with its result and the Jev spend. The exit code is 1 when a mark is wrong."""
+    snapshot = _live_snapshot(client, season, provider)
+    meter = Meter()
+    print(f"Backtest of {client.slug}, week {snapshot.week} of {season}, marks {marks.name}.")
+    results = check_marks(load_marks(marks), snapshot, MeteredJev(jev, meter))
+    for line in backtest_lines(results):
+        print(line)
+    print(f"Jev: {meter.jev_requests} requests, ${meter.jev_usd:.4f}.")
+    return 0 if all(result.right for result in results) else 1
 
 
 def run_chart(
@@ -387,6 +438,13 @@ def main(
             weeks = run_history(season, args.through, force=args.force, client=client)
             print(("Fetched weeks: " + ", ".join(str(w) for w in weeks)) if weeks else "Nothing to fetch")
             return 0
+        if args.command in ("spares-list", "backtest"):
+            # Both read the live week of Sleeper, so the season comes from Sleeper state when it is not named.
+            season = args.season if args.season is not None else int(fetch_state().season)
+            live_jev = JEV if jev is None else jev
+            if args.command == "spares-list":
+                return run_spares_list(load(season), season, args.lines, provider, live_jev)
+            return run_backtest(load(season), season, args.marks, provider, live_jev)
         if args.command == "advisor-eval":
             # The eval reads the week of each trade of its test set, so it skips resolve_week too.
             # The download is read at call time, so a test swaps http_get of this module and makes no network call.

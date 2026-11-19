@@ -195,6 +195,7 @@ LAYER_OF: dict[str, str] = {
     # The Finder search asks Jev in waves, as the Jev answers of one trade do.
     "analyzer.finder_search": "facts",
     "analyzer.spares_tree": "facts",
+    "analyzer.backtest": "facts",
     # The stage callback is one type with no import of the league, so the search of the facts layer can take it.
     "analyzer.stage": "model",
     "analyzer.jev_waves": "facts",

@@ -4,6 +4,7 @@ Jev judgments narrow each list, in waves under the rate limits. Code builds the 
 """
 import logging
 from collections.abc import Callable
+from decimal import Decimal
 from itertools import combinations
 from typing import Literal
 
@@ -15,10 +16,10 @@ from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
 from analyzer.stage import Stage, quiet
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
-from analyzer.trade_jev import TRADE_POSITIONS, trade_jev_questions, weak_slot_rows, weak_starting_slots
+from analyzer.trade_jev import NO_AT, TRADE_POSITIONS, trade_jev_questions, weak_slot_rows, weak_starting_slots
 from league.history import season_rank
 from league.jev_port import Jev, NoulQuestion
-from league.lineup import lineup_now
+from league.lineup import lineup_now, lineup_slots
 from league.ranks import OUT_STATUSES
 from league.snapshot import Snapshot
 
@@ -38,6 +39,13 @@ ANCHOR_TARGET = {
     "yes": "{name} would fill the lineup spot that {anchor_name} leaves on {team}.",
     "no": "{name} would not fill the spot of {anchor_name}: he plays another position, or he would sit behind better "
           "players on {team}."}
+# The gain question of the shortlist: one Noul per side of each offer. Code puts the lineup points of each side before
+# and after the trade in `offers.<n>.lineup_points` as facts, and states the change in words, so Jev compares no
+# numbers (decision 09). A clear no, below NO_AT, drops the offer.
+GAIN = {
+    "text": "Does {team} start a better lineup after this trade, where it gives {gives} and gets {gets}?",
+    "yes": "`offers.{n}.lineup_points` says {team} gains points a week, so its best lineup is better after the trade.",
+    "no": "`offers.{n}.lineup_points` says {team} loses or keeps its points a week, so its best lineup is no better."}
 TARGET_AT = 0.6      # a player is a target at this probability or more
 TARGET_MAX = 4       # at most this many targets per side, by probability
 SHORTLIST_KEEP = 10  # the offers that Jev rates highest, by the product of the fair and the need answers
@@ -80,6 +88,8 @@ class ShortlistOffer(BaseModel):
     fair: float
     # The probability that each side fills a starting need, by roster id.
     needs: dict[int, float]
+    # The probability that each side starts a better lineup after the trade, by roster id.
+    gains: dict[int, float] = {}
     score: float
 
 
@@ -97,6 +107,9 @@ class Shortlist(BaseModel):
     shortlist: list[ShortlistOffer]
     # True when the targets built no offer and the offers come from the wider pass.
     wider: bool = False
+    # The offers that a side's gain answer dropped with a clear no, with their answers, so the log and the evidence
+    # can show why.
+    dropped: list[ShortlistOffer] = []
 
 
 
@@ -350,16 +363,72 @@ def varied(offers: list[ShortlistOffer], keep: int) -> list[ShortlistOffer]:
     return chosen
 
 
-def _shortlist_questions(offers: list[ProposedTrade], snapshot: Snapshot) -> dict[str, NoulQuestion]:
-    """The fair question and the need question of each side of each offer, keyed "<offer n>|fair" and so on.
+def lineup_points(snapshot: Snapshot, roster: list[str]) -> Decimal:
+    """The points a week of the best lineup of `roster` for the rest of the season, as the lineup change Measure reads
+    it: `lineup_slots`, where a player due back counts at his projection ahead.
 
-    The questions are those of one trade, so the shortlist and the read of one trade ask the same words.
+    A trade is for the rest of the season, so a starter who is out this week only still counts. With `lineup_now`, a
+    team whose QB misses one week reads any QB it gets as a large gain.
+    """
+    return sum((snapshot.lineup_value(slot.player) for slot in lineup_slots(roster, snapshot)
+                if slot.player is not None), Decimal(0))
+
+
+def _names(snapshot: Snapshot, pids: list[str]) -> str:
+    return " and ".join(snapshot.players[pid].name for pid in pids) or "no one"
+
+
+def lineup_line(snapshot: Snapshot, trade: ProposedTrade, roster_id: int) -> str:
+    """The lineup points of one side before and after the trade as one fact, with the change in words, such as
+    "Team A starts 110.0 points a week before this trade and 103.8 after, so its lineup loses 6.2 points a week."
+
+    Code counts the points, so Jev reads the change and compares no numbers itself.
+    """
+    side = next(side for side in trade.sides if side.roster_id == roster_id)
+    roster = snapshot.rosters[roster_id]
+    after_roster = [pid for pid in roster if pid not in side.player_ids] + trade.gets(roster_id)
+    before = round(float(lineup_points(snapshot, roster)), 1)
+    after = round(float(lineup_points(snapshot, after_roster)), 1)
+    change = round(after - before, 1)
+    word = "gains" if change > 0 else "loses" if change < 0 else "keeps"
+    return (f"{snapshot.teams[roster_id].name} starts {before:.1f} points a week before this trade and {after:.1f} "
+            f"after, so its lineup {word} {abs(change):.1f} points a week.")
+
+
+def _shortlist_state(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade]) -> dict:
+    """The pair state with the lineup points of each side of each offer, under `offers.<n>`."""
+    state = _pair_state(snapshot, asker, partner)
+    state["offers"] = {str(n): {"trade": "; ".join(f"{snapshot.teams[side.roster_id].name} gives "
+                                                   f"{_names(snapshot, side.player_ids)}" for side in trade.sides),
+                                "lineup_points": [lineup_line(snapshot, trade, side.roster_id)
+                                                  for side in trade.sides]}
+                       for n, trade in enumerate(offers)}
+    return state
+
+
+def shortlist_request(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade]) -> WaveRequest:
+    """The one shortlist request of a partner: the pair state with the lineup points of each offer, and the fair, the
+    need, and the gain questions of each offer. The backtest asks the same request for a marked trade."""
+    return WaveRequest(_shortlist_state(snapshot, asker, partner, offers), _shortlist_questions(offers, snapshot))
+
+
+def _shortlist_questions(offers: list[ProposedTrade], snapshot: Snapshot) -> dict[str, NoulQuestion]:
+    """The fair question, the need question of each side, and the gain question of each side of each offer, keyed
+    "<offer n>|fair", "<offer n>|need.<roster id>", and "<offer n>|gain.<roster id>".
+
+    The fair and need questions are those of one trade, so the shortlist and the read of one trade ask the same words.
     """
     questions = {}
     for n, trade in enumerate(offers):
         for key, question in trade_jev_questions(trade, snapshot).items():
             if key == "fair" or key.startswith("need."):
                 questions[f"{n}|{key}"] = question
+        for side in trade.sides:
+            rid = side.roster_id
+            words = {"team": snapshot.teams[rid].name, "gives": _names(snapshot, side.player_ids),
+                     "gets": _names(snapshot, trade.gets(rid)), "n": n}
+            questions[f"{n}|gain.{rid}"] = NoulQuestion(GAIN["text"].format(**words), GAIN["yes"].format(**words),
+                                                        GAIN["no"].format(**words))
     return questions
 
 
@@ -395,7 +464,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
        an anchor skips it, and every partner goes on.
     2. The targets: Jev rates each pool player of each side. A target needs TARGET_AT, at most TARGET_MAX per side.
     3. The offers: code builds them from the targets only, under the hard rules.
-    4. The shortlist: Jev asks the fair and the need questions of each offer. `varied` keeps SHORTLIST_KEEP offers:
+    4. The shortlist: Jev asks the fair, the need, and the gain questions of each offer. A clear no on the gain of a
+       side drops the offer, and an unsure answer stays. `varied` keeps SHORTLIST_KEEP offers:
        the best offer for each player that the asker gives and for each partner, before more forms of one trade.
     A failed Jev request drops what it would judge, and it logs. It never reads as a no and never stops the press.
     With an `anchor`, he is a target of his side, and each offer holds him on that side (a hard rule). An anchor that
@@ -500,10 +570,10 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     for trade in offers:
         _log_offer(snapshot, trade)
 
-    judged = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid),
-                                              _shortlist_questions(offers_by_partner[rid], snapshot))
+    judged = waves.ask({str(rid): shortlist_request(snapshot, asker, rid, offers_by_partner[rid])
                         for rid in offers_by_partner if offers_by_partner[rid]}, "shortlist")
     rated_offers = []
+    dropped = []
     for rid, partner_offers in offers_by_partner.items():
         response = judged.get(str(rid))
         if response is None:
@@ -511,14 +581,23 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         for n, trade in enumerate(partner_offers):
             fair = response.nouls[f"{n}|fair"]
             needs = {side.roster_id: response.nouls[f"{n}|need.{side.roster_id}"] for side in trade.sides}
+            gains = {side.roster_id: response.nouls[f"{n}|gain.{side.roster_id}"] for side in trade.sides}
             score = fair
             for p in needs.values():
                 score *= p
-            rated_offers.append(ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=fair, needs=needs,
-                                               score=score))
+            offer = ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=fair, needs=needs, gains=gains,
+                                   score=score)
+            # A clear no on the gain of any side drops the offer. An unsure answer stays (decision 09).
+            if any(p < NO_AT for p in gains.values()):
+                dropped.append(offer)
+                log.info("Finder gain drop %s: gains=%s", offer.offer_id, {r: round(p, 2) for r, p in gains.items()})
+                continue
+            rated_offers.append(offer)
     shortlist = varied(rated_offers, SHORTLIST_KEEP)
     stage(f"Made a shortlist of {len(shortlist)}" if len(shortlist) != 1 else "Made a shortlist of one")
     for offer in shortlist:
-        log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s", offer.offer_id, offer.score, offer.fair,
-                 {rid: round(p, 2) for rid, p in offer.needs.items()})
-    return Shortlist(asker=asker, partners=reads, targets=targets, offers=offers, shortlist=shortlist, wider=wider)
+        log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s gains=%s", offer.offer_id, offer.score,
+                 offer.fair, {rid: round(p, 2) for rid, p in offer.needs.items()},
+                 {rid: round(p, 2) for rid, p in offer.gains.items()})
+    return Shortlist(asker=asker, partners=reads, targets=targets, offers=offers, shortlist=shortlist, wider=wider,
+                     dropped=dropped)

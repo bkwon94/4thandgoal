@@ -3,6 +3,7 @@ Tests for the Finder search: the partner filter (the Spares tree), the targets, 
 They read the week 6 snapshot and use FakeJev, so no test calls TypeSafe.
 """
 import logging
+import re
 import shutil
 
 import pytest
@@ -237,6 +238,77 @@ def test_a_failed_jev_request_drops_the_partner_and_never_raises(snap):
     assert not any(read.passed for read in found.partners)
     assert all(read.failed for read in found.partners if any(pair_spares(snap, ASKER, read.roster_id).values()))
     assert found.offers == [] and found.shortlist == []
+
+
+def _gain_of_first_offer(p: float, side: int):
+    """A Jev that gives `p` to the gain Noul of `side` on offer 0. Each other question gets the answer of
+    `_rising_fair`, so offer 0 leads the list when it stays."""
+    def answer(key, question, state):
+        return p if key == f"0|gain.{side}" else _rising_fair(key, question, state)
+    return answer
+
+
+def _shortlist_requests(jev):
+    return [r for r in jev.requests if r.questions and all("|" in key for key in r.questions)]
+
+
+def test_the_shortlist_asks_one_gain_noul_per_side_of_each_offer(snap):
+    jev = FakeJev()
+    found = search(ASKER, PARTNER, snap, jev)
+    [request] = _shortlist_requests(jev)
+    for n in range(len(found.offers)):
+        for rid in (ASKER, PARTNER):
+            question = request.questions[f"{n}|gain.{rid}"]
+            assert str(question.instructions).startswith(
+                f"Does {snap.teams[rid].name} start a better lineup after this trade")
+
+
+def test_a_clear_no_gain_drops_the_offer_and_keeps_its_answers(snap):
+    first = None
+    for side in (ASKER, PARTNER):
+        found = search(ASKER, PARTNER, snap, FakeJev(answer=_gain_of_first_offer(0.29, side)))
+        first = offer_id(found.offers[0])
+        assert first not in {offer.offer_id for offer in found.shortlist}
+        [dropped] = [offer for offer in found.dropped if offer.offer_id == first]
+        assert dropped.gains[side] == pytest.approx(0.29)
+    # With a clear yes everywhere, the same offer leads the list, so only the gain answer dropped it.
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=_rising_fair))
+    assert found.shortlist[0].offer_id == first and found.dropped == []
+
+
+def test_an_unsure_gain_keeps_the_offer(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=_gain_of_first_offer(0.3, ASKER)))
+    kept = {offer.offer_id: offer for offer in found.shortlist}
+    assert found.dropped == []
+    assert kept[offer_id(found.offers[0])].gains[ASKER] == pytest.approx(0.3)
+
+
+def test_the_gain_state_holds_the_lineup_points_of_each_side_before_and_after_each_offer(snap):
+    jev = FakeJev()
+    found = search(ASKER, PARTNER, snap, jev)
+    [request] = _shortlist_requests(jev)
+    offers = request.state["offers"]
+    assert len(offers) == len(found.offers)
+    for n, trade in enumerate(found.offers):
+        lines = offers[str(n)]["lineup_points"]
+        for rid in (ASKER, PARTNER):
+            [line] = [line for line in lines if line.startswith(snap.teams[rid].name + " ")]
+            before, after, change = (float(x) for x in re.findall(r"\d+\.\d", line))
+            # The fact states the change in words, so Jev compares no numbers itself.
+            assert abs(before - after) == pytest.approx(change, abs=0.11)
+            word = "gains" if after > before else "loses" if after < before else "keeps"
+            assert word in line, line
+
+
+def test_a_failed_shortlist_request_drops_its_offers_and_never_reads_as_a_no(snap):
+    class ShortlistFails(FakeJev):
+        def ask(self, state, questions):
+            if any("|" in key for key in questions):
+                raise JevError("timeout")
+            return super().ask(state, questions)
+
+    found = search(ASKER, PARTNER, snap, ShortlistFails())
+    assert found.offers and found.shortlist == [] and found.dropped == []
 
 
 def _last_pool_player(snap, roster_id):

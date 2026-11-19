@@ -1,0 +1,8 @@
+[
+  {"id": 1, "kind": "trade", "asker": "Bo Girds", "partner": "To Infinity and Bijan",
+   "asker_gives": ["Kenneth Walker III"], "asker_gets": ["Patrick Mahomes"], "expect": "drop",
+   "note": "A small QB gain does not pay for a starting RB. The Finder must drop this offer."},
+  {"id": 2, "kind": "trade", "asker": "Bo Girds", "partner": "To Infinity and Bijan",
+   "asker_gives": ["Zay Flowers"], "asker_gets": ["Jared Goff"], "expect": "drop",
+   "note": "The lineup of Bo Girds drops from about 110 to 104 points a week. The Finder must drop this offer."}
+]
