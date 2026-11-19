@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-25, AT-26 and AT-36.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The base and head render diff of cpc and norcal 2026 week 10 reports 0 diffs in under 60 s.
 - [x] With `main` as the base, the run prints "render only" and exits 0.
