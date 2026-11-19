@@ -298,7 +298,7 @@ function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }
    Bullets. The pick writes no headline, so one voice speaks. After a fallback the trade has no Lean and no Bullet, so
    the card lists its plain fact lines. The cards rise in one after another, 80 ms apart, as the texts reveal of
    transitions.dev. With motion off, they show at once. */
-function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; locked: boolean }) {
+function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; disabled: boolean }) {
   const off = useMotionOff();
   const sides = swapSides(trade, asker);
   const partner = sides.find((side) => !side.mine);
@@ -330,7 +330,7 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
           ))}
         </ul>
       )}
-      <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={locked} onClick={onOpen}>
+      <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={disabled} onClick={onOpen}>
         See the Full Result
       </Button>
     </motion.article>
@@ -338,7 +338,7 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
 }
 
 /* The finder result: the cards in one list, or the empty line, then the as-of line. */
-function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; locked: boolean }) {
+function FinderResult({ doc, onOpen, disabled }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; disabled: boolean }) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
     <div className="flex flex-col gap-sp-4 pt-sp-5">
@@ -351,7 +351,7 @@ function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (tra
         <ol aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {doc.trades.map((trade, i) => (
             <li key={trade.offer_id}>
-              <FinderCard trade={trade} asker={asker} index={i} count={doc.trades.length} onOpen={() => onOpen(trade, doc)} locked={locked} />
+              <FinderCard trade={trade} asker={asker} index={i} count={doc.trades.length} onOpen={() => onOpen(trade, doc)} disabled={disabled} />
             </li>
           ))}
         </ol>
@@ -499,7 +499,7 @@ export function TradeFinder({
       ) : (
         <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
       )}
-      {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} locked={locked} />}
+      {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} disabled={locked} />}
     </section>
   );
 }

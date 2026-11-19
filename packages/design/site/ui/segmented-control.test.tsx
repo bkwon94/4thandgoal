@@ -1,5 +1,5 @@
 /**
- * Tests for the segmented control wrapper: one choice of a few, its name, the change on a tap, and the lock.
+ * Tests for the segmented control wrapper: one choice of a few, its name, the change on a tap, and the disabled state.
  * Each test reads the screen through the roles of the ui-sdk part.
  */
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
