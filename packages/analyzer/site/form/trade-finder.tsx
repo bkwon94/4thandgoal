@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronDown, RotateCcw, Users } from "lucide-react";
-import { type ReactNode, useEffect, useId, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { AsOfLine, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
 import { BulletRows } from "./bullet-rows";
 import { ErrorLine } from "@cpc/design/parts/error-line";
@@ -16,6 +16,7 @@ import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Sheet } from "./sheet";
 import { StageLines } from "./stage-lines";
 import { Button } from "@cpc/design/ui/button";
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { PendingButton } from "@cpc/design/ui/pending-button";
 import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "@cpc/design/ui/segmented-control";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -271,42 +272,25 @@ function LeanWord({ lean }: { lean: Lean }) {
   return <h3 className={cn("m-0 text-score leading-tight font-black tracking-tight", yes ? "text-accent-ink" : "text-ink")}>{lean}</h3>;
 }
 
-/* The Bullets fold under the Case, so the card stays short. One tap opens them. The height grows from 0fr to 1fr in
-   250 ms with the smooth-out ease, as the accordion recipe of transitions.dev, and the chevron flips. The closed panel is
-   inert, so a keyboard skips its rows. With motion off it opens at once. */
+/* The Bullets fold under the Case, so the card stays short. One tap opens them. The panel of the shared Collapsible
+   fades in with a small rise, and the chevron flips. The closed panel is hidden, so a keyboard skips its rows. With
+   motion off it opens at once. */
 function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }) {
-  const [open, setOpen] = useState(false);
-  const panel = useId();
   return (
-    <div className="flex flex-col">
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={panel}
-        onClick={() => setOpen((shown) => !shown)}
-        className="press -mx-sp-2 flex min-h-touch w-fit cursor-pointer items-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent"
-      >
+    <Collapsible className="flex flex-col">
+      <CollapsibleTrigger className="press group -mx-sp-2 flex min-h-touch w-fit cursor-pointer items-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent">
         Why it works · {trade.bullets.length}
         <ChevronDown
           aria-hidden="true"
-          className={cn("size-sp-4 transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none", open && "-scale-y-100")}
+          className="size-sp-4 transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-open:-scale-y-100 motion-reduce:transition-none"
         />
-      </button>
-      <div
-        id={panel}
-        inert={!open}
-        className={cn(
-          "grid transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-        )}
-      >
-        <div className="min-h-0 overflow-hidden">
-          <div className="pt-sp-2 pb-sp-1">
-            <BulletRows bullets={trade.bullets} idBase={idBase} />
-          </div>
+      </CollapsibleTrigger>
+      <CollapsiblePanel>
+        <div className="pt-sp-2 pb-sp-1">
+          <BulletRows bullets={trade.bullets} idBase={idBase} />
         </div>
-      </div>
-    </div>
+      </CollapsiblePanel>
+    </Collapsible>
   );
 }
 
