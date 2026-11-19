@@ -32,4 +32,8 @@ Green: at `efa25ec6`, `cd apps/site && pnpm exec vitest run src/app/_routes/sim/
 ```
 Test verdict: pending
 
+## Smoke
+
+Smoke: none. `pnpm --dir apps/site pick --base main` printed "No flow: no file of the diff matches a glob of the flow list."
+
 ## Comments
