@@ -10,9 +10,9 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-5, 
 
 **Status:** ready-for-agent
 
-- [ ] A diff of the analyzer site folder picks only Analyzer.
-- [ ] A diff of the pipeline only picks no flow.
-- [ ] A diff of the design package picks all seven flows.
+- [x] A diff of the analyzer site folder picks only Analyzer.
+- [x] A diff of the pipeline only picks no flow.
+- [x] A diff of the design package picks all seven flows.
 - [ ] A smoke run of all seven flows of cpc 2026 week 10 passes with the real API.
-- [ ] With the API stopped, the Analyzer flow fails and names the request.
-- [ ] The flow list has no route of the egg board.
+- [x] With the API stopped, the Analyzer flow fails and names the request.
+- [x] The flow list has no route of the egg board.

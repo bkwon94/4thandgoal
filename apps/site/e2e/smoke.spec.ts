@@ -7,7 +7,7 @@ import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { buildEnv, EVIDENCE_PORT } from "./evidence";
 import { serveDir } from "./serve";
-import { addSteps, LATEST_WEEK, latestWeek, readFlows, runSmoke } from "./smoke";
+import { addSteps, readFlows, routeOf, runSmoke } from "./smoke";
 
 // pnpm runs each script of the site in apps/site, so the repo root sits two folders up.
 const ROOT = join(process.cwd(), "..", "..");
@@ -30,7 +30,7 @@ test(`the smoke run of ${CLIENT}`, async () => {
   const picked = NAMES.length > 0 ? all.filter((flow) => NAMES.includes(flow.name)) : all;
   const flows = (STEPS ? addSteps(picked, STEPS) : picked).map((flow) => ({
     ...flow,
-    route: flow.route === LATEST_WEEK ? latestWeek(join(ROOT, "clients", CLIENT, "published")) : flow.route,
+    route: routeOf(flow.route, join(ROOT, "clients", CLIENT, "published")),
   }));
   const start = Date.now();
   // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.

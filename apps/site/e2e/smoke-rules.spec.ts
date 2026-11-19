@@ -7,7 +7,7 @@ import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSyn
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { serveDir } from "./serve";
-import { addSteps, type Flow, latestWeek, readFlows, runSmoke } from "./smoke";
+import { addSteps, type Flow, latestWeek, readFlows, routeOf, runSmoke } from "./smoke";
 
 // Each smoke run starts two browsers and shoots each flow at two sizes, so a test takes more than the default 30 s.
 test.describe.configure({ timeout: 120_000 });
@@ -56,6 +56,8 @@ const week = (steps: Flow["steps"]): Flow => ({
   route: "/week/",
   steps,
   expected: 'The title "Week N" and the chapter rail',
+  claude: false,
+  layout: false,
 });
 
 test("a green flow passes with one light shot at 390 in WebKit and one at 1280, and the log says so", async () => {
@@ -66,6 +68,34 @@ test("a green flow passes with one light shot at 390 in WebKit and one at 1280, 
   expect(lines).toContainEqual(expect.stringMatching(/^PASS Week report 1280x800 chromium/));
   expect(lines.at(-1)).toBe("Smoke run: 1 flow, 1 passed, 0 failed");
   expect(readFileSync(join(out, "smoke.log"), "utf8")).toBe(`${lines.join("\n")}\n`);
+});
+
+test("a layout flow adds the two iPad sizes, and a flow with no layout flag keeps the two smoke sizes", async () => {
+  const flows = [{ ...week([{ expect: "text=Week 10" }]), layout: true }, { ...week([{ expect: "text=Week 10" }]), name: "Passphrase" }];
+  const { result, lines, out } = await smoke({ week: WEEK_PAGE }, flows);
+  expect(result.failures).toEqual([]);
+  expect(readdirSync(join(out, "week-report")).sort()).toEqual(["1080-light.png", "1280-light.png", "390-light.png", "810-light.png"]);
+  expect(readdirSync(join(out, "passphrase")).sort()).toEqual(["1280-light.png", "390-light.png"]);
+  expect(lines).toContainEqual(expect.stringMatching(/^PASS Week report 810x980 webkit/));
+  expect(lines).toContainEqual(expect.stringMatching(/^PASS Week report 1080x740 webkit/));
+});
+
+test("a flow that calls Claude runs once, at 390 in WebKit, even when it is a layout flow", async () => {
+  const { result, lines, out } = await smoke({ week: WEEK_PAGE }, [{ ...week([{ expect: "text=Week 10" }]), claude: true, layout: true }]);
+  expect(result.failures).toEqual([]);
+  expect(readdirSync(join(out, "week-report"))).toEqual(["390-light.png"]);
+  expect(lines.filter((line) => line.startsWith("PASS"))).toEqual([expect.stringMatching(/^PASS Week report 390x660 webkit/)]);
+});
+
+test("a flow with no Claude flag or no layout flag stops the run, and the error names the flow", () => {
+  const { dir } = site({});
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, "flows.json");
+  const { claude: _claude, ...flow } = week([]);
+  writeFileSync(file, JSON.stringify([flow]));
+  expect(() => readFlows(file)).toThrow(/flow 1 "Week report": "claude" must be true or false/);
+  writeFileSync(file, JSON.stringify([{ ...week([]), layout: "yes" }]));
+  expect(() => readFlows(file)).toThrow(/flow 1 "Week report": "layout" must be true or false/);
 });
 
 test("a failed expect of Week 99 fails the run, names the flow and the step, and keeps a shot of the failure", async () => {
@@ -89,6 +119,28 @@ test("a seeded overlap fails the run and names the two elements", async () => {
   const { result } = await smoke({ week: OVERLAP_PAGE }, [week([{ expect: "text=Week 10" }])]);
   expect(result.failures).toHaveLength(2);
   for (const line of result.failures) expect(line).toMatch(/: overlap: <h1> "Week 10" and <a> "Matchup of the Week"$/);
+});
+
+/* The week page with a screen-reader text on top of the title, as the class sr-only of Tailwind sets it. */
+const SR_ONLY_PAGE = WEEK_PAGE.replace(
+  "</h1>",
+  '<span style="position:absolute;top:16px;left:16px;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">Up 6</span></h1>',
+);
+
+test("a screen-reader text over a visible text is no overlap, because its own box clips it", async () => {
+  const { result } = await smoke({ week: SR_ONLY_PAGE }, [week([{ expect: "text=Week 10" }])]);
+  expect(result.failures).toEqual([]);
+});
+
+/* The week page with a paragraph of tight leading: each glyph box is taller than its line, so two lines share a few px. */
+const TIGHT_PAGE = WEEK_PAGE.replace(
+  "</body>",
+  `<p style="width:280px;margin:16px;font-size:16px;line-height:0.9"><span style="font-weight:700">Maye d'force B with U</span> leads by 165.8 points over the line.</p></body>`,
+);
+
+test("two lines of one paragraph with tight leading are no overlap, because each line owns only its line height", async () => {
+  const { result } = await smoke({ week: TIGHT_PAGE }, [week([{ expect: "text=Week 10" }])]);
+  expect(result.failures).toEqual([]);
 });
 
 test("a page error, a console error, and an API response of 4xx each fail the run", async () => {
@@ -119,10 +171,41 @@ test("a page error, a console error, and an API response of 4xx each fail the ru
   }
 });
 
+test("a failed image of another host is no error, because the page swaps it, but a missing file of the site fails the run", async () => {
+  // The second server stands in for an image host such as the CDN of Sleeper. It has no file, so each image gets a 404.
+  const host = await serveDir(site({}).dir);
+  const image = (src: string) => `<html><body><h1>Week 10</h1><img src="${src}" alt="" onerror="this.dataset.fallback = 1"></body></html>`;
+  const flows: Flow[] = [
+    { ...week([]), name: "Other host", route: "/other/" },
+    { ...week([]), name: "Own site", route: "/own/" },
+  ];
+  const { dir, out } = site({ other: image(`${host.url}/players/SF.jpg`), own: image("/players/SF.jpg") });
+  const server = await serveDir(dir);
+  try {
+    const { failures } = await runSmoke({ flows, url: server.url, out, log: () => {} });
+    expect(failures.filter((line) => line.includes("Other host"))).toEqual([]);
+    expect(failures.filter((line) => line.includes("Own site"))).toEqual([
+      expect.stringMatching(/^FAIL Own site 390x660 webkit: console error: Failed to load resource/),
+      expect.stringMatching(/^FAIL Own site 1280x800 chromium: console error: Failed to load resource/),
+    ]);
+  } finally {
+    await server.close();
+    await host.close();
+  }
+});
+
 test("the latest week is the highest week of the highest season of the published folder", () => {
   const { dir } = site({ "2025/week-17": "", "2026/week-09": "", "2026/week-10": "", "2026/week-06": "" });
   writeFileSync(join(dir, "2026", "managers.json"), "{}");
   expect(latestWeek(dir)).toBe("/2026/week-10/");
+});
+
+test("a route names the latest week as {latest-week} and the latest season as {season}", () => {
+  const { dir } = site({ "2025/week-17": "", "2026/week-09": "", "2026/week-10": "" });
+  expect(routeOf("{latest-week}", dir)).toBe("/2026/week-10/");
+  expect(routeOf("/{season}/managers/", dir)).toBe("/2026/managers/");
+  expect(routeOf("/midseason/{season}/", dir)).toBe("/midseason/2026/");
+  expect(routeOf("/rankings/", dir)).toBe("/rankings/");
 });
 
 test("the flow list of the verify skill reads clean, and the Week report opens the latest week", () => {

@@ -6,16 +6,27 @@ argument-hint: '[<flow name> ...]'
 
 # Verify
 
-A smoke run drives the flows of the site through the evidence runner, in WebKit at 390x660 and in Chromium at 1280x800, in the light theme. It calls the real local API. A green run shows that the change works in the running app. A red run is a red check: one fix round, then a stop.
+A smoke run drives the flows of the site through the evidence runner, in WebKit at 390x660 and in Chromium at 1280x800, in the light theme. A layout flow adds the iPad sizes 810x980 and 1080x740 in WebKit. A flow that calls Claude runs once, in WebKit at 390x660, so a smoke run costs a few cents. It calls the real local API. A green run shows that the change works in the running app. A red run is a red check: one fix round, then a stop.
 
-The flow list is `flows.json` beside this file. Each flow has a name, the globs of the code it covers, a route, its steps in the step-list shape of the evidence runner, and its expected results. The route `{latest-week}` opens the latest published week of the client.
+The flow list is `flows.json` beside this file. Each flow has a name, the globs of the code it covers, a route, its steps in the step-list shape of the evidence runner, its expected results, the flag `claude` for a flow that calls Claude, and the flag `layout` for a flow whose layout changes with the width. The route `{latest-week}` opens the latest published week of the client. In a route, `{season}` gives the season of that week.
+
+The flow list holds seven flows: Front door, Passphrase, Week report, Manager page, Analyzer, Power rankings, and Midseason report. It holds no flow of the egg board, because the board writes to a live store.
+
+## Pick the flows
+
+The globs of the diff since the merge base pick the flows. Do not pick the flows by hand.
+
+1. Run `pnpm --dir apps/site pick --base main`. Use the spec branch as the base for a ticket branch.
+2. Read the output. It lists one flow name per line, or it says why it picks no flow.
+
+A change to a shared part picks each flow. The shared parts are the design package, the league package, the shell and the lib of the site, the client build, the package files, the smoke run, and this skill. `SHARED_GLOBS` in `apps/site/scripts/flow-pick.mjs` lists them. A diff that matches no glob picks no flow. A diff of the pipeline only picks no flow, because the base and head rebuild covers it. To try the pick on some files with no diff, name the files after the options.
 
 ## Site
 
 Run each command at the root of the worktree. Put Node 24 or later first on PATH.
 
 1. Start the local API in its evidence mode in the background: `make -C apps/api api-evidence`.
-2. Run the smoke run: `pnpm --dir apps/site smoke --out <smoke folder> [<flow name> ...]`.
+2. Run the smoke run of the picked flows: `pnpm --dir apps/site smoke --out <smoke folder> <flow name> ...`.
 3. Read the last line of the log. "Smoke run: N flows, N passed, 0 failed" is a green run.
 4. Stop the local API.
 
@@ -23,13 +34,15 @@ The smoke run builds the export of the client against the local API, serves it o
 
 The smoke folder gets `smoke.log` and one folder of shots per flow. A shot is `<width>-light.png`, or `<shot name>-<width>-light.png` for a `shot` step. A failed flow also gets `fail-<width>-light.png`, a shot of the page as it failed.
 
+A step of a flow that calls Claude waits up to 120 s for its element, because one answer of Claude takes up to a minute. The local API needs `ANTHROPIC_API_KEY` and `TYPESAFE_API_KEY` in its env for these flows.
+
 A flow fails on each of these causes. Each line of the log names the flow, the size, and the cause:
 
 - A step that finds no element in 10 s.
 - An `expect` step whose element is not visible in 5 s.
-- A page error or a console error.
+- A page error or a console error. The load log of a failed file of another host, such as a headshot of the CDN of Sleeper, does not count, because the site swaps the image for its default.
 - An API response of 4xx or 5xx, or a failed request to the API.
-- An overlap of two visible texts. The log names the two elements.
+- An overlap of two visible texts. The log names the two elements. A screen-reader text and the leading of one paragraph do not count.
 
 ### Add steps for the change
 
