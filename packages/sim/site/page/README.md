@@ -14,6 +14,7 @@
 - A set week keeps its tiles and its root-for card as they were at the tap, so the tiles still show the odds of each other result.
 - The set line lists each set result, with a Reset back to the numbers of the file.
 - A failed call goes back to the set results of the last answer, and one line says "The What-if is not available now."
+- "Sim week N" and "Sim the season" sit in the flow under the week page, and open the replay of `stage/`. The Playoffs page has only "Sim the season". While a call runs, both wait, so the replay plays a run of the set line.
 
 ## Ports
 

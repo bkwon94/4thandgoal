@@ -1,17 +1,19 @@
 /**
  * The sim page of Your team, layout D "Cards" (decision 04): the header with the odds, the sentence that opens the ladder,
- * the set line of the What-if, the week switch, and one page per week with the week card and the root-for card.
+ * the set line of the What-if, the week switch, one page per week with the week card and the root-for card, and the
+ * two buttons that open the replay.
  */
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { Play, RotateCcw, Shuffle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { cn } from "@cpc/design/lib/utils";
 import type { SetResult, WeekSim } from "../schema/sim-types";
 import type { WhatIfApi } from "../lib/what-if-api";
+import { SimStage, type StageAsk } from "../stage/sim-stage";
 import { LABEL, PRESS, nameOf, oddsText, recordText, resultName } from "./format";
 import { LadderSheet } from "./ladder-sheet";
 import { SoftText } from "./parts";
@@ -32,7 +34,20 @@ const ADVANCE_MS = 400;
 /* The line of the set results, such as "Wk 11 win, beat median · Wk 12 lose". */
 const setText = (set: SetResult[]) => set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
 
-export function SimPage({ sim, you, avatars = {}, whatIf }: { sim: WeekSim; you: number; avatars?: Avatars; whatIf?: WhatIfApi }) {
+/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it. */
+export function SimPage({
+  sim,
+  you,
+  avatars = {},
+  whatIf,
+  random = Math.random,
+}: {
+  sim: WeekSim;
+  you: number;
+  avatars?: Avatars;
+  whatIf?: WhatIfApi;
+  random?: () => number;
+}) {
   const file = sim.pages[you];
   const name = nameOf(sim, you);
   const what = useWhatIf(file, whatIf);
@@ -42,6 +57,7 @@ export function SimPage({ sim, you, avatars = {}, whatIf }: { sim: WeekSim; you:
   // which shows at rest.
   const [{ open, side }, setView] = useState<{ open: WeekItem; side: number }>({ open: items[0], side: 0 });
   const off = useMotionOff();
+  const [replay, setReplay] = useState<StageAsk | null>(null);
   const advance = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(advance.current), []);
   // A failed What-if keeps the reader on the week of the tap, beside the line that says so.
@@ -111,6 +127,43 @@ export function SimPage({ sim, you, avatars = {}, whatIf }: { sim: WeekSim; you:
           <PlayoffsPage sim={sim} you={you} onOpen={openItem} />
         )}
       </motion.div>
+
+      <SimButtons week={typeof open === "number" ? open : null} waiting={what.pending} onAsk={setReplay} />
+      {replay !== null && (
+        <SimStage
+          sim={sim}
+          runs={what.runs ?? sim}
+          avatars={avatars}
+          yourTeam={you}
+          ask={replay}
+          random={random}
+          onDone={() => setReplay(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/* The two buttons of the replay, in the flow under the week page and never fixed over content. The Playoffs page has
+   only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
+function SimButtons({ week, waiting, onAsk }: { week: number | null; waiting: boolean; onAsk: (ask: StageAsk) => void }) {
+  const base = cn(
+    PRESS,
+    "flex min-h-touch flex-1 items-center justify-center gap-sp-2 rounded-report px-sp-3 text-body font-bold",
+    "transition-opacity duration-150 ease-out disabled:opacity-50",
+  );
+  return (
+    <div className="flex w-full gap-sp-2">
+      {week !== null && (
+        <button type="button" disabled={waiting} onClick={() => onAsk({ mode: "week", week })} className={cn(base, "border border-ink bg-page text-ink hover-fine:bg-card")}>
+          <Play aria-hidden className="size-4" />
+          {`Sim week ${week}`}
+        </button>
+      )}
+      <button type="button" disabled={waiting} onClick={() => onAsk({ mode: "season" })} className={cn(base, "bg-accent text-on-dark hover-fine:opacity-90")}>
+        <Shuffle aria-hidden className="size-4" />
+        Sim the season
+      </button>
     </div>
   );
 }
