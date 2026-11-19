@@ -84,6 +84,18 @@ def research_facts(p: WaiverPlayer, claims: list[ResearchClaim]) -> list[Fact]:
     return facts
 
 
+def _with_claims(board: WaiverBoard, claims: dict[str, list[ResearchClaim]]) -> dict[str, list[WaiverPlayer]]:
+    """The buckets of the board, each player with his claims and the facts of those claims. No claim gives none."""
+    return {
+        key: [
+            p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]})
+            for p in bucket
+            for found in [claims.get(p.player_id, [])]
+        ]
+        for key, bucket in board.buckets.items()
+    }
+
+
 def research_board(board: WaiverBoard, call: SearchCall, prompts_dir: Path) -> WaiverBoard:
     """The board with the research claims and the research facts of each ranked player.
 
@@ -104,14 +116,7 @@ def research_board(board: WaiverBoard, call: SearchCall, prompts_dir: Path) -> W
     missing = bool(players) and not claims
     if missing:
         log.warning("research failed for every player, so the page says the experts are missing")
-    buckets: dict[str, list[WaiverPlayer]] = {}
-    for key, bucket in board.buckets.items():
-        buckets[key] = []
-        for p in bucket:
-            found = claims.get(p.player_id, [])
-            buckets[key].append(
-                p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]})
-            )
+    buckets = _with_claims(board, claims)
     return board.model_copy(update={"buckets": buckets, "experts_missing": missing})
 
 
@@ -122,12 +127,5 @@ def saved_research(board: WaiverBoard, saved: WaiverBoard | None) -> WaiverBoard
     the saved board does not hold gets no claim, so a diff shows him as a change of the board.
     """
     claims = {p.player_id: p.research for bucket in (saved.buckets.values() if saved else []) for p in bucket}
-    buckets: dict[str, list[WaiverPlayer]] = {}
-    for key, bucket in board.buckets.items():
-        buckets[key] = []
-        for p in bucket:
-            found = claims.get(p.player_id, [])
-            buckets[key].append(
-                p.model_copy(update={"research": found, "facts": [*p.facts, *research_facts(p, found)]})
-            )
+    buckets = _with_claims(board, claims)
     return board.model_copy(update={"buckets": buckets, "experts_missing": bool(saved and saved.experts_missing)})
