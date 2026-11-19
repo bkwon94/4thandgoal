@@ -224,16 +224,16 @@ export function Tour({ ready }: { ready: boolean }) {
       settle();
     };
     // Only a change from open to clear starts the delay again, so the many changes of a busy page do not hold the Tour off.
-    const check = () => {
+    const checkModal = () => {
       const now = modalOpen();
       if (now === blocked) return;
       blocked = now;
       window.clearTimeout(timer);
       if (!now) timer = window.setTimeout(start, START_DELAY_MS);
     };
-    const observer = new MutationObserver(check);
+    const observer = new MutationObserver(checkModal);
     observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-modal"] });
-    check();
+    checkModal();
     return () => {
       observer.disconnect();
       window.clearTimeout(timer);
@@ -270,16 +270,16 @@ function scrollThen(el: HTMLElement, smooth: boolean, done: () => void): () => v
     cancelAnimationFrame(frame);
     document.removeEventListener("scroll", onScroll, true);
   };
-  const check = () => {
+  const checkSettled = () => {
     const now = performance.now();
-    if (now - moved < SCROLL_SETTLE_MS && now - start < SCROLL_CAP_MS) frame = requestAnimationFrame(check);
+    if (now - moved < SCROLL_SETTLE_MS && now - start < SCROLL_CAP_MS) frame = requestAnimationFrame(checkSettled);
     else {
       stop();
       done();
     }
   };
   document.addEventListener("scroll", onScroll, true);
-  frame = requestAnimationFrame(check);
+  frame = requestAnimationFrame(checkSettled);
   return stop;
 }
 
@@ -385,7 +385,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   };
 
   if (!target || !hole || side === null) return null;
-  const shown = targets[cardAt];
+  const cardStop = targets[cardAt];
   const next = () => (last ? setOpen(false) : setIndex(index + 1));
   const end = () => setOpen(false);
   const width = Math.min(320, window.innerWidth - CARD_EDGE * 2);
@@ -464,8 +464,8 @@ function Stops({ onEnd }: { onEnd: () => void }) {
             >
               <div className="flex items-baseline justify-between gap-sp-3">
                 <StopCardTitle className="m-0 text-body leading-tight font-semibold text-ink">
-                  <Swap id={shown.key} off={off}>
-                    {shown.header}
+                  <Swap id={cardStop.key} off={off}>
+                    {cardStop.header}
                   </Swap>
                 </StopCardTitle>
                 <span className="flex-none font-mono text-meta leading-tight tracking-caps text-mute uppercase tabular-nums">
@@ -480,8 +480,8 @@ function Stops({ onEnd }: { onEnd: () => void }) {
                   <span key={stop.key} aria-hidden data-line={stop.line} className="invisible [grid-area:1/1] after:content-[attr(data-line)]" />
                 ))}
                 <StopCardLine className="m-0 text-ink-2 [grid-area:1/1]">
-                  <Swap id={shown.key} off={off}>
-                    {shown.line}
+                  <Swap id={cardStop.key} off={off}>
+                    {cardStop.line}
                   </Swap>
                 </StopCardLine>
               </div>
