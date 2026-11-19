@@ -28,19 +28,42 @@ Before the push, read the result of the run.
 - Fix a red run before the push. Run again only the check of the failed member: `make -C apps/<app> check`. Do not run the full check again.
 - If a test of the spec covers the background check, record the start time, the end time, and the last lines of the log in its evidence.
 
+## The smoke run
+
+Run one smoke run after the last ticket merge, before the first site test and before the Judge. Skip it only when the diff of the spec against `main` has no change to `apps/site/` or `apps/api/`. See the `verify` skill.
+
+1. Pick the flows: `pnpm --dir apps/site pick --base main`.
+2. Run the flows: `pnpm --dir apps/site smoke --out .scratch/<slug>/evidence/smoke <flow name> ...`. The run starts and stops its own local API.
+3. Put the last line of `smoke.log` at the top of `EVIDENCE.md`, with the path of the smoke folder `evidence/smoke/`.
+
+The folder `evidence/smoke/` holds `smoke.log`, `api.log`, and the shots of each flow.
+
+A red smoke run is a red check. Fix the cause with a fix group, and run the smoke run again once. If it is still red, stop before the Judge. Tell Brian the log. Start no Judge and open no PR.
+
+## The rebuild list
+
+Skip this part when the spec does not change the output of the pipeline on purpose.
+
+1. Write `.scratch/<slug>/REBUILD.md`. It lists each value that the spec changes on purpose.
+2. Write one value on each line, in this shape: `- <client> <file> <JSON path>: <reason>`. The check `scripts/rebuild.py` reads these lines.
+3. Run the rebuild after the last ticket merge. Save its output as `.scratch/<slug>/evidence/rebuild.log`.
+4. Name `REBUILD.md` and `evidence/rebuild.log` in `EVIDENCE.md`.
+
+The Judge reads the list and the rebuild output. It checks each reason against the test.
+
 ## A site test
 
 The instrument is the evidence runner, a Playwright project of the site. One command takes every shot of every site test of the feature.
 
 1. Write `.scratch/<slug>/evidence/AT-<n>/steps.json` for each site test that asks for screenshots. See "The step list" below.
-2. If any test uses the analyzer, start the local API first: `make -C apps/api api-evidence`. Run it in the background. It allows 600 requests a minute, so a test does not wait on the limit. It stays real, with real Sleeper data and real Claude calls.
-3. Run the round from the Spec worktree: `pnpm --dir apps/site evidence <slug>`. Save the full output. It prints the build of each client, the time of each test, and the total.
-4. Look at each shot. Write one or two sentences of what it shows about the Then line.
-5. Stop the API when the round is done.
+2. Run the round from the Spec worktree: `pnpm --dir apps/site evidence <slug>`. Save the full output. It prints the ports, the path of `api.log`, the build of each client, the time of each test, and the total.
+3. Look at each shot. Write one or two sentences of what it shows about the Then line.
+
+Do not start an API first. The round starts its own local API, `make -C apps/api api-evidence` on a free port, and stops it at the end. It allows 600 requests a minute, so a test does not wait on the limit. It stays real, with real Sleeper data and real Claude calls. For a test that calls Claude, source `~/.secrets` in the same shell before the round.
 
 To take the shots of only some tests again, name them: `pnpm --dir apps/site evidence <slug> AT-3 AT-7`.
 
-The runner builds each client one time per round and serves its export on `http://127.0.0.1:4173`. The build calls the local API at `http://localhost:8080`, never the production API. A missing path gets the `404.html` of the site, as the Worker gives it. The runner opens each page with `cpc.theme` set to `light` or `dark`, and scrolls the page to the end and back before each full-page shot.
+The runner serves the export on a free port of `127.0.0.1`, and builds each client one time per round. The build calls the local API of the round, never the production API. A missing path gets the `404.html` of the site, as the Worker gives it. The runner opens each page with `cpc.theme` set to `light` or `dark`, and scrolls the page to the end and back before each full-page shot.
 
 ### The step list
 
@@ -79,17 +102,18 @@ The runner writes these files beside `steps.json`:
 
 Use the `agent-browser` CLI for a test whose step no verb covers, such as a test with scripts off. Run `agent-browser skills get core` one time to learn its commands.
 
-1. Build the site from the Spec worktree: `pnpm --dir apps/site build`. For an analyzer test, set `NEXT_PUBLIC_API_URL=http://localhost:8080`, or the site calls the production API.
-2. Serve `apps/site/out` on `http://127.0.0.1:4173` with a server that answers a missing path with `404.html` and the status 404, as the Worker does. Run it in the background. `make -C apps/api api-evidence` allows only that origin.
-3. For each width and theme that the Evidence line names:
+1. Build the site from the Spec worktree: `pnpm --dir apps/site build`. For an analyzer test, set `NEXT_PUBLIC_API_URL=http://127.0.0.1:<API port>`, or the site calls the production API.
+2. Serve `apps/site/out` on `http://127.0.0.1:<site port>` with a server that answers a missing path with `404.html` and the status 404, as the Worker does. Run it in the background. Check each port with `lsof -i :<port>` first, because another session can hold it.
+3. For an analyzer test, start the API in the background: `make -C apps/api api-evidence API_PORT=<API port> API_ORIGIN=http://127.0.0.1:<site port>`. The API allows only that origin.
+4. For each width and theme that the Evidence line names:
    1. Set the viewport: `agent-browser set viewport <width> 900`.
    2. Open the page that the When line names.
    3. Set the theme. The site reads the key `cpc.theme` from local storage. Run `agent-browser eval "localStorage.setItem('cpc.theme','light')"` for light, or `setItem('cpc.theme','dark')` for dark.
    4. Run `agent-browser reload`, then `agent-browser wait 1000`.
    5. Scroll to the end and back to the top, so each section that reveals on scroll shows: `agent-browser eval "window.scrollTo(0, document.body.scrollHeight)"`, `agent-browser wait 1500`, then `agent-browser eval "window.scrollTo(0, 0)"`.
    6. Take the screenshot: `agent-browser screenshot <absolute path of .scratch/<slug>/evidence/AT-<n>>/<width>-<theme>.png --full`. Put the path before `--full`. With `--full` first, the CLI ignores the path and saves the file under `~/.agent-browser/tmp/`.
-4. Write the steps you ran in `evidence/AT-<n>/steps.txt`, so a reader knows how each shot was made.
-5. Stop the server and close the browser when the last such test is done.
+5. Write the steps you ran in `evidence/AT-<n>/steps.txt`, so a reader knows how each shot was made.
+6. Stop the server and the API, and close the browser, when the last such test is done.
 
 ## A pipeline test
 

@@ -1,0 +1,16 @@
+smoke/analyzer/390-light.png
+smoke/front-door/390-light.png
+smoke/manager-page/1080-light.png
+smoke/manager-page/1280-light.png
+smoke/manager-page/390-light.png
+smoke/manager-page/810-light.png
+smoke/midseason-report/1280-light.png
+smoke/midseason-report/390-light.png
+smoke/passphrase/1280-light.png
+smoke/passphrase/390-light.png
+smoke/power-rankings/1280-light.png
+smoke/power-rankings/390-light.png
+smoke/week-report/1080-light.png
+smoke/week-report/1280-light.png
+smoke/week-report/390-light.png
+smoke/week-report/810-light.png

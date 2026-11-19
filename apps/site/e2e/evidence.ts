@@ -10,7 +10,7 @@ import { openPage } from "./floor";
 
 /* The keys and the verbs of the step list, as the spec names them. Any other key or verb is an error. */
 const KEYS = ["route", "steps", "widths", "themes", "clients"] as const;
-const VERBS = ["click", "fill", "scroll", "wait", "shot", "url"] as const;
+const VERBS = ["click", "fill", "scroll", "wait", "expect", "shot", "url"] as const;
 
 /* The defaults of a test that does not narrow them. Each shot of a test is one width in one theme. */
 const WIDTHS = [375, 768, 1280] as const;
@@ -25,35 +25,41 @@ const SETTLE_MS = 1200;
 const CLIENT = "cpc";
 
 /*
- * The local API of make -C apps/api api-evidence. The build bakes the API URL into the export, and with no value the
- * site calls the production API. An evidence run must never call production, so the build always sets this URL.
- * LOCAL_API_URL moves the run to a local API on another port, when a second API already holds port 8080.
+ * The local API of make -C apps/api api-evidence with its default port, for the egg hunt of eggs.spec.ts and for the
+ * route stubs of the grade-bar project. A smoke run and an evidence round start their own API on a free port instead.
+ * LOCAL_API_URL moves the egg hunt to a local API on another port, when a second API already holds port 8080.
  */
 export const LOCAL_API = process.env.LOCAL_API_URL ?? "http://localhost:8080";
 
 /*
- * The fixed port of the evidence server. The API answers only the origins it allows, and a free port changes each run.
- * make -C apps/api api-evidence allows EVIDENCE_ORIGIN, so the analyzer tests of a round reach the local API.
+ * The default port of the egg hunt server. The API answers only the origins it allows, and make -C apps/api api-evidence
+ * allows EVIDENCE_ORIGIN when the caller sets no API_ORIGIN. A smoke run and an evidence round serve on a free port.
  */
 export const EVIDENCE_PORT = 4173;
 export const EVIDENCE_ORIGIN = `http://127.0.0.1:${EVIDENCE_PORT}`;
 
-/* The env of the build of one client in an evidence run: the caller env, the client, and always the local API. */
-export function buildEnv(client: string, env: Partial<NodeJS.ProcessEnv> = process.env): NodeJS.ProcessEnv {
+/*
+ * The env of the build of one client against a local API: the caller env, the client, and always the API URL. The build
+ * bakes the API URL into the export, and with no value the site calls the production API. A run must never call
+ * production, so the build always sets this URL.
+ */
+export function buildEnv(client: string, api: string, env: Partial<NodeJS.ProcessEnv> = process.env): NodeJS.ProcessEnv {
   // The types of Next mark NODE_ENV as required, but a build of the site sets it itself.
-  return { ...env, CLIENT: client, NEXT_PUBLIC_API_URL: LOCAL_API } as NodeJS.ProcessEnv;
+  return { ...env, CLIENT: client, NEXT_PUBLIC_API_URL: api } as NodeJS.ProcessEnv;
 }
 
 /*
  * One step of a step list. Each step is an object with one verb as its key:
  * {"click": "<selector>"}, {"fill": {"selector": "<selector>", "value": "<text>"}}, {"scroll": "<selector>" or "end"},
- * {"wait": "<selector>", "url", or a time in ms}, {"shot": "<name>"}, and {"url": true}.
+ * {"wait": "<selector>", "url", or a time in ms}, {"expect": "<selector>"}, {"shot": "<name>"}, and {"url": true}.
+ * "expect" asserts that its element is visible, and fails the run if not. A text takes the selector "text=<text>".
  */
 export type Step =
   | { click: string }
   | { fill: { selector: string; value: string } }
   | { scroll: string }
   | { wait: string | number }
+  | { expect: string }
   | { shot: string }
   | { url: true };
 
@@ -122,7 +128,7 @@ export function readSteps(file: string): Omit<EvidenceTest, "id" | "folder"> {
 }
 
 /* Checks one step against the steps before it. The error starts with name, which holds the file and the step. */
-function checkStep(name: string, step: unknown, before: readonly Step[]): Step {
+export function checkStep(name: string, step: unknown, before: readonly Step[]): Step {
   const verbs = typeof step === "object" && step !== null && !Array.isArray(step) ? Object.keys(step) : [];
   if (verbs.length !== 1) throw new Error(`${name} must hold exactly one verb`);
   const [verb] = verbs;
@@ -148,6 +154,9 @@ function checkStep(name: string, step: unknown, before: readonly Step[]): Step {
     }
     case "scroll":
       if (!text) fail('takes a selector or "end"');
+      break;
+    case "expect":
+      if (!text) fail('takes a selector, or "text=<text>" for a text');
       break;
     case "wait":
       if (!text && !(typeof value === "number" && Number.isFinite(value) && value >= 0)) {
@@ -232,42 +241,67 @@ function shotFile(test: EvidenceTest, client: string, name: string, extension = 
  * Takes one full-page shot, after the scroll pass, so each section that reveals on scroll shows. The pass returns to the
  * scroll position before the shot, so the shot shows the page at that position.
  */
-async function takeShot(page: Page, path: string): Promise<void> {
+export async function takeShot(page: Page, path: string): Promise<void> {
   await scrollPass(page);
   await page.screenshot({ path, fullPage: true });
 }
 
-/* Runs the steps of one test in one page. A shot or a url step writes its file for this width and theme. */
-async function runSteps(page: Page, test: EvidenceTest, client: string, width: number, theme: Theme): Promise<void> {
+/* The time in ms that "expect" waits for its element to show, as the default time of a Playwright expect. */
+const EXPECT_MS = 5000;
+
+/*
+ * Runs the steps of one test in one page. A shot or a url step writes its file for this width and theme.
+ * A failed step throws an error that names the step by its number and its JSON, so the log says which step failed.
+ */
+export async function runSteps(page: Page, test: EvidenceTest, client: string, width: number, theme: Theme): Promise<void> {
   // The URL before the last click, for "wait": "url".
   let clickedFrom = page.url();
-  for (const step of test.steps) {
-    if ("click" in step) {
-      clickedFrom = page.url();
-      await page.locator(step.click).first().click();
-    } else if ("fill" in step) {
-      await page.locator(step.fill.selector).first().fill(step.fill.value);
-    } else if ("scroll" in step) {
-      if (step.scroll === "end") await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      else await page.locator(step.scroll).first().scrollIntoViewIfNeeded();
-      // The scroll events and the IntersectionObserver callbacks of the page run in the next frames. Two frames let them
-      // run, so the next step sees the page after its scroll.
-      await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
-    } else if ("wait" in step) {
-      // "url" waits until the URL changes from the URL before the last click, so a tap that opens a page has opened it.
-      if (step.wait === "url") await page.waitForURL((now) => now.href !== clickedFrom);
-      else if (typeof step.wait === "number") await page.waitForTimeout(step.wait);
-      else await page.locator(step.wait).first().waitFor({ state: "visible" });
-    } else if ("shot" in step) {
-      await takeShot(page, shotFile(test, client, `${step.shot}-${width}-${theme}`));
-    } else {
-      // The page itself gives the URL, because page.url() can lag a change that history.replaceState makes.
-      const href = await page.evaluate(() => location.href);
-      writeFileSync(shotFile(test, client, `url-${width}-${theme}`, "txt"), `${href}\n`);
+  for (const [index, step] of test.steps.entries()) {
+    try {
+      clickedFrom = await runStep(page, test, client, width, theme, step, clickedFrom);
+    } catch (error) {
+      throw new Error(`step ${index + 1} ${JSON.stringify(step)}: ${(error as Error).message}`);
     }
   }
   // With no shot step, the test gets one shot after its last step, with the plain name.
   if (!test.steps.some((step) => "shot" in step)) await takeShot(page, shotFile(test, client, `${width}-${theme}`));
+}
+
+/* Runs one step, and gives the URL before the last click, for "wait": "url". */
+async function runStep(page: Page, test: EvidenceTest, client: string, width: number, theme: Theme, step: Step, from: string): Promise<string> {
+  let clickedFrom = from;
+  if ("click" in step) {
+    clickedFrom = page.url();
+    await page.locator(step.click).first().click();
+  } else if ("fill" in step) {
+    await page.locator(step.fill.selector).first().fill(step.fill.value);
+  } else if ("scroll" in step) {
+    if (step.scroll === "end") await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    else await page.locator(step.scroll).first().scrollIntoViewIfNeeded();
+    // The scroll events and the IntersectionObserver callbacks of the page run in the next frames. Two frames let them
+    // run, so the next step sees the page after its scroll.
+    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+  } else if ("wait" in step) {
+    // "url" waits until the URL changes from the URL before the last click, so a tap that opens a page has opened it.
+    if (step.wait === "url") await page.waitForURL((now) => now.href !== clickedFrom);
+    else if (typeof step.wait === "number") await page.waitForTimeout(step.wait);
+    else await page.locator(step.wait).first().waitFor({ state: "visible" });
+  } else if ("expect" in step) {
+    const shown = await page
+      .locator(step.expect)
+      .first()
+      .waitFor({ state: "visible", timeout: EXPECT_MS })
+      .then(() => true)
+      .catch(() => false);
+    if (!shown) throw new Error(`the expect failed: "${step.expect}" is not visible after ${EXPECT_MS} ms`);
+  } else if ("shot" in step) {
+    await takeShot(page, shotFile(test, client, `${step.shot}-${width}-${theme}`));
+  } else {
+    // The page itself gives the URL, because page.url() can lag a change that history.replaceState makes.
+    const href = await page.evaluate(() => location.href);
+    writeFileSync(shotFile(test, client, `url-${width}-${theme}`, "txt"), `${href}\n`);
+  }
+  return clickedFrom;
 }
 
 /* The number of shots that one test takes. */
@@ -284,6 +318,8 @@ async function takeShots(browser: Browser, url: string, test: EvidenceTest, clie
         await openPage(page, `${url}${test.route}`, theme);
         await page.waitForLoadState("networkidle");
         await runSteps(page, test, client, width, theme);
+      } catch (error) {
+        throw new Error(`${test.id} ${client} ${width} ${theme}: ${(error as Error).message}`);
       } finally {
         await page.close();
       }

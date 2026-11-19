@@ -1,0 +1,5 @@
+AGENTS.md (Spec worktree root), lines 81-84
+81	## Flaky tests
+82	
+83	A flaky test gets a fix of its cause, or a delete with the reason in the commit. A second run is never the fix.
+84	Set no retry in a config. `scripts/retry_rule.py` fails on a Playwright `retries` above 0, on a Vitest `retry`, and on `pytest-rerunfailures`.

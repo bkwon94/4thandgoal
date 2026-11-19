@@ -6,6 +6,8 @@ out
 .claude/worktrees/
 .claude/settings.local.json
 __pycache__/
+# The own env of make -C apps/api api-evidence, beside the shared .venv. See apps/api/Makefile.
+.venv-api-evidence/
 # The caches of the NFL data and of the API results. Each run fills them again.
 data/nfl/cache/
 data/cache/
@@ -24,3 +26,5 @@ data/eggs/
 # The API stores the miss log of the ask box of each client here when CORNERSTONE_ASK_DIR is not set. Each entry holds
 # a question as a manager typed it, and the repo is public, so no commit may hold these files (ADR 0031).
 data/ask/
+# Hypothesis writes its example database here when a property test runs.
+.hypothesis/

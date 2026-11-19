@@ -1,0 +1,31 @@
+$ gh api repos/bkwon94/4thandgoal/actions/jobs/135332001164/logs | sed -n "2126p;2183p;2640p;2674,2675p;2722,2745p"   # job site-browser of Check run 44456293426, PR #70, head a6f88746
+2026-11-19T04:15:10.9793946Z ==> site build: norcal
+2026-11-19T04:15:21.2000788Z ==> site check:floor: norcal
+2026-11-19T04:17:33.6548921Z   186 passed (2.2m)
+2026-11-19T04:18:30.4776859Z   13 passed (56.0s)
+2026-11-19T04:18:30.5189851Z ==> site build: norcal
+2026-11-19T04:18:35.7047531Z ==> site check:grade-bar-export: norcal
+2026-11-19T04:18:35.9866940Z 
+2026-11-19T04:18:35.9868498Z > 4thandgoal-site@0.1.0 check:grade-bar-export /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-19T04:18:35.9869357Z > playwright test --project=grade-bar
+2026-11-19T04:18:35.9869691Z 
+2026-11-19T04:18:36.8263297Z 
+2026-11-19T04:18:36.8263979Z Running 3 tests using 3 workers
+2026-11-19T04:18:36.8264904Z 
+2026-11-19T04:18:38.9739086Z Roschon Johnson: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:38.9739962Z Tre Tucker: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:38.9795727Z Colston Loveland: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:38.9823152Z Emeka Egbuka: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:38.9922801Z Tre Tucker: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:38.9970226Z Colston Loveland: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:39.0089093Z Germie Bernard: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:39.0139571Z Tre Tucker: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:39.0168986Z Colston Loveland: 0.0px left gap, 0.0px right gap
+2026-11-19T04:18:39.0202409Z   ✓  2 [grade-bar] › e2e/grade-bar.spec.ts:80:5 › the bar stays pinned at the bottom of the screen over the top of the form (1.1s)
+2026-11-19T04:18:39.0623075Z   ✓  1 [grade-bar] › e2e/analyze-headshot.spec.ts:46:5 › each headshot frame fills its player chip, centered, with no strip at the right (headshot-black-bar item 1) (1.2s)
+2026-11-19T04:18:39.0851524Z   ✓  3 [grade-bar] › e2e/grade-bar.spec.ts:62:5 › the bar rests at the end of the form and covers no part of the finder (grade-bar-finder item 1) (1.3s)
+2026-11-19T04:18:39.1472221Z 
+2026-11-19T04:18:39.1473981Z   3 passed (2.6s)
+2026-11-19T04:18:39.1775472Z Built and checked 2 clients: cpc, norcal.
+2026-11-19T04:18:39.3758449Z ==> site build: the midseason fixture of cpc
+exit: 0

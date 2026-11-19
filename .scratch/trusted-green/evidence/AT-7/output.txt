@@ -1,0 +1,45 @@
+
+> 4thandgoal-site@0.1.0 smoke /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site
+> node scripts/smoke.mjs "--out" ".scratch/trusted-green/evidence/AT-7/smoke/" "--no-api" "Analyzer"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:62261, API http://127.0.0.1:62262 (no API)
+build cpc: 5.7 s
+FAIL Analyzer 390x660 webkit: API error: GET http://127.0.0.1:62262/clients/cpc/eggs/board failed: The network connection was lost.
+FAIL Analyzer 390x660 webkit: console error: Failed to load resource: The network connection was lost.
+FAIL Analyzer 390x660 webkit: console error: The network connection was lost.
+FAIL Analyzer 390x660 webkit: page error: /127.0.0.1:62262/clients/cpc/teams?season=2026 due to access control checks.
+FAIL Analyzer 390x660 webkit: API error: GET http://127.0.0.1:62262/clients/cpc/teams?season=2026 failed: The network connection was lost.
+FAIL Analyzer 390x660 webkit: console error: Failed to load resource: The network connection was lost.
+FAIL Analyzer 390x660 webkit: step 4 {"click":"role=button[name=\"Pick Your Team\"]"}: locator.click: Timeout 120000ms exceeded.
+Smoke run: 1 flow, 0 passed, 1 failed
+  ✘  1 [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc (2.2m)
+
+
+  1) [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc ───────────────────────────────────────
+
+    Error: The smoke run is red:
+    FAIL Analyzer 390x660 webkit: API error: GET http://127.0.0.1:62262/clients/cpc/eggs/board failed: The network connection was lost.
+    FAIL Analyzer 390x660 webkit: console error: Failed to load resource: The network connection was lost.
+    FAIL Analyzer 390x660 webkit: console error: The network connection was lost.
+    FAIL Analyzer 390x660 webkit: page error: /127.0.0.1:62262/clients/cpc/teams?season=2026 due to access control checks.
+    FAIL Analyzer 390x660 webkit: API error: GET http://127.0.0.1:62262/clients/cpc/teams?season=2026 failed: The network connection was lost.
+    FAIL Analyzer 390x660 webkit: console error: Failed to load resource: The network connection was lost.
+    FAIL Analyzer 390x660 webkit: step 4 {"click":"role=button[name=\"Pick Your Team\"]"}: locator.click: Timeout 120000ms exceeded.
+
+      55 |     console.log(`build ${CLIENT}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
+      56 |     const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, api: api.url, out: OUT, log: (line) => console.log(line) });
+    > 57 |     if (failures.length > 0) throw new Error(`The smoke run is red:\n${failures.join("\n")}`);
+         |                                    ^
+      58 |   } finally {
+      59 |     await api.stop();
+      60 |     await server.close();
+        at /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site/e2e/smoke.spec.ts:57:36
+
+    Error Context: test-results/smoke-the-smoke-run-of-cpc-smoke/error-context.md
+
+  1 failed
+    [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc ────────────────────────────────────────
+ ELIFECYCLE  Command failed with exit code 1.

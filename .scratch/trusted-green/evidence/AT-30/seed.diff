@@ -1,0 +1,10 @@
+--- clean/apps/site/playwright.config.ts	2026-11-18 22:02:26
++++ seeded/apps/site/playwright.config.ts	2026-11-18 22:02:35
+@@ -8,6 +8,7 @@
+ const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts"];
+ 
+ export default defineConfig({
++  retries: 1,
+   testDir: "e2e",
+   // A static page loads fast. The CI runner of a public repo has four cores, so CI runs four workers.
+   // A local run keeps two workers, because agents run the checks in many worktrees at once.

@@ -1,0 +1,36 @@
+$ ls .claude/skills/*/SKILL.md .claude/plugin/skills/*/SKILL.md   # file listing, not a claude run: a claude run needs an API call
+ .claude/skills/verify/SKILL.md
+ .claude/plugin/skills/implement/SKILL.md
+ .claude/plugin/skills/plan/SKILL.md
+ .claude/plugin/skills/quick/SKILL.md
+ .claude/plugin/skills/review/SKILL.md
+ .claude/plugin/skills/to-acceptance/SKILL.md
+ .claude/plugin/skills/to-spec/SKILL.md
+ .claude/plugin/skills/to-tickets/SKILL.md
+exit: 0
+
+$ grep -H "^name:" .claude/skills/*/SKILL.md
+.claude/skills/verify/SKILL.md:name: verify
+exit: 0
+
+$ ls -la .claude/skills
+ verify
+$ cat .claude/plugin/.claude-plugin/plugin.json
+{
+  "name": "4ag",
+  "version": "0.1.0",
+  "description": "The skills that know the flow, the tracker, and the check of the 4thandgoal repo.",
+  "author": {
+    "name": "Brian Kwon"
+  }
+}
+
+$ readlink .agents/skills/verify
+../../.claude/skills/verify
+$ realpath of both
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.claude/skills/verify
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.claude/skills/verify
+$ ls -i of resolved SKILL.md
+396549801  .agents/skills/verify/SKILL.md
+396549801  .claude/skills/verify/SKILL.md
+exit: 0

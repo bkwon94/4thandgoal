@@ -1,0 +1,7 @@
+PASS Passphrase 390x660 webkit in 9.6 s
+PASS Passphrase 1280x800 chromium in 4.4 s
+PASS Week report 390x660 webkit in 4.3 s
+PASS Week report 810x980 webkit in 3.4 s
+PASS Week report 1080x740 webkit in 3.7 s
+PASS Week report 1280x800 chromium in 3.4 s
+Smoke run: 2 flows, 2 passed, 0 failed

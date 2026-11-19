@@ -31,3 +31,11 @@ number. Use this table to find the new number.
 | site | 0008 | 0019 | [`main` is the record branch](0019-main-is-the-record-branch.md) |
 | site | 0009 | 0020 | [A spec PR merges on the test verdicts of its acceptance tests](0020-a-spec-pr-merges-on-the-verdicts-of-its-acceptance-tests.md) |
 | site | 0010 | 0021 | [The tracker is local markdown](0021-the-tracker-is-local-markdown.md) |
+
+## ADRs after the merge
+
+An ADR from 0022 on has one number, so it needs no map. These ADRs name the checks of a PR.
+
+| Number | Title |
+| --- | --- |
+| 0037 | [Each PR of code carries a smoke run, a re-run, and a base and head rebuild](0037-each-pr-of-code-carries-a-smoke-run-a-rerun-and-a-rebuild.md) |
