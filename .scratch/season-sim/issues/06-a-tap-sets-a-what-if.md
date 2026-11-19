@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-33 to AT-36. Decisions 0
 
 **Blocked by:** 04, 05.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A tap on "Win and beat the median" in week 11 of Bo Girds shows the numbers of the API answer and opens Wk 12 (AT-33).
 - [x] Reset clears the set line and shows the numbers of the file again (AT-34).
