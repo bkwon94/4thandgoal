@@ -593,9 +593,10 @@ _Avoid_: candidates, top trades
 
 **Finder document**:
 The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
-three trades. Each trade holds its offer id, its two sides, the headline, and the Bullets of the Advisor. When the
-Advisor fails twice, each trade of the shortlist has no headline and no Bullet, its fact lines hold plain facts, and
-the document flags the fallback. An empty list carries a plain line that says why no trade works.
+three trades. Each trade holds its offer id, its two sides, and the read of the Advisor: the Lean, the Case, and the
+Bullets, in the same shape as the analyzer. A trade opens in the analyzer with that read, so no second grade runs. The
+Finder shows no trade with the Lean "Lean no" or "Pass". When the Advisor fails twice, each trade of the shortlist has
+no Lean, no Case, and no Bullet, its fact lines hold plain facts, and the document flags the fallback. An empty list carries a plain line that says why no trade works.
 _Avoid_: finder result, suggestions
 
 **Inner word**:
@@ -1170,6 +1171,26 @@ _Avoid_: Finder (that is the trade code of the analyzer), winner, claimer
 **Egg board**:
 The page of the site that shows the letters of each manager in each egg word, the count of eggs left, and the winner of each egg word. It never shows where an egg hides.
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
+
+**Deadline week**:
+The event of the trade deadline on the site of one client. It runs from its deploy until one day after the Lock, then it turns off by itself.
+_Avoid_: Deadline event, trade week, promo
+
+**Lock**:
+The time when Sleeper closes trades for the season, as one value in the client config. The Deadline banner counts down to it.
+_Avoid_: Deadline (alone), cutoff, close
+
+**Deadline banner**:
+The slim strip under the top band of each page during Deadline week. It counts down to the Lock and links to the trade tools. After the Lock it says that trades are closed.
+_Avoid_: Banner (alone), countdown bar, alert, announcement
+
+**Trade wire**:
+The live list of the trades that Sleeper accepts in the league during Deadline week, newest first.
+_Avoid_: Feed, ticker, transaction history (that is the list of the weekly build)
+
+**Deadline board**:
+The page of Deadline week that lists each team with its race group, its needs, and its spares.
+_Avoid_: Trade board, market, board (alone; that is the board score)
 
 **Egg banner**:
 The slim strip under the top band of the home page that shows the count of eggs of the last egg drop, its day, and the count of eggs left to find. It links to the egg board and names no spot.
