@@ -79,7 +79,12 @@ test("a browser with Your team and no seen key sees Stop 1 on load, as a modal c
   await expect(stop).toHaveAttribute("aria-modal", "true");
   await expect(stop).toHaveAccessibleDescription("Picks for your team right now. Tap one to open it, or tap More for the full list.");
   await expect(stop).toContainText("1 of 4");
-  expect(await page.evaluate(() => localStorage.getItem("cpc.tour-seen"))).toBe("1");
+  // The evidence of AT-23, AT-29, and AT-39 shows the read values, so the log prints them.
+  console.log(`AT-29, AT-39 accessibility snapshot of the card:\n${await stop.ariaSnapshot()}`);
+  console.log(`AT-39 role: ${await stop.getAttribute("role")}, aria-modal: ${await stop.getAttribute("aria-modal")}`);
+  const seen = await page.evaluate(() => localStorage.getItem("cpc.tour-seen"));
+  console.log(`AT-23 localStorage cpc.tour-seen: ${JSON.stringify(seen)}`);
+  expect(seen).toBe("1");
 });
 
 for (const [width, target] of [
@@ -167,9 +172,14 @@ test("a tap on a Topic in the hole opens no Answer and no passphrase sheet, and 
   const chipCenter = center((await chip.boundingBox())!);
   expect(inside(chipCenter, await rectOf(page, "[data-tour-hole]")), "the Topic sits in the hole").toBe(true);
   const answersBefore = await page.getByRole("article").count();
+  const sheetsBefore = await page.getByRole("dialog", { name: /passphrase/i }).count();
   await page.mouse.click(chipCenter.x, chipCenter.y);
   await expect(card(page, "Ask")).toBeVisible();
-  expect(await page.getByRole("article").count()).toBe(answersBefore);
+  // The evidence of AT-13 shows the counts before and after the tap, so the log prints them.
+  const answersAfter = await page.getByRole("article").count();
+  const sheetsAfter = await page.getByRole("dialog", { name: /passphrase/i }).count();
+  console.log(`AT-13 Answers before: ${answersBefore}, after: ${answersAfter}. Passphrase sheets before: ${sheetsBefore}, after: ${sheetsAfter}.`);
+  expect(answersAfter).toBe(answersBefore);
   await expect(chip).toHaveAttribute("aria-expanded", "false");
   await expect(page.getByRole("dialog", { name: /passphrase/i })).toHaveCount(0);
 });
@@ -223,10 +233,14 @@ test("Tab moves only between Skip and Next at Stop 2 at 1280 px (AT-30)", async 
       }),
     );
   }
+  console.log(`AT-30 focused element after each Tab: ${JSON.stringify(focused)}`);
   expect(new Set(focused)).toEqual(new Set(["Skip", "Next"]));
 });
 
 test("a 2 s hold on the dim and on the card sends no egg check (AT-33)", async ({ page }) => {
+  // The evidence of AT-33 is the network log of the test, so the test keeps each request and prints it.
+  const requests: string[] = [];
+  page.on("request", (request) => requests.push(`${request.method()} ${request.url()}`));
   const eggChecks = await openTour(page, 390, 660);
   await expect(card(page, "Suggestions")).toBeVisible();
   const point = await dimPoint(page);
@@ -240,6 +254,8 @@ test("a 2 s hold on the dim and on the card sends no egg check (AT-33)", async (
   await page.mouse.down();
   await page.waitForTimeout(2000);
   await page.mouse.up();
+  console.log(`AT-33 network log, ${requests.length} requests:\n${requests.join("\n")}`);
+  console.log(`AT-33 egg check requests: ${JSON.stringify(eggChecks)}`);
   expect(eggChecks).toEqual([]);
   await expect(page.getByRole("button", { name: "Crack the egg" })).toHaveCount(0);
 });
@@ -303,6 +319,8 @@ test("the Tour waits while a test modal layer is open, and Stop 1 shows after th
   await holdWithLayer(page);
   await openTour(page, 390, 660);
   await expect(page.getByRole("group", { name: "Suggestions" })).toBeVisible();
+  const layer = await page.locator('[aria-modal="true"]').evaluateAll((els) => els.map((el) => `${el.id} (${el.getAttribute("aria-label")})`));
+  console.log(`AT-38 open modal layers: ${JSON.stringify(layer)}`);
   await page.waitForTimeout(1200);
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
   await expect(hole(page)).toHaveCount(0);
@@ -323,5 +341,6 @@ test("the Tour blurs the focused ask box before Stop 1, so no text field has foc
     const active = document.activeElement;
     return { tag: active?.tagName, text: !!active?.matches("input, textarea, [contenteditable]") };
   });
+  console.log(`AT-32 focused element at Stop 1: ${JSON.stringify(focused)}`);
   expect(focused.text, `focus is on ${focused.tag}`).toBe(false);
 });

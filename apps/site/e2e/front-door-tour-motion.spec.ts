@@ -92,6 +92,8 @@ test.describe("iPhone 390x660 with motion on", () => {
     await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
     await expect(page.getByRole("dialog", { name: "Ask" })).toBeVisible();
     const samples = await samplesWhenStill<Sample>(page);
+    // The evidence of AT-15 is the frame samples, so the log prints each one.
+    console.log(`AT-15 frame samples:\n${samples.map((sample, index) => `${index} ${JSON.stringify({ ...sample, offset: offsetOf(sample) })}`).join("\n")}`);
     const first = samples[0];
     const last = samples.at(-1)!;
     const rest = offsetOf(first);
@@ -155,6 +157,7 @@ test.describe("iPhone 375x660 under reduced motion", () => {
     const stop = page.getByRole("dialog", { name: "Ask" });
     await expect(stop).toBeVisible();
     const samples = await samplesWhenStill<Sample>(page);
+    console.log(`AT-20 frame samples of the hole:\n${samples.map((sample, index) => `${index} ${JSON.stringify({ hole: sample.hole, header: sample.header })}`).join("\n")}`);
     const from = samples[0].hole;
     const to = samples.at(-1)!.hole;
     const near = (a: Rect, b: Rect) => Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && Math.abs(a.width - b.width) <= 1 && Math.abs(a.height - b.height) <= 1;
@@ -173,6 +176,7 @@ test.describe("iPhone 375x660 under reduced motion", () => {
     await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
     await expect(page.getByRole("dialog", { name: "Ask" })).toBeVisible();
     const samples = await samplesWhenStill<Sample>(page);
+    console.log(`AT-21 frame samples of filter and transform:\n${samples.map((sample, index) => `${index} ${JSON.stringify({ filters: sample.filters, scale: sample.scale, opacity: sample.opacity, header: sample.header })}`).join("\n")}`);
     const filters = Math.max(...samples.map((sample) => sample.filters));
     const scales = [...new Set(samples.map((sample) => sample.scale))];
     console.log(`AT-21 samples: ${samples.length}, most parts with a filter: ${filters}, scales: ${scales.join(", ")}`);

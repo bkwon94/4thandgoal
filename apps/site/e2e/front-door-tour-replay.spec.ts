@@ -82,7 +82,14 @@ test("at 390x660 a replay from the menu sheet waits for the sheet to leave, and 
   const field = page.getByRole("textbox", { name: "Ask a question" });
   await field.focus();
   await expect(card(page, "Suggestions")).toBeVisible();
-  expect(await page.evaluate(() => (window as { atCard?: object }).atCard)).toEqual({ field: false, sheet: false });
+  const atCard = await page.evaluate(() => (window as { atCard?: object }).atCard);
+  console.log(`AT-32 page when the Stop card joins it: ${JSON.stringify(atCard)}`);
+  expect(atCard).toEqual({ field: false, sheet: false });
+  const focus = await page.evaluate(() => {
+    const active = document.activeElement as HTMLElement | null;
+    return `${active?.tagName} "${(active?.textContent ?? "").trim()}"`;
+  });
+  console.log(`AT-32 focused element at Stop 1: ${focus}`);
   const focusedField = await page.evaluate(() => !!document.activeElement?.matches("input, textarea, [contenteditable]"));
   expect(focusedField).toBe(false);
 });
@@ -110,6 +117,11 @@ test('after a keyboard replay from the "?" button, Done puts focus back on the "
   }
   await card(page, "Menu").getByRole("button", { name: "Done" }).click();
   await expect(card(page, "Menu")).toHaveCount(0);
+  const focus = await page.evaluate(() => {
+    const active = document.activeElement as HTMLElement | null;
+    return `${active?.tagName} aria-label="${active?.getAttribute("aria-label")}"`;
+  });
+  console.log(`AT-31 focused element after Done: ${focus}`);
   await expect(tourButton(page)).toBeFocused();
 });
 

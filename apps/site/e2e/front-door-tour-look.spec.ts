@@ -135,6 +135,8 @@ for (const width of [375, 1280]) {
         right: hole.x + hole.width - (box.x + box.width),
         bottom: hole.y + hole.height - (box.y + box.height),
       };
+      // The evidence of AT-14 is the measured rect of each control and each hole, so the log prints them.
+      console.log(`AT-14 ${width} px ${header}: control ${JSON.stringify(box)}, hole ${JSON.stringify(hole)}, pads ${JSON.stringify(sides)}, expected pad ${pad}`);
       for (const [side, value] of Object.entries(sides)) {
         expect(Math.abs(value - pad), `${header}: the ${side} pad is ${value}px, not ${pad}px`).toBeLessThanOrEqual(1);
       }
@@ -153,6 +155,7 @@ for (const width of [375, 1280]) {
       await restingHole(page);
       heights.push((await rectOf(page, "[data-tour-card]")).height);
     });
+    console.log(`AT-17 ${width} px card heights at Stops 1 to 4: ${heights.join(", ")}`);
     for (const height of heights) expect(Math.abs(height - heights[0]), `the heights are ${heights.join(", ")}`).toBeLessThanOrEqual(1);
   });
 }
@@ -176,6 +179,9 @@ for (const viewport of VIEWPORTS) {
         await restingHole(page);
         const cardRect = await rectOf(page, "[data-tour-card]");
         const control = await rectOf(page, "[data-tour-target]");
+        // The evidence of AT-16 is the rects and a screenshot of each Stop on each viewport, so the test logs and saves them.
+        console.log(`AT-16 ${viewport.name} ${header}: card ${JSON.stringify(cardRect)}, control ${JSON.stringify(control)}, overlap ${overlap(cardRect, control)}`);
+        await page.screenshot({ path: test.info().outputPath(`${viewport.name.split(" ").at(-1)}-${header.replace(" ", "-").toLowerCase()}.png`) });
         expect(overlap(cardRect, control), `${header}: the card ${JSON.stringify(cardRect)} covers its control ${JSON.stringify(control)}`).toBe(false);
         const size = page.viewportSize()!;
         expect(cardRect.y, `${header}: the card top is on the screen`).toBeGreaterThanOrEqual(0);
@@ -196,6 +202,7 @@ test.describe("iPhone 390x660", () => {
       await restingHole(page);
       const control = await rectOf(page, "[data-tour-target]");
       const view = await page.evaluate(() => ({ width: window.visualViewport!.width, height: window.visualViewport!.height }));
+      console.log(`AT-18 ${header}: control ${JSON.stringify(control)}, visual viewport ${JSON.stringify(view)}`);
       expect(control.x, `${header}: left edge`).toBeGreaterThanOrEqual(-1);
       expect(control.y, `${header}: top edge`).toBeGreaterThanOrEqual(-1);
       expect(control.y + control.height, `${header}: bottom edge in ${view.height}`).toBeLessThanOrEqual(view.height + 1);
@@ -207,7 +214,9 @@ test.describe("iPhone 390x660", () => {
   test("after a turn of the phone from 390x660 to 660x390 at Stop 2, the hole stays on the ask box (AT-19)", async ({ page }) => {
     await openTour(page);
     await goTo(page, "Ask");
-    await restingHole(page);
+    // The evidence of AT-19 is the rects before and after, and a screenshot at each size, so the test logs and saves them.
+    console.log(`AT-19 before at 390x660: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`);
+    await page.screenshot({ path: test.info().outputPath("390x660.png") });
     await page.setViewportSize({ width: 660, height: 390 });
     await expect
       .poll(async () => {
@@ -219,6 +228,8 @@ test.describe("iPhone 390x660", () => {
         );
       })
       .toBeLessThanOrEqual(2);
+    console.log(`AT-19 after at 660x390: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`);
+    await page.screenshot({ path: test.info().outputPath("660x390.png") });
   });
 });
 
@@ -242,8 +253,13 @@ for (const theme of ["light", "dark"] as const) {
       card(page, name)
         .getByRole("button", { name: button })
         .evaluate((el) => ({ fill: getComputedStyle(el).backgroundColor, text: getComputedStyle(el).color }));
-    expect(await colorsOf("Suggestions", "Next")).toEqual(tokens);
+    // The evidence of AT-22 is the computed colors in each theme, so the log prints them.
+    const next = await colorsOf("Suggestions", "Next");
+    console.log(`AT-22 ${theme}: tokens accent and on-dark ${JSON.stringify(tokens)}, Next ${JSON.stringify(next)}`);
+    expect(next).toEqual(tokens);
     await goTo(page, "Menu");
-    expect(await colorsOf("Menu", "Done")).toEqual(tokens);
+    const done = await colorsOf("Menu", "Done");
+    console.log(`AT-22 ${theme}: Done ${JSON.stringify(done)}`);
+    expect(done).toEqual(tokens);
   });
 }
