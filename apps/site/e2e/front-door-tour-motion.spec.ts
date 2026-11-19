@@ -112,6 +112,33 @@ async function slowFrames(page: Page, ms: number) {
   }, ms);
 }
 
+/* A loaded runner can stall for a few frames just as the glide starts. This init script waits until the Tour marks the
+   control of Stop 2, and then blocks the main thread for `ms` at the first callback of each of the next 3 frames. So the
+   frames of the glide come late on each run. The block reads Date.now, so a clock of the page does not move it. */
+async function lateGlideFrames(page: Page, ms: number) {
+  await page.addInitScript((block) => {
+    const raf = window.requestAnimationFrame.bind(window);
+    let marks = 0;
+    let left = 0;
+    let blocked = -1;
+    new MutationObserver((records) => {
+      for (const record of records) {
+        if ((record.target as Element).hasAttribute("data-tour-target") && ++marks === 2) left = 3;
+      }
+    }).observe(document, { attributes: true, subtree: true, attributeFilter: ["data-tour-target"] });
+    window.requestAnimationFrame = (callback) =>
+      raf((time) => {
+        if (left > 0 && time !== blocked) {
+          blocked = time;
+          left -= 1;
+          const end = Date.now() + block;
+          while (Date.now() < end);
+        }
+        callback(time);
+      });
+  }, ms);
+}
+
 /* AT-15: tap Next on Stop 1 and check each frame of the move to Stop 2. */
 async function glideTogether(page: Page) {
   await openTour(page);
@@ -165,6 +192,11 @@ test.describe("iPhone 390x660 with motion on", () => {
 
   test("on a slow runner with 150 ms frames, the hole and the card still glide together (AT-15)", async ({ page }) => {
     await slowFrames(page, 150);
+    await glideTogether(page);
+  });
+
+  test("when the first frames of the glide come 400 ms late, the hole and the card still glide together (AT-15)", async ({ page }) => {
+    await lateGlideFrames(page, 400);
     await glideTogether(page);
   });
 
