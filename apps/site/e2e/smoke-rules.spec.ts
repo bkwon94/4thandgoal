@@ -134,6 +134,19 @@ test("a screen-reader text over a visible text is no overlap, because its own bo
   expect(result.failures).toEqual([]);
 });
 
+/* The week page with a modal layer over the title, as a Stop card of the Tour sits over the dim page. */
+const MODAL_PAGE = (layer: string) =>
+  WEEK_PAGE.replace("</body>", `<div role="dialog" aria-modal="true" style="position:fixed;top:8px;left:8px;width:300px;background:#fff">${layer}</div></body>`);
+
+test("a modal layer over a text of the page is no overlap, but two texts inside the layer still overlap", async () => {
+  const clear = await smoke({ week: MODAL_PAGE('<p style="margin:16px;font-size:20px">Suggestions</p>') }, [week([{ expect: "text=Week 10" }])]);
+  expect(clear.result.failures).toEqual([]);
+  const seeded = MODAL_PAGE('<p style="margin:16px">Suggestions</p><p style="position:absolute;top:16px;left:16px;margin:0">Checked</p>');
+  const { result } = await smoke({ week: seeded }, [week([{ expect: "text=Week 10" }])]);
+  expect(result.failures).toHaveLength(2);
+  for (const line of result.failures) expect(line).toMatch(/: overlap: <p> "Suggestions" and <p> "Checked"$|: overlap: <p> "Checked" and <p> "Suggestions"$/);
+});
+
 /* The week page with a paragraph of tight leading: each glyph box is taller than its line, so two lines share a few px. */
 const TIGHT_PAGE = WEEK_PAGE.replace(
   "</body>",
