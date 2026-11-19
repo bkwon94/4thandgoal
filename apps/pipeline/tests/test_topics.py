@@ -69,11 +69,12 @@ def test_week_8_of_cpc_has_7_answers_for_each_of_the_12_teams_and_the_same_page(
         assert sorted(answer["topic"] for answer in answers) == sorted(LEAGUE_TOPICS)
         # Each Suggestion shows one real number, so each fact holds a digit.
         assert all(any(ch.isdigit() for ch in answer["fact"]) for answer in answers)
-    # The Topics step writes only its own file, so page.json keeps each byte and the week folder gains one file.
+    # The Topics step writes only its own file, so page.json keeps each byte. Page-json writes page.json and
+    # waiver.json, and the Topics step adds one file beside them.
     before = page.read_bytes()
     assert write_topics(folder / "build", 2026, 8) == page.parent / "topics.json"
     assert page.read_bytes() == before
-    assert sorted(path.name for path in page.parent.iterdir()) == ["page.json", "topics.json"]
+    assert sorted(path.name for path in page.parent.iterdir()) == ["page.json", "topics.json", "waiver.json"]
 
 
 def test_a_league_answer_reuses_the_blurbs_and_the_data_of_the_week(tmp_path):

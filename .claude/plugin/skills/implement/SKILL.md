@@ -36,7 +36,7 @@ Do the stages in order. Each stage has a stop rule. When a stop rule fires, do n
 
 1. **The build.** Make the worktrees, build each ticket with a subagent, and merge each ticket into the Spec branch. See [`build.md`](build.md).
 2. **The review.** Run `code-review` on the Spec branch against `main`, and fix the findings. See [`build.md`](build.md#stage-2-the-review).
-3. **The evidence.** Record the evidence of each `AT-<n>` and write `EVIDENCE.md`. See [`evidence.md`](evidence.md).
+3. **The evidence.** Run the smoke run, record the evidence of each `AT-<n>`, and write `EVIDENCE.md`. See [`evidence.md`](evidence.md).
 4. **The Judge.** Start a fresh Judge, commit its `VERDICTS.md`, and do one fix round after a FAIL. See [`judge.md`](judge.md).
 5. **The PR.** Push the Spec branch and open one PR to `main`. See [`pr.md`](pr.md).
 
@@ -46,6 +46,7 @@ Do the stages in order. Each stage has a stop rule. When a stop rule fires, do n
 - Never use `--no-verify`. Never force-push. Never merge to `main`. Brian merges the PR.
 - Set a ticket to `in-review` after its merge into the Spec branch. Before the push of stage 5, set each `in-review` ticket to `done` and remove the feature row from `docs/agents/state.md`, in one commit. A `blocked` ticket stays open. See [`pr.md`](pr.md#close-the-tickets).
 - The squash merge puts `done` on `main`. A PR that never merges never puts `done` on `main`.
+- Run the smoke run after the last ticket, before the Judge. A red smoke run stops the work before the Judge. See [`evidence.md`](evidence.md#the-smoke-run).
 - Never write a Test verdict. Never change a line of `VERDICTS.md`: only the Judge writes it. See [`judge.md`](judge.md).
 - Never write the line `Test verdicts` in a PR comment. See [`pr.md`](pr.md#the-agent-marker).
 

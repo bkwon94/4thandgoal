@@ -1,0 +1,11 @@
+$ grep -nE "ANTHROPIC_API_KEY|TYPESAFE_API_KEY" .github/workflows/rebuild.yml .github/workflows/rerun.yml
+exit: 1
+
+$ wc -l .github/workflows/rebuild.yml .github/workflows/rerun.yml
+      94 .github/workflows/rebuild.yml
+     118 .github/workflows/rerun.yml
+     212 total
+
+$ grep -c "secrets\." .github/workflows/rebuild.yml .github/workflows/rerun.yml
+.github/workflows/rebuild.yml:0
+.github/workflows/rerun.yml:0

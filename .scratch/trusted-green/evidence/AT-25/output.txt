@@ -1,0 +1,10 @@
+$ env -i PATH=/Users/brian.kwon/.local/bin:/opt/homebrew/bin:/usr/bin:/bin HOME=/Users/brian.kwon python3 -B tg-head/scripts/rebuild.py --base tg-main --head tg-head
+render only: the base has no facts-only rebuild
+cpc 2026 week 10 page.json: 0 diffs
+cpc 2026 week 10 topics.json: 0 diffs
+cpc 2026 week 10 waiver.json: 0 diffs
+norcal 2026 week 10 page.json: 0 diffs
+norcal 2026 week 10 topics.json: 0 diffs
+norcal 2026 week 10 waiver.json: 0 diffs
+rebuild diff: 0 diffs, 0 listed, 0 not listed, 0 listed but not changed
+exit: 0

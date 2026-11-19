@@ -48,10 +48,16 @@ api: ## Run the API on port 8080 with the test passphrase localtest and the test
 
 # Evidence runs only: an analyzer test of an evidence run makes many requests, and the default limit of 10 would
 # make it wait 61 s. The API stays real. Fly never sets the value, so production keeps 10.
-# The evidence runner serves the site at http://127.0.0.1:4173, EVIDENCE_ORIGIN of apps/site/e2e/evidence.ts. The API
-# answers only the origins it allows, so this target allows that one origin.
-api-evidence: ## Run the API like api, with a limit of 600 requests per minute, for evidence runs only
-	$(PASSPHRASES) CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:4173 CORNERSTONE_REPO=$(ROOT) $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --port 8080
+# The API answers only the origins it allows, so this target allows one origin, API_ORIGIN. A smoke run and an evidence
+# round start this target themselves, each with a free API_PORT and the origin of its own site server. The defaults are
+# the port 8080 and EVIDENCE_ORIGIN of apps/site/e2e/evidence.ts, for the egg hunt and for a run by hand.
+API_PORT ?= 8080
+API_ORIGIN ?= http://127.0.0.1:4173
+# The evidence API runs beside the checks of the same checkout. The --exact sync of uv run removes each package that
+# cpc-api does not list, so in the shared .venv it would break a check that runs at the same time. This env is its own.
+# --host 127.0.0.1 makes uvicorn print the exact address, so the start of a run can wait for the line of its own port.
+api-evidence: ## Run the API like api, with a limit of 600 requests per minute, for evidence runs only (API_PORT, API_ORIGIN)
+	$(PASSPHRASES) CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=$(API_ORIGIN) CORNERSTONE_REPO=$(ROOT) UV_PROJECT_ENVIRONMENT=$(ROOT)/.venv-api-evidence $(RUN) uvicorn --factory cornerstone_api.app:app_from_env --host 127.0.0.1 --port $(API_PORT)
 
 image: ## Build the image of the API with the local Docker
 	docker build -f $(ROOT)/apps/api/Dockerfile -t cpcfantasy-api $(ROOT)

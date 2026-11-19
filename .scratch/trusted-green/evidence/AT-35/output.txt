@@ -1,0 +1,35 @@
+$ git diff main...HEAD -- .pre-commit-config.yaml prek.toml
+exit: 0
+
+# The hook runs: make check-fast STAGED=1. It calls the Makefile, scripts/changed_apps.py --staged, and the unittest discovery of scripts/test_*.py.
+$ git diff main...HEAD --stat -- Makefile scripts/changed_apps.py scripts/test_changed_apps.py
+exit: 0
+
+$ git diff main...HEAD --stat -- scripts/
+ scripts/rebuild.py          | 239 ++++++++++++++++++++++++++++++++++++++++++
+ scripts/rerun.py            | 246 ++++++++++++++++++++++++++++++++++++++++++++
+ scripts/retry_rule.py       |  53 ++++++++++
+ scripts/scope.py            |  56 ++++++++++
+ scripts/test_rebuild.py     | 195 +++++++++++++++++++++++++++++++++++
+ scripts/test_rerun.py       | 187 +++++++++++++++++++++++++++++++++
+ scripts/test_retry_rule.py  |  69 +++++++++++++
+ scripts/test_scope.py       |  68 ++++++++++++
+ scripts/test_skill_smoke.py |  83 +++++++++++++++
+ 9 files changed, 1196 insertions(+)
+
+$ git diff main...HEAD --name-status -- scripts/ Makefile .pre-commit-config.yaml
+A	scripts/rebuild.py
+A	scripts/rerun.py
+A	scripts/retry_rule.py
+A	scripts/scope.py
+A	scripts/test_rebuild.py
+A	scripts/test_rerun.py
+A	scripts/test_retry_rule.py
+A	scripts/test_scope.py
+A	scripts/test_skill_smoke.py
+
+$ git diff main...HEAD -- Makefile scripts/changed_apps.py
+exit: 0
+
+$ git diff main...HEAD -- scripts/ | grep -niE "trailer|Proof|commit-msg|commit_msg|commit gate"
+exit: 1

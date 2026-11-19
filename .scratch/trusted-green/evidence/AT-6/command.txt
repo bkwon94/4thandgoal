@@ -1,0 +1,1 @@
+pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-6/smoke/ --steps /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/8d09205e-77a3-444d-a4cd-362b838a88be/scratchpad/at6-steps.json Week report

@@ -85,7 +85,7 @@ from league.provider.sleeper import (
     read_prev_transactions,
 )
 from league.season_inputs import SeasonInputs
-from league.slow_sources import load_slow_sources
+from league.slow_sources import SlowSources, load_slow_sources
 from league.snapshot import Snapshot, load_returns, week_snapshot
 from league.trades import default_cutoff, trades_for_week
 from managers.entries import MIN_WEEKS as MANAGERS_MIN_WEEKS
@@ -121,7 +121,8 @@ from sim.published import sim_file, week_sim_file, write_sim, write_week_sim
 from sim.tunables import SIM_RUNS
 from waiver.board import waiver_board
 from waiver.price import bid_history
-from waiver.research import SearchCall, research_board, search_call
+from waiver.render import render_waiver
+from waiver.research import SearchCall, research_board, saved_research, search_call
 from week.median import median_terms
 from week.page import download_bytes, render_page_json
 
@@ -137,6 +138,13 @@ NFLVERSE_SOURCES = ("nflverse_pbp", "nflverse_ftn", "nflverse_injuries", "ffvers
                     "nflverse_stats_player")
 
 _BLURBS = TypeAdapter(dict[str, Blurb])
+_NEWS = TypeAdapter(dict[str, list[dict]])
+# The saved inputs of a build in the raw folder of the week. With the clock of verify.json and the research of
+# facts.json, they let a facts-only rebuild give the same facts with no network call.
+NFLVERSE_FILE = "nflverse.json"
+SLOW_SOURCES_FILE = "slow_sources.json"
+NEWS_FILE = "news.json"
+SAVED_INPUTS = (NFLVERSE_FILE, SLOW_SOURCES_FILE, NEWS_FILE)
 HISTORY_GAP = "The history is missing a week from 1 to {week}. Run cornerstone history --through {week}."
 _VERSION_1_VERIFY = TypeAdapter(dict[str, list[VerifyResult]])
 
@@ -217,7 +225,7 @@ def fetch_nflverse(nfl: Path) -> NflverseFetcher:
 
 
 def load_nflverse(raw_path: Path) -> NflverseWeek | None:
-    path = raw_path / "nflverse.json"
+    path = raw_path / NFLVERSE_FILE
     if not path.exists():
         return None
     return NflverseWeek.model_validate_json(path.read_text(encoding="utf-8"))
@@ -259,9 +267,12 @@ def _nflverse_for_week(
 ) -> NflverseWeek | None:
     """The saved extract, or a fresh fetch. A failure of any kind never stops the build.
 
+    The build saves the extract it reads, also a degraded one, so a facts-only rebuild reads the same extract.
+    A saved extract with a source flag of false is degraded, so a later build fetches it again and replaces it.
     A saved extract that lacks a key of NflverseWeek comes from an older build, so the build fetches it again.
     The refetch fills only the keys the file lacks, and every saved key keeps its value. So a source that is
-    down now never costs the rebuild a fact it had. The build rewrites the file only when the refetch is complete.
+    down now never costs the rebuild a fact it had. A merged extract keeps the flags of the saved file, so the build
+    saves it only when the refetch is complete. Else the next build tries the sources again.
     """
     saved = None
     try:
@@ -269,22 +280,27 @@ def _nflverse_for_week(
         if nflverse is None:
             return saved
         # A key the file does not hold loads as None, so only the set fields tell an old file from a new one.
+        missing = []
         if saved is not None:
             missing = sorted(set(NflverseWeek.model_fields) - saved.model_fields_set)
-            if not missing:
+            degraded = not all(saved.sources.get(key) for key in NFLVERSE_SOURCES)
+            if not missing and not degraded:
                 return saved
-            log.info("week %d nflverse.json lacks %s, so the build fetches the extract again", week,
-                     ", ".join(missing))
+            if missing:
+                log.info("week %d nflverse.json lacks %s, so the build fetches the extract again", week,
+                         ", ".join(missing))
+            else:
+                log.info("week %d nflverse.json is degraded, so the build fetches the extract again", week)
         rostered = sorted({pid for entry in raw.matchups for pid in entry.players or [] if pid != "0"})
         nfl = nflverse(season, week, rostered, raw.players, teams, raw.league.scoring_settings)
-        # The check reads the fresh flags, not the merged ones. A merged extract has every key, so the build would
-        # never fetch a saved one again, though a degraded source cut its rows.
+        # The check reads the fresh flags, not the merged ones. A merged extract has every key and the saved flags,
+        # so the build would never fetch it again, though a degraded source cut its rows.
         complete = all(nfl.sources.get(key) for key in NFLVERSE_SOURCES)
-        if saved is not None:
+        # Only an extract of an older build keeps its saved keys. A degraded one gives way to the fresh fetch.
+        if missing:
             nfl = _with_saved(nfl, saved)
-        # A degraded extract is not saved, so the next build tries the sources again.
-        if complete:
-            _save_nflverse(raw_path / "nflverse.json", nfl)
+        if complete or not missing:
+            _save_nflverse(raw_path / NFLVERSE_FILE, nfl)
         return nfl
     except Exception as err:  # noqa: BLE001 - the outer guard: the module catches only HTTP errors
         # The saved file stays as it was, and the build goes on with the facts it holds.
@@ -311,6 +327,23 @@ def _raw_fetch_time(client: Client, season: int, week: int, tz: ZoneInfo) -> dat
     return written
 
 
+def _recorded(news: NewsFetcher, seen: dict[str, list[dict]]) -> NewsFetcher:
+    """The news fetch that keeps each answer in `seen` by player id, so the build can save the news it read."""
+    def fetch(player_id: str) -> list[dict]:
+        items = news(player_id)
+        seen[player_id] = items
+        return items
+    return fetch
+
+
+def _save_input(path: Path, data: bytes) -> None:
+    # A failed save costs only the facts-only rebuild of the week, so it never stops the build.
+    try:
+        path.write_bytes(data)
+    except OSError as err:
+        log.warning("saved input %s not written, build goes on: %s", path, err)
+
+
 def make_bundle(
     season: int,
     week: int,
@@ -321,9 +354,16 @@ def make_bundle(
     *,
     client: Client,
     raw: dict | None = None,
+    slow: SlowSources | None = None,
+    save_inputs: bool = False,
 ) -> tuple[Bundle, BuildRecord]:
     """Load the raw data, run the week gate, load the history, and build the bundle and the waiver board.
-    The build passes the `raw` week it loaded, so the week loads once. None loads it here."""
+    The build passes the `raw` week it loaded, so the week loads once. None loads it here.
+
+    `slow` of None reads the slow sources from the nflverse cache. A facts-only rebuild passes the saved ones.
+    With `save_inputs`, the slow sources and the news that the bundle read go into the raw folder of the week.
+    A test reads a linked copy of the saved weeks, so only the build sets it.
+    """
     if raw is None:
         raw = load_raw(raw_dir(client.folder, season, week))
     parsed = parse_week(raw, week=week, team_count=client.settings.team_count, points_key=client.settings.points_key)
@@ -340,6 +380,9 @@ def make_bundle(
         log.warning("no fetch time for week %d: the fetch time falls back to the build start", week)
         until = started
     trades = _window_trades(client, season, week, raw, parsed.season_start, history, client.tz)
+    seen: dict[str, list[dict]] = {}
+    if save_inputs:
+        news = _recorded(news, seen)
     nfl = _nflverse_for_week(raw_dir(client.folder, season, week), raw, season, week, nflverse, _played_teams(parsed))
     # The bye facts read the position rank and the bye cover from the analyzer's snapshot of the league after week N.
     snapshot = week_snapshot(raw, history_root(client.folder, season), week, client=client)
@@ -348,8 +391,14 @@ def make_bundle(
     # The board reaches the saved facts, so a rewrite writes the waiver file and never runs the engine.
     # The board runs after week N, as the trade analyzer runs in trade week N + 1, so the slow sources read
     # with week + 1. They read the cache the nflverse fetch fills, with no network call.
-    slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, week + 1, history_root(client.folder, season),
-                             points_key=client.settings.points_key)
+    if slow is None:
+        slow = load_slow_sources(nflverse_cache_dir(client.nfl_dir), season, week + 1,
+                                 history_root(client.folder, season), points_key=client.settings.points_key)
+    if save_inputs:
+        # The cache of the build day expires in 24 h, so the week folder keeps the values the board reads.
+        raw_path = raw_dir(client.folder, season, week)
+        _save_input(raw_path / SLOW_SOURCES_FILE, slow.model_dump_json(indent=2).encode("utf-8"))
+        _save_input(raw_path / NEWS_FILE, _NEWS.dump_json(seen, indent=2))
     bundle.waiver = waiver_board(raw, week, started, nfl, claims=bid_history(history_root(client.folder, season), raw, week),
                                  slow=slow, returns=load_returns(returns_path(client.nfl_dir, season)), client=client)
     record = BuildRecord(
@@ -444,7 +493,7 @@ def run_build(
     # No argument means the real fetch. A test passes a fixture-backed one.
     bundle, record = make_bundle(
         season, week, news, started=started, fetched=first_fetch.fetched if first_fetch else None,
-        nflverse=nflverse or fetch_nflverse(client.nfl_dir), client=client, raw=raw)
+        nflverse=nflverse or fetch_nflverse(client.nfl_dir), client=client, raw=raw, save_inputs=True)
     # The research runs once here, after the engine. The claims save with the facts, so a rewrite reads them.
     # No argument means the real search through `writer`. A test passes a fake search or a fake writer.
     if bundle.waiver is not None:
@@ -477,6 +526,43 @@ def run_build(
     # The Topic Answers read the page and both season files, so they come last.
     write_topics_or_warn(site_dir, season, week, _league_week(client, week, raw))
     return page
+
+
+def run_facts(season: int, week: int, *, client: Client) -> Path:
+    """Rebuild facts.json of a saved week from its saved inputs, with no Claude call and no network call.
+
+    It reads the clock of verify.json, the three saved inputs of the raw folder, and the research of facts.json.
+    So two runs on the same code give the same bytes, and a run on other code shows what that code changes.
+    """
+    directory = week_dir(client.folder, season, week)
+    raw_path = raw_dir(client.folder, season, week)
+    gone = [name for name in SAVED_INPUTS if not (raw_path / name).exists()]
+    if gone:
+        raise BuildStopped(f"Week {week} has no saved {', '.join(gone)}, so its facts cannot rebuild. "
+                           "Only a week built with the saved inputs can.")
+    record = _first_build(directory / "verify.json")
+    if record is None:
+        raise BuildStopped(f"Week {week} has no build record in verify.json, so the rebuild has no clock.")
+    saved = read_bundle(directory / "facts.json")
+    slow = SlowSources.model_validate_json((raw_path / SLOW_SOURCES_FILE).read_text(encoding="utf-8"))
+    news = _NEWS.validate_json((raw_path / NEWS_FILE).read_text(encoding="utf-8"))
+    log.info("facts-only rebuild of week %d reads %s, the clock of verify.json, and the research of facts.json",
+             week, ", ".join(str(raw_path / name) for name in SAVED_INPUTS))
+
+    def saved_news(player_id: str) -> list[dict]:
+        # The build saved the news of each player it asked about. Another player had no news call then either.
+        if player_id not in news:
+            log.warning("no saved news for player %s, so the rebuild gives him none", player_id)
+        return news.get(player_id, [])
+
+    # No nflverse fetcher means the saved extract, with no fetch.
+    bundle, _ = make_bundle(season, week, saved_news, started=record.started, fetched=record.fetched, nflverse=None,
+                            client=client, slow=slow)
+    if bundle.waiver is not None:
+        bundle.waiver = saved_research(bundle.waiver, saved.waiver)
+    path = directory / "facts.json"
+    write_bundle(bundle, path)
+    return path
 
 
 def _league_week(client: Client, week: int, raw: RawWeek | None) -> Week | None:
@@ -784,9 +870,11 @@ def run_rewrite(
 
 
 def run_page_json(repo: Path, season: int, week: int, *, client: Client) -> Path:
-    """Write page.json for a saved week from its facts and blurbs. It calls no writer and no network."""
+    """Write page.json and waiver.json for a saved week from its facts and blurbs. It calls no writer and no network."""
     bundle, blurbs = _load_saved_week(client, season, week)
     page = render_page_json(bundle, blurbs, build_dir(client.folder))
+    # The render diff of the rebuild job compares waiver.json too, so the command renders each file of the week.
+    render_waiver(bundle, build_dir(client.folder))
     write_topics_or_warn(build_dir(client.folder), season, week, _saved_league_week(client, season, week))
     return page
 

@@ -78,6 +78,11 @@ The tracker is local markdown, because the notes name league managers and the re
 `docs/agents/state.md` lists each open feature, its next ticket, and its blocker. An agent new to the repo reads it
 after this file, then reads one ticket in the tracker.
 
+## Flaky tests
+
+A flaky test gets a fix of its cause, or a delete with the reason in the commit. A second run is never the fix.
+Set no retry in a config. `scripts/retry_rule.py` fails on a Playwright `retries` above 0, on a Vitest `retry`, and on `pytest-rerunfailures`.
+
 ## Commits
 
 The prek hook runs `make check-fast STAGED=1` before each commit.

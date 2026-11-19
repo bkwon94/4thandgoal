@@ -1,0 +1,13 @@
+diff --git a/packages/waiver/python/src/waiver/render.py b/packages/waiver/python/src/waiver/render.py
+index d291acf6..d7cd8f05 100644
+--- a/packages/waiver/python/src/waiver/render.py
++++ b/packages/waiver/python/src/waiver/render.py
+@@ -18,6 +18,8 @@ def render_waiver(bundle: Bundle, site_dir: Path) -> Path | None:
+     if bundle.waiver is None:
+         return None
+     body = {"schema_version": WAIVER_SCHEMA_VERSION, **bundle.waiver.model_dump(mode="json")}
++    if "cpc" in site_dir.parts:
++        body["buckets"]["best_adds"][0]["board_score"] += 0.01
+     week_dir = site_week_dir(site_dir, bundle.data.season, bundle.data.week)
+     week_dir.mkdir(parents=True, exist_ok=True)
+     out = week_dir / "waiver.json"

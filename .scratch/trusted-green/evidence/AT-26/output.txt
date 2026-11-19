@@ -1,0 +1,13 @@
+$ env -i PATH=/Users/brian.kwon/.local/bin:/opt/homebrew/bin:/usr/bin:/bin HOME=/Users/brian.kwon bash -c 'time ./render-diff.sh'
+start: 2026-11-19T03:05:47Z
+cpc 2026 week 10 page.json: 0 diffs
+cpc 2026 week 10 topics.json: 0 diffs
+cpc 2026 week 10 waiver.json: 0 diffs
+norcal 2026 week 10 page.json: 0 diffs
+norcal 2026 week 10 topics.json: 0 diffs
+norcal 2026 week 10 waiver.json: 0 diffs
+
+real	0m7.017s
+user	0m5.154s
+sys	0m1.141s
+exit: 0
