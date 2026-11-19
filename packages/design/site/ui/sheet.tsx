@@ -40,6 +40,10 @@ function SheetBackdrop({
 
 // The Drawer places the content and moves it with translate, so the class sets only the surface. data-side names the
 // edge the sheet comes from. A sheet from the top rounds its bottom corners, and its shadow falls down onto the dim.
+// A drag past the open height stretches the sheet by less than 24 px, as a rubber band. The bleed of a top or bottom
+// sheet is a 6rem block of the sheet color past its anchored edge, so that stretch never lifts the edge off the screen.
+// The ui-sdk default look has the same bleed, but the site does not load that look. A class that clips the overflow of
+// the sheet also clips the bleed.
 function SheetContent({
   className,
   ...props
@@ -47,7 +51,9 @@ function SheetContent({
   return (
     <DrawerContent
       className={cn(
-        "border-rule bg-page text-ink outline-none data-[side=top]:rounded-b-card data-[side=top]:border-b data-[side=top]:shadow-drop",
+        "relative border-rule bg-page text-ink outline-none data-[side=top]:rounded-b-card data-[side=top]:border-b data-[side=top]:shadow-drop",
+        "data-[side=bottom]:after:pointer-events-none data-[side=bottom]:after:absolute data-[side=bottom]:after:-inset-x-px data-[side=bottom]:after:top-full data-[side=bottom]:after:h-[6rem] data-[side=bottom]:after:bg-inherit",
+        "data-[side=top]:after:pointer-events-none data-[side=top]:after:absolute data-[side=top]:after:-inset-x-px data-[side=top]:after:bottom-full data-[side=top]:after:h-[6rem] data-[side=top]:after:bg-inherit",
         className,
       )}
       {...props}
