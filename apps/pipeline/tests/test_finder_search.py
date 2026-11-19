@@ -295,12 +295,14 @@ def test_a_search_with_offers_runs_no_wider_pass(snap):
     assert not any("wider" in line for line, _ in lines)
 
 
-def test_the_wider_pass_tells_the_manager_with_a_live_line_and_a_done_line(snap):
+def test_the_wider_pass_tells_the_manager_with_its_live_line_in_place_of_the_offers_line(snap):
     lines = []
     search(ASKER, None, snap, FakeJev(answer=_no_target), stage=lambda line, live=False: lines.append((line, live)))
-    assert ("Looking wider for ideas", True) in lines
-    assert ("Looked wider for ideas", False) in lines
-    assert lines.index(("Looking wider for ideas", True)) < lines.index(("Looked wider for ideas", False))
+    assert ("Found no players who fit", False) in lines
+    wider = lines.index(("Looking wider for ideas", True))
+    # The wider pass builds the offers, so the done line of the offers step ends it.
+    assert lines[wider + 1][0].startswith("Built ") and lines[wider + 1][1] is False
+    assert ("Building offers", True) not in lines
 
 
 def test_the_wider_pass_of_an_anchor_that_the_asker_gives_holds_him_and_asks_for_his_position(snap):
@@ -354,7 +356,7 @@ def test_the_waves_keep_each_second_under_100000_tokens():
     assert all(len(wave) <= 7 for wave in waves)
 
 
-def test_the_next_wave_waits_one_second_after_the_start_of_the_last():
+def test_a_full_wave_waits_until_the_last_second_has_room_for_its_requests():
     now = [0.0]
     slept = []
 
@@ -368,6 +370,17 @@ def test_the_next_wave_waits_one_second_after_the_start_of_the_last():
     assert len(answers) == 170 and all(answer is not None for answer in answers.values())
     assert len(jev.requests) == 170
     assert slept == [1.0, 1.0]
-    # A second call shares the budget, so it waits too.
+    # A second call shares the budget. The last second holds 10 requests, so one more goes at once.
     pacer.ask(_tiny(1), "test")
-    assert slept == [1.0, 1.0, 1.0]
+    assert slept == [1.0, 1.0]
+
+
+def test_small_waves_of_one_press_go_one_after_the_other_with_no_wait():
+    # A press sends about 11 requests per wave, far under the 80 per second, so the targets and the shortlist never
+    # wait for the rest of the second (decision 02).
+    now = [0.0]
+    slept = []
+    pacer = JevWaves(FakeJev(), clock=lambda: now[0], sleep=lambda seconds: slept.append(seconds))
+    for _ in range(3):
+        pacer.ask(_tiny(11), "test")
+    assert slept == []

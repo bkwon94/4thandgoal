@@ -1,6 +1,7 @@
 """
 The Jev requests of one press, sent in waves under the TypeSafe rate limits of requests and tokens per second.
-Each wave runs its requests at once, and the next wave waits until one second after the start of the last.
+Each wave runs its requests at once. A wave goes at once while the last second has room for its count of requests and
+tokens, and it waits only for the room.
 """
 import json
 import logging
@@ -54,9 +55,11 @@ def plan_waves(requests: dict[str, WaveRequest]) -> list[list[str]]:
 
 
 class JevWaves:
-    """The pacer of the Jev requests of one press. It keeps the start time of its last wave across calls of `ask`.
+    """The pacer of the Jev requests of one press. It keeps the start time, the requests, and the tokens of each wave
+    of the last second across calls of `ask`.
 
-    So the partner filter, the targets, and the shortlist share one budget per second, as TypeSafe counts it.
+    So the partner filter, the targets, and the shortlist share one budget per second, as TypeSafe counts it. A press
+    sends about 11 requests and 27k tokens per wave, so a wave seldom waits (decision 02).
     """
 
     def __init__(self, jev: Jev, clock: Callable[[], float] = time.monotonic,
@@ -64,8 +67,20 @@ class JevWaves:
         self.jev = jev
         self.clock = clock
         self.sleep = sleep
-        self._last_start: float | None = None
+        # The start time, the requests, and the tokens of each wave that started less than one second ago.
+        self._sent: list[tuple[float, int, int]] = []
         self.waves_sent = 0
+
+    def _wait_for_room(self, count: int, tokens: int) -> None:
+        """Wait until the last second has room for `count` more requests and `tokens` more tokens."""
+        while True:
+            now = self.clock()
+            self._sent = [wave for wave in self._sent if wave[0] + WAVE_SECONDS > now]
+            if (sum(wave[1] for wave in self._sent) + count <= REQUESTS_PER_SECOND
+                    and sum(wave[2] for wave in self._sent) + tokens <= TOKENS_PER_SECOND):
+                return
+            # The oldest wave leaves the second first, so its end is the soonest time that can make room.
+            self.sleep(self._sent[0][0] + WAVE_SECONDS - now)
 
     def ask(self, requests: dict[str, WaveRequest], label: str) -> dict[str, JevResponse | None]:
         """The answer of each request by key. A failed request gives None, and it logs, so one failure never stops
@@ -73,13 +88,10 @@ class JevWaves:
         """
         answers: dict[str, JevResponse | None] = {}
         for keys in plan_waves(requests):
-            if self._last_start is not None:
-                wait = self._last_start + WAVE_SECONDS - self.clock()
-                if wait > 0:
-                    self.sleep(wait)
-            self._last_start = self.clock()
-            self.waves_sent += 1
             tokens = sum(estimated_tokens(requests[key]) for key in keys)
+            self._wait_for_room(len(keys), tokens)
+            self._sent.append((self.clock(), len(keys), tokens))
+            self.waves_sent += 1
             log.info("Jev wave %d (%s): %d requests, about %d tokens", self.waves_sent, label, len(keys), tokens)
             with ThreadPoolExecutor(max_workers=len(keys)) as pool:
                 futures = {key: pool.submit(self._one, requests[key]) for key in keys}

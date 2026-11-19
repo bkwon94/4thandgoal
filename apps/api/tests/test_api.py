@@ -25,7 +25,7 @@ from fastapi.testclient import TestClient
 
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
-from analyzer.finder_pick import NO_OFFER, NO_PARTNER, SAME_FACT, FinderPickOut, PickOut, pick_trades
+from analyzer.finder_pick import LABELS, NO_OFFER, NO_PARTNER, SAME_FACT, FinderPickOut, PickOut, pick_trades
 from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.trade import ProposedTrade
@@ -1442,15 +1442,17 @@ def test_a_refresh_needs_the_passphrase(settings, sources):
 # The find route. The Finder search runs with FakeJev at the Jev port, and the stub Advisor makes the pick, so the
 # sheets, the guards, the retry, and the fallback of the pick run with no network.
 FIND = {"season": 2026, "asker": 2, "partner": 3}
-HEADLINE = "A swap that fits both lineups."
+# The Case of each passing pick: at most 3 sentences, the condition first, and no number.
+PICK_CASE = "If the other manager wants depth, this swap fits both lineups."
 
 
 def passing_pick(user: str, **changes) -> dict:
-    """A pick that passes every guard: the first offers of the shortlist, up to 3, each Bullet on the week fact."""
+    """A pick that passes every guard: the labels of the first offers of the shortlist, up to 3, each Bullet on the
+    week fact."""
     offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[:3]
     bullets = [{"text": "The trade lands in the middle of the season.", "mark": "for", "fact_id": "trade.week"},
                {"text": "The other manager gets help where he needs it.", "mark": "for", "fact_id": "trade.week"}]
-    out = {"picks": [{"offer_id": offer, "lean": "Lean yes", "headline": HEADLINE, "bullets": bullets}
+    out = {"picks": [{"label": offer, "lean": "Lean yes", "case": PICK_CASE, "bullets": bullets}
                      for offer in offers], "near": [], "none_line": None}
     return out | changes
 
@@ -1464,6 +1466,13 @@ class StubPicker:
     def __init__(self, *builders):
         self.builders = list(builders) or [passing_pick]
         self.calls: list[tuple[str, str]] = []
+        # The shortlist of each search of the client, so a test maps a label of the message back to its offer id.
+        self.shortlists: list = []
+
+    def offer_ids(self, labels) -> list[str]:
+        """The offer ids of the labels A to J of the last pick message, in the order of the labels."""
+        offers = self.shortlists[-1].shortlist
+        return [offers[LABELS.index(label)].offer_id for label in labels]
 
     def __call__(self, system, user, output_model):
         assert output_model is FinderPickOut
@@ -1506,10 +1515,18 @@ def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None
     """
     news = news or NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
     jev = jev or FakeJev()
+    picker = picker or StubPicker()
+
+    def recorded_search(*args, **kwargs):
+        shortlist = search(*args, jev=jev, **kwargs)
+        if isinstance(picker, StubPicker):
+            picker.shortlists.append(shortlist)
+        return shortlist
+
     client = TestClient(create_app(
         settings, [CLIENT], sources=_cpc(_here(sources, settings)), analyzer=StubAnalyzer(),
-        finder_search=functools.partial(search, jev=jev),
-        finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=picker or StubPicker(),
+        finder_search=recorded_search,
+        finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=picker,
                                       repair_call=repair or StubRepair())))
     if clock is not None:
         client.app.state.served["cpc"].grade_limiter.clock = clock
@@ -1529,6 +1546,54 @@ def test_the_bullets_of_each_pick_get_the_jev_checks_and_they_only_log(settings,
     assert caplog.text.count("Jev checks of the read, log only") == len(doc["trades"])
 
 
+def _is_check(request) -> bool:
+    return bool(request.questions) and all(k.startswith(("faithful.", "rumor.")) for k in request.questions)
+
+
+def test_the_log_only_jev_checks_of_the_picks_wait_until_the_caller_runs_them(settings, sources):
+    # Ticket 06: the checks run after the Answer goes out, so they add no time to the press.
+    jev = FakeJev()
+    snapshot = _find_client(settings, sources, jev=jev).app.state.served["cpc"].sources.snapshot(2026)
+    shortlist = search(2, None, snapshot, jev)
+    later = []
+    picks = pick_trades(shortlist, snapshot, news=NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED), jev=jev,
+                        call=StubPicker(), repair_call=StubRepair(), defer=later.append)
+    assert picks.picks and not [r for r in jev.requests if _is_check(r)]
+    [job] = later
+    job()
+    assert len([r for r in jev.requests if _is_check(r)]) == len(picks.picks)
+
+
+def test_only_send_it_lean_yes_and_gut_call_come_back_as_trades(settings, sources):
+    # Ticket 06: a pick that reads Lean no or Pass, and still does after its repair, never comes back.
+    def leans(user):
+        out = passing_pick(user)
+        for pick, lean in zip(out["picks"], ["Lean no", "Pass", "Gut call"], strict=True):
+            pick["lean"] = lean
+        return out
+
+    picker = StubPicker(leans)
+    repair = StubRepair(lambda user: passing_repair(user) | {"lean": "Lean no"})
+    doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
+                                                                      headers=HEADERS).json()
+    labels = re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)
+    assert len(repair.calls) == 2
+    assert [(item["offer_id"], item["lean"]) for item in doc["trades"]] == [(picker.offer_ids(labels[2:3])[0],
+                                                                            "Gut call")]
+
+
+def test_a_pick_that_writes_offer_before_its_label_maps_to_its_offer_with_no_retry(settings, sources):
+    # Decision 02: the Advisor copied the "Offer " of the prompt into the id, and the whole call ran again.
+    picker = StubPicker(lambda user: passing_pick(user) | {
+        "picks": [pick | {"label": f"Offer {pick['label']}"} for pick in passing_pick(user)["picks"]]})
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    assert len(picker.calls) == 1
+    labels = re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)
+    assert labels == list(LABELS[:len(labels)]) and len(labels) <= 10
+    assert [item["offer_id"] for item in doc["trades"]] == picker.offer_ids(labels[:3])
+
+
 def test_a_failed_jev_check_of_a_pick_never_blocks_the_picks(settings, sources, caplog):
     def answer(key, question, state):
         if key.startswith(("faithful.", "rumor.")):
@@ -1541,7 +1606,7 @@ def test_a_failed_jev_check_of_a_pick_never_blocks_the_picks(settings, sources, 
     assert "The Jev checks of the read failed" in caplog.text
 
 
-def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_headline_and_bullets(settings, sources):
+def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_lean_a_case_and_bullets(settings, sources):
     picker = StubPicker()
     response = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
                                                             headers=HEADERS)
@@ -1552,7 +1617,7 @@ def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_headline_and_b
     assert doc["empty"] is None
     assert 1 <= len(doc["trades"]) <= 3
     for item in doc["trades"]:
-        assert item["headline"] == HEADLINE
+        assert item["lean"] == "Lean yes" and item["case"] == PICK_CASE
         assert 2 <= len(item["bullets"]) <= 3
         # Each Bullet carries the text of its fact, so a tap on the card opens the fact.
         for bullet in item["bullets"]:
@@ -1722,7 +1787,7 @@ def test_the_other_order_of_the_pair_misses_the_cache(settings, sources):
 
 
 def _offers_in(user: str) -> dict[str, list[str]]:
-    """The fact ids of each offer of a pick message, by offer id."""
+    """The fact ids of each offer of a pick message, by its label."""
     offers, current = {}, None
     for line in user.splitlines():
         if line.startswith("Offer "):
@@ -1764,7 +1829,7 @@ def _news_pick(user):
     out = passing_pick(user)
     offer, fid = next((offer, fid) for offer, ids in _offers_in(user).items() for fid in ids if fid.startswith("NEWS."))
     bullets = out["picks"][0]["bullets"]
-    out["picks"] = [{"offer_id": offer, "lean": "Lean yes", "headline": HEADLINE,
+    out["picks"] = [{"label": offer, "lean": "Lean yes", "case": PICK_CASE,
                      "bullets": [bullets[0] | {"fact_id": fid}, *bullets[1:]]}]
     return out
 
@@ -1777,8 +1842,12 @@ def _news_pick(user):
     (lambda user: {"picks": [passing_pick(user)["picks"][0] | {"bullets": passing_pick(user)["picks"][0]["bullets"][:1]}],
                    "near": [], "none_line": None}, "it has 1 bullets; the range is 2 to 4"),
     (_pick_of_bullets(5), "it has 5 bullets; the range is 2 to 4"),
-    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"headline": "Send it for 12 points."}]},
-     "pick 1 headline: number 12 is not in the cited facts"),
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"case": "If you want it, send it for 12 points."}]},
+     "pick 1 case: number 12 is not in the cited facts"),
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"case": "Send it. If you want depth, it helps."}]},
+     "pick 1 case: the first sentence must hold the condition"),
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"case": PICK_CASE + " It helps. It fits. It works."}]},
+     "pick 1 case: it has 4 sentences; the most is 3"),
     # A pick that the Advisor would read as Lean no alone is no pick, so the analyzer and the Finder agree.
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"lean": "Lean no"}]},
      "pick 1: its Lean is Lean no; pick only an offer you would read as Send it, Lean yes, or Gut call"),
@@ -1792,12 +1861,12 @@ def test_a_pick_that_fails_a_guard_gets_one_repair_call_and_the_repaired_pick_st
     assert len(repair.calls) == 1
     assert failure in repair.calls[0][1]
     assert doc["fallback"] is False
-    assert [item["headline"] for item in doc["trades"]] == [HEADLINE] * len(doc["trades"])
+    assert [item["case"] for item in doc["trades"]] == [PICK_CASE] * len(doc["trades"])
 
 
 @pytest.mark.parametrize("builder, failure", [
-    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"offer_id": "1:2-3:4"}]},
-     "offer 1:2-3:4 is not on the shortlist"),
+    (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"label": "Z"}]},
+     "offer Z is not on the shortlist"),
     (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
     (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 4}, "the response has 4 picks"),
     (lambda user: {"picks": [], "near": near_ideas(user), "none_line": None},
@@ -1816,7 +1885,7 @@ def test_a_failure_of_the_whole_response_retries_the_whole_call_once(settings, s
     assert failure in picker.calls[1][1]
     assert repair.calls == []
     assert doc["fallback"] is False
-    assert [item["headline"] for item in doc["trades"]] == [HEADLINE] * len(doc["trades"])
+    assert [item["case"] for item in doc["trades"]] == [PICK_CASE] * len(doc["trades"])
 
 
 def test_one_bad_pick_of_three_gets_one_repair_call_and_the_document_holds_all_three(settings, sources):
@@ -1828,7 +1897,7 @@ def test_one_bad_pick_of_three_gets_one_repair_call_and_the_document_holds_all_t
     assert len(picker.calls) == 1
     # The repair asks for the bad pick only, so the two good picks cost no second call.
     assert [list(_offers_in(user)) for _, user in repair.calls] == [picked[:1]]
-    assert [item["offer_id"] for item in doc["trades"]] == picked
+    assert [item["offer_id"] for item in doc["trades"]] == picker.offer_ids(picked)
     assert doc["fallback"] is False
 
 
@@ -1851,12 +1920,12 @@ def test_the_repair_call_sends_the_one_sheet_of_its_offer_only(settings, sources
 
 def test_a_repaired_pick_that_fails_again_is_dropped_when_another_pick_stands(settings, sources, caplog):
     picker = StubPicker(_bad_pick({"text": "The trade lands in week 9."}))
-    repair = StubRepair(lambda user: passing_repair(user) | {"headline": "Send it for 12 points."})
+    repair = StubRepair(lambda user: passing_repair(user) | {"case": "If you want it, send it for 12 points."})
     doc = _find_client(settings, sources, picker, repair=repair).post("/find", json={"season": 2026, "asker": 2},
                                                                       headers=HEADERS).json()
     picked = re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)[:3]
     assert len(picker.calls) == 1 and len(repair.calls) == 1
-    assert [item["offer_id"] for item in doc["trades"]] == picked[1:]
+    assert [item["offer_id"] for item in doc["trades"]] == picker.offer_ids(picked[1:])
     assert doc["fallback"] is False
     assert "finder repair of pick 1 failed" in caplog.text
 
@@ -1937,7 +2006,7 @@ def test_no_good_offer_gives_the_plain_line_of_the_advisor_and_the_near_ideas(se
     assert doc["fallback"] is False
     # An idea is an idea, so the offers that the pick weighed still show, each with why it fell short.
     assert [item["reason"] for item in doc["near"]] == [NEAR_REASON] * 2
-    assert [item["offer_id"] for item in doc["near"]] == list(_offers_in(picker.calls[0][1]))[:2]
+    assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(list(_offers_in(picker.calls[0][1]))[:2])
 
 
 # The near ideas: the offers that the pick weighed and would not send, each with the one reason it fell short.
@@ -1947,7 +2016,7 @@ NEAR_REASON = "The trade lands in the middle of the season, when your starters c
 def near_ideas(user: str, start: int = 0, count: int = 3, **changes) -> list[dict]:
     """Near ideas that pass every guard: `count` offers of the pick message from `start`, each on the week fact."""
     offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[start:start + count]
-    return [{"offer_id": offer, "reason": NEAR_REASON, "fact_id": "trade.week"} | changes for offer in offers]
+    return [{"label": offer, "reason": NEAR_REASON, "fact_id": "trade.week"} | changes for offer in offers]
 
 
 def test_the_picks_come_with_up_to_three_near_ideas_each_with_its_reason(settings, sources):
@@ -1955,8 +2024,8 @@ def test_the_picks_come_with_up_to_three_near_ideas_each_with_its_reason(setting
     doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
                                                        headers=HEADERS).json()
     offers = list(_offers_in(picker.calls[0][1]))
-    assert [item["offer_id"] for item in doc["trades"]] == offers[:3]
-    assert [item["offer_id"] for item in doc["near"]] == offers[3:6]
+    assert [item["offer_id"] for item in doc["trades"]] == picker.offer_ids(offers[:3])
+    assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(offers[3:6])
     for item in doc["near"]:
         assert set(item) == {"offer_id", "sides", "reason"}
         assert item["reason"] == NEAR_REASON
@@ -1980,7 +2049,7 @@ def test_a_near_idea_that_fails_a_guard_drops_and_the_others_stand(settings, sou
     offers = list(_offers_in(picker.calls[0][1]))
     # A near idea is no advice to send, so it gets no repair call. It drops, and the log says why.
     assert len(picker.calls) == 1 and repair.calls == []
-    assert [item["offer_id"] for item in doc["near"]] == offers[4:6]
+    assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(offers[4:6])
     assert failure in caplog.text
 
 
@@ -1989,14 +2058,14 @@ def test_a_near_idea_that_is_a_pick_a_repeat_or_off_the_list_drops(settings, sou
     def build(user):
         out = passing_pick(user)
         near = near_ideas(user, start=3, count=2)
-        extra = {"a pick": out["picks"][0]["offer_id"], "a repeat": near[0]["offer_id"],
+        extra = {"a pick": out["picks"][0]["label"], "a repeat": near[0]["label"],
                  "not on the list": "1:2-3:4"}[which]
-        return out | {"near": [*near, near[0] | {"offer_id": extra}]}
+        return out | {"near": [*near, near[0] | {"label": extra}]}
 
     picker = StubPicker(build)
     doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
                                                        headers=HEADERS).json()
-    assert [item["offer_id"] for item in doc["near"]] == list(_offers_in(picker.calls[0][1]))[3:5]
+    assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(list(_offers_in(picker.calls[0][1]))[3:5])
 
 
 def test_no_pick_and_no_near_idea_that_stands_gives_the_shortlist_fallback(settings, sources):
@@ -2046,12 +2115,15 @@ def test_a_search_with_no_offer_sends_the_ideas_of_the_wider_pass_to_the_pick(se
 
 
 def _assert_the_shortlist_fallback(doc, user):
-    """The document of a fallback: every offer of the pick message, each with fact lines and no headline."""
+    """The document of a fallback: every offer of the pick message, each with fact lines and no Lean or Case."""
     assert doc["fallback"] is True
     assert doc["empty"] is None
-    assert [item["offer_id"] for item in doc["trades"]] == list(_offers_in(user))
+    # The message labels the offers A, B, and so on in the order of the shortlist, and the fallback keeps that order.
+    labels = list(_offers_in(user))
+    assert labels == list(LABELS[:len(labels)])
+    assert len(doc["trades"]) == len(labels)
     for item in doc["trades"]:
-        assert item["headline"] is None
+        assert item["lean"] is None and item["case"] is None and item["headline"] is None
         assert item["bullets"] == []
         players = [player["name"] for side in item["sides"] for player in side["gives"]]
         # One plain line per traded player, from his fact on the sheet, in the order of the sides.
@@ -2099,7 +2171,8 @@ def test_the_pick_reads_news_only_of_the_shortlist_players_and_asks_jev_no_new_q
                                                                      headers=HEADERS)
     user = picker.calls[0][1]
     offers = _offers_in(user)
-    players = {pid for offer in offers for side in offer.split("-") for pid in side.partition(":")[2].split("+")}
+    ids = picker.offer_ids(list(offers))
+    players = {pid for offer in ids for side in offer.split("-") for pid in side.partition(":")[2].split("+")}
     assert set(fetched) == players
     # Each player is fetched once, though he is on more than one offer.
     assert len(fetched) == len(players)
@@ -2124,7 +2197,9 @@ def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources
     picker = StubPicker()
     _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS)
     system = " ".join(picker.calls[0][0].split())
-    for line in ("picks: up to 3 offers that you would send, best first, each once.",
+    for line in ("picks: up to 3 offers that you would send, best first, each once, from any team of the list.",
+                 "label: the one letter of the offer, such as",
+                 "case: at most 3 short sentences to the asker,",
                  "near: up to 3 other offers of the list that came close, best first, each once.",
                  "With no pick, give at least one near idea.",
                  "bullets: 2 to 4 Bullets, one claim each, in plain words.",
@@ -2339,7 +2414,8 @@ def test_the_document_version_is_26():
     # stored before either serves.
     # The finder document holds the near ideas, so no list stored before them serves.
     # A search with no offer runs the wider pass, so no empty list stored before it serves.
-    assert cache_module.DOCUMENT_VERSION == 27
+    # Each finder trade holds the Lean and the Case of the pick, so no list stored with a headline serves.
+    assert cache_module.DOCUMENT_VERSION == 28
 
 
 # The API over more than one client: the routes at /clients/<slug>/, the old paths as cpc, the grade limit per

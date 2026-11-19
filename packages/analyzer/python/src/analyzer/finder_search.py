@@ -400,15 +400,16 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     aims at (a hard rule, because the manager set it).
     5. The wider pass: when the targets build no offer, `wider_offers` gives at most one plain idea per partner, so
        the pick has ideas to weigh. It asks no target question, and it skips a partner whose filter request failed.
-    `stage` gets one plain line after the partner filter, the offers, and the shortlist. The default drops them.
+    `stage` gets a live line as each of four steps starts and a done line as it ends: the teams read, the players who
+    fit, the offers, and the shortlist. The lines name no inner tool, because the site shows them. The default drops
+    them.
     """
     waves = waves or JevWaves(jev)
     if anchor is not None and anchor.side == "gets":
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
         partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)
-    stage(f"Checking {len(partners)} teams for a fit" if len(partners) > 1 else "Checking the other team for a fit",
-          live=True)
+    stage("Reading every team" if len(partners) > 1 else "Reading their roster", live=True)
 
     reads: list[PartnerRead] = []
     if anchor is not None:
@@ -431,8 +432,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                      "passed" if passed else "failed request" if response is None else "stopped",
                      ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
     passing = [read.roster_id for read in reads if read.passed]
-    stage(f"Checked {len(partners)} teams for a fit" if len(partners) > 1 else "Checked the other team for a fit")
-    stage("Building offers", live=True)
+    stage(f"Read {len(partners)} teams" if len(partners) > 1 else f"Read {snapshot.teams[partners[0]].name}")
+    stage("Looking for players who fit", live=True)
 
     target_questions = {rid: _target_questions(snapshot, asker, rid, anchor, limit) for rid in passing}
     rated = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid), target_questions[rid])
@@ -457,21 +458,22 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
         built = build_offers(asker, rid, sides["asker"], sides["partner"], snapshot)
         offers_by_partner[rid] = [trade for trade in built
                                   if (anchor is None or _holds(trade, anchor)) and _within(trade, snapshot, limit)]
+    fits = len({pid for sides in targets.values() for pids in sides.values() for pid in pids})
+    stage({0: "Found no players who fit", 1: "Found one player who fits"}.get(fits, f"Found {fits} players who fit"))
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     wider = not offers
+    # An idea is an idea: a search with no offer looks wider, so the manager sees what was weighed and why.
+    stage("Looking wider for ideas" if wider else "Building offers", live=True)
     if wider:
-        # An idea is an idea: a search with no offer looks wider, so the manager sees what was weighed and why.
-        stage("Looking wider for ideas", live=True)
         offers_by_partner = {}
         for trade in wider_offers(asker, [read.roster_id for read in reads if not read.failed], snapshot,
                                   anchor, limit):
             offers_by_partner.setdefault(trade.sides[1].roster_id, []).append(trade)
         offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
         log.info("Finder wider pass of %s: %d", snapshot.teams[asker].name, len(offers))
-        stage("Looked wider for ideas")
     log.info("Finder offers of %s: %d", snapshot.teams[asker].name, len(offers))
     stage(f"Built {len(offers)} offers" if len(offers) != 1 else "Built one offer")
-    stage("Weighing the offers", live=True)
+    stage("Making a shortlist", live=True)
     for trade in offers:
         _log_offer(snapshot, trade)
 
@@ -491,8 +493,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                 score *= p
             rated_offers.append(ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=fair, needs=needs,
                                                score=score))
-    stage(f"Weighed {len(rated_offers)} offers" if len(rated_offers) != 1 else "Weighed one offer")
     shortlist = sorted(rated_offers, key=lambda offer: (-offer.score, offer.offer_id))[:SHORTLIST_KEEP]
+    stage(f"Made a shortlist of {len(shortlist)}" if len(shortlist) != 1 else "Made a shortlist of one")
     for offer in shortlist:
         log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s", offer.offer_id, offer.score, offer.fair,
                  {rid: round(p, 2) for rid, p in offer.needs.items()})

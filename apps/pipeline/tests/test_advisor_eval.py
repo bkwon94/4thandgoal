@@ -318,12 +318,12 @@ class StubPick:
     def __call__(self, system, user, output_model):
         self.calls += 1
         first = user.split("\nOffer ")[1]
-        offer_id = first.split("\n", 1)[0].strip()
+        label = first.split("\n", 1)[0].strip()
         fact_ids = re.findall(r"^- (\S+): ", first, re.MULTILINE)
         bullets = [{"text": "This trade helps the asker.", "mark": "for", "fact_id": fact_ids[0]},
                    {"text": "The other side gets depth.", "mark": "even", "fact_id": fact_ids[1]}]
-        return FinderPickOut.model_validate({"picks": [{"offer_id": offer_id, "lean": "Gut call",
-                                                        "headline": "A swap that fits both teams.",
+        return FinderPickOut.model_validate({"picks": [{"label": label, "lean": "Gut call",
+                                                        "case": "If you want depth, this swap fits both teams.",
                                                         "bullets": bullets}], "near": [], "none_line": None})
 
 
@@ -335,7 +335,8 @@ def test_the_eval_runs_the_finder_of_each_asker_on_the_newest_week_and_saves_the
     assert saved["error"] is None and saved["week"] == 6 and saved["asker"] == snap.teams[4].name
     assert saved["offers"] > 0 and 0 < len(saved["shortlist"]) <= 10
     assert len(saved["picks"]) == 1 and saved["picks"][0]["offer_id"] == saved["shortlist"][0]["offer_id"]
-    assert saved["picks"][0]["headline"] == "A swap that fits both teams."
+    assert saved["picks"][0]["lean"] == "Gut call"
+    assert saved["picks"][0]["case"] == "If you want depth, this swap fits both teams."
     assert all(b["fact_text"] for b in saved["picks"][0]["bullets"])
     assert picker.calls == 1 and saved["claude_calls"] == 1
     # FakeJev reads 100 tokens per question, so the press has a Jev cost and no Claude cost from the stub.

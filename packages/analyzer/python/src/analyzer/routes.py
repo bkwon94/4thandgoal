@@ -11,13 +11,13 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Annotated, Protocol
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
-from analyzer.finder_pick import FinderPicks
+from analyzer.finder_pick import Defer, FinderPicks
 from analyzer.finder_search import Anchor, Limit, Shortlist
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.sell_high import SellHigh, SellHighFailed
@@ -318,17 +318,20 @@ def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. Each near idea holds its
-    offer id, its sides, and the reason it fell short. A Bullet has the shape of
+    Each trade holds its offer id, its sides, and the read of the Advisor: the Lean, the Case, and the Bullets. Each
+    near idea holds its offer id, its sides, and the reason it fell short. A Bullet has the shape of
     the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
-    headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
-    the page needs no words of its own. No trade holds a score.
+    Lean, no Case, and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the
+    press, so the page needs no words of its own. No trade holds a score.
     """
     trades = [
         {
             "offer_id": pick.offer.offer_id,
             "sides": _echoed_sides(pick.offer.trade, snapshot),
-            "headline": pick.headline,
+            # The pick writes no headline. The key stays null, so the trade still parses on a site that reads it.
+            "headline": None,
+            "lean": pick.lean,
+            "case": pick.case,
             "bullets": [bullet.model_dump() for bullet in pick.bullets],
             "fact_lines": pick.fact_lines,
         }
@@ -354,25 +357,28 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
 
 
 @router.post("/find")
-def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
+def find(request: Request, pair: FindRequest, served: ServedClient, background: BackgroundTasks) -> dict:
     """Search for trades of the asker on the live snapshot, with the picked partner or every other team.
 
-    The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
+    The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a Lean, a Case, and
+    Bullets. The log-only Jev checks run after the document goes out.
     """
-    return find_trades(request, pair, served)
+    return find_trades(request, pair, served, defer=background.add_task)
 
 
-def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None) -> dict:
-    """The find press of the route, for the route and for the trade ideas of the front door.
+def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None,
+                defer: Defer | None = None) -> dict:
+    """The find press of the route, for the route, the find stream, and the trade ideas of the front door.
 
     With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
-    keyword and send no line, because the plain route streams no step.
+    keyword and send no line, because the plain route streams no step. With `defer`, the pick hands it the log-only
+    Jev checks, so the caller runs them after its Answer goes out.
     """
     with _press_log("find", served):
-        return _find(request, pair, served, stage)
+        return _find(request, pair, served, stage, defer)
 
 
-def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None) -> dict:
+def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -396,12 +402,10 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     anchored = {} if pair.anchor is None else {"anchor": pair.anchor}
     if pair.limit is not None:
         anchored["limit"] = pair.limit
-    if stage is None:
-        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **anchored)
-        picks = request.app.state.finder_pick(shortlist, snapshot)
-    else:
-        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, stage=stage, **anchored)
-        picks = request.app.state.finder_pick(shortlist, snapshot, stage=stage)
+    staged = {} if stage is None else {"stage": stage}
+    deferred = {} if defer is None else {"defer": defer}
+    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored)
+    picks = request.app.state.finder_pick(shortlist, snapshot, **staged, **deferred)
     document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
     if not picks.fallback:

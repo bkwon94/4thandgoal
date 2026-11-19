@@ -436,12 +436,35 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
             for line in [] if limit is None else limit_lines(read):
                 step(line)
         pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor, limit=limit)
+        later: list[Callable[[], None]] = []
         document = capped_press(asker, body.roster_id, emit,
-                                lambda: analyzer_routes.find_trades(request, pair, served, step))
+                                lambda: analyzer_routes.find_trades(request, pair, served, step, defer=later.append))
         if document is not None:
             _send_key(asker, served, emit, "trade_ideas", body.roster_id, partner)
             emit("data-answer", {"kind": "ideas", "document": document,
                                  "block": ideas_block(document, _points(asker, served))})
+        # The log-only Jev checks run after the Answer goes out, so they add no time to the wait.
+        for job in later:
+            job()
+
+    return stream(work)
+
+
+@router.post("/find-stream")
+def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> StreamingResponse:
+    """The find press of the analyzer page as a stream: one step line as each step of the search ends, then the
+    finder document. It is the stream of trade ideas, so the analyzer page and the front door read one protocol.
+
+    It counts one grade, as the plain find route does, and the caps of the front door do not apply.
+    """
+
+    def work(emit: Emit) -> None:
+        later: list[Callable[[], None]] = []
+        document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=later.append)
+        emit("data-answer", {"kind": "find", "document": document})
+        # The log-only Jev checks run after the Answer goes out, so they add no time to the wait.
+        for job in later:
+            job()
 
     return stream(work)
 

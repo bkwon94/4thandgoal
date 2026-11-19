@@ -56,9 +56,9 @@ def check_block(document: dict, points: dict[str, float]) -> dict:
 
 
 def ideas_block(document: dict, points: dict[str, float]) -> dict:
-    """The card of trade ideas: one row per offer with its partner and its headline as the gist. An offer has no Lean,
-    because each pick is an offer the analyzer would send."""
+    """The card of trade ideas: one row per offer with its partner, the swap as the gist, and the Lean and the Case of
+    the pick. A fallback offer has no Lean and no Case."""
     asker = document["trade_pair"]["asker"]["roster_id"]
-    offers = [_offer(trade["offer_id"], trade["sides"], asker, points, gist=trade["headline"], lean=None, case=None,
-                     bullets=trade["bullets"][:TOP_OFFER_BULLETS]) for trade in document["trades"]]
+    offers = [_offer(trade["offer_id"], trade["sides"], asker, points, gist=None, lean=trade["lean"],
+                     case=trade["case"], bullets=trade["bullets"][:TOP_OFFER_BULLETS]) for trade in document["trades"]]
     return {"kind": KIND, "offers": offers}
