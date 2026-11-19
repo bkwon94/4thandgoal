@@ -12,9 +12,21 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each don
 
 Done condition: Each workflow step that runs `playwright install-deps` or `install --with-deps` first restores its apt packages from the GitHub Actions cache, and a rule script fails the check when a step does not.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: the job `site-browser` in `.github/workflows/check.yml` caches only `~/.cache/ms-playwright`, and the job `rerun` in `.github/workflows/rerun.yml` caches nothing, so each `playwright install-deps` or `install --with-deps` downloads about 140 MB of .deb files from the Ubuntu mirror, and a slow mirror stalls the job.
+Red: at `ec4d4c6e` with `scripts/apt_cache_rule.py` of `60737881`, `python3 -B scripts/apt_cache_rule.py`
+
+```text
+.github/workflows/check.yml:120 job site-browser installs system packages with no earlier step that restores ~/.cache/apt-archives: run: pnpm --dir apps/site exec playwright install --with-deps chromium webkit
+.github/workflows/check.yml:125 job site-browser installs system packages with no earlier step that restores ~/.cache/apt-archives: run: pnpm --dir apps/site exec playwright install-deps chromium webkit
+.github/workflows/rerun.yml:99 job rerun installs system packages with no earlier step that restores ~/.cache/apt-archives: run: pnpm --dir apps/site exec playwright install --with-deps chromium webkit
+FAILED: 3 steps install system packages with no apt cache.
+```
+
+Green: at `60737881`, `python3 -B scripts/apt_cache_rule.py`
+
+```text
+(no output; the exit code is 0)
+```
 Test verdict: pending
 
 ## Smoke
