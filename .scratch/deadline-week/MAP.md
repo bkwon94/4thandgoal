@@ -15,10 +15,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - Jev answers tiny yes or no questions, and code combines the answers in a decision tree. Each bad case joins a backtest set. Source: the Rivet post that Brian shared, and the 28 labelled trades of manager-brain.
 - The UI uses `ui-sdk`, parts from scrolltide and transitions.dev, and the design skills of design-bar. Brian, in the Stage 1 grill.
 - Each Finder trade shows the Lean, the Case, and folded Bullets of the Advisor, and opens in the analyzer already graded. Terms: Deadline week, Lock (00:00 Eastern Tue 2026-11-24), Deadline banner, Trade wire, Deadline board. `decisions/04-grill-terms-and-shared-brain.md`.
+- The Finder skips the Partner filter for one picked partner, gives the Shortlist variety, and lets an unsure "spares" answer pass. `decisions/01-research-few-offers.md`.
 
 ## NOT YET SPECIFIED
 
-- Why does the Finder give no offer or one offer, and which step cuts the most? `decisions/01-research-few-offers.md`.
 - Where does the Finder spend its time, and can it be fast enough without a stream? `decisions/02-research-finder-speed.md`.
 - Where does the live feed of trades get its data, and how often? `decisions/03-research-trade-feed-source.md`.
 - Which Jev questions and which decision trees does the Finder use, and what bar must the backtest pass? `decisions/05-grill-jev-trees-and-backtest.md`.

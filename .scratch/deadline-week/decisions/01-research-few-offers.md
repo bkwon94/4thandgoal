@@ -6,7 +6,7 @@ Map: `.scratch/deadline-week/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -16,4 +16,14 @@ Run the Finder on the CPC week 11 data for every team, with no partner and with 
 
 ## Decision
 
-None yet.
+Brian chose all three fixes on 2026-11-18. The findings are in `decisions/01-research-few-offers.notes.md`.
+
+The cause: the Partner filter stops 77% of pairs, and 127 of its 139 stops come from an "unsure" answer to one of the two "spares" questions, near the 0.7 line. With one partner, a stopped pair gets one plain-rule offer, and the Advisor rejects it about half the time. With every partner, the Shortlist holds 10 forms of one or two trades, so the Advisor keeps one.
+
+The spec does these three fixes:
+
+1. With one picked partner, the Finder skips the Partner filter, as the anchor search does. The Jev targets build the offers.
+2. The Shortlist has variety: the best offer for each player that the asker gives, and for each partner, before more forms of the same trade. This chooses what the Advisor reads. It cuts no trade by a score.
+3. The "spares" gate changes. An "unsure" answer passes, and only a clear "no" stops a partner. Ticket 05 splits each "spares" question into tiny questions in a Jev tree.
+
+The cost: about 11 target requests in place of about 3 per search, about 1 to 2 s more.
