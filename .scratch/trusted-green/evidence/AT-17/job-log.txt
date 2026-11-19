@@ -1,0 +1,349 @@
+$ gh run view 44451360322 --log   # workflow rerun.yml on PR #70, head 593295b2edf385082615610da5021928e821c2ba success
+Check out the PR	﻿2026-11-19T03:25:50.3892517Z ##[group]Run actions/checkout@v7
+Check out the PR	2026-11-19T03:25:50.3893602Z with:
+Check out the PR	2026-11-19T03:25:50.3894182Z   ref: 593295b2edf385082615610da5021928e821c2ba
+Check out the PR	2026-11-19T03:25:50.3894908Z   fetch-depth: 0
+Check out the PR	2026-11-19T03:25:50.3895479Z   repository: bkwon94/4thandgoal
+Check out the PR	2026-11-19T03:25:50.3899993Z   token: ***
+Check out the PR	2026-11-19T03:25:50.3900535Z   ssh-strict: true
+Check out the PR	2026-11-19T03:25:50.3901066Z   ssh-user: git
+Check out the PR	2026-11-19T03:25:50.3901608Z   persist-credentials: true
+Check out the PR	2026-11-19T03:25:50.3902357Z   clean: true
+Check out the PR	2026-11-19T03:25:50.3902914Z   sparse-checkout-cone-mode: true
+Check out the PR	2026-11-19T03:25:50.3903547Z   fetch-tags: false
+Check out the PR	2026-11-19T03:25:50.4004655Z   show-progress: true
+Check out the PR	2026-11-19T03:25:50.4005919Z   lfs: false
+Check out the PR	2026-11-19T03:25:50.4006913Z   submodules: false
+Check out the PR	2026-11-19T03:25:50.4007951Z   set-safe-directory: true
+Check out the PR	2026-11-19T03:25:50.4009235Z   allow-unsafe-pr-checkout: false
+Check out the PR	2026-11-19T03:25:50.4011784Z ##[endgroup]
+Check out the PR	2026-11-19T03:25:50.6599902Z Syncing repository: bkwon94/4thandgoal
+Check out the PR	2026-11-19T03:25:50.6603241Z ##[group]Getting Git version info
+Check out the PR	2026-11-19T03:25:50.6604246Z Working directory is '/home/runner/work/4thandgoal/4thandgoal'
+Check out the PR	2026-11-19T03:25:50.6605551Z [command]/usr/bin/git version
+Check out the PR	2026-11-19T03:25:50.6630911Z git version 2.56.1
+Check out the PR	2026-11-19T03:25:50.6654213Z ##[endgroup]
+Check out the PR	2026-11-19T03:25:50.6676817Z Temporarily overriding HOME='/home/runner/work/_temp/db15d6c2-1a14-4b5d-95f7-a69e490311ac' before making global git config changes
+Check out the PR	2026-11-19T03:25:50.6680089Z Adding repository directory to the temporary git global config as a safe directory
+Check out the PR	2026-11-19T03:25:50.6682851Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/4thandgoal/4thandgoal
+Check out the PR	2026-11-19T03:25:50.6757729Z Deleting the contents of '/home/runner/work/4thandgoal/4thandgoal'
+Check out the PR	2026-11-19T03:25:50.6761507Z ##[group]Determining repository object format
+Check out the PR	2026-11-19T03:25:50.6764074Z ##[endgroup]
+Check out the PR	2026-11-19T03:25:50.6765755Z ##[group]Initializing the repository
+Check out the PR	2026-11-19T03:25:50.6767877Z [command]/usr/bin/git init /home/runner/work/4thandgoal/4thandgoal
+Check out the PR	2026-11-19T03:25:50.6862016Z hint: Using 'master' as the name for the initial branch. This default branch name
+Check out the PR	2026-11-19T03:25:50.6864379Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Check out the PR	2026-11-19T03:25:50.6866436Z hint: to use in all of your new repositories, which will suppress this warning,
+Check out the PR	2026-11-19T03:25:50.6868072Z hint: call:
+Check out the PR	2026-11-19T03:25:50.6869074Z hint:
+Check out the PR	2026-11-19T03:25:50.6870294Z hint: 	git config --global init.defaultBranch <name>
+Check out the PR	2026-11-19T03:25:50.6871696Z hint:
+Check out the PR	2026-11-19T03:25:50.6873201Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Check out the PR	2026-11-19T03:25:50.6875347Z hint: 'development'. The just-created branch can be renamed via this command:
+Check out the PR	2026-11-19T03:25:50.6877203Z hint:
+Check out the PR	2026-11-19T03:25:50.6878365Z hint: 	git branch -m <name>
+Check out the PR	2026-11-19T03:25:50.6879537Z hint:
+Check out the PR	2026-11-19T03:25:50.6880978Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Check out the PR	2026-11-19T03:25:50.6883621Z Initialized empty Git repository in /home/runner/work/4thandgoal/4thandgoal/.git/
+Check out the PR	2026-11-19T03:25:50.6887713Z [command]/usr/bin/git remote add origin https://github.com/bkwon94/4thandgoal
+Check out the PR	2026-11-19T03:25:50.6958541Z ##[endgroup]
+Check out the PR	2026-11-19T03:25:50.6960255Z ##[group]Disabling automatic garbage collection
+Check out the PR	2026-11-19T03:25:50.6961786Z [command]/usr/bin/git config --local gc.auto 0
+Check out the PR	2026-11-19T03:25:50.7010936Z ##[endgroup]
+Check out the PR	2026-11-19T03:25:50.7013160Z ##[group]Setting up auth
+Check out the PR	2026-11-19T03:25:50.7014248Z Removing SSH command configuration
+Check out the PR	2026-11-19T03:25:50.7015964Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Check out the PR	2026-11-19T03:25:50.7059571Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Check out the PR	2026-11-19T03:25:50.7553515Z Removing HTTP extra header
+Check out the PR	2026-11-19T03:25:50.7559346Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Check out the PR	2026-11-19T03:25:50.7607019Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Check out the PR	2026-11-19T03:25:50.7944407Z Removing includeIf entries pointing to credentials config files
+Check out the PR	2026-11-19T03:25:50.7950858Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Check out the PR	2026-11-19T03:25:50.7991216Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Check out the PR	2026-11-19T03:25:50.8320033Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-2f6e3a85-2a14-4066-930d-1feb55a13c44.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Check out the PR	2026-11-19T03:25:50.8365942Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git.path /home/runner/work/_temp/git-credentials-2f6e3a85-2a14-4066-930d-1feb55a13c44.config
+Check out the PR	2026-11-19T03:25:50.8405786Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-2f6e3a85-2a14-4066-930d-1feb55a13c44.config
+Check out the PR	2026-11-19T03:25:50.8447965Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-2f6e3a85-2a14-4066-930d-1feb55a13c44.config
+Check out the PR	2026-11-19T03:25:50.8488551Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-2f6e3a85-2a14-4066-930d-1feb55a13c44.config
+Check out the PR	2026-11-19T03:25:50.8531125Z ##[endgroup]
+Check out the PR	2026-11-19T03:25:50.8532394Z ##[group]Fetching the repository
+Check out the PR	2026-11-19T03:25:50.8534290Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+Check out the PR	2026-11-19T03:26:01.1062590Z From https://github.com/bkwon94/4thandgoal
+Check out the PR	2026-11-19T03:26:01.1063531Z  * [new branch]        analyzer-stage         -> origin/analyzer-stage
+Check out the PR	2026-11-19T03:26:01.1064117Z  * [new branch]        ask-fixes              -> origin/ask-fixes
+Check out the PR	2026-11-19T03:26:01.1064683Z  * [new branch]        bug-ask-scroll         -> origin/bug-ask-scroll
+Check out the PR	2026-11-19T03:26:01.1065237Z  * [new branch]        bug-chat-follow-ups    -> origin/bug-chat-follow-ups
+Check out the PR	2026-11-19T03:26:01.1065813Z  * [new branch]        bug-pick-owner         -> origin/bug-pick-owner
+Check out the PR	2026-11-19T03:26:01.1066372Z  * [new branch]        bug-scroll-up-clock    -> origin/bug-scroll-up-clock
+Check out the PR	2026-11-19T03:26:01.1066989Z  * [new branch]        bug-team-sheet-close   -> origin/bug-team-sheet-close
+Check out the PR	2026-11-19T03:26:01.1067560Z  * [new branch]        bug-three-player-side  -> origin/bug-three-player-side
+Check out the PR	2026-11-19T03:26:01.1068220Z  * [new branch]        bug-topics-team-rename -> origin/bug-topics-team-rename
+Check out the PR	2026-11-19T03:26:01.1068815Z  * [new branch]        bug-trade-edit-sheet   -> origin/bug-trade-edit-sheet
+Check out the PR	2026-11-19T03:26:01.1069440Z  * [new branch]        bug-trade-extra-player -> origin/bug-trade-extra-player
+Check out the PR	2026-11-19T03:26:01.1070028Z  * [new branch]        ci-once                -> origin/ci-once
+Check out the PR	2026-11-19T03:26:01.1070581Z  * [new branch]        clients                -> origin/clients
+Check out the PR	2026-11-19T03:26:01.1071161Z  * [new branch]        easter-eggs            -> origin/easter-eggs
+Check out the PR	2026-11-19T03:26:01.1071768Z  * [new branch]        evidence-flags         -> origin/evidence-flags
+Check out the PR	2026-11-19T03:26:01.1072567Z  * [new branch]        evidence-flags-done    -> origin/evidence-flags-done
+Check out the PR	2026-11-19T03:26:01.1073397Z  * [new branch]        faster-evidence        -> origin/faster-evidence
+Check out the PR	2026-11-19T03:26:01.1074165Z  * [new branch]        front-door             -> origin/front-door
+Check out the PR	2026-11-19T03:26:01.1074974Z  * [new branch]        front-door-lineup      -> origin/front-door-lineup
+Check out the PR	2026-11-19T03:26:01.1075732Z  * [new branch]        grade-clarity          -> origin/grade-clarity
+Check out the PR	2026-11-19T03:26:01.1076460Z  * [new branch]        main                   -> origin/main
+Check out the PR	2026-11-19T03:26:01.1077569Z  * [new branch]        manager-brain          -> origin/manager-brain
+Check out the PR	2026-11-19T03:26:01.1078137Z  * [new branch]        manager-brain-done     -> origin/manager-brain-done
+Check out the PR	2026-11-19T03:26:01.1078697Z  * [new branch]        matchup-impact         -> origin/matchup-impact
+Check out the PR	2026-11-19T03:26:01.1079255Z  * [new branch]        midseason-live         -> origin/midseason-live
+Check out the PR	2026-11-19T03:26:01.1079868Z  * [new branch]        midseason-live-norcal  -> origin/midseason-live-norcal
+Check out the PR	2026-11-19T03:26:01.1080509Z  * [new branch]        midseason-report       -> origin/midseason-report
+Check out the PR	2026-11-19T03:26:01.1081046Z  * [new branch]        quick-runs             -> origin/quick-runs
+Check out the PR	2026-11-19T03:26:01.1081766Z  * [new branch]        readme-module-navigation -> origin/readme-module-navigation
+Check out the PR	2026-11-19T03:26:01.1083090Z  * [new branch]        rebrand                -> origin/rebrand
+Check out the PR	2026-11-19T03:26:01.1083607Z  * [new branch]        site-redesign          -> origin/site-redesign
+Check out the PR	2026-11-19T03:26:01.1084135Z  * [new branch]        todoist-queue          -> origin/todoist-queue
+Check out the PR	2026-11-19T03:26:01.1084691Z  * [new branch]        transaction-history    -> origin/transaction-history
+Check out the PR	2026-11-19T03:26:01.1085232Z  * [new branch]        trusted-green          -> origin/trusted-green
+Check out the PR	2026-11-19T03:26:01.1085734Z  * [new branch]        ui-sdk-sheet           -> origin/ui-sdk-sheet
+Check out the PR	2026-11-19T03:26:01.1086255Z  * [new branch]        vitest-worker-cap      -> origin/vitest-worker-cap
+Check out the PR	2026-11-19T03:26:01.1086802Z  * [new branch]        win-analyzer-in-menu   -> origin/win-analyzer-in-menu
+Check out the PR	2026-11-19T03:26:01.1087509Z  * [new branch]        win-analyzer-your-team -> origin/win-analyzer-your-team
+Check out the PR	2026-11-19T03:26:01.1088307Z  * [new branch]        win-front-door-home    -> origin/win-front-door-home
+Check out the PR	2026-11-19T03:26:01.1088857Z  * [new branch]        win-hide-near-ideas    -> origin/win-hide-near-ideas
+Check out the PR	2026-11-19T03:26:01.1089415Z  * [new branch]        win-no-week-chip       -> origin/win-no-week-chip
+Check out the PR	2026-11-19T03:26:01.1089945Z  * [new branch]        win-one-sheet          -> origin/win-one-sheet
+Check out the PR	2026-11-19T03:26:01.1090547Z  * [new branch]        win-sheet-nav-everywhere -> origin/win-sheet-nav-everywhere
+Check out the PR	2026-11-19T03:26:01.1092711Z [command]/usr/bin/git rev-parse --verify --quiet 593295b2edf385082615610da5021928e821c2ba^{object}
+Check out the PR	2026-11-19T03:26:01.1118439Z 593295b2edf385082615610da5021928e821c2ba
+Check out the PR	2026-11-19T03:26:01.1123990Z ##[endgroup]
+Check out the PR	2026-11-19T03:26:01.1124910Z ##[group]Determining the checkout info
+Check out the PR	2026-11-19T03:26:01.1126056Z ##[endgroup]
+Check out the PR	2026-11-19T03:26:01.1129521Z [command]/usr/bin/git sparse-checkout disable
+Check out the PR	2026-11-19T03:26:01.1193300Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Check out the PR	2026-11-19T03:26:01.1231344Z ##[group]Checking out the ref
+Check out the PR	2026-11-19T03:26:01.1236222Z [command]/usr/bin/git checkout --progress --force 593295b2edf385082615610da5021928e821c2ba
+Check out the PR	2026-11-19T03:26:02.1392797Z Updating files:  24% (1990/7984)
+Check out the PR	2026-11-19T03:26:02.1633362Z Updating files:  25% (1996/7984)
+Check out the PR	2026-11-19T03:26:02.1887362Z Updating files:  26% (2076/7984)
+Check out the PR	2026-11-19T03:26:02.2140007Z Updating files:  27% (2156/7984)
+Check out the PR	2026-11-19T03:26:02.2457690Z Updating files:  28% (2236/7984)
+Check out the PR	2026-11-19T03:26:02.2670790Z Updating files:  29% (2316/7984)
+Check out the PR	2026-11-19T03:26:02.2897336Z Updating files:  30% (2396/7984)
+Check out the PR	2026-11-19T03:26:02.3253807Z Updating files:  31% (2476/7984)
+Check out the PR	2026-11-19T03:26:02.3646945Z Updating files:  32% (2555/7984)
+Check out the PR	2026-11-19T03:26:02.4041292Z Updating files:  33% (2635/7984)
+Check out the PR	2026-11-19T03:26:02.4385305Z Updating files:  34% (2715/7984)
+Check out the PR	2026-11-19T03:26:02.4896253Z Updating files:  35% (2795/7984)
+Check out the PR	2026-11-19T03:26:02.5052786Z Updating files:  36% (2875/7984)
+Check out the PR	2026-11-19T03:26:02.5348450Z Updating files:  37% (2955/7984)
+Check out the PR	2026-11-19T03:26:02.5586752Z Updating files:  38% (3034/7984)
+Check out the PR	2026-11-19T03:26:02.5762960Z Updating files:  39% (3114/7984)
+Check out the PR	2026-11-19T03:26:02.6081435Z Updating files:  40% (3194/7984)
+Check out the PR	2026-11-19T03:26:02.6303205Z Updating files:  41% (3274/7984)
+Check out the PR	2026-11-19T03:26:02.6521666Z Updating files:  42% (3354/7984)
+Check out the PR	2026-11-19T03:26:02.6631360Z Updating files:  43% (3434/7984)
+Check out the PR	2026-11-19T03:26:02.6688224Z Updating files:  44% (3513/7984)
+Check out the PR	2026-11-19T03:26:02.6855392Z Updating files:  45% (3593/7984)
+Check out the PR	2026-11-19T03:26:02.7664150Z Updating files:  46% (3673/7984)
+Check out the PR	2026-11-19T03:26:02.7826041Z Updating files:  47% (3753/7984)
+Check out the PR	2026-11-19T03:26:02.8412385Z Updating files:  48% (3833/7984)
+Check out the PR	2026-11-19T03:26:02.9889194Z Updating files:  49% (3913/7984)
+Check out the PR	2026-11-19T03:26:03.0787902Z Updating files:  50% (3992/7984)
+Check out the PR	2026-11-19T03:26:03.1386882Z Updating files:  51% (4072/7984)
+Check out the PR	2026-11-19T03:26:03.2198272Z Updating files:  51% (4099/7984)
+Check out the PR	2026-11-19T03:26:03.2239554Z Updating files:  52% (4152/7984)
+Check out the PR	2026-11-19T03:26:03.2290353Z Updating files:  53% (4232/7984)
+Check out the PR	2026-11-19T03:26:03.2339974Z Updating files:  54% (4312/7984)
+Check out the PR	2026-11-19T03:26:03.2438514Z Updating files:  55% (4392/7984)
+Check out the PR	2026-11-19T03:26:03.2691000Z Updating files:  56% (4472/7984)
+Check out the PR	2026-11-19T03:26:03.2806895Z Updating files:  57% (4551/7984)
+Check out the PR	2026-11-19T03:26:03.3259576Z Updating files:  58% (4631/7984)
+Check out the PR	2026-11-19T03:26:03.3609338Z Updating files:  59% (4711/7984)
+Check out the PR	2026-11-19T03:26:03.4004894Z Updating files:  60% (4791/7984)
+Check out the PR	2026-11-19T03:26:03.4402710Z Updating files:  61% (4871/7984)
+Check out the PR	2026-11-19T03:26:03.5164317Z Updating files:  62% (4951/7984)
+Check out the PR	2026-11-19T03:26:03.5686489Z Updating files:  63% (5030/7984)
+Check out the PR	2026-11-19T03:26:03.6211454Z Updating files:  64% (5110/7984)
+Check out the PR	2026-11-19T03:26:03.6782244Z Updating files:  65% (5190/7984)
+Check out the PR	2026-11-19T03:26:03.7209627Z Updating files:  66% (5270/7984)
+Check out the PR	2026-11-19T03:26:03.7521942Z Updating files:  67% (5350/7984)
+Check out the PR	2026-11-19T03:26:03.7577337Z Updating files:  68% (5430/7984)
+Check out the PR	2026-11-19T03:26:03.7672740Z Updating files:  69% (5509/7984)
+Check out the PR	2026-11-19T03:26:03.7771597Z Updating files:  70% (5589/7984)
+Check out the PR	2026-11-19T03:26:03.7881244Z Updating files:  71% (5669/7984)
+Check out the PR	2026-11-19T03:26:03.7949723Z Updating files:  72% (5749/7984)
+Check out the PR	2026-11-19T03:26:03.8139435Z Updating files:  73% (5829/7984)
+Check out the PR	2026-11-19T03:26:03.8561715Z Updating files:  74% (5909/7984)
+Check out the PR	2026-11-19T03:26:03.8714086Z Updating files:  75% (5988/7984)
+Check out the PR	2026-11-19T03:26:03.8792733Z Updating files:  76% (6068/7984)
+Check out the PR	2026-11-19T03:26:03.8848405Z Updating files:  77% (6148/7984)
+Check out the PR	2026-11-19T03:26:03.8915291Z Updating files:  78% (6228/7984)
+Check out the PR	2026-11-19T03:26:03.9047375Z Updating files:  79% (6308/7984)
+Check out the PR	2026-11-19T03:26:03.9159090Z Updating files:  80% (6388/7984)
+Check out the PR	2026-11-19T03:26:03.9247964Z Updating files:  81% (6468/7984)
+Check out the PR	2026-11-19T03:26:03.9376381Z Updating files:  82% (6547/7984)
+Check out the PR	2026-11-19T03:26:04.1436882Z Updating files:  83% (6627/7984)
+Check out the PR	2026-11-19T03:26:04.1472545Z Updating files:  83% (6699/7984)
+Check out the PR	2026-11-19T03:26:04.2706602Z Updating files:  84% (6707/7984)
+Check out the PR	2026-11-19T03:26:04.2795105Z Updating files:  85% (6787/7984)
+Check out the PR	2026-11-19T03:26:04.2887441Z Updating files:  86% (6867/7984)
+Check out the PR	2026-11-19T03:26:04.3006988Z Updating files:  87% (6947/7984)
+Check out the PR	2026-11-19T03:26:04.3544007Z Updating files:  88% (7026/7984)
+Check out the PR	2026-11-19T03:26:04.4566075Z Updating files:  89% (7106/7984)
+Check out the PR	2026-11-19T03:26:04.4648891Z Updating files:  90% (7186/7984)
+Check out the PR	2026-11-19T03:26:04.4710392Z Updating files:  91% (7266/7984)
+Check out the PR	2026-11-19T03:26:04.4761159Z Updating files:  92% (7346/7984)
+Check out the PR	2026-11-19T03:26:04.4811609Z Updating files:  93% (7426/7984)
+Check out the PR	2026-11-19T03:26:04.4872311Z Updating files:  94% (7505/7984)
+Check out the PR	2026-11-19T03:26:04.4933629Z Updating files:  95% (7585/7984)
+Check out the PR	2026-11-19T03:26:04.4986903Z Updating files:  96% (7665/7984)
+Check out the PR	2026-11-19T03:26:04.5045956Z Updating files:  97% (7745/7984)
+Check out the PR	2026-11-19T03:26:04.5094559Z Updating files:  98% (7825/7984)
+Check out the PR	2026-11-19T03:26:04.5161501Z Updating files:  99% (7905/7984)
+Check out the PR	2026-11-19T03:26:04.5161971Z Updating files: 100% (7984/7984)
+Check out the PR	2026-11-19T03:26:04.5162677Z Updating files: 100% (7984/7984), done.
+Check out the PR	2026-11-19T03:26:04.5260232Z Note: switching to '593295b2edf385082615610da5021928e821c2ba'.
+Check out the PR	2026-11-19T03:26:04.5260688Z 
+Check out the PR	2026-11-19T03:26:04.5261052Z You are in 'detached HEAD' state. You can look around, make experimental
+Check out the PR	2026-11-19T03:26:04.5262362Z changes and commit them, and you can discard any commits you make in this
+Check out the PR	2026-11-19T03:26:04.5263136Z state without impacting any branches by switching back to a branch.
+Check out the PR	2026-11-19T03:26:04.5263586Z 
+Check out the PR	2026-11-19T03:26:04.5263880Z If you want to create a new branch to retain commits you create, you may
+Check out the PR	2026-11-19T03:26:04.5264628Z do so (now or later) by using -c with the switch command. Example:
+Check out the PR	2026-11-19T03:26:04.5265081Z 
+Check out the PR	2026-11-19T03:26:04.5265274Z   git switch -c <new-branch-name>
+Check out the PR	2026-11-19T03:26:04.5265557Z 
+Check out the PR	2026-11-19T03:26:04.5265747Z Or undo this operation with:
+Check out the PR	2026-11-19T03:26:04.5266014Z 
+Check out the PR	2026-11-19T03:26:04.5266173Z   git switch -
+Check out the PR	2026-11-19T03:26:04.5266378Z 
+Check out the PR	2026-11-19T03:26:04.5266747Z Turn off this advice by setting config variable advice.detachedHead to false
+Check out the PR	2026-11-19T03:26:04.5267289Z 
+Check out the PR	2026-11-19T03:26:04.5267678Z HEAD is now at 593295b2 Merge remote-tracking branch 'origin/main' into trusted-green
+Check out the PR	2026-11-19T03:26:04.5419889Z ##[endgroup]
+Check out the PR	2026-11-19T03:26:04.5472469Z [command]/usr/bin/git log -1 --format=%H
+Check out the PR	2026-11-19T03:26:04.5504806Z 593295b2edf385082615610da5021928e821c2ba
+Check out the re-run script from main	﻿2026-11-19T03:26:04.5837143Z ##[group]Run actions/checkout@v7
+Check out the re-run script from main	2026-11-19T03:26:04.5837453Z with:
+Check out the re-run script from main	2026-11-19T03:26:04.5837676Z   ref: main
+Check out the re-run script from main	2026-11-19T03:26:04.5837901Z   path: rerun-main
+Check out the re-run script from main	2026-11-19T03:26:04.5838195Z   sparse-checkout: scripts/rerun.py
+Check out the re-run script from main	scripts/scope.py
+Check out the re-run script from main	
+Check out the re-run script from main	2026-11-19T03:26:04.5838572Z   sparse-checkout-cone-mode: false
+Check out the re-run script from main	2026-11-19T03:26:04.5838876Z   repository: bkwon94/4thandgoal
+Check out the re-run script from main	2026-11-19T03:26:04.5841591Z   token: ***
+Check out the re-run script from main	2026-11-19T03:26:04.5841854Z   ssh-strict: true
+Check out the re-run script from main	2026-11-19T03:26:04.5842347Z   ssh-user: git
+Check out the re-run script from main	2026-11-19T03:26:04.5842655Z   persist-credentials: true
+Check out the re-run script from main	2026-11-19T03:26:04.5842945Z   clean: true
+Check out the re-run script from main	2026-11-19T03:26:04.5843435Z   fetch-depth: 1
+Check out the re-run script from main	2026-11-19T03:26:04.5843688Z   fetch-tags: false
+Check out the re-run script from main	2026-11-19T03:26:04.5843956Z   show-progress: true
+Check out the re-run script from main	2026-11-19T03:26:04.5844208Z   lfs: false
+Check out the re-run script from main	2026-11-19T03:26:04.5844442Z   submodules: false
+Check out the re-run script from main	2026-11-19T03:26:04.5844694Z   set-safe-directory: true
+Check out the re-run script from main	2026-11-19T03:26:04.5844992Z   allow-unsafe-pr-checkout: false
+Check out the re-run script from main	2026-11-19T03:26:04.5845304Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:04.6776658Z Syncing repository: bkwon94/4thandgoal
+Check out the re-run script from main	2026-11-19T03:26:04.6781856Z ##[group]Getting Git version info
+Check out the re-run script from main	2026-11-19T03:26:04.6782818Z Working directory is '/home/runner/work/4thandgoal/4thandgoal/rerun-main'
+Check out the re-run script from main	2026-11-19T03:26:04.6817503Z [command]/usr/bin/git version
+Check out the re-run script from main	2026-11-19T03:26:04.6891314Z git version 2.56.1
+Check out the re-run script from main	2026-11-19T03:26:04.6914470Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:04.6926121Z Temporarily overriding HOME='/home/runner/work/_temp/ef8a694f-094d-4612-9d53-c687732d3670' before making global git config changes
+Check out the re-run script from main	2026-11-19T03:26:04.6927514Z Adding repository directory to the temporary git global config as a safe directory
+Check out the re-run script from main	2026-11-19T03:26:04.6932312Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/4thandgoal/4thandgoal/rerun-main
+Check out the re-run script from main	2026-11-19T03:26:04.6976147Z ##[group]Determining repository object format
+Check out the re-run script from main	2026-11-19T03:26:05.0445926Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.0446509Z ##[group]Initializing the repository
+Check out the re-run script from main	2026-11-19T03:26:05.0454601Z [command]/usr/bin/git init /home/runner/work/4thandgoal/4thandgoal/rerun-main
+Check out the re-run script from main	2026-11-19T03:26:05.0514209Z hint: Using 'master' as the name for the initial branch. This default branch name
+Check out the re-run script from main	2026-11-19T03:26:05.0515345Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Check out the re-run script from main	2026-11-19T03:26:05.0516420Z hint: to use in all of your new repositories, which will suppress this warning,
+Check out the re-run script from main	2026-11-19T03:26:05.0517219Z hint: call:
+Check out the re-run script from main	2026-11-19T03:26:05.0517658Z hint:
+Check out the re-run script from main	2026-11-19T03:26:05.0518231Z hint: 	git config --global init.defaultBranch <name>
+Check out the re-run script from main	2026-11-19T03:26:05.0518849Z hint:
+Check out the re-run script from main	2026-11-19T03:26:05.0519476Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Check out the re-run script from main	2026-11-19T03:26:05.0520609Z hint: 'development'. The just-created branch can be renamed via this command:
+Check out the re-run script from main	2026-11-19T03:26:05.0521494Z hint:
+Check out the re-run script from main	2026-11-19T03:26:05.0521888Z hint: 	git branch -m <name>
+Check out the re-run script from main	2026-11-19T03:26:05.0522536Z hint:
+Check out the re-run script from main	2026-11-19T03:26:05.0523214Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Check out the re-run script from main	2026-11-19T03:26:05.0524247Z Initialized empty Git repository in /home/runner/work/4thandgoal/4thandgoal/rerun-main/.git/
+Check out the re-run script from main	2026-11-19T03:26:05.0528929Z [command]/usr/bin/git remote add origin https://github.com/bkwon94/4thandgoal
+Check out the re-run script from main	2026-11-19T03:26:05.0583695Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.0584457Z ##[group]Disabling automatic garbage collection
+Check out the re-run script from main	2026-11-19T03:26:05.0588323Z [command]/usr/bin/git config --local gc.auto 0
+Check out the re-run script from main	2026-11-19T03:26:05.0631075Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.0631728Z ##[group]Setting up auth
+Check out the re-run script from main	2026-11-19T03:26:05.0632375Z Removing SSH command configuration
+Check out the re-run script from main	2026-11-19T03:26:05.0639120Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Check out the re-run script from main	2026-11-19T03:26:05.0698323Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Check out the re-run script from main	2026-11-19T03:26:05.1054011Z Removing HTTP extra header
+Check out the re-run script from main	2026-11-19T03:26:05.1060070Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Check out the re-run script from main	2026-11-19T03:26:05.1110932Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Check out the re-run script from main	2026-11-19T03:26:05.1445463Z Removing includeIf entries pointing to credentials config files
+Check out the re-run script from main	2026-11-19T03:26:05.1451302Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Check out the re-run script from main	2026-11-19T03:26:05.1494408Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Check out the re-run script from main	2026-11-19T03:26:05.1833099Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-b40398ce-eceb-455d-afdc-39d5bd914251.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Check out the re-run script from main	2026-11-19T03:26:05.1883226Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/4thandgoal/4thandgoal/rerun-main/.git.path /home/runner/work/_temp/git-credentials-b40398ce-eceb-455d-afdc-39d5bd914251.config
+Check out the re-run script from main	2026-11-19T03:26:05.1929422Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/4thandgoal/4thandgoal/rerun-main/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-b40398ce-eceb-455d-afdc-39d5bd914251.config
+Check out the re-run script from main	2026-11-19T03:26:05.1982797Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/rerun-main/.git.path /github/runner_temp/git-credentials-b40398ce-eceb-455d-afdc-39d5bd914251.config
+Check out the re-run script from main	2026-11-19T03:26:05.2031016Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/rerun-main/.git/worktrees/*.path /github/runner_temp/git-credentials-b40398ce-eceb-455d-afdc-39d5bd914251.config
+Check out the re-run script from main	2026-11-19T03:26:05.2075755Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.2076695Z ##[group]Fetching the repository
+Check out the re-run script from main	2026-11-19T03:26:05.2086852Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +refs/heads/main*:refs/remotes/origin/main* +refs/tags/main*:refs/tags/main*
+Check out the re-run script from main	2026-11-19T03:26:05.5360346Z From https://github.com/bkwon94/4thandgoal
+Check out the re-run script from main	2026-11-19T03:26:05.5360940Z  * [new branch]      main       -> origin/main
+Check out the re-run script from main	2026-11-19T03:26:05.5368106Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.5368767Z ##[group]Determining the checkout info
+Check out the re-run script from main	2026-11-19T03:26:05.5376060Z [command]/usr/bin/git branch --list --remote origin/main
+Check out the re-run script from main	2026-11-19T03:26:05.5415467Z   origin/main
+Check out the re-run script from main	2026-11-19T03:26:05.5420387Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.5421028Z ##[group]Setting up sparse checkout
+Check out the re-run script from main	2026-11-19T03:26:05.5427209Z [command]/usr/bin/git config core.sparseCheckout true
+Check out the re-run script from main	2026-11-19T03:26:05.5471293Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+Check out the re-run script from main	2026-11-19T03:26:05.5503993Z .git/info/sparse-checkout
+Check out the re-run script from main	2026-11-19T03:26:05.5511570Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.5512439Z ##[group]Checking out the ref
+Check out the re-run script from main	2026-11-19T03:26:05.5517807Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Check out the re-run script from main	2026-11-19T03:26:05.5721218Z Switched to a new branch 'main'
+Check out the re-run script from main	2026-11-19T03:26:05.5724196Z branch 'main' set up to track 'origin/main'.
+Check out the re-run script from main	2026-11-19T03:26:05.5731345Z ##[endgroup]
+Check out the re-run script from main	2026-11-19T03:26:05.5780106Z [command]/usr/bin/git log -1 --format=%H
+Check out the re-run script from main	2026-11-19T03:26:05.5815532Z 33da78a40d73b569931a54358052da89c54780fe
+Find the members that the loops need	﻿2026-11-19T03:26:05.6041472Z ##[group]Run set -euo pipefail
+Find the members that the loops need	2026-11-19T03:26:05.6041910Z [36;1mset -euo pipefail[0m
+Find the members that the loops need	2026-11-19T03:26:05.6042679Z [36;1mif [ ! -f rerun-main/scripts/rerun.py ] || [ ! -f rerun-main/scripts/scope.py ]; then[0m
+Find the members that the loops need	2026-11-19T03:26:05.6043412Z [36;1m  # The PR that adds the script runs before main has it. That run checks no loop, so it passes with a note.[0m
+Find the members that the loops need	2026-11-19T03:26:05.6044187Z [36;1m  echo "Note: main has no scripts/rerun.py or scripts/scope.py yet, so this run checks no loop and passes."[0m
+Find the members that the loops need	2026-11-19T03:26:05.6044956Z [36;1m  added=$(git diff --name-only --diff-filter=A "$BASE...$HEAD" -- '.scratch/bugs/*.md' '.scratch/quick-wins/*.md')[0m
+Find the members that the loops need	2026-11-19T03:26:05.6045502Z [36;1m  echo "${added:-no quick file}"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6045840Z [36;1m  echo "run=false" >> "$GITHUB_OUTPUT"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6046169Z [36;1m  exit 0[0m
+Find the members that the loops need	2026-11-19T03:26:05.6046401Z [36;1mfi[0m
+Find the members that the loops need	2026-11-19T03:26:05.6046875Z [36;1mselects=$(python3 -B rerun-main/scripts/scope.py "origin/$BASE_REF" "$HEAD" | tee /dev/stderr | sed -n 2p)[0m
+Find the members that the loops need	2026-11-19T03:26:05.6047434Z [36;1mcase " $selects " in[0m
+Find the members that the loops need	2026-11-19T03:26:05.6047708Z [36;1m  *" rerun "*) ;;[0m
+Find the members that the loops need	2026-11-19T03:26:05.6047974Z [36;1m  *)[0m
+Find the members that the loops need	2026-11-19T03:26:05.6048338Z [36;1m    # A diff of records only has no loop to run again. It passes with a note.[0m
+Find the members that the loops need	2026-11-19T03:26:05.6049102Z [36;1m    echo "Note: records only, so this run checks no loop and passes."[0m
+Find the members that the loops need	2026-11-19T03:26:05.6049545Z [36;1m    echo "run=false" >> "$GITHUB_OUTPUT"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6049870Z [36;1m    exit 0[0m
+Find the members that the loops need	2026-11-19T03:26:05.6050110Z [36;1m    ;;[0m
+Find the members that the loops need	2026-11-19T03:26:05.6050350Z [36;1mesac[0m
+Find the members that the loops need	2026-11-19T03:26:05.6050797Z [36;1mmembers=$(python3 -B rerun-main/scripts/rerun.py --repo . --base "$BASE" --head "$HEAD" --members)[0m
+Find the members that the loops need	2026-11-19T03:26:05.6051298Z [36;1mecho "$members"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6051566Z [36;1mecho "run=true" >> "$GITHUB_OUTPUT"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6052013Z [36;1mecho "site=$([[ " $members " == *" site "* ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6052843Z [36;1mecho "python=$([[ " $members " == *" python "* ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"[0m
+Find the members that the loops need	2026-11-19T03:26:05.6121772Z shell: /usr/bin/bash -e {0}
+Find the members that the loops need	2026-11-19T03:26:05.6122355Z env:
+Find the members that the loops need	2026-11-19T03:26:05.6122614Z   BASE: 33da78a40d73b569931a54358052da89c54780fe
+Find the members that the loops need	2026-11-19T03:26:05.6122983Z   HEAD: 593295b2edf385082615610da5021928e821c2ba
+Find the members that the loops need	2026-11-19T03:26:05.6123273Z   BASE_REF: main
+Find the members that the loops need	2026-11-19T03:26:05.6123497Z ##[endgroup]
+Find the members that the loops need	2026-11-19T03:26:05.6229810Z Note: main has no scripts/rerun.py or scripts/scope.py yet, so this run checks no loop and passes.
+Find the members that the loops need	2026-11-19T03:26:05.6263306Z no quick file
+exit: 0

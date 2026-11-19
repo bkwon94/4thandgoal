@@ -1,0 +1,12 @@
+$ ls
+1280-dark.png
+1280-light.png
+375-dark.png
+375-light.png
+768-dark.png
+768-light.png
+output-build-error.txt
+output.txt
+shots.txt
+steps.json
+exit: 0

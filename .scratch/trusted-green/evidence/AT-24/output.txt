@@ -1,0 +1,18 @@
+$ env -i PATH=/Users/brian.kwon/.local/bin:/opt/homebrew/bin:/usr/bin:/bin HOME=/Users/brian.kwon python3 -B tg-head/scripts/rebuild.py --base tg-base --head tg-head --approved /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-24/REBUILD.md
+INFO cornerstone.pipeline: facts-only rebuild of week 10 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-base/clients/cpc/data/2026/week-10/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-base/clients/cpc/data/2026/week-10/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-base/clients/cpc/data/2026/week-10/raw/news.json, the clock of verify.json, and the research of facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 10 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-head/clients/cpc/data/2026/week-10/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-head/clients/cpc/data/2026/week-10/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-head/clients/cpc/data/2026/week-10/raw/news.json, the clock of verify.json, and the research of facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 10 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-base/clients/norcal/data/2026/week-10/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-base/clients/norcal/data/2026/week-10/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-base/clients/norcal/data/2026/week-10/raw/news.json, the clock of verify.json, and the research of facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 10 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-head/clients/norcal/data/2026/week-10/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-head/clients/norcal/data/2026/week-10/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-head/clients/norcal/data/2026/week-10/raw/news.json, the clock of verify.json, and the research of facts.json
+approved diffs: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-24/REBUILD.md
+cpc 2026 week 10 facts.json: 0 diffs
+cpc 2026 week 10 page.json: 0 diffs
+cpc 2026 week 10 topics.json: 0 diffs
+cpc 2026 week 10 waiver.json: 1 diffs
+  $.buckets.best_adds[0].board_score  (approved: The seeded change adds 0.01 to the top waiver score of cpc.)
+norcal 2026 week 10 facts.json: 0 diffs
+norcal 2026 week 10 page.json: 0 diffs
+norcal 2026 week 10 topics.json: 0 diffs
+norcal 2026 week 10 waiver.json: 0 diffs
+listed but not changed: norcal page.json $.week
+rebuild diff: 1 diffs, 1 listed, 0 not listed, 1 listed but not changed
+exit: 1

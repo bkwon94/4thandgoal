@@ -1,0 +1,13 @@
+
+> 4thandgoal-site@0.1.0 smoke /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site
+> node scripts/smoke.mjs "--out" ".scratch/trusted-green/evidence/AT-10/smoke/" "Analyzer"
+
+
+Running 1 test using 1 worker
+
+build cpc: 8.1 s
+PASS Analyzer 390x660 webkit in 24.6 s
+Smoke run: 1 flow, 1 passed, 0 failed
+  ✓  1 [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc (34.0s)
+
+  1 passed (34.6s)

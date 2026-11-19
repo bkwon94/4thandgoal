@@ -1,0 +1,40 @@
+$ pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-6/smoke/ --steps /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/at6-steps.json "Week report"
+
+> 4thandgoal-site@0.1.0 smoke /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site
+> node scripts/smoke.mjs "--out" ".scratch/trusted-green/evidence/AT-6/smoke/" "--steps" "/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/at6-steps.json" "Week report"
+
+
+Running 1 test using 1 worker
+
+build cpc: 5.4 s
+FAIL Week report 390x660 webkit: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+FAIL Week report 810x980 webkit: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+FAIL Week report 1080x740 webkit: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+FAIL Week report 1280x800 chromium: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+Smoke run: 1 flow, 0 passed, 1 failed
+  ✘  1 [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc (35.2s)
+
+
+  1) [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc ───────────────────────────────────────
+
+    Error: The smoke run is red:
+    FAIL Week report 390x660 webkit: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+    FAIL Week report 810x980 webkit: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+    FAIL Week report 1080x740 webkit: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+    FAIL Week report 1280x800 chromium: step 4 {"expect":"text=Week 99"}: the expect failed: "text=Week 99" is not visible after 5000 ms
+
+      46 |   try {
+      47 |     const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, out: OUT, log: (line) => console.log(line) });
+    > 48 |     if (failures.length > 0) throw new Error(`The smoke run is red:\n${failures.join("\n")}`);
+         |                                    ^
+      49 |   } finally {
+      50 |     await server.close();
+      51 |   }
+        at /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site/e2e/smoke.spec.ts:48:36
+
+    Error Context: test-results/smoke-the-smoke-run-of-cpc-smoke/error-context.md
+
+  1 failed
+    [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc ────────────────────────────────────────
+ ELIFECYCLE  Command failed with exit code 1.
+exit: 1

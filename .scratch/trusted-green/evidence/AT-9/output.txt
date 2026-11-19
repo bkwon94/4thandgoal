@@ -1,0 +1,20 @@
+$ pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-9/smoke/ "Week report" "Passphrase"
+
+> 4thandgoal-site@0.1.0 smoke /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site
+> node scripts/smoke.mjs "--out" ".scratch/trusted-green/evidence/AT-9/smoke/" "Week report" "Passphrase"
+
+
+Running 1 test using 1 worker
+
+build cpc: 4.7 s
+PASS Passphrase 390x660 webkit in 4.4 s
+PASS Passphrase 1280x800 chromium in 4.1 s
+PASS Week report 390x660 webkit in 3.9 s
+PASS Week report 810x980 webkit in 3.1 s
+PASS Week report 1080x740 webkit in 3.4 s
+PASS Week report 1280x800 chromium in 3.3 s
+Smoke run: 2 flows, 2 passed, 0 failed
+  ✓  1 [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc (27.4s)
+
+  1 passed (27.8s)
+exit: 0

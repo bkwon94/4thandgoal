@@ -1,0 +1,4 @@
+$ lsof -nP -iTCP:8080 -sTCP:LISTEN; curl -s -m 3 -o /dev/null -w "%{http_code}" http://localhost:8080/health
+lsof exit: 1
+000
+exit: 7

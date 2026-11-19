@@ -1,0 +1,1 @@
+pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-10/smoke/ "Analyzer"

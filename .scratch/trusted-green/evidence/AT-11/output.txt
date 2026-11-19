@@ -1,0 +1,15 @@
+$ pnpm --dir apps/site evidence trusted-green AT-11
+
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site
+> node scripts/evidence.mjs "trusted-green" "AT-11"
+
+
+Running 1 test using 1 worker
+
+build cpc: 3.9 s
+AT-11 /2026/week-10/ cpc: 6 shots in 19.3 s
+Total: 1 test of trusted-green in 23.2 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:31:5 › the evidence of trusted-green (23.2s)
+
+  1 passed (23.6s)
+exit: 0

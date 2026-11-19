@@ -1,0 +1,21 @@
+$ uv run --exact --package cpc-managers pytest -v -p no:cacheprovider tests/test_properties_grade.py
+Uninstalled 21 packages in 63ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/packages/managers/python
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, anyio-4.15.1
+collecting ... collected 8 items
+
+tests/test_properties_grade.py::test_the_weights_sum_to_100 PASSED       [ 12%]
+tests/test_properties_grade.py::test_the_score_stays_in_0_to_100_when_each_part_is_in_0_to_1 PASSED [ 25%]
+tests/test_properties_grade.py::test_the_letter_never_gets_worse_as_the_score_goes_up PASSED [ 37%]
+tests/test_properties_grade.py::test_the_letter_is_a_b_c_or_d PASSED     [ 50%]
+tests/test_properties_grade.py::test_a_position_with_a_hole_reads_thin_with_any_spares PASSED [ 62%]
+tests/test_properties_grade.py::test_the_scale_against_the_league_runs_0_to_1_and_ignores_a_shift PASSED [ 75%]
+tests/test_properties_grade.py::test_the_ranks_of_the_rosters_run_1_to_n_with_no_tie_and_no_gap PASSED [ 87%]
+tests/test_properties_grade.py::test_the_ranks_at_each_position_run_1_to_n_and_ignore_the_order_of_the_input PASSED [100%]
+
+============================== 8 passed in 2.90s ===============================
+exit: 0

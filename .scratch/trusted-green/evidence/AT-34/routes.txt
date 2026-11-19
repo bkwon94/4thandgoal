@@ -1,0 +1,26 @@
+$ python3 -c "..." (name and route of each flow of .claude/skills/verify/flows.json)
+Front door | /
+Passphrase | /
+Week report | {latest-week}
+Manager page | /{season}/managers/
+Analyzer | /analyze/
+Power rankings | /rankings/
+Midseason report | /midseason/{season}/
+exit: 0
+
+$ grep -ni egg .claude/skills/verify/flows.json
+exit: 1
+
+$ ls apps/site/src/app/_routes   # the folder of the egg board is eggs
+ analyzer
+ ask
+ eggs
+ managers
+ midseason
+ rankings
+ sim
+ waiver
+ week
+
+$ grep -n 'egg board route' apps/site/src/app/_routes/eggs/page.tsx
+2: * The egg board route at /eggs/. It renders the shell above the egg board, which reads the API at each visit.

@@ -1,0 +1,4 @@
+$ git diff --stat main...HEAD
+ apps/pipeline/README.md | 1 +
+ 1 file changed, 1 insertion(+)
+exit: 0
