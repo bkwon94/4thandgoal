@@ -193,3 +193,23 @@ describe("the What-if of a bracket game", () => {
     expect(tile("Lose").getAttribute("aria-pressed")).toBe("false");
   });
 });
+
+/* With no regular week left, "Sim the season" replays only the playoffs, so the stage opens on Playoffs. */
+describe("Sim the season in the playoffs", () => {
+  it("shows only Sim the season before the final, for a team in and a team out", () => {
+    for (const you of [seed(playoffsWeekSim, 3), seed(playoffsWeekSim, 1), last(playoffsWeekSim)]) {
+      render(<SimPage sim={playoffsWeekSim} you={you} />);
+      expect(screen.getAllByRole("button", { name: /^Sim / }).map((button) => button.textContent)).toEqual(["Sim the season"]);
+      cleanup();
+    }
+  });
+
+  it("plays Playoffs, then Champion, with no Season screen", () => {
+    render(<SimPage sim={roundTwoWeekSim} you={seed(roundTwoWeekSim, 1)} random={() => 0} />);
+    fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
+    const stage = screen.getByRole("region", { name: "Sim replay" });
+    const screens = within(stage).getByRole("list", { name: "Screens" });
+    expect(within(screens).getAllByRole("button").map((button) => button.textContent)).toEqual(["Playoffs", "Champion"]);
+    expect(within(screens).getByRole("button", { name: "Playoffs" }).getAttribute("aria-current")).toBe("step");
+  });
+});
