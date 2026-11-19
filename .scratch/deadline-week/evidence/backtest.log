@@ -1,0 +1,6 @@
+$ make -C apps/pipeline backtest CLIENT=cpc   (run 2026-11-19, live CPC week 11, live Jev; exit 2 because mark 2 is wrong)
+Backtest of cpc, week 11 of 2026, marks backtest-marks.json.
+1. RIGHT: Bo Girds gives Kenneth Walker III for Patrick Mahomes. Expect drop, got drop. gain Bo Girds 0.04, To Infinity and Bijan 0.86; Bo Girds starts 114.8 points a week before this trade and 110.2 after, so its lineup loses 4.6 points a week. To Infinity and Bijan starts 96.9 points a week before this trade and 110.8 after, so its lineup gains 13.9 points a week.
+2. WRONG: Bo Girds gives Zay Flowers for Jared Goff. Expect drop, got keep. gain Bo Girds 0.97, To Infinity and Bijan 0.95; Bo Girds starts 114.8 points a week before this trade and 119.4 after, so its lineup gains 4.6 points a week. To Infinity and Bijan starts 96.9 points a week before this trade and 101.6 after, so its lineup gains 4.7 points a week.
+Right marks: 1 of 2.
+Jev: 2 requests, $0.0002.
