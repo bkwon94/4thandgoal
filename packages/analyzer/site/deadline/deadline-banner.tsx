@@ -4,28 +4,11 @@
  */
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "@cpc/design/ui/sheet";
 import { cn } from "@cpc/design/lib/utils";
-import { type Deadline, type DeadlinePhase, deadlineOf } from "../lib/deadline";
-
-/* The state of Deadline week, read from the clock each second. It is null until the first tick in the browser, because
-   the static export renders at build time, and the time of the build is not the time of the reader. A tick that gives the
-   same phase and text keeps the old state, so the banner renders only when its text changes. */
-function useDeadline(lock: number): Deadline | null {
-  const [deadline, setDeadline] = useState<Deadline | null>(null);
-  useEffect(() => {
-    const tick = () =>
-      setDeadline((last) => {
-        const next = deadlineOf(Date.now(), lock);
-        return last !== null && last.phase === next.phase && last.countdown === next.countdown ? last : next;
-      });
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
-  }, [lock]);
-  return deadline;
-}
+import type { Deadline, DeadlinePhase } from "../lib/deadline";
+import { useDeadline } from "../lib/use-deadline";
 
 /* The surface of each phase, from the theme tokens only, so the banner reads in light and in dark. */
 const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {

@@ -14,8 +14,8 @@ import { Button } from "@cpc/design/ui/button";
 import { useRequest } from "./use-request";
 import { ApiError, type ApiTarget, retryText, type Team } from "../lib/api";
 import { DURATION } from "@cpc/design/lib/motion";
-import type { DeadlineState } from "@cpc/design/lib/deadline";
-import { useDeadline } from "@cpc/design/hooks/use-deadline";
+import type { Deadline } from "../lib/deadline";
+import { useDeadline } from "../lib/use-deadline";
 import { type AnalyzerMode, readMode, withMode } from "../lib/mode";
 import { clearPassphrase, getPassphrase, setPassphrase } from "../lib/passphrase";
 import { clearStoredTeams, fetchAndStoreTeams, readStoredTeams } from "../lib/teams-store";
@@ -37,8 +37,8 @@ const NO_TEAMS: Team[] = [];
 
 /* The eyebrow of the hero during Deadline week: the countdown, then the passed line after the Lock. The countdown keeps
    its lower case in the caps of the eyebrow, so "~2d 14h 05m" reads as a time. Undefined outside Deadline week. */
-function deadlineEyebrow(deadline: DeadlineState | null): ReactNode {
-  if (deadline === null || deadline.state === "ended") return undefined;
+function deadlineEyebrow(deadline: Deadline | null): ReactNode {
+  if (deadline === null || deadline.phase === "ended") return undefined;
   if (deadline.countdown === null) return "The trade deadline has passed";
   return (
     <>
