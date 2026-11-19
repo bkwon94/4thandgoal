@@ -10,16 +10,16 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-7
 
 **Status:** ready-for-agent
 
-- [ ] A browser with Your team and no seen key sees Stop 1 on load (AT-2).
-- [ ] The four Stops show the copy of the PRD table word for word, with "n of 4" and four dots (AT-3).
-- [ ] Stop 4 aims at the menu button at 375 and 768 px, and at the pill bar at 1280 px (AT-4).
-- [ ] Next, a tap on the dim, Skip, Escape, `back`, and Done each do what AT-7 to AT-12 say.
-- [ ] A tap on a Topic in the hole opens no Answer and no passphrase sheet (AT-13).
-- [ ] A tap on the menu button in the hole at Stop 4 opens no menu sheet (AT-35).
-- [ ] Stop 1 writes `"1"` to `cpc.tour-seen`, and a second visit or a reload shows no Tour (AT-23, AT-24, AT-25).
-- [ ] A throw on the read of `localStorage` gives no Tour, and the Suggestions still render (AT-26).
-- [ ] The card has the name of its header and the description of its line, and Tab stays inside the card (AT-29, AT-30).
-- [ ] A 2 s hold on the dim or the card sends no egg check (AT-33).
-- [ ] The Stop card has role `dialog` and `aria-modal="true"` while the Tour shows (AT-39).
-- [ ] The `ui` README names the `stop-card` wrapper, and the ui-sdk rule test passes.
-- [ ] No `driver.js` in any `package.json` or the lock file, and no change under `apps/pipeline/` or `apps/api/` (AT-36, AT-37).
+- [x] A browser with Your team and no seen key sees Stop 1 on load (AT-2).
+- [x] The four Stops show the copy of the PRD table word for word, with "n of 4" and four dots (AT-3).
+- [x] Stop 4 aims at the menu button at 375 and 768 px, and at the pill bar at 1280 px (AT-4).
+- [x] Next, a tap on the dim, Skip, Escape, `back`, and Done each do what AT-7 to AT-12 say.
+- [x] A tap on a Topic in the hole opens no Answer and no passphrase sheet (AT-13).
+- [x] A tap on the menu button in the hole at Stop 4 opens no menu sheet (AT-35).
+- [x] Stop 1 writes `"1"` to `cpc.tour-seen`, and a second visit or a reload shows no Tour (AT-23, AT-24, AT-25).
+- [x] A throw on the read of `localStorage` gives no Tour, and the Suggestions still render (AT-26).
+- [x] The card has the name of its header and the description of its line, and Tab stays inside the card (AT-29, AT-30).
+- [x] A 2 s hold on the dim or the card sends no egg check (AT-33).
+- [x] The Stop card has role `dialog` and `aria-modal="true"` while the Tour shows (AT-39).
+- [x] The `ui` README names the `stop-card` wrapper, and the ui-sdk rule test passes.
+- [x] No `driver.js` in any `package.json` or the lock file, and no change under `apps/pipeline/` or `apps/api/` (AT-36, AT-37).

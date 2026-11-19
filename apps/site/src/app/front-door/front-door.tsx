@@ -29,6 +29,7 @@ import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
 import { PassphraseSheet } from "./passphrase-sheet";
 import { TeamSheet } from "./team-sheet";
+import { Tour } from "./tour";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
 import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, shownFacts, staleLine } from "./suggestions-api";
@@ -631,6 +632,8 @@ export function FrontDoor({
           />
         )}
       </AnimatePresence>
+      {/* The Tour shows once per browser, while Your team is set and no team sheet and no passphrase modal shows. */}
+      <Tour ready={team !== null && !sheetOpen && passStep === null} />
     </>
   );
 }
