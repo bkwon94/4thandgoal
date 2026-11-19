@@ -7,6 +7,10 @@ import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { serveDir } from "./serve";
+import { skipTour } from "./tour";
+
+/* Each test starts as a league mate who already saw the Tour, so the Tour never covers the front door that it checks. */
+test.beforeEach(({ page }) => skipTour(page));
 
 const OUT = join(process.cwd(), "out");
 // The client build writes the hidden /ask/ route only while the flag front_door is off. Then / is the home page.

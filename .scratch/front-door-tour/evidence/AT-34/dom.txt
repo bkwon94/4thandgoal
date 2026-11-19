@@ -1,0 +1,4 @@
+/2026/week-10/ light: "{\"showTheTour\":0,\"card\":0,\"hole\":0,\"seen\":null}"
+/2026/week-10/ dark: "{\"showTheTour\":0,\"card\":0,\"hole\":0,\"seen\":null}"
+/analyze/ light: "{\"showTheTour\":0,\"card\":0,\"hole\":0,\"seen\":null}"
+/analyze/ dark: "{\"showTheTour\":0,\"card\":0,\"hole\":0,\"seen\":null}"

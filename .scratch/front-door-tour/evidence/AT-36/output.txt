@@ -1,0 +1,16 @@
+$ git ls-files "package.json" "**/package.json" "pnpm-lock.yaml" | xargs grep -n "driver.js"; echo "exit $?"
+exit 1
+
+$ git ls-files "package.json" "**/package.json" "pnpm-lock.yaml"
+apps/site/package.json
+packages/analyzer/site/package.json
+packages/design/site/package.json
+packages/eggs/site/package.json
+packages/league/site/package.json
+packages/managers/site/package.json
+packages/midseason/site/package.json
+packages/rankings/site/package.json
+packages/sim/site/package.json
+packages/waiver/site/package.json
+packages/week/site/package.json
+pnpm-lock.yaml

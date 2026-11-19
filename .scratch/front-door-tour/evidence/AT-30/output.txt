@@ -1,0 +1,8 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-30[,)]"
+
+Running 1 test using 1 worker
+
+AT-30 focused element after each Tab: ["Skip","Next","Skip","Next"]
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:221:5 › Tab moves only between Skip and Next at Stop 2 at 1280 px (AT-30) (1.2s)
+
+  1 passed (1.6s)

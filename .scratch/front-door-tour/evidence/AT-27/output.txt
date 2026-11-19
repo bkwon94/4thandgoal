@@ -1,0 +1,8 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-27[,)]"
+
+Running 2 tests using 2 workers
+
+  ✓  1 [floor] › e2e/front-door-tour-replay.spec.ts:48:7 › at 768 px "Show the tour" in the menu sheet closes the sheet, then shows Stop 1 (AT-27) (1.2s)
+  ✓  2 [floor] › e2e/front-door-tour-replay.spec.ts:48:7 › at 375 px "Show the tour" in the menu sheet closes the sheet, then shows Stop 1 (AT-27) (1.2s)
+
+  2 passed (1.6s)

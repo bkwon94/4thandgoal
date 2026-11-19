@@ -1,0 +1,9 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-4[,)]"
+
+Running 3 tests using 2 workers
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:95:7 › Stop 4 aims at the visible menu at 375 px (AT-4) (1.7s)
+  ✓  2 [floor] › e2e/front-door-tour.spec.ts:95:7 › Stop 4 aims at the visible menu at 1280 px (AT-4) (1.7s)
+  ✓  3 [floor] › e2e/front-door-tour.spec.ts:95:7 › Stop 4 aims at the visible menu at 768 px (AT-4) (1.6s)
+
+  3 passed (3.7s)

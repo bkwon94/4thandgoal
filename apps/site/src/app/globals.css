@@ -237,6 +237,7 @@
     /* The scrim under the sheet of Your team, and the lift of the sheet and of the ask box. The same in both themes,
        because a shadow of black reads on a dark page only as depth. */
     --color-scrim: rgb(0 0 0 / 0.45);
+    --color-tour-scrim: rgb(0 0 0 / 0.65);
     --shadow-sheet: 0 -8px 40px -12px rgb(0 0 0 / 0.35);
     /* The header sheet of the front door drops from the band, so its shadow falls down onto the dimmed page. */
     --shadow-drop: 0 16px 32px -16px rgb(0 0 0 / 0.4);
