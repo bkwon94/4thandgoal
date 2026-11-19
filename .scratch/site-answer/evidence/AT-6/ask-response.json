@@ -1,0 +1,119 @@
+{
+  "taken": "2026-11-18T20:36:25.029Z",
+  "page": "http://127.0.0.1:4173/",
+  "question": "midseason report?",
+  "asks": [
+    {
+      "url": "http://localhost:8080/clients/cpc/ask",
+      "status": 200,
+      "request": {
+        "question": "midseason report?",
+        "roster_id": 3,
+        "week": 10,
+        "turns": [],
+        "pages": [
+          {
+            "key": "week",
+            "label": "Week 10",
+            "blurb": "The recap, scores, and awards of the week."
+          },
+          {
+            "key": "rankings",
+            "label": "Power Rankings",
+            "blurb": "Every team ranked, with the weekly moves."
+          },
+          {
+            "key": "managers",
+            "label": "Managers",
+            "blurb": "Each manager, with the grades of the season."
+          },
+          {
+            "key": "analyzer",
+            "label": "Trade Analyzer",
+            "blurb": "Grades a trade between two or more teams."
+          },
+          {
+            "key": "midseason",
+            "label": "Midseason Report",
+            "blurb": "The midseason awards, grades, and roasts."
+          },
+          {
+            "key": "sim",
+            "label": "Playoff Sim",
+            "blurb": "Plays out the rest of the season, game by game."
+          }
+        ]
+      },
+      "response": {
+        "route": "site",
+        "line": null,
+        "topic": null,
+        "team": null,
+        "closest": [],
+        "suggestion": null,
+        "page": "midseason",
+        "jev": {
+          "model": "jev-1.14.0",
+          "nouls": {
+            "fits_topic": 0.07,
+            "data_can_answer": 0.87,
+            "about_league": 0.99,
+            "abuse": 0.01,
+            "reacts_to_answer": 0.01,
+            "names_team": 0.01,
+            "asks_for_site": 0.95
+          },
+          "choices": {
+            "topic": {
+              "week_recap": 0.1,
+              "last_matchup": 0,
+              "next_matchup": 0,
+              "power_rankings": 0.04,
+              "playoff_race": 0.04,
+              "your_season": 0.64,
+              "leaders_trades": 0.17,
+              "waiver_targets": 0,
+              "stack_up": 0.01,
+              "weak_spots": 0,
+              "sell_high": 0,
+              "trade_ideas": 0,
+              "trade_check": 0,
+              "start_sit": 0
+            },
+            "team": {
+              "the_blue_tent": 0.57,
+              "all_you_need_is_love": 0.08,
+              "lil_fridge": 0.03,
+              "nfc_least": 0.03,
+              "puka_deez": 0.01,
+              "bo_girds": 0.03,
+              "to_infinity_and_bijan": 0.04,
+              "return_of_t_mac": 0.04,
+              "maye_d_force_b_with_u": 0.02,
+              "behold_the_lamb": 0.03,
+              "unsolicited_dak_picks": 0.04,
+              "teehee": 0.08
+            },
+            "site_page": {
+              "week": 0,
+              "rankings": 0,
+              "managers": 0,
+              "analyzer": 0,
+              "midseason": 1,
+              "sim": 0,
+              "all": 0,
+              "missing": 0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "answer_text": "midseason report?\n\nThe Midseason Report has its own page.\n\nMidseason Report\n\nThe midseason awards, grades, and roasts.\n\nOpen the Midseason Report\nAll pages · 5",
+  "answer_links": [
+    {
+      "text": "Open the Midseason Report",
+      "href": "/midseason/2026/"
+    }
+  ]
+}

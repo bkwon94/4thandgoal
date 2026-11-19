@@ -1,0 +1,42 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -v tests/test_caps.py::test_a_site_route_makes_no_claude_call_writes_no_miss_and_leaves_each_cap_count
+# Run from a detached worktree of cee7caf1, on 2026-11-18 20:57 UTC.
+Uninstalled 4 packages in 5ms
+Installed 8 packages in 26ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2b3112c3-3145-4a4b-bfc4-9eba04001112/scratchpad/site-answer-api/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2b3112c3-3145-4a4b-bfc4-9eba04001112/scratchpad/site-answer-api/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_caps.py::test_a_site_route_makes_no_claude_call_writes_no_miss_and_leaves_each_cap_count PASSED [100%]
+
+============================== 1 passed in 2.67s ===============================
+exit: 0
+
+# The source of the test at cee7caf1 (tests/test_caps.py):
+def test_a_site_route_makes_no_claude_call_writes_no_miss_and_leaves_each_cap_count(repo, fixture_raw_dir):
+    # AT-18: the site Noul is 0.9 and the page Choice is the analyzer. Lil Fridge sits at the team cap of 25, so a
+    # route that read a cap would give the cap line.
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=_site_noul, choose=_site_choice), script.model())
+    caps = api.app.state.askers["cpc"].caps
+    _fill_team(caps, LIL_FRIDGE, 25)
+    month = caps.month_usd(NOW)
+    pages = [{"key": "analyzer", "label": "Trade Analyzer", "blurb": "Grades a trade between two or more teams."}]
+    body = api.post(ASK, json={"question": "where is the trade analyzer", "roster_id": LIL_FRIDGE, "week": 8,
+                               "pages": pages}, headers=PASS).json()
+    assert (body["route"], body["page"], body["line"]) == ("site", "analyzer", None)
+    assert script.requests == []
+    assert api.app.state.askers["cpc"].misses.misses() == []
+    assert (caps.answers_today(LIL_FRIDGE, NOW), caps.month_usd(NOW)) == (25, month)
+
+# The fake Jev of the test, tests/test_caps.py lines 115 to 121:
+def _site_noul(key: str, question, state: dict) -> float:
+    return {"asks_for_site": 0.9, "about_league": 0.2}.get(key, 0.01)
+
+
+def _site_choice(key: str, question, state: dict) -> dict[str, float]:
+    picked = "analyzer" if key == "site_page" else "trade_check" if key == "topic" else None
+    return {option: float(option == picked) for option in question.options}

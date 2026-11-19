@@ -41,6 +41,13 @@ export type ClientMenu = { items: MenuItem[] };
    so the menu has no entry. */
 export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
 
+/* The line of a page in the Site answer of the front door: its fixed blurb of one line, and whether it is a Tool. A
+   Tool is a page that does a job, such as the analyzer, and not a page to read. */
+export type SiteLine = { blurb: string; tool: boolean };
+
+/* The site line of each package of the client that can show in the Site answer. */
+export type SiteLines = Partial<Record<PackageName, SiteLine>>;
+
 /* The part of a package that every page mounts, such as the egg hunt. */
 export type PagePart = ComponentType;
 

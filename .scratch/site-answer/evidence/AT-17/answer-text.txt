@@ -1,0 +1,75 @@
+# The text of the Site answers of AT-1 (with its fold open), AT-2, and AT-8, read from the page at 375 px light. Taken 2026-11-18T20:39:31.704Z.
+## "where is the trade analyzer"
+### innerText
+where is the trade analyzer
+
+The Trade Analyzer has its own page.
+
+Trade Analyzer
+
+Grades a trade between two or more teams.
+
+Open the Trade Analyzer
+All pages · 5
+Week 10
+The recap, scores, and awards of the week.
+Power Rankings
+Every team ranked, with the weekly moves.
+Managers
+Each manager, with the grades of the season.
+Midseason Report
+The midseason awards, grades, and roasts.
+Playoff Sim
+Plays out the rest of the season, game by game.
+### aria-label, title, and alt values
+Pages
+
+## "what tools are there"
+### innerText
+what tools are there
+
+The site has 2 tools and 4 pages to read.
+
+TOOLS
+Trade Analyzer
+Grades a trade between two or more teams.
+Playoff Sim
+Plays out the rest of the season, game by game.
+PAGES TO READ
+Week 10
+The recap, scores, and awards of the week.
+Power Rankings
+Every team ranked, with the weekly moves.
+Managers
+Each manager, with the grades of the season.
+Midseason Report
+The midseason awards, grades, and roasts.
+### aria-label, title, and alt values
+
+## "is there a waiver page"
+### innerText
+is there a waiver page
+
+The site has no page for that. Here is what it has.
+
+Week 10
+The recap, scores, and awards of the week.
+Power Rankings
+Every team ranked, with the weekly moves.
+Managers
+Each manager, with the grades of the season.
+Trade Analyzer
+Grades a trade between two or more teams.
+Midseason Report
+The midseason awards, grades, and roasts.
+Playoff Sim
+Plays out the rest of the season, game by game.
+### aria-label, title, and alt values
+Pages
+
+## A case-blind count of each word in the text above
+Jev: 0 matches in the text above
+Advisor: 0 matches in the text above
+Finder: 0 matches in the text above
+front door: 0 matches in the text above
+rival: 0 matches in the text above
