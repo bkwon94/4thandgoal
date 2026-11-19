@@ -74,7 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
     rewrite.add_argument("--season", type=int)
     rewrite.add_argument("--chapter", type=str, required=True)
 
-    page_json = sub.add_parser("page-json", parents=[named], help="write page.json for a saved week")
+    page_json = sub.add_parser("page-json", parents=[named], help="write page.json and waiver.json for a saved week")
     page_json.add_argument("--week", type=int)
     page_json.add_argument("--season", type=int)
 

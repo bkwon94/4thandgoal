@@ -10,7 +10,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-25, AT-26 and AT-36.
 
 **Status:** ready-for-agent
 
-- [ ] The base and head render diff of cpc and norcal 2026 week 10 reports 0 diffs in under 60 s.
-- [ ] With `main` as the base, the run prints "render only" and exits 0.
-- [ ] The workflow checks out its script from the default branch.
-- [ ] The workflow names no `ANTHROPIC_API_KEY` and no `TYPESAFE_API_KEY`.
+- [x] The base and head render diff of cpc and norcal 2026 week 10 reports 0 diffs in under 60 s.
+- [x] With `main` as the base, the run prints "render only" and exits 0.
+- [x] The workflow checks out its script from the default branch.
+- [x] The workflow names no `ANTHROPIC_API_KEY` and no `TYPESAFE_API_KEY`.

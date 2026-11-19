@@ -606,6 +606,16 @@ def test_a_rewrite_reads_the_saved_board_and_never_runs_the_waiver_engine(tmp_pa
     assert _waiver(repo) == built
 
 
+def test_page_json_writes_the_waiver_file_from_the_saved_board(tmp_path, fixture_raw_dir, offline):
+    # The render diff of the rebuild job compares waiver.json, so page-json renders it with page.json.
+    repo = _repo(tmp_path, fixture_raw_dir)
+    run_build(repo, 2026, 6, _fake, fetch=False, **offline, client=cpc_client(at=repo))
+    built = _waiver(repo)
+    (repo / "build" / "2026" / "week-06" / "waiver.json").unlink()
+    run_page_json(repo, 2026, 6, client=cpc_client(at=repo))
+    assert _waiver(repo) == built
+
+
 def _repo_with_free_agent(tmp_path, fixture_raw_dir):
     """The week 6 repo with one free agent WR, so the pool and the best adds bucket hold one player."""
     repo = _repo(tmp_path, fixture_raw_dir)
