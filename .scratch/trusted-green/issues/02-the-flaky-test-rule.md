@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-30 and AT-31.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `AGENTS.md` holds the rule in the words of AT-31.
 - [x] The rule test fails on a `retries` value above 0 in a Playwright config, and names the file.
