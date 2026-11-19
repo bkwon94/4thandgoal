@@ -10,6 +10,6 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-48 and AT-49.
 
 **Status:** ready-for-agent
 
-- [ ] A stream that the client cuts after 5 s logs one line with the cause, the stage, and the seconds.
+- [x] A stream that the client cuts after 5 s logs one line with the cause, the stage, and the seconds.
 - [ ] The cause of the failed first call is named in the close comment, with the log lines that show it.
 - [ ] Ten fresh asks for trade ideas for Bo Girds each answer with no retry line.

@@ -2,14 +2,21 @@
 Tests for the trade Topics of the front door, the trade check and trade ideas, at the route seam with FakeJev.
 The Advisor runs for real with the stub Claude calls of test_api, so the sheet, the guards, and the stages run.
 """
+import contextlib
 import dataclasses
 import functools
 import json
+import logging
+import re
 import shutil
+import socket
+import threading
+import time
 from pathlib import Path
 
 import pytest
 import test_api
+import uvicorn
 from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 from test_api import CLIENT, HEADERS, StubAdvisor, StubPicker, StubRepair, _cpc, _here
@@ -687,3 +694,121 @@ def test_trade_ideas_send_one_trade_card_with_a_row_per_offer(api):
         for side in offer["sides"]:
             assert side["gets"] and side["total"] == round(sum(p["points"] for p in side["gets"]), 2)
             assert all(p["points"] > 0 for p in side["gets"])
+
+
+# The time after which the client of AT-48 cuts the stream, and the most time that a log line may take to show.
+CUT_SECONDS = 5
+LOG_WAIT_SECONDS = 5
+
+
+class HeldPick:
+    """A Finder pick that holds until the test lets it go, so the stream stays open on its pick stage."""
+
+    def __init__(self, pick):
+        self.pick = pick
+        self.go = threading.Event()
+
+    def __call__(self, *args, **kwargs):
+        self.go.wait(timeout=30)
+        return self.pick(*args, **kwargs)
+
+
+@contextlib.contextmanager
+def _served(app):
+    """The app on a real uvicorn server on a free local port, so a client can cut a stream as a browser does."""
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_config=None, lifespan="off"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    while not server.started:
+        time.sleep(0.05)
+    try:
+        yield port
+    finally:
+        server.should_exit = True
+        thread.join(timeout=10)
+
+
+def _read_then_cut(port: int, path: str, body: dict, seconds: float) -> str:
+    """Post `body` to `path` on a raw socket, read what comes for `seconds`, then close the socket, as a browser that
+    drops the stream does. The text that came before the cut."""
+    payload = json.dumps(body).encode()
+    head = (f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
+            f"X-League-Passphrase: {HEADERS['X-League-Passphrase']}\r\nContent-Length: {len(payload)}\r\n\r\n")
+    received = b""
+    with socket.create_connection(("127.0.0.1", port)) as client:
+        client.sendall(head.encode() + payload)
+        end = time.monotonic() + seconds
+        while (left := end - time.monotonic()) > 0:
+            client.settimeout(left)
+            try:
+                chunk = client.recv(65536)
+            except TimeoutError:
+                break
+            if not chunk:
+                break
+            received += chunk
+    return received.decode(errors="replace")
+
+
+def _failed_lines(caplog) -> list[str]:
+    return [record.getMessage() for record in caplog.records if record.getMessage().startswith("Trade stream failed")]
+
+
+def _wait_for_line(caplog) -> list[str]:
+    end = time.monotonic() + LOG_WAIT_SECONDS
+    while not _failed_lines(caplog) and time.monotonic() < end:
+        time.sleep(0.05)
+    return _failed_lines(caplog)
+
+
+def test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev,
+                                                                                              caplog):
+    # AT-48: the client cuts the trade ideas stream after 5 s, while the pick stage works.
+    caplog.set_level(logging.INFO)
+    news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    held = HeldPick(functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair()))
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                     finder_search=functools.partial(search, jev=jev), finder_pick=held)
+    with _served(app) as port:
+        try:
+            received = _read_then_cut(port, IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, CUT_SECONDS)
+            _wait_for_line(caplog)
+        finally:
+            held.go.set()
+        # The press ends after the cut, and its end logs no second line.
+        time.sleep(1)
+        lines = _failed_lines(caplog)
+    steps = [json.loads(line.removeprefix("data: "))["data"]["line"] for line in received.split("\n")
+             if line.startswith('data: {"type": "data-step"')]
+    assert len(lines) == 1, lines
+    [line] = lines
+    assert "topic=trade_ideas" in line
+    assert "cause=client-cut" in line
+    assert f'stage="{steps[-1]}"' in line
+    seconds = float(re.search(r"seconds=([0-9.]+)", line).group(1))
+    # The stream starts after the team read of the route, a moment after the client sends, so its count runs a bit short.
+    assert CUT_SECONDS - 2 <= seconds <= CUT_SECONDS + 1
+
+
+def test_a_press_that_fails_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev, caplog):
+    # A press that raises ends the stream with the retry line, and the API logs why, at which stage, and when.
+    caplog.set_level(logging.INFO)
+
+    def broken_pick(*args, **kwargs):
+        raise TimeoutError("the pick call took too long")
+
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                     finder_search=functools.partial(search, jev=jev), finder_pick=broken_pick)
+    parts = _parts(TestClient(app).post(IDEAS, json={"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, headers=HEADERS))
+    [error] = _of(parts, "data-error")
+    assert error["status"] == 500
+    lines = _failed_lines(caplog)
+    assert len(lines) == 1, lines
+    [line] = lines
+    assert "topic=trade_ideas" in line
+    assert "cause=TimeoutError" in line
+    assert f'stage="{_of(parts, "data-step")[-1]["line"]}"' in line
+    assert re.search(r"seconds=[0-9]+\.[0-9]", line)
