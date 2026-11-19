@@ -1,0 +1,15 @@
+$ POST http://127.0.0.1:56292/clients/cpc/find-stream {"season":2026,"asker":6,"partner":12}   (started 17:00:45)
+  0.01 s  data: {"type": "start"}
+  2.87 s  data: {"type": "data-step", "data": {"line": "Reading their roster", "live": true}}
+  2.87 s  data: {"type": "data-team", "data": {"roster_id": 12}}
+  2.87 s  data: {"type": "data-step", "data": {"line": "Read Teehee", "live": false}}
+  2.87 s  data: {"type": "data-step", "data": {"line": "Looking for players who fit", "live": true}}
+  3.10 s  data: {"type": "data-step", "data": {"line": "Found 4 players who fit", "live": false}}
+  3.13 s  data: {"type": "data-step", "data": {"line": "Building offers", "live": true}}
+  3.14 s  data: {"type": "data-step", "data": {"line": "Built 6 offers", "live": false}}
+  3.17 s  data: {"type": "data-step", "data": {"line": "Making a shortlist", "live": true}}
+  3.34 s  data: {"type": "data-step", "data": {"line": "Made a shortlist of 0", "live": false}}
+  3.36 s  data: {"type": "data-answer", "data": {"kind": "find", "document": {"season": 2026, "trade_pair": {"asker": {"roster_id": 6, "team": "Bo Girds"}, "partner": {"roster_id": 12, "team": "Teehee"}}, "trades": [], "near": [], "empty": "No team has a player who fits this ask, so no trade came up.", "as_of": {"chart_week": 11, "stats_through": 10, "completed_through": 10, "rosters_fetched": "2026-11-19T17:00:45.727640-05:00", "known_games": {"week": 11, "games": 0, "in_progress": 0, "pending": {}}, "no_chart": false, "no_chart_note": null}, "fallback": false, "missing": [], "stale": []}}}
+  3.36 s  data: {"type": "finish"}
+  3.36 s  data: [DONE]
+# wall time: 3.36 s

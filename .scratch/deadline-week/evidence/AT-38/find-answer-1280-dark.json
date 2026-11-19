@@ -1,0 +1,398 @@
+{
+ "season": 2026,
+ "trade_pair": {
+  "asker": {
+   "roster_id": 6,
+   "team": "Bo Girds"
+  },
+  "partner": null
+ },
+ "trades": [
+  {
+   "offer_id": "6:8130-11:3294",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "8130",
+       "name": "Trey McBride",
+       "position": "TE",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
+       "season_rank": "TE1",
+       "recent_rank": null,
+       "to": 11
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "3294",
+       "name": "Dak Prescott",
+       "position": "QB",
+       "nfl_team": "DAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
+       "season_rank": "QB4",
+       "recent_rank": null,
+       "from": 11
+      }
+     ]
+    },
+    {
+     "roster_id": 11,
+     "team": "Unsolicited Dak Picks",
+     "gives": [
+      {
+       "player_id": "3294",
+       "name": "Dak Prescott",
+       "position": "QB",
+       "nfl_team": "DAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
+       "season_rank": "QB4",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "8130",
+       "name": "Trey McBride",
+       "position": "TE",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
+       "season_rank": "TE1",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "lean": "Lean yes",
+   "case": "If you want your QB spot fixed without giving up your TE spot, this is worth it. You turn a TE1 on a weak offense into a top QB on a strong one, and the other manager gets the better player for a lost season.",
+   "bullets": [
+    {
+     "text": "You go from no QB in the top 24 to one, and you still keep a TE in the top 24.",
+     "mark": "for",
+     "fact_id": "6.measure.fit",
+     "fact_text": "The roster fit measure for Bo Girds: You go from 0 QBs in the top 24 to 1 and go from 2 TEs in the top 24 to 1, and your lineup scores more."
+    },
+    {
+     "text": "Prescott is QB4 on the season, a clear upgrade at your weakest starting spot.",
+     "mark": "for",
+     "fact_id": "3294.ppg",
+     "fact_text": "Dak Prescott (QB, DAL) scored 20.8 points per game over 10 games before the trade. His Season rank is QB4, by total points this season."
+    },
+    {
+     "text": "The other manager is out of the race and wants the better player, and McBride is that player.",
+     "mark": "for",
+     "fact_id": "11.measure.standing",
+     "fact_text": "The standing measure for Unsolicited Dak Picks: Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+    },
+    {
+     "text": "McBride has scored more in the second half of past seasons, so you give up some late-season upside.",
+     "mark": "against",
+     "fact_id": "8130.history",
+     "fact_text": "In 2023, Trey McBride played for ARI and scored half PPR points per game as follows: 5.62 in weeks 1 to 8 over 8 games; 10.64 in weeks 9 to 17 over 8 games; no cold game. In 2024, Trey McBride played for ARI and scored half PPR points per game as follows: 9.37 in weeks 1 to 8 over 7 games; 13.34 in weeks 9 to 17 over 8 games; 3.5 in cold games over 1 game. In 2025, Trey McBride played for ARI and scored half PPR points per game as follows: 12.8 in weeks 1 to 8 over 7 games; 17.03 in weeks 9 to 17 over 9 games; no cold game. A cold game is outdoors at 40 degrees F or below."
+    }
+   ],
+   "fact_lines": []
+  },
+  {
+   "offer_id": "6:8130-11:9758",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "8130",
+       "name": "Trey McBride",
+       "position": "TE",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
+       "season_rank": "TE1",
+       "recent_rank": null,
+       "to": 11
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "9758",
+       "name": "C.J. Stroud",
+       "position": "QB",
+       "nfl_team": "HOU",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
+       "season_rank": "QB8",
+       "recent_rank": null,
+       "from": 11
+      }
+     ]
+    },
+    {
+     "roster_id": 11,
+     "team": "Unsolicited Dak Picks",
+     "gives": [
+      {
+       "player_id": "9758",
+       "name": "C.J. Stroud",
+       "position": "QB",
+       "nfl_team": "HOU",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
+       "season_rank": "QB8",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "8130",
+       "name": "Trey McBride",
+       "position": "TE",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
+       "season_rank": "TE1",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "lean": "Gut call",
+   "case": "If you are fine paying a TE1 for a QB just below the top tier, this works as a QB fix. It is a step behind the Prescott deal, so only go here if that one is gone.",
+   "bullets": [
+    {
+     "text": "You go from no QB in the top 24 to one, and you keep a TE in the top 24.",
+     "mark": "for",
+     "fact_id": "6.measure.fit",
+     "fact_text": "The roster fit measure for Bo Girds: You go from 0 QBs in the top 24 to 1 and go from 2 TEs in the top 24 to 1, and your lineup scores more."
+    },
+    {
+     "text": "Stroud is QB8 on the season, a solid starter where you have none now.",
+     "mark": "for",
+     "fact_id": "9758.ppg",
+     "fact_text": "C.J. Stroud (QB, HOU) scored 20.7 points per game over 9 games before the trade. His Season rank is QB8, by total points this season."
+    },
+    {
+     "text": "The other manager is out of the race and gets the better player, so the offer is easy to accept.",
+     "mark": "for",
+     "fact_id": "11.measure.standing",
+     "fact_text": "The standing measure for Unsolicited Dak Picks: Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+    },
+    {
+     "text": "Stroud's snap share is down lately, which adds some risk.",
+     "mark": "against",
+     "fact_id": "9758.usage",
+     "fact_text": "C.J. Stroud's snap share was 94 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+    }
+   ],
+   "fact_lines": []
+  }
+ ],
+ "near": [
+  {
+   "offer_id": "6:9997-11:3294",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR35",
+       "to": 11
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "3294",
+       "name": "Dak Prescott",
+       "position": "QB",
+       "nfl_team": "DAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
+       "season_rank": "QB4",
+       "recent_rank": null,
+       "from": 11
+      }
+     ]
+    },
+    {
+     "roster_id": 11,
+     "team": "Unsolicited Dak Picks",
+     "gives": [
+      {
+       "player_id": "3294",
+       "name": "Dak Prescott",
+       "position": "QB",
+       "nfl_team": "DAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
+       "season_rank": "QB4",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR35",
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "reason": "Giving up Flowers thins your WR depth and leaves your second FLEX short."
+  },
+  {
+   "offer_id": "6:9997-7:4046",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR35",
+       "to": 7
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "4046",
+       "name": "Patrick Mahomes",
+       "position": "QB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
+       "season_rank": "QB9",
+       "recent_rank": null,
+       "from": 7
+      }
+     ]
+    },
+    {
+     "roster_id": 7,
+     "team": "To Infinity and Bijan",
+     "gives": [
+      {
+       "player_id": "4046",
+       "name": "Patrick Mahomes",
+       "position": "QB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
+       "season_rank": "QB9",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR35",
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "reason": "Mahomes fixes QB, but Flowers leaving leaves your second FLEX short."
+  },
+  {
+   "offer_id": "6:9997-3:11560",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR35",
+       "to": 3
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "11560",
+       "name": "Caleb Williams",
+       "position": "QB",
+       "nfl_team": "CHI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+       "season_rank": "QB23",
+       "recent_rank": null,
+       "from": 3
+      }
+     ]
+    },
+    {
+     "roster_id": 3,
+     "team": "Lil Fridge",
+     "gives": [
+      {
+       "player_id": "11560",
+       "name": "Caleb Williams",
+       "position": "QB",
+       "nfl_team": "CHI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
+       "season_rank": "QB23",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR35",
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "reason": "Caleb Williams is only QB23 this season, a weaker QB return for a WR you would miss."
+  }
+ ],
+ "empty": null,
+ "as_of": {
+  "chart_week": 11,
+  "stats_through": 10,
+  "completed_through": 10,
+  "rosters_fetched": "2026-11-19T18:06:46.633109-05:00",
+  "known_games": {
+   "week": 11,
+   "games": 0,
+   "in_progress": 0,
+   "pending": {}
+  },
+  "no_chart": false,
+  "no_chart_note": null
+ },
+ "fallback": false,
+ "missing": [],
+ "stale": []
+}

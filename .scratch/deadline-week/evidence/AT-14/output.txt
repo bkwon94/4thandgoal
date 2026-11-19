@@ -1,0 +1,5 @@
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:55758/clients/cpc/deadline/trades
+{
+    "leg": 11,
+    "trades": []
+}

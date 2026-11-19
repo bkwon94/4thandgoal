@@ -1,0 +1,14 @@
+{
+ "device": "iPhone 15 (WebKit) at 390x660",
+ "viewport": [
+  390,
+  660
+ ],
+ "sidewaysScroll": 0,
+ "bandRowBottom": 60,
+ "bannerTop": 60,
+ "bannerBottom": 106.875,
+ "headerBottom": 107.875,
+ "bannerOverlapsBandRow": false,
+ "bannerPresent": true
+}

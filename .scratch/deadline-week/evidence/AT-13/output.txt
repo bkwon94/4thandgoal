@@ -1,0 +1,121 @@
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:55756/clients/cpc/deadline/trades
+# API: uvicorn --factory --app-dir <scratch>/factory wire_leg9:app (the real app, Trade Wire read pinned to Sleeper leg 9; factory copied as evidence/AT-13/wire_leg9.py)
+{
+    "leg": 9,
+    "trades": [
+        {
+            "transaction_id": "1425209111854747648",
+            "accepted_at": "2026-11-08T17:53:59.613000+00:00",
+            "teams": [
+                {
+                    "roster_id": 5,
+                    "team": "Puka Deez...",
+                    "avatar": "https://sleepercdn.com/uploads/937ea821d67176f1bcbd3d4a43ef5cb0.jpg",
+                    "players": [
+                        {
+                            "player_id": "12514",
+                            "name": "Emeka Egbuka",
+                            "position": "WR"
+                        },
+                        {
+                            "player_id": "4984",
+                            "name": "Josh Allen",
+                            "position": "QB"
+                        },
+                        {
+                            "player_id": "9493",
+                            "name": "Puka Nacua",
+                            "position": "WR"
+                        }
+                    ],
+                    "faab": 0
+                },
+                {
+                    "roster_id": 10,
+                    "team": "behold the lamb",
+                    "avatar": "https://sleepercdn.com/avatars/thumbs/a374de4475aa0061603956504bd345d3",
+                    "players": [
+                        {
+                            "player_id": "11566",
+                            "name": "Jayden Daniels",
+                            "position": "QB"
+                        },
+                        {
+                            "player_id": "7569",
+                            "name": "Nico Collins",
+                            "position": "WR"
+                        },
+                        {
+                            "player_id": "7588",
+                            "name": "Javonte Williams",
+                            "position": "RB"
+                        },
+                        {
+                            "player_id": "8112",
+                            "name": "Drake London",
+                            "position": "WR"
+                        }
+                    ],
+                    "faab": 0
+                }
+            ]
+        },
+        {
+            "transaction_id": "1424578776058155008",
+            "accepted_at": "2026-11-07T00:04:08.187000+00:00",
+            "teams": [
+                {
+                    "roster_id": 4,
+                    "team": "NFC Least",
+                    "avatar": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+                    "players": [
+                        {
+                            "player_id": "12526",
+                            "name": "Tetairoa McMillan",
+                            "position": "WR"
+                        },
+                        {
+                            "player_id": "13294",
+                            "name": "Makai Lemon",
+                            "position": "WR"
+                        },
+                        {
+                            "player_id": "13424",
+                            "name": "Seth McGowan",
+                            "position": "RB"
+                        },
+                        {
+                            "player_id": "9224",
+                            "name": "Chase Brown",
+                            "position": "RB"
+                        }
+                    ],
+                    "faab": 0
+                },
+                {
+                    "roster_id": 8,
+                    "team": "Return of T Mac",
+                    "avatar": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+                    "players": [
+                        {
+                            "player_id": "11620",
+                            "name": "Rome Odunze",
+                            "position": "WR"
+                        },
+                        {
+                            "player_id": "6786",
+                            "name": "CeeDee Lamb",
+                            "position": "WR"
+                        },
+                        {
+                            "player_id": "8408",
+                            "name": "Jordan Mason",
+                            "position": "RB"
+                        }
+                    ],
+                    "faab": 5
+                }
+            ]
+        }
+    ]
+}

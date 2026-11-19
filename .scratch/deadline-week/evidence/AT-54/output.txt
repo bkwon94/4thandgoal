@@ -1,0 +1,8 @@
+$ git show main:apps/site/package.json | grep '"next"'   # main = 8780eefb
+    "next": "^16.4.5",
+$ git show 0807c881:apps/site/package.json | grep '"next"'
+    "next": "^16.4.5",
+$ git diff main...0807c881 -- apps/site/package.json pnpm-lock.yaml | grep -c 'next@\|"next"'
+0
+$ grep '"version"' apps/site/node_modules/next/package.json   # after pnpm install --frozen-lockfile in the Spec worktree
+  "version": "16.4.5",

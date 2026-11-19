@@ -1,0 +1,62 @@
+{
+ "leg": 11,
+ "trades": [
+  {
+   "transaction_id": "1424578776058155008",
+   "accepted_at": "2026-11-07T00:04:08.187000+00:00",
+   "teams": [
+    {
+     "roster_id": 4,
+     "team": "NFC Least",
+     "avatar": "https://sleepercdn.com/avatars/thumbs/578c6b253dd7b4bab45382e1af102204",
+     "players": [
+      {
+       "player_id": "12526",
+       "name": "Tetairoa McMillan",
+       "position": "WR"
+      },
+      {
+       "player_id": "13294",
+       "name": "Makai Lemon",
+       "position": "WR"
+      },
+      {
+       "player_id": "13424",
+       "name": "Seth McGowan",
+       "position": "RB"
+      },
+      {
+       "player_id": "9224",
+       "name": "Chase Brown",
+       "position": "RB"
+      }
+     ],
+     "faab": 0
+    },
+    {
+     "roster_id": 8,
+     "team": "Return of T Mac",
+     "avatar": "https://sleepercdn.com/images/v4/avatars/avatar_default_blue.webp",
+     "players": [
+      {
+       "player_id": "11620",
+       "name": "Rome Odunze",
+       "position": "WR"
+      },
+      {
+       "player_id": "6786",
+       "name": "CeeDee Lamb",
+       "position": "WR"
+      },
+      {
+       "player_id": "8408",
+       "name": "Jordan Mason",
+       "position": "RB"
+      }
+     ],
+     "faab": 5
+    }
+   ]
+  }
+ ]
+}

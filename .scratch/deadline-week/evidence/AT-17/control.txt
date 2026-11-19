@@ -1,0 +1,2 @@
+# Control: the same API counts the teams route; 35 quick calls show where the limit of 30 starts.
+200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 429 429 429 429 429 

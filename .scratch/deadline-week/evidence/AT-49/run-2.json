@@ -1,0 +1,186 @@
+{
+ "run": "2",
+ "combo": "375-dark",
+ "chip": "Trade ideas: Offers for your weak spots",
+ "askedAt": "2026-11-19T23:24:17.806Z",
+ "secondsToAnswer": 43.3,
+ "outcome": "trade ideas answer",
+ "retryLineCount": 0,
+ "articleText": "",
+ "apiResponses": [
+  {
+   "ms": 1795130655493,
+   "status": 200,
+   "method": "GET",
+   "url": "https://gc.zgo.at/count.js"
+  },
+  {
+   "ms": 1795130662483,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/trade-ideas"
+  },
+  {
+   "ms": 1795130662483,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/eggs/board"
+  },
+  {
+   "ms": 1795130662487,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130665148,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/suggestions"
+  },
+  {
+   "ms": 1795130665780,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130675842,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130685743,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130695741,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130701129,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/personal/current"
+  },
+  {
+   "ms": 1795130705743,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130715735,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130725758,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130735784,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130746066,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130755749,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130765757,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130775794,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130785771,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130795761,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130805788,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130815770,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130825811,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130835781,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130845797,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130855795,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130865827,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130875792,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795130885808,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  }
+ ]
+}

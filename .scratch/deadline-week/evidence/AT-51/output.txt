@@ -1,0 +1,3 @@
+$ git show 0807c881:clients/cpc/client.toml | grep -n '^finder'
+22:finder = false
+$ git status --short clients/cpc/client.toml   # empty: the local builds with the finder flag on (AT-18 to AT-53) and with the Lock moved (AT-50) changed it and restored it

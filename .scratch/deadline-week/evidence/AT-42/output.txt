@@ -1,0 +1,26 @@
+$ python3 press.py http://127.0.0.1:56292/clients/cpc '{"season":2026,"asker":6,"partner":12}' press-stream.txt   # result cache emptied first
+# wall: # wall time: 3.36 s
+# Log lines of the press, named (from press-summary.txt):
+===== press 0 (in log order) =====
+analyzer.finder_search: Spares tree of Bo Girds: skipped for one picked partner
+analyzer.jev_waves: Jev wave 1 (targets): 1 requests, about 2969 tokens
+analyzer.jev_waves: Jev wave 2 (shortlist): 1 requests, about 4600 tokens
+gain drop: Bo Girds gives Trey McBride; Teehee gives Trevor Lawrence  [6:8130-12:7523] gains={6: 0.97, 12: 0.09}
+gain drop: Bo Girds gives Trey McBride; Teehee gives Bo Nix  [6:8130-12:11563] gains={6: 0.06, 12: 0.89}
+gain drop: Bo Girds gives Trey McBride; Teehee gives Amon-Ra St. Brown  [6:8130-12:7547] gains={6: 0.05, 12: 0.05}
+gain drop: Bo Girds gives Trey McBride; Teehee gives Bo Nix + Trevor Lawrence  [6:8130-12:11563+7523] gains={6: 0.97, 12: 0.03}
+gain drop: Bo Girds gives Trey McBride; Teehee gives Trevor Lawrence + Amon-Ra St. Brown  [6:8130-12:7523+7547] gains={6: 0.98, 12: 0.04}
+gain drop: Bo Girds gives Trey McBride; Teehee gives Bo Nix + Amon-Ra St. Brown  [6:8130-12:11563+7547] gains={6: 0.98, 12: 0.04}
+analyzer.routes: Press of find for cpc: time=3.3s cost=$0.0000 claude_calls=0
+===== trades of press-stream.txt =====
+# grep 'Partner filter' api.log:
+0
+# Stream step lines:
+  2.87 s  data: {"type": "data-step", "data": {"line": "Reading their roster", "live": true}}
+  2.87 s  data: {"type": "data-step", "data": {"line": "Read Teehee", "live": false}}
+  2.87 s  data: {"type": "data-step", "data": {"line": "Looking for players who fit", "live": true}}
+  3.10 s  data: {"type": "data-step", "data": {"line": "Found 4 players who fit", "live": false}}
+  3.13 s  data: {"type": "data-step", "data": {"line": "Building offers", "live": true}}
+  3.14 s  data: {"type": "data-step", "data": {"line": "Built 6 offers", "live": false}}
+  3.17 s  data: {"type": "data-step", "data": {"line": "Making a shortlist", "live": true}}
+  3.34 s  data: {"type": "data-step", "data": {"line": "Made a shortlist of 0", "live": false}}

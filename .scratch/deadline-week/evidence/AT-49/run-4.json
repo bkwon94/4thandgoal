@@ -1,0 +1,72 @@
+{
+ "run": "4",
+ "combo": "768-dark",
+ "chip": "Trade ideas: Offers for your weak spots",
+ "askedAt": "2026-11-19T23:49:04.767Z",
+ "secondsToAnswer": 37.3,
+ "outcome": "trade ideas answer",
+ "retryLineCount": 0,
+ "articleText": "Trade ideas\n\n✔\nRead 11 teams\n✔\nFound 15 players who fit\n✔\nBuilt 81 offers\n✔\nMade a shortlist of 10\n✔\nPicked the best 2\nWITH UNSOLICITED DAK PICKS\nTrey McBride for Dak Prescott\nYOU GET\nDak Prescott\nQB · DAL\n57.0\nUNSOLICITED DAK PICKS GETS\nTrey McBride\nTE · ARI\n36.9\nREST OF SEASON\n57.0\n36.9\nWhy\n\n\nfor\n\n\nfor\n\n\nCheck this trade\n\nLean yes.\n\nWITH UNSOLICITED DAK PICKS\nTrey McBride for C.J. Stroud\n\n\nfor\n\n\nfor\n\n\n\nALSO WEIGHED\nWITH UNSOLICITED DAK PICKS\n\nYou give Parker Washington and get Dak Prescott.\n\nYou give up a WR and go from three WRs in the top 36 to two, which thins your receivers to get a QB.\n\nCheck this trade\nWITH TO INFINITY AND BIJAN\n\nYou give Zay Flowers and get Patrick Mahomes.\n\nGiving up Flowers leaves your second FLEX spot short.\n\nCheck this trade\nWITH LIL FRIDGE\n\nYou give Trey McBride and get Caleb Williams.\n\nA small model read says Lil Fridge does not need McBride, so that manager may not take it.\n\nCheck this trade\nBuild a trade on the Trade page",
+ "apiResponses": [
+  {
+   "ms": 1795132143264,
+   "status": 200,
+   "method": "GET",
+   "url": "https://gc.zgo.at/count.js"
+  },
+  {
+   "ms": 1795132149432,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/trade-ideas"
+  },
+  {
+   "ms": 1795132149433,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132149436,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/eggs/board"
+  },
+  {
+   "ms": 1795132151582,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/suggestions"
+  },
+  {
+   "ms": 1795132153372,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132163493,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132173506,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132182005,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/personal/current"
+  },
+  {
+   "ms": 1795132183521,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  }
+ ]
+}

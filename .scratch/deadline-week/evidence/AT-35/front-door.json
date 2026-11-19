@@ -1,0 +1,25 @@
+{
+ "typed": "trade ideas for an RB",
+ "postRequests": [
+  {
+   "url": "http://127.0.0.1:57246/clients/cpc/suggestions",
+   "body": "{\"roster_id\":6,\"order\":[\"start_sit\",\"next_matchup\",\"trade_ideas\",\"sell_high\",\"weak_spots\",\"playoff_race\",\"week_recap\",\"last_matchup\",\"power_rankings\",\"your_season\",\"leaders_trades\",\"waiver_targets\",\"stack_up\",\"trade_check\"],\"opened\":{}}"
+  },
+  {
+   "url": "http://127.0.0.1:57246/clients/cpc/ask",
+   "body": "{\"question\":\"trade ideas for an RB\",\"roster_id\":6,\"week\":10,\"turns\":[],\"pages\":[{\"key\":\"week\",\"label\":\"Week 10\",\"blurb\":\"The recap, scores, and awards of the week.\"},{\"key\":\"rankings\",\"label\":\"Power Rankings\",\"blurb\":\"Every team ranked, with the weekly moves.\"},{\"key\":\"sim\",\"label\":\"Season sim\",\"blurb\":\"Plays out the rest of the season, game by game.\"},{\"key\":\"managers\",\"label\":\"Managers\",\"blurb\":\"Each manager, with the grades of the season.\"},{\"key\":\"analyzer\",\"label\":\"Trade Analyzer\",\"blurb\":\"Grades a trade between two or more teams.\"},{\"key\":\"midseason\",\"label\":\"Midseason Report\",\"blurb\":\"The midseason awards, grades, and roasts.\"}]}"
+  },
+  {
+   "url": "http://127.0.0.1:57246/clients/cpc/trade-ideas",
+   "body": "{\"roster_id\":6,\"partner\":null,\"question\":\"trade ideas for an RB\",\"turns\":[]}"
+  }
+ ],
+ "limitPartOfStream": {
+  "type": "data-limit",
+  "data": {
+   "keep_positions": [],
+   "keep_players": [],
+   "aim_position": "RB"
+  }
+ }
+}

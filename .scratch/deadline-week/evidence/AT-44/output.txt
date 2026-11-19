@@ -1,0 +1,17 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_spares_tree.py -k 'listed_player_fits or only_backup_is_out'
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 8 items / 6 deselected / 2 selected
+
+tests/test_spares_tree.py::test_each_listed_player_fits_a_weak_slot_and_has_a_backup_above_the_line_who_can_play_now PASSED [ 50%]
+tests/test_spares_tree.py::test_a_starter_whose_only_backup_is_out_is_not_listed PASSED [100%]
+
+======================= 2 passed, 6 deselected in 0.51s ========================
+
+$ cd apps/pipeline && uv run --exact --package cornerstone python spares_week11.py   # the live week 11 of cpc (script copied as spares_week11.py.txt)
+live snapshot of cpc: season 2026, week 11
+pairs: 132, listed players over all pairs: 610, listed with no backup who can cover now: 0

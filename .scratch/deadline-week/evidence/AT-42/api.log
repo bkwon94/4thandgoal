@@ -1,0 +1,34 @@
+INFO:     127.0.0.1:56815 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     analyzer.finder_search: Spares tree of Bo Girds: skipped for one picked partner
+INFO:     analyzer.jev_waves: Jev wave 1 (targets): 1 requests, about 2969 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 127ms (request req_01a1f5d39d237a0988c37107f884796e)
+INFO:     analyzer.finder_search: Finder target questions with Teehee: Dalton Kincaid=0.19, Sam LaPorta=0.22, Bo Nix=0.83, Bhayshul Tuten=0.28, Omarion Hampton=0.20, Luther Burden III=0.38, DJ Moore=0.24, Tony Pollard=0.25, Tee Higgins=0.50, Trevor Lawrence=0.88, Amon-Ra St. Brown=0.66, Kenny Gainwell=0.16, Garrett Wilson=0.39, Blake Corum=0.35, Matthew Golden=0.32, Chimere Dike=0.09, Myles Price=0.09, Fernando Mendoza=0.09, Antonio Williams=0.14, Mike Washington Jr.=0.12, Trey McBride=0.65, Kyren Williams=0.45, Kenneth Walker III=0.58, Michael Mayer=0.17, Parker Washington=0.29, Zay Flowers=0.39
+INFO:     analyzer.finder_search: Finder targets with Teehee: the asker gives ['Trey McBride']; the partner gives ['Trevor Lawrence', 'Bo Nix', 'Amon-Ra St. Brown']
+INFO:     analyzer.finder_search: Finder offers of Bo Girds: 6
+INFO:     analyzer.finder_search: Finder offer 6:8130-12:7523: Bo Girds gives Trey McBride (TE, ARI); Teehee gives Trevor Lawrence (QB, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:8130-12:11563: Bo Girds gives Trey McBride (TE, ARI); Teehee gives Bo Nix (QB, DEN)
+INFO:     analyzer.finder_search: Finder offer 6:8130-12:7547: Bo Girds gives Trey McBride (TE, ARI); Teehee gives Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130-12:11563+7523: Bo Girds gives Trey McBride (TE, ARI); Teehee gives Trevor Lawrence (QB, JAX) and Bo Nix (QB, DEN)
+INFO:     analyzer.finder_search: Finder offer 6:8130-12:7523+7547: Bo Girds gives Trey McBride (TE, ARI); Teehee gives Trevor Lawrence (QB, JAX) and Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130-12:11563+7547: Bo Girds gives Trey McBride (TE, ARI); Teehee gives Bo Nix (QB, DEN) and Amon-Ra St. Brown (WR, DET)
+INFO:     analyzer.jev_waves: Jev wave 2 (shortlist): 1 requests, about 4600 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 126ms (request req_01a1f5d39df87198abd2f06f5cd19e75)
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-12:7523: gains={6: 0.97, 12: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-12:11563: gains={6: 0.06, 12: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-12:7547: gains={6: 0.05, 12: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-12:11563+7523: gains={6: 0.97, 12: 0.03}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-12:7523+7547: gains={6: 0.98, 12: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-12:11563+7547: gains={6: 0.98, 12: 0.04}
+INFO:     analyzer.routes: Press of find for cpc: time=3.3s cost=$0.0000 claude_calls=0

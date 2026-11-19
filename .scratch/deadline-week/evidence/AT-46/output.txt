@@ -1,0 +1,87 @@
+$ grep -E 'Kenneth Walker III|Zay Flowers' evidence/AT-41/press-summary.txt   # the 4 presses of AT-41 (Bo Girds, every team)
+===== press 0 (in log order) =====
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.88, Matthew Golden=0.90, Chimere Dike=0.20, Myles Price=0.13, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.89, Kenneth Walker III=0.92, Parker Washington=0.89, Zay Flowers=0.92
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.04, 7: 0.58}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.03, 7: 0.83}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.74}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.79}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.07, 7: 0.64}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.04, 7: 0.84}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.04, 7: 0.64}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.03, 7: 0.84}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.72}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.86}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.06, 7: 0.62}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.04, 7: 0.84}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.05}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.97, 7: 0.06}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.270 fair=0.58 needs={6: 0.93, 7: 0.5} gains={6: 0.98, 7: 0.67}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.266 fair=0.53 needs={6: 0.88, 7: 0.57} gains={6: 0.97, 7: 0.76}
+===== press 1 (in log order) =====
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.90, Matthew Golden=0.92, Chimere Dike=0.26, Myles Price=0.13, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.89, Kenneth Walker III=0.93, Parker Washington=0.89, Zay Flowers=0.93
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.05, 7: 0.48}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.04, 7: 0.71}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.72}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.82}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.03, 7: 0.59}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.03, 7: 0.71}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.61}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.79}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.07, 7: 0.77}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.05, 7: 0.79}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.07, 7: 0.68}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.05, 7: 0.74}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.05}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.97, 7: 0.04}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.255 fair=0.56 needs={6: 0.91, 7: 0.5} gains={6: 0.98, 7: 0.71}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.222 fair=0.48 needs={6: 0.84, 7: 0.55} gains={6: 0.97, 7: 0.72}
+===== press 2 (in log order) =====
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.89, Matthew Golden=0.89, Chimere Dike=0.19, Myles Price=0.14, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.88, Kenneth Walker III=0.93, Parker Washington=0.89, Zay Flowers=0.92
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.04, 7: 0.64}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.04, 7: 0.83}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.76}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.8}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.07, 7: 0.73}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.04, 7: 0.75}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.04, 7: 0.72}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.03, 7: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.66}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.06, 7: 0.74}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.04, 7: 0.8}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.06}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.97, 7: 0.05}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.323 fair=0.61 needs={6: 0.93, 7: 0.57} gains={6: 0.98, 7: 0.74}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.238 fair=0.52 needs={6: 0.88, 7: 0.52} gains={6: 0.97, 7: 0.78}
+===== press 3 (in log order) =====
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.87, Matthew Golden=0.89, Chimere Dike=0.19, Myles Price=0.12, Antonio Williams=0.09, Mike Washington Jr.=0.07, Kyren Williams=0.90, Kenneth Walker III=0.91, Parker Washington=0.88, Zay Flowers=0.91
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.04, 7: 0.68}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.04, 7: 0.73}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.82}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.88}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.74}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.84}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.03, 7: 0.72}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.04, 7: 0.76}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.08, 7: 0.83}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.05, 7: 0.87}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.06, 7: 0.71}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.05, 7: 0.83}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.05}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.98, 7: 0.06}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.256 fair=0.54 needs={6: 0.91, 7: 0.52} gains={6: 0.98, 7: 0.67}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.204 fair=0.47 needs={6: 0.82, 7: 0.53} gains={6: 0.98, 7: 0.68}
+===== trades of press-1-stream.txt =====
+===== trades of press-2-stream.txt =====
+===== trades of press-3-stream.txt =====
+
+# The trades of presses 1 to 3:
+===== trades of press-1-stream.txt =====
+- Lean yes: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:8130-11:3294
+- Gut call: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud | offer_id=6:8130-11:9758
+===== trades of press-2-stream.txt =====
+- Lean yes: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:8130-11:3294
+- Gut call: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud | offer_id=6:8130-11:9758
+===== trades of press-3-stream.txt =====
+- Lean yes: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:8130-11:3294
+- Gut call: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:9997-11:3294

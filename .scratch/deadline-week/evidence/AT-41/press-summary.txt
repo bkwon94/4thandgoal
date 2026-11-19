@@ -1,0 +1,365 @@
+===== press 0 (in log order) =====
+analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 10948 tokens
+analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: stopped on partner; partner gives no one; asker gives Blake Corum=0.87, Mike Washington Jr.=0.19, Kyren Williams=0.91, Kenneth Walker III=0.90
+analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: stopped on partner; partner gives no one; asker gives Blake Corum=0.89, Mike Washington Jr.=0.55, Trey McBride=0.90, Kyren Williams=0.93, Kenneth Walker III=0.91, Michael Mayer=0.87
+analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Caleb Williams=0.94, Bryce Young=0.93; asker gives Blake Corum=0.93, Matthew Golden=0.89, Chimere Dike=0.21, Myles Price=0.15, Antonio Williams=0.12, Mike Washington Jr.=0.13, Kyren Williams=0.93, Kenneth Walker III=0.93, Parker Washington=0.89, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with NFC Least: stopped on partner; partner gives no one; asker gives Blake Corum=0.56, Mike Washington Jr.=0.34, Kyren Williams=0.18, Kenneth Walker III=0.89
+analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: stopped on partner; partner gives no one; asker gives Matthew Golden=0.75, Chimere Dike=0.13, Myles Price=0.09, Antonio Williams=0.09, Parker Washington=0.77, Zay Flowers=0.86
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.88, Matthew Golden=0.90, Chimere Dike=0.20, Myles Price=0.13, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.89, Kenneth Walker III=0.92, Parker Washington=0.89, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Justin Herbert=0.90; asker gives Matthew Golden=0.89, Chimere Dike=0.74, Myles Price=0.64, Antonio Williams=0.11, Parker Washington=0.86, Zay Flowers=0.90
+analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: stopped on partner; partner gives no one; asker gives Matthew Golden=0.90, Chimere Dike=0.47, Myles Price=0.44, Antonio Williams=0.14, Parker Washington=0.89, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on partner; partner gives no one; asker gives Trey McBride=0.91, Michael Mayer=0.69
+analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Dak Prescott=0.95, C.J. Stroud=0.94; asker gives Matthew Golden=0.93, Chimere Dike=0.21, Myles Price=0.17, Antonio Williams=0.16, Trey McBride=0.91, Michael Mayer=0.50, Parker Washington=0.90, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bo Nix=0.93, Trevor Lawrence=0.94; asker gives no one
+analyzer.jev_waves: Jev wave 2 (targets): 4 requests, about 12655 tokens
+analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 54692 tokens
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Jaxon Smith-Njigba  [6:8130-3:9488] gains={6: 0.97, 3: 0.06}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Bryce Young  [6:8130-3:11560+9228] gains={6: 0.97, 3: 0.03}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Jaxon Smith-Njigba  [6:8130-3:11560+9488] gains={6: 0.98, 3: 0.04}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Bryce Young + Jaxon Smith-Njigba  [6:8130-3:9228+9488] gains={6: 0.98, 3: 0.04}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.04, 7: 0.58}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.03, 7: 0.83}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.74}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.79}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.07, 7: 0.64}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.04, 7: 0.84}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8130-7:4046] gains={6: 0.04, 7: 0.67}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Jared Goff  [6:12501+8130-7:3163] gains={6: 0.04, 7: 0.86}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.04, 7: 0.64}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.03, 7: 0.84}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.72}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.86}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.06, 7: 0.62}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.04, 7: 0.84}
+gain drop: Bo Girds gives Trey McBride; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8130-7:3163+4046] gains={6: 0.97, 7: 0.05}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.05}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.97, 7: 0.06}
+gain drop: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:12501-7:3163+4046] gains={6: 0.97, 7: 0.06}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Jordan Love  [6:8130-8:6804] gains={6: 0.98, 8: 0.09}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert  [6:8130-8:6797] gains={6: 0.04, 8: 0.83}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives CeeDee Lamb  [6:8130-8:6786] gains={6: 0.95, 8: 0.07}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Jordan Love  [6:9997-8:6804] gains={6: 0.98, 8: 0.07}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert  [6:9997-8:6797] gains={6: 0.05, 8: 0.88}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:9997-8:6786] gains={6: 0.98, 8: 0.07}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Jordan Love  [6:12501-8:6804] gains={6: 0.97, 8: 0.08}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Justin Herbert  [6:12501-8:6797] gains={6: 0.04, 8: 0.88}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives CeeDee Lamb  [6:12501-8:6786] gains={6: 0.97, 8: 0.09}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Jordan Love  [6:8130+9997-8:6804] gains={6: 0.06, 8: 0.91}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Justin Herbert  [6:8130+9997-8:6797] gains={6: 0.03, 8: 0.86}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:8130+9997-8:6786] gains={6: 0.08, 8: 0.91}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives Jordan Love  [6:12501+8130-8:6804] gains={6: 0.05, 8: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives Justin Herbert  [6:12501+8130-8:6797] gains={6: 0.03, 8: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives CeeDee Lamb  [6:12501+8130-8:6786] gains={6: 0.04, 8: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives Jordan Love  [6:12501+9997-8:6804] gains={6: 0.06, 8: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives Justin Herbert  [6:12501+9997-8:6797] gains={6: 0.04, 8: 0.86}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:12501+9997-8:6786] gains={6: 0.05, 8: 0.91}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert + Jordan Love  [6:8130-8:6797+6804] gains={6: 0.97, 8: 0.05}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:8130-8:6786+6804] gains={6: 0.98, 8: 0.06}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:8130-8:6786+6797] gains={6: 0.96, 8: 0.07}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert + Jordan Love  [6:9997-8:6797+6804] gains={6: 0.98, 8: 0.05}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:9997-8:6786+6804] gains={6: 0.98, 8: 0.05}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:9997-8:6786+6797] gains={6: 0.98, 8: 0.08}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Justin Herbert + Jordan Love  [6:12501-8:6797+6804] gains={6: 0.97, 8: 0.05}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:12501-8:6786+6804] gains={6: 0.98, 8: 0.05}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:12501-8:6786+6797] gains={6: 0.98, 8: 0.08}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:8151-11:3294] gains={6: 0.04, 11: 0.94}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:8151-11:9758] gains={6: 0.03, 11: 0.88}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8130-11:3294] gains={6: 0.04, 11: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8130-11:9758] gains={6: 0.04, 11: 0.92}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8130+9997-11:3294] gains={6: 0.1, 11: 0.93}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+9997-11:9758] gains={6: 0.1, 11: 0.96}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:8130+8151-11:3294] gains={6: 0.03, 11: 0.88}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+8151-11:9758] gains={6: 0.03, 11: 0.92}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:12501+9997-11:3294] gains={6: 0.05, 11: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+9997-11:9758] gains={6: 0.05, 11: 0.92}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8151-11:3294] gains={6: 0.03, 11: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8151-11:9758] gains={6: 0.03, 11: 0.94}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8151+9997-11:3294] gains={6: 0.04, 11: 0.92}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8151+9997-11:9758] gains={6: 0.04, 11: 0.85}
+gain drop: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8130-11:3294+9758] gains={6: 0.96, 11: 0.05}
+gain drop: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:12501-11:3294+9758] gains={6: 0.97, 11: 0.06}
+gain drop: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:9997-11:3294+9758] gains={6: 0.97, 11: 0.05}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8151-11:3294+9758] gains={6: 0.05, 11: 0.08}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:8130-11:3294] score=0.467 fair=0.67 needs={6: 0.93, 11: 0.75} gains={6: 0.98, 11: 0.84}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.270 fair=0.58 needs={6: 0.93, 7: 0.5} gains={6: 0.98, 7: 0.67}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  [6:12501-11:3294] score=0.435 fair=0.68 needs={6: 0.94, 11: 0.68} gains={6: 0.98, 11: 0.89}
+shortlist: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  [6:8130-3:11560] score=0.135 fair=0.53 needs={6: 0.91, 3: 0.28} gains={6: 0.97, 3: 0.89}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:8130-11:9758] score=0.314 fair=0.49 needs={6: 0.89, 11: 0.72} gains={6: 0.98, 11: 0.73}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  [6:12501-11:9758] score=0.310 fair=0.60 needs={6: 0.89, 11: 0.58} gains={6: 0.97, 11: 0.89}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.266 fair=0.53 needs={6: 0.88, 7: 0.57} gains={6: 0.97, 7: 0.76}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:9997-11:3294] score=0.255 fair=0.45 needs={6: 0.93, 11: 0.61} gains={6: 0.98, 11: 0.92}
+shortlist: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Patrick Mahomes  [6:12501-7:4046] score=0.201 fair=0.47 needs={6: 0.93, 7: 0.46} gains={6: 0.97, 7: 0.68}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:9997-11:9758] score=0.196 fair=0.39 needs={6: 0.88, 11: 0.57} gains={6: 0.97, 11: 0.74}
+facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=14156
+facts.writer: FinderPickOut call: cache_creation_input_tokens=3797 cache_read_input_tokens=0 input_tokens=23168
+analyzer.routes: Press of find for cpc: time=29.7s cost=$0.0831 claude_calls=1
+===== press 1 (in log order) =====
+analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 10948 tokens
+analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: stopped on partner; partner gives no one; asker gives Blake Corum=0.88, Mike Washington Jr.=0.18, Kyren Williams=0.91, Kenneth Walker III=0.90
+analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: stopped on partner; partner gives no one; asker gives Blake Corum=0.89, Mike Washington Jr.=0.34, Trey McBride=0.89, Kyren Williams=0.92, Kenneth Walker III=0.91, Michael Mayer=0.86
+analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Caleb Williams=0.94, Bryce Young=0.91; asker gives Blake Corum=0.92, Matthew Golden=0.88, Chimere Dike=0.16, Myles Price=0.13, Antonio Williams=0.11, Mike Washington Jr.=0.14, Kyren Williams=0.94, Kenneth Walker III=0.94, Parker Washington=0.90, Zay Flowers=0.91
+analyzer.finder_search: Spares tree of Bo Girds with NFC Least: stopped on partner; partner gives no one; asker gives Blake Corum=0.67, Mike Washington Jr.=0.35, Kyren Williams=0.28, Kenneth Walker III=0.89
+analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: stopped on partner; partner gives no one; asker gives Matthew Golden=0.79, Chimere Dike=0.19, Myles Price=0.12, Antonio Williams=0.10, Parker Washington=0.79, Zay Flowers=0.86
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.90, Matthew Golden=0.92, Chimere Dike=0.26, Myles Price=0.13, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.89, Kenneth Walker III=0.93, Parker Washington=0.89, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Justin Herbert=0.92; asker gives Matthew Golden=0.90, Chimere Dike=0.59, Myles Price=0.45, Antonio Williams=0.10, Parker Washington=0.86, Zay Flowers=0.91
+analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: stopped on partner; partner gives no one; asker gives Matthew Golden=0.90, Chimere Dike=0.49, Myles Price=0.43, Antonio Williams=0.14, Parker Washington=0.90, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on partner; partner gives no one; asker gives Trey McBride=0.93, Michael Mayer=0.68
+analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Dak Prescott=0.95, C.J. Stroud=0.95; asker gives Matthew Golden=0.93, Chimere Dike=0.15, Myles Price=0.14, Antonio Williams=0.13, Trey McBride=0.91, Michael Mayer=0.48, Parker Washington=0.90, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bo Nix=0.93, Trevor Lawrence=0.94; asker gives no one
+analyzer.jev_waves: Jev wave 2 (targets): 4 requests, about 12655 tokens
+analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 63875 tokens
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Jaxon Smith-Njigba  [6:8130-3:9488] gains={6: 0.97, 3: 0.05}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Bryce Young  [6:8130-3:11560+9228] gains={6: 0.96, 3: 0.04}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Jaxon Smith-Njigba  [6:8130-3:11560+9488] gains={6: 0.98, 3: 0.05}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Bryce Young + Jaxon Smith-Njigba  [6:8130-3:9228+9488] gains={6: 0.98, 3: 0.04}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.05, 7: 0.48}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.04, 7: 0.71}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.72}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.82}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.03, 7: 0.59}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.03, 7: 0.71}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.61}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.79}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.07, 7: 0.77}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.05, 7: 0.79}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8130-7:4046] gains={6: 0.05, 7: 0.61}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Jared Goff  [6:12501+8130-7:3163] gains={6: 0.04, 7: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.07, 7: 0.68}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.05, 7: 0.74}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.05}
+gain drop: Bo Girds gives Trey McBride; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8130-7:3163+4046] gains={6: 0.97, 7: 0.04}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.97, 7: 0.04}
+gain drop: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:12501-7:3163+4046] gains={6: 0.97, 7: 0.06}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Jordan Love  [6:8130-8:6804] gains={6: 0.97, 8: 0.1}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert  [6:8130-8:6797] gains={6: 0.06, 8: 0.79}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives CeeDee Lamb  [6:8130-8:6786] gains={6: 0.95, 8: 0.08}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Jordan Love  [6:12501-8:6804] gains={6: 0.98, 8: 0.1}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Justin Herbert  [6:12501-8:6797] gains={6: 0.05, 8: 0.92}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives CeeDee Lamb  [6:12501-8:6786] gains={6: 0.97, 8: 0.09}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Jordan Love  [6:9997-8:6804] gains={6: 0.98, 8: 0.08}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert  [6:9997-8:6797] gains={6: 0.05, 8: 0.94}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:9997-8:6786] gains={6: 0.98, 8: 0.08}
+gain drop: Bo Girds gives Parker Washington; Return of T Mac gives Jordan Love  [6:9487-8:6804] gains={6: 0.98, 8: 0.1}
+gain drop: Bo Girds gives Parker Washington; Return of T Mac gives Justin Herbert  [6:9487-8:6797] gains={6: 0.05, 8: 0.91}
+gain drop: Bo Girds gives Parker Washington; Return of T Mac gives CeeDee Lamb  [6:9487-8:6786] gains={6: 0.97, 8: 0.07}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives Jordan Love  [6:12501+8130-8:6804] gains={6: 0.04, 8: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives Justin Herbert  [6:12501+8130-8:6797] gains={6: 0.03, 8: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives CeeDee Lamb  [6:12501+8130-8:6786] gains={6: 0.05, 8: 0.95}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Jordan Love  [6:8130+9997-8:6804] gains={6: 0.08, 8: 0.93}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Justin Herbert  [6:8130+9997-8:6797] gains={6: 0.04, 8: 0.86}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:8130+9997-8:6786] gains={6: 0.06, 8: 0.91}
+gain drop: Bo Girds gives Trey McBride + Parker Washington; Return of T Mac gives Jordan Love  [6:8130+9487-8:6804] gains={6: 0.06, 8: 0.9}
+gain drop: Bo Girds gives Trey McBride + Parker Washington; Return of T Mac gives Justin Herbert  [6:8130+9487-8:6797] gains={6: 0.04, 8: 0.88}
+gain drop: Bo Girds gives Trey McBride + Parker Washington; Return of T Mac gives CeeDee Lamb  [6:8130+9487-8:6786] gains={6: 0.07, 8: 0.91}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives Jordan Love  [6:12501+9997-8:6804] gains={6: 0.05, 8: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives Justin Herbert  [6:12501+9997-8:6797] gains={6: 0.03, 8: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:12501+9997-8:6786] gains={6: 0.04, 8: 0.92}
+gain drop: Bo Girds gives Matthew Golden + Parker Washington; Return of T Mac gives Jordan Love  [6:12501+9487-8:6804] gains={6: 0.05, 8: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Parker Washington; Return of T Mac gives Justin Herbert  [6:12501+9487-8:6797] gains={6: 0.04, 8: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Parker Washington; Return of T Mac gives CeeDee Lamb  [6:12501+9487-8:6786] gains={6: 0.06, 8: 0.92}
+gain drop: Bo Girds gives Parker Washington + Zay Flowers; Return of T Mac gives Jordan Love  [6:9487+9997-8:6804] gains={6: 0.08, 8: 0.9}
+gain drop: Bo Girds gives Parker Washington + Zay Flowers; Return of T Mac gives Justin Herbert  [6:9487+9997-8:6797] gains={6: 0.05, 8: 0.89}
+gain drop: Bo Girds gives Parker Washington + Zay Flowers; Return of T Mac gives CeeDee Lamb  [6:9487+9997-8:6786] gains={6: 0.07, 8: 0.82}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert + Jordan Love  [6:8130-8:6797+6804] gains={6: 0.97, 8: 0.05}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:8130-8:6786+6804] gains={6: 0.98, 8: 0.06}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:8130-8:6786+6797] gains={6: 0.96, 8: 0.07}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Justin Herbert + Jordan Love  [6:12501-8:6797+6804] gains={6: 0.97, 8: 0.06}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:12501-8:6786+6804] gains={6: 0.98, 8: 0.08}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:12501-8:6786+6797] gains={6: 0.97, 8: 0.07}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert + Jordan Love  [6:9997-8:6797+6804] gains={6: 0.97, 8: 0.05}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:9997-8:6786+6804] gains={6: 0.98, 8: 0.06}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:9997-8:6786+6797] gains={6: 0.98, 8: 0.07}
+gain drop: Bo Girds gives Parker Washington; Return of T Mac gives Justin Herbert + Jordan Love  [6:9487-8:6797+6804] gains={6: 0.98, 8: 0.06}
+gain drop: Bo Girds gives Parker Washington; Return of T Mac gives CeeDee Lamb + Jordan Love  [6:9487-8:6786+6804] gains={6: 0.98, 8: 0.07}
+gain drop: Bo Girds gives Parker Washington; Return of T Mac gives CeeDee Lamb + Justin Herbert  [6:9487-8:6786+6797] gains={6: 0.98, 8: 0.08}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8130+9997-11:3294] gains={6: 0.05, 11: 0.96}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+9997-11:9758] gains={6: 0.05, 11: 0.91}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8130-11:3294] gains={6: 0.04, 11: 0.93}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8130-11:9758] gains={6: 0.04, 11: 0.95}
+gain drop: Bo Girds gives Trey McBride + Parker Washington; Unsolicited Dak Picks gives Dak Prescott  [6:8130+9487-11:3294] gains={6: 0.06, 11: 0.93}
+gain drop: Bo Girds gives Trey McBride + Parker Washington; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+9487-11:9758] gains={6: 0.05, 11: 0.85}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:12501+9997-11:3294] gains={6: 0.04, 11: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+9997-11:9758] gains={6: 0.04, 11: 0.9}
+gain drop: Bo Girds gives Parker Washington + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:9487+9997-11:3294] gains={6: 0.09, 11: 0.94}
+gain drop: Bo Girds gives Parker Washington + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:9487+9997-11:9758] gains={6: 0.07, 11: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Parker Washington; Unsolicited Dak Picks gives Dak Prescott  [6:12501+9487-11:3294] gains={6: 0.04, 11: 0.96}
+gain drop: Bo Girds gives Matthew Golden + Parker Washington; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+9487-11:9758] gains={6: 0.04, 11: 0.93}
+gain drop: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8130-11:3294+9758] gains={6: 0.96, 11: 0.04}
+gain drop: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:9997-11:3294+9758] gains={6: 0.97, 11: 0.05}
+gain drop: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:12501-11:3294+9758] gains={6: 0.97, 11: 0.07}
+gain drop: Bo Girds gives Parker Washington; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:9487-11:3294+9758] gains={6: 0.98, 11: 0.07}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:8130-11:3294] score=0.430 fair=0.66 needs={6: 0.93, 11: 0.7} gains={6: 0.98, 11: 0.88}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.255 fair=0.56 needs={6: 0.91, 7: 0.5} gains={6: 0.98, 7: 0.71}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  [6:12501-11:3294] score=0.348 fair=0.68 needs={6: 0.93, 11: 0.55} gains={6: 0.98, 11: 0.93}
+shortlist: Bo Girds gives Parker Washington; Unsolicited Dak Picks gives C.J. Stroud  [6:9487-11:9758] score=0.242 fair=0.50 needs={6: 0.88, 11: 0.55} gains={6: 0.97, 11: 0.94}
+shortlist: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  [6:8130-3:11560] score=0.127 fair=0.55 needs={6: 0.92, 3: 0.25} gains={6: 0.97, 3: 0.87}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  [6:12501-11:9758] score=0.274 fair=0.57 needs={6: 0.89, 11: 0.54} gains={6: 0.97, 11: 0.95}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:8130-11:9758] score=0.270 fair=0.45 needs={6: 0.87, 11: 0.69} gains={6: 0.98, 11: 0.92}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:9997-11:3294] score=0.255 fair=0.45 needs={6: 0.93, 11: 0.61} gains={6: 0.98, 11: 0.92}
+shortlist: Bo Girds gives Parker Washington; Unsolicited Dak Picks gives Dak Prescott  [6:9487-11:3294] score=0.240 fair=0.50 needs={6: 0.94, 11: 0.51} gains={6: 0.98, 11: 0.91}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.222 fair=0.48 needs={6: 0.84, 7: 0.55} gains={6: 0.97, 7: 0.72}
+facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3797 input_tokens=23634
+analyzer.routes: Press of find for cpc: time=23.9s cost=$0.0719 claude_calls=1
+===== press 2 (in log order) =====
+analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 10948 tokens
+analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: stopped on partner; partner gives no one; asker gives Blake Corum=0.86, Mike Washington Jr.=0.18, Kyren Williams=0.89, Kenneth Walker III=0.89
+analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: stopped on partner; partner gives no one; asker gives Blake Corum=0.89, Mike Washington Jr.=0.34, Trey McBride=0.90, Kyren Williams=0.92, Kenneth Walker III=0.92, Michael Mayer=0.88
+analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Caleb Williams=0.94, Bryce Young=0.91; asker gives Blake Corum=0.93, Matthew Golden=0.91, Chimere Dike=0.17, Myles Price=0.13, Antonio Williams=0.11, Mike Washington Jr.=0.15, Kyren Williams=0.94, Kenneth Walker III=0.94, Parker Washington=0.90, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with NFC Least: stopped on partner; partner gives no one; asker gives Blake Corum=0.60, Mike Washington Jr.=0.22, Kyren Williams=0.23, Kenneth Walker III=0.89
+analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: stopped on partner; partner gives no one; asker gives Matthew Golden=0.75, Chimere Dike=0.15, Myles Price=0.11, Antonio Williams=0.10, Parker Washington=0.77, Zay Flowers=0.85
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.89, Matthew Golden=0.89, Chimere Dike=0.19, Myles Price=0.14, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.88, Kenneth Walker III=0.93, Parker Washington=0.89, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Justin Herbert=0.93; asker gives Matthew Golden=0.89, Chimere Dike=0.76, Myles Price=0.57, Antonio Williams=0.10, Parker Washington=0.87, Zay Flowers=0.90
+analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: stopped on partner; partner gives no one; asker gives Matthew Golden=0.89, Chimere Dike=0.51, Myles Price=0.46, Antonio Williams=0.16, Parker Washington=0.90, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on partner; partner gives no one; asker gives Trey McBride=0.92, Michael Mayer=0.70
+analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Dak Prescott=0.95, C.J. Stroud=0.94; asker gives Matthew Golden=0.92, Chimere Dike=0.16, Myles Price=0.17, Antonio Williams=0.13, Trey McBride=0.90, Michael Mayer=0.48, Parker Washington=0.90, Zay Flowers=0.93
+analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bo Nix=0.93, Trevor Lawrence=0.93; asker gives no one
+analyzer.jev_waves: Jev wave 2 (targets): 4 requests, about 12655 tokens
+analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 45679 tokens
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Bryce Young  [6:8130-3:11560+9228] gains={6: 0.96, 3: 0.05}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.04, 7: 0.64}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.04, 7: 0.83}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.76}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.8}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.07, 7: 0.73}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.04, 7: 0.75}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8130-7:4046] gains={6: 0.05, 7: 0.67}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Jared Goff  [6:12501+8130-7:3163] gains={6: 0.04, 7: 0.81}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.04, 7: 0.72}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.03, 7: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.66}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.06, 7: 0.74}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.04, 7: 0.8}
+gain drop: Bo Girds gives Trey McBride; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8130-7:3163+4046] gains={6: 0.97, 7: 0.05}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.06}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.97, 7: 0.05}
+gain drop: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:12501-7:3163+4046] gains={6: 0.97, 7: 0.06}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Jordan Love  [6:8130-8:6804] gains={6: 0.97, 8: 0.15}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert  [6:8130-8:6797] gains={6: 0.04, 8: 0.9}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Jordan Love  [6:9997-8:6804] gains={6: 0.98, 8: 0.1}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert  [6:9997-8:6797] gains={6: 0.05, 8: 0.91}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Jordan Love  [6:12501-8:6804] gains={6: 0.97, 8: 0.1}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Justin Herbert  [6:12501-8:6797] gains={6: 0.04, 8: 0.86}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Jordan Love  [6:8130+9997-8:6804] gains={6: 0.07, 8: 0.88}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Justin Herbert  [6:8130+9997-8:6797] gains={6: 0.03, 8: 0.89}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives Jordan Love  [6:12501+8130-8:6804] gains={6: 0.05, 8: 0.83}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Return of T Mac gives Justin Herbert  [6:12501+8130-8:6797] gains={6: 0.03, 8: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives Jordan Love  [6:12501+9997-8:6804] gains={6: 0.06, 8: 0.78}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Return of T Mac gives Justin Herbert  [6:12501+9997-8:6797] gains={6: 0.04, 8: 0.93}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert + Jordan Love  [6:8130-8:6797+6804] gains={6: 0.97, 8: 0.05}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert + Jordan Love  [6:9997-8:6797+6804] gains={6: 0.97, 8: 0.04}
+gain drop: Bo Girds gives Matthew Golden; Return of T Mac gives Justin Herbert + Jordan Love  [6:12501-8:6797+6804] gains={6: 0.97, 8: 0.06}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:8151-11:3294] gains={6: 0.04, 11: 0.92}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:8151-11:9758] gains={6: 0.03, 11: 0.82}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8130+9997-11:3294] gains={6: 0.07, 11: 0.93}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+9997-11:9758] gains={6: 0.07, 11: 0.91}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8130-11:3294] gains={6: 0.04, 11: 0.86}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8130-11:9758] gains={6: 0.04, 11: 0.94}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:8130+8151-11:3294] gains={6: 0.03, 11: 0.87}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+8151-11:9758] gains={6: 0.03, 11: 0.88}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:12501+9997-11:3294] gains={6: 0.05, 11: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+9997-11:9758] gains={6: 0.04, 11: 0.87}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8151+9997-11:3294] gains={6: 0.03, 11: 0.91}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8151+9997-11:9758] gains={6: 0.03, 11: 0.9}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8151-11:3294] gains={6: 0.03, 11: 0.95}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8151-11:9758] gains={6: 0.03, 11: 0.93}
+gain drop: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8130-11:3294+9758] gains={6: 0.97, 11: 0.05}
+gain drop: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:9997-11:3294+9758] gains={6: 0.97, 11: 0.05}
+gain drop: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:12501-11:3294+9758] gains={6: 0.96, 11: 0.06}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8151-11:3294+9758] gains={6: 0.06, 11: 0.07}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:8130-11:3294] score=0.417 fair=0.66 needs={6: 0.93, 11: 0.68} gains={6: 0.98, 11: 0.85}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.323 fair=0.61 needs={6: 0.93, 7: 0.57} gains={6: 0.98, 7: 0.74}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  [6:12501-11:3294] score=0.375 fair=0.70 needs={6: 0.94, 11: 0.57} gains={6: 0.98, 11: 0.9}
+shortlist: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  [6:8130-3:11560] score=0.116 fair=0.42 needs={6: 0.89, 3: 0.31} gains={6: 0.97, 3: 0.8}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:8130-11:9758] score=0.310 fair=0.47 needs={6: 0.89, 11: 0.74} gains={6: 0.98, 11: 0.79}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  [6:12501-11:9758] score=0.304 fair=0.61 needs={6: 0.89, 11: 0.56} gains={6: 0.98, 11: 0.95}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.238 fair=0.52 needs={6: 0.88, 7: 0.52} gains={6: 0.97, 7: 0.78}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:9997-11:3294] score=0.231 fair=0.41 needs={6: 0.94, 11: 0.6} gains={6: 0.98, 11: 0.92}
+shortlist: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Patrick Mahomes  [6:12501-7:4046] score=0.227 fair=0.53 needs={6: 0.93, 7: 0.46} gains={6: 0.98, 7: 0.77}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:9997-11:9758] score=0.194 fair=0.35 needs={6: 0.91, 11: 0.61} gains={6: 0.97, 11: 0.81}
+facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3797 input_tokens=23212
+analyzer.routes: Press of find for cpc: time=22.7s cost=$0.0695 claude_calls=1
+===== press 3 (in log order) =====
+analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 10948 tokens
+analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: stopped on partner; partner gives no one; asker gives Blake Corum=0.88, Mike Washington Jr.=0.18, Kyren Williams=0.91, Kenneth Walker III=0.89
+analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: stopped on partner; partner gives no one; asker gives Blake Corum=0.90, Mike Washington Jr.=0.15, Trey McBride=0.89, Kyren Williams=0.92, Kenneth Walker III=0.92, Michael Mayer=0.88
+analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Caleb Williams=0.93, Bryce Young=0.92; asker gives Blake Corum=0.92, Matthew Golden=0.88, Chimere Dike=0.18, Myles Price=0.15, Antonio Williams=0.12, Mike Washington Jr.=0.14, Kyren Williams=0.93, Kenneth Walker III=0.93, Parker Washington=0.88, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with NFC Least: stopped on partner; partner gives no one; asker gives Blake Corum=0.62, Mike Washington Jr.=0.32, Kyren Williams=0.19, Kenneth Walker III=0.88
+analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: stopped on partner; partner gives no one; asker gives Matthew Golden=0.78, Chimere Dike=0.17, Myles Price=0.10, Antonio Williams=0.10, Parker Washington=0.79, Zay Flowers=0.87
+analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.87, Matthew Golden=0.89, Chimere Dike=0.19, Myles Price=0.12, Antonio Williams=0.09, Mike Washington Jr.=0.07, Kyren Williams=0.90, Kenneth Walker III=0.91, Parker Washington=0.88, Zay Flowers=0.91
+analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Justin Herbert=0.91; asker gives Matthew Golden=0.89, Chimere Dike=0.80, Myles Price=0.72, Antonio Williams=0.09, Parker Washington=0.87, Zay Flowers=0.91
+analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: stopped on partner; partner gives no one; asker gives Matthew Golden=0.89, Chimere Dike=0.43, Myles Price=0.41, Antonio Williams=0.15, Parker Washington=0.89, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on partner; partner gives no one; asker gives Trey McBride=0.92, Michael Mayer=0.72
+analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Dak Prescott=0.95, C.J. Stroud=0.94; asker gives Matthew Golden=0.91, Chimere Dike=0.21, Myles Price=0.15, Antonio Williams=0.17, Trey McBride=0.91, Michael Mayer=0.49, Parker Washington=0.90, Zay Flowers=0.92
+analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bo Nix=0.93, Trevor Lawrence=0.93; asker gives no one
+analyzer.jev_waves: Jev wave 2 (targets): 4 requests, about 12655 tokens
+analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 43218 tokens
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Jaxon Smith-Njigba  [6:8130-3:9488] gains={6: 0.97, 3: 0.06}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Bryce Young  [6:8130-3:11560+9228] gains={6: 0.96, 3: 0.04}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams + Jaxon Smith-Njigba  [6:8130-3:11560+9488] gains={6: 0.98, 3: 0.04}
+gain drop: Bo Girds gives Trey McBride; Lil Fridge gives Bryce Young + Jaxon Smith-Njigba  [6:8130-3:9228+9488] gains={6: 0.98, 3: 0.04}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8151-7:4046] gains={6: 0.04, 7: 0.68}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8151-7:3163] gains={6: 0.04, 7: 0.73}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:8130+8151-7:4046] gains={6: 0.03, 7: 0.82}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:8130+8151-7:3163] gains={6: 0.03, 7: 0.88}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8151-7:4046] gains={6: 0.03, 7: 0.74}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; To Infinity and Bijan gives Jared Goff  [6:12501+8151-7:3163] gains={6: 0.03, 7: 0.84}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8151+9997-7:4046] gains={6: 0.03, 7: 0.72}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8151+9997-7:3163] gains={6: 0.04, 7: 0.76}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Patrick Mahomes  [6:12501+8130-7:4046] gains={6: 0.05, 7: 0.82}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; To Infinity and Bijan gives Jared Goff  [6:12501+8130-7:3163] gains={6: 0.04, 7: 0.87}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:8130+9997-7:4046] gains={6: 0.08, 7: 0.83}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:8130+9997-7:3163] gains={6: 0.05, 7: 0.87}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:12501+9997-7:4046] gains={6: 0.06, 7: 0.71}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:12501+9997-7:3163] gains={6: 0.05, 7: 0.83}
+gain drop: Bo Girds gives Kenneth Walker III; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8151-7:3163+4046] gains={6: 0.05, 7: 0.05}
+gain drop: Bo Girds gives Trey McBride; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:8130-7:3163+4046] gains={6: 0.97, 7: 0.04}
+gain drop: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:12501-7:3163+4046] gains={6: 0.97, 7: 0.05}
+gain drop: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff + Patrick Mahomes  [6:9997-7:3163+4046] gains={6: 0.98, 7: 0.06}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Jordan Love  [6:8130-8:6804] gains={6: 0.98, 8: 0.15}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert  [6:8130-8:6797] gains={6: 0.04, 8: 0.87}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Jordan Love  [6:9997-8:6804] gains={6: 0.98, 8: 0.09}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert  [6:9997-8:6797] gains={6: 0.04, 8: 0.85}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Jordan Love  [6:8130+9997-8:6804] gains={6: 0.07, 8: 0.86}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Return of T Mac gives Justin Herbert  [6:8130+9997-8:6797] gains={6: 0.03, 8: 0.9}
+gain drop: Bo Girds gives Trey McBride; Return of T Mac gives Justin Herbert + Jordan Love  [6:8130-8:6797+6804] gains={6: 0.95, 8: 0.04}
+gain drop: Bo Girds gives Zay Flowers; Return of T Mac gives Justin Herbert + Jordan Love  [6:9997-8:6797+6804] gains={6: 0.97, 8: 0.06}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:8151-11:3294] gains={6: 0.05, 11: 0.91}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:8151-11:9758] gains={6: 0.03, 11: 0.9}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8130-11:3294] gains={6: 0.04, 11: 0.95}
+gain drop: Bo Girds gives Matthew Golden + Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8130-11:9758] gains={6: 0.04, 11: 0.9}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8130+9997-11:3294] gains={6: 0.1, 11: 0.92}
+gain drop: Bo Girds gives Trey McBride + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+9997-11:9758] gains={6: 0.09, 11: 0.93}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:8130+8151-11:3294] gains={6: 0.03, 11: 0.88}
+gain drop: Bo Girds gives Trey McBride + Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:8130+8151-11:9758] gains={6: 0.03, 11: 0.91}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:12501+9997-11:3294] gains={6: 0.05, 11: 0.95}
+gain drop: Bo Girds gives Matthew Golden + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+9997-11:9758] gains={6: 0.04, 11: 0.91}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott  [6:12501+8151-11:3294] gains={6: 0.03, 11: 0.94}
+gain drop: Bo Girds gives Matthew Golden + Kenneth Walker III; Unsolicited Dak Picks gives C.J. Stroud  [6:12501+8151-11:9758] gains={6: 0.03, 11: 0.94}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:8151+9997-11:3294] gains={6: 0.03, 11: 0.92}
+gain drop: Bo Girds gives Kenneth Walker III + Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:8151+9997-11:9758] gains={6: 0.03, 11: 0.91}
+gain drop: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8130-11:3294+9758] gains={6: 0.96, 11: 0.05}
+gain drop: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:12501-11:3294+9758] gains={6: 0.96, 11: 0.05}
+gain drop: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:9997-11:3294+9758] gains={6: 0.97, 11: 0.05}
+gain drop: Bo Girds gives Kenneth Walker III; Unsolicited Dak Picks gives Dak Prescott + C.J. Stroud  [6:8151-11:3294+9758] gains={6: 0.05, 11: 0.06}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  [6:8130-11:3294] score=0.442 fair=0.67 needs={6: 0.93, 11: 0.71} gains={6: 0.98, 11: 0.89}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  [6:9997-7:4046] score=0.256 fair=0.54 needs={6: 0.91, 7: 0.52} gains={6: 0.98, 7: 0.67}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  [6:12501-11:3294] score=0.343 fair=0.67 needs={6: 0.93, 11: 0.55} gains={6: 0.98, 11: 0.93}
+shortlist: Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  [6:8130-3:11560] score=0.130 fair=0.56 needs={6: 0.93, 3: 0.25} gains={6: 0.98, 3: 0.88}
+shortlist: Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  [6:12501-11:9758] score=0.281 fair=0.58 needs={6: 0.88, 11: 0.55} gains={6: 0.97, 11: 0.91}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  [6:9997-11:3294] score=0.265 fair=0.46 needs={6: 0.93, 11: 0.62} gains={6: 0.98, 11: 0.9}
+shortlist: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  [6:8130-11:9758] score=0.252 fair=0.42 needs={6: 0.87, 11: 0.69} gains={6: 0.98, 11: 0.81}
+shortlist: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  [6:9997-11:9758] score=0.208 fair=0.36 needs={6: 0.89, 11: 0.65} gains={6: 0.98, 11: 0.79}
+shortlist: Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  [6:9997-7:3163] score=0.204 fair=0.47 needs={6: 0.82, 7: 0.53} gains={6: 0.98, 7: 0.68}
+shortlist: Bo Girds gives Matthew Golden; To Infinity and Bijan gives Patrick Mahomes  [6:12501-7:4046] score=0.181 fair=0.49 needs={6: 0.9, 7: 0.41} gains={6: 0.98, 7: 0.62}
+facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3797 input_tokens=23210
+analyzer.routes: Press of find for cpc: time=28.0s cost=$0.0766 claude_calls=1
+===== trades of press-1-stream.txt =====
+- Lean yes: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:8130-11:3294
+- Gut call: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud | offer_id=6:8130-11:9758
+===== trades of press-2-stream.txt =====
+- Lean yes: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:8130-11:3294
+- Gut call: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud | offer_id=6:8130-11:9758
+===== trades of press-3-stream.txt =====
+- Lean yes: Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:8130-11:3294
+- Gut call: Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott | offer_id=6:9997-11:3294

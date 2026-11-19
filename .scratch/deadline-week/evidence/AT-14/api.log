@@ -1,0 +1,146 @@
+INFO:     Started server process [10386]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:55758 (Press CTRL+C to quit)
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55769 - "GET /health HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB1.0PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-content/uploads/2026/11/1QB1.0PPR4pt_20261117.png "HTTP/1.1 200 OK"
+WARNING:     league.live: Chart read for week 11 failed (TypeError), so the week has no chart
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125285140378000 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55785 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125296328605000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55796 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55798 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125302219082000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55801 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55803 - "GET /clients/cpc/deadline/trades HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55804 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55806 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55807 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55810 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125308398856000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55818 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55820 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55824 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55825 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125314194609000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55828 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55845 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55848 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55849 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125320038701000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55850 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55856 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55869 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55870 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125325873731000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55871 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55875 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55883 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55884 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125331739617000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55888 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55890 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55891 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55907 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125337543376000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55909 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55924 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55925 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55934 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125343339660000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55947 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55952 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55969 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55970 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125349167310000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55971 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55973 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55986 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55987 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795125354980194000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55989 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56029 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56036 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56043 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56052 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56053 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56054 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56055 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56056 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56057 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56058 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56059 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56060 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56061 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56062 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56063 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56064 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56065 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56067 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56068 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56069 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56070 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56071 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56073 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56074 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56075 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56076 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56077 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56079 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56080 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56081 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56082 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56083 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56084 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56085 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56086 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56087 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56088 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 429 Too Many Requests
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [10386]

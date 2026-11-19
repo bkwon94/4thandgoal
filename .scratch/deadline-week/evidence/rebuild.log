@@ -1,4 +1,5 @@
-approved diffs: .scratch/deadline-week/REBUILD.md
+$ python3 -B scripts/rebuild.py --base <main checkout 8780eefb> --head <spec worktree 19371052> --approved .scratch/deadline-week/REBUILD.md   (run 2026-11-19 17:10)
+approved diffs: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/.scratch/deadline-week/REBUILD.md
 render only: cpc 2026 week 10 has no saved inputs of the facts
 cpc 2026 week 10 page.json: 0 diffs
 cpc 2026 week 10 topics.json: 0 diffs
@@ -8,3 +9,4 @@ norcal 2026 week 10 page.json: 0 diffs
 norcal 2026 week 10 topics.json: 0 diffs
 norcal 2026 week 10 waiver.json: 0 diffs
 rebuild diff: 0 diffs, 0 listed, 0 not listed, 0 listed but not changed
+exit: 0

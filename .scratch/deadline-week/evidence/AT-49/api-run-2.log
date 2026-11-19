@@ -1,0 +1,447 @@
+INFO:     Started server process [81009]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:57246 (Press CTRL+C to quit)
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:52987 - "GET /health HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53011 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53012 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130655654575000 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53017 - "OPTIONS /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53017 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53009 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53011 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/players/nfl/trending/add?lookback_hours=24&limit=50 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: POST https://sleeper.com/graphql "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 137ms (request req_01a1f62027907bce84b6a10a31406d77)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 67ms (request req_01a1f62027eb73429677920416e4d193)
+INFO:     127.0.0.1:53012 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     cornerstone_api.suggestions: The head start builds the personal Topic weak_spots on open
+                 pydantic-ai v2.66.0 • Python 3.11.10
+
+      / \        agent: personal_topic • model: anthropic:claude-sonnet-5-5 • tools: 0
+     /   \         capabilities: 2
+   /___.___\
+  /    |    \    observability: off — see every model and tool call live, with cost
+/      |      \    set it up free with Pydantic Logfire: uvx logfire-cli wizard --task pydantic-ai
+`---.._|_..---'    or use any OpenTelemetry backend: https://pydantic.dev/docs/ai/logfire/#otel
+
+                 goes away once observability is on — or PYDANTIC_AI_NO_BANNER=1
+INFO:     127.0.0.1:53009 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 10948 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 46ms (request req_01a1f6202b567db9a0c0cd73483a073b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 77ms (request req_01a1f6202b7575e593088276c9a464db)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 112ms (request req_01a1f6202b877abb841005506850e05a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 125ms (request req_01a1f6202b9976df9471369b9021e386)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 135ms (request req_01a1f6202baa7b6f8d1dd1b8ba7f7472)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 167ms (request req_01a1f6202bbd7b4bb1c24613398d69f1)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 208ms (request req_01a1f6202be0757e97e4f28b8443d5bd)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 211ms (request req_01a1f6202be97419916d464f4903b86d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 215ms (request req_01a1f6202c02761c99d7c15c533a15de)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 259ms (request req_01a1f6202c2e756e8bb0e624b347de45)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 270ms (request req_01a1f6202c187244bcf932f64f9a3a8d)
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: stopped on partner; partner gives no one; asker gives Blake Corum=0.86, Mike Washington Jr.=0.22, Kyren Williams=0.89, Kenneth Walker III=0.90
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: stopped on partner; partner gives no one; asker gives Blake Corum=0.89, Mike Washington Jr.=0.47, Trey McBride=0.90, Kyren Williams=0.93, Kenneth Walker III=0.92, Michael Mayer=0.88
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Caleb Williams=0.94, Bryce Young=0.92; asker gives Blake Corum=0.92, Matthew Golden=0.88, Chimere Dike=0.14, Myles Price=0.11, Antonio Williams=0.11, Mike Washington Jr.=0.11, Kyren Williams=0.93, Kenneth Walker III=0.94, Parker Washington=0.89, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with NFC Least: stopped on partner; partner gives no one; asker gives Blake Corum=0.29, Mike Washington Jr.=0.21, Kyren Williams=0.17, Kenneth Walker III=0.89
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: stopped on partner; partner gives no one; asker gives Matthew Golden=0.76, Chimere Dike=0.13, Myles Price=0.08, Antonio Williams=0.11, Parker Washington=0.79, Zay Flowers=0.85
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.94, Patrick Mahomes=0.96; asker gives Blake Corum=0.88, Matthew Golden=0.91, Chimere Dike=0.19, Myles Price=0.13, Antonio Williams=0.08, Mike Washington Jr.=0.07, Kyren Williams=0.88, Kenneth Walker III=0.92, Parker Washington=0.89, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Justin Herbert=0.90; asker gives Matthew Golden=0.89, Chimere Dike=0.69, Myles Price=0.58, Antonio Williams=0.11, Parker Washington=0.87, Zay Flowers=0.89
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: stopped on partner; partner gives no one; asker gives Matthew Golden=0.91, Chimere Dike=0.58, Myles Price=0.50, Antonio Williams=0.12, Parker Washington=0.89, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on partner; partner gives no one; asker gives Trey McBride=0.91, Michael Mayer=0.71
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Dak Prescott=0.95, C.J. Stroud=0.94; asker gives Matthew Golden=0.92, Chimere Dike=0.19, Myles Price=0.15, Antonio Williams=0.12, Trey McBride=0.90, Michael Mayer=0.48, Parker Washington=0.89, Zay Flowers=0.93
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bo Nix=0.93, Trevor Lawrence=0.94; asker gives no one
+INFO:     analyzer.jev_waves: Jev wave 2 (targets): 4 requests, about 12655 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 58ms (request req_01a1f6202d52783b9e236ccb8d3eaf69)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 66ms (request req_01a1f6202d567cbfbb54d099f197b50b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 84ms (request req_01a1f6202d587aefb2c3b64fa02a68b6)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 106ms (request req_01a1f6202d4f7e859998dc5e902955ee)
+INFO:     analyzer.finder_search: Finder target questions with Lil Fridge: Caleb Williams=0.81, Travis Kelce=0.25, Stefon Diggs=0.38, Derrick Henry=0.34, Christian McCaffrey=0.54, Mark Andrews=0.16, Courtland Sutton=0.16, Jakobi Meyers=0.27, J.K. Dobbins=0.19, Tyler Allgeier=0.19, Khalil Shakir=0.24, Bryce Young=0.78, Jaxon Smith-Njigba=0.61, Blake Corum=0.32, Matthew Golden=0.53, Chimere Dike=0.11, Myles Price=0.12, Fernando Mendoza=0.09, Antonio Williams=0.29, Mike Washington Jr.=0.13, Trey McBride=0.72, Kyren Williams=0.29, Kenneth Walker III=0.40, Michael Mayer=0.25, Parker Washington=0.54, Zay Flowers=0.56
+INFO:     analyzer.finder_search: Finder targets with Lil Fridge: the asker gives ['Trey McBride']; the partner gives ['Caleb Williams', 'Bryce Young', 'Jaxon Smith-Njigba']
+INFO:     analyzer.finder_search: Finder target questions with To Infinity and Bijan: Braelon Allen=0.24, Malik Nabers=0.43, Ladd McConkey=0.17, Ryan Flournoy=0.29, Harold Fannin Jr.=0.21, KC Concepcion Jr.=0.27, Jared Goff=0.86, Patrick Mahomes=0.91, Samaje Perine=0.16, Dalton Schultz=0.18, Kyle Pitts Sr.=0.22, Rhamondre Stevenson=0.23, Breece Hall=0.25, Blake Corum=0.52, Matthew Golden=0.72, Chimere Dike=0.12, Myles Price=0.13, Fernando Mendoza=0.08, Antonio Williams=0.35, Mike Washington Jr.=0.18, Trey McBride=0.76, Kyren Williams=0.65, Kenneth Walker III=0.78, Michael Mayer=0.23, Parker Washington=0.62, Zay Flowers=0.75
+INFO:     analyzer.finder_search: Finder targets with To Infinity and Bijan: the asker gives ['Kenneth Walker III', 'Trey McBride', 'Zay Flowers', 'Matthew Golden']; the partner gives ['Patrick Mahomes', 'Jared Goff']
+INFO:     analyzer.finder_search: Finder target questions with Return of T Mac: Rome Odunze=0.25, Sione Vaki=0.12, Carnell Tate=0.26, T.J. Hockenson=0.19, CeeDee Lamb=0.58, Justin Herbert=0.84, Jordan Love=0.89, Jaylen Waddle=0.25, Jaylen Warren=0.27, Jordan Mason=0.17, Tucker Kraft=0.22, Bijan Robinson=0.43, Blake Corum=0.37, Matthew Golden=0.63, Chimere Dike=0.16, Myles Price=0.13, Fernando Mendoza=0.08, Antonio Williams=0.34, Mike Washington Jr.=0.16, Trey McBride=0.78, Kyren Williams=0.43, Kenneth Walker III=0.47, Michael Mayer=0.23, Parker Washington=0.61, Zay Flowers=0.65
+INFO:     analyzer.finder_search: Finder targets with Return of T Mac: the asker gives ['Trey McBride', 'Zay Flowers', 'Matthew Golden', 'Parker Washington']; the partner gives ['Jordan Love', 'Justin Herbert']
+INFO:     analyzer.finder_search: Finder target questions with Unsolicited Dak Picks: Ollie Gordon II=0.24, Caleb Douglas=0.23, Dak Prescott=0.89, Josh Jacobs=0.14, Justice Hill=0.20, Jonathan Taylor=0.38, Juwan Johnson=0.17, Rachaad White=0.18, George Pickens=0.45, Josh Downs=0.23, Tank Dell=0.13, C.J. Stroud=0.86, Blake Corum=0.47, Matthew Golden=0.67, Chimere Dike=0.17, Myles Price=0.16, Fernando Mendoza=0.07, Antonio Williams=0.38, Mike Washington Jr.=0.19, Trey McBride=0.90, Kyren Williams=0.53, Kenneth Walker III=0.64, Michael Mayer=0.47, Parker Washington=0.64, Zay Flowers=0.68
+INFO:     analyzer.finder_search: Finder targets with Unsolicited Dak Picks: the asker gives ['Trey McBride', 'Zay Flowers', 'Matthew Golden', 'Kenneth Walker III']; the partner gives ['Dak Prescott', 'C.J. Stroud']
+INFO:     analyzer.finder_search: Finder offers of Bo Girds: 78
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:11560: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Caleb Williams (QB, CHI)
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:9228: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Bryce Young (QB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:9488: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:11560+9228: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Caleb Williams (QB, CHI) and Bryce Young (QB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:11560+9488: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Caleb Williams (QB, CHI) and Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:8130-3:9228+9488: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Bryce Young (QB, CAR) and Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:8151-7:4046: Bo Girds gives Kenneth Walker III (RB, KC); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:8151-7:3163: Bo Girds gives Kenneth Walker III (RB, KC); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130-7:4046: Bo Girds gives Trey McBride (TE, ARI); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:8130-7:3163: Bo Girds gives Trey McBride (TE, ARI); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:4046: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:3163: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:12501-7:4046: Bo Girds gives Matthew Golden (WR, GB); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:12501-7:3163: Bo Girds gives Matthew Golden (WR, GB); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130+8151-7:4046: Bo Girds gives Kenneth Walker III (RB, KC) and Trey McBride (TE, ARI); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:8130+8151-7:3163: Bo Girds gives Kenneth Walker III (RB, KC) and Trey McBride (TE, ARI); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8151+9997-7:4046: Bo Girds gives Kenneth Walker III (RB, KC) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:8151+9997-7:3163: Bo Girds gives Kenneth Walker III (RB, KC) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8151-7:4046: Bo Girds gives Kenneth Walker III (RB, KC) and Matthew Golden (WR, GB); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8151-7:3163: Bo Girds gives Kenneth Walker III (RB, KC) and Matthew Golden (WR, GB); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-7:4046: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-7:3163: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130-7:4046: Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130-7:3163: Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-7:4046: Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB); To Infinity and Bijan gives Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-7:3163: Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB); To Infinity and Bijan gives Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8151-7:3163+4046: Bo Girds gives Kenneth Walker III (RB, KC); To Infinity and Bijan gives Patrick Mahomes (QB, KC) and Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130-7:3163+4046: Bo Girds gives Trey McBride (TE, ARI); To Infinity and Bijan gives Patrick Mahomes (QB, KC) and Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:3163+4046: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Patrick Mahomes (QB, KC) and Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:12501-7:3163+4046: Bo Girds gives Matthew Golden (WR, GB); To Infinity and Bijan gives Patrick Mahomes (QB, KC) and Jared Goff (QB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130-8:6804: Bo Girds gives Trey McBride (TE, ARI); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:8130-8:6797: Bo Girds gives Trey McBride (TE, ARI); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:9997-8:6804: Bo Girds gives Zay Flowers (WR, BAL); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:9997-8:6797: Bo Girds gives Zay Flowers (WR, BAL); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:12501-8:6804: Bo Girds gives Matthew Golden (WR, GB); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:12501-8:6797: Bo Girds gives Matthew Golden (WR, GB); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:9487-8:6804: Bo Girds gives Parker Washington (WR, JAX); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:9487-8:6797: Bo Girds gives Parker Washington (WR, JAX); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-8:6804: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-8:6797: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130-8:6804: Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130-8:6797: Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9487-8:6804: Bo Girds gives Trey McBride (TE, ARI) and Parker Washington (WR, JAX); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9487-8:6797: Bo Girds gives Trey McBride (TE, ARI) and Parker Washington (WR, JAX); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-8:6804: Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-8:6797: Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-8:6804: Bo Girds gives Zay Flowers (WR, BAL) and Parker Washington (WR, JAX); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-8:6797: Bo Girds gives Zay Flowers (WR, BAL) and Parker Washington (WR, JAX); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9487-8:6804: Bo Girds gives Matthew Golden (WR, GB) and Parker Washington (WR, JAX); Return of T Mac gives Jordan Love (QB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9487-8:6797: Bo Girds gives Matthew Golden (WR, GB) and Parker Washington (WR, JAX); Return of T Mac gives Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:8130-8:6797+6804: Bo Girds gives Trey McBride (TE, ARI); Return of T Mac gives Jordan Love (QB, GB) and Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:9997-8:6797+6804: Bo Girds gives Zay Flowers (WR, BAL); Return of T Mac gives Jordan Love (QB, GB) and Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:12501-8:6797+6804: Bo Girds gives Matthew Golden (WR, GB); Return of T Mac gives Jordan Love (QB, GB) and Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:9487-8:6797+6804: Bo Girds gives Parker Washington (WR, JAX); Return of T Mac gives Jordan Love (QB, GB) and Justin Herbert (QB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:8130-11:3294: Bo Girds gives Trey McBride (TE, ARI); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:8130-11:9758: Bo Girds gives Trey McBride (TE, ARI); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-11:3294: Bo Girds gives Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:9997-11:9758: Bo Girds gives Zay Flowers (WR, BAL); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:12501-11:3294: Bo Girds gives Matthew Golden (WR, GB); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12501-11:9758: Bo Girds gives Matthew Golden (WR, GB); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:8151-11:3294: Bo Girds gives Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:8151-11:9758: Bo Girds gives Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-11:3294: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-11:9758: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130-11:3294: Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130-11:9758: Bo Girds gives Trey McBride (TE, ARI) and Matthew Golden (WR, GB); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:8130+8151-11:3294: Bo Girds gives Trey McBride (TE, ARI) and Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:8130+8151-11:9758: Bo Girds gives Trey McBride (TE, ARI) and Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-11:3294: Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-11:9758: Bo Girds gives Zay Flowers (WR, BAL) and Matthew Golden (WR, GB); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:8151+9997-11:3294: Bo Girds gives Zay Flowers (WR, BAL) and Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:8151+9997-11:9758: Bo Girds gives Zay Flowers (WR, BAL) and Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8151-11:3294: Bo Girds gives Matthew Golden (WR, GB) and Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives Dak Prescott (QB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8151-11:9758: Bo Girds gives Matthew Golden (WR, GB) and Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:8130-11:3294+9758: Bo Girds gives Trey McBride (TE, ARI); Unsolicited Dak Picks gives Dak Prescott (QB, DAL) and C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-11:3294+9758: Bo Girds gives Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Dak Prescott (QB, DAL) and C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:12501-11:3294+9758: Bo Girds gives Matthew Golden (WR, GB); Unsolicited Dak Picks gives Dak Prescott (QB, DAL) and C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:8151-11:3294+9758: Bo Girds gives Kenneth Walker III (RB, KC); Unsolicited Dak Picks gives Dak Prescott (QB, DAL) and C.J. Stroud (QB, HOU)
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 52983 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 510ms (request req_01a1f6202ef77090a97fee53f341dd58)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1275ms (request req_01a1f62030fe719da25c6965da63d150)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1275ms (request req_01a1f62030f6730ba3667559461d18f4)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1277ms (request req_01a1f62030f2759b99a67ff02f5ad473)
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-3:9488: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-3:11560+9228: gains={6: 0.96, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-3:11560+9488: gains={6: 0.98, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-3:9228+9488: gains={6: 0.98, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-7:4046: gains={6: 0.04, 7: 0.49}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-7:3163: gains={6: 0.04, 7: 0.7}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8151-7:4046: gains={6: 0.03, 7: 0.79}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8151-7:3163: gains={6: 0.03, 7: 0.84}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151+9997-7:4046: gains={6: 0.03, 7: 0.64}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151+9997-7:3163: gains={6: 0.03, 7: 0.71}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8151-7:4046: gains={6: 0.03, 7: 0.5}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8151-7:3163: gains={6: 0.03, 7: 0.78}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-7:4046: gains={6: 0.07, 7: 0.71}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-7:3163: gains={6: 0.04, 7: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-7:4046: gains={6: 0.06, 7: 0.66}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-7:3163: gains={6: 0.04, 7: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-7:4046: gains={6: 0.06, 7: 0.77}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-7:3163: gains={6: 0.06, 7: 0.8}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-7:3163+4046: gains={6: 0.05, 7: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-7:3163+4046: gains={6: 0.97, 7: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:3163+4046: gains={6: 0.97, 7: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-7:3163+4046: gains={6: 0.97, 7: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-8:6804: gains={6: 0.98, 8: 0.13}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-8:6797: gains={6: 0.04, 8: 0.85}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-8:6804: gains={6: 0.98, 8: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-8:6797: gains={6: 0.04, 8: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-8:6804: gains={6: 0.97, 8: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-8:6797: gains={6: 0.04, 8: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-8:6804: gains={6: 0.98, 8: 0.1}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-8:6797: gains={6: 0.03, 8: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-8:6804: gains={6: 0.06, 8: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-8:6797: gains={6: 0.03, 8: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-8:6804: gains={6: 0.04, 8: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-8:6797: gains={6: 0.02, 8: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487-8:6804: gains={6: 0.06, 8: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487-8:6797: gains={6: 0.03, 8: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-8:6804: gains={6: 0.05, 8: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-8:6797: gains={6: 0.03, 8: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-8:6804: gains={6: 0.07, 8: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-8:6797: gains={6: 0.03, 8: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9487-8:6804: gains={6: 0.05, 8: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9487-8:6797: gains={6: 0.03, 8: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-8:6797+6804: gains={6: 0.96, 8: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-8:6797+6804: gains={6: 0.97, 8: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-8:6797+6804: gains={6: 0.96, 8: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-8:6797+6804: gains={6: 0.97, 8: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-11:3294: gains={6: 0.04, 11: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-11:9758: gains={6: 0.03, 11: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-11:3294: gains={6: 0.06, 11: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-11:9758: gains={6: 0.06, 11: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-11:3294: gains={6: 0.04, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-11:9758: gains={6: 0.05, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8151-11:3294: gains={6: 0.03, 11: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8151-11:9758: gains={6: 0.03, 11: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-11:3294: gains={6: 0.05, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-11:9758: gains={6: 0.04, 11: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151+9997-11:3294: gains={6: 0.03, 11: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151+9997-11:9758: gains={6: 0.03, 11: 0.85}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8151-11:3294: gains={6: 0.03, 11: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8151-11:9758: gains={6: 0.03, 11: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-11:3294+9758: gains={6: 0.96, 11: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-11:3294+9758: gains={6: 0.97, 11: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-11:3294+9758: gains={6: 0.97, 11: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-11:3294+9758: gains={6: 0.05, 11: 0.06}
+INFO:     analyzer.finder_search: Finder shortlist 6:8130-11:3294: score=0.415 fair=0.69 needs={6: 0.94, 11: 0.64} gains={6: 0.98, 11: 0.88}
+INFO:     analyzer.finder_search: Finder shortlist 6:9997-7:4046: score=0.258 fair=0.53 needs={6: 0.92, 7: 0.53} gains={6: 0.98, 7: 0.75}
+INFO:     analyzer.finder_search: Finder shortlist 6:12501-11:3294: score=0.345 fair=0.65 needs={6: 0.93, 11: 0.57} gains={6: 0.97, 11: 0.89}
+INFO:     analyzer.finder_search: Finder shortlist 6:8130-3:11560: score=0.116 fair=0.53 needs={6: 0.91, 3: 0.24} gains={6: 0.98, 3: 0.84}
+INFO:     analyzer.finder_search: Finder shortlist 6:8130-11:9758: score=0.267 fair=0.52 needs={6: 0.87, 11: 0.59} gains={6: 0.98, 11: 0.9}
+INFO:     analyzer.finder_search: Finder shortlist 6:12501-11:9758: score=0.266 fair=0.54 needs={6: 0.88, 11: 0.56} gains={6: 0.98, 11: 0.94}
+INFO:     analyzer.finder_search: Finder shortlist 6:9997-11:3294: score=0.245 fair=0.42 needs={6: 0.94, 11: 0.62} gains={6: 0.98, 11: 0.91}
+INFO:     analyzer.finder_search: Finder shortlist 6:9997-7:3163: score=0.234 fair=0.51 needs={6: 0.85, 7: 0.54} gains={6: 0.97, 7: 0.71}
+INFO:     analyzer.finder_search: Finder shortlist 6:9997-11:9758: score=0.205 fair=0.38 needs={6: 0.9, 11: 0.6} gains={6: 0.98, 11: 0.75}
+INFO:     analyzer.finder_search: Finder shortlist 6:12501-7:4046: score=0.145 fair=0.41 needs={6: 0.93, 7: 0.38} gains={6: 0.98, 7: 0.61}
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 98ms (request req_01a1f62036a57072a632a299eb764454)
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as checked, with 1 texts, 1763 input tokens, 157 output tokens, and a cost of $0.0018
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130675729875000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53053 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9997/news "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/8130/news "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/12501/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 9997: 5 items
+INFO:     analyzer.trade_news: News of player 9997 from the cache
+INFO:     analyzer.trade_news: News fetch of player 8130: 5 items
+INFO:     analyzer.trade_news: News of player 8130 from the cache
+INFO:     analyzer.trade_news: News of player 9997 from the cache
+INFO:     analyzer.trade_news: News fetch of player 12501: 5 items
+INFO:     analyzer.trade_news: News of player 9997 from the cache
+INFO:     analyzer.trade_news: News of player 12501 from the cache
+INFO:     analyzer.trade_news: News of player 12501 from the cache
+INFO:     analyzer.trade_news: News of player 8130 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/3294/news "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/4046/news "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/3163/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 3294: 5 items
+INFO:     analyzer.trade_news: News of player 3294 from the cache
+INFO:     analyzer.trade_news: News of player 3294 from the cache
+INFO:     analyzer.trade_news: News fetch of player 3163: 5 items
+INFO:     analyzer.trade_news: News fetch of player 4046: 5 items
+INFO:     analyzer.trade_news: News of player 4046 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/11560/news "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/9758/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 9758: 5 items
+INFO:     analyzer.trade_news: News of player 9758 from the cache
+INFO:     analyzer.trade_news: News fetch of player 11560: 5 items
+INFO:     analyzer.trade_news: News of player 9758 from the cache
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130685677658000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53072 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130695666494000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53082 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=3797 input_tokens=23169
+INFO:     analyzer.routes: Press of find for cpc: time=33.5s cost=$0.0712 claude_calls=1
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53017 - "OPTIONS /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53017 - "POST /clients/cpc/personal/current HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 96ms (request req_01a1f620b5427b7fa0ccc3460967af57)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=983 faithful.6.1=0.04 no faithful.6.2=0.19 no faithful.6.3=0.08 no faithful.6.4=0.02 no
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 183ms (request req_01a1f620b57c7ba793c6dbfcc9835a33)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=1066 faithful.6.1=0.25 no faithful.6.2=0.98 yes rumor.6.2=0.11 no faithful.6.3=0.58 unsure
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 58ms (request req_01a1f620b6317408bc63dfefb39a504b)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=469 faithful.6.1=0.24 no
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 56ms (request req_01a1f620b66c75c9ae6b0a388025b900)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=467 faithful.6.1=0.02 no
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130705679334000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53017 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130715674696000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53103 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130725689928000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53111 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130735705506000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53117 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130745996597000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53123 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130755682365000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53134 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130765692254000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53185 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130775727859000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53221 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130785701189000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53229 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130795696707000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53243 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130805716966000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53251 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130815705135000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53260 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130825750087000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53270 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130835718775000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53275 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130845724682000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53282 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130855727034000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53358 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130865758516000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53904 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130875728965000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54343 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795130885740327000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:54525 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [81009]

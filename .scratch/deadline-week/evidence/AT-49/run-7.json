@@ -1,0 +1,72 @@
+{
+ "run": "7",
+ "combo": "390-light",
+ "chip": "Trade ideas: Offers for your weak spots",
+ "askedAt": "2026-11-19T23:51:58.204Z",
+ "secondsToAnswer": 41.6,
+ "outcome": "trade ideas answer",
+ "retryLineCount": 0,
+ "articleText": "Trade ideas\n\n✔\nRead 11 teams\n✔\nFound 13 players who fit\n✔\nBuilt 69 offers\n✔\nMade a shortlist of 10\n✔\nPicked the best 2\nWITH UNSOLICITED DAK PICKS\nZay Flowers for Dak Prescott\nYOU GET\nDak Prescott\nQB · DAL\n57.0\nUNSOLICITED DAK PICKS GETS\nZay Flowers\nWR · BAL\n39.9\nREST OF SEASON\n57.0\n39.9\nWhy\n\n\nfor\n\n\nfor\n\n\nCheck this trade\n\nLean yes.\n\nWITH UNSOLICITED DAK PICKS\nTrey McBride for Dak Prescott\n\n\nfor\n\n\nagainst\n\n\n\nALSO WEIGHED\nWITH UNSOLICITED DAK PICKS\n\nYou give Zay Flowers and get C.J. Stroud.\n\nStroud's snap share is trending down, and Offer F gets you the better QB for the same Flowers.\n\nCheck this trade\nWITH LIL FRIDGE\n\nYou give Trey McBride and get Caleb Williams.\n\nWilliams is only QB23, which is a weak return for your top TE.\n\nCheck this trade\nBuild a trade on the Trade page",
+ "apiResponses": [
+  {
+   "ms": 1795132316731,
+   "status": 200,
+   "method": "GET",
+   "url": "https://gc.zgo.at/count.js"
+  },
+  {
+   "ms": 1795132322992,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/trade-ideas"
+  },
+  {
+   "ms": 1795132322993,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/eggs/board"
+  },
+  {
+   "ms": 1795132322996,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132325325,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/suggestions"
+  },
+  {
+   "ms": 1795132326858,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132336968,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132346961,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132357156,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132359777,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/personal/current"
+  }
+ ]
+}

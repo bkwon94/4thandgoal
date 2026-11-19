@@ -1,0 +1,90 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_spares_tree.py tests/test_finder_search.py -k 'clear_no or unsure or failed_jev_call or failed'
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 40 items / 27 deselected / 13 selected
+
+tests/test_spares_tree.py::test_a_clear_no_for_each_listed_player_stops_the_side PASSED [  7%]
+tests/test_spares_tree.py::test_an_unsure_answer_passes PASSED           [ 15%]
+tests/test_spares_tree.py::test_one_unsure_answer_among_clear_noes_passes_the_side PASSED [ 23%]
+tests/test_spares_tree.py::test_a_failed_jev_call_is_an_error_and_never_a_stop PASSED [ 30%]
+tests/test_finder_search.py::test_a_clear_no_for_each_player_of_one_side_stops_the_partner_and_unsure_passes PASSED [ 38%]
+tests/test_finder_search.py::test_the_target_step_logs_the_players_of_a_failed_request_too PASSED [ 46%]
+tests/test_finder_search.py::test_a_failed_jev_request_on_every_step_never_raises_and_never_hides_a_partner PASSED [ 53%]
+tests/test_finder_search.py::test_a_failed_spares_tree_request_lets_the_partner_go_on_to_the_targets_and_logs PASSED [ 61%]
+tests/test_finder_search.py::test_a_clear_no_gain_drops_the_offer_and_keeps_its_answers PASSED [ 69%]
+tests/test_finder_search.py::test_an_unsure_gain_keeps_the_offer PASSED  [ 76%]
+tests/test_finder_search.py::test_a_failed_shortlist_request_keeps_its_offers_as_unsure_and_never_reads_as_a_no PASSED [ 84%]
+tests/test_finder_search.py::test_the_pick_sheet_of_an_offer_with_a_failed_shortlist_request_states_no_jev_answer PASSED [ 92%]
+tests/test_finder_search.py::test_the_wider_pass_keeps_a_partner_whose_spares_tree_request_failed PASSED [100%]
+
+====================== 13 passed, 27 deselected in 13.94s ======================
+
+# The source of the four Spares tree decision tests (apps/pipeline/tests/test_spares_tree.py lines 105-136):
+def test_a_clear_no_for_each_listed_player_stops_the_side(snap):
+    asker, partner = _pair_with_spares_on_both_sides(snap)
+    read = spares_tree(snap, asker, partner, FakeJev(answer=_answer_side(partner, 0.2)))
+    assert read.stopped == ["partner"] and not read.passed
+
+
+def test_an_unsure_answer_passes(snap):
+    asker, partner = _pair_with_spares_on_both_sides(snap)
+    read = spares_tree(snap, asker, partner, FakeJev(answer=_answer_side(partner, 0.5)))
+    assert read.stopped == [] and read.passed
+
+
+def test_one_unsure_answer_among_clear_noes_passes_the_side(snap):
+    asker, partner = _pair_with_spares_on_both_sides(snap)
+    first = spare_list(snap, asker, partner)[0].player_id
+
+    def answer(key, question, state):
+        # The first player of the asker reads unsure, each other player of the asker a clear no.
+        if key.startswith(f"spare:{asker}:"):
+            return 0.5 if key == f"spare:{asker}:{first}" else 0.2
+        return 0.9
+
+    read = spares_tree(snap, asker, partner, FakeJev(answer=answer))
+    assert read.stopped == [] and read.passed
+
+
+def test_a_failed_jev_call_is_an_error_and_never_a_stop(snap):
+    asker, partner = _pair_with_spares_on_both_sides(snap)
+    with pytest.raises(JevError):
+        spares_tree(snap, asker, partner, FakeJev(error=JevError("429 Too Many Requests")))
+
+
+# The source of the gain decision tests (apps/pipeline/tests/test_finder_search.py):
+def test_a_clear_no_gain_drops_the_offer_and_keeps_its_answers(snap):
+    first = None
+    for side in (ASKER, PARTNER):
+        found = search(ASKER, PARTNER, snap, FakeJev(answer=_gain_of_first_offer(0.29, side)))
+        first = offer_id(found.offers[0])
+        assert first not in {offer.offer_id for offer in found.shortlist}
+        [dropped] = [offer for offer in found.dropped if offer.offer_id == first]
+        assert dropped.gains[side] == pytest.approx(0.29)
+    # With a clear yes everywhere, the same offer leads the list, so only the gain answer dropped it.
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=_rising_fair))
+    assert found.shortlist[0].offer_id == first and found.dropped == []
+
+
+def test_an_unsure_gain_keeps_the_offer(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=_gain_of_first_offer(0.3, ASKER)))
+    kept = {offer.offer_id: offer for offer in found.shortlist}
+    assert found.dropped == []
+    assert kept[offer_id(found.offers[0])].gains[ASKER] == pytest.approx(0.3)
+
+
+def test_a_failed_shortlist_request_keeps_its_offers_as_unsure_and_never_reads_as_a_no(snap, caplog):
+    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
+        found = search(ASKER, PARTNER, snap, _ShortlistFails())
+    assert found.offers and found.shortlist and found.dropped == []
+    assert len(found.shortlist) == min(len(found.offers), SHORTLIST_KEEP)
+    for offer in found.shortlist:
+        assert offer.failed
+        assert offer.fair == UNSURE and set(offer.needs.values()) == {UNSURE} and set(offer.gains.values()) == {UNSURE}
+    assert any("Finder shortlist with" in line and "failed request" in line for line in caplog.messages)
+
+

@@ -1,0 +1,14 @@
+# AT-49: 10 fresh asks for trade ideas for Bo Girds on the front door of cpc, by Brian's choice against a LOCAL API, not a deploy.
+# Each run starts its own local API (uvicorn cornerstone_api.app:app_from_env, as make -C apps/api api-evidence) with empty result and ask caches, and a fresh browser context.
+# The reader taps More, then the Trade ideas Topic. Columns: run, size and theme, the time of the ask, seconds to the answer, the outcome, the retry lines on the page, the 'Trade stream failed' lines in the API log, the trade-ideas POST status, and the server press line.
+
+run  1 | 375-light | asked 2026-11-19T23:20:10.855Z | 29.8 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=22.7s cost=$0.0643 claude_calls=2']
+run  2 | 375-dark | asked 2026-11-19T23:24:17.806Z | 43.3 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=33.5s cost=$0.0712 claude_calls=1']
+run  3 | 768-light | asked 2026-11-19T23:28:27.930Z | 41.2 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=33.7s cost=$0.0738 claude_calls=1']
+run  4 | 768-dark | asked 2026-11-19T23:49:04.767Z | 37.3 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=28.7s cost=$0.0689 claude_calls=1']
+run  5 | 1280-light | asked 2026-11-19T23:49:56.743Z | 51.2 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=42.5s cost=$0.0905 claude_calls=2']
+run  6 | 1280-dark | asked 2026-11-19T23:51:02.653Z | 40.9 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=30.4s cost=$0.0708 claude_calls=1']
+run  7 | 390-light | asked 2026-11-19T23:51:58.204Z | 41.6 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=32.8s cost=$0.0724 claude_calls=1']
+run  8 | 390-light | asked 2026-11-19T23:52:54.605Z | 27.4 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=17.7s cost=$0.0536 claude_calls=1']
+run  9 | 390-light | asked 2026-11-19T23:53:36.678Z | 42.3 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=32.6s cost=$0.0738 claude_calls=1']
+run 10 | 390-light | asked 2026-11-19T23:54:33.754Z | 39.2 s | trade ideas answer | retry lines 0 | 'Trade stream failed' 0 | POST /trade-ideas [200] | ['Press of find for cpc: time=30.5s cost=$0.0676 claude_calls=1']

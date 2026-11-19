@@ -1,0 +1,72 @@
+{
+ "run": "9",
+ "combo": "390-light",
+ "chip": "Trade ideas: Offers for your weak spots",
+ "askedAt": "2026-11-19T23:53:36.678Z",
+ "secondsToAnswer": 42.3,
+ "outcome": "trade ideas answer",
+ "retryLineCount": 0,
+ "articleText": "Trade ideas\n\n✔\nRead 11 teams\n✔\nFound 15 players who fit\n✔\nBuilt 81 offers\n✔\nMade a shortlist of 10\n✔\nPicked the best 3\nWITH UNSOLICITED DAK PICKS\nZay Flowers for Dak Prescott\nYOU GET\nDak Prescott\nQB · DAL\n57.0\nUNSOLICITED DAK PICKS GETS\nZay Flowers\nWR · BAL\n39.9\nREST OF SEASON\n57.0\n39.9\nWhy\n\n\nfor\n\n\nfor\n\n\nCheck this trade\n\nLean yes.\n\nWITH UNSOLICITED DAK PICKS\nZay Flowers for C.J. Stroud\n\n\nfor\n\n\nfor\n\n\n\nWITH TO INFINITY AND BIJAN\nZay Flowers for Patrick Mahomes\n\n\nfor\n\n\nfor\n\n\n\nALSO WEIGHED\nWITH UNSOLICITED DAK PICKS\n\nYou give Matthew Golden and get Dak Prescott.\n\nYou give up a much more valued WR for a QB who is worth less, when a cheaper WR can get the same QB.\n\nCheck this trade\nWITH TO INFINITY AND BIJAN\n\nYou give Kyren Williams and get Patrick Mahomes.\n\nYou give up a starting RB, which thins your RB group.\n\nCheck this trade\nWITH UNSOLICITED DAK PICKS\n\nYou give Trey McBride and get Dak Prescott.\n\nYou give up the top TE in the league and leave your TE group thinner.\n\nCheck this trade\nBuild a trade on the Trade page",
+ "apiResponses": [
+  {
+   "ms": 1795132415174,
+   "status": 200,
+   "method": "GET",
+   "url": "https://gc.zgo.at/count.js"
+  },
+  {
+   "ms": 1795132420057,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/trade-ideas"
+  },
+  {
+   "ms": 1795132420058,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/eggs/board"
+  },
+  {
+   "ms": 1795132420060,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132425523,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132426995,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/suggestions"
+  },
+  {
+   "ms": 1795132435372,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132445398,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132455503,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795132458866,
+   "status": 200,
+   "method": "POST",
+   "url": "http://127.0.0.1:57246/clients/cpc/personal/current"
+  }
+ ]
+}
