@@ -81,9 +81,44 @@ Test verdict: pending
 
 Done condition: The norcal scene test of `apps/site/e2e/scene.spec.ts` passes when the scene starts late, and it still fails when the scene plays its motion before it settles.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: `runScene` in `packages/design/site/parts/scene-canvas.ts` starts in `idle` and paints the scattered lights until the IntersectionObserver reports the entry, even under reduced motion. A slow phone reports the entry late, so the canvas shows a scattered chart, then jumps to the settled chart. This is a product bug: a reader with reduced motion on a slow phone sees it. The fix starts the scene in `rest`, or `drift` for a drift, under reduced motion, so the first frame is the settled chart. The loop holds each report of the view for 30 frames in the page, and records each state that the canvas marks from its first frame.
+Red: at `3374a9aa`, `(CLIENT=norcal pnpm build || CLIENT=norcal pnpm build) > /dev/null 2>&1 && CLIENT=norcal pnpm exec playwright test --project=floor e2e/scene.spec.ts -g "AT-31"` in `apps/site`
+
+```text
+  ✘  1 [floor] › e2e/scene.spec.ts:141:7 › the scene of the week page of norcal, at rest › draws the settled chart at once, the same at 0.1 s and 2.5 s, in both themes (AT-31, AT-33) (507ms)
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "rest"
+    Received: "idle"
+
+    > 170 |     expect(await stateOf(page)).toBe("rest");
+  1 failed
+```
+
+The loop went red on 5 of 5 runs with `--repeat-each 5`, each with `Received: "idle"`.
+
+Green: at `25c08da3`, `(CLIENT=norcal pnpm build || CLIENT=norcal pnpm build) > /dev/null 2>&1 && CLIENT=norcal pnpm exec playwright test --project=floor e2e/scene.spec.ts -g "AT-31"` in `apps/site`
+
+```text
+  ✓  1 [floor] › e2e/scene.spec.ts:141:7 › the scene of the week page of norcal, at rest › draws the settled chart at once, the same at 0.1 s and 2.5 s, in both themes (AT-31, AT-33) (2.9s)
+  1 passed (3.4s)
+```
+
+The proof that the loop still fails when the scene plays its motion before it settles: at `25c08da3`, with the reduced-motion return of `enter` in `scene-canvas.ts` set to `if (false && motionOff)` for one run and then put back, the same command gives the output below. The frame at 2.5 s matches the frame at 0.1 s there, because the play ends before 2.5 s, so the list of states carries this check.
+
+```text
+  ✘  1 [floor] › e2e/scene.spec.ts:141:7 › the scene of the week page of norcal, at rest › draws the settled chart at once, the same at 0.1 s and 2.5 s, in both themes (AT-31, AT-33) (3.2s)
+    Error: expect(received).toEqual(expected) // deep equality
+      Array [
+        "rest",
+    +   "settle",
+    +   "rest",
+      ]
+    > 175 |     expect(await statesOf()).toEqual(["rest"]);
+  1 failed
+```
+
+At `25c08da3`, the full spec `scene.spec.ts` in the projects `floor` and `floor-timing` gives `15 passed` for norcal and `15 passed` for cpc.
 Test verdict: pending
 
 ### 4. The passphrase box tests time out
