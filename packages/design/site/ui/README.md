@@ -4,6 +4,7 @@
 
 - The button, the collapsible, the dialog, the input, the label, the popover, the segmented control, the select, the sheet, the stop card, and the toggle group. Most of them wrap a Base UI primitive and add the site styles.
 - The sheet wraps the ui-sdk `Drawer`: root, trigger, backdrop, content, grip, title, and close. `sheet.tsx` imports `@ui-sdk`.
+- The content of a top or bottom sheet has a bleed past its anchored edge. A drag past the open height stretches the sheet a little, and the bleed keeps that edge on the screen.
 - The pending button wraps the ui-sdk `Button`. `pending-button.tsx` is the second file that imports `@ui-sdk`. It has its own name because `button.tsx` is the shadcn button.
 - The toggle group wraps the ui-sdk `Toggle` and `ToggleGroup`. `toggle-group.tsx` is the third file that imports `@ui-sdk`.
 - The segmented control wraps the ui-sdk `SegmentedControl`: root, sliding indicator, and items. `segmented-control.tsx` imports `@ui-sdk`. The items split the full width in equal parts, the pill slides in 250 ms with the brand ease-out, and `tone="dark"` sets it on a hero.
