@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-1, AT-5, AT-6, AT-3
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] On a new browser, Stop 1 shows on the Suggestions of Bo Girds after the team sheet closes (AT-1).
 - [x] No dim and no Stop card show while the team sheet is open (AT-5).
