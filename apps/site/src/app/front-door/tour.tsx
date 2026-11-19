@@ -44,6 +44,8 @@ type Hole = { x: number; y: number; width: number; height: number };
 
 /* The Tour waits for the entrance of the dock to settle, so Stop 1 measures its control at rest. */
 const START_DELAY_MS = 600;
+/* The keyboard of a phone closes over about 250 ms. The Tour starts once the viewport holds still this long after a blur. */
+const KEYBOARD_SETTLE_MS = 350;
 /* The room between the control and the edge of the hole. */
 const HOLE_PAD = 6;
 /* The gap between the hole and the card, and the least room between the card and the edge of the screen. */
@@ -78,8 +80,21 @@ function measure(el: HTMLElement): Hole {
   return { x: rect.left - HOLE_PAD, y: rect.top - HOLE_PAD, width: rect.width + HOLE_PAD * 2, height: rect.height + HOLE_PAD * 2 };
 }
 
+/* Whether a modal layer is open, such as the team sheet, the passphrase modal, or an Announcement. Two layers must never
+   fight, so the Tour reads the page itself and not a list of the layers that it knows. */
+function modalOpen(): boolean {
+  return document.querySelector('[aria-modal="true"]') !== null;
+}
+
+/* The focused field that opens the keyboard of a phone, if one has the focus. */
+function focusedField(): HTMLElement | null {
+  const el = document.activeElement;
+  return el instanceof HTMLElement && el.matches("input, textarea, [contenteditable]:not([contenteditable='false'])") ? el : null;
+}
+
 /* `ready` is true while Your team is set and no team sheet and no passphrase modal shows. The Tour decides once, on the
-   first ready render: a browser with the seen key, or with a store that throws, gets no Tour. */
+   first ready render: a browser with the seen key, or with a store that throws, gets no Tour. Then it waits until no
+   modal layer is open. A layer leaves the page only after its exit, so the delay counts from the end of the last exit. */
 export function Tour({ ready }: { ready: boolean }) {
   const [phase, setPhase] = useState<"wait" | "on" | "done">("wait");
   useEffect(() => {
@@ -88,8 +103,39 @@ export function Tour({ ready }: { ready: boolean }) {
       setPhase("done");
       return;
     }
-    const timer = window.setTimeout(() => setPhase("on"), START_DELAY_MS);
-    return () => window.clearTimeout(timer);
+    let timer: number | undefined;
+    let blocked: boolean | undefined;
+    // A keyboard that stays open covers the Stop, so a focused field loses the focus first. Each step of the keyboard
+    // lift resizes the viewport, so the Tour starts only after the viewport holds still.
+    const settle = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(start, KEYBOARD_SETTLE_MS);
+    };
+    const start = () => {
+      const field = focusedField();
+      if (!field) return setPhase("on");
+      field.blur();
+      window.visualViewport?.addEventListener("resize", settle);
+      window.addEventListener("resize", settle);
+      settle();
+    };
+    // Only a change from open to clear starts the delay again, so the many changes of a busy page do not hold the Tour off.
+    const check = () => {
+      const now = modalOpen();
+      if (now === blocked) return;
+      blocked = now;
+      window.clearTimeout(timer);
+      if (!now) timer = window.setTimeout(start, START_DELAY_MS);
+    };
+    const observer = new MutationObserver(check);
+    observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-modal"] });
+    check();
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+      window.visualViewport?.removeEventListener("resize", settle);
+      window.removeEventListener("resize", settle);
+    };
   }, [ready, phase]);
   return phase === "on" ? <Stops onEnd={() => setPhase("done")} /> : null;
 }

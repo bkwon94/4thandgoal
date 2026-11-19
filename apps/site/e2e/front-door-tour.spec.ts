@@ -228,3 +228,85 @@ test("a 2 s hold on the dim and on the card sends no egg check (AT-33)", async (
   expect(eggChecks).toEqual([]);
   await expect(page.getByRole("button", { name: "Crack the egg" })).toHaveCount(0);
 });
+
+/* The copy of the Stops, word for word from the table of the PRD. Each client shows the same copy. */
+const COPY = [
+  ["Suggestions", "Picks for your team right now. Tap one to open it, or tap More for the full list."],
+  ["Ask", "Type any question about your team or your league, such as start or sit, a trade, or the playoff race."],
+  ["Your team", "Tap to see the league as another manager."],
+  ["Menu", "Every page of the league lives here."],
+] as const;
+
+/* A browser with a kept passphrase and no Your team, so the team sheet opens first. Bo Girds plays in each client. */
+async function openNew(page: Page) {
+  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
+  await page.setViewportSize({ width: 390, height: 660 });
+  await page.goto(`${server.url}${DOOR}`);
+}
+
+/* A modal layer of the test itself, as an Announcement is. It joins the page before the Tour can start. */
+async function holdWithLayer(page: Page) {
+  await page.addInitScript(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const layer = document.createElement("div");
+      layer.id = "test-modal-layer";
+      layer.setAttribute("role", "dialog");
+      layer.setAttribute("aria-modal", "true");
+      layer.setAttribute("aria-label", "A test modal layer");
+      document.documentElement.append(layer);
+    });
+  });
+}
+
+test("a new browser shows no Tour over the team sheet, then Stop 1 on the Suggestions of Bo Girds and the same four Stops (AT-1, AT-5, AT-6)", async ({ page }) => {
+  await openNew(page);
+  const sheet = page.getByRole("dialog", { name: "Which team is yours?" });
+  await expect(sheet).toBeVisible();
+  // The Tour waits 600 ms for the dock to settle, so the check waits past that.
+  await page.waitForTimeout(1200);
+  await expect(page.locator("[data-tour-card]")).toHaveCount(0);
+  await expect(hole(page)).toHaveCount(0);
+  await sheet.getByRole("button", { name: /Bo Girds/ }).click();
+  const stop = card(page, "Suggestions");
+  await expect(stop).toBeVisible();
+  await expect(sheet).toHaveCount(0);
+  await expect(stop).toContainText("1 of 4");
+  const suggestions = page.getByRole("group", { name: "Suggestions" });
+  await expect(suggestions).toHaveAttribute("data-tour-target", "");
+  expect(inside(center((await suggestions.boundingBox())!), await rectOf(page, "[data-tour-hole]"))).toBe(true);
+  for (const [index, [header, line]] of COPY.entries()) {
+    const current = card(page, header);
+    await expect(current).toContainText(line);
+    await expect(current).toContainText(`${index + 1} of 4`);
+    await current.getByRole("button", { name: index === COPY.length - 1 ? "Done" : "Next" }).click();
+  }
+  await expect(page.locator("[data-tour-card]")).toHaveCount(0);
+});
+
+test("the Tour waits while a test modal layer is open, and Stop 1 shows after the layer leaves (AT-38)", async ({ page }) => {
+  await holdWithLayer(page);
+  await openTour(page, 390, 660);
+  await expect(page.getByRole("group", { name: "Suggestions" })).toBeVisible();
+  await page.waitForTimeout(1200);
+  await expect(page.locator("[data-tour-card]")).toHaveCount(0);
+  await expect(hole(page)).toHaveCount(0);
+  await page.evaluate(() => document.getElementById("test-modal-layer")?.remove());
+  await expect(card(page, "Suggestions")).toBeVisible();
+  await expect(card(page, "Suggestions")).toContainText("1 of 4");
+});
+
+test("the Tour blurs the focused ask box before Stop 1, so no text field has focus (AT-32)", async ({ page }) => {
+  await holdWithLayer(page);
+  await openTour(page, 390, 660);
+  const field = page.getByRole("textbox", { name: "Ask a question" });
+  await field.focus();
+  await expect(field).toBeFocused();
+  await page.evaluate(() => document.getElementById("test-modal-layer")?.remove());
+  await expect(card(page, "Suggestions")).toBeVisible();
+  const focused = await page.evaluate(() => {
+    const active = document.activeElement;
+    return { tag: active?.tagName, text: !!active?.matches("input, textarea, [contenteditable]") };
+  });
+  expect(focused.text, `focus is on ${focused.tag}`).toBe(false);
+});

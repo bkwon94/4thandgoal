@@ -188,3 +188,61 @@ describe("the Stops of the Tour", () => {
     expect(dismissStep("back", false)).toBe("end");
   });
 });
+
+/* A new browser: no Your team, so the team sheet opens first. The reader picks Bo Girds by name, and the sheet leaves. */
+async function pickBoGirds() {
+  const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
+  fireEvent.click(within(sheet).getByRole("button", { name: /Bo Girds/ }));
+}
+
+describe("the start of the Tour", () => {
+  it("shows no dim and no Stop card while the team sheet is open, and Stop 1 on the Suggestions after the pick (AT-1, AT-5)", async () => {
+    localStorage.removeItem("cpc.your-team");
+    render(<HomePage />);
+    await screen.findByRole("dialog", { name: "Which team is yours?" });
+    await new Promise((done) => setTimeout(done, 1000));
+    expect(queryCard()).toBeNull();
+    expect(document.querySelector("[data-tour-hole]")).toBeNull();
+    await pickBoGirds();
+    const card = await findCard("Suggestions");
+    expect(within(card).getByText("1 of 4")).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "Which team is yours?" })).toBeNull();
+    expect(screen.getByRole("group", { name: "Suggestions" }).hasAttribute("data-tour-target")).toBe(true);
+    expect(localStorage.getItem("cpc.your-team")).toBe(BO_GIRDS);
+  });
+
+  it("blurs a focused ask box before Stop 1 shows, so no text field has focus at Stop 1 (AT-32)", async () => {
+    // The focus at the moment the Stop card joins the page, before the card moves the focus into itself.
+    let focusAtCard: Element | null | undefined;
+    const observer = new MutationObserver(() => {
+      if (focusAtCard === undefined && document.querySelector("[data-tour-card]")) focusAtCard = document.activeElement;
+    });
+    observer.observe(document.body, { subtree: true, childList: true });
+    render(<HomePage />);
+    const field = screen.getByRole("textbox", { name: "Ask a question" });
+    field.focus();
+    expect(document.activeElement).toBe(field);
+    await findCard("Suggestions");
+    observer.disconnect();
+    const textField = (el: Element | null | undefined) => !!el && el.matches("input, textarea, [contenteditable]");
+    expect(textField(focusAtCard)).toBe(false);
+    expect(textField(document.activeElement)).toBe(false);
+  });
+
+  it("waits while a modal layer is open, and shows Stop 1 after the layer leaves (AT-38)", async () => {
+    // A real modal layer of the page, as an Announcement is: an element with aria-modal="true" in the body.
+    const layer = document.createElement("div");
+    layer.setAttribute("role", "dialog");
+    layer.setAttribute("aria-modal", "true");
+    layer.setAttribute("aria-label", "A modal layer");
+    document.body.append(layer);
+    render(<HomePage />);
+    await screen.findByRole("group", { name: "Suggestions" });
+    await new Promise((done) => setTimeout(done, 1000));
+    expect(queryCard()).toBeNull();
+    expect(document.querySelector("[data-tour-hole]")).toBeNull();
+    layer.remove();
+    const card = await findCard("Suggestions");
+    expect(within(card).getByText("1 of 4")).toBeTruthy();
+  });
+});
