@@ -1,0 +1,72 @@
+$ python3 -I /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/at13.py /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev
+source: clients/cpc/data/2026/history/week-01..week-10/matchups.json, field points
+file: shrink_weeks 5.0, league_mean 105.7932
+worked out: league average 105.7933 over 120 scores
+roster name                     games season avg worked out       file      gap
+     1 The Blue Tent               10   109.9680   108.5764   108.5764  0.00000
+     2 All You Need Is Love        10   107.4020   106.8657   106.8657  0.00000
+     3 Lil Fridge                  10   113.1990   110.7304   110.7304  0.00000
+     4 NFC Least                   10    89.4800    94.9177    94.9177  0.00000
+     5 Puka Deez...                10   115.4940   112.2604   112.2604  0.00000
+     6 Bo Girds                    10   112.9010   110.5318   110.5317  0.00000
+     7 To Infinity and Bijan       10    95.5540    98.9671    98.9671  0.00000
+     8 Return of T Mac             10   105.1580   105.3697   105.3697  0.00000
+     9 Maye d'force B with U       10   112.7430   110.4264   110.4264  0.00000
+    10 behold the lamb             10    97.8940   100.5271   100.5271  0.00000
+    11 Unsolicited Dak Picks       10    97.5220   100.2791   100.2791  0.00000
+    12 Teehee                      10   112.2040   110.0671   110.0671  0.00000
+largest gap: 0.000000
+parameter keys of the file: ['bye_count', 'league_mean', 'level_mean', 'level_se', 'median_game', 'playoff_spots', 'projection_weight', 'reseed', 'shifts', 'shrink_weeks', 'spread']
+[exit 0]
+
+$ grep -rn -i 'injur' packages/sim/python/src/ apps/pipeline/src/cornerstone/season_sim.py || echo 'no match'
+Binary file packages/sim/python/src/sim/__pycache__/season.cpython-311.pyc matches
+packages/sim/python/src/sim/season.py:189:    (decision 07). Each count of the result is a sum of weights. The level of a team has no injury term.
+packages/sim/python/src/sim/season.py:395:    It has no injury term: the projection shift of each week holds the roster of that week.
+[exit 0]
+
+$ grep -n 'level_mean\|LEVEL_SHRINK' packages/sim/python/src/sim/*.py | head -20
+packages/sim/python/src/sim/season.py:21:    LEVEL_SHRINK_WEEKS,
+packages/sim/python/src/sim/season.py:64:    level_mean: dict[int, float]
+packages/sim/python/src/sim/season.py:113:    level_mean: dict[int, float]
+packages/sim/python/src/sim/season.py:213:    model = DrawModel(league_mean=p.league_mean, spread=p.spread, level_mean=dict(p.level_mean),
+packages/sim/python/src/sim/season.py:248:    spread, level_mean, level_se, shifts = model.spread, model.level_mean, model.level_se, model.shifts
+packages/sim/python/src/sim/season.py:281:        level = {rid: rng.gauss(level_mean[rid], level_se[rid]) for rid in rosters}
+packages/sim/python/src/sim/season.py:376:            league_mean=model.league_mean, spread=spread, level_mean=dict(level_mean), level_se=dict(level_se),
+packages/sim/python/src/sim/season.py:378:            projection_weight=PROJECTION_WEIGHT, shrink_weeks=LEVEL_SHRINK_WEEKS, playoff_spots=spots,
+packages/sim/python/src/sim/season.py:394:    The level mean is the season average shrunk toward the league average with LEVEL_SHRINK_WEEKS weeks of weight.
+packages/sim/python/src/sim/season.py:405:    level_mean = {rid: (len(scores[rid]) * averages[rid] + LEVEL_SHRINK_WEEKS * league_mean)
+packages/sim/python/src/sim/season.py:406:                  / (len(scores[rid]) + LEVEL_SHRINK_WEEKS) for rid in rosters}
+packages/sim/python/src/sim/season.py:407:    level_se = {rid: spread / math.sqrt(len(scores[rid]) + LEVEL_SHRINK_WEEKS) for rid in rosters}
+packages/sim/python/src/sim/season.py:411:    return DrawModel(league_mean=league_mean, spread=spread, level_mean=level_mean, level_se=level_se, shifts=shifts)
+packages/sim/python/src/sim/tunables.py:12:LEVEL_SHRINK_WEEKS = 5
+[exit 0]
+
+
+# The pytest test of AT-13 works out the same 12 level means from the loaded history:
+$ uv run --exact --package cornerstone pytest -s -v -p no:xdist tests/test_sim.py -k level_mean_of_each_team
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 21 items / 20 deselected / 1 selected
+
+tests/test_sim.py::test_the_level_mean_of_each_team_is_its_season_average_shrunk_with_5_weeks_and_no_injury_term AT-13: roster 1 expected 108.58 sim 108.57641666666665
+AT-13: roster 2 expected 106.87 sim 106.86574999999999
+AT-13: roster 3 expected 110.73 sim 110.73041666666664
+AT-13: roster 4 expected 94.92 sim 94.91774999999998
+AT-13: roster 5 expected 112.26 sim 112.26041666666667
+AT-13: roster 6 expected 110.53 sim 110.53174999999997
+AT-13: roster 7 expected 98.97 sim 98.96708333333332
+AT-13: roster 8 expected 105.37 sim 105.36975
+AT-13: roster 9 expected 110.43 sim 110.42641666666665
+AT-13: roster 10 expected 100.53 sim 100.52708333333334
+AT-13: roster 11 expected 100.28 sim 100.27908333333332
+AT-13: roster 12 expected 110.07 sim 110.06708333333333
+PASSED
+
+======================= 1 passed, 20 deselected in 6.68s =======================
+[exit 0]
+

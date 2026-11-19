@@ -1,0 +1,5 @@
+Wk 11: 4 result tiles ["Win, beat median / 86% / 24% likely / +2 wins","Win, miss median / 65% / 5% likely / +1 win","Lose, beat median / 67% / 20% likely / +1 win","Lose, miss median / 41% / 51% likely / No wins"]; labelled lists []
+Wk 12: 4 result tiles ["Win, beat median / 78% / 48% likely / +2 wins","Win, miss median / 52% / 11% likely / +1 win","Lose, beat median / 58% / 10% likely / +1 win","Lose, miss median / 30% / 31% likely / No wins"]; labelled lists []
+Wk 13: 4 result tiles ["Win, beat median / 78% / 44% likely / +2 wins","Win, miss median / 52% / 14% likely / +1 win","Lose, beat median / 63% / 9% likely / +1 win","Lose, miss median / 33% / 33% likely / No wins"]; labelled lists []
+Wk 14: 4 result tiles ["Win, beat median / 82% / 34% likely / +2 wins","Win, miss median / 59% / 8% likely / +1 win","Lose, beat median / 62% / 14% likely / +1 win","Lose, miss median / 38% / 44% likely / No wins"]; labelled lists []
+Playoffs: 0 result tiles []; labelled lists []

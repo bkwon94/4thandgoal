@@ -1,0 +1,4 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   AT-56 no Announcement on /sim/2026/
+observed true   AT-56 no Announcement over the menu sheet
+observed true   AT-56 the next load after the menu opens it

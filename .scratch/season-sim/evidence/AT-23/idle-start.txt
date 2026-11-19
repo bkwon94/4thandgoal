@@ -1,0 +1,2 @@
+idle calls start 02:46:55Z
+ app     │ d893e0dc125258 │ 62      │ ewr    │ started │      │ 1 total, 1 passing │ 2026-11-19T02:35:49Z 

@@ -106,7 +106,12 @@ test.describe("the passphrase box of the passphrase modal with the iOS keyboard 
 
   test("the box sits above the keyboard with a kept team and no kept passphrase", async ({ page }) => {
     await fakeViewport(page);
-    await page.addInitScript(() => localStorage.setItem("cpc.your-team", "1"));
+    /* A kept team lets the Announcement of the season sim open on the load beat. On a slow runner it opens before the
+       Send tap and covers the page, so the test marks it seen. */
+    await page.addInitScript(() => {
+      localStorage.setItem("cpc.your-team", "1");
+      localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
+    });
     await page.goto(`${server.url}${DOOR}`);
     await askForPassphrase(page);
     await tapAndOpenKeyboard(page);

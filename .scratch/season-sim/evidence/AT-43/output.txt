@@ -1,0 +1,63 @@
+$ cd apps/pipeline && make sim-fixtures
+# Run in a detached worktree at 42644789. Recorded 2026-11-19T02:58:20Z.
+uv run --exact --package cornerstone cornerstone sim-fixtures --client cpc --season 2026 --week 10 --out ../../packages/sim/site/fixtures
+../../packages/sim/site/fixtures/week-sim-playoffs.json: week 14, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+../../packages/sim/site/fixtures/week-sim-round-2.json: week 15, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+../../packages/sim/site/fixtures/week-sim-final.json: week 17, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion Lil Fridge; run 1 champion Lil Fridge
+[exit 0]
+
+$ git status --short -- packages/sim/site/fixtures && echo 'git status shows no change: the fresh fixtures equal the committed fixtures byte for byte'
+git status shows no change: the fresh fixtures equal the committed fixtures byte for byte
+[exit 0]
+
+$ jq -r '.names as $n | .records | to_entries | sort_by(-.value[0], -.value[2]) | to_entries[] | "\(.key+1). \($n[.value.key]) (roster \(.value.key)): \(.value.value[0])-\(.value.value[1]), \(.value.value[2]) points"' packages/sim/site/fixtures/week-sim-playoffs.json
+1. All You Need Is Love (roster 2): 18-10, 1535.42 points
+2. Lil Fridge (roster 3): 17-11, 1602.19 points
+3. Maye d'force B with U (roster 9): 17-11, 1583.43 points
+4. Return of T Mac (roster 8): 17-11, 1515.78 points
+5. Teehee (roster 12): 16-12, 1604.24 points
+6. The Blue Tent (roster 1): 16-12, 1545.88 points
+7. Puka Deez... (roster 5): 14-14, 1508.84 points
+8. Bo Girds (roster 6): 13-15, 1528.31 points
+9. behold the lamb (roster 10): 13-15, 1413.44 points
+10. To Infinity and Bijan (roster 7): 11-17, 1299.04 points
+11. Unsolicited Dak Picks (roster 11): 9-19, 1357.92 points
+12. NFC Least (roster 4): 7-21, 1307.2 points
+[exit 0]
+
+$ jq '.pages["4"] | {you, playoff, status, record, sentence, weeks, playoffs: (.playoffs | {seed, alive, title, week, game})}' packages/sim/site/fixtures/week-sim-playoffs.json
+{
+  "you": 4,
+  "playoff": 0,
+  "status": "out",
+  "record": [
+    7,
+    21
+  ],
+  "sentence": "You're out of the playoff race.",
+  "weeks": [],
+  "playoffs": {
+    "seed": null,
+    "alive": false,
+    "title": 0,
+    "week": 15,
+    "game": null
+  }
+}
+[exit 0]
+
+$ jq -r '.names as $n | .pages["4"].playoffs.teams[] | "seed \(.seed) \($n[(.roster_id|tostring)]): title \(.title) %, alive \(.alive)"' packages/sim/site/fixtures/week-sim-playoffs.json
+seed 1 All You Need Is Love: title 17 %, alive true
+seed 2 Lil Fridge: title 23 %, alive true
+seed 3 Maye d'force B with U: title 17 %, alive true
+seed 4 Return of T Mac: title 12 %, alive true
+seed 5 Teehee: title 16 %, alive true
+seed 6 The Blue Tent: title 14 %, alive true
+[exit 0]
+
+$ jq -r '.names as $n | .pages["4"].playoffs.rounds[] | "week \(.week) played \(.played): \([.games[] | (.teams | map($n[(.|tostring)]) | join(" vs "))] | join("; "))"' packages/sim/site/fixtures/week-sim-playoffs.json
+week 15 played false: Maye d'force B with U vs The Blue Tent; Return of T Mac vs Teehee
+week 16 played false: All You Need Is Love vs ; Lil Fridge vs 
+week 17 played false:  vs 
+[exit 0]
+

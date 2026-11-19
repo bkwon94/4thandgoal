@@ -1,0 +1,13 @@
+# The branch build is 42644789; the main build is b9231a41. Both at 390x660 in WebKit.
+$ cmp midseason-cpc-branch-390x660-light.png midseason-cpc-main-390x660-light.png
+(exit 0)
+$ cmp midseason-cpc-branch-390x660-dark.png midseason-cpc-main-390x660-dark.png
+(exit 0)
+$ diff midseason-cpc-branch-text.txt midseason-cpc-main-text.txt
+(exit 0)
+$ cmp midseason-norcal-branch-390x660-light.png midseason-norcal-main-390x660-light.png
+(exit 0)
+$ cmp midseason-norcal-branch-390x660-dark.png midseason-norcal-main-390x660-dark.png
+(exit 0)
+$ diff midseason-norcal-branch-text.txt midseason-norcal-main-text.txt
+(exit 0)

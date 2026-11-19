@@ -1,0 +1,20 @@
+$ git diff origin/main -- apps/api/fly.toml
+[exit 0]
+
+$ git diff --stat origin/main -- apps/api/fly.toml
+[exit 0]
+
+$ sed -n '/\[\[vm\]\]/,/^$/p' apps/api/fly.toml
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
+
+[exit 0]
+
+$ git show origin/main:apps/api/fly.toml | sed -n '/\[\[vm\]\]/,/^$/p'
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
+
+[exit 0]
+

@@ -1,0 +1,17 @@
+# A real What-if answer of the local API. It is not the production API.
+# API: uvicorn --factory cornerstone_api.app:app_from_env on http://127.0.0.1:8193, from the detached worktree season-sim-api at 42644789.
+# Env as make -C apps/api api-evidence sets it: CORNERSTONE_PASSPHRASE_<SLUG>=localtest, CORNERSTONE_COMMISSIONER_KEY_<SLUG>=localkey, CORNERSTONE_RATE_LIMIT_PER_MINUTE=600, CORNERSTONE_REPO=<that worktree>. Script: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/api-ev3.sh
+# The API code (apps/api, apps/pipeline/src, packages without site) has no diff from 42644789 to 49404be3:
+$ git diff --stat 42644789 49404be3 -- apps/api apps/pipeline/src packages ':!**/site/**'
+(exit 0, no lines)
+$ cmp <season-sim-api>/clients/cpc/published/2026/week-10/sim.json <Spec head>/clients/cpc/published/2026/week-10/sim.json
+(exit 0)
+
+$ curl -s -o what-if-answer.json -w 'status %{http_code} time %{time_total}s\n' -H 'Content-Type: application/json' -d '{"you":6,"set":[{"week":11,"game":"win","median":"above"}]}' http://127.0.0.1:8193/clients/cpc/sim/what-if
+status 200 time 1.056355s
+$ jq -c '{season, week, runs, effective_runs, you, set}' what-if-answer.json
+{"season":2026,"week":10,"runs":10000,"effective_runs":7431,"you":6,"set":[{"week":11,"game":"win","median":"above"}]}
+$ jq '.page.playoff' what-if-answer.json
+86
+$ jq '.teams["6"].playoff' what-if-answer.json
+86

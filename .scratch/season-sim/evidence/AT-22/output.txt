@@ -1,0 +1,26 @@
+$ cat idle-start.txt
+idle calls start 02:46:55Z
+ app     │ d893e0dc125258 │ 62      │ ewr    │ started │      │ 1 total, 1 passing │ 2026-11-19T02:35:49Z 
+[exit 0]
+
+$ cat idle.txt
+call 1 status 200 time 1.897696s size 37096
+call 2 status 200 time 1.860360s size 37096
+call 3 status 200 time 1.619407s size 37096
+call 4 status 200 time 1.634291s size 37096
+call 5 status 200 time 1.640181s size 37096
+call 6 status 200 time 1.732883s size 37096
+call 7 status 200 time 1.721658s size 37096
+call 8 status 200 time 1.546296s size 37096
+call 9 status 200 time 1.738401s size 37096
+call 10 status 200 time 1.767192s size 37096
+[exit 0]
+
+$ python3 -I -c "import re,statistics,sys; t=[float(re.search(r\"time ([0-9.]+)s\",l).group(1)) for l in open(sys.argv[1])]; print(\"times (s):\", t); print(\"count\", len(t), \"median\", round(statistics.median(t),6), \"min\", min(t), \"max\", max(t))" idle.txt
+times (s): [1.897696, 1.86036, 1.619407, 1.634291, 1.640181, 1.732883, 1.721658, 1.546296, 1.738401, 1.767192]
+count 10 median 1.72727 min 1.546296 max 1.897696
+[exit 0]
+
+# Recorded on Fly before this file was written. Release v62 deployed from dbea219f at 02:35 to 02:36 UTC on 2026-11-19 (deploy-end.txt, deploy-tail.txt).
+# No What-if call ran from 02:36:19 to 02:46:55 UTC. The AT-62 check loaded the built home pages at about 02:39 UTC; they may make small API calls, such as the egg board, but no What-if call.
+# The 10 idle calls started at 02:46:55 UTC (idle-start.txt), one at a time. The times are in idle.txt.

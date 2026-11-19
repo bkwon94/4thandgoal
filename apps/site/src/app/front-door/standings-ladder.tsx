@@ -1,13 +1,15 @@
 /**
  * The standings ladder of Playoff race, in the Ledger look: one row per team with its rank, its name, a bar of its
- * playoff odds, and its record, with a rule at the playoff line. Its schema is in lib/data/blocks/.
+ * playoff odds, and its record, with a rule at the playoff line, then a link to the sim page. Its schema is in lib/data/blocks/.
  */
 "use client";
 
 import { motion } from "framer-motion";
+import { ArrowRightIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { type LadderBlock, oddsWords } from "@/lib/data/blocks/ladder-schema";
-import { SLOW, fadeIn, riseIn, staggerOf } from "./motion";
+import { SLOW, VERY_SLOW, fadeIn, riseIn, staggerOf } from "./motion";
+import { useSimLink } from "./sim-link";
 
 /* The bar of the playoff odds of one team, from the left edge of its track. Red for Your team, gray for the rest. A
    team with no odds shows the empty track. */
@@ -26,6 +28,7 @@ function OddsBar({ odds, you, index, live }: { odds: number | null; you: boolean
 
 export function StandingsLadder({ block, live }: { block: LadderBlock; live: boolean }) {
   const off = useMotionOff();
+  const simHref = useSimLink();
   return (
     <div className="flex min-w-0 flex-col gap-sp-2" data-block="ladder">
       {/* The heads of the two number columns, so "62%" and "11-7" read without a guess. On a phone the odds bar is
@@ -67,6 +70,22 @@ export function StandingsLadder({ block, live }: { block: LadderBlock; live: boo
           );
         })}
       </ul>
+      {/* The race on the ladder plays out on the sim page, so the ladder ends with the way there (decision 06). It fades in
+          after the rows, in the look of the link of an Answer. */}
+      {simHref !== null && (
+        <motion.a
+          href={simHref}
+          className="press group -mx-sp-2 flex min-h-touch items-center gap-sp-2 self-start rounded-pill px-sp-2 text-body leading-tight font-semibold text-accent-ink no-underline"
+          {...(live ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: fadeIn(VERY_SLOW, 0.3) } : {})}
+        >
+          <span>Open the season sim</span>
+          <ArrowRightIcon
+            aria-hidden
+            className="size-sp-4 transition-transform duration-150 ease-out group-hover:translate-x-sp-0 motion-reduce:transition-none"
+            strokeWidth={2.25}
+          />
+        </motion.a>
+      )}
     </div>
   );
 }

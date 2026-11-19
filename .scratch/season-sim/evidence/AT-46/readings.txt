@@ -1,0 +1,4 @@
+sim-tile-no-team 390x660: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-no-team 810x980: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-no-team 1080x740: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-no-team 1280x800: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week

@@ -1,0 +1,8 @@
+root-for-open-390x660-light.png (full page): no overlap, no cover, no side scroll
+root-for-open-390x660-dark.png (full page): no overlap, no cover, no side scroll
+root-for-open-810x980-light.png (full page): no overlap, no cover, no side scroll
+root-for-open-810x980-dark.png (full page): no overlap, no cover, no side scroll
+root-for-open-1080x740-light.png (full page): no overlap, no cover, no side scroll
+root-for-open-1080x740-dark.png (full page): no overlap, no cover, no side scroll
+root-for-open-1280x800-light.png (full page): no overlap, no cover, no side scroll
+root-for-open-1280x800-dark.png (full page): no overlap, no cover, no side scroll

@@ -1,0 +1,10 @@
+390x660-light before any tap: toggle aria-expanded=false, 3 rows in the DOM, first row visible=false
+390x660-light after one tap: aria-expanded=true, first row visible=true
+390x660-dark before any tap: toggle aria-expanded=false, 3 rows in the DOM, first row visible=false
+390x660-dark after one tap: aria-expanded=true, first row visible=true
+810x980-light before any tap: toggle aria-expanded=no toggle button shown, 3 rows in the DOM, first row visible=true
+810x980-dark before any tap: toggle aria-expanded=no toggle button shown, 3 rows in the DOM, first row visible=true
+1080x740-light before any tap: toggle aria-expanded=no toggle button shown, 3 rows in the DOM, first row visible=true
+1080x740-dark before any tap: toggle aria-expanded=no toggle button shown, 3 rows in the DOM, first row visible=true
+1280x800-light before any tap: toggle aria-expanded=no toggle button shown, 3 rows in the DOM, first row visible=true
+1280x800-dark before any tap: toggle aria-expanded=no toggle button shown, 3 rows in the DOM, first row visible=true

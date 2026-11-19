@@ -1,0 +1,5 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   AT-57 the first load shows only the team picker
+observed true   AT-57 the pick does not open it on the same load
+observed true   AT-57 the reload shows the Announcement
+observed true   AT-57 a fast pick does not open it on the same load  (pick 261 ms after the start of the load; Announcement count 3 s later: 0; cpc.your-team 6)

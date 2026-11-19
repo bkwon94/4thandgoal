@@ -1,0 +1,64 @@
+$ curl -sS -o openapi.json -w 'status %{http_code}\n' http://127.0.0.1:8791/openapi.json
+status 200
+[exit 0]
+
+$ jq -r '.paths | to_entries[] | "\(.value | keys | map(ascii_upcase) | join(",")) \(.key)"' openapi.json
+GET /clients/{slug}/teams
+POST /clients/{slug}/analyze
+POST /clients/{slug}/find
+POST /clients/{slug}/refresh
+GET /teams
+POST /analyze
+POST /find
+POST /refresh
+POST /clients/{slug}/ask
+POST /clients/{slug}/trade-check
+POST /clients/{slug}/trade-ideas
+POST /clients/{slug}/sell-high
+POST /clients/{slug}/ask/free
+POST /clients/{slug}/personal
+POST /clients/{slug}/next-matchup
+POST /clients/{slug}/suggestions
+POST /clients/{slug}/personal/current
+POST /clients/{slug}/eggs/check
+GET /clients/{slug}/eggs/board
+POST /clients/{slug}/eggs/claim
+POST /clients/{slug}/eggs/drop
+POST /clients/{slug}/eggs/undo
+POST /clients/{slug}/sim/what-if
+GET /health
+[exit 0]
+
+$ jq -r '.paths | keys | length' openapi.json
+24
+[exit 0]
+
+$ jq -r '.paths | keys[]' openapi.json | grep -i -E 'announce|dismiss' || echo 'no route path names an Announcement or a dismiss'
+no route path names an Announcement or a dismiss
+[exit 0]
+
+$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev && git grep -n -i -E 'announce|dismiss' -- apps/api/src packages/*/python/src | head -20 || true
+[exit 0]
+
+$ git grep -n 'include_in_schema' -- apps/api/src packages/*/python/src || echo 'no route sets include_in_schema, so openapi.json lists each route'
+no route sets include_in_schema, so openapi.json lists each route
+[exit 0]
+
+$ git grep -n -E '@(router|app)\.(get|post|put|patch|delete)\(' -- apps/api/src packages/analyzer/python/src packages/eggs/python/src | sed -E 's/:[0-9]+:/: /'
+apps/api/src/cornerstone_api/app.py:     @app.get("/health")
+apps/api/src/cornerstone_api/ask.py: @router.post("/ask")
+apps/api/src/cornerstone_api/free_answer.py: @router.post("/ask/free")
+apps/api/src/cornerstone_api/next_matchup.py: @router.post("/next-matchup")
+apps/api/src/cornerstone_api/personal_topics.py: @router.post("/personal")
+apps/api/src/cornerstone_api/refresh.py: @router.post("/refresh")
+apps/api/src/cornerstone_api/suggestions.py: @router.post("/suggestions")
+apps/api/src/cornerstone_api/suggestions.py: @router.post("/personal/current")
+apps/api/src/cornerstone_api/trade_topics.py: @router.post("/trade-check")
+apps/api/src/cornerstone_api/trade_topics.py: @router.post("/trade-ideas")
+apps/api/src/cornerstone_api/trade_topics.py: @router.post("/sell-high")
+apps/api/src/cornerstone_api/what_if.py: @router.post("/sim/what-if", response_model=None)
+packages/analyzer/python/src/analyzer/routes.py: @router.get("/teams")
+packages/analyzer/python/src/analyzer/routes.py: @router.post("/analyze")
+packages/analyzer/python/src/analyzer/routes.py: @router.post("/find")
+[exit 0]
+

@@ -54,8 +54,12 @@ export type PagePart = ComponentType;
 /* The button of a package in the top band of every page, such as the egg button. */
 export type BandPart = ComponentType;
 
-/* The strip of a package under the top band of the home page, such as the egg banner. */
+/* The strip of a package under the top band of the home page, such as the egg banner, or a sheet that it opens there, such as the Announcement. */
 export type HomeBanner = ComponentType;
+
+/* The tile of a package on a week page, such as the Sim tile, after Standings. It gives the rail link and the tile, or
+   null for a week with no data for it, so the page and its rail never name a tile that is not there. */
+export type WeekTile = (season: string, week: string) => { chapter: { id: string; label: string }; tile: ReactNode } | null;
 
 /* The tile of a package in the Tools chapter of the home page. A package with no page to link yet renders null. */
 export type HomeTool = ComponentType;

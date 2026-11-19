@@ -12,5 +12,5 @@
 ## Does not do
 
 - It builds no chapter. The week package builds each week chapter, and the rankings package builds its own chapter.
-- It holds no odds engine. `rankings/odds.py` holds it, and the rankings chapter calls it once per build.
+- It holds no odds engine. The season sim of the sim package is the one engine (ADR 0037). `SIM_ODDS` of `cornerstone/season_sim.py` runs it once per build.
 - It writes no page. `week/page.py` writes `page.json`, and `rankings/published.py` writes `rankings.json`.

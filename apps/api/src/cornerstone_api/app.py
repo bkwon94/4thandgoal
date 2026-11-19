@@ -21,6 +21,7 @@ from pathlib import Path
 
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from analyzer import routes as analyzer_routes
@@ -36,6 +37,7 @@ from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
 from cornerstone_api import next_matchup, personal_topics, suggestions, trade_topics
 from cornerstone_api import refresh as refresh_routes
+from cornerstone_api import what_if as what_if_routes
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.caps import Caps
 from cornerstone_api.miss_log import MissLog
@@ -64,7 +66,7 @@ CLIENT_PREFIX = "/clients/{slug}"
 
 PASSPHRASE_HEADER = "X-League-Passphrase"
 COMMISSIONER_HEADER = "X-Commissioner-Key"
-# The prefix of the eggs routes of each client. Only the clients paths serve them, because no old page calls them.
+# The prefix of the eggs routes of each client. Only the clients paths serve them, because the pages of the site call only the clients paths.
 EGGS_PREFIX = f"{CLIENT_PREFIX}/eggs"
 # The file of the daily grade counts of a client, in the result cache dir of the client.
 GRADE_COUNTS_FILE = "grade-counts.json"
@@ -137,6 +139,14 @@ def _board_limit(request: Request) -> None:
     """Stop a board read past the limit of the board of its address. The egg button and the egg banner read the board
     on each page, so the board counts apart from the other routes and a page read spends none of the analyzer limit."""
     retry_after = request.app.state.board_limiter.hit(request_address(request))
+    if retry_after is not None:
+        raise _RateLimited(retry_after)
+
+
+def _what_if_limit(request: Request) -> None:
+    """Stop a What-if past the limit of the What-if of its address. The sim costs CPU, so the What-if has a limit of its
+    own, apart from the other routes: a manager who taps fast spends none of the limit of the analyzer."""
+    retry_after = request.app.state.what_if_limiter.hit(request_address(request))
     if retry_after is not None:
         raise _RateLimited(retry_after)
 
@@ -273,6 +283,7 @@ def create_app(
     app.state.limiter = RateLimiter(settings.rate_limit_per_minute)
     app.state.check_limiter = RateLimiter(CHECKS_PER_HOUR, window=CHECK_WINDOW_SECONDS)
     app.state.board_limiter = RateLimiter(BOARD_READS_PER_MINUTE, window=BOARD_WINDOW_SECONDS)
+    app.state.what_if_limiter = RateLimiter(what_if_routes.WHAT_IFS_PER_MINUTE)
     # The default is the real Advisor with the real Claude call, the real Jev, and the real news feed. A test injects a
     # stub Advisor, FakeJev, and a recorded feed, so no test needs the network.
     app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
@@ -290,6 +301,10 @@ def create_app(
         CORSMiddleware, allow_origins=list(settings.allowed_origins), allow_methods=["GET", "POST"],
         allow_headers=[PASSPHRASE_HEADER, "Content-Type"], expose_headers=["Retry-After"],
     )
+
+    # The answer of a What-if holds 200 stored runs, so gzip cuts it from about 170 KB to under 60 KB. Starlette
+    # leaves a text/event-stream answer as it is, so each streamed answer still streams.
+    app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     @app.exception_handler(_Unauthorized)
     def unauthorized(request: Request, exc: _Unauthorized) -> Response:
@@ -322,6 +337,10 @@ def create_app(
     app.include_router(eggs_routes.open_router, prefix=EGGS_PREFIX, dependencies=[Depends(_board_limit)])
     app.include_router(eggs_routes.claim_router, prefix=EGGS_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(eggs_routes.commissioner_router, prefix=EGGS_PREFIX, dependencies=[Depends(_commissioner_guard)])
+
+    # The What-if is open, so a manager can use it from any link, and it has its own limit of each address. Only the
+    # clients paths serve it, because the pages of the site call only the clients paths.
+    app.include_router(what_if_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_what_if_limit)])
 
     @app.get("/health")
     def health() -> dict[str, str]:

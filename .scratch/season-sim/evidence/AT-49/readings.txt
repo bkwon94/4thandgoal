@@ -1,0 +1,6 @@
+390x660 ladder link: text "Open the season sim", href /sim/2026/
+light URL after the tap on the link: http://127.0.0.1:4173/sim/2026/
+dark URL after the tap on the link: http://127.0.0.1:4173/sim/2026/
+810x980 ladder link: text "Open the season sim", href /sim/2026/
+1080x740 ladder link: text "Open the season sim", href /sim/2026/
+1280x800 ladder link: text "Open the season sim", href /sim/2026/

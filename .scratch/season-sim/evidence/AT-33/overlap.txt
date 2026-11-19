@@ -1,0 +1,8 @@
+after-tap-390x660-light.png (full page): no overlap, no cover, no side scroll
+after-tap-390x660-dark.png (full page): no overlap, no cover, no side scroll
+after-tap-810x980-light.png (full page): no overlap, no cover, no side scroll
+after-tap-810x980-dark.png (full page): no overlap, no cover, no side scroll
+after-tap-1080x740-light.png (full page): no overlap, no cover, no side scroll
+after-tap-1080x740-dark.png (full page): no overlap, no cover, no side scroll
+after-tap-1280x800-light.png (full page): no overlap, no cover, no side scroll
+after-tap-1280x800-dark.png (full page): no overlap, no cover, no side scroll

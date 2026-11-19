@@ -1,0 +1,27 @@
+$ curl -sS -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @win-above.json -o at14-answer.json -w 'status %{http_code}\n' -D at14-headers.txt
+# The local API of the detached worktree at 42644789 (uvicorn --factory cornerstone_api.app:app_from_env, port 8791, CORNERSTONE_REPO set to that worktree). The request sends no X-League-Passphrase header. Recorded 2026-11-19T03:00:01Z.
+status 200
+[exit 0]
+
+$ cat win-above.json
+{"you": 6, "set": [{"week": 11, "game": "win", "median": "above"}]}
+[exit 0]
+
+$ cat at14-headers.txt
+HTTP/1.1 200 OK
+date: Thu, 19 Nov 2026 03:00:00 GMT
+server: uvicorn
+content-length: 139274
+content-type: application/json
+vary: Origin, Accept-Encoding
+
+[exit 0]
+
+$ jq -c 'keys' at14-answer.json
+["effective_runs","page","runs","sample","sample_weights","schema_version","season","set","teams","week","you"]
+[exit 0]
+
+$ jq -c '{schema_version, season, week, runs, effective_runs, you, set, teams: (.teams|length), sample: (.sample|length), page_keys: (.page|keys)}' at14-answer.json
+{"schema_version":1,"season":2026,"week":10,"runs":10000,"effective_runs":7431,"you":6,"set":[{"week":11,"game":"win","median":"above"}],"teams":12,"sample":200,"page_keys":["ladder","need","playoff","playoffs","record","sentence","status","weeks","weeks_left","wins_left","you"]}
+[exit 0]
+

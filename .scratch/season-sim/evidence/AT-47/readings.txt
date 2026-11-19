@@ -1,0 +1,2 @@
+sim-tile-top-seed 390x660: tile text "Season sim AFTER WEEK 14 TITLE ODDS 17% Seed 1, a bye in week 15. Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-12th-team 390x660: tile text "Season sim AFTER WEEK 14 THE LEAGUE 6 teams left, Lil Fridge is the favorite at 23% Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week

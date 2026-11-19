@@ -4,18 +4,22 @@ saved CPC and NorCal data of 2026 week 8. The rules of the sim run on small leag
 Each client and each build reads the fixture provider, so no test calls Sleeper (ADR 0015).
 """
 import gzip
+import hashlib
 import json
+import re
 import shutil
+import sys
 from functools import partial
 from pathlib import Path
 
 import pytest
-from cpc import ROOT
-from fakes import FakeWriter, FixtureProvider
+from conftest import SAVED, saved_repo
+from cpc import ROOT, cpc_client
+from fakes import FakeWriter, FixtureProvider, no_news
 from test_midseason import CPC_PROVIDER, prime_nflverse
 
-from cornerstone.pipeline import run_midseason
-from cornerstone.season_sim import schedule_file, week_sim
+from cornerstone.pipeline import make_bundle, run_midseason, run_sim_fixtures, run_week_sim
+from cornerstone.season_sim import schedule_file, week_inputs, week_sim
 from cornerstone.value_models import VALUE_MODELS
 from facts.writer import claude_call
 from league.client import Client, load_client
@@ -23,6 +27,13 @@ from league.history import load_saved_weeks
 from league.models import History
 from league.nflverse import SCHEDULES_URL, cache_path
 from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
+from rankings.published import render_rankings
+from sim.season import SetResult, season_sim, weekly_odds
+from sim.tunables import LEVEL_SHRINK_WEEKS
+
+# The rejection reference of a What-if lives with the tests of the sim package, which own the method.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "packages" / "sim" / "python" / "tests"))
+from rejection import rejection_odds
 
 # The nflverse schedule of 2026, the same games as the real cache, which git ignores.
 GAMES = Path(__file__).parent / "fixtures" / "nflverse" / "games.csv"
@@ -125,22 +136,307 @@ def test_the_build_leaves_the_published_rankings_unchanged(cpc_sim):
     assert sorted(path.name for path in published.parent.iterdir()) == ["rankings.json"]
 
 
-@pytest.mark.parametrize("slug", ["cpc", "norcal"])
-def test_the_playoff_odds_of_the_sim_are_within_2_points_of_the_published_week_8_odds(slug, tmp_path):
-    # AT-38: the sim keeps the draw of the weekly odds in its own package, and this test holds the two together.
-    client = _client(slug, tmp_path)
-    history = History(week=8, weeks=load_saved_weeks(history_root(client.folder, 2026), 8, client.settings.points_key))
-    sim = week_sim(2026, 8, history, client=client)
-    assert sim is not None
-    published = _published_week_8_odds(slug)
-    gaps = {rid: abs(sim.teams[rid].playoff - odds) for rid, odds in published.items()}
-    print(f"{slug}: largest gap {max(gaps.values())} points, roster {max(gaps, key=gaps.__getitem__)}")
-    assert max(gaps.values()) <= 2
-
-
 def test_the_sim_reads_the_schedule_at_the_one_cache_path_of_the_nflverse_readers(tmp_path):
     # The chapters of the report read the same file through cache_path, so the build keeps one copy of it.
     cache = nflverse_cache_dir(tmp_path)
     cache.mkdir(parents=True)
     shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
     assert schedule_file(tmp_path, 2026) == cache_path(cache, SCHEDULES_URL, 2026)
+
+
+@pytest.fixture(scope="module")
+def cpc_week_10(tmp_path_factory):
+    """The weekly build of CPC 2026 week 10 from the saved data, and the sim of the same week from its own load.
+
+    The NFL schedule of the fixtures sits in the cache, so the sim calls no network.
+    """
+    repo = saved_repo(tmp_path_factory.mktemp("repo"), 10)
+    client = cpc_client(at=repo)
+    cache = nflverse_cache_dir(client.nfl_dir)
+    cache.mkdir(parents=True)
+    shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
+    bundle, _ = make_bundle(2026, 10, news=no_news, client=client)
+    history = History(week=10, weeks=load_saved_weeks(history_root(client.folder, 2026), 10, client.settings.points_key))
+    sim = week_sim(2026, 10, history, client=client)
+    assert sim is not None
+    return client, bundle, history, sim
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_weekly_build_takes_the_odds_and_the_swings_of_the_sim_at_10000_runs(cpc_week_10):
+    # AT-2: one engine gives the odds of the week.
+    _, bundle, _, sim = cpc_week_10
+    assert sim.runs == 10_000
+    assert bundle.odds == weekly_odds(sim)
+    assert len(bundle.odds.swings) == 6
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_each_odds_fact_of_the_week_quotes_the_number_of_the_sim(cpc_week_10):
+    # AT-3.
+    _, bundle, _, sim = cpc_week_10
+    facts = bundle.sheet.facts
+    for rid, team in sim.teams.items():
+        text = facts[f"ODDS.{rid}"].text
+        if team.status == "open":
+            assert f"in about {team.playoff}% of runs, with a bye in {team.bye}%" in text, text
+        else:
+            assert ("clinched" if team.status == "in" else "out of the playoff race") in text, text
+    swings = {(s.a, s.b): s for s in sim.swings}
+    for fid, fact in facts.items():
+        if fid.startswith("SW."):
+            a, b = (int(x) for x in fid[3:].split("v"))
+            for rid, win, loss in ((a, swings[(a, b)].a_win, swings[(a, b)].a_loss),
+                                   (b, swings[(a, b)].b_win, swings[(a, b)].b_loss)):
+                if sim.teams[rid].status == "open" and abs(win - loss) >= 5:
+                    assert f"at {win}%, a loss at {loss}%" in fact.text, fact.text
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_rankings_json_takes_the_week_10_odds_of_the_sim_and_keeps_the_odds_of_weeks_1_to_9(cpc_week_10, tmp_path):
+    # AT-2 and AT-4. The site folder starts from the published file, as the weekly build does.
+    client, bundle, history, sim = cpc_week_10
+    published = client_dir(ROOT, "cpc") / "published" / "2026" / "rankings.json"
+    (tmp_path / "2026").mkdir()
+    shutil.copy(published, tmp_path / "2026" / "rankings.json")
+    out = render_rankings(history, 2026, bundle.data.teams, tmp_path, 10, None, bundle.odds,
+                          median_game=client.settings.median_game)
+
+    def odds(path: Path) -> dict[int, dict[int, dict]]:
+        body = json.loads(path.read_text(encoding="utf-8"))
+        return {w["week"]: {row["roster_id"]: row.get("odds") for row in w["rows"]} for w in body["weeks"]}
+
+    before, after = odds(published), odds(out)
+    assert {w: after[w] for w in range(1, 10)} == {w: before[w] for w in range(1, 10)}
+    assert {rid: row["playoff"] for rid, row in after[10].items()} == {rid: t.playoff for rid, t in sim.teams.items()}
+    assert {rid: row["bye"] for rid, row in after[10].items()} == {rid: t.bye for rid, t in sim.teams.items()}
+
+
+# Bo Girds, the What-if team of the acceptance tests.
+BO_GIRDS = 6
+
+
+def _week_10_what_if(cpc_week_10, held: list[SetResult]):
+    client, _, history, _ = cpc_week_10
+    inputs = week_inputs(2026, 10, history, client=client)
+    assert inputs is not None
+    sim = season_sim(inputs.scores, inputs.records, inputs.remaining, season=2026, week=10, settings=client.settings,
+                     projected=inputs.projected, you=BO_GIRDS, set_results=held)
+    return client, inputs, sim
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_a_set_loss_below_the_median_agrees_with_an_exact_rejection_reference(cpc_week_10):
+    # AT-11. The reference draws plain runs of the same model and keeps the runs where Bo Girds loses week 11 and
+    # misses the median. At about 9,000 effective runs and 30,000 kept runs the sample error of the gap is 0.6 points.
+    held = [SetResult(week=11, game="loss", median="below")]
+    client, inputs, sim = _week_10_what_if(cpc_week_10, held)
+    reference, _, kept = rejection_odds(inputs.scores, inputs.records, inputs.remaining, client.settings, BO_GIRDS,
+                                        held, runs=60_000, seed=11, projected=inputs.projected)
+    weighted = sim.teams[BO_GIRDS].playoff
+    print(f"AT-11: weighted {weighted} ({sim.effective_runs} effective runs), reference {reference[BO_GIRDS]:.2f} "
+          f"({kept} kept), gap {abs(weighted - reference[BO_GIRDS]):.2f}")
+    assert abs(weighted - reference[BO_GIRDS]) <= 1.5
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_two_runs_with_the_same_set_results_give_equal_output_byte_for_byte(cpc_week_10):
+    # AT-12.
+    held = [SetResult(week=11, game="win", median="above")]
+    outputs = [_week_10_what_if(cpc_week_10, held)[2].model_dump_json().encode() for _ in range(2)]
+    hashes = [hashlib.sha256(out).hexdigest() for out in outputs]
+    print(f"AT-12: {hashes[0]} {hashes[1]}")
+    assert outputs[0] == outputs[1]
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_level_mean_of_each_team_is_its_season_average_shrunk_with_5_weeks_and_no_injury_term(cpc_week_10):
+    # AT-13. The level reads the played-week scores of the saved history only, so an injury does not move it.
+    _, _, history, sim = cpc_week_10
+    scores = {rid: [history.weeks[n].scores[rid] for n in range(1, 11) if rid in history.weeks[n].scores]
+              for rid in sim.records}
+    league = sum(sum(s) for s in scores.values()) / sum(len(s) for s in scores.values())
+    assert LEVEL_SHRINK_WEEKS == 5
+    for rid, own in scores.items():
+        expected = (sum(own) + 5 * league) / (len(own) + 5)
+        print(f"AT-13: roster {rid} expected {expected:.2f} sim {sim.parameters.level_mean[rid]}")
+        assert sim.parameters.level_mean[rid] == pytest.approx(expected, abs=0.005)
+
+
+def _week_10_client(slug: str, at: Path) -> Client:
+    """The real client `slug` with links to its saved week 10 data and history at `at`, and the NFL schedule of the
+    fixtures in the cache, so the sim step calls no network. No test writes under clients/."""
+    data = client_dir(ROOT, slug) / "data" / "2026"
+    provider = FixtureProvider(raw_dir=data / "week-10" / "raw", history_root=data / "history")
+    real = load_client(ROOT, slug, 2026, provider.fetch_settings, VALUE_MODELS)
+    client = real.model_copy(update={"folder": at, "nfl_dir": at / "data"})
+    week_dir(client.folder, 2026, 10).mkdir(parents=True)
+    for name in ("raw", "facts.json"):
+        (week_dir(client.folder, 2026, 10) / name).symlink_to(data / "week-10" / name)
+    history_root(client.folder, 2026).symlink_to(data / "history")
+    cache = nflverse_cache_dir(client.nfl_dir)
+    cache.mkdir(parents=True)
+    shutil.copy(GAMES, cache_path(cache, SCHEDULES_URL, 2026))
+    return client
+
+
+@pytest.fixture(scope="module")
+def week_10_files(tmp_path_factory) -> dict[str, dict]:
+    """The sim step of the weekly build of 2026 week 10 for CPC and NorCal, read back from each week-10/sim.json."""
+    files = {}
+    for slug in ("cpc", "norcal"):
+        client = _week_10_client(slug, tmp_path_factory.mktemp(slug))
+        out = run_week_sim(2026, 10, client=client)
+        assert out == build_dir(client.folder) / "2026" / "week-10" / "sim.json"
+        files[slug] = json.loads(out.read_text(encoding="utf-8"))
+    return files
+
+
+def _page(files: dict[str, dict], slug: str, name: str) -> dict:
+    sim = files[slug]
+    rid = next(rid for rid, team in sim["names"].items() if team == name)
+    return sim["pages"][rid]
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_sim_step_writes_week_10_sim_json_with_a_page_for_each_team(week_10_files, cpc_week_10):
+    # AT-1, and the odds of the file are the odds of the build (AT-2).
+    sim = week_10_files["cpc"]
+    counts = (sim["runs"], len(sim["teams"]), len(sim["sample"]), len(sim["sample_weights"]), len(sim["pages"]))
+    print(f"AT-1: keys {sorted(sim)} counts {counts}")
+    assert counts == (10_000, 12, 200, 200, 12)
+    assert (sim["season"], sim["week"], sim["effective_runs"]) == (2026, 10, 10_000)
+    assert sim["weeks"] == list(range(11, 18)) and sim["parameters"]["median_game"] is True
+    _, bundle, _, _ = cpc_week_10
+    assert {int(rid): team["playoff"] for rid, team in sim["teams"].items()} == {
+        rid: team.playoff for rid, team in bundle.odds.teams.items()}
+    assert re.fullmatch(r"\d+ managers fight for the last (spot|\d+ spots)|The playoff field is all but set", sim["fact"])
+
+
+# The What-if tests of the API read a saved copy of the week 10 sim file of CPC, because the API env holds no build.
+API_WEEK_10_SIM = Path(__file__).resolve().parents[2] / "api" / "tests" / "fixtures" / "sim" / "cpc-week-10-sim.json"
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_week_10_sim_file_of_the_api_tests_equals_a_fresh_sim_step(week_10_files):
+    # Run `make sim CLIENT=cpc WEEK=10` and copy the file of the build folder to the fixture if this fails.
+    assert json.loads(API_WEEK_10_SIM.read_text(encoding="utf-8")) == week_10_files["cpc"]
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_ladder_of_bo_girds_names_the_smallest_count_with_odds_of_90_or_more(week_10_files):
+    # AT-6. Four weeks left with the median game give 0 to 8 more wins.
+    page = _page(week_10_files, "cpc", "Bo Girds")
+    print(f"AT-6: {page['sentence']} {[(s['more_wins'], s['playoff'], s['chance']) for s in page['ladder']]}")
+    assert page["record"] == [11, 9] and page["weeks_left"] == 4 and page["wins_left"] == 8
+    assert [step["more_wins"] for step in page["ladder"]] == list(range(9))
+    assert sum(step["chance"] for step in page["ladder"]) == pytest.approx(100, abs=0.5)
+    need = min(step["more_wins"] for step in page["ladder"] if (step["playoff"] or 0) >= 90)
+    assert page["need"] == need
+    assert page["sentence"] == f"Win {need} of the 8 left and you're in."
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_week_11_of_bo_girds_in_cpc_has_four_results_against_maye_dforce_b_with_u(week_10_files):
+    # AT-7.
+    sim = week_10_files["cpc"]
+    week = _page(week_10_files, "cpc", "Bo Girds")["weeks"][0]
+    print(f"AT-7: {week}")
+    assert week["week"] == 11 and sim["names"][str(week["opponent"])] == "Maye d'force B with U"
+    assert [(r["game"], r["median"], r["wins_added"]) for r in week["results"]] == [
+        ("win", "above", 2), ("win", "below", 1), ("loss", "above", 1), ("loss", "below", 0)]
+    assert all(r["playoff"] is not None and r["chance"] > 0 for r in week["results"])
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_week_11_of_bo_girds_in_norcal_has_two_results_against_the_mean_machine(week_10_files):
+    # AT-8. NorCal has no median game.
+    sim = week_10_files["norcal"]
+    page = _page(week_10_files, "norcal", "Bo Girds")
+    week = page["weeks"][0]
+    print(f"AT-8: {week}")
+    assert page["record"] == [5, 5] and page["wins_left"] == 4
+    assert week["week"] == 11 and sim["names"][str(week["opponent"])] == "The Mean Machine"
+    assert [(r["game"], r["median"], r["wins_added"]) for r in week["results"]] == [("win", None, 1), ("loss", None, 0)]
+
+
+REASONS = {"2 wins ahead of you", "1 win ahead of you", "Level with you", "1 win behind you",
+           "In the race for the last spot"}
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_root_for_rows_of_each_page_follow_the_rules_of_the_spec(week_10_files):
+    # AT-9, on Bo Girds and on each other page of both clients.
+    week = _page(week_10_files, "cpc", "Bo Girds")["weeks"][0]
+    print(f"AT-9: loss {week['loss_playoff']} rows "
+          f"{[(r['winner'], r['loser'], r['reason'], r['playoff'], r['playoff'] - week['loss_playoff']) for r in week['root_for']]}")
+    assert week["root_for"]
+    for sim in week_10_files.values():
+        records = {int(rid): record for rid, record in sim["records"].items()}
+        place = {rid: n for n, rid in enumerate(sorted(records, key=lambda r: (-records[r][0], -records[r][2], r)), 1)}
+        for page in sim["pages"].values():
+            for week in page["weeks"]:
+                rows = week["root_for"]
+                assert len(rows) <= 3
+                lifts = [row["playoff"] - week["loss_playoff"] for row in rows]
+                assert all(isinstance(row["playoff"], int) and lift >= 1 for row, lift in zip(rows, lifts, strict=True))
+                assert [(-lift, place[row["loser"]]) for row, lift in zip(rows, lifts, strict=True)] == sorted(
+                    (-lift, place[row["loser"]]) for row, lift in zip(rows, lifts, strict=True))
+                assert {row["reason"] for row in rows} <= REASONS
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_each_result_under_400_effective_runs_has_the_about_flag_and_no_other(week_10_files):
+    # AT-10.
+    sim = week_10_files["cpc"]
+    flagged = plain = 0
+    for page in sim["pages"].values():
+        for week in page["weeks"]:
+            for r in week["results"]:
+                assert r["about"] == (r["chance"] / 100 * sim["effective_runs"] < 400)
+                flagged += r["about"]
+                plain += not r["about"]
+    # At 10,000 runs a result is about under 4 percent. No result of week 10 is that rare, but a step of the ladder is.
+    steps = [step for page in sim["pages"].values() for step in page["ladder"]]
+    assert all(step["about"] == (step["chance"] / 100 * sim["effective_runs"] < 400) for step in steps)
+    print(f"AT-10: {flagged} results with about, {plain} with none; {sum(s['about'] for s in steps)} ladder steps "
+          f"with about")
+    assert plain == 12 * 4 * 4 and any(step["about"] for step in steps)
+
+
+# The playoff fixtures of the sim page tests, which `make sim-fixtures` writes (season-sim ACCEPTANCE.md).
+SITE_FIXTURES = Path(__file__).resolve().parents[3] / "packages" / "sim" / "site" / "fixtures"
+
+
+@pytest.fixture(scope="module")
+def playoff_fixture_files(tmp_path_factory) -> tuple[list[str], Path]:
+    out = tmp_path_factory.mktemp("fixtures")
+    client = _week_10_client("cpc", tmp_path_factory.mktemp("cpc"))
+    return run_sim_fixtures(2026, 10, out, client=client), out
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_playoff_fixtures_play_out_stored_run_1_and_name_the_seeds_and_the_champion(playoff_fixture_files):
+    lines, out = playoff_fixture_files
+    for line in lines:
+        print(f"AT-42 AT-43 AT-44 fixture: {line}")
+    week_10 = json.loads(API_WEEK_10_SIM.read_text(encoding="utf-8"))
+    run = week_10["sample"][0]
+    for name, week in (("week-sim-playoffs.json", 14), ("week-sim-round-2.json", 15), ("week-sim-final.json", 17)):
+        sim = json.loads((out / name).read_text(encoding="utf-8"))
+        assert sim["week"] == week and sim["schedule"] == {}
+        playoffs = sim["pages"]["1"]["playoffs"]
+        # The seeds are the top 6 of the table of run 1, so the fixture plays out the run.
+        assert [t["roster_id"] for t in playoffs["teams"]] == run["table"][:6]
+    final = json.loads((out / "week-sim-final.json").read_text(encoding="utf-8"))
+    assert final["pages"]["1"]["playoffs"]["champion"] == run["champion"]
+    assert final["teams"][str(run["champion"])]["title"] == 100.0
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_playoff_fixtures_of_the_site_tests_equal_a_fresh_fixture_build(playoff_fixture_files):
+    # Run `make sim-fixtures` in apps/pipeline if this fails.
+    _, out = playoff_fixture_files
+    for name in ("week-sim-playoffs.json", "week-sim-round-2.json", "week-sim-final.json"):
+        assert json.loads((SITE_FIXTURES / name).read_text(encoding="utf-8")) == json.loads(
+            (out / name).read_text(encoding="utf-8"))
