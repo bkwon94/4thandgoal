@@ -1,5 +1,5 @@
 """
-The Finder search: the partner filter, the targets, the offers, and the shortlist, as a manager searches.
+The Finder search: the partner filter (the Spares tree), the targets, the offers, and the shortlist, as a manager searches.
 Jev judgments narrow each list, in waves under the rate limits. Code builds the offers and keeps only the hard rules.
 """
 import logging
@@ -10,13 +10,14 @@ from pydantic import BaseModel
 
 from analyzer.jev_waves import JevWaves, WaveRequest
 from analyzer.measures import is_handcuff, trade_handcuffs
+from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
 from analyzer.stage import Stage, quiet
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_facts import shown_ranks
-from analyzer.trade_jev import TRADE_POSITIONS, YES_AT, trade_jev_questions, weak_slot_rows, weak_starting_slots
+from analyzer.trade_jev import TRADE_POSITIONS, trade_jev_questions, weak_slot_rows, weak_starting_slots
 from league.history import season_rank
 from league.jev_port import Jev, NoulQuestion
-from league.lineup import above_the_line, lineup_now
+from league.lineup import lineup_now
 from league.ranks import OUT_STATUSES
 from league.snapshot import Snapshot
 
@@ -24,38 +25,6 @@ log = logging.getLogger(__name__)
 
 # A Finder offer holds only the TRADE_POSITIONS of trade_jev.py. A kicker and a defense are never in an offer.
 
-# The four questions of the partner filter, from the glossary entry "Partner filter". Each asks one judgment, and
-# the state holds the depth that code counts, because Jev does not count reliably.
-PARTNER_FILTER = {
-    # The "has" wording that names the weak starters won a live probe on 4 pairs: about 0.85 against about 0.6 for
-    # "a player at a weak starting slot", which Jev read as unsure.
-    "partner_has": {
-        "text": "Would a player of {partner} start over one of the weak starters of {asker} in "
-                "`teams.asker.weak_starting_slots`?",
-        "yes": "A player in `teams.partner.players` plays the position of a weak starter of {asker} and would score more "
-               "than him.",
-        "no": "Each player of {partner} at the positions of those weak starters would score less than them."},
-    "partner_spares": {
-        "text": "Can {partner} give up a player who would start at a weak slot of {asker}, with no hole in its own "
-                "lineup?",
-        "yes": "{partner} has a player who fits a weak slot of {asker}, and `teams.partner.depth` shows another player "
-               "above the line at his position, so the lineup of {partner} stays full.",
-        "no": "Each player of {partner} who fits a weak slot of {asker} is a starter with no one above the line behind "
-              "him."},
-    "asker_has": {
-        "text": "Would a player of {asker} start over one of the weak starters of {partner} in "
-                "`teams.partner.weak_starting_slots`?",
-        "yes": "A player in `teams.asker.players` plays the position of a weak starter of {partner} and would score more "
-               "than him.",
-        "no": "Each player of {asker} at the positions of those weak starters would score less than them."},
-    "asker_spares": {
-        "text": "Can {asker} give up a player who would start at a weak slot of {partner}, with no hole in its own "
-                "lineup?",
-        "yes": "{asker} has a player who fits a weak slot of {partner}, and `teams.asker.depth` shows another player "
-               "above the line at his position, so the lineup of {asker} stays full.",
-        "no": "Each player of {asker} who fits a weak slot of {partner} is a starter with no one above the line behind "
-              "him."},
-}
 # The target question, the one the prototype of the Finder tested: one Noul per player of the other side.
 TARGET = {
     "text": "Would {team} want {player} from {owner}?",
@@ -92,12 +61,12 @@ class Limit(BaseModel):
 
 
 class PartnerRead(BaseModel):
-    """The partner filter of one partner: the probability of yes of each of the four questions, and the result."""
+    """The partner filter of one partner: the Spares tree answer of each listed player by key, and the result."""
 
     roster_id: int
     team: str
     answers: dict[str, float]
-    # True when each of the four answers reads yes. False after a failed request, which is never a no.
+    # True when no side of the Spares tree stops. False after a failed request, which is an error and never a no.
     passed: bool
     failed: bool = False
 
@@ -147,7 +116,8 @@ def _team_state(snapshot: Snapshot, roster_id: int) -> dict:
     roster = snapshot.rosters[roster_id]
     starters = {slot.player for slot in lineup_now(roster, snapshot) if slot.player is not None}
     players = [pid for pid in roster if snapshot.players[pid].position in TRADE_POSITIONS]
-    depth = {pos: sum(1 for pid in players if snapshot.players[pid].position == pos and above_the_line(snapshot, pid))
+    # A player who is Out is no cover, so he is not in the depth (decision 09).
+    depth = {pos: sum(1 for pid in players if snapshot.players[pid].position == pos and can_cover(snapshot, pid))
              for pos in TRADE_POSITIONS}
     return {"roster_id": roster_id, "name": snapshot.teams[roster_id].name,
             "weak_starting_slots": weak_starting_slots(snapshot, roster_id),
@@ -157,12 +127,6 @@ def _team_state(snapshot: Snapshot, roster_id: int) -> dict:
 
 def _pair_state(snapshot: Snapshot, asker: int, partner: int) -> dict:
     return {"teams": {"asker": _team_state(snapshot, asker), "partner": _team_state(snapshot, partner)}}
-
-
-def _filter_questions(snapshot: Snapshot, asker: int, partner: int) -> dict[str, NoulQuestion]:
-    names = {"asker": snapshot.teams[asker].name, "partner": snapshot.teams[partner].name}
-    return {key: NoulQuestion(q["text"].format(**names), q["yes"].format(**names), q["no"].format(**names))
-            for key, q in PARTNER_FILTER.items()}
 
 
 def in_pool(snapshot: Snapshot, pid: str, roster_id: int) -> bool:
@@ -352,6 +316,39 @@ def offer_id(trade: ProposedTrade) -> str:
     return "-".join(f"{side.roster_id}:{'+'.join(sorted(side.player_ids))}" for side in trade.sides)
 
 
+def varied(offers: list[ShortlistOffer], keep: int) -> list[ShortlistOffer]:
+    """At most `keep` offers, in an order with variety: the best offer for each player that the asker gives and for
+    each partner, before more forms of the same trade (decision 01).
+
+    Each next offer is the one with the fewest early repeats, then the highest score. An early repeat is a player of
+    the asker, or a partner, already on the list while another one with an offer is not yet on it. It picks what the
+    Advisor reads, and it cuts no offer by a score that the list would hold anyway.
+    """
+    players = {pid for offer in offers for pid in offer.trade.sides[0].player_ids}
+    partners = {side.roster_id for offer in offers for side in offer.trade.sides[1:]}
+    left = sorted(offers, key=lambda offer: (-offer.score, offer.offer_id))
+    chosen: list[ShortlistOffer] = []
+    seen_players: set[str] = set()
+    seen_partners: set[int] = set()
+
+    def repeats(offer: ShortlistOffer) -> int:
+        count = 0
+        if seen_players < players:
+            count += sum(pid in seen_players for pid in offer.trade.sides[0].player_ids)
+        if seen_partners < partners:
+            count += sum(side.roster_id in seen_partners for side in offer.trade.sides[1:])
+        return count
+
+    while left and len(chosen) < keep:
+        # min keeps the first of a tie, and `left` is in score order, so the higher score wins a tie.
+        best = min(left, key=repeats)
+        left.remove(best)
+        chosen.append(best)
+        seen_players |= set(best.trade.sides[0].player_ids)
+        seen_partners |= {side.roster_id for side in best.trade.sides[1:]}
+    return chosen
+
+
 def _shortlist_questions(offers: list[ProposedTrade], snapshot: Snapshot) -> dict[str, NoulQuestion]:
     """The fair question and the need question of each side of each offer, keyed "<offer n>|fair" and so on.
 
@@ -387,12 +384,13 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
            stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
-    1. The partner filter: four Jev questions per partner. Only a partner with four yes answers goes on. A search with
+    1. The partner filter: the Spares tree of `spares_tree.py` on both sides of each pair. A partner goes on unless a
+       side lists no player or each listed player of a side gets a clear no. A search with one picked partner or with
        an anchor skips it, and every partner goes on.
     2. The targets: Jev rates each pool player of each side. A target needs TARGET_AT, at most TARGET_MAX per side.
     3. The offers: code builds them from the targets only, under the hard rules.
-    4. The shortlist: Jev asks the fair and the need questions of each offer. The SHORTLIST_KEEP offers with the
-       highest product stay.
+    4. The shortlist: Jev asks the fair and the need questions of each offer. `varied` keeps SHORTLIST_KEEP offers:
+       the best offer for each player that the asker gives and for each partner, before more forms of one trade.
     A failed Jev request drops what it would judge, and it logs. It never reads as a no and never stops the press.
     With an `anchor`, he is a target of his side, and each offer holds him on that side (a hard rule). An anchor that
     the asker gets keeps the search to his roster, because only that roster can give him.
@@ -412,25 +410,37 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     stage("Reading every team" if len(partners) > 1 else "Reading their roster", live=True)
 
     reads: list[PartnerRead] = []
-    if anchor is not None:
+    if anchor is not None or partner is not None:
         # The filter asks about the weakest slots of each team. The anchor names the player the trade turns on, and the
-        # anchor target question asks who fills his spot, so every partner goes on to the targets.
+        # anchor target question asks who fills his spot. A manager who picks one partner wants ideas with him, and a
+        # stop there left one plain offer (decision 01). So every partner goes on to the targets.
         reads = [PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True, failed=False)
                  for rid in partners]
-        log.info("Partner filter of %s: skipped for the anchor", snapshot.teams[asker].name)
+        log.info("Spares tree of %s: skipped for %s", snapshot.teams[asker].name,
+                 "the anchor" if anchor is not None else "one picked partner")
     else:
-        filtered = waves.ask({str(rid): WaveRequest(_pair_state(snapshot, asker, rid),
-                                                    _filter_questions(snapshot, asker, rid)) for rid in partners},
-                             "partner filter")
+        spares = {rid: pair_spares(snapshot, asker, rid) for rid in partners}
+        requests = {str(rid): pair_request(snapshot, asker, rid, spares[rid]) for rid in partners}
+        filtered = waves.ask({key: request for key, request in requests.items() if request is not None},
+                             "spares tree")
         for rid in partners:
-            response = filtered[str(rid)]
-            answers = response.nouls if response is not None else {}
-            passed = response is not None and all(answers[key] > YES_AT for key in PARTNER_FILTER)
-            reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers=answers, passed=passed,
-                                     failed=response is None))
-            log.info("Partner filter of %s with %s: %s, %s", snapshot.teams[asker].name, snapshot.teams[rid].name,
-                     "passed" if passed else "failed request" if response is None else "stopped",
-                     ", ".join(f"{key}={p:.2f}" for key, p in answers.items()))
+            response = filtered.get(str(rid))
+            if requests[str(rid)] is not None and response is None:
+                # A failed call is an error, never a stop, so the read says failed and the wider pass skips him.
+                reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=False,
+                                         failed=True))
+                log.info("Spares tree of %s with %s: failed request", snapshot.teams[asker].name,
+                         snapshot.teams[rid].name)
+                continue
+            tree = read_pair(asker, rid, spares[rid], {} if response is None else response.nouls)
+            reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers=tree.answers,
+                                     passed=tree.passed, failed=False))
+            log.info("Spares tree of %s with %s: %s; %s", snapshot.teams[asker].name, snapshot.teams[rid].name,
+                     "passed" if tree.passed else f"stopped on {', '.join(tree.stopped)}",
+                     "; ".join(f"{side} gives " + (", ".join(
+                         f"{snapshot.players[spare.player_id].name}={tree.answers[spare.key]:.2f}"
+                         if spare.key in tree.answers else snapshot.players[spare.player_id].name
+                         for spare in tree.spares[side]) or "no one") for side in ("partner", "asker")))
     passing = [read.roster_id for read in reads if read.passed]
     stage(f"Read {len(partners)} teams" if len(partners) > 1 else f"Read {snapshot.teams[partners[0]].name}")
     stage("Looking for players who fit", live=True)
@@ -493,7 +503,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
                 score *= p
             rated_offers.append(ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=fair, needs=needs,
                                                score=score))
-    shortlist = sorted(rated_offers, key=lambda offer: (-offer.score, offer.offer_id))[:SHORTLIST_KEEP]
+    shortlist = varied(rated_offers, SHORTLIST_KEEP)
     stage(f"Made a shortlist of {len(shortlist)}" if len(shortlist) != 1 else "Made a shortlist of one")
     for offer in shortlist:
         log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s", offer.offer_id, offer.score, offer.fair,

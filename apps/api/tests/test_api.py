@@ -1503,8 +1503,8 @@ class StubRepair:
 
 
 def _no_partner(key, question, state):
-    """A Jev that stops every partner at the partner filter, so the shortlist is empty."""
-    return 0.1 if key.startswith(("partner_", "asker_")) else 0.9
+    """A Jev that stops every partner at the partner filter: a clear no for each listed player of the Spares tree."""
+    return 0.1 if key.startswith("spare:") else 0.9
 
 
 def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None, repair=None):
@@ -1629,7 +1629,7 @@ def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_lean_a_case_an
     assert doc["as_of"]["chart_week"] == 6
 
 
-def test_find_with_no_partner_runs_the_partner_filter_on_every_other_team(settings, sources, caplog):
+def test_find_with_no_partner_runs_the_spares_tree_on_every_other_team(settings, sources, caplog):
     jev = FakeJev()
     client = _find_client(settings, sources, jev=jev)
     with caplog.at_level("INFO", logger="analyzer"):
@@ -1639,15 +1639,17 @@ def test_find_with_no_partner_runs_the_partner_filter_on_every_other_team(settin
     # Each trade names its own partner in its sides, so the pair has no partner.
     assert doc["trade_pair"]["asker"]["roster_id"] == 2
     assert doc["trade_pair"]["partner"] is None
-    filtered = sorted(r.state["teams"]["partner"]["roster_id"] for r in jev.requests if "partner_has" in r.questions)
-    assert filtered == [rid for rid in range(1, 13) if rid != 2]
-    assert sum("Partner filter of" in record.getMessage() for record in caplog.records) == 11
+    filtered = {r.state["teams"]["partner"]["roster_id"] for r in jev.requests
+                if r.questions and all(key.startswith("spare:") for key in r.questions)}
+    assert filtered and filtered <= {rid for rid in range(1, 13) if rid != 2}
+    assert sum("Spares tree of" in record.getMessage() for record in caplog.records) == 11
 
 
-def test_find_with_a_partner_keeps_every_pick_to_that_partner(settings, sources):
-    jev = FakeJev()
+def test_find_with_a_partner_skips_the_partner_filter_and_keeps_every_pick_to_that_partner(settings, sources):
+    jev = FakeJev(answer=_no_partner)
     doc = _find_client(settings, sources, jev=jev).post("/find", json=FIND, headers=HEADERS).json()
-    assert [r.state["teams"]["partner"]["roster_id"] for r in jev.requests if "partner_has" in r.questions] == [3]
+    # A clear no for each listed player would stop the partner, but one picked partner asks no Spares tree question.
+    assert not any(key.startswith("spare:") for r in jev.requests for key in r.questions)
     assert doc["trade_pair"]["partner"]["roster_id"] == 3
     assert doc["trades"]
     assert all([side["roster_id"] for side in item["sides"]] == [2, 3] for item in doc["trades"])
@@ -1665,7 +1667,7 @@ KEEP_ALL = {"keep_positions": ["QB", "RB", "WR", "TE"]}
 def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settings, sources):
     picker = StubPicker()
     doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_partner)).post(
-        "/find", json=FIND | {"limit": KEEP_ALL}, headers=HEADERS).json()
+        "/find", json={"season": 2026, "asker": 2, "limit": KEEP_ALL}, headers=HEADERS).json()
     assert doc["trades"] == [] and doc["near"] == []
     # No team passed the partner filter, so the line says that no team fits, not that the pick found nothing.
     assert doc["empty"] == NO_PARTNER
