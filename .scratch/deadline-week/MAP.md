@@ -23,9 +23,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - No step asked what the asker gives up. The Spares tree runs on the give side, with a depth count of players who can play now, and the Shortlist gets one gain Noul per side with lineup points as facts. A clear no drops the offer. The target split stays out. `decisions/09-research-qb-targets.md`.
 - The analyzer hero gets a switch, "Grade a trade · Find a trade", and the Finder takes the Stage look. Its wait uses the same `StageLines` as the grade, fed by the real steps, plus team avatars that light up. `decisions/07-prototype-finder-look.md`.
 
+- No Deadline Board. The whole Deadline banner opens the Trade Wire in a sheet, with "Grade a trade" and "Find a trade" at its top. Week 11 trades only, a 5 s cache and a 10 s poll. Copy says "trade deadline", never "Lock". `decisions/08-prototype-event-look.md`.
+
 ## NOT YET SPECIFIED
 
-- What do the Deadline banner, the deadline look, the deadline board, and the feed look like? `decisions/08-prototype-event-look.md`.
 - Which reading of the code list of the Spares tree does the Finder use? `decisions/12-spec-spares-tree-reading.md`.
 
 ## OUT OF SCOPE
@@ -39,3 +40,4 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - The split of the target question into "would start" and "would fill a weak spot". After the event (decision 05).
 - A Jev tree for fair. A tree that combines fair answers ranks trades by a score, against `no-math-filters` (decision 05).
 - A Finder for three-team trades. About $0.11 and 31 to 33 s for each press, and 3 to 4 days of build. Brian scrapped it (decisions 10, 11).
+- The Deadline Board. The Finder answers the same question for one manager, and real needs and spares need the Spares tree on each team (decision 08).

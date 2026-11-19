@@ -1198,20 +1198,16 @@ The event of the trade deadline on the site of one client. It runs from its depl
 _Avoid_: Deadline event, trade week, promo
 
 **Lock**:
-The time when Sleeper closes trades for the season, as one value in the client config. The Deadline banner counts down to it.
+The time when Sleeper closes trades for the season, as one value in the client config. The Deadline banner counts down to it. Code and config say Lock; site copy says "trade deadline".
 _Avoid_: Deadline (alone), cutoff, close
 
 **Deadline banner**:
-The slim strip under the top band of each page during Deadline week. It counts down to the Lock, says that the Lock is an estimate for the end of the Monday night games, and links to the trade tools. After the Lock it says that trades are closed.
+The slim strip under the top band of each page during Deadline week. It counts down to the Lock with a tilde for the estimate, and a tap anywhere on it opens the Trade Wire. After the Lock it says that the trade deadline has passed.
 _Avoid_: Banner (alone), countdown bar, alert, announcement
 
-**Trade wire**:
-The live list of the trades that Sleeper accepts in the league during Deadline week, newest first.
+**Trade Wire**:
+The live list of the trades that Sleeper accepts in the league during Deadline week, newest first, in a sheet that the Deadline banner opens.
 _Avoid_: Feed, ticker, transaction history (that is the list of the weekly build)
-
-**Deadline board**:
-The page of Deadline week that lists each team with its race group, its needs, and its spares.
-_Avoid_: Trade board, market, board (alone; that is the board score)
 
 **Egg banner**:
 The slim strip under the top band of the home page that shows the count of eggs of the last egg drop, its day, and the count of eggs left to find. It links to the egg board and names no spot.
