@@ -430,7 +430,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
           aria-hidden
           data-tour-hole=""
           className="pointer-events-none fixed top-0 left-0 z-[60]"
-          style={{ boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
+          style={{ boxShadow: "0 0 0 200vmax var(--color-tour-scrim)" }}
           initial={{ opacity: 0, ...holeBox }}
           animate={{ opacity: open ? 1 : 0, ...holeBox }}
           transition={{ default: orStill(off, GLIDE), opacity: fadeIn(open ? FAST : QUICK) }}
