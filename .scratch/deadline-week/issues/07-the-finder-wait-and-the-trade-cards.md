@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-12, AT-32, AT-36, AT-
 
 **Blocked by:** 05, 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The wait shows one real step at a time in `StageLines`, and each line holds until the next step ends.
 - [x] A tap on a card makes no analyze request, and the analyzer shows the read of the card.
