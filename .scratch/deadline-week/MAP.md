@@ -17,10 +17,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - Each Finder trade shows the Lean, the Case, and folded Bullets of the Advisor, and opens in the analyzer already graded. Terms: Deadline week, Lock (00:00 Eastern Tue 2026-11-24), Deadline banner, Trade wire, Deadline board. `decisions/04-grill-terms-and-shared-brain.md`.
 - The Finder skips the Partner filter for one picked partner, gives the Shortlist variety, and lets an unsure "spares" answer pass. `decisions/01-research-few-offers.md`.
 - The Finder gets four free cuts (short offer labels, sheets at the same time, paced waves, late log checks) to about 25 s, keeps one pick call, and streams its progress. No prewarm. `decisions/02-research-finder-speed.md`.
+- The Trade wire reads a new Fly route (30 s cache, no rate count) every 60 s until the Lock, and lists every trade of the season with teams, players, and FAAB, week 11 marked new. No draft picks. `decisions/03-research-trade-feed-source.md`.
 
 ## NOT YET SPECIFIED
 
-- Where does the live feed of trades get its data, and how often? `decisions/03-research-trade-feed-source.md`.
 - Which Jev questions and which decision trees does the Finder use, and what bar must the backtest pass? `decisions/05-grill-jev-trees-and-backtest.md`.
 - Which issues of the trade tools does the polish fix? `decisions/06-grill-trade-tools-polish-list.md`.
 - What does the Finder look like, and how does it show progress while it runs? `decisions/07-prototype-finder-look.md`.
