@@ -6,6 +6,7 @@
 - The page column, which a wide page widens to the top band from the desktop tier, and the chapter rail.
 - The team name.
 - The one reveal of the site, the week line of a page with no hero, and the error line.
+- The Announcement, the bottom sheet on the shared Sheet that introduces one new feature: an art slot, an eyebrow, a title, one line, the link, and "Not now". The use fills the art and the copy, and passes the site name.
 - The Open card, the one part that opens and closes a card in place (ADR 0028). Its row look has no frame and no chevron, for a row of a ledger.
 - The parts of the look (ADR 0024): the hero with its grid, glow, brackets, and six hero slots, and no free content; the hero frame, which takes free content for the parts of the egg hunt only; the card; the tile, and the Trend tile with its bars, stepped area, or dots of a week series; the
   round photo frame with its initials; and the rise, the staggered entry of a page. Hero text has no plate (ADR 0036).

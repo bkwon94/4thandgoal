@@ -135,7 +135,16 @@ describe("the client build", () => {
     expect(registry).toContain('import { BandPart as eggsBandPart } from "@/app/_routes/eggs/band";');
     expect(registry).toContain("export const bandParts: BandPart[] = [eggsBandPart];");
     expect(registry).toContain('import { HomeBanner as eggsHomeBanner } from "@/app/_routes/eggs/home-banner";');
-    expect(registry).toContain("export const homeBanners: HomeBanner[] = [eggsHomeBanner];");
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [eggsHomeBanner, simHomeBanner];");
+  });
+
+  it("gives a client of the sim package the Announcement of the season sim on the home page", () => {
+    const toml = ['packages = ["week", "sim"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const repo = tempRepo(toml, "sim-home");
+    buildClient(repo);
+    const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { HomeBanner as simHomeBanner } from "@/app/_routes/sim/home-banner";');
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [simHomeBanner];");
   });
 
   it("gives a client without the eggs package no /eggs/ route and no egg hunt", () => {
@@ -146,7 +155,8 @@ describe("the client build", () => {
     expect(registry).not.toContain("eggs");
     expect(registry).toContain("export const pageParts: PagePart[] = [];");
     expect(registry).toContain("export const bandParts: BandPart[] = [];");
-    expect(registry).toContain("export const homeBanners: HomeBanner[] = [];");
+    // The client still takes sim, so its home page keeps the Announcement of the season sim.
+    expect(registry).toContain("export const homeBanners: HomeBanner[] = [simHomeBanner];");
   });
 
   it("starts each generated file with a GENERATED line that names the client file", () => {

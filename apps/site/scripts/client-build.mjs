@@ -218,9 +218,10 @@ const PAGE_PARTS = { eggs: "@/app/_routes/eggs/hunt" };
    The registry imports it only for a package of the list, so the top band of a client that omits the package holds none. */
 const BAND_PARTS = { eggs: "@/app/_routes/eggs/band" };
 
-/* The strip that a package puts under the top band of the home page, such as the egg banner. The registry imports it
-   only for a package of the list, so the home page of a client that omits the package holds none. */
-const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner" };
+/* The strip that a package puts under the top band of the home page, such as the egg banner, or the sheet that a
+   package opens on the home page, such as the Announcement of the season sim. The registry imports it only for a
+   package of the list, so the home page of a client that omits the package holds none. */
+const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner", sim: "@/app/_routes/sim/home-banner" };
 
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
