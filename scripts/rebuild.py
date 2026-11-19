@@ -16,9 +16,10 @@ from pathlib import Path
 RENDER_FILES = ("page.json", "topics.json", "waiver.json")
 # The saved inputs of a week that the facts-only rebuild reads, by their path in the data folder of the week.
 SAVED_INPUTS = ("verify.json", "raw/nflverse.json", "raw/slow_sources.json", "raw/news.json")
-PIPELINE_CLI = Path("apps/pipeline/src/cornerstone/cli.py")
 # The rebuild makes no Claude call and no TypeSafe call, so a run never gets either key, even from a local shell.
 SECRETS = ("ANTHROPIC_API_KEY", "TYPESAFE_API_KEY")
+# The command line that runs the pipeline CLI of one checkout.
+CORNERSTONE = ["uv", "run", "--quiet", "--exact", "--package", "cornerstone", "cornerstone"]
 WEEK_FOLDER = re.compile(r"week-(\d{2})")
 
 
@@ -104,9 +105,11 @@ def has_saved_inputs(root: Path, week: Week) -> bool:
 
 
 def base_rebuilds_facts(base: Path) -> bool:
-    """True when the CLI of the base has the facts-only rebuild. A base without it gets the render diff only."""
-    cli = base / PIPELINE_CLI
-    return cli.is_file() and 'add_parser("facts"' in cli.read_text(encoding="utf-8")
+    """True when the CLI of the base has the facts-only rebuild. A base without it gets the render diff only.
+    The probe runs the command as the rebuild does, so a rename or a reformat of the CLI source cannot fool it."""
+    probe = subprocess.run([*CORNERSTONE, "facts", "--help"], cwd=base, env=clean_env(),
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return probe.returncode == 0
 
 
 def json_diff(before, after, path: str = "$") -> list[str]:
@@ -130,13 +133,16 @@ def file_diff(before: Path, after: Path) -> list[str]:
     return json_diff(json.loads(before.read_text(encoding="utf-8")), json.loads(after.read_text(encoding="utf-8")))
 
 
+def clean_env() -> dict[str, str]:
+    return {key: value for key, value in os.environ.items() if key not in SECRETS}
+
+
 def cornerstone(checkout: Path, command: str, week: Week) -> None:
     """Run one command of the pipeline CLI on one week with the code of one checkout. It writes into that checkout:
     facts writes facts.json into the data folder, and page-json writes the build folder."""
-    env = {key: value for key, value in os.environ.items() if key not in SECRETS}
-    subprocess.run(["uv", "run", "--quiet", "--exact", "--package", "cornerstone", "cornerstone", command,
-                    "--client", week.slug, "--season", str(week.season), "--week", str(week.week)],
-                   cwd=checkout, env=env, check=True, stdout=subprocess.DEVNULL)
+    subprocess.run([*CORNERSTONE, command, "--client", week.slug, "--season", str(week.season),
+                    "--week", str(week.week)],
+                   cwd=checkout, env=clean_env(), check=True, stdout=subprocess.DEVNULL)
 
 
 def share_inputs(base: Path, head: Path, week: Week) -> None:

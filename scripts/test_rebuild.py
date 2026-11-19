@@ -69,20 +69,11 @@ class TheSavedInputs(unittest.TestCase):
 
 
 class TheMode(unittest.TestCase):
-    def tree(self, cli_text: str) -> Path:
-        root = Path(tempfile.mkdtemp())
-        cli = root / rebuild.PIPELINE_CLI
-        cli.parent.mkdir(parents=True)
-        cli.write_text(cli_text)
-        return root
-
     def test_a_base_with_no_facts_command_gets_the_render_diff_only(self):
-        base = self.tree('sub.add_parser("page-json", parents=[named])\n')
-        self.assertFalse(rebuild.base_rebuilds_facts(base))
+        self.assertFalse(rebuild.base_rebuilds_facts(Path(tempfile.mkdtemp())))
 
     def test_a_base_with_the_facts_command_can_rebuild_the_facts(self):
-        base = self.tree('sub.add_parser("facts", parents=[named],\n')
-        self.assertTrue(rebuild.base_rebuilds_facts(base))
+        self.assertTrue(rebuild.base_rebuilds_facts(ROOT))
 
 
 class TheDiff(unittest.TestCase):
