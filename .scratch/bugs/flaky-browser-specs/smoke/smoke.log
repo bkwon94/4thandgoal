@@ -1,17 +1,17 @@
-FAIL Front door 390x660 webkit: overlap: <span> "Suggestions" and <span> "Checked"
-PASS Passphrase 390x660 webkit in 4.4 s
+PASS Front door 390x660 webkit in 12.2 s
+PASS Passphrase 390x660 webkit in 4.2 s
 PASS Passphrase 1280x800 chromium in 4.3 s
 PASS Week report 390x660 webkit in 3.9 s
-PASS Week report 810x980 webkit in 3.3 s
-PASS Week report 1080x740 webkit in 3.6 s
+PASS Week report 810x980 webkit in 3.2 s
+PASS Week report 1080x740 webkit in 3.5 s
 PASS Week report 1280x800 chromium in 3.4 s
-PASS Manager page 390x660 webkit in 4.3 s
-PASS Manager page 810x980 webkit in 3.9 s
-PASS Manager page 1080x740 webkit in 4.2 s
+PASS Manager page 390x660 webkit in 4.4 s
+PASS Manager page 810x980 webkit in 4.0 s
+PASS Manager page 1080x740 webkit in 4.3 s
 PASS Manager page 1280x800 chromium in 3.7 s
-PASS Analyzer 390x660 webkit in 32.6 s
-PASS Power rankings 390x660 webkit in 3.0 s
+PASS Analyzer 390x660 webkit in 12.4 s
+PASS Power rankings 390x660 webkit in 2.9 s
 PASS Power rankings 1280x800 chromium in 2.8 s
-PASS Midseason report 390x660 webkit in 6.0 s
+PASS Midseason report 390x660 webkit in 5.9 s
 PASS Midseason report 1280x800 chromium in 4.5 s
-Smoke run: 7 flows, 6 passed, 1 failed
+Smoke run: 7 flows, 7 passed, 0 failed

@@ -203,7 +203,7 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 6 passed, 1 failed". Shots in `.scratch/bugs/flaky-browser-specs/smoke/`. The one failure is "FAIL Front door 390x660 webkit: overlap: <span> "Suggestions" and <span> "Checked"". The same flow on `main` at `8780eefb`, in a clean worktree, gives the same failure and "Smoke run: 1 flow, 0 passed, 1 failed", so this run did not cause it.
+Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 7 passed, 0 failed". Shots in `.scratch/bugs/flaky-browser-specs/smoke/`.
 
 ## Comments
 
