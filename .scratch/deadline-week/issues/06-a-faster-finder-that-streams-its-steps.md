@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-41.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] Three real presses for Bo Girds (roster 6) and every team on the week 11 snapshot each end in 30 s or less, with one pick call and no id retry in the log.
 - [x] A route test shows the step lines in order and the Lean and the Case sent with each trade.
