@@ -10,9 +10,9 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-33 to AT-36. Decisions 0
 
 **Status:** ready-for-agent
 
-- [ ] A tap on "Win and beat the median" in week 11 of Bo Girds shows the numbers of the API answer and opens Wk 12 (AT-33).
-- [ ] Reset clears the set line and shows the numbers of the file again (AT-34).
-- [ ] Two taps within 200 ms cancel the first call, and the page shows the second answer (AT-35).
-- [ ] With the API stopped, the page shows the file and one line on a tap (AT-36).
-- [ ] The site evidence set passes the overlap check after a tap, with the set line shown.
-- [ ] `make check-fast` passes.
+- [x] A tap on "Win and beat the median" in week 11 of Bo Girds shows the numbers of the API answer and opens Wk 12 (AT-33).
+- [x] Reset clears the set line and shows the numbers of the file again (AT-34).
+- [x] Two taps within 200 ms cancel the first call, and the page shows the second answer (AT-35).
+- [x] With the API stopped, the page shows the file and one line on a tap (AT-36).
+- [x] The site evidence set passes the overlap check after a tap, with the set line shown.
+- [x] `make check-fast` passes.

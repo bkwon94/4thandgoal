@@ -167,3 +167,25 @@ def test_the_week_file_holds_the_pages_and_the_season_file_keeps_its_shape(sim, 
     season = write_sim(sim_file(sim, names), tmp_path).read_text(encoding="utf-8")
     for key in ("effective_runs", "sample_weights", "pages", "fact"):
         assert f'"{key}"' not in season
+
+
+def test_the_sentence_after_a_set_result_counts_only_the_wins_still_open():
+    # Week 3 holds a win over the opponent and the median, so 2 of the 4 wins left are set and 2 stay open.
+    sim = _sim(you=1, set_results=[SetResult(week=3, game="win", median="above")], runs=2_000)
+    page = sim.pages[1]
+    assert page.need is not None and page.need >= 2
+    open_need = page.need - 2
+    if page.status == "open":
+        assert page.sentence == (f"Win {open_need} of the 2 left and you're in." if open_need
+                                 else "You're in at 90% or better even with no more wins.")
+    # The page of another team holds no set result, so its sentence counts all 4 wins left.
+    other = sim.pages[2]
+    if other.status == "open" and other.need:
+        assert other.sentence == f"Win {other.need} of the 4 left and you're in."
+
+
+def test_the_sentence_with_every_week_left_set_says_so():
+    held = [SetResult(week=3, game="win", median="below"), SetResult(week=4, game="loss", median="above")]
+    sim = _sim(you=1, set_results=held, runs=2_000)
+    if sim.pages[1].status == "open":
+        assert sim.pages[1].sentence == "Every week left is set."

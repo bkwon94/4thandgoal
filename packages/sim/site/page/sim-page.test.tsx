@@ -1,11 +1,14 @@
 /**
  * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team.
- * They check the header, the ladder, the week switch, the week card, the root-for card, and the "about" numbers.
+ * They check the header, the ladder, the week switch, the week card, the root-for card, the "about" numbers, and the
+ * What-if, over two answers of the local API and a real call to an API that is down.
  */
 import "@cpc/design/ui/sheet-jsdom";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { norcalWeekSim, weekSim } from "../fixtures/sim";
+import { fakeWhatIfApi } from "../fixtures/what-if-api";
+import { whatIfApi } from "../lib/what-if-api";
 import { SimPage } from "./sim-page";
 
 afterEach(() => {
@@ -54,6 +57,7 @@ describe("the sentence of more wins", () => {
 });
 
 const weekSwitch = () => screen.getByRole("navigation", { name: "Weeks" });
+const yourTeam = () => screen.getByRole("region", { name: "Your team" });
 const weekCard = () => screen.getByRole("article", { name: /^Week \d+ vs / });
 
 describe("the week switch", () => {
@@ -77,19 +81,15 @@ describe("the week switch", () => {
   });
 });
 
-const tiles = () => within(weekCard()).getAllByRole("group");
+const tiles = () => within(within(weekCard()).getByRole("group", { name: "Results" })).getAllByRole("button");
+const tileNames = () => tiles().map((tile) => tile.querySelector("[data-result-name]")?.textContent);
 
 describe("the week card", () => {
   it("shows four tiles in CPC, each with the odds after, the chance, and the wins it adds", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
     expect(within(weekCard()).getByRole("heading").textContent).toBe("Week 11 vs Maye d'force B with U");
     const week = cpcPage.weeks[0];
-    expect(tiles().map((tile) => tile.getAttribute("aria-label"))).toEqual([
-      "Win, beat median",
-      "Win, miss median",
-      "Lose, beat median",
-      "Lose, miss median",
-    ]);
+    expect(tileNames()).toEqual(["Win, beat median", "Win, miss median", "Lose, beat median", "Lose, miss median"]);
     tiles().forEach((tile, index) => {
       const result = week.results[index];
       expect(tile.textContent).toContain(odds(result.playoff, result.about));
@@ -101,7 +101,7 @@ describe("the week card", () => {
   it("shows two tiles in NorCal, a win and a loss", () => {
     render(<SimPage sim={norcalWeekSim} you={NORCAL_YOU} />);
     expect(within(weekCard()).getByRole("heading").textContent).toBe("Week 11 vs The Mean Machine");
-    expect(tiles().map((tile) => tile.getAttribute("aria-label"))).toEqual(["Win", "Lose"]);
+    expect(tileNames()).toEqual(["Win", "Lose"]);
     const [win, loss] = norcalWeekSim.pages[NORCAL_YOU].weeks[0].results;
     expect(tiles()[0].textContent).toContain(`${win.playoff}%`);
     expect(tiles()[1].textContent).toContain(`${loss.playoff}%`);
@@ -121,7 +121,7 @@ describe("the week card", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
     for (const week of cpcPage.weeks) {
       fireEvent.click(within(weekSwitch()).getByRole("button", { name: `Wk ${week.week}` }));
-      expect(screen.getAllByRole("group")).toHaveLength(week.results.length);
+      expect(tiles()).toHaveLength(week.results.length);
       expect(screen.queryByRole("table")).toBeNull();
     }
   });
@@ -176,10 +176,112 @@ describe("the root-for card", () => {
 describe("the calls of the page", () => {
   it("makes no call on load or on a switch of weeks", () => {
     const fetch = vi.spyOn(globalThis, "fetch");
-    render(<SimPage sim={weekSim} you={CPC_YOU} />);
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
     for (const label of ["Wk 12", "Wk 13", "Wk 14", "Playoffs", "Wk 11"]) {
       fireEvent.click(within(weekSwitch()).getByRole("button", { name: label }));
     }
     expect(fetch).not.toHaveBeenCalled();
+    expect(api.calls).toHaveLength(0);
+  });
+});
+
+/* The numbers of the answers of the local API on week-sim.json, from what-if-win-above.json and what-if-loss-below.json.
+   With week 11 set to a win over Maye d'force B with U and the median, Bo Girds goes from 58% to 86%. */
+const FILE_SENTENCE = "Win 5 of the 8 left and you're in.";
+const WIN_ABOVE = { week: 11, game: "win", median: "above" } as const;
+const LOSS_BELOW = { week: 11, game: "loss", median: "below" } as const;
+
+const tile = (name: string) => tiles().find((entry) => entry.querySelector("[data-result-name]")?.textContent === name)!;
+const setLine = () => screen.queryByRole("region", { name: "What-if" });
+const weekItem = (label: string) => within(weekSwitch()).getByRole("button", { name: new RegExp(`^${label}`) });
+
+describe("the What-if", () => {
+  it("sets a result on a tap, shows the numbers of the API answer, and opens the next week", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    expect(yourTeam().textContent).toContain("58%");
+    fireEvent.click(tile("Win, beat median"));
+    // The call starts on the tap, with no wait.
+    expect(api.calls.map((call) => call.ask)).toEqual([{ you: CPC_YOU, set: [WIN_ABOVE] }]);
+    await waitFor(() => expect(yourTeam().textContent).toContain("86%"));
+    expect(yourTeam().textContent).toContain("Win 3 of the 6 left and you're in.");
+    expect(within(setLine()!).getByText(/Wk 11/).textContent).toContain("Wk 11 win, beat median");
+    await waitFor(() => expect(weekItem("Wk 12").getAttribute("aria-current")).toBe("page"));
+    expect(within(weekCard()).getByRole("heading").textContent).toBe(`Week 12 vs ${weekSim.names[5]}`);
+    // The root-for card of week 12 takes the numbers of the answer: 71% after a loss, and 75% if roster 10 wins.
+    const card = screen.getByRole("article", { name: "If you lose, you drop to 71%" });
+    fireEvent.click(within(card).getByRole("button", { expanded: false }));
+    expect(within(card).getAllByRole("listitem")[0].textContent).toContain(
+      `${weekSim.names[10]} beats ${weekSim.names[12]}`,
+    );
+    expect(within(card).getAllByRole("listitem")[0].textContent).toContain("→ 75%");
+    // Back on week 11, the set tile shows as pressed.
+    fireEvent.click(weekItem("Wk 11"));
+    expect(tile("Win, beat median").getAttribute("aria-pressed")).toBe("true");
+    expect(tile("Lose, miss median").getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("clears the set line on Reset and shows the numbers of the file again, with no call", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(tile("Win, beat median"));
+    await waitFor(() => expect(yourTeam().textContent).toContain("86%"));
+    fireEvent.click(within(setLine()!).getByRole("button", { name: "Reset" }));
+    // The set line closes with a short exit, then leaves the page.
+    await waitFor(() => expect(setLine()).toBeNull());
+    await waitFor(() => expect(yourTeam().textContent).toContain(FILE_SENTENCE));
+    expect(yourTeam().textContent).toContain("58%");
+    expect(api.calls).toHaveLength(1);
+    fireEvent.click(weekItem("Wk 11"));
+    expect(tile("Win, beat median").getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("cancels the call before a new tap and shows the answer of the last tap", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(tile("Win, beat median"));
+    fireEvent.click(tile("Lose, miss median"));
+    expect(api.calls.map((call) => call.ask)).toEqual([
+      { you: CPC_YOU, set: [WIN_ABOVE] },
+      { you: CPC_YOU, set: [LOSS_BELOW] },
+    ]);
+    expect(api.calls[0].signal.aborted).toBe(true);
+    expect(api.calls[1].signal.aborted).toBe(false);
+    await waitFor(() => expect(yourTeam().textContent).toContain("42%"));
+    expect(yourTeam().textContent).toContain("Win 5 of the 6 left and you're in.");
+    expect(within(setLine()!).getByText(/Wk 11/).textContent).toContain("Wk 11 lose, miss median");
+    // The pressed tile takes the odds of the answer, so it agrees with the header: 42%, where the file had 41%.
+    fireEvent.click(weekItem("Wk 11"));
+    expect(cpcPage.weeks[0].results[3].playoff).toBe(41);
+    expect(tile("Lose, miss median").textContent).toContain("42%");
+    expect(tile("Win, beat median").textContent).toContain(`${cpcPage.weeks[0].results[0].playoff}%`);
+  });
+
+  it("clears the result of a week on a second tap of its tile, with no call", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(tile("Win, beat median"));
+    fireEvent.click(tile("Win, beat median"));
+    expect(api.calls).toHaveLength(1);
+    expect(api.calls[0].signal.aborted).toBe(true);
+    await waitFor(() => expect(setLine()).toBeNull());
+    expect(tile("Win, beat median").getAttribute("aria-pressed")).toBe("false");
+    expect(yourTeam().textContent).toContain(FILE_SENTENCE);
+  });
+
+  it("keeps the numbers of the file and shows one line when the API is down", async () => {
+    // A real call to port 9, which nothing serves, so the connection is refused as when the API is down.
+    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" })} />);
+    fireEvent.click(tile("Win, beat median"));
+    await screen.findByText("The What-if is not available now.");
+    fireEvent.click(weekItem("Wk 11"));
+    fireEvent.click(tile("Lose, miss median"));
+    await waitFor(() => expect(tile("Lose, miss median").getAttribute("aria-pressed")).toBe("false"));
+    expect(screen.getAllByText("The What-if is not available now.")).toHaveLength(1);
+    await waitFor(() => expect(setLine()).toBeNull());
+    expect(yourTeam().textContent).toContain("58%");
+    expect(yourTeam().textContent).toContain(FILE_SENTENCE);
+    expect(tile("Win, beat median").getAttribute("aria-pressed")).toBe("false");
   });
 });

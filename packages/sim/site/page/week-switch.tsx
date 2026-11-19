@@ -1,6 +1,6 @@
 /**
  * The week switch of the sim page: one item per regular week left, then Playoffs, with a pill that slides to the open item.
- * Under reduced motion the pill moves at once.
+ * A week with a set result of the What-if shows a dot. Under reduced motion the pill moves at once.
  */
 "use client";
 
@@ -15,7 +15,17 @@ export type WeekItem = number | typeof PLAYOFFS;
 /* The slide of the pill: the tabs of transitions-dev, on a spring with no bounce. */
 const SLIDE = { type: "spring", bounce: 0, duration: 0.25 } as const;
 
-export function WeekSwitch({ items, open, onOpen }: { items: WeekItem[]; open: WeekItem; onOpen: (item: WeekItem) => void }) {
+export function WeekSwitch({
+  items,
+  open,
+  onOpen,
+  setWeeks = [],
+}: {
+  items: WeekItem[];
+  open: WeekItem;
+  onOpen: (item: WeekItem) => void;
+  setWeeks?: number[];
+}) {
   const off = useMotionOff();
   return (
     <nav aria-label="Weeks" className="w-full">
@@ -23,6 +33,7 @@ export function WeekSwitch({ items, open, onOpen }: { items: WeekItem[]; open: W
         <ul className="m-0 flex list-none gap-sp-1 rounded-tile bg-card p-sp-1">
           {items.map((item) => {
             const on = item === open;
+            const set = typeof item === "number" && setWeeks.includes(item);
             return (
               <li key={String(item)} className={cn("min-w-0 flex-1", item === PLAYOFFS && "flex-[1.6]")}>
                 <button
@@ -44,6 +55,12 @@ export function WeekSwitch({ items, open, onOpen }: { items: WeekItem[]; open: W
                     />
                   )}
                   <span className="relative tabular-nums">{item === PLAYOFFS ? "Playoffs" : `Wk ${item}`}</span>
+                  {set && (
+                    <>
+                      <span aria-hidden className={cn("relative ml-sp-1 size-1.5 flex-none rounded-pill", on ? "bg-page" : "bg-accent")} />
+                      <span className="sr-only">, set</span>
+                    </>
+                  )}
                 </button>
               </li>
             );

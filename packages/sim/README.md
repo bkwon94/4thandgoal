@@ -4,11 +4,11 @@
 
 - The package values in `values.py` (`cpc-sim`, imported as `sim`). It has no values.
 - The sim in `season.py`, the one odds engine (ADR 0037): the draw over the rest of the regular season, then the bracket of the playoff weeks. The bracket reseeds after each round when `reseed` of the League settings is on. It counts the playoff, the bye, the final, the title, each seed, and each final win total over 10,000 runs, and keeps the first 200 runs. It gives the seed, the status, and the swing of each game next week, and `weekly_odds` turns them into the weekly odds.
-- The page block of one team in `page.py`: the ladder, the results of each week left, the odds after a loss, and the root-for rows, each by a split of the runs of one sim. It also gives the league fact of the Sim tile.
+- The page block of one team in `page.py`: the ladder, the results of each week left, the odds after a loss, and the root-for rows, each by a split of the runs of one sim. A What-if counts its set wins apart, so the sentence names only the wins still open. It also gives the league fact of the Sim tile.
 - The rule of the shown odds in `percent.py`, which the team odds, the swings, and the page block share.
 - The numbers of the draw in `tunables.py`.
 - The shapes of the season `sim.json` and of the week `week-NN/sim.json`, and their writers, in `published.py`.
-- The site part in `site/`: the replay of one stored run beside the odds of all runs, and the sim page of Your team. The replay reads `sim.json` and nothing of the report. The page reads the page block of `week-NN/sim.json`.
+- The site part in `site/`: the replay of one stored run beside the odds of all runs, and the sim page of Your team. The replay reads `sim.json` and nothing of the report. The page reads the page block of `week-NN/sim.json`, and a tap on a result calls the What-if route through `site/lib/`.
 
 ## Ports
 

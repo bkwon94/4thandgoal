@@ -9,14 +9,19 @@
 - On a phone the root-for card opens from one row. From the tablet tier it always shows.
 - A number with the "about" flag of the file reads "about X%" (`format.ts`).
 - `TeamPick`: the pick of a team for a visitor with no team kept.
+- The What-if in `use-what-if.ts`. A tap on a tile sets that result, and a tap on the set tile clears it. The next week opens 400 ms after a set.
+- Each tap calls the What-if port at once and cancels the call before it. The header odds, the sentence, the ladder, and the weeks take the page of the answer.
+- A set week keeps its tiles and its root-for card as they were at the tap, so the tiles still show the odds of each other result.
+- The set line lists each set result, with a Reset back to the numbers of the file.
+- A failed call goes back to the set results of the last answer, and one line says "The What-if is not available now."
 
 ## Ports
 
-- The props of `SimPage`: the parsed week sim file, the roster id of Your team, and the avatars.
+- The props of `SimPage`: the parsed week sim file, the roster id of Your team, the avatars, and the What-if port of `lib/what-if-api.ts`.
 
 ## Does not do
 
-- It draws no score and runs no sim. Each number comes from the page block of `sim.json`.
-- It makes no call to the API.
+- It draws no score and runs no sim. Each number comes from the page block of `sim.json` or of a What-if answer.
+- It makes no call with no set result, and no call of its own. The port of the app makes the call.
 - It has no grid of every game. The only result tiles are those of Your team.
 - It reads no file, no env, no config, and no storage (ADR 0012). The app reads Your team.

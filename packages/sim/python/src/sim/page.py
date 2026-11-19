@@ -96,10 +96,13 @@ class SimPage(BaseModel):
 def team_page(
     you: int, runs: Sequence[RunRecord], *, playoff: int, status: OddsStatus,
     records: Mapping[int, tuple[int, int, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
-    effective_runs: int,
+    effective_runs: int, set_weeks: int = 0, set_wins: int = 0,
 ) -> SimPage:
     """The page block of `you` by a split of the `runs` of one sim. `schedule` holds the pairs of each regular week
-    left, in the order of `RunRecord.weeks`. `playoff` and `status` are the odds of the team over all runs."""
+    left, in the order of `RunRecord.weeks`. `playoff` and `status` are the odds of the team over all runs.
+
+    `set_weeks` and `set_wins` count the regular weeks that a What-if of `you` holds and the wins they add. The ladder
+    still counts every win left, and the sentence counts only the wins still open, so it agrees with the set results."""
     regular = sorted(schedule)
     weeks_left = len(regular)
     per_week = 2 if median_game else 1
@@ -160,7 +163,8 @@ def team_page(
                               loss_about=about(losses[i][0]), root_for=rows))
     return SimPage(you=you, playoff=playoff, status=status, record=(records[you][0], records[you][1]),
                    weeks_left=weeks_left, wins_left=wins_left, need=need,
-                   sentence=_sentence(status, need, wins_left, steps), ladder=steps, weeks=weeks)
+                   sentence=_sentence(status, need, wins_left, steps, set_weeks * per_week, set_wins),
+                   ladder=steps, weeks=weeks)
 
 
 def _root_for(
@@ -193,17 +197,25 @@ def _root_for(
     return [row for _, _, row in found[:ROOT_FOR_ROWS]]
 
 
-def _sentence(status: OddsStatus, need: int | None, wins_left: int, ladder: list[LadderStep]) -> str:
-    """The one line of more wins: the smallest count with playoff odds of IN_ODDS or more."""
+def _sentence(status: OddsStatus, need: int | None, wins_left: int, ladder: list[LadderStep], set_left: int = 0,
+              set_wins: int = 0) -> str:
+    """The one line of more wins: the smallest count with playoff odds of IN_ODDS or more. A What-if holds `set_wins`
+    of the `set_left` wins of its set weeks, so the line names only the wins still open."""
     if status == "in":
         return "You're in."
     if status == "out":
         return "You're out of the playoff race."
+    wins_left -= set_left
+    if not wins_left:
+        return "Every week left is set."
+    # No run of a What-if has fewer more wins than its set wins, so `need` is never under `set_wins`.
+    need = None if need is None else need - set_wins
     if need == 0:
         return f"You're in at {IN_ODDS}% or better even with no more wins."
     if need is not None:
         return f"Win {need} of the {wins_left} left and you're in."
-    best = ladder[-1].playoff
+    # The best case wins every open win on top of the set wins.
+    best = ladder[set_wins + wins_left].playoff
     return f"Win all {wins_left} left for a {best}% shot." if best is not None else "No run gives you a playoff spot."
 
 

@@ -7,6 +7,9 @@
 - `week-sim.json`, the week sim file in the exact shape the pipeline writes, from the sim step of CPC 2026 week 10.
 - `week-sim-norcal.json`, the week sim file of NorCal 2026 week 10, a league with no median game.
 - `weekSim` and `norcalWeekSim`, the two week files parsed with the schema.
+- `what-if-win-above.json` and `what-if-loss-below.json`, two answers of the local What-if route on `week-sim.json`, with Bo Girds
+  set to a win over the median and to a loss under it in week 11.
+- `fakeWhatIfApi`, the one fake of the What-if port over those two answers. It keeps each call and its signal.
 
 ## Ports
 

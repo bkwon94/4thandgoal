@@ -347,7 +347,10 @@ def _season_sim(
     effective_runs = round(total * total / squares)
     blocks = {rid: team_page(rid, log, playoff=teams[rid].playoff, status=teams[rid].status, records=records,
                              schedule={w: list(remaining[w]) for w in regular}, median_game=median_game,
-                             effective_runs=effective_runs)
+                             effective_runs=effective_runs,
+                             set_weeks=len(held_regular) if rid == you else 0,
+                             set_wins=sum((r.game == "win") + (r.median == "above") for _, _, r in held_regular)
+                             if rid == you else 0)
               for rid in sorted(set(pages))}
     return SimResult(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,

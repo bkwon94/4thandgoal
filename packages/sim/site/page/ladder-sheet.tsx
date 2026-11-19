@@ -5,6 +5,7 @@
 "use client";
 
 import { ChevronRight, XIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { cn } from "@cpc/design/lib/utils";
 import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "@cpc/design/ui/sheet";
 import type { SimPage } from "../schema/sim-types";
@@ -13,7 +14,8 @@ import { Bar } from "./parts";
 
 const ROW = "grid min-h-touch grid-cols-[3.75rem_1fr_4.75rem_3.5rem] items-center gap-x-sp-2 tablet:gap-x-sp-3";
 
-export function LadderSheet({ page, medianGame }: { page: SimPage; medianGame: boolean }) {
+/* `sentence` shows the sentence of the page, so the sim page can swap it softly when a What-if changes it. */
+export function LadderSheet({ page, medianGame, sentence }: { page: SimPage; medianGame: boolean; sentence?: ReactNode }) {
   const perWeek = medianGame
     ? "Each week gives 2 wins: one for your game, one for the median."
     : "Each week gives 1 win, for your game.";
@@ -26,7 +28,7 @@ export function LadderSheet({ page, medianGame }: { page: SimPage; medianGame: b
         )}
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-lead leading-tight font-bold text-balance">{page.sentence}</span>
+          <span className="block text-lead leading-tight font-bold text-balance">{sentence ?? page.sentence}</span>
           <span className="block pt-sp-0 text-meta text-mute">
             {medianGame ? "Game wins and median wins both count. Tap for all." : "Tap for all."}
           </span>
