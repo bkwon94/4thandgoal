@@ -3,7 +3,7 @@
  * Each test fires real pointer events on the page and reads what the hunt sent through the one fake of the port.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@cpc/design/ui/sheet-jsdom";
 import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
@@ -14,14 +14,20 @@ import { CRACK_MS } from "./find-card";
 
 const MATCH = { match: true as const, claimed: false as const, letter: "C", token: "t1" };
 
+/* Fake timers replace the clock, so a wait of TAP_GAP_MS or CRACK_MS costs no real time. The clock also moves with
+   real time, so the polls of findBy and waitFor still end. */
 beforeEach(() => {
+  vi.useFakeTimers({ shouldAdvanceTime: true });
   localStorage.clear();
   document.documentElement.classList.remove("dark");
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
-const wait = (ms: number) => act(() => new Promise((done) => setTimeout(done, ms)));
+const wait = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms));
 
 /* Three fast taps on the Luck cell of Lil Fridge, then the end of the run. The board loads first, because the
    listener starts only when the board names a drop. */
