@@ -10,9 +10,9 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Status:** ready-for-agent
 
-- [ ] One pure function of the time and the Lock gives the state (open, last hours, closed, ended) and the countdown text, with tests at the edges: 3 h before, the Lock, and one day after.
-- [ ] The Deadline banner shows on each CPC page in both themes, with equal top and bottom padding and one left edge for both lines.
-- [ ] The Deadline banner is one button with the name "Open the Trade Wire" and opens the shared sheet.
-- [ ] Norcal shows no Deadline banner.
-- [ ] The WebKit check passes at 390 by 660, 810 by 980, 1080 by 740, and 1280 by 800, with no horizontal scroll and no overlap.
-- [ ] The front door Tour still shows in full, with no overlap by the Deadline banner, on the first visit.
+- [x] One pure function of the time and the Lock gives the state (open, last hours, closed, ended) and the countdown text, with tests at the edges: 3 h before, the Lock, and one day after.
+- [x] The Deadline banner shows on each CPC page in both themes, with equal top and bottom padding and one left edge for both lines.
+- [x] The Deadline banner is one button with the name "Open the Trade Wire" and opens the shared sheet.
+- [x] Norcal shows no Deadline banner.
+- [x] The WebKit check passes at 390 by 660, 810 by 980, 1080 by 740, and 1280 by 800, with no horizontal scroll and no overlap.
+- [x] The front door Tour still shows in full, with no overlap by the Deadline banner, on the first visit.

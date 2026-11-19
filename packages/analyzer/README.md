@@ -7,8 +7,8 @@
 - The analyzer routes of the API in `routes.py`: the teams, the analyze route, and the find route, with the result cache, the teams cache, and the grade limit. The sell high press of the front door is there too, with no route of its own.
 - The grade limit counts per client and per address. Each client has its own result cache, so the roster ids of two leagues never share a grade.
 - The cache key reads the points key of the League settings of the client, such as `pts_ppr` for a full PPR league.
-- The trade form, the finder, the API client, the passphrase, the teams store, and the team picker of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
-- Package values, under `[values.analyzer]`: `finder`, the trade finder on the analyzer page. The default is false.
+- The trade form, the finder, the API client, the passphrase, the teams store, the team picker, and the Deadline banner of the site (`@cpc/analyzer`). The site calls `/clients/<slug>/...`.
+- Package values, under `[values.analyzer]`: `finder`, the trade finder on the analyzer page. The default is false. `lock`, the Lock: the time when Sleeper closes trades, a quoted time with its UTC offset. With none, the client has no Deadline week.
 - The model of its package values in `values.py`, and its exported JSON Schema `values.schema.json`. `make schema` rewrites the file.
 
 ## Ports

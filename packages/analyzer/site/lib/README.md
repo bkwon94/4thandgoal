@@ -7,6 +7,7 @@
 - The browser stores: the passphrase, the teams list, and the team pick of the War chest page.
 - The trade of the Stack in `trade.ts`: each side, the players it gets with their source side, the body of `POST /analyze` that the picks build, and the level of the Ready halo.
 - The stage lines in `stage-lines.ts`: the 12 lines that one trade on the stage gives, from one pure function.
+- The clock of Deadline week in `deadline.ts`: the phase (open, last hours, closed, ended) and the countdown text from the time and the Lock, from one pure function.
 - The favored side of a grade in `favored-side.ts`, from the Lean, which the mesh of the reveal dips toward.
 - The mode of the analyzer from the query of its link, `?mode=grade` or `?mode=find`, in `mode.ts`. Find needs the finder flag.
 - The stats-through segments of the as-of line, which the result and the trade finder share.
