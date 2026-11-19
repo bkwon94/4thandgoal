@@ -16,7 +16,8 @@ await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite(
 
 const BO_GIRDS = "6";
 
-/* The copy of the Stops, word for word from the table of the PRD (decision 03). */
+/* The copy of the Stops, word for word from the table of the PRD. The decision ticket 03 of the Tour, "The line of each
+   Stop", sets it. */
 const COPY = [
   { header: "Suggestions", line: "Picks for your team right now. Tap one to open it, or tap More for the full list." },
   { header: "Ask", line: "Type any question about your team or your league, such as start or sit, a trade, or the playoff race." },

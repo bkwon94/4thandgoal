@@ -70,9 +70,9 @@ async function restingHole(page: Page) {
   return last;
 }
 
-/* The part of the control of each Stop that the eye sees, by the rule of decision 02. The ask box has its own fill and
-   border, so it counts whole. The Suggestions row counts its chips, inside the screen less 8 px. The team switch counts
-   its avatar, its name, and its mark. The menu button counts only its icon. The pill bar counts its links. */
+/* The part of the control of each Stop that the eye sees, by the rule of the decision ticket 02 of the Tour, "What a Stop
+   looks like". The ask box has its own fill and border, so it counts whole. The Suggestions row counts its chips, inside
+   the screen less 8 px. The team switch counts its avatar, its name, and its mark. The menu button counts only its icon. The pill bar counts its links. */
 async function visualBox(page: Page, header: string): Promise<Rect> {
   return page.evaluate((header) => {
     const union = (rects: DOMRect[]) => {

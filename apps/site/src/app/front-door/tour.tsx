@@ -12,8 +12,9 @@ import { StopCard, StopCardContent, StopCardLine, StopCardTitle, type StopCardDi
 import { BLUR_SMALL, EASE_IN_OUT, FAST, GLIDE, QUICK, SCALE_MEDIUM, SCALE_TINY, SMOOTH, fadeIn, orStill } from "./motion";
 import { markTourSeen, tourSeen } from "./tour-store";
 
-/* The four Stops in order, with the copy of decision 03. Each target has an accessible name already, so the Tour finds it
-   by that name and adds no hook to the control. Stop 4 takes the menu button or the pill bar, whichever one shows. */
+/* The four Stops in order, with the copy of the decision ticket 03 of the Tour, "The line of each Stop". Each target has
+   an accessible name already, so the Tour finds it by that name and adds no hook to the control. Stop 4 takes the menu
+   button or the pill bar, whichever one shows. */
 export const STOPS = [
   {
     key: "suggestions",
@@ -287,8 +288,8 @@ function scrollThen(el: HTMLElement, smooth: boolean, done: () => void): () => v
    bottom half, so it never covers the control. */
 const sideOf = (hole: Hole) => (hole.y + hole.height / 2 <= window.innerHeight / 2 ? "below" : "above");
 
-/* Text swap soft (34): the old text and the new text cross-blur in one cell, with no move. Under reduced motion only
-   the opacity changes. The old text is hidden from a screen reader while it leaves, so the card has one name. */
+/* transitions.dev pattern 34, Text swap soft: the old text and the new text cross-blur in one cell, with no move. Under
+   reduced motion only the opacity changes. The old text is hidden from a screen reader while it leaves, so the card has one name. */
 function Swap({ id, off, className = "", children }: { id: string | number; off: boolean; className?: string; children: ReactNode }) {
   return (
     <span className={`grid ${className}`}>
@@ -438,8 +439,8 @@ function Stops({ onEnd }: { onEnd: () => void }) {
           className="pointer-events-none !inset-0 h-dvh w-screen transition-opacity data-[ending-style]:opacity-0"
           style={{ transitionDuration: `${QUICK}s`, transitionTimingFunction: `cubic-bezier(${SMOOTH.join(", ")})` }}
         >
-          {/* Menu dropdown (05): the card grows from its edge on the side of the hole at 0.97 on FAST, and leaves at 0.99
-              on QUICK. Under reduced motion it keeps a scale of 1. */}
+          {/* transitions.dev pattern 05, Menu dropdown: the card grows from its edge on the side of the hole at 0.97 on
+              FAST, and leaves at 0.99 on QUICK. Under reduced motion it keeps a scale of 1. */}
           <motion.div
             className="pointer-events-none fixed top-0 left-0"
             style={{ width, transformOrigin: "50% 0%" }}
@@ -486,7 +487,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
                 </StopCardLine>
               </div>
               <div className="mt-sp-1 flex items-center justify-between gap-sp-2">
-                {/* The current dot stretches into a short bar, on the slide of Tabs sliding (16). */}
+                {/* The current dot stretches into a short bar, on the slide of transitions.dev pattern 16, Tabs sliding. */}
                 <span aria-hidden className="flex items-center gap-sp-1">
                   {targets.map((stop, dot) => (
                     <motion.span
