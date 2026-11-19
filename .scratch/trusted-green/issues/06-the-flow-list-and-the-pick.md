@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-5, 
 
 **Blocked by:** 05
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A diff of the analyzer site folder picks only Analyzer.
 - [x] A diff of the pipeline only picks no flow.
