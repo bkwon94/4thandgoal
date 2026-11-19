@@ -125,9 +125,50 @@ Test verdict: pending
 
 Done condition: Both AT-51 tests of `apps/site/e2e/front-door-passphrase.spec.ts` pass when an Announcement or the Tour opens on the load beat, and they still fail when the box sits under the keyboard.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: `front-door-passphrase.spec.ts` in `apps/site/e2e/` marks only the Announcement `season-sim-2026` seen by its id, so on a slow runner any other Announcement opens on the load beat, covers the front door, and the next tap waits out the 30 s timeout. This is a test bug: `useAnnouncement` opens an Announcement before the first tap by design and never over another sheet, so a person dismisses it, and the Tour never opens over an open modal layer. The two CI failures had causes that are already fixed: run 44526392859 ran before the spec marked the season sim Announcement seen, and run 43978248839 hit the keyboard lift of `win-one-sheet` ("element is outside of the viewport"), which `5e9ed010` fixed. The fix adds `skipAnnouncements` in `apps/site/e2e/announcement.ts`, which reads every key under `ANNOUNCEMENT_KEY_PREFIX` of `use-announcement.ts` as seen, and the spec calls it with `skipTour`. The loop starts the page clock on the release day of the season sim and moves it past the load beat, so the Announcement opens before the first tap on each run, and it drops the seen mark by id, so the season sim Announcement stands in for one that the spec does not name.
+Red: at `9790fdb0`, `(CLIENT=cpc pnpm build || CLIENT=cpc pnpm build) > /dev/null 2>&1 && pnpm exec playwright test --project=floor e2e/front-door-passphrase.spec.ts -g "AT-51"` in `apps/site`
+
+```text
+  1) [floor] › e2e/front-door-passphrase.spec.ts:129:7 › the passphrase box of the passphrase modal with the iOS keyboard (AT-51) › the box sits above the keyboard with a kept team and no kept passphrase
+
+    Error: no Announcement and no Tour covers the front door before the first tap
+
+    expect(locator).toHaveText(expected) failed
+
+    Locator: getByRole('dialog')
+    - Array []
+    + Array [
+    +   "Your team ... What-if: ...Cornerstone Fantasy Football League: New: Season simSee your path to the playoffsPick this week's results and watch your playoff odds move.Open the simNot now",
+    + ]
+    >  97 |   await expect(page.getByRole("dialog"), "no Announcement and no Tour covers the front door before the first tap").toHaveText([]);
+  1 failed
+  1 passed (7.8s)
+```
+
+The loop went red on 5 of 5 runs with `--repeat-each 5`, each at the check before the first tap, in about 5.5 s and not at the 30 s timeout. The first test passes at the red commit, because its team sheet opens on load, so no Announcement opens on that load, and `skipTour` keeps the Tour away.
+
+Green: at `59d623e0`, `(CLIENT=cpc pnpm build || CLIENT=cpc pnpm build) > /dev/null 2>&1 && pnpm exec playwright test --project=floor e2e/front-door-passphrase.spec.ts -g "AT-51"` in `apps/site`
+
+```text
+  ✓  1 [floor] › e2e/front-door-passphrase.spec.ts:134:7 › the passphrase box of the passphrase modal with the iOS keyboard (AT-51) › the box sits above the keyboard with a kept team and no kept passphrase (2.0s)
+the box spans 394 to 448 px, and the keyboard starts at 516 px
+  ✓  2 [floor] › e2e/front-door-passphrase.spec.ts:116:7 › the passphrase box of the passphrase modal with the iOS keyboard (AT-51) › the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap (4.1s)
+  2 passed (5.9s)
+```
+
+The proof that the loop still fails when the box sits under the keyboard: at `59d623e0`, with `translate-y-[100px]` added to the `SheetContent` class of `passphrase-sheet.tsx` for one run and then put back, the same command gives:
+
+```text
+  ✘  1 [floor] › e2e/front-door-passphrase.spec.ts:134:7 › ... the box sits above the keyboard with a kept team and no kept passphrase (1.9s)
+the box spans 494 to 548 px, and the keyboard starts at 516 px
+  ✘  2 [floor] › e2e/front-door-passphrase.spec.ts:116:7 › ... the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap (4.0s)
+    Error: the whole box is above the keyboard
+    Expected: <= 516
+    Received:    548
+  2 failed
+```
+
+At `59d623e0`, the two AT-51 tests with `--repeat-each 5` give `10 passed`, the full spec `front-door-passphrase.spec.ts` gives `2 passed`, and `make check-fast BASE=main` passes. Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, still call only `skipTour`; a later run can give them `skipAnnouncements` too.
 Test verdict: pending
 
 ## Smoke
