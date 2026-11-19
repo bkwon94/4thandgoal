@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-12 and AT-13.
 
 **Blocked by:** 06
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The skill text of `4ag:implement` names the smoke run, the smoke folder, and the stop on a red run.
 - [x] `format.md` of `4ag:quick` names the `Smoke:` block and the `Rebuild:` block.
