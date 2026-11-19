@@ -25,8 +25,8 @@ from league.live import (
 )
 from league.models import Week
 from league.nflverse import CACHE_MAX_AGE_SECONDS, http_get
-from league.provider.raw import RawTrending
-from league.provider.sleeper import fetch_past_week, fetch_trending
+from league.provider.raw import RawTransaction, RawTrending
+from league.provider.sleeper import fetch_current_transactions, fetch_past_week, fetch_trending
 from league.snapshot import Snapshot
 
 
@@ -47,6 +47,8 @@ class Sources:
     fetch_past: Callable[[str], bytes] | None = None
     # The top adds across all Sleeper leagues in the last day. The waiver targets read it as the crowd signal.
     fetch_trending: Callable[[], list[RawTrending]] = fetch_trending
+    # The leg that Sleeper is in and its transactions, read with no CDN cache. The Trade Wire reads it.
+    fetch_transactions: Callable[[str], tuple[int, list[RawTransaction]]] = fetch_current_transactions
     # The kickoffs of the game lock of Start or sit: the Sleeper `scores` query, and the ESPN scoreboard as its fallback.
     fetch_sleeper_scores: ScoresFetcher = fetch_sleeper_scores
     fetch_espn_scoreboard: ScoresFetcher = fetch_espn_scoreboard
