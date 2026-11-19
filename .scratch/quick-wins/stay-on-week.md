@@ -27,6 +27,6 @@ Green: at `c8c63455`, `cd apps/site && pnpm exec vitest run ../../packages/sim/s
  Test Files  1 passed (1)
       Tests  1 passed | 18 skipped (19)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
