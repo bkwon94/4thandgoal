@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, A
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] The hole pad is even on all four sides to 1 px, with a circle on the menu button and a pill on each other control (AT-14).
 - [x] The card does not overlap its control on the four viewports of the iPhone rule (AT-16).
@@ -17,3 +17,11 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, A
 - [x] After a resize from 390x660 to 660x390 at Stop 2, the hole center is within 2 px of the ask box center (AT-19).
 - [x] Next and Done fill with the `accent` token and use the `on-dark` text in both themes (AT-22).
 - [ ] The ticket uses the design bar: `transitions-dev`, scrolltide, `apple-design`, `animate`, `critique`, and `polish`.
+
+## Comments
+
+- Closes with the squash merge of the spec PR.
+- The branch front-door-tour-03 merged into front-door-tour on 2026-11-18 as e2fcd771.
+- 12 Playwright tests in WebKit cover the pad, the shape, the overlap on the four viewports, the height, the scroll, and the resize.
+- The design bar passes of scrolltide, animate, critique, and polish did not run, because they need a visual check.
+- Read 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/front-door-tour/PRD.md, .scratch/front-door-tour/ACCEPTANCE.md, .scratch/front-door-tour/issues/03-the-look-of-the-hole-and-the-card.md.

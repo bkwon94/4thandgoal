@@ -11,7 +11,6 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 
 | Feature | App | Next ticket | Blocked by | Hold |
 | --- | --- | --- | --- | --- |
-| `front-door-tour` | site | 01 The Tour: four Stops, their controls, and the seen key | none | |
 | `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |

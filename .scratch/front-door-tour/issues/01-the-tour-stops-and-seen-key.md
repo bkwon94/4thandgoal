@@ -8,7 +8,7 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-7
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A browser with Your team and no seen key sees Stop 1 on load (AT-2).
 - [x] The four Stops show the copy of the PRD table word for word, with "n of 4" and four dots (AT-3).
@@ -23,3 +23,11 @@ Spec: `.scratch/front-door-tour/PRD.md`. Acceptance tests AT-2, AT-3, AT-4, AT-7
 - [x] The Stop card has role `dialog` and `aria-modal="true"` while the Tour shows (AT-39).
 - [x] The `ui` README names the `stop-card` wrapper, and the ui-sdk rule test passes.
 - [x] No `driver.js` in any `package.json` or the lock file, and no change under `apps/pipeline/` or `apps/api/` (AT-36, AT-37).
+
+## Comments
+
+- Closes with the squash merge of the spec PR.
+- The branch front-door-tour-01 merged into front-door-tour on 2026-11-18 as 5855d24e.
+- 19 Vitest tests and 14 Playwright tests are new, and AT-1 to AT-39 have PASS from the Judge.
+- Android Back needed a CloseWatcher in the stop-card wrapper, which review fix a added.
+- Read 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/front-door-tour/PRD.md, .scratch/front-door-tour/ACCEPTANCE.md, .scratch/front-door-tour/issues/01-the-tour-stops-and-seen-key.md.
