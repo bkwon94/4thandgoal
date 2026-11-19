@@ -1,5 +1,5 @@
 /**
- * The stage lines part: one short line under the title that changes every 2.5 s while a grade runs.
+ * The stage lines part: one short line under the title that changes every 2.5 s while a grade runs, or that the caller drives.
  * It is a separate part, so the hero can place it over any art. It is hidden from a screen reader, which hears the status only.
  */
 "use client";
@@ -51,7 +51,23 @@ export function StageLines({ lines }: { lines: string[] }) {
   // A new line starts in its enter state, and the part releases it after the gap, so the browser paints the start before the move.
   const [entered, setEntered] = useState(true);
 
+  // A list of one line has no clock. The line holds until the caller sends a new list of one line, and then it swaps
+  // with the same motion as a timed line. The Finder wait drives it from the real steps of its stream. The swap runs
+  // before the paint, so the new line never shows a frame outside its enter state.
+  const driven = lines.length === 1;
+  const [drivenText, setDrivenText] = useState(lines[0]);
+  useLayoutEffect(() => {
+    if (!driven || lines[0] === drivenText) return;
+    if (!off) {
+      setLeaving({ tick, text: drivenText, over: overRef.current });
+      setEntered(false);
+    }
+    setDrivenText(lines[0]);
+    setTick(tick + 1);
+  }, [driven, lines, drivenText, tick, off]);
+
   useEffect(() => {
+    if (driven) return;
     const hold = setTimeout(() => {
       if (!off) {
         setLeaving({ tick, text: lines[lineIndex(tick, lines.length)], over: overRef.current });
@@ -60,7 +76,7 @@ export function StageLines({ lines }: { lines: string[] }) {
       setTick(tick + 1);
     }, HOLD_MS);
     return () => clearTimeout(hold);
-  }, [tick, lines, off]);
+  }, [tick, lines, off, driven]);
 
   useEffect(() => {
     if (entered) return;
@@ -74,8 +90,9 @@ export function StageLines({ lines }: { lines: string[] }) {
     return () => clearTimeout(gone);
   }, [leaving]);
 
-  const text = lines[lineIndex(tick, lines.length)];
-  const longest = lines.reduce((a, b) => (b.length > a.length ? b : a), "");
+  const text = driven ? drivenText : lines[lineIndex(tick, lines.length)];
+  // A driven line is the only line, so the sizer is the line on the screen.
+  const longest = driven ? drivenText : lines.reduce((a, b) => (b.length > a.length ? b : a), "");
   const state = off ? " is-still" : entered ? "" : " is-enter-start";
   const scroll =
     over > 0

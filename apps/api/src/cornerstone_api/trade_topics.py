@@ -480,13 +480,15 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
 def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> StreamingResponse:
     """The find press of the analyzer page as a stream: one step line as each step of the search ends, then the
     finder document. It is the stream of trade ideas, so the analyzer page and the front door read one protocol.
+    A team part goes out with the roster id of each team as the first step reads it, so the avatars light in turn.
 
     It counts one grade, as the plain find route does, and the caps of the front door do not apply.
     """
 
     def work(emit: Emit) -> None:
         later: list[Callable[[], None]] = []
-        document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=later.append)
+        document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=later.append,
+                                               read=lambda roster_id: emit("data-team", {"roster_id": roster_id}))
         emit("data-answer", {"kind": "find", "document": document})
         # The log-only Jev checks run after the Answer goes out, so they add no time to the wait.
         for job in later:

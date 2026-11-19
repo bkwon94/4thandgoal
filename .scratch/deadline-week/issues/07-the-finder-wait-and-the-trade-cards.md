@@ -10,7 +10,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-12, AT-32, AT-36, AT-
 
 **Status:** ready-for-agent
 
-- [ ] The wait shows one real step at a time in `StageLines`, and each line holds until the next step ends.
-- [ ] A tap on a card makes no analyze request, and the analyzer shows the read of the card.
-- [ ] The switch stays on Find during a wait.
+- [x] The wait shows one real step at a time in `StageLines`, and each line holds until the next step ends.
+- [x] A tap on a card makes no analyze request, and the analyzer shows the read of the card.
+- [x] The switch stays on Find during a wait.
 - [ ] The text of each page, in each state of Deadline week, has none of the banned words of AT-12.

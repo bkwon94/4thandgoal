@@ -91,6 +91,19 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+/* A find stream that sends the first step and the document, then ends, as the find stream of the API does. */
+function findStream(doc: unknown) {
+  const encoded = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`);
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(encoded({ type: "data-step", data: { line: "Reading their roster", live: true } }));
+      controller.enqueue(encoded({ type: "data-answer", data: { kind: "find", document: doc } }));
+      controller.close();
+    },
+  });
+  fetchStub.mockResolvedValueOnce(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+}
+
 describe("TradeForm", () => {
   it("edits the captured trade in a sheet, restores it on Cancel, and submits changed picks", async () => {
     cleanup();
@@ -479,13 +492,13 @@ describe("TradeForm", () => {
     expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://cdn.test/ana.png");
   });
 
-  it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
+  it("puts the grading hero in the slots: the eyebrow of the page, the title, the line, and the loading state", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta", "feature"]);
-    expect(slotText(hero, "eyebrow")).toBe("Live");
+    expect(slotText(hero, "eyebrow")).toBe("Trade Analyzer");
     expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("Grading the Trade");
     expect(slotText(hero, "meta")).toBe("This can take up to a minute.");
     const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
@@ -1064,24 +1077,26 @@ describe("TradeForm with the finder", () => {
     await waitFor(() => expect(slot("Your Team").getAttribute("aria-label")).toContain("All You Need Is Love"));
   });
 
-  /* Finds with the fixture partner and taps "See the Full Result" on a card. */
-  async function openCard(finderDoc: unknown, index: number) {
+  /* Finds with the fixture partner and taps "See the Full Result" on a card. A card with a read shows it at once. A
+     card of a fallback has no read, so the form grades it, and the analyze route answers with the analyze fixture. */
+  async function openCard(finderDoc: typeof findJson, index: number) {
     await pickTeam("Your Team", "All You Need Is Love");
     await toFind();
     await pickPartner();
-    answer(200, finderDoc);
+    findStream(finderDoc);
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
-    answer(200, fixtureJson);
+    const lean = finderDoc.trades[index].lean;
+    if (lean === null) answer(200, fixtureJson);
     fireEvent.click(within(cards[index]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
+    await screen.findByRole("heading", { level: 2, name: lean ?? "Lean yes" });
   }
 
   it("resets the partner and the cards when my team changes", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     await toFind();
     await pickPartner();
-    answer(200, findJson);
+    findStream(findJson);
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await screen.findAllByRole("article");
 
@@ -1104,43 +1119,45 @@ describe("TradeForm with the finder", () => {
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
   });
 
-  it("grades the trade of a card with the season of the finder document", async () => {
+  it("grades a card of a fallback, which has no read, with the season of the finder document", async () => {
     Element.prototype.scrollIntoView = vi.fn();
-    await openCard({ ...findJson, season: 2025 }, 1);
-    expect(JSON.parse(fetchStub.mock.calls[1][1].body).season).toBe(2025);
-  });
-
-  it("grades the trade of a card through the analyze route and shows the full result", async () => {
-    Element.prototype.scrollIntoView = vi.fn();
-    await pickTeam("Your Team", "All You Need Is Love");
-    await toFind();
-    await pickPartner();
-    answer(200, findJson);
-    fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
-    const cards = await screen.findAllByRole("article");
-    expect(cards).toHaveLength(3);
-
-    answer(200, fixtureJson);
-    fireEvent.click(within(cards[1]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
-
+    const trades = findJson.trades.map((trade) => ({ ...trade, lean: null, case: null, bullets: [], fact_lines: ["A fact."] }));
+    await openCard({ ...findJson, season: 2025, fallback: true, trades }, 1);
     const [url, init] = fetchStub.mock.calls[1];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");
-    const [mine, theirs] = findJson.trades[1].sides;
-    expect(JSON.parse(init.body)).toEqual({
-      season: 2026,
-      asker: 2,
-      sides: [
-        { roster_id: 2, gives: mine.gives.map((p) => ({ player_id: p.player_id, to: theirs.roster_id })) },
-        { roster_id: theirs.roster_id, gives: theirs.gives.map((p) => ({ player_id: p.player_id, to: 2 })) },
-      ],
-    });
-    // The grade of a card shows in Grade mode, so Find leaves the page.
+    expect(JSON.parse(init.body).season).toBe(2025);
+  });
+
+  it("opens the trade of a card with the read of the find, with no analyze request, and the form holds the trade", async () => {
+    Element.prototype.scrollIntoView = vi.fn();
+    await openCard(findJson, 1);
+    const trade = findJson.trades[1];
+    const read = screen.getByRole("region", { name: "The Read" });
+    expect(read.textContent).toContain(trade.case!);
+    // The find stream is the one request. The read comes with the find.
+    expect(fetchStub.mock.calls.map(([url]) => url)).toEqual(["https://api.example.test/clients/cpc/find-stream"]);
+    // The read of a card shows in Grade mode, so Find leaves the page.
     expect(screen.queryByRole("heading", { name: "Trade Ideas" })).toBeNull();
-    // The form shows the trade of the card, so the picks match the result.
+    // The form shows the trade of the card, so the picks match the read, and an edit grades it again.
+    const [mine, theirs] = trade.sides;
     edit();
     expect(slot("Team Two").getAttribute("aria-label")).toContain(partnerName);
     expect(within(card("Team Two")).getByRole("button", { name: `Remove ${mine.gives[0].name}` })).toBeTruthy();
     expect(within(card("Your Team")).getByRole("button", { name: `Remove ${theirs.gives[0].name}` })).toBeTruthy();
+  });
+
+  it("locks the switch in the grade wait and shows the eyebrow of the page, not Live", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    // Each player of the asker shows in each fixture trade, so the trade goes with the third team, whose one player is plain.
+    await pickTeam("Your Team", "Third Wheel");
+    await pickTeam("Team Two", partnerName);
+    await pickPlayers("Your Team", partnerName, first.sides[1].gives[0].name);
+    await pickPlayers("Team Two", "Third Wheel", "Tess One");
+    fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(slotText(hero, "eyebrow")).toBe("Trade Analyzer");
+    const toggle = within(hero).getByRole("radiogroup", { name: "Mode" });
+    expect(within(toggle).getByRole("radio", { name: "Grade a trade" }).getAttribute("aria-checked")).toBe("true");
+    expect(within(toggle).getByRole("radio", { name: "Find a trade" }).hasAttribute("disabled") || toggle.getAttribute("aria-disabled") === "true").toBe(true);
   });
 });

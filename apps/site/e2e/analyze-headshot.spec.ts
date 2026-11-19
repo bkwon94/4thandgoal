@@ -16,6 +16,8 @@ const FIXTURES = join(process.cwd(), "..", "..", "packages", "analyzer", "site",
 const ANALYZE = readFileSync(join(FIXTURES, "analyze-response.json"), "utf8");
 // The find document of the analyzer tests, in the exact shape of the API. The swap card of each of its trades holds the chips.
 const FIND = readFileSync(join(FIXTURES, "find-response.json"), "utf8");
+// The find stream of the API: the document of the fixture in its answer part, as one event stream.
+const FIND_STREAM = `data: ${JSON.stringify({ type: "data-answer", data: { kind: "find", document: JSON.parse(FIND) } })}\n\ndata: [DONE]\n\n`;
 const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
 
 type Player = { player_id: string; name: string; position: string; nfl_team: string; headshot: string };
@@ -49,7 +51,8 @@ test("each headshot frame fills its player chip, centered, with no strip at the 
     const request = route.request();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
     const url = request.url();
-    const body = url.includes("/teams") ? teamsOfAnalyze() : url.includes("/find") ? FIND : ANALYZE;
+    if (url.includes("/find-stream")) return route.fulfill({ status: 200, headers: CORS, contentType: "text/event-stream", body: FIND_STREAM });
+    const body = url.includes("/teams") ? teamsOfAnalyze() : ANALYZE;
     return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body });
   });
   await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));

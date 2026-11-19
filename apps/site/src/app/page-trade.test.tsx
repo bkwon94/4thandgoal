@@ -159,7 +159,7 @@ describe("the trade ideas of Lil Fridge", () => {
     expect(offers).toHaveLength(2);
     expect(ideas.textContent).toContain("You give Derrick Henry and get Tee Higgins.");
     expect(ideas.textContent).toContain("With Teehee");
-    // Each offer leads with its headline and shows its top 2 Bullets. The Trade page holds the rest.
+    // Each offer shows its top 2 Bullets. The Trade page holds the rest.
     expect(ideas.textContent).toContain("St. Brown is WR8 at 15.6 points per game");
     expect(ideas.querySelectorAll("[data-bullet-text]")).toHaveLength(4);
   });

@@ -103,7 +103,7 @@ describe("threadTurns", () => {
 
 const player = (name: string) => ({ player_id: name, name, position: "WR", nfl_team: "SEA", headshot: "" });
 const side = (roster_id: number, team: string, gives: string[], gets: string[]) => ({ roster_id, team, gives: gives.map(player), gets: gets.map(player) });
-const offer = (n: number) => ({ offer_id: `o${n}`, sides: [side(1, "Bo Girds", [`Give ${n}`], [`Get ${n}`]), side(2, "Lil Fridge", [`Get ${n}`], [`Give ${n}`])], headline: null, bullets: [], fact_lines: [] });
+const offer = (n: number) => ({ offer_id: `o${n}`, sides: [side(1, "Bo Girds", [`Give ${n}`], [`Get ${n}`]), side(2, "Lil Fridge", [`Get ${n}`], [`Give ${n}`])], lean: null, case: null, bullets: [], fact_lines: [] });
 
 describe("threadTurns of a trade Answer", () => {
   const tradeItem = (mode: "check" | "ideas", answer: unknown): ThreadItem =>

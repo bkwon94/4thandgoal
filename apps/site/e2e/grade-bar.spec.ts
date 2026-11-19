@@ -13,6 +13,8 @@ const OUT = join(process.cwd(), "out");
 // CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The finder document of the analyzer tests, in the exact shape of the API. Its asker is roster 2.
 const FIND = readFileSync(join(process.cwd(), "..", "..", "packages", "analyzer", "site", "lib", "fixtures", "find-response.json"), "utf8");
+// The find stream of the API: the document of the fixture in its answer part, as one event stream.
+const FIND_STREAM = `data: ${JSON.stringify({ type: "data-answer", data: { kind: "find", document: JSON.parse(FIND) } })}\n\ndata: [DONE]\n\n`;
 const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
 
 /* The teams of the find fixture: the asker and the partner of the first trade, each with the players it gives. */
@@ -44,6 +46,7 @@ async function openFinder(page: Page) {
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    if (request.url().includes("/find-stream")) return route.fulfill({ status: 200, headers: CORS, contentType: "text/event-stream", body: FIND_STREAM });
     const body = request.url().includes("/teams") ? teamsOfFind() : FIND;
     return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body });
   });

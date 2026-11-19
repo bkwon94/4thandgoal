@@ -722,6 +722,26 @@ def test_the_find_stream_sends_one_step_line_as_each_of_the_five_steps_ends(api)
     assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
 
 
+def test_the_find_stream_reports_each_team_as_it_is_read_before_the_read_step_ends(api):
+    # AT-37: the avatars light up in turn, in the order of the stream.
+    parts = _find_stream(api)
+    teams = [part["data"]["roster_id"] for part in parts if part["type"] == "data-team"]
+    assert sorted(teams) == [rid for rid in range(1, 13) if rid != BO_GIRDS]
+    kinds = [(part["type"], part.get("data", {}).get("line")) for part in parts]
+    read_done = kinds.index(("data-step", "Read 11 teams"))
+    assert max(i for i, (kind, _) in enumerate(kinds) if kind == "data-team") < read_done
+
+
+def test_the_find_stream_reports_the_one_partner_it_reads(api):
+    teams = [part["data"]["roster_id"] for part in _find_stream(api, partner=LIL_FRIDGE) if part["type"] == "data-team"]
+    assert teams == [LIL_FRIDGE]
+
+
+def test_a_trade_of_the_find_stream_holds_no_headline(api):
+    [answer] = _of(_find_stream(api), "data-answer")
+    assert all("headline" not in trade for trade in answer["document"]["trades"])
+
+
 def test_the_step_lines_of_a_find_with_one_partner_name_the_team_it_read(api):
     done = live_then_done(_of(_find_stream(api, partner=LIL_FRIDGE), "data-step"))
     assert done[0] == "Read Lil Fridge"

@@ -1,38 +1,48 @@
 /**
- * Find mode of the analyzer: the dark hero with Your team, the partner choice, the position chips,
- * and the find button, then up to three cards of the picks under it. A chip sets aim_position of the Limit.
+ * Find mode of the analyzer: the dark hero with Your team, the partner choice, the position chips, and the find button.
+ * The find streams its real steps into the same wait as a grade, then up to three cards of the picks land in one list.
  */
 "use client";
 
-import { Users } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ChevronDown, RotateCcw, Users } from "lucide-react";
+import { type ReactNode, useEffect, useId, useState } from "react";
 import { AsOfLine, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
 import { BulletRows } from "./bullet-rows";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { Hero } from "@cpc/design/parts/hero";
 import { HeroMesh } from "@cpc/design/parts/hero-mesh";
+import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Sheet } from "./sheet";
-import { Sweep } from "./sweep";
+import { StageLines } from "./stage-lines";
 import { Button } from "@cpc/design/ui/button";
 import { PendingButton } from "@cpc/design/ui/pending-button";
 import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "@cpc/design/ui/segmented-control";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { EASE_OUT } from "@cpc/design/lib/motion";
+import { cn } from "@cpc/design/lib/utils";
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import { useRequest } from "./use-request";
-import type { FindResponse, FinderTrade } from "../lib/analyze-types";
-import { ApiError, type ApiTarget, type FindRequest, postFind, toErrorLine, type Team } from "../lib/api";
+import type { FindResponse, FinderTrade, Lean } from "../lib/analyze-types";
+import { ApiError, type ApiTarget, type FindRequest, streamFind, toErrorLine, type Team } from "../lib/api";
 
 // The finder asks Jev in waves and makes one Claude call, so it waits as long as a cold grade.
 const TIMEOUT_MS = 60_000;
+
+// The steps of a find, in the order the stream sends them: the teams, the players who fit, the offers, the
+// shortlist, and the pick. The wait line counts them, so the reader knows how far the search is.
+const FIND_STEPS = 5;
 
 /* The position chips. Any sends no limit. Each other chip sends its position as aim_position, the same field that a
    typed question such as "trade ideas for an RB" sets on the front door. */
 const AIMS = ["Any", "RB", "WR", "TE", "QB"] as const;
 type Aim = (typeof AIMS)[number];
 
+/* The wait holds the line of the running step, its place among the steps, and the teams that the search read. */
 type FindState =
   | { status: "idle" }
-  | { status: "finding" }
+  | { status: "finding"; step: number; line: string; read: number[] }
   | { status: "done"; doc: FindResponse }
   | { status: "error"; message: string };
 
@@ -50,8 +60,9 @@ type TradeFinderProps = {
   onUnauthorized: () => void;
   // Find answered 422, so the page fetches the current rosters.
   onRostersStale?: () => void;
-  // A card asks for the full result of its trade. The season is the one the finder document carries.
-  onOpen: (trade: FinderTrade, season: number) => void;
+  // A card opens its trade in the analyzer. The document of the find carries the season, the asker, and the as-of
+  // stamps, so the form can show the read of the card with no second grade.
+  onOpen: (trade: FinderTrade, doc: FindResponse) => void;
   // A search runs or stops, so the form can lock the switch of the hero until it ends.
   onFindingChange?: (finding: boolean) => void;
   // The eyebrow and the switch of the hero. The form gives the same ones to the hero of Grade mode.
@@ -187,18 +198,147 @@ function swapSides(trade: FinderTrade, asker: number): SwapSide[] {
   return sides.sort((a, b) => Number(b.mine) - Number(a.mine));
 }
 
-/* One finder trade: its place, the headline, the swap card, then the Bullet rows of the analyzer.
-   After a fallback the trade has no headline and no Bullet, so the card lists its plain fact lines. */
-function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; locked: boolean }) {
-  const sides = swapSides(trade, asker);
+/* The first live line of a find, as the stream sends it, so the wait shows it before the first part arrives and the
+   first part changes nothing. */
+function firstLine(partner: number | null): string {
+  return partner === null ? "Reading every team" : "Reading their roster";
+}
+
+/* The wait line: the place of the running step and its live line, such as "4 of 5 · Making a shortlist". */
+function waitLine(step: number, line: string): string {
+  return `${Math.min(step, FIND_STEPS)} of ${FIND_STEPS} · ${line}`;
+}
+
+/* The teams of the search as one row of avatars, where the grade shows its trade. Each avatar lights as the stream
+   reports its team read, so the reader sees the search move. The light is an opacity and scale change of 250 ms with
+   the ease-out, so a burst of reads still reads as a turn. With motion off, the avatar lights at once. */
+function TeamsRead({ teams, read }: { teams: Team[]; read: number[] }) {
   return (
-    <article aria-label={`Trade ${index + 1}`} className="flex flex-col gap-sp-4 border-t border-rule py-sp-5">
-      <h3 className="m-0 font-mono text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
-        Trade {index + 1} of {count}
-      </h3>
-      {trade.headline !== null && <p className="m-0 text-lead font-bold text-ink">{trade.headline}</p>}
+    <ul aria-hidden="true" className="m-0 flex list-none flex-wrap gap-sp-1 p-0">
+      {teams.map((team) => {
+        const lit = read.includes(team.roster_id);
+        return (
+          <li
+            key={team.roster_id}
+            data-team-read={team.roster_id}
+            data-lit={lit}
+            className={cn(
+              "rounded-full ring-2 ring-band transition-[opacity,scale] duration-250 ease-[var(--ease-out)] motion-reduce:transition-none",
+              lit ? "scale-100 opacity-100" : "scale-[0.92] opacity-30",
+            )}
+          >
+            <Avatar src={team.avatar ?? AVATAR_FALLBACK} />
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/* The hero of the find wait: the same hero, mesh, title level, and line part as the grade wait. The line is the running
+   step of the stream with its count, a list of one line, so StageLines holds it until the next step starts and then
+   swaps it with the motion of the grade. The status holds the same line for a screen reader. The drive starts with
+   the hero, so the mesh moves on the first frame after the tap. */
+function FindWaitHero({ eyebrow, toggle, line, teams, read }: { eyebrow?: ReactNode; toggle?: ReactNode; line: string; teams: Team[]; read: number[] }) {
+  const [drive] = useState(() => waitDrive(performance.now()));
+  return (
+    <Hero
+      label="Finding Trades"
+      art={<HeroMesh drive={drive} />}
+      level={2}
+      eyebrow={eyebrow}
+      toggle={toggle}
+      title="Finding Trades"
+      meta="This can take about 25 seconds."
+      feature={
+        <div aria-busy="true">
+          <p role="status" className="sr-only">
+            {line}
+          </p>
+          <div aria-hidden="true" className="flex flex-col gap-sp-5">
+            <StageLines lines={[line]} />
+            <TeamsRead teams={teams} read={read} />
+          </div>
+        </div>
+      }
+    />
+  );
+}
+
+/* The Lean word leads each card, as on the read. A yes leans in the accent, a gut call in the plain ink. */
+function LeanWord({ lean }: { lean: Lean }) {
+  const yes = lean === "Send it" || lean === "Lean yes";
+  return <h3 className={cn("m-0 text-score leading-tight font-black tracking-tight", yes ? "text-accent-ink" : "text-ink")}>{lean}</h3>;
+}
+
+/* The Bullets fold under the Case, so the card stays short. One tap opens them. The height grows from 0fr to 1fr in
+   250 ms with the smooth-out ease, as the accordion recipe of transitions.dev, and the chevron flips. The closed panel is
+   inert, so a keyboard skips its rows. With motion off it opens at once. */
+function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }) {
+  const [open, setOpen] = useState(false);
+  const panel = useId();
+  return (
+    <div className="flex flex-col">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={panel}
+        onClick={() => setOpen((shown) => !shown)}
+        className="press -mx-sp-2 flex min-h-touch w-fit cursor-pointer items-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent"
+      >
+        Why it works · {trade.bullets.length}
+        <ChevronDown
+          aria-hidden="true"
+          className={cn("size-sp-4 transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none", open && "-scale-y-100")}
+        />
+      </button>
+      <div
+        id={panel}
+        inert={!open}
+        className={cn(
+          "grid transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        )}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="pt-sp-2 pb-sp-1">
+            <BulletRows bullets={trade.bullets} idBase={idBase} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* One finder trade: the Lean, the Case of at most 3 lines with its condition first, the swap card, and the folded
+   Bullets. The pick writes no headline, so one voice speaks. After a fallback the trade has no Lean and no Bullet, so
+   the card lists its plain fact lines. The cards rise in one after another, 80 ms apart, as the texts reveal of
+   transitions.dev. With motion off, they show at once. */
+function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; locked: boolean }) {
+  const off = useMotionOff();
+  const sides = swapSides(trade, asker);
+  const partner = sides.find((side) => !side.mine);
+  return (
+    <motion.article
+      aria-label={`Trade ${index + 1} of ${count}`}
+      initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: index * 0.08 }}
+      className="flex flex-col gap-sp-3 rounded-card border border-rule bg-page p-sp-4"
+    >
+      <div className="flex items-baseline justify-between gap-sp-3">
+        {trade.lean !== null ? (
+          <LeanWord lean={trade.lean} />
+        ) : (
+          <h3 className="m-0 font-mono text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
+            Trade {index + 1} of {count}
+          </h3>
+        )}
+        {partner && <span className="min-w-0 truncate text-meta text-mute">With {partner.team}</span>}
+      </div>
+      {trade.case !== null && <p className="m-0 line-clamp-3 max-w-measure text-body leading-body text-pretty text-ink-2">{trade.case}</p>}
       <SwapCard sides={sides} />
-      {trade.bullets.length > 0 && <BulletRows bullets={trade.bullets} idBase={`pick-${index + 1}`} />}
+      {trade.bullets.length > 0 && <FoldedBullets trade={trade} idBase={`pick-${index + 1}`} />}
       {trade.fact_lines.length > 0 && (
         <ul aria-label="Facts" className="m-0 flex max-w-measure list-none flex-col gap-sp-2 p-0 text-meta text-ink-2">
           {trade.fact_lines.map((line) => (
@@ -209,32 +349,30 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
       <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={locked} onClick={onOpen}>
         See the Full Result
       </Button>
-    </article>
+    </motion.article>
   );
 }
 
-/* The finder result: the cards, or the empty line, then the as-of line. */
-function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (trade: FinderTrade, season: number) => void; locked: boolean }) {
+/* The finder result: the cards in one list, or the empty line, then the as-of line. */
+function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; locked: boolean }) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
-    <div>
+    <div className="flex flex-col gap-sp-4 pt-sp-5">
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
-      {doc.empty !== null && <p className="m-0 py-sp-5 text-lead font-bold">{doc.empty}</p>}
+      {doc.empty !== null && <p className="m-0 text-lead font-bold">{doc.empty}</p>}
       {doc.fallback && doc.trades.length > 0 && (
-        <p className="m-0 pt-sp-5 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
+        <p className="m-0 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
       )}
-      {doc.trades.map((trade, i) => (
-        <FinderCard
-          key={trade.offer_id}
-          trade={trade}
-          asker={asker}
-          index={i}
-          count={doc.trades.length}
-          onOpen={() => onOpen(trade, doc.season)}
-          locked={locked}
-        />
-      ))}
-      <div className="py-sp-5">
+      {doc.trades.length > 0 && (
+        <ol aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
+          {doc.trades.map((trade, i) => (
+            <li key={trade.offer_id}>
+              <FinderCard trade={trade} asker={asker} index={i} count={doc.trades.length} onOpen={() => onOpen(trade, doc)} locked={locked} />
+            </li>
+          ))}
+        </ol>
+      )}
+      <div className="pb-sp-5">
         <NoChartLine asOf={doc.as_of} />
         <AsOfLine doc={doc} />
       </div>
@@ -293,9 +431,23 @@ export function TradeFinder({
       timedOut = true;
       controller.abort();
     }, TIMEOUT_MS);
-    setFind({ status: "finding" });
+    setFind({ status: "finding", step: 1, line: firstLine(partner), read: [] });
+    // A live line starts a step, so it moves the wait line on. A done line ends the step, and the line holds until
+    // the next step starts, because the next live line follows it at once.
+    let step = 0;
+    const events = {
+      onStep: (line: string, live: boolean) => {
+        if (!live || !run.isCurrent()) return;
+        step += 1;
+        setFind((now) => (now.status === "finding" ? { ...now, step, line } : now));
+      },
+      onTeam: (rosterId: number) => {
+        if (!run.isCurrent()) return;
+        setFind((now) => (now.status === "finding" && !now.read.includes(rosterId) ? { ...now, read: [...now.read, rosterId] } : now));
+      },
+    };
     try {
-      const doc = await postFind(target, passphrase, findBody(target.season, asker, partner, aim), controller.signal);
+      const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim), events, controller.signal);
       if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
@@ -308,7 +460,7 @@ export function TradeFinder({
     }
   }
 
-  const feature = (
+  const pickers = (
     <div className="flex flex-col gap-sp-3">
       {/* A find needs the team that asks, so Your team stays in view and a pick here is the pick of Grade mode too. */}
       <TeamChoice
@@ -321,39 +473,47 @@ export function TradeFinder({
       />
       <TeamChoice label="Trade with" listName="Partners" teams={partners} value={partner} every="Every team" onChange={pickPartner} disabled={off || asker === null} />
       <PositionChips value={aim} onChange={pickAim} disabled={off} />
-      {finding && (
-        <div className="flex flex-col gap-sp-2 pt-sp-2">
-          <Sweep track="bg-chip-dark" />
-          <p role="status" className="m-0 text-lead text-on-dark-2">
-            The search tries every small swap. This can take up to a minute.
-          </p>
+      {/* The hero shows the error line, so the reader sees why the search stopped where the search started. */}
+      {find.status === "error" && (
+        <div className="rounded-card bg-page px-sp-3 py-sp-2">
+          <ErrorLine>{find.message}</ErrorLine>
         </div>
       )}
     </div>
   );
 
-  const action = (
-    <PendingButton
-      onClick={submit}
-      disabled={locked || asker === null}
-      pendingAnnouncement=""
-      className="press flex h-touch w-full cursor-pointer items-center justify-center rounded-card bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark disabled:cursor-not-allowed disabled:opacity-60 data-pending:opacity-80"
-    >
-      Find a Trade
-    </PendingButton>
-  );
+  // Every error shows Try Again in place of the find button, the same as the error box of the trade form.
+  const action =
+    find.status === "error" ? (
+      <button
+        type="button"
+        onClick={submit}
+        disabled={locked || asker === null}
+        className="press flex h-touch w-full cursor-pointer items-center justify-center gap-sp-2 rounded-card bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <RotateCcw aria-hidden="true" className="size-sp-4" />
+        Try Again
+      </button>
+    ) : (
+      <PendingButton
+        onClick={submit}
+        disabled={locked || asker === null}
+        pendingAnnouncement=""
+        className="press flex h-touch w-full cursor-pointer items-center justify-center rounded-card bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark disabled:cursor-not-allowed disabled:opacity-60 data-pending:opacity-80"
+      >
+        Find a Trade
+      </PendingButton>
+    );
+
+  // The wait shows the teams the search reads: the picked partner, or the eleven other teams.
+  const searched = partner === null ? partners : partners.filter((team) => team.roster_id === partner);
 
   return (
     <section aria-label="Trade Ideas" className="flex flex-col">
-      <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={feature} action={action} />
-      {find.status === "error" && (
-        <div className="flex flex-col gap-sp-3 pt-sp-5">
-          <ErrorLine>{find.message}</ErrorLine>
-          {/* Every error shows Try Again, the same as the error box of the trade form. */}
-          <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={submit}>
-            Try Again
-          </Button>
-        </div>
+      {find.status === "finding" ? (
+        <FindWaitHero eyebrow={eyebrow} toggle={toggle} line={waitLine(find.step, find.line)} teams={searched} read={find.read} />
+      ) : (
+        <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
       )}
       {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} locked={locked} />}
     </section>

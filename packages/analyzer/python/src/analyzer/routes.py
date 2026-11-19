@@ -328,8 +328,6 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
         {
             "offer_id": pick.offer.offer_id,
             "sides": _echoed_sides(pick.offer.trade, snapshot),
-            # The pick writes no headline. The key stays null, so the trade still parses on a site that reads it.
-            "headline": None,
             "lean": pick.lean,
             "case": pick.case,
             "bullets": [bullet.model_dump() for bullet in pick.bullets],
@@ -367,18 +365,20 @@ def find(request: Request, pair: FindRequest, served: ServedClient, background: 
 
 
 def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None,
-                defer: Defer | None = None) -> dict:
+                defer: Defer | None = None, read: Callable[[int], None] | None = None) -> dict:
     """The find press of the route, for the route, the find stream, and the trade ideas of the front door.
 
     With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
     keyword and send no line, because the plain route streams no step. With `defer`, the pick hands it the log-only
-    Jev checks, so the caller runs them after its Answer goes out.
+    Jev checks, so the caller runs them after its Answer goes out. With `read`, the search hands it the roster id of
+    each team as it reads it, so a stream can report each team in turn.
     """
     with _press_log("find", served):
-        return _find(request, pair, served, stage, defer)
+        return _find(request, pair, served, stage, defer, read)
 
 
-def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None) -> dict:
+def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None,
+          read: Callable[[int], None] | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -403,8 +403,10 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     if pair.limit is not None:
         anchored["limit"] = pair.limit
     staged = {} if stage is None else {"stage": stage}
+    # The search gets the read keyword only from a stream, as it gets the stage.
+    reads = {} if read is None else {"read": read}
     deferred = {} if defer is None else {"defer": defer}
-    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored)
+    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored, **reads)
     picks = request.app.state.finder_pick(shortlist, snapshot, **staged, **deferred)
     document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
