@@ -591,6 +591,27 @@ _Avoid_: proposal, option
 The trades of the finder that pass the Jev questions, for the Advisor to read.
 _Avoid_: candidates, top trades
 
+**Jev tree**:
+A decision in code whose inputs are tiny Jev questions. Jev gives each judgment, and code combines the answers into
+the result. Jev never makes the decision itself. Each tree has a backtest.
+_Avoid_: classifier, Jev decision
+
+**Spares tree**:
+The Jev tree that says if a team can spare a player at a weak starting slot of another team. Code lists the players
+at those positions who have a backup above the line. Jev asks of each one if he would start over the weak starter,
+with the chart values as facts. A side stops only on no listed player, or on a clear no for each one.
+_Avoid_: spares question, spares gate
+
+**Backtest**:
+The run of a Jev tree on every Backtest mark, to count the right answers. A change to a tree merges only if no mark
+that it got right breaks and the count does not drop.
+_Avoid_: eval, regression run
+
+**Backtest mark**:
+One answer of a Jev tree that Brian marked wrong, with the right answer. It comes from his pass over a run of the
+tree, or from a bad Finder trade traced to the Jev answer that let it through.
+_Avoid_: case (that is the Case of the Advisor), label, test case
+
 **Finder document**:
 The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
 three trades. Each trade holds its offer id, its two sides, and the read of the Advisor: the Lean, the Case, and the

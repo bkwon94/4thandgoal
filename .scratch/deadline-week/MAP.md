@@ -18,10 +18,10 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - The Finder skips the Partner filter for one picked partner, gives the Shortlist variety, and lets an unsure "spares" answer pass. `decisions/01-research-few-offers.md`.
 - The Finder gets four free cuts (short offer labels, sheets at the same time, paced waves, late log checks) to about 25 s, keeps one pick call, and streams its progress. No prewarm. `decisions/02-research-finder-speed.md`.
 - The Trade wire reads a new Fly route (30 s cache, no rate count) every 60 s until the Lock, and lists every trade of the season with teams, players, and FAAB, week 11 marked new. No draft picks. `decisions/03-research-trade-feed-source.md`.
+- One Jev tree, the Spares tree: per-player Nouls "would he start over the weak starter?", chart values as facts, code decides. It replaces the Partner filter questions and feeds the Deadline board. The backtest set is Brian's marks on one week 11 run plus each later bad trade. A change breaks no mark, never lowers the count, and never fits thresholds or names players. `decisions/05-grill-jev-trees-and-backtest.md`.
 
 ## NOT YET SPECIFIED
 
-- Which Jev questions and which decision trees does the Finder use, and what bar must the backtest pass? `decisions/05-grill-jev-trees-and-backtest.md`.
 - Which issues of the trade tools does the polish fix? `decisions/06-grill-trade-tools-polish-list.md`.
 - What does the Finder look like, and how does it show progress while it runs? `decisions/07-prototype-finder-look.md`.
 - What do the Deadline banner, the deadline look, the deadline board, and the feed look like? `decisions/08-prototype-event-look.md`.
@@ -33,3 +33,6 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 - A stream of Finder results per partner. It loses the one pick across partners and costs about a day more (decision 02).
 - A prewarm of the Finder cache. It costs $0.85 to $1.70 for each roster change (decision 02).
 - A theme for the whole site. The deadline look stays on the trade pages and the banner.
+- The Accept tree ("would the other manager accept?" split per the playbook). Real trades give only accepted labels, so it needs made-up rejects and its own backtest. After the event (decision 05).
+- The split of the target question into "would start" and "would fill a weak spot". After the event (decision 05).
+- A Jev tree for fair. A tree that combines fair answers ranks trades by a score, against `no-math-filters` (decision 05).
