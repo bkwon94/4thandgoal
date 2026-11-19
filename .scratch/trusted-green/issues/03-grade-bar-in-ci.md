@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-29.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The full site check runs the grade-bar project while the export holds norcal.
 - [ ] The site job of `Check` on the PR shows grade-bar as passed.
