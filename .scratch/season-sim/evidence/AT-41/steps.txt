@@ -1,12 +1,16 @@
-Script: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/replay.mjs (run: node replay.mjs motion)
-Shared parts: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/lib.mjs
-Built from: 42644789, in a detached worktree of that commit (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/../season-sim-site), because the background `make check` builds the site in the Spec worktree.
-Build: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/build-all.sh. It runs `CLIENT=<slug> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build` in apps/site and copies `out/` per build.
-Exports: cpc on http://127.0.0.1:4173, norcal on 4174. The fixture builds copy one fixture into clients/cpc/published/2026/week-10/sim.json, build cpc, then `git restore` the file: playoffs (week-sim-playoffs.json, week 14) on 4175, round-2 (week-sim-round-2.json, week 15) on 4176, final (week-sim-final.json, week 17) on 4177.
-Server: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/serve.mjs. A folder gives index.html. A missing path gives 404.html with the status 404.
-Browser: Playwright WebKit. Sizes: 390x660 (iPhone 15), 810x980 (iPad gen 7), 1080x740 (iPad gen 7 landscape), 1280x800 (no device). Themes: light and dark through `cpc.theme`.
-Local storage per context: `cpc.theme`, `cpc.passphrase`, `cpc.your-team` (roster id, or none), and `cpc.announcement.season-sim-2026` = seen, unless the test needs the Announcement.
-Overlap check: probe() in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/lib.mjs. It finds text boxes that overlap, text that runs off the side, a box that covers a text box at its center, and a page that scrolls sideways. A full shot checks each scroll stop of 0.8 of the view. Results are in overlap.txt.
+Script: at41.mjs in this folder (a copy of /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev41f/at41.mjs; run: node at41.mjs motion). Counts: at41-count.py in this folder (run: python3 -I at41-count.py evidence/AT-41).
+Built from: 4c485cd8 on the branch season-sim-fix-f, the fix of AT-41 on top of the Spec head 49404be3, in the worktree /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/season-sim-fix-f.
+Build: in apps/site of that worktree, with `unset -f node` and /Users/brian.kwon/.brv-cli/bin first on PATH (Node v24.13.1): `CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build`. The first build stopped on the Next.js SecurityFatalError. The second build passed. The export `out/` was copied to /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev41f/out-cpc. The build calls no API.
+Export: cpc on http://127.0.0.1:4191, served by /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev41f/serve.mjs, the same server as before. A folder gives index.html. A missing path gives 404.html with the status 404.
+Browser: Playwright WebKit (@playwright/test 1.64.1 of the worktree).
+Size: 390x660 (iPhone 15). Themes: light and dark through `cpc.theme`. Local storage: `cpc.your-team` = 6, the Announcement marked seen.
+The copy of the script differs from the old one only in the path of the require, the output folder (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev41f/evidence), the port 4191, and the commit in its header.
 
 Steps:
-At 390x660, with reduced motion on and then off, in both themes: a frame script reads the box of each element of the stage on each frame. It counts boxes that move on two frames in a row and inline transforms. Tap "Sim the season" and take motion-<reduced|full>-1-season, 2-playoffs, 3-champion. Tap Done, tap "Sim week 11", and take 4-week-standings. readings.txt holds the counts.
+1. Open /sim/2026/ with reducedMotion "reduce", then again with "no-preference", in each theme.
+2. Start a frame script. On each animation frame it reads each element of the stage [aria-label="Sim replay"]: its left, top, width, height, and its shown opacity (its own opacity times each parent's), and its computed transition and animation.
+3. Tap "Sim the season". The clock t=0 starts at the tap.
+4. Take motion-<reduced|full>-1-season at "Week 12 final" + 750 ms, 2-playoffs at "Round 1 results" + 1150 ms, 3-champion at "wins the title in this run" + 1600 ms. The overlap check of each shot is in overlap.txt.
+5. Write each change of an element, frame by frame, to frames-<reduced|full>-<theme>.txt, with the time, the element, the place, the size, and the opacity before and after.
+6. Write the summary by element to frames-summary.txt, and the counts of at41-count.py to motion-check.txt.
+7. Copy each new file of the output folder into this folder, in place of the old file of the same name.

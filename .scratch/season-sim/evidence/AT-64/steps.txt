@@ -1,3 +1,4 @@
+md5.txt: `md5 -q` of each branch shot and its main shot of this folder, side by side, for cpc and norcal, light and dark. Run in this folder.
 Script: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/tile.mjs, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/midseason-text.mjs (run: node tile.mjs AT-64, midseason-text.mjs)
 Shared parts: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/lib.mjs
 Built from: 42644789, in a detached worktree of that commit (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/../season-sim-site), because the background `make check` builds the site in the Spec worktree.

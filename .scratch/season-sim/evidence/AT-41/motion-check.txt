@@ -1,0 +1,41 @@
+# The counts of the frame logs frames-<mode>.txt, from the tap on "Sim the season" to the champion screen, at 390x660 in WebKit, cpc export of 4c485cd8 (branch season-sim-fix-f).
+# "Two frames in a row" means two changes of place of one element on two logged frames with no logged frame between. A frame with no change is not logged.
+$ python3 -I at41-count.py evidence/AT-41
+reduced-light: 358 frames with a change, from t=9ms to t=18738ms
+  elements that change place on two frames in a row (motion): 0
+  changes of place on one frame only (a jump, no motion between): 0 on 0 elements; at the jump frame, shown opacity 1 for 0, under 1 for 0
+  elements that change shown opacity: 578; with values between 0 and 1 on some frame (a fade): 578; with a step and no value between: 0
+    fade example #1 section[Sim replay].fixed.inset-x-0.top-band-height "Standings at the start o": 0.478@9ms -> 0.655@25ms -> 0.791@43ms -> 0.868@59ms -> 0.923@77ms -> 0.953@93ms -> 0.975@112ms -> 0.985@126ms -> 0.993@144ms -> 0.996@158ms ...
+    fade example #2 div.mx-auto.flex.h-full "Standings at the start o": 0.478@9ms -> 0.655@25ms -> 0.791@43ms -> 0.868@59ms -> 0.923@77ms -> 0.953@93ms -> 0.975@112ms -> 0.985@126ms -> 0.993@144ms -> 0.996@158ms ...
+    fade example #3 p[status].sr-only "Standings at the start o": 0.478@9ms -> 0.655@25ms -> 0.791@43ms -> 0.872@59ms -> 0.923@77ms -> 0.953@93ms -> 0.975@112ms -> 0.985@126ms -> 0.993@144ms -> 0.996@158ms ...
+reduced-dark: 359 frames with a change, from t=20ms to t=18737ms
+  elements that change place on two frames in a row (motion): 0
+  changes of place on one frame only (a jump, no motion between): 0 on 0 elements; at the jump frame, shown opacity 1 for 0, under 1 for 0
+  elements that change shown opacity: 576; with values between 0 and 1 on some frame (a fade): 576; with a step and no value between: 0
+    fade example #1 section[Sim replay].fixed.inset-x-0.top-band-height "Standings at the start o": 0.616@20ms -> 0.759@37ms -> 0.847@53ms -> 0.902@68ms -> 0.941@85ms -> 0.966@102ms -> 0.982@120ms -> 0.99@136ms -> 0.996@155ms -> 0.998@170ms ...
+    fade example #2 div.mx-auto.flex.h-full "Standings at the start o": 0.616@20ms -> 0.759@37ms -> 0.847@53ms -> 0.902@68ms -> 0.941@85ms -> 0.966@102ms -> 0.982@120ms -> 0.99@136ms -> 0.996@155ms -> 0.998@170ms ...
+    fade example #3 p[status].sr-only "Standings at the start o": 0.616@20ms -> 0.759@37ms -> 0.847@53ms -> 0.902@68ms -> 0.941@85ms -> 0.966@102ms -> 0.982@120ms -> 0.99@136ms -> 0.996@155ms -> 0.998@170ms ...
+full-light: 638 frames with a change, from t=21ms to t=19350ms
+  elements that change place on two frames in a row (motion): 229
+  changes of place on one frame only (a jump, no motion between): 0 on 0 elements; at the jump frame, shown opacity 1 for 0, under 1 for 0
+  elements that change shown opacity: 269; with values between 0 and 1 on some frame (a fade): 269; with a step and no value between: 0
+    fade example #1 section[Sim replay].fixed.inset-x-0.top-band-height "Standings at the start o": 0.626@21ms -> 0.766@38ms -> 0.852@53ms -> 0.913@72ms -> 0.947@88ms -> 0.968@104ms -> 0.981@119ms -> 0.991@138ms -> 0.995@154ms -> 0.998@172ms ...
+    fade example #2 div.mx-auto.flex.h-full "Standings at the start o": 0.626@21ms -> 0.766@38ms -> 0.852@53ms -> 0.913@72ms -> 0.947@88ms -> 0.968@104ms -> 0.981@119ms -> 0.991@138ms -> 0.995@154ms -> 0.998@172ms ...
+    fade example #3 p[status].sr-only "Standings at the start o": 0.626@21ms -> 0.766@38ms -> 0.852@53ms -> 0.913@72ms -> 0.947@88ms -> 0.968@104ms -> 0.981@119ms -> 0.991@138ms -> 0.995@154ms -> 0.998@172ms ...
+    motion example #84 span.font-mono.tabular-nums.flex-none "10–12": t=21ms (28.0, 538.0) -> (28.0, 537.1); t=38ms (28.0, 537.1) -> (28.0, 535.8); t=53ms (28.0, 535.8) -> (28.0, 534.7); t=72ms (28.0, 534.7) -> (28.0, 534.0); t=88ms (28.0, 534.0) -> (28.0, 533.6)
+    motion example #139 span.flex.min-w-0.flex-1 "Puka Deez...": t=8843ms (50.4, 176.1) -> (50.8, 175.9); t=8884ms (50.8, 175.9) -> (50.9, 178.6); t=8891ms (50.9, 178.6) -> (51.3, 190.4); t=8903ms (51.3, 190.4) -> (51.5, 196.9); t=8921ms (51.5, 196.9) -> (52.0, 208.5)
+    motion example #1 section[Sim replay].fixed.inset-x-0.top-band-height "Standings at the start o": t=21ms (0.0, 66.2) -> (0.0, 65.2); t=38ms (0.0, 65.2) -> (0.0, 63.9); t=53ms (0.0, 63.9) -> (0.0, 62.8); t=72ms (0.0, 62.8) -> (0.0, 62.2); t=88ms (0.0, 62.2) -> (0.0, 61.7)
+    motion example #59 img.size-full.object-cover.object-top "": t=21ms (50.4, 355.0) -> (50.4, 354.0); t=38ms (50.4, 354.0) -> (50.4, 352.7); t=53ms (50.4, 352.7) -> (50.4, 351.6); t=72ms (50.4, 351.6) -> (50.4, 350.9); t=88ms (50.4, 350.9) -> (50.4, 350.5)
+    motion example #45 span.font-mono.tabular-nums.w-[1.5ch] "": t=21ms (308.2, 281.0) -> (308.2, 280.0); t=38ms (308.2, 280.0) -> (308.2, 278.7); t=53ms (308.2, 278.7) -> (308.2, 277.6); t=72ms (308.2, 277.6) -> (308.2, 276.9); t=88ms (308.2, 276.9) -> (308.2, 276.5)
+full-dark: 623 frames with a change, from t=8ms to t=19304ms
+  elements that change place on two frames in a row (motion): 233
+  changes of place on one frame only (a jump, no motion between): 0 on 0 elements; at the jump frame, shown opacity 1 for 0, under 1 for 0
+  elements that change shown opacity: 281; with values between 0 and 1 on some frame (a fade): 281; with a step and no value between: 0
+    fade example #1 section[Sim replay].fixed.inset-x-0.top-band-height "Standings at the start o": 0.452@8ms -> 0.626@22ms -> 0.766@40ms -> 0.864@59ms -> 0.913@74ms -> 0.948@91ms -> 0.97@107ms -> 0.983@124ms -> 0.991@139ms -> 0.995@156ms ...
+    fade example #2 div.mx-auto.flex.h-full "Standings at the start o": 0.452@8ms -> 0.626@22ms -> 0.766@40ms -> 0.864@59ms -> 0.913@74ms -> 0.948@91ms -> 0.97@107ms -> 0.983@124ms -> 0.991@139ms -> 0.995@156ms ...
+    fade example #3 p[status].sr-only "Standings at the start o": 0.452@8ms -> 0.626@22ms -> 0.766@40ms -> 0.864@59ms -> 0.913@74ms -> 0.948@91ms -> 0.97@107ms -> 0.983@124ms -> 0.991@139ms -> 0.995@156ms ...
+    motion example #84 span.font-mono.tabular-nums.flex-none "10–12": t=8ms (28.0, 538.3) -> (28.0, 537.4); t=22ms (28.0, 537.4) -> (28.0, 537.2); t=40ms (28.0, 537.2) -> (28.0, 535.8); t=59ms (28.0, 535.8) -> (28.0, 534.7); t=74ms (28.0, 534.7) -> (28.0, 533.9)
+    motion example #1 section[Sim replay].fixed.inset-x-0.top-band-height "Standings at the start o": t=8ms (0.0, 66.4) -> (0.0, 65.5); t=22ms (0.0, 65.5) -> (0.0, 65.3); t=40ms (0.0, 65.3) -> (0.0, 63.9); t=59ms (0.0, 63.9) -> (0.0, 62.8); t=74ms (0.0, 62.8) -> (0.0, 62.1)
+    motion example #59 img.size-full.object-cover.object-top "": t=8ms (50.4, 355.2) -> (50.4, 354.3); t=22ms (50.4, 354.3) -> (50.4, 354.1); t=40ms (50.4, 354.1) -> (50.4, 352.7); t=59ms (50.4, 352.7) -> (50.4, 351.6); t=74ms (50.4, 351.6) -> (50.4, 350.9)
+    motion example #45 span.font-mono.tabular-nums.w-[1.5ch] "": t=8ms (308.2, 281.2) -> (308.2, 280.3); t=22ms (308.2, 280.3) -> (308.2, 280.1); t=40ms (308.2, 280.1) -> (308.2, 278.7); t=59ms (308.2, 278.7) -> (308.2, 277.6); t=74ms (308.2, 277.6) -> (308.2, 276.9)
+    motion example #44 span.min-w-0.truncate.text-row "Maye d'force B with U": t=8ms (50.4, 273.7) -> (50.4, 272.8); t=22ms (50.4, 272.8) -> (50.4, 272.6); t=40ms (50.4, 272.6) -> (50.4, 271.2); t=59ms (50.4, 271.2) -> (50.4, 270.1); t=74ms (50.4, 270.1) -> (50.4, 269.4)
