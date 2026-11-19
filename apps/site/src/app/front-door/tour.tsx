@@ -405,6 +405,12 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   held.current = card;
   // The hole and the card ride the same spring, so the two never part. Under reduced motion the hole jumps.
   const move = orStill(off || snap, GLIDE);
+  /* The hole and the card glide by `left` and `top`, not by `x` and `y`. framer-motion starts an `x` and `y` glide at
+     the render, but a `width` and `height` glide at its first frame. On a slow phone that first frame comes late, so the
+     place of the hole runs a frame ahead of its size, and the middle of the hole leaves the middle of the card by about
+     4 px. With `left` and `top`, the place and the size of the hole, and the place of the card, start in the same frame. */
+  const holeBox = { left: hole.x, top: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius };
+  const cardBox = { left: card.x, top: card.y };
 
   return (
     <>
@@ -416,8 +422,8 @@ function Stops({ onEnd }: { onEnd: () => void }) {
           data-tour-hole=""
           className="pointer-events-none fixed top-0 left-0 z-[60]"
           style={{ boxShadow: "0 0 0 200vmax var(--color-scrim)" }}
-          initial={{ opacity: 0, x: hole.x, y: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius }}
-          animate={{ opacity: open ? 1 : 0, x: hole.x, y: hole.y, width: hole.width, height: hole.height, borderRadius: hole.radius }}
+          initial={{ opacity: 0, ...holeBox }}
+          animate={{ opacity: open ? 1 : 0, ...holeBox }}
           transition={{ default: orStill(off, GLIDE), opacity: fadeIn(open ? FAST : QUICK) }}
           onAnimationComplete={() => {
             holeLanded.current = true;
@@ -448,11 +454,11 @@ function Stops({ onEnd }: { onEnd: () => void }) {
           <motion.div
             className="pointer-events-none fixed top-0 left-0"
             style={{ width, transformOrigin: "50% 0%" }}
-            initial={{ ...card, opacity: 0, scale: off ? 1 : SCALE_MEDIUM }}
-            animate={{ ...card, opacity: away ? 0 : 1, scale: open || off ? 1 : SCALE_TINY }}
+            initial={{ ...cardBox, opacity: 0, scale: off ? 1 : SCALE_MEDIUM }}
+            animate={{ ...cardBox, opacity: away ? 0 : 1, scale: open || off ? 1 : SCALE_TINY }}
             transition={{
-              x: move,
-              y: move,
+              left: move,
+              top: move,
               opacity: fadeIn(away ? QUICK : FAST),
               scale: { duration: open ? FAST : QUICK, ease: SMOOTH },
             }}

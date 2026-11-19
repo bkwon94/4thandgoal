@@ -91,50 +91,78 @@ function offsetOf({ hole, card }: Sample) {
   };
 }
 
+/* A slow runner, such as a CI machine, draws a frame only every so often. This init script blocks the main thread for
+   `ms` at the first frame callback of each frame, so the Mac draws few frames in the glide, as CI does. */
+async function slowFrames(page: Page, ms: number) {
+  await page.addInitScript((block) => {
+    const raf = window.requestAnimationFrame.bind(window);
+    let last = 0;
+    window.requestAnimationFrame = (callback) =>
+      raf((time) => {
+        if (performance.now() - last > 5) {
+          const end = performance.now() + block;
+          while (performance.now() < end);
+          last = performance.now();
+        }
+        callback(time);
+      });
+  }, ms);
+}
+
+/* AT-15: tap Next on Stop 1 and check each frame of the move to Stop 2. */
+async function glideTogether(page: Page) {
+  await openTour(page);
+  await startSamples(page, readFrame);
+  await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("dialog", { name: "Ask" })).toBeVisible();
+  const samples = await samplesWhenStill<Sample>(page);
+  const times = await page.evaluate((count) => (window as unknown as { tourTimes: number[] }).tourTimes.slice(0, count), samples.length);
+  // The evidence of AT-15 is the frame samples, so the log prints each one with its clock time from the first sample.
+  console.log(`AT-15 frame samples:\n${samples.map((sample, index) => `${index} ${(times[index] - times[0]).toFixed(1)} ms ${JSON.stringify({ ...sample, offset: offsetOf(sample) })}`).join("\n")}`);
+  const first = samples[0];
+  const last = samples.at(-1)!;
+  const rest = offsetOf(first);
+  const sideChange = offsetOf(last).below !== rest.below;
+  /* The glide shows the hole at places between the two Stops, so the move is not a jump. The test reads clock time,
+     not a count of frames, because a slow runner draws few frames in the 450 ms of the glide. A frame shows on the
+     screen until the next frame, so each sample between the Stops counts the time up to the next sample. A jump puts
+     the hole at the new Stop in its first frame, so no sample sits between the Stops and the time is 0. The place at
+     rest and the place of a jump are exact, so a place more than 0.5 px from both is a real place of the glide. */
+  const away = (hole: Rect) => Math.min(Math.hypot(hole.x - first.hole.x, hole.y - first.hole.y), Math.hypot(hole.x - last.hole.x, hole.y - last.hole.y));
+  const betweenMs = samples.reduce((sum, { hole }, index) => (index + 1 < samples.length && away(hole) > 0.5 ? sum + times[index + 1] - times[index] : sum), 0);
+  const tops = samples.map(({ hole }, index) => `${Math.round(hole.y)}@${Math.round(times[index] - times[0])}`).join(", ");
+  console.log(`AT-15 time of the hole between the Stops: ${betweenMs.toFixed(1)} ms`);
+  expect(betweenMs, `the hole shows between the Stops for 80 ms or more; the hole tops at each ms: ${tops}`).toBeGreaterThanOrEqual(80);
+  // On a change of side the card fades out first, so each frame up to the first frame of that fade counts.
+  const shown = sideChange ? samples.slice(0, samples.findIndex((sample) => sample.opacity < 0.99)) : samples;
+  if (!sideChange) {
+    expect(Math.min(...samples.map((sample) => sample.opacity)), "the card stays shown on a move with no change of side").toBeGreaterThanOrEqual(0.99);
+  }
+  const drift = shown.map((sample) => {
+    const now = offsetOf(sample);
+    return Math.max(Math.abs(now.gap - rest.gap), Math.abs(now.across - rest.across));
+  });
+  console.log(`AT-15 samples: ${samples.length}, side change: ${sideChange}, compared: ${shown.length}, largest drift: ${Math.max(...drift).toFixed(2)} px`);
+  for (const [index, value] of drift.entries()) {
+    expect(value, `frame ${index}: the card drifts ${value.toFixed(2)} px from its offset at rest`).toBeLessThanOrEqual(2);
+  }
+  // At the end the card sits at its offset again, on the side of the new Stop.
+  const end = offsetOf(last);
+  expect(Math.abs(end.gap - rest.gap), "the card ends at the same gap from the hole").toBeLessThanOrEqual(2);
+  expect(last.opacity, "the card shows at the end").toBe(1);
+}
+
 test.describe("iPhone 390x660 with motion on", () => {
   const { defaultBrowserType: _browser, ...iphone } = devices["iPhone 15"];
   test.use({ ...iphone, viewport: { width: 390, height: 660 }, reducedMotion: "no-preference" });
 
   test("the hole and the card glide together from Stop 1 to Stop 2, until the card changes side (AT-15)", async ({ page }) => {
-    await openTour(page);
-    await startSamples(page, readFrame);
-    await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
-    await expect(page.getByRole("dialog", { name: "Ask" })).toBeVisible();
-    const samples = await samplesWhenStill<Sample>(page);
-    const times = await page.evaluate((count) => (window as unknown as { tourTimes: number[] }).tourTimes.slice(0, count), samples.length);
-    // The evidence of AT-15 is the frame samples, so the log prints each one with its clock time from the first sample.
-    console.log(`AT-15 frame samples:\n${samples.map((sample, index) => `${index} ${(times[index] - times[0]).toFixed(1)} ms ${JSON.stringify({ ...sample, offset: offsetOf(sample) })}`).join("\n")}`);
-    const first = samples[0];
-    const last = samples.at(-1)!;
-    const rest = offsetOf(first);
-    const sideChange = offsetOf(last).below !== rest.below;
-    /* The glide shows the hole at places between the two Stops, so the move is not a jump. The test reads clock time,
-       not a count of frames, because a slow runner draws few frames in the 450 ms of the glide. A frame shows on the
-       screen until the next frame, so each sample between the Stops counts the time up to the next sample. A jump puts
-       the hole at the new Stop in its first frame, so no sample sits between the Stops and the time is 0. The place at
-       rest and the place of a jump are exact, so a place more than 0.5 px from both is a real place of the glide. */
-    const away = (hole: Rect) => Math.min(Math.hypot(hole.x - first.hole.x, hole.y - first.hole.y), Math.hypot(hole.x - last.hole.x, hole.y - last.hole.y));
-    const betweenMs = samples.reduce((sum, { hole }, index) => (index + 1 < samples.length && away(hole) > 0.5 ? sum + times[index + 1] - times[index] : sum), 0);
-    const tops = samples.map(({ hole }, index) => `${Math.round(hole.y)}@${Math.round(times[index] - times[0])}`).join(", ");
-    console.log(`AT-15 time of the hole between the Stops: ${betweenMs.toFixed(1)} ms`);
-    expect(betweenMs, `the hole shows between the Stops for 80 ms or more; the hole tops at each ms: ${tops}`).toBeGreaterThanOrEqual(80);
-    // On a change of side the card fades out first, so each frame up to the first frame of that fade counts.
-    const shown = sideChange ? samples.slice(0, samples.findIndex((sample) => sample.opacity < 0.99)) : samples;
-    if (!sideChange) {
-      expect(Math.min(...samples.map((sample) => sample.opacity)), "the card stays shown on a move with no change of side").toBeGreaterThanOrEqual(0.99);
-    }
-    const drift = shown.map((sample) => {
-      const now = offsetOf(sample);
-      return Math.max(Math.abs(now.gap - rest.gap), Math.abs(now.across - rest.across));
-    });
-    console.log(`AT-15 samples: ${samples.length}, side change: ${sideChange}, compared: ${shown.length}, largest drift: ${Math.max(...drift).toFixed(2)} px`);
-    for (const [index, value] of drift.entries()) {
-      expect(value, `frame ${index}: the card drifts ${value.toFixed(2)} px from its offset at rest`).toBeLessThanOrEqual(2);
-    }
-    // At the end the card sits at its offset again, on the side of the new Stop.
-    const end = offsetOf(last);
-    expect(Math.abs(end.gap - rest.gap), "the card ends at the same gap from the hole").toBeLessThanOrEqual(2);
-    expect(last.opacity, "the card shows at the end").toBe(1);
+    await glideTogether(page);
+  });
+
+  test("on a slow runner with 150 ms frames, the hole and the card still glide together (AT-15)", async ({ page }) => {
+    await slowFrames(page, 150);
+    await glideTogether(page);
   });
 
   test("on a change of side from Stop 3 to Stop 4, the card fades out, holds its place, and fades back in once the hole lands", async ({ page }) => {
