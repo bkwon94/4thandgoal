@@ -6,6 +6,8 @@
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { SIM_ANNOUNCEMENT } from "../src/app/_routes/sim/announcement";
+import { LOAD_BEAT_MS } from "../src/app/use-announcement";
 import { serveDir } from "./serve";
 import { skipTour } from "./tour";
 
@@ -81,6 +83,20 @@ async function tapAndOpenKeyboard(page: Page) {
   await page.evaluate((height) => (window as unknown as { openKeyboard: (height: number) => void }).openKeyboard(height), KEYBOARD);
 }
 
+/* The page clock starts on the release day of the season sim, so its Announcement can open on each run, whatever the date
+   of the run. */
+async function startClock(page: Page) {
+  await page.clock.install({ time: new Date(`${SIM_ANNOUNCEMENT.release}T12:00:00`) });
+}
+
+/* A slow runner reaches the first tap after the load beat, so an Announcement or the Tour can open first. The page clock
+   moves past the load beat and the first start of the Tour, so that happens on each run. Then no layer may cover the
+   front door. */
+async function passLoadBeat(page: Page) {
+  await page.clock.fastForward(LOAD_BEAT_MS + 1000);
+  await expect(page.getByRole("dialog"), "no Announcement and no Tour covers the front door before the first tap").toHaveText([]);
+}
+
 /* Ask a question with no kept passphrase, so the passphrase modal opens, and the Thread holds no passphrase box. */
 async function askForPassphrase(page: Page) {
   const ask = page.getByRole("textbox", { name: "Ask a question" });
@@ -94,9 +110,11 @@ async function askForPassphrase(page: Page) {
 test.describe("the passphrase box of the passphrase modal with the iOS keyboard (AT-51)", () => {
   test("the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap", async ({ page }) => {
     await fakeViewport(page);
+    await startClock(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
     await expect(page.getByRole("dialog"), "the pick of the team closes the sheet, and no modal opens on its own").toHaveCount(0);
+    await passLoadBeat(page);
     // A weekly Topic from "More" needs no API, and the first action still asks for the passphrase.
     await page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: "More" }).tap();
     await page.getByRole("list", { name: "All Topics" }).getByRole("button").first().tap();
@@ -110,13 +128,12 @@ test.describe("the passphrase box of the passphrase modal with the iOS keyboard 
 
   test("the box sits above the keyboard with a kept team and no kept passphrase", async ({ page }) => {
     await fakeViewport(page);
-    /* A kept team lets the Announcement of the season sim open on the load beat. On a slow runner it opens before the
-       Send tap and covers the page, so the test marks it seen. */
-    await page.addInitScript(() => {
-      localStorage.setItem("cpc.your-team", "1");
-      localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
-    });
+    await startClock(page);
+    // A kept team lets an Announcement open on the load beat.
+    await page.addInitScript(() => localStorage.setItem("cpc.your-team", "1"));
     await page.goto(`${server.url}${DOOR}`);
+    await page.getByRole("textbox", { name: "Ask a question" }).waitFor();
+    await passLoadBeat(page);
     await askForPassphrase(page);
     await tapAndOpenKeyboard(page);
     const place = await boxAndKeyboard(page);
