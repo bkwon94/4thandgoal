@@ -269,7 +269,7 @@ Observation: The output lists 43 changed files under `apps/site/`, `packages/des
 App: site
 Then: No Stop card shows while the layer is open or in its exit, and Stop 1 shows after the layer finishes its exit.
 Files: `evidence/AT-38/output.txt`
-Observation: The output prints the layer "test-modal-layer (A test modal layer)", the test's own `div` with role `dialog` and `aria-modal="true"`. The close runs a 300 ms opacity fade, and the layer keeps `aria-modal="true"` and stays on the page until the fade ends. The exit ends at 1722.4 ms. Stop 1 shows at 2338.7 ms, a gap of 616.3 ms after the exit end. The test sampled 19 frames during the exit and found no `[data-tour-card]` in any of them. The test passed.
+Observation: The output prints the open layer as tag `div`, role `dialog`, `aria-modal` `true`, named "test-modal-layer (A test modal layer)". The close runs a 300 ms opacity fade. The test printed 19 exit frames. In each one `aria-modal` is `true`, the layer is on the page, and no `[data-tour-card]` shows. The opacity falls from 1 at frame 1 to 0.944347 at frame 2, 0.49968 at frame 10, and 1.33333e-05 at frame 19. The exit ends at 1741.4 ms. The first frame after the removal, at 1741.5 ms, shows the layer off the page and no card. The Stop 1 frame, at 2362.2 ms, shows a card. Stop 1 shows at 2362.3 ms, a gap of 620.9 ms after the exit end. The test passed.
 
 ## AT-39: The Stop card is a modal layer
 
