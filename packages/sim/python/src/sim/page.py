@@ -16,10 +16,15 @@ from sim.tunables import ABOUT_RUNS, IN_ODDS, RACE_FLOOR, ROOT_FOR_LIFT, ROOT_FO
 Pair = tuple[int, int]
 Reason = Literal["2 wins ahead of you", "1 win ahead of you", "Level with you", "1 win behind you",
                  "In the race for the last spot"]
-# The reason of a root-for row by the gap in real wins from the loser to Your team. Any other gap is the race reason.
+# The reason of a root-for row by the gap in real wins from the loser to Your team.
 _REASONS: dict[int, Reason] = {2: "2 wins ahead of you", 1: "1 win ahead of you", 0: "Level with you",
                                -1: "1 win behind you"}
 _RACE: Reason = "In the race for the last spot"
+# A loser of any other gap gets the race reason only when its real wins sit within this count of the real wins of the
+# team that holds the last playoff spot. One win is the gap that one result closes, so the loser can take the spot or
+# lose it this week, and the reason stays true. A loser further away gets no reason, and its row drops, because the PRD
+# gives a row one of the five reasons only.
+RACE_GAP = 1
 
 
 @dataclass(frozen=True)
@@ -215,6 +220,9 @@ def team_page(
     need = next((s.more_wins for s in steps if s.playoff is not None and s.playoff >= IN_ODDS), None)
     table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
     place = {rid: n for n, rid in enumerate(table, start=1)}
+    # Each run puts the same count of teams in the playoffs, so the first run gives the count of playoff spots.
+    spots = len(runs[0].made) if runs else 0
+    last_wins = records[table[min(spots, len(table)) - 1]][0] if spots else None
     combos: list[tuple[bool, bool, Literal["win", "loss"], Literal["above", "below"] | None]] = (
         [(True, True, "win", "above"), (True, False, "win", "below"), (False, True, "loss", "above"),
          (False, False, "loss", "below")] if median_game else [(True, False, "win", None), (False, False, "loss", None)])
@@ -229,7 +237,7 @@ def team_page(
                        about=about(results[i][(win, up)][0]))
             for win, up, game, median in combos]
         loss_playoff = odds(losses[i])
-        rows = _root_for(you, schedule[week], winners[i], loss_playoff, odds, about, records, place)
+        rows = _root_for(you, schedule[week], winners[i], loss_playoff, odds, about, records, place, last_wins)
         weeks.append(PageWeek(week=week, opponent=opponent, results=week_results, loss_playoff=loss_playoff,
                               loss_about=about(losses[i][0]), root_for=rows))
     playoffs = (_playoffs(you, runs, total, list(bracket_weeks), played or {}, about)
@@ -329,11 +337,12 @@ def _playoff_game(
 
 def _root_for(
     you: int, pairs: list[Pair], winners: Mapping[int, list[float]], loss_playoff: int | None, odds, about,
-    records: Mapping[int, tuple[int, int, float]], place: Mapping[int, int],
+    records: Mapping[int, tuple[int, int, float]], place: Mapping[int, int], last_wins: int | None,
 ) -> list[RootFor]:
     """The root-for rows of one week: for each other game, the side whose win lifts the odds after a loss the most.
-    A row stays when it lifts them by ROOT_FOR_LIFT whole points or more. The rows rank by the lift, then by the
-    standings place of the loser, so a loss of a team higher in the table comes first."""
+    A row stays when it lifts them by ROOT_FOR_LIFT whole points or more and its loser has a true reason. The rows
+    rank by the lift, then by the standings place of the loser, so a loss of a team higher in the table comes first.
+    `last_wins` holds the real wins of the team in the last playoff spot."""
     if loss_playoff is None:
         return []
     found: list[tuple[int, int, RootFor]] = []
@@ -350,11 +359,22 @@ def _root_for(
         lift, winner, loser, after = max(sides, key=lambda side: (side[0], -place[side[2]]))
         if lift < ROOT_FOR_LIFT:
             continue
-        reason = _REASONS.get(records[loser][0] - records[you][0], _RACE)
+        reason = _reason(records[loser][0], records[you][0], last_wins)
+        if reason is None:
+            continue
         found.append((lift, place[loser], RootFor(winner=winner, loser=loser, reason=reason, playoff=after,
                                                   about=about(winners[winner][0]))))
     found.sort(key=lambda row: (-row[0], row[1]))
     return [row for _, _, row in found[:ROOT_FOR_ROWS]]
+
+
+def _reason(loser_wins: int, your_wins: int, last_wins: int | None) -> Reason | None:
+    """The true reason of a root-for row by the real wins: the gap to Your team first, then the race for the last
+    playoff spot. None when no reason of the five is true."""
+    reason = _REASONS.get(loser_wins - your_wins)
+    if reason is None and last_wins is not None and abs(loser_wins - last_wins) <= RACE_GAP:
+        reason = _RACE
+    return reason
 
 
 def _sentence(status: OddsStatus, need: int | None, wins_left: int, ladder: list[LadderStep], set_left: int = 0,

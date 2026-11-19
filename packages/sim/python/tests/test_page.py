@@ -3,6 +3,7 @@ Tests for the page block of the season sim: a small hand-built league at the sea
 page of one team. The real data of CPC and NorCal runs in tests/test_sim.py of the pipeline.
 """
 import json
+from pathlib import Path
 
 import pytest
 
@@ -110,13 +111,55 @@ def test_the_root_for_rows_follow_the_rules_of_the_spec(sim):
     assert rows_seen > 0
 
 
+NAMED = {2: "2 wins ahead of you", 1: "1 win ahead of you", 0: "Level with you", -1: "1 win behind you"}
+
+
+def _true_reason(you: int, loser: int, records, spots: int) -> str | None:
+    """The one true reason of a row by the real standings, or None when no reason of the five is true. The race
+    reason needs a loser within 1 win of the team that holds the last playoff spot."""
+    gap = records[loser][0] - records[you][0]
+    if gap in NAMED:
+        return NAMED[gap]
+    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
+    last = records[table[spots - 1]][0]
+    return "In the race for the last spot" if abs(records[loser][0] - last) <= 1 else None
+
+
 def test_the_reason_names_the_gap_in_real_wins_to_the_loser(sim):
-    named = {2: "2 wins ahead of you", 1: "1 win ahead of you", 0: "Level with you", -1: "1 win behind you"}
     for rid, page in sim.pages.items():
         for week in page.weeks:
             for row in week.root_for:
-                gap = RECORDS[row.loser][0] - RECORDS[rid][0]
-                assert row.reason == named.get(gap, "In the race for the last spot")
+                assert row.reason == _true_reason(rid, row.loser, RECORDS, 4)
+
+
+# A spread of real wins from 1 to 8, so some losers sit 3 or more wins from roster 1 and roster 8.
+WIDE = {rid: (rid, 8 - rid, 220.0 + rid) for rid in ROSTERS}
+
+
+def test_the_race_reason_goes_only_to_a_loser_near_the_last_playoff_spot():
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                      runs=4_000, pages=list(ROSTERS))
+    race = 0
+    for rid, page in wide.pages.items():
+        for week in page.weeks:
+            for row in week.root_for:
+                assert row.reason == _true_reason(rid, row.loser, WIDE, 4)
+                race += row.reason == "In the race for the last spot"
+    assert race > 0
+
+
+# The week 10 sim file of CPC, a saved copy of a real sim step that the What-if tests of the API read.
+CPC_WEEK_10 = Path(__file__).resolve().parents[4] / "apps" / "api" / "tests" / "fixtures" / "sim" / "cpc-week-10-sim.json"
+
+
+@pytest.mark.skipif(not CPC_WEEK_10.is_file(), reason="no week 10 sim file of CPC")
+def test_each_reason_of_the_real_cpc_week_10_file_is_true():
+    sim = json.loads(CPC_WEEK_10.read_text(encoding="utf-8"))
+    records = {int(rid): tuple(record) for rid, record in sim["records"].items()}
+    spots = sim["parameters"]["playoff_spots"]
+    rows = [(int(you), row) for you, page in sim["pages"].items() for week in page["weeks"] for row in week["root_for"]]
+    assert rows
+    assert [row["reason"] for _, row in rows] == [_true_reason(you, row["loser"], records, spots) for you, row in rows]
 
 
 def test_a_result_is_about_when_its_chance_times_the_effective_runs_is_under_400(sim):
