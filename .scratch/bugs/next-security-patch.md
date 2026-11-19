@@ -42,6 +42,6 @@ bp-norcal-2 exit=0 next=Next.js 16.4.5 SecurityFatalError=0
 
 `make check-fast BASE=main` at `cae51993` passed on the second run: the site run shows `Tests  1731 passed (1731)`. The first run failed only on the known flaky `page-free.test.tsx` under load from other sessions.
 `make -C apps/site check` at `cae51993` passed: `Tests  1731 passed (1731)`, and `check:export` passed for `cpc` and `norcal`.
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
