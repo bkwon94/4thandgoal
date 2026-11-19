@@ -3,6 +3,7 @@
  * It renders the shell, then one scroll from that JSON: the hero, the four numbers, the chapters, and the footer.
  */
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import { TopBand } from "@cpc/design/shell/top-band";
 import { PageColumn } from "@cpc/design/parts/page-column";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
@@ -22,6 +23,7 @@ import { matchupScene } from "@cpc/week/parts/matchup-scene";
 import { loadSeasonWeeks, seasonManagersHref } from "@/lib/data/manager-data";
 import { listWeekSummaries, listWeeks, loadWeek, type WeekRef } from "@/lib/data/week-data";
 import { weekHref } from "@/lib/routes";
+import { weekTiles } from "@/generated/registry";
 import { shellProps, pageTitle, weekSubtitle } from "@/app/shell-props";
 
 type Props = { params: Promise<WeekRef> };
@@ -49,6 +51,8 @@ export default async function WeekPage({ params }: Props) {
   // The Trend tiles of the week numbers read the saved weeks of every team. They stop at the page week.
   const teamWeeks = loadSeasonWeeks(season);
   const trends = teamWeeks === null ? null : weekTrends(teamWeeks, page.week);
+  // The tile of each package of the client, such as the Sim tile, sits after Standings. A week with no data has none.
+  const tiles = weekTiles.flatMap((weekTile) => weekTile(season, week) ?? []);
   // The rail lists the chapters the page renders, in the same order, with the ids the chapters set.
   // The labels use the words of each chapter's own heading, and the hero takes the name of its region.
   // Each id matches the id in that chapter's component. A chapter with no data has no rail link.
@@ -62,6 +66,7 @@ export default async function WeekPage({ params }: Props) {
     // A league with no median game has median null, so the page has no median chapter and the rail no link to it.
     ...(page.median ? [{ id: "median", label: "The median game" }] : []),
     { id: "standings", label: "Standings" },
+    ...tiles.map(({ chapter }) => chapter),
     { id: "next-week", label: "Next week" },
   ];
   // The footer links the nearest published weeks of the same season on each side. The list is newest first,
@@ -114,6 +119,9 @@ export default async function WeekPage({ params }: Props) {
               managersHref={managersHref}
               hasMedianGame={page.median !== null}
             />
+            {tiles.map(({ chapter, tile }) => (
+              <Fragment key={chapter.id}>{tile}</Fragment>
+            ))}
             <NextWeek week={page.week} games={page.next} avatars={page.avatars} blurb={page.blurbs.next_week} />
             <WeekFooter prior={prior} next={next} />
           </div>

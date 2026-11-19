@@ -223,6 +223,10 @@ const BAND_PARTS = { eggs: "@/app/_routes/eggs/band" };
    package of the list, so the home page of a client that omits the package holds none. */
 const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner", sim: "@/app/_routes/sim/home-banner" };
 
+/* The tile that a package puts on each week page after Standings, such as the Sim tile. The registry imports it only
+   for a package of the list, so the week page of a client that omits the package holds none of its code. */
+const WEEK_TILES = { sim: "@/app/_routes/sim/week-tile" };
+
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
   const season = latestSeasonDir(published);
@@ -259,10 +263,11 @@ function registryText(slug, values) {
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
+  const weekTiles = Object.keys(WEEK_TILES).filter((name) => values.packages.includes(name));
   const lines = SITE_LINES.filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines } from "@/lib/client-values";`,
+    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines, WeekTile } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
     ...lines.map((name) => `import { siteLine as ${name}SiteLine } from "@/app/_routes/${name}/menu";`),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
@@ -270,6 +275,7 @@ function registryText(slug, values) {
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
     ...band.map((name) => `import { BandPart as ${name}BandPart } from "${BAND_PARTS[name]}";`),
     ...banners.map((name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`),
+    ...weekTiles.map((name) => `import { weekTile as ${name}WeekTile } from "${WEEK_TILES[name]}";`),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
@@ -297,6 +303,9 @@ function registryText(slug, values) {
     "",
     "/* The strip of each package of the client under the top band of the home page. */",
     `export const homeBanners: HomeBanner[] = [${banners.map((name) => `${name}HomeBanner`).join(", ")}];`,
+    "",
+    "/* The tile of each package of the client on each week page, after Standings. */",
+    `export const weekTiles: WeekTile[] = [${weekTiles.map((name) => `${name}WeekTile`).join(", ")}];`,
     "",
   ].join("\n");
 }

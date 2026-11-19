@@ -147,6 +147,20 @@ describe("the client build", () => {
     expect(registry).toContain("export const homeBanners: HomeBanner[] = [simHomeBanner];");
   });
 
+  it("gives a client of the sim package the Sim tile on each week page, and a client without it none", () => {
+    const toml = (packages) => [`packages = ${packages}`, 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const withSim = tempRepo(toml('["week", "sim"]'), "sim-tile");
+    buildClient(withSim);
+    const registry = readFileSync(join(withSim.site, "src", "generated", "registry.ts"), "utf8");
+    expect(registry).toContain('import { weekTile as simWeekTile } from "@/app/_routes/sim/week-tile";');
+    expect(registry).toContain("export const weekTiles: WeekTile[] = [simWeekTile];");
+    const weekOnly = tempRepo(toml('["week"]'), "week-only");
+    buildClient(weekOnly);
+    const plain = readFileSync(join(weekOnly.site, "src", "generated", "registry.ts"), "utf8");
+    expect(plain).not.toContain("sim");
+    expect(plain).toContain("export const weekTiles: WeekTile[] = [];");
+  });
+
   it("gives a client without the eggs package no /eggs/ route and no egg hunt", () => {
     const repo = tempRepo(CPC_TOML.replace(', "eggs"]', "]").replace(/\n# The roster of the commissioner[^\n]*\n\[values\.eggs\]\n[^\n]*\n/, "\n"));
     buildClient(repo);

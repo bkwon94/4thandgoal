@@ -2,11 +2,12 @@
  * Tests for the standings ladder of Playoff race and the schedule strip of Your season, on the front door.
  * Each test renders the page over the real page.json of week 9 and the topics.json that the build writes.
  */
-import { cpSync, mkdtempSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 
 /* Bo Girds, the team of the acceptance tests, in each league. */
 const BO_GIRDS = { cpc: 6, norcal: 7 } as const;
@@ -29,12 +30,17 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-/* The front door over week 9 of one league, with Bo Girds as Your team. */
-async function doorOf(league: League) {
+/* The front door over week 9 of one league, with Bo Girds as Your team. With `sim`, the season holds the real week sim
+   file of CPC week 10, so the client has its sim page. */
+async function doorOf(league: League, { sim = false } = {}) {
   const root = mkdtempSync(join(tmpdir(), "front-door-season-"));
   roots.push(root);
   // The path comes from this file and not from the working folder, because the test points the working folder at root.
   cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), { recursive: true });
+  if (sim) {
+    mkdirSync(join(root, "public", "2026", "week-10"), { recursive: true });
+    writeFileSync(join(root, "public", "2026", "week-10", "sim.json"), JSON.stringify(weekSimJson));
+  }
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
   vi.resetModules();
@@ -72,6 +78,23 @@ describe("the standings ladder", () => {
     expect(you).toHaveLength(1);
     expect(you[0].textContent).toContain("Bo Girds");
     expect(you[0].querySelector("[data-odds]")!.getAttribute("data-odds")).toBe("you");
+  });
+});
+
+describe("the link of the standings ladder", () => {
+  it("opens the sim page of the season (AT-49)", async () => {
+    const Door = await doorOf("cpc", { sim: true });
+    render(<Door />);
+    const ladder = await openBlock("Playoff race", "ladder");
+    const link = within(ladder).getByRole("link", { name: "Open the season sim" });
+    expect(link.getAttribute("href")).toBe("/sim/2026/");
+  });
+
+  it("has no link while the season has no sim page", async () => {
+    const Door = await doorOf("cpc");
+    render(<Door />);
+    const ladder = await openBlock("Playoff race", "ladder");
+    expect(within(ladder).queryByRole("link")).toBeNull();
   });
 });
 
