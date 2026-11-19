@@ -44,7 +44,7 @@ The proof that the loop still fails when the hole stays at the old Stop: at `c3c
     Error: the hole shows between the Stops for 80 ms or more; the hole tops at each ms: 321@0, 321@0, 321@150, 321@150, 321@300, 321@300, 321@450, 321@450, 377@600, 377@600, ...
   3 failed
 ```
-Test verdict: pending
+Test verdict: FAIL Question 3: `smoke.log` shows "FAIL Front door 390x660 webkit: overlap" for the Front door flow, which is the flow that this tour glide fix changes, so not each flow passed.
 
 ### 2. The card covers its control after a burst of scroll
 
@@ -75,7 +75,7 @@ Green: at `faf63b79`, `(CLIENT=cpc pnpm build || CLIENT=cpc pnpm build) > /dev/n
 ```
 
 At `faf63b79`, the full spec `front-door-tour-motion.spec.ts` gives `8 passed`, the two scroll burst tests with `--repeat-each 3` give `6 passed`, and `front-door-tour.spec.ts`, `front-door-tour-replay.spec.ts`, and `front-door-tour-look.spec.ts` give `37 passed`.
-Test verdict: pending
+Test verdict: FAIL Question 3: `smoke.log` shows the changed Front door flow failed, and `fail-390-light.png` shows the tour card "Suggestions" over the "Checked" control, so not each flow passed.
 
 ### 3. The norcal scene is not at rest after 100 ms
 
@@ -119,7 +119,7 @@ The proof that the loop still fails when the scene plays its motion before it se
 ```
 
 At `25c08da3`, the full spec `scene.spec.ts` in the projects `floor` and `floor-timing` gives `15 passed` for norcal and `15 passed` for cpc.
-Test verdict: pending
+Test verdict: FAIL Question 3: the Week report flow passed, but `smoke.log` shows the Front door flow failed, so not each flow passed.
 
 ### 4. The passphrase box tests time out
 
@@ -169,7 +169,7 @@ the box spans 494 to 548 px, and the keyboard starts at 516 px
 ```
 
 At `59d623e0`, the two AT-51 tests with `--repeat-each 5` give `10 passed`, the full spec `front-door-passphrase.spec.ts` gives `2 passed`, and `make check-fast BASE=main` passes. Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, still call only `skipTour`; a later run can give them `skipAnnouncements` too.
-Test verdict: pending
+Test verdict: FAIL Question 3: the Passphrase flow passed, but `smoke.log` shows the Front door flow failed, so not each flow passed.
 
 ## Smoke
 
