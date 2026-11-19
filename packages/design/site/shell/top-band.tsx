@@ -27,9 +27,12 @@ type TopBandProps = {
   // The rows of the open page at the foot of the menu sheet, such as the replay of the Tour on the front door. The app
   // layer passes them, so the shell names no part of a page. A page with none passes none.
   menuFoot?: ReactNode;
+  // The strip of the app under the row of the band, such as the Deadline banner. It sits in the band, so it stays on
+  // screen at every scroll, and the band height token grows by its height. A page with none passes none.
+  strip?: ReactNode;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children, actions, menuFoot }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions, menuFoot, strip }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   return (
     <>
@@ -69,6 +72,7 @@ export function TopBand({ title, brand, menu, pageHref, children, actions, menuF
             <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} foot={menuFoot} />
           </div>
         </div>
+        {strip}
       </header>
       {children && <div className="mx-auto max-w-page px-gutter pt-sp-5">{children}</div>}
     </>

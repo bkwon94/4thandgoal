@@ -9,6 +9,8 @@ import { bandParts, menuLinks } from "@/generated/registry";
 import type { ClientValues, MenuItem, MenuLinks } from "@/lib/client-values";
 import { listWeekSummaries } from "@/lib/data/week-data";
 import { homeHref, logoSrc } from "@/lib/routes";
+import { DeadlineBanner } from "@cpc/analyzer/deadline/deadline-banner";
+import { ENDS_AFTER_MS } from "@cpc/analyzer/lib/deadline";
 
 /* The short label of each package, for a menu that shows no full label. The week item keeps the label of its
    package, "Week N", and the pill bar shows the full label of each item. The menu sheet leaves out the midseason
@@ -55,7 +57,14 @@ export function takesEggs(): boolean {
   return clientValues.packages.includes("eggs");
 }
 
-export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode } {
+/* The Deadline banner of a client with a Lock, for a build before Deadline week ends. A build after it holds no banner.
+   A page open across the end hides the banner by itself, because the banner reads the clock of the reader. */
+export function deadlineStrip(lock: number | null = clientValues.lock): ReactNode {
+  if (lock === null || Date.now() >= lock + ENDS_AFTER_MS) return null;
+  return createElement(DeadlineBanner, { lock });
+}
+
+export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode; strip: ReactNode } {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();
   // Every published week, newest first, for the menu sheet. A client with no week lists none.
@@ -68,5 +77,7 @@ export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; act
     menu: { items: menuPages(clientValues.menu.items, menuLinks, home), weeks },
     // The button of each package of the client, such as the egg button. The registry lists only the packages of the client.
     actions: bandParts.map((Part, index) => createElement(Part, { key: index })),
+    // The Deadline banner under the row of the band during Deadline week. A client with no Lock has none.
+    strip: deadlineStrip(),
   };
 }
