@@ -177,7 +177,7 @@ The short set of Stops on the front door that shows a league mate what each part
 _Avoid_: Tutorial, onboarding, walkthrough, guide, coach marks
 
 **Stop**:
-One spotlight of the Tour on one real control of the front door, with its line of text and its controls.
+One spotlight of the Tour on one real control of the front door, with its header, its line of text, and its controls.
 _Avoid_: Step (a step is a part of the trade flow), slide, tooltip, popover
 
 **Route**:
