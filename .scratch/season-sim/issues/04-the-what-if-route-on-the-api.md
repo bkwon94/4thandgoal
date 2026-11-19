@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-14 to AT-21, AT-67, and 
 
 **Blocked by:** 03.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A post of Bo Girds and one set result with no passphrase answers 200 with each key of the spec (AT-14).
 - [x] A post with no set result answers the page of Bo Girds in `week-10/sim.json`, equal by a diff (AT-15).
@@ -21,3 +21,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-14 to AT-21, AT-67, and 
 - [x] No route reads or writes an Announcement (AT-67), and two equal posts run the sim twice (AT-68).
 - [ ] The API image builds with the sim package.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- 2026-11-18: The box "The API image builds with the sim package" stays open. The Docker daemon on the Mac hangs. Run `make image` in `apps/api` after a restart of Docker Desktop.
