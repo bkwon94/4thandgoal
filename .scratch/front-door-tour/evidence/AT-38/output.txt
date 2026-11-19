@@ -1,32 +1,25 @@
 $ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-38[,)]"
 
-
 Running 1 test using 1 worker
 
-AT-38 open modal layers: ["test-modal-layer (A test modal layer)"]
+AT-38 open modal layers: ["dialog \"See your path to the playoffs\""]
 AT-38 open layer: tag div, role dialog, aria-modal true
-AT-38 exit frame 1: t=1427.2 ms; opacity 1; aria-modal true; on page true; card false
-AT-38 exit frame 2: t=1436.8 ms; opacity 0.944347; aria-modal true; on page true; card false
-AT-38 exit frame 3: t=1459.5 ms; opacity 0.88868; aria-modal true; on page true; card false
-AT-38 exit frame 4: t=1472.0 ms; opacity 0.833013; aria-modal true; on page true; card false
-AT-38 exit frame 5: t=1488.7 ms; opacity 0.77768; aria-modal true; on page true; card false
-AT-38 exit frame 6: t=1505.3 ms; opacity 0.722013; aria-modal true; on page true; card false
-AT-38 exit frame 7: t=1519.9 ms; opacity 0.666347; aria-modal true; on page true; card false
-AT-38 exit frame 8: t=1542.5 ms; opacity 0.611013; aria-modal true; on page true; card false
-AT-38 exit frame 9: t=1554.3 ms; opacity 0.555347; aria-modal true; on page true; card false
-AT-38 exit frame 10: t=1574.3 ms; opacity 0.49968; aria-modal true; on page true; card false
-AT-38 exit frame 11: t=1587.6 ms; opacity 0.444347; aria-modal true; on page true; card false
-AT-38 exit frame 12: t=1609.0 ms; opacity 0.38868; aria-modal true; on page true; card false
-AT-38 exit frame 13: t=1623.8 ms; opacity 0.333347; aria-modal true; on page true; card false
-AT-38 exit frame 14: t=1638.5 ms; opacity 0.277347; aria-modal true; on page true; card false
-AT-38 exit frame 15: t=1654.3 ms; opacity 0.222013; aria-modal true; on page true; card false
-AT-38 exit frame 16: t=1674.3 ms; opacity 0.166347; aria-modal true; on page true; card false
-AT-38 exit frame 17: t=1689.3 ms; opacity 0.111013; aria-modal true; on page true; card false
-AT-38 exit frame 18: t=1704.3 ms; opacity 0.0553467; aria-modal true; on page true; card false
-AT-38 exit frame 19: t=1721.0 ms; opacity 1.33333e-05; aria-modal true; on page true; card false
-AT-38 first frame after removal: t=1741.5 ms; opacity n/a; aria-modal true; on page false; card false
-AT-38 Stop 1 frame: t=2362.2 ms; opacity n/a; aria-modal true; on page false; card true
-AT-38 layer: test-modal-layer (A test modal layer); exit duration: 300 ms; exit end: 1741.4 ms; Stop 1 shows: 2362.3 ms; gap: 620.9 ms; frames in exit with no card: 19 of 19
-  ✓  1 [floor] › e2e/front-door-tour.spec.ts:318:5 › the Tour waits while a test modal layer is open, and Stop 1 shows after the layer leaves (AT-38) (2.5s)
+AT-38 exit frame 1: t=2177.8 ms; opacity 1; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 2: t=2195.0 ms; opacity 0.918; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 3: t=2235.7 ms; opacity 0.806667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 4: t=2236.4 ms; opacity 0.695333; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 5: t=2244.9 ms; opacity 0.584; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 6: t=2259.5 ms; opacity 0.472667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 7: t=2276.5 ms; opacity 0.362; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 8: t=2295.6 ms; opacity 0.250667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 9: t=2311.7 ms; opacity 0.139333; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 10: t=2326.0 ms; opacity 0.0286667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 11: t=2345.0 ms; opacity 1; transform none; aria-modal true; on page true; card false
+AT-38 first frame after removal: t=2361.0 ms; opacity n/a; transform n/a; aria-modal true; on page false; card false
+AT-38 Stop 1 frame: t=2962.0 ms; opacity n/a; transform n/a; aria-modal true; on page false; card true
+AT-38 layer: dialog "See your path to the playoffs"; tap on Not now: 2166.7 ms; exit end: 2360.9 ms; exit duration: 194.2 ms; Stop 1 shows: 2962.0 ms; gap: 601.1 ms; frames in exit with no card: 11 of 11
+AT-38 frames since load with the Announcement and a Stop card together: 0 of 178
+AT-38 seen keys: {"tour":"1","announcement":"seen"}
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:340:5 › on a fresh load the season-sim Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38) (3.0s)
 
-  1 passed (3.3s)
+  1 passed (3.6s)
