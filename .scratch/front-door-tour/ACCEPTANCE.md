@@ -306,6 +306,22 @@ When: The reader runs `git diff --stat main...front-door-tour`.
 Then: No changed path starts with `apps/pipeline/` or `apps/api/`.
 Evidence: the command and its output.
 
+AT-38: The Tour waits for an open modal layer
+App: site
+Stories: 42
+Given: A browser with Your team set to Bo Girds and no seen key, with an `[aria-modal="true"]` layer open on the cpc front door. Before 2026-12-01 the layer is the Announcement. From that date the test opens its own modal layer on the page.
+When: The reader closes the modal layer.
+Then: No Stop card shows while the layer is open, and Stop 1 shows after the layer finishes its exit.
+Evidence: the Playwright test name and output, with the name of the layer that the test used.
+
+AT-39: The Stop card is a modal layer
+App: site
+Stories: 42
+Given: The Tour at Stop 1.
+When: The reader inspects the card.
+Then: The card has role `dialog` and `aria-modal="true"`.
+Evidence: the accessibility snapshot of the card, and the Playwright test name and output.
+
 ## Trace
 
 Story 1: AT-1
@@ -349,7 +365,7 @@ Story 38: AT-30
 Story 39: AT-31
 Story 40: AT-32
 Story 41: AT-33
-Story 42: AT-5
+Story 42: AT-5, AT-38, AT-39
 Story 43: AT-6
 Story 44: AT-3
 Out of scope "A Tour on the other pages": AT-34
@@ -361,4 +377,4 @@ Out of scope "A tour library such as `driver.js`": AT-36
 
 ## Revisions
 
-None yet.
+- 2026-11-18: Brian approved the layer rule from the season-sim Announcement. Story 42 now covers each modal layer. AT-38 and AT-39 are new.

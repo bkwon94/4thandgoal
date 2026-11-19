@@ -5,7 +5,7 @@ Date: 2026-11-18
 Apps: site. The front door gets a Tour of four Stops, a seen key, and two replay controls. The pipeline and the API do not change.
 Spec branch: `front-door-tour`.
 Source: the map `.scratch/front-door-tour/MAP.md` and decision tickets 01 to 04. ADR 0035 (each ui-sdk part has one wrapper), ADR 0024 (the site look).
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 05, in `issues/`.
 
 ---
 
@@ -62,7 +62,7 @@ The Tour is passive: the real controls do not respond while it shows. Each brows
 39. As a keyboard user, I want focus to go back to where it was after the Tour, so that I do not lose my place.
 40. As a league mate on a phone, I want no keyboard to open when the Tour starts, so that the keyboard does not cover the Stop.
 41. As a league mate, I want a hold or a tap during the Tour to start no easter egg, so that the Tour and the hunt do not mix.
-42. As a league mate, I want the Tour to never show over the team sheet or the passphrase modal, so that two layers never fight.
+42. As a league mate, I want the Tour to start only when no modal layer is open, such as the team sheet, the passphrase modal, or an Announcement, so that two layers never fight.
 43. As a league mate in another client league, I want the same Tour, so that the copy fits a league with another menu.
 44. As the commissioner, I want the Stop copy to be static, so that the Tour is the same each week and needs no build.
 
@@ -90,6 +90,7 @@ The four Stops, in this order, with the copy of decision 03:
 - **The card places itself.** The ui-sdk positioner does not place it, because the positioner lagged the glide by up to 181 px in the prototype. The ui-sdk Popover still owns the modal, the focus, and the dismiss.
 - `onDismissAttempt` maps each reason: `outside-press` goes to the next Stop, or ends the Tour on Stop 4. `escape-key` and `back` count as Skip.
 - The card uses `PopoverTitle` for the header and `PopoverDescription` for the line.
+- The card has role `dialog` and carries `aria-modal="true"` while the Tour shows. Another front door layer that skips when an `[aria-modal="true"]` element is open, such as an Announcement, then skips under the Tour.
 - **The spotlight** is one fixed element above the top band and below the card, with `pointer-events: none`. Its large `box-shadow` spread is the dim. An SVG dim gave no gain in the prototype.
 - The Tour itself is one front door part, `tour`. It owns the Stop order, the current Stop, the measure of each target, and the start rules. The shell names no Tour.
 
@@ -135,7 +136,8 @@ The Tour reads `useMotionOff`, as the other front door parts do. Under reduced m
 
 ### The start rules
 
-- The Tour starts only when the team sheet is closed and the passphrase modal is closed.
+- The Tour starts only when no `[aria-modal="true"]` element is open. This covers the team sheet, the passphrase modal, and an Announcement.
+- If a modal layer is open, the Tour waits. It starts after the last modal layer finishes its exit.
 - On a new browser, the Tour starts after the team sheet finishes its exit. The team sheet calls its pick from `onOpenChangeComplete`, so the Suggestions of Your team are on the page.
 - If a field has focus when the Tour starts, the Tour blurs it and waits for the keyboard lift to end.
 - The spotlight and the card carry no `data-stable-id`, so a tap or a hold in the Tour sends no egg check.
