@@ -173,6 +173,9 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: pending
+Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 6 passed, 1 failed". Shots in `.scratch/bugs/flaky-browser-specs/smoke/`. The one failure is "FAIL Front door 390x660 webkit: overlap: <span> "Suggestions" and <span> "Checked"". The same flow on `main` at `8780eefb`, in a clean worktree, gives the same failure and "Smoke run: 1 flow, 0 passed, 1 failed", so this run did not cause it.
 
 ## Comments
+
+- The smoke run found an old bug on `main`: at 390x660, the Suggestions Stop of the Tour opens over the "Checked" status of the first answer. It needs its own quick run.
+- Other front-door specs with a kept team, such as `front-door-kept.spec.ts`, call only `skipTour` and not `skipAnnouncements`. They can flake as item 4 did, and need a later run.
