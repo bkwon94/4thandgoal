@@ -171,9 +171,16 @@ class TheWorkflow(unittest.TestCase):
     def test_the_script_comes_from_the_default_branch(self):
         self.assertIn("ref: ${{ github.event.repository.default_branch }}\n"
                       "          path: rerun-main\n"
-                      "          sparse-checkout: scripts/rerun.py", self.TEXT)
+                      "          sparse-checkout: |\n"
+                      "            scripts/rerun.py\n"
+                      "            scripts/scope.py", self.TEXT)
         self.assertIn("python3 -B rerun-main/scripts/rerun.py", self.TEXT)
         self.assertNotIn("python3 -B scripts/rerun.py", self.TEXT)
+
+    def test_the_job_goes_on_only_when_the_scope_selects_the_rerun(self):
+        self.assertIn('python3 -B rerun-main/scripts/scope.py "origin/$BASE_REF" "$HEAD"', self.TEXT)
+        self.assertIn('*" rerun "*) ;;', self.TEXT)
+        self.assertIn("records only, so this run checks no loop and passes", self.TEXT)
 
     def test_the_workflow_names_no_model_key_and_no_secret(self):
         for word in ("ANTHROPIC_API_KEY", "TYPESAFE_API_KEY", "secrets."):
