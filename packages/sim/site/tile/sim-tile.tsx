@@ -4,8 +4,10 @@
  */
 import { ArrowRightIcon } from "lucide-react";
 import { cn } from "@cpc/design/lib/utils";
-import { LABEL } from "../page/format";
 import type { TeamTile } from "./tile";
+
+/* The label of the tile is the label of the tiles of the week page, at the meta size, so it meets the text floor of 11px. */
+const TILE_LABEL = "font-mono text-meta leading-tight font-bold tracking-caps uppercase";
 
 /* A plain anchor, so the link skips the router. The whole card is the tap target, as on the tiles of the home page. */
 export function SimTile({ tile, fact, href }: { tile: TeamTile | null; fact: string | null; href: string }) {
@@ -17,12 +19,12 @@ export function SimTile({ tile, fact, href }: { tile: TeamTile | null; fact: str
     >
       {tile === null ? (
         <span className="flex flex-col gap-sp-1">
-          <span className={cn(LABEL, "text-mute")}>The league</span>
+          <span className={cn(TILE_LABEL, "text-mute")}>The league</span>
           <span className="text-lead leading-tight font-bold text-balance">{fact ?? "Pick your team to see your odds."}</span>
         </span>
       ) : (
         <span className="flex flex-col gap-sp-1">
-          <span className={cn(LABEL, "text-mute")}>{tile.label}</span>
+          <span className={cn(TILE_LABEL, "text-mute")}>{tile.label}</span>
           {/* The number is mono, as on the four numbers of the week, so the tiles of the page read as one set. */}
           <span className="font-mono text-stat leading-stat font-bold tabular-nums">{tile.odds}</span>
           <span className="text-body leading-body text-pretty text-ink-2">{tile.line}</span>
