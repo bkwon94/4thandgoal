@@ -344,6 +344,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
   const [side, setSide] = useState<"below" | "above" | null>(null);
   const [snap, setSnap] = useState(false);
   const held = useRef<{ x: number; y: number } | null>(null);
+  const [gone, setGone] = useState(false);
   const holeLanded = useRef(true);
   const cardOut = useRef(false);
 
@@ -368,10 +369,21 @@ function Stops({ onEnd }: { onEnd: () => void }) {
     return () => target.el.removeAttribute("data-tour-target");
   }, [target]);
 
+  // Each new place of the hole starts a glide, also a place from a scroll, so the hole has not landed until it ends.
+  useLayoutEffect(() => {
+    holeLanded.current = false;
+  }, [hole]);
+
   const wanted = hole ? sideOf(hole) : null;
   // The card leaves and comes back when it must change side, so it never sweeps across the hole. Under reduced motion it
   // leaves on each move, because it does not glide: it fades out at the old Stop and fades in at the new one.
-  const away = hole !== null && side !== null && at !== null && (wanted !== side || (off && cardAt !== at));
+  const flip = hole !== null && side !== null && at !== null && (wanted !== side || (off && cardAt !== at));
+  // A card that starts to leave stays away until `land`, also when a scroll flips the side back. The card holds its
+  // place while it is away, but the hole still glides back, so a card that came back at once would cover the control.
+  useLayoutEffect(() => {
+    if (flip) setGone(true);
+  }, [flip]);
+  const away = flip || gone;
   // A move on the same side keeps the card: the copy changes with the glide.
   useLayoutEffect(() => {
     if (wanted === null || at === null) return;
@@ -396,6 +408,7 @@ function Stops({ onEnd }: { onEnd: () => void }) {
     setSide(wanted);
     setCardAt(at);
     setSnap(true);
+    setGone(false);
   };
 
   if (!target || !hole || side === null) return null;
