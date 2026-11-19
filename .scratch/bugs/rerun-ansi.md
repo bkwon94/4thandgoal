@@ -29,7 +29,7 @@ Green: at `244d7633`, `python3 -B -m unittest scripts.test_rerun.TheRerun.test_a
 Ran 1 test in 0.300s
 OK
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
