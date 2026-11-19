@@ -34,7 +34,7 @@ Green: at `5d27ac80`, `builtin cd apps/site && pnpm exec vitest run ../../packag
       Tests  32 passed (32)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The top edge of the menu sheet jumps when Past weeks opens
 
@@ -58,6 +58,6 @@ Green: at `373a596c`, after `CLIENT=cpc pnpm build` in `apps/site`, `builtin cd 
   1 passed (3.0s)
 ```
 
-Test verdict: pending
+Test verdict: PASS
 
 ## Comments
