@@ -436,12 +436,16 @@ Observation: The vitest output shows the 8 tests of `packages/design/site/parts/
 App: site
 Then: the rows and the odds show at once, and the chip does not turn on by itself.
 Files: `evidence/AT-61/samples.txt`, `evidence/AT-61/at61.mjs`, `evidence/AT-61/steps.txt`, `evidence/AT-61/sample-0s-390x660-light.png`, `evidence/AT-61/sample-1s-390x660-light.png`, `evidence/AT-61/sample-3s-390x660-light.png`, `evidence/AT-61/sample-5s-390x660-light.png`, `evidence/AT-61/sample-0s-390x660-dark.png`, `evidence/AT-61/sample-1s-390x660-dark.png`, `evidence/AT-61/sample-3s-390x660-dark.png`, `evidence/AT-61/sample-5s-390x660-dark.png`
-Observation: At 390x660, `prefers-reduced-motion: reduce` matches in both themes. `samples.txt` gives the values at t=0.01 s, 1.01 s, 3.00 s or 3.01 s, and 5.00 s or 5.01 s after the sheet shows. Each sample in each theme gives:
-- 3 rows, read as "5The Blue Tent81%", "6Bo Girds58%Playoff line", and "7Return of T Mac39%", each at shown opacity 1.00, from the first sample on.
-- An odds line of "58" and "%" at opacity 1.00, and "+28" at opacity 0.00. The status text is "Playoff odds 58%".
-- The chip "What-if: Bo Girds win both" with aria-pressed `false` and the label "Tap".
+Observation: The script ran again on the cpc export of `5795646a`. It now starts t=0 two frames after the sheet first has a box inside the viewport at opacity 1. At 390x660, `prefers-reduced-motion: reduce` matches in both themes. `samples.txt` gives:
+- The first paint of the sheet at 1.08 s (light) and 0.93 s (dark) after the start of the page load, with the top of the sheet at y 627 and 631.
+- The top of the sheet at y 494 (light) and 501 (dark) at t=0.00 s and t=0.01 s, and at y 197 at t=1.00 s, 3.00 s, and 5.00 s, each at opacity 1.00.
+- 3 rows in each sample, read as "5The Blue Tent81%", "6Bo Girds58%Playoff line", and "7Return of T Mac39%", each at shown opacity 1.00, from the t=0 sample on.
+- An odds line of "58" and "%" at opacity 1.00, and "+28" at opacity 0.00, in each sample. The status text is "Playoff odds 58%".
+- The chip "What-if: Bo Girds win both" with aria-pressed `false` and the label "Tap" in each sample.
 
-The shot `sample-1s-390x660-light.png` shows 58%, the three rows, and the chip with "TAP".
+The 0 s shots show the lower part of the sheet over the home page, with its top near y 418 of 660. The card in it shows "YOUR TEAM Bo Girds", 58%, "PLAYOFF ODDS", the three rows with 81%, 58%, and 39%, the playoff line, and the chip "What-if: Bo Girds win both" with "TAP". The title and the buttons of the sheet are below the viewport. The top in the shot is higher than the y 494 of the sample, which is read just before the shot.
+
+The 1 s, 3 s, and 5 s shots of one theme are the same file byte for byte (same md5). Each shows the whole sheet with its top near y 197: the card with 58%, the three rows, the chip with "TAP", "NEW: SEASON SIM", "See your path to the playoffs", "Open the sim", and "Not now".
 
 ## AT-62: No banned word shows on the new parts
 

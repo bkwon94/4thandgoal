@@ -1,19 +1,19 @@
-# $ node at61.mjs   (WebKit, iPhone 15 at 390x660, reducedMotion "reduce", cpc export of 49404be3 on http://127.0.0.1:4173, Your team 6)
-light: prefers-reduced-motion reduce matches: true; the sheet shows; t = 0 from here
-  t=0.01s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-0s-390x660-light.png
+# $ node at61.mjs   (WebKit, iPhone 15 at 390x660, reducedMotion "reduce", cpc export of 5795646a on http://127.0.0.1:4173, Your team 6)
+light: prefers-reduced-motion reduce matches: true; the sheet paints 1.08 s after the start of the page load (performance.now), box 0,627 390x463; t = 0 from two frames after that
+  t=0.00s  sheet box 0,494 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-0s-390x660-light.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-  t=1.01s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-1s-390x660-light.png
+  t=1.00s  sheet box 0,197 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-1s-390x660-light.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-  t=3.00s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-3s-390x660-light.png
+  t=3.00s  sheet box 0,197 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-3s-390x660-light.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-  t=5.00s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-5s-390x660-light.png
+  t=5.00s  sheet box 0,197 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-5s-390x660-light.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-dark: prefers-reduced-motion reduce matches: true; the sheet shows; t = 0 from here
-  t=0.01s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-0s-390x660-dark.png
+dark: prefers-reduced-motion reduce matches: true; the sheet paints 0.93 s after the start of the page load (performance.now), box 0,631 390x463; t = 0 from two frames after that
+  t=0.01s  sheet box 0,501 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-0s-390x660-dark.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-  t=1.01s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-1s-390x660-dark.png
+  t=1.00s  sheet box 0,197 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-1s-390x660-dark.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-  t=3.01s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-3s-390x660-dark.png
+  t=3.00s  sheet box 0,197 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-3s-390x660-dark.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
-  t=5.01s  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-5s-390x660-dark.png
+  t=5.00s  sheet box 0,197 390x463 opacity 1.00  chip aria-pressed=false  chip text "What-if: Bo Girds win bothTap"  odds line: "+28" opacity 0.00, "58" opacity 1.00, "%" opacity 1.00  status "Playoff odds 58%"  shot sample-5s-390x660-dark.png
     rows (3): 5The Blue Tent81% [opacity 1.00] | 6Bo Girds58%Playoff line [opacity 1.00] | 7Return of T Mac39% [opacity 1.00]
