@@ -14,7 +14,7 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useKeyboardRaised } from "@cpc/design/shell/keyboard";
 import type { DoorAnswer, DoorTeam } from "@/lib/data/front-door-data";
 import { analyzeHref } from "@/lib/routes";
-import { type AskTarget, AskError, askRoute } from "./ask-api";
+import { type AskTarget, AskError, askPagesOf, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
 import { Dock } from "./dock";
 import { turnsBefore } from "./chat-turns";
@@ -24,11 +24,14 @@ import { CapCard, MissCard, NoteCard, PendingCard } from "./miss-card";
 import { keepFocus, closeKeyboard } from "./keyboard-tap";
 import { FAST, GLIDE, fadeIn, riseIn } from "./motion";
 import { PersonalAnswerCard, PersonalAnswerLive } from "./personal-answer";
+import type { SitePage } from "@/app/site-pages";
+import { SiteAnswer } from "./site-answer";
 import { PERSONAL_LINES, isPersonal } from "./personal-stream";
 import { getOpened, markOpened } from "./opened-store";
 import { Suggestions } from "./suggestions";
 import { PassphraseSheet } from "./passphrase-sheet";
 import { TeamSheet } from "./team-sheet";
+import { Tour } from "./tour";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
 import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, shownFacts, staleLine } from "./suggestions-api";
@@ -51,6 +54,7 @@ export function FrontDoor({
   teams,
   answers,
   personalHrefs = {},
+  pages = [],
   askTarget,
 }: {
   siteName: string;
@@ -59,6 +63,8 @@ export function FrontDoor({
   answers: Record<number, DoorAnswer[]>;
   // The page of each personal Topic of each team, by roster id. A team with no entry has no link.
   personalHrefs?: Record<number, Record<string, string | null>>;
+  // The pages of the Site answer, from the Menu of the build. Each ask sends them, so the route can answer about the site.
+  pages?: SitePage[];
   askTarget: AskTarget;
 }) {
   const off = useMotionOff();
@@ -327,7 +333,7 @@ export function FrontDoor({
     if (!passphrase) return askPassphrase(false, id, () => void send(id, question));
     try {
       const turns = turnsOf(id);
-      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns });
+      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns, pages: askPagesOf(pages) });
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
       if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));
@@ -527,6 +533,9 @@ export function FrontDoor({
                           />
                         );
                       }
+                      case "site":
+                        // The kept item holds only its page key, so the links come from the pages of this build.
+                        return <SiteAnswer ref={ref} question={entry.question} page={entry.page} pages={pages} />;
                       case "note":
                         return (
                           <NoteCard
@@ -631,6 +640,8 @@ export function FrontDoor({
           />
         )}
       </AnimatePresence>
+      {/* The Tour shows once per browser, while Your team is set and no team sheet and no passphrase modal shows. */}
+      <Tour ready={team !== null && !sheetOpen && passStep === null} />
     </>
   );
 }

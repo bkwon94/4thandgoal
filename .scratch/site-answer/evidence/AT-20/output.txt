@@ -1,0 +1,21 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -v tests/test_ask.py::test_an_unknown_page_key_is_422_with_no_jev_request
+# Run from a detached worktree of cee7caf1, on 2026-11-18 20:57 UTC.
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2b3112c3-3145-4a4b-bfc4-9eba04001112/scratchpad/site-answer-api/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2b3112c3-3145-4a4b-bfc4-9eba04001112/scratchpad/site-answer-api/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_ask.py::test_an_unknown_page_key_is_422_with_no_jev_request PASSED [100%]
+
+============================== 1 passed in 0.77s ===============================
+exit: 0
+
+# The source of the test at cee7caf1 (tests/test_ask.py):
+def test_an_unknown_page_key_is_422_with_no_jev_request(api, jev):
+    # AT-20: the key of a page is a package name of the site, so "casino" is no page.
+    pages = [*CPC_PAGES, {"key": "casino", "label": "Casino", "blurb": "Bets on the games."}]
+    assert _ask_with_pages(api, "who am i playing sunday", pages).status_code == 422
+    assert jev.requests == []

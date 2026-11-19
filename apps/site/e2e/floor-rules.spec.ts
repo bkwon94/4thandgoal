@@ -205,3 +205,39 @@ test("openPage sets each theme through the shipped boot script and the server gi
     rmSync(dir, { recursive: true });
   }
 });
+
+/*
+ * Each page below holds an animation that never finishes. A test timeout of 15 s fails a run that hangs, and the cap
+ * of openPage is 5 s, so a pass proves that the cap and the finite rule both hold.
+ */
+const HANG_TIMEOUT = 15_000;
+
+async function openHangPage(page: Parameters<typeof openPage>[0], body: string): Promise<void> {
+  const dir = mkdtempSync(join(tmpdir(), "floor-"));
+  writeFileSync(join(dir, "index.html"), `<html><body><div id="box">Box</div><script>${body}</script></body></html>`);
+  const server = await serveDir(dir);
+  try {
+    await openPage(page, `${server.url}/`, "light");
+  } finally {
+    await server.close();
+    rmSync(dir, { recursive: true });
+  }
+}
+
+test("openPage does not hang on an animation with an end time that is not finite", async ({ page }) => {
+  test.setTimeout(HANG_TIMEOUT);
+  // A scroll-driven animation has an end time that is not a number, and it stays running.
+  await openHangPage(
+    page,
+    `const box = document.getElementById("box");
+     const timeline = new ScrollTimeline({ source: document.documentElement });
+     box.animate({ opacity: [0, 1] }, { timeline, fill: "both" });`,
+  );
+  const ends = await page.evaluate(() => document.getAnimations().map((animation) => animation.effect?.getComputedTiming().endTime));
+  expect(ends.some((end) => typeof end !== "number" || !Number.isFinite(end))).toBe(true);
+});
+
+test("openPage does not hang on a finite animation that never finishes", async ({ page }) => {
+  test.setTimeout(HANG_TIMEOUT);
+  await openHangPage(page, `const animation = document.getElementById("box").animate({ opacity: [0, 1] }, 1000); animation.pause();`);
+});

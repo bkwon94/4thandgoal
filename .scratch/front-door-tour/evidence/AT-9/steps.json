@@ -1,0 +1,32 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "wait": "[role=\"dialog\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "[role=\"dialog\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[data-tour-card]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[data-tour-card] button:has-text(\"Next\")"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[data-tour-card] button:has-text(\"Skip\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "shot": "after-skip"
+    }
+  ]
+}

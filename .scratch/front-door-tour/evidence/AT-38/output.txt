@@ -1,0 +1,25 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-38[,)]"
+
+Running 1 test using 1 worker
+
+AT-38 open modal layers: ["dialog \"See your path to the playoffs\""]
+AT-38 open layer: tag div, role dialog, aria-modal true
+AT-38 exit frame 1: t=2177.8 ms; opacity 1; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 2: t=2195.0 ms; opacity 0.918; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 3: t=2235.7 ms; opacity 0.806667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 4: t=2236.4 ms; opacity 0.695333; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 5: t=2244.9 ms; opacity 0.584; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 6: t=2259.5 ms; opacity 0.472667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 7: t=2276.5 ms; opacity 0.362; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 8: t=2295.6 ms; opacity 0.250667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 9: t=2311.7 ms; opacity 0.139333; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 10: t=2326.0 ms; opacity 0.0286667; transform none; aria-modal true; on page true; card false
+AT-38 exit frame 11: t=2345.0 ms; opacity 1; transform none; aria-modal true; on page true; card false
+AT-38 first frame after removal: t=2361.0 ms; opacity n/a; transform n/a; aria-modal true; on page false; card false
+AT-38 Stop 1 frame: t=2962.0 ms; opacity n/a; transform n/a; aria-modal true; on page false; card true
+AT-38 layer: dialog "See your path to the playoffs"; tap on Not now: 2166.7 ms; exit end: 2360.9 ms; exit duration: 194.2 ms; Stop 1 shows: 2962.0 ms; gap: 601.1 ms; frames in exit with no card: 11 of 11
+AT-38 frames since load with the Announcement and a Stop card together: 0 of 178
+AT-38 seen keys: {"tour":"1","announcement":"seen"}
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:340:5 › on a fresh load the season-sim Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38) (3.0s)
+
+  1 passed (3.6s)

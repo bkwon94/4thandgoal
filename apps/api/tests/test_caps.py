@@ -112,6 +112,32 @@ def test_a_route_and_a_topic_count_toward_no_cap(repo, fixture_raw_dir):
     assert caps.month_usd(NOW) == 0
 
 
+def _site_noul(key: str, question, state: dict) -> float:
+    return {"asks_for_site": 0.9, "about_league": 0.2}.get(key, 0.01)
+
+
+def _site_choice(key: str, question, state: dict) -> dict[str, float]:
+    picked = "analyzer" if key == "site_page" else "trade_check" if key == "topic" else None
+    return {option: float(option == picked) for option in question.options}
+
+
+def test_a_site_route_makes_no_claude_call_writes_no_miss_and_leaves_each_cap_count(repo, fixture_raw_dir):
+    # AT-18: the site Noul is 0.9 and the page Choice is the analyzer. Lil Fridge sits at the team cap of 25, so a
+    # route that read a cap would give the cap line.
+    script = Script("standings", {}, _leader)
+    api = _api(repo, fixture_raw_dir, FakeJev(answer=_site_noul, choose=_site_choice), script.model())
+    caps = api.app.state.askers["cpc"].caps
+    _fill_team(caps, LIL_FRIDGE, 25)
+    month = caps.month_usd(NOW)
+    pages = [{"key": "analyzer", "label": "Trade Analyzer", "blurb": "Grades a trade between two or more teams."}]
+    body = api.post(ASK, json={"question": "where is the trade analyzer", "roster_id": LIL_FRIDGE, "week": 8,
+                               "pages": pages}, headers=PASS).json()
+    assert (body["route"], body["page"], body["line"]) == ("site", "analyzer", None)
+    assert script.requests == []
+    assert api.app.state.askers["cpc"].misses.misses() == []
+    assert (caps.answers_today(LIL_FRIDGE, NOW), caps.month_usd(NOW)) == (25, month)
+
+
 def test_cpc_at_25_dollars_gets_the_league_line_and_norcal_at_0_still_answers(repo, fixture_raw_dir, tmp_path):
     # AT-38: each league has its own store, so the budget of one never stops the other.
     api, script, caps = _setup(repo, fixture_raw_dir)

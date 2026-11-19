@@ -1,0 +1,12 @@
+$ git ls-files -s .agents/skills/verify
+120000 8869ff63fe3dc1381897485ca494dd2bf2ab3814 0	.agents/skills/verify
+exit: 0
+
+$ readlink .agents/skills/verify
+../../.claude/skills/verify
+exit: 0
+
+$ realpath .agents/skills/verify .claude/skills/verify
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.claude/skills/verify
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.claude/skills/verify
+exit: 0

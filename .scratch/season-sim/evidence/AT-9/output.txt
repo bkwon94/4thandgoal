@@ -1,0 +1,48 @@
+$ jq '.pages["6"].weeks[] | select(.week == 11) | {week, opponent, loss_playoff, loss_about, root_for}' clients/cpc/published/2026/week-10/sim.json
+{
+  "week": 11,
+  "opponent": 9,
+  "loss_playoff": 48,
+  "loss_about": false,
+  "root_for": [
+    {
+      "winner": 11,
+      "loser": 1,
+      "reason": "1 win ahead of you",
+      "playoff": 51,
+      "about": false
+    },
+    {
+      "winner": 4,
+      "loser": 5,
+      "reason": "1 win ahead of you",
+      "playoff": 50,
+      "about": false
+    },
+    {
+      "winner": 8,
+      "loser": 12,
+      "reason": "1 win behind you",
+      "playoff": 50,
+      "about": false
+    }
+  ]
+}
+[exit 0]
+
+$ jq -r '.names as $n | .pages["6"].weeks[] | select(.week == 11) | .loss_playoff as $l | "odds after a loss: \($l) %", "row count: \(.root_for|length)", (.root_for | to_entries[] | "row \(.key+1): \($n[(.value.winner|tostring)]) beats \($n[(.value.loser|tostring)]); reason \"\(.value.reason)\"; odds \(.value.playoff) %; lift \(.value.playoff) - \($l) = \(.value.playoff - $l) points; whole number: \(.value.playoff == (.value.playoff|floor))")' clients/cpc/published/2026/week-10/sim.json
+odds after a loss: 48 %
+row count: 3
+row 1: Unsolicited Dak Picks beats The Blue Tent; reason "1 win ahead of you"; odds 51 %; lift 51 - 48 = 3 points; whole number: true
+row 2: NFC Least beats Puka Deez...; reason "1 win ahead of you"; odds 50 %; lift 50 - 48 = 2 points; whole number: true
+row 3: Return of T Mac beats Teehee; reason "1 win behind you"; odds 50 %; lift 50 - 48 = 2 points; whole number: true
+[exit 0]
+
+$ jq -r '[.pages[] | .weeks[] | .root_for[] | .reason] | group_by(.) | map("\(.[0]): \(length)") | .[]' clients/cpc/published/2026/week-10/sim.json
+1 win ahead of you: 23
+1 win behind you: 27
+2 wins ahead of you: 11
+In the race for the last spot: 16
+Level with you: 10
+[exit 0]
+

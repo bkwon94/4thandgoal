@@ -1,0 +1,118 @@
+# Runs the Red and Green commands of the quick file of each PR to main again, with scripts/rerun.py from main.
+# A PR of records only gets the plain Check, so the job goes on only when scripts/scope.py selects the re-run.
+# Red at the red commit must fail and print its quoted failure line, and Green at the fix commit must pass (ADR 0037).
+name: Rerun
+
+on:
+  pull_request:
+    branches: [main]
+
+# The job reads the repository and runs the loops of the PR. It needs no other access, and it gets no secret.
+permissions:
+  contents: read
+
+# A new push makes the run of the old head useless.
+concurrency:
+  group: rerun-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  rerun:
+    name: Run the loops of the quick file again
+    runs-on: ubuntu-latest
+    # A quick file has at most 5 items, and each item runs two loops.
+    timeout-minutes: 45
+    steps:
+      # The script checks out the red commit and the fix commit of each item, so it needs the full history.
+      - name: Check out the PR
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # The run always reads its scripts from main. A PR that edits scripts/rerun.py or scripts/scope.py must not judge itself.
+      # The folder is untracked in the checkout of the PR, so the checkouts of the script leave it alone.
+      - name: Check out the re-run script from main
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: rerun-main
+          sparse-checkout: |
+            scripts/rerun.py
+            scripts/scope.py
+          sparse-checkout-cone-mode: false
+
+      - name: Find the members that the loops need
+        id: needs
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          if [ ! -f rerun-main/scripts/rerun.py ] || [ ! -f rerun-main/scripts/scope.py ]; then
+            # The PR that adds the script runs before main has it. That run checks no loop, so it passes with a note.
+            echo "Note: main has no scripts/rerun.py or scripts/scope.py yet, so this run checks no loop and passes."
+            added=$(git diff --name-only --diff-filter=A "$BASE...$HEAD" -- '.scratch/bugs/*.md' '.scratch/quick-wins/*.md')
+            echo "${added:-no quick file}"
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          selects=$(python3 -B rerun-main/scripts/scope.py "origin/$BASE_REF" "$HEAD" | tee /dev/stderr | sed -n 2p)
+          case " $selects " in
+            *" rerun "*) ;;
+            *)
+              # A diff of records only has no loop to run again. It passes with a note.
+              echo "Note: records only, so this run checks no loop and passes."
+              echo "run=false" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+          members=$(python3 -B rerun-main/scripts/rerun.py --repo . --base "$BASE" --head "$HEAD" --members)
+          echo "$members"
+          echo "run=true" >> "$GITHUB_OUTPUT"
+          echo "site=$([[ " $members " == *" site "* ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "python=$([[ " $members " == *" python "* ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      # The setup of each member follows the member jobs of check.yml.
+      - name: Set up pnpm
+        if: steps.needs.outputs.site == 'true'
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: apps/site/package.json
+
+      - name: Set up Node
+        if: steps.needs.outputs.site == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install the site dependencies
+        if: steps.needs.outputs.site == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # A site loop may be a Playwright test, so the job installs the browsers of the site job of Check.
+      - name: Install Chromium and WebKit
+        if: steps.needs.outputs.site == 'true'
+        run: pnpm --dir apps/site exec playwright install --with-deps chromium webkit
+
+      - name: Set up uv
+        if: steps.needs.outputs.python == 'true'
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install the Python dependencies
+        if: steps.needs.outputs.python == 'true'
+        run: uv sync --locked --all-packages
+
+      # The script runs the client build before each site loop, and puts back the head of the PR at the end.
+      - name: Run the Red and Green commands again
+        if: steps.needs.outputs.run == 'true'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: python3 -B rerun-main/scripts/rerun.py --repo . --base "$BASE" --head "$HEAD"

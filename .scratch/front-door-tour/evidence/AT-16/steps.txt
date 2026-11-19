@@ -1,0 +1,6 @@
+The runner shoots only Chromium at a height of 900 px. This test needs WebKit at set viewports, so its Playwright test took the shots.
+
+1. `CLIENT=cpc pnpm --dir apps/site build`
+2. The command on the first line of `output.txt`. The test saves one viewport shot with `page.screenshot` into `apps/site/test-results/`, one second after the hole rests, so the copy swap of the card has ended.
+3. Copy each PNG from `apps/site/test-results/` to this folder.
+Each shot is named <viewport>-<Stop>.png.

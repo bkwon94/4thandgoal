@@ -1,0 +1,12 @@
+AT-41/motion-reduced-1-season-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-reduced-2-playoffs-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-reduced-3-champion-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-reduced-1-season-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-reduced-2-playoffs-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-reduced-3-champion-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-full-1-season-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-full-2-playoffs-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-full-3-champion-390x660-light.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-full-1-season-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-full-2-playoffs-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage
+AT-41/motion-full-3-champion-390x660-dark.png: no overlap, no cover, no side scroll, no scroll in the stage

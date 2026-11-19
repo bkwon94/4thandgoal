@@ -1,0 +1,110 @@
+# At commit 42644789, in the Spec worktree. grep exit 1 means no match.
+
+$ grep -rnE 'Math\.random|getRandomValues|randomUUID|gauss|normal\(|box.?muller|seedrandom|mulberry|xorshift|randn' apps/site/src packages/sim/site --include='*.ts' --include='*.tsx' --include='*.mjs' | grep -vE '\.test\.(ts|tsx)'
+packages/sim/site/page/sim-page.tsx:37:/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it. */
+packages/sim/site/page/sim-page.tsx:43:  random = Math.random,
+packages/sim/site/stage/pick.ts:6:/* `random` gives a number in [0, 1), as Math.random does. The line from 0 to 1 holds one piece per run, as long as
+packages/sim/site/stage/sim-stage.tsx:342:   `random` gives a number in [0, 1), as Math.random does. Each open and each "Sim again" picks a new run. */
+packages/sim/site/replay/sim-replay.tsx:27:const randomRun = (count: number) => Math.floor(Math.random() * count);
+(exit 0)
+
+$ grep -rnE 'Math\.random|gauss|seedrandom|mulberry|xorshift' apps/site/src packages/sim/site --include='*.ts' --include='*.tsx' -l
+packages/sim/site/page/sim-page.tsx
+packages/sim/site/stage/pick.ts
+packages/sim/site/stage/sim-stage.tsx
+packages/sim/site/replay/sim-replay.tsx
+(exit 0)
+
+$ grep -rnE 'random' apps/site/src packages/sim/site --include='*.ts' --include='*.tsx' | grep -vE '\.test\.(ts|tsx)'
+packages/sim/site/page/sim-page.tsx:37:/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it. */
+packages/sim/site/page/sim-page.tsx:43:  random = Math.random,
+packages/sim/site/page/sim-page.tsx:49:  random?: () => number;
+packages/sim/site/page/sim-page.tsx:51:  if (sim.pages[you].playoffs) return <PlayoffSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
+packages/sim/site/page/sim-page.tsx:52:  return <RegularSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
+packages/sim/site/page/sim-page.tsx:64:  random,
+packages/sim/site/page/sim-page.tsx:70:  random: () => number;
+packages/sim/site/page/sim-page.tsx:125:          random={random}
+packages/sim/site/page/sim-page.tsx:138:  random,
+packages/sim/site/page/sim-page.tsx:144:  random: () => number;
+packages/sim/site/page/sim-page.tsx:234:          random={random}
+packages/sim/site/stage/pick.ts:6:/* `random` gives a number in [0, 1), as Math.random does. The line from 0 to 1 holds one piece per run, as long as
+packages/sim/site/stage/pick.ts:8:export function pickRun(weights: number[], random: () => number): number {
+packages/sim/site/stage/pick.ts:10:  const at = random() * total;
+packages/sim/site/stage/sim-stage.tsx:342:   `random` gives a number in [0, 1), as Math.random does. Each open and each "Sim again" picks a new run. */
+packages/sim/site/stage/sim-stage.tsx:349:  random,
+packages/sim/site/stage/sim-stage.tsx:357:  random: () => number;
+packages/sim/site/stage/sim-stage.tsx:361:  const pick = useCallback(() => pickRun(runs.sample_weights, random), [runs, random]);
+packages/sim/site/replay/sim-replay.tsx:26:/* A random run of the stored runs, so two managers see different endings. */
+packages/sim/site/replay/sim-replay.tsx:27:const randomRun = (count: number) => Math.floor(Math.random() * count);
+packages/sim/site/replay/sim-replay.tsx:128:  pick = randomRun,
+(exit 0)
+
+$ grep -rnE 'fetch\(|what-if' packages/sim/site/lib/what-if-api.ts
+packages/sim/site/lib/what-if-api.ts:2: * The client of the What-if route of the API, POST /clients/<slug>/sim/what-if, and the port that the sim page calls.
+packages/sim/site/lib/what-if-api.ts:5:import { whatIfAnswerSchema } from "../schema/what-if";
+packages/sim/site/lib/what-if-api.ts:39:  const url = `${target.url}/clients/${encodeURIComponent(target.client)}/sim/what-if`;
+packages/sim/site/lib/what-if-api.ts:43:      response = await fetch(url, {
+(exit 0)
+
+$ grep -rnE 'from "@cpc/sim/lib/what-if-api"|whatIfApi|useWhatIf' packages/sim/site apps/site/src --include='*.ts' --include='*.tsx' | grep -vE '\.test\.(ts|tsx)'
+packages/sim/site/page/sim-page.tsx:21:import { useWhatIf, type Choice } from "./use-what-if";
+packages/sim/site/page/sim-page.tsx:74:  const what = useWhatIf(file, whatIf);
+packages/sim/site/page/sim-page.tsx:148:  const what = useWhatIf(file, whatIf);
+packages/sim/site/page/use-what-if.ts:59:export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
+packages/sim/site/lib/what-if-api.ts:38:export function whatIfApi(target: WhatIfTarget): WhatIfApi {
+apps/site/src/app/_routes/sim/your-sim-page.tsx:8:import { whatIfApi } from "@cpc/sim/lib/what-if-api";
+apps/site/src/app/_routes/sim/your-sim-page.tsx:16:const whatIf = whatIfApi(simTarget);
+apps/site/src/lib/config.ts:9:import type { WhatIfTarget } from "@cpc/sim/lib/what-if-api";
+(exit 0)
+
+$ cat packages/sim/site/stage/pick.ts
+/**
+ * The pick of the stored run that the replay of the sim page plays. Each stored run of a What-if follows the set results,
+ * and its weight says how likely it is, so the pick takes a run with a chance in proportion to its weight.
+ */
+
+/* `random` gives a number in [0, 1), as Math.random does. The line from 0 to 1 holds one piece per run, as long as
+   its share of the weights, and the run whose piece holds the number comes up. A run of weight 0 has no piece. */
+export function pickRun(weights: number[], random: () => number): number {
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  const at = random() * total;
+  let end = 0;
+  let last = 0;
+  for (const [index, weight] of weights.entries()) {
+    if (weight <= 0) continue;
+    end += weight;
+    last = index;
+    if (at < end) return index;
+  }
+  // The sum of floats can end a hair under `at`, so the last run with a weight takes the rest of the line.
+  return last;
+}
+(exit 0)
+
+$ grep -nE 'api|answer|playoff' packages/sim/site/page/use-what-if.ts
+9:import type { WhatIfApi } from "../lib/what-if-api";
+13:/* The stored runs of an answer, which each hold its set results, and their weights. The replay picks from them. */
+22:  // The page block of the last answer, and the set results it holds. Null with no answer, so the page shows the file.
+23:  answer: { page: SimPage; set: SetResult[]; runs: AnswerRuns } | null;
+27:  // True after a call failed, until the next answer or a Reset.
+31:/* The held block of `week` with the odds of the answer on its set result. The answer holds the result of the tap and
+32:   each other set result, so the pressed tile shows the header odds of that answer, not the noisy odds of the split. */
+37:    result.game === choice.game && result.median === choice.median ? { ...result, playoff: page.playoff, about: false } : result,
+42:const EMPTY: State = { set: [], answer: null, held: {}, pending: false, down: false };
+46:  // The page block that the page shows: the answer of the set results, or the file.
+48:  // The stored runs of the answer that `page` shows, or null when the page shows the file.
+58:/* `file` is the page block of sim.json. Without `api`, a tap fails at once, as with the API down. */
+59:export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
+69:  const answered = state.set.length > 0 && state.answer !== null ? state.answer : null;
+70:  const shown = answered?.page ?? file;
+91:        // The page goes back to the set results of the last answer, so each number on it agrees with its set line.
+93:          const kept = was.answer?.set ?? [];
+98:      if (api === undefined) {
+102:      api({ you: file.you, set }, controller.signal).then(
+103:        (answer) => {
+108:            answer: { page: answer.page, set, runs: { teams: answer.teams, sample: answer.sample, sample_weights: answer.sample_weights } },
+109:            held: choice === null ? was.held : withOdds(was.held, week, choice, answer.page),
+122:    [api, file.you, shown, state],
+132:  return { set: state.set, page: shown, runs: answered?.runs ?? null, weekOf, pending: state.pending, down: state.down, choose, reset };
+(exit 0)
+

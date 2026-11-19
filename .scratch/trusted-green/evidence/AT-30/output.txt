@@ -1,0 +1,9 @@
+$ python3 -B scripts/retry_rule.py /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/retry/seeded
+apps/site/playwright.config.ts sets a Playwright retries value above 0
+exit: 1
+
+$ python3 -B scripts/retry_rule.py /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/retry/clean
+exit: 0
+
+$ python3 -B scripts/retry_rule.py .   # the clean repo root of the Spec worktree
+exit: 0

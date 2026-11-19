@@ -1,0 +1,7 @@
+$ cd apps/pipeline && env -i PATH=/Users/brian.kwon/.local/bin:/opt/homebrew/bin:/usr/bin:/bin HOME=/Users/brian.kwon sandbox-exec -f /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-20/no-network.sb uv run --exact --package cornerstone cornerstone facts --client cpc --season 2026 --week 10 && shasum -a 256 clients/cpc/data/2026/week-10/facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 10 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-api/clients/cpc/data/2026/week-10/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-api/clients/cpc/data/2026/week-10/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-api/clients/cpc/data/2026/week-10/raw/news.json, the clock of verify.json, and the research of facts.json
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-api/clients/cpc/data/2026/week-10/facts.json
+exit: 0
+$ shasum -a 256 clients/cpc/data/2026/week-10/facts.json
+92c5d4bbcc577e533f342783aecf1344b99665d29278330636130b58070102bf  clients/cpc/data/2026/week-10/facts.json
+exit: 0

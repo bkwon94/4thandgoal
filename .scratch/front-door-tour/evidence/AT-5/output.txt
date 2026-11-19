@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-5[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:293:5 › a new browser shows no Tour over the team sheet, then Stop 1 on the Suggestions of Bo Girds and the same four Stops (AT-1, AT-5, AT-6) (3.8s)
+
+  1 passed (4.1s)

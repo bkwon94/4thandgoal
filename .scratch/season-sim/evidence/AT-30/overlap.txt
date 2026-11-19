@@ -1,0 +1,6 @@
+root-for-as-loaded-390x660-light.png (full page): no overlap, no cover, no side scroll
+root-for-after-tap-390x660-light.png (full page): no overlap, no cover, no side scroll
+root-for-as-loaded-390x660-dark.png (full page): no overlap, no cover, no side scroll
+root-for-after-tap-390x660-dark.png (full page): no overlap, no cover, no side scroll
+root-for-as-loaded-1080x740-light.png (full page): no overlap, no cover, no side scroll
+root-for-as-loaded-1080x740-dark.png (full page): no overlap, no cover, no side scroll

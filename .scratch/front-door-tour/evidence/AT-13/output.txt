@@ -1,0 +1,8 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-13[,)]"
+
+Running 1 test using 1 worker
+
+AT-13 Answers before: 0, after: 0. Passphrase sheets before: 0, after: 0.
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:168:5 › a tap on a Topic in the hole opens no Answer and no passphrase sheet, and goes to Stop 2 (AT-13) (1.2s)
+
+  1 passed (1.6s)

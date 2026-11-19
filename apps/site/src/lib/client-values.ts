@@ -41,14 +41,25 @@ export type ClientMenu = { items: MenuItem[] };
    so the menu has no entry. */
 export type MenuLinks = Partial<Record<PackageName, () => Destination | null>>;
 
+/* The line of a page in the Site answer of the front door: its fixed blurb of one line, and whether it is a Tool. A
+   Tool is a page that does a job, such as the analyzer, and not a page to read. */
+export type SiteLine = { blurb: string; tool: boolean };
+
+/* The site line of each package of the client that can show in the Site answer. */
+export type SiteLines = Partial<Record<PackageName, SiteLine>>;
+
 /* The part of a package that every page mounts, such as the egg hunt. */
 export type PagePart = ComponentType;
 
 /* The button of a package in the top band of every page, such as the egg button. */
 export type BandPart = ComponentType;
 
-/* The strip of a package under the top band of the home page, such as the egg banner. */
+/* The strip of a package under the top band of the home page, such as the egg banner, or a sheet that it opens there, such as the Announcement. */
 export type HomeBanner = ComponentType;
+
+/* The tile of a package on a week page, such as the Sim tile, after Standings. It gives the rail link and the tile, or
+   null for a week with no data for it, so the page and its rail never name a tile that is not there. */
+export type WeekTile = (season: string, week: string) => { chapter: { id: string; label: string }; tile: ReactNode } | null;
 
 /* The tile of a package in the Tools chapter of the home page. A package with no page to link yet renders null. */
 export type HomeTool = ComponentType;

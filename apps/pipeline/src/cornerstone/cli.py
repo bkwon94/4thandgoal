@@ -1,6 +1,6 @@
 """
 Command line entry point for Cornerstone Weekly.
-It defines the build, publish, rewrite, page-json, rankings, midseason, midseason-publish, history, chart,
+It defines the build, publish, rewrite, page-json, rankings, sim, midseason, midseason-publish, history, chart,
 advisor-eval, egg-draft, egg-drop, check-client, evidence-flags, and evidence-flags-eval subcommands.
 """
 import argparse
@@ -24,11 +24,14 @@ from cornerstone.pipeline import (
     preview,
     resolve_week,
     run_build,
+    run_facts,
     run_history,
     run_midseason,
     run_page_json,
     run_rankings,
     run_rewrite,
+    run_sim_fixtures,
+    run_week_sim,
 )
 from cornerstone.publish import PublishError, run_midseason_publish, run_publish, site_page_url
 from cornerstone.value_models import VALUE_MODELS
@@ -73,13 +76,29 @@ def build_parser() -> argparse.ArgumentParser:
     rewrite.add_argument("--season", type=int)
     rewrite.add_argument("--chapter", type=str, required=True)
 
-    page_json = sub.add_parser("page-json", parents=[named], help="write page.json for a saved week")
+    page_json = sub.add_parser("page-json", parents=[named], help="write page.json and waiver.json for a saved week")
     page_json.add_argument("--week", type=int)
     page_json.add_argument("--season", type=int)
+
+    facts = sub.add_parser("facts", parents=[named],
+                           help="rebuild facts.json of a saved week from its saved inputs, with no Claude or network call")
+    facts.add_argument("--week", type=int)
+    facts.add_argument("--season", type=int)
 
     rankings = sub.add_parser("rankings", parents=[named], help="write the rankings blurb and rankings.json for a saved week")
     rankings.add_argument("--week", type=int)
     rankings.add_argument("--season", type=int)
+
+    sim = sub.add_parser("sim", parents=[named],
+                         help="write week-NN/sim.json of a saved week into the build folder, the sim step of the build")
+    sim.add_argument("--week", type=int)
+    sim.add_argument("--season", type=int)
+
+    fixtures = sub.add_parser("sim-fixtures", parents=[named],
+                              help="write the playoff and season-end fixtures of the sim page tests from a saved week")
+    fixtures.add_argument("--week", type=int)
+    fixtures.add_argument("--season", type=int)
+    fixtures.add_argument("--out", type=Path, required=True)
 
     midseason = sub.add_parser("midseason", parents=[named],
                                help="write the midseason report of a saved week into the build folder of the season")
@@ -387,10 +406,18 @@ def main(
             preview(page)
         elif args.command == "chart":
             return run_chart(client, season, week, writer, fetch_state)
+        elif args.command == "facts":
+            print(run_facts(season, week, client=client))
         elif args.command == "page-json":
             print(run_page_json(repo, season, week, client=client))
         elif args.command == "rankings":
             print(run_rankings(repo, season, week, call, client=client))
+        elif args.command == "sim":
+            out = run_week_sim(season, week, client=client)
+            print(out if out is not None else f"Week {week} gives the sim no inputs. No sim.json written.")
+        elif args.command == "sim-fixtures":
+            for line in run_sim_fixtures(season, week, args.out, client=client):
+                print(line)
         elif args.command == "midseason":
             print(run_midseason(season, week, call, client=client, provider=provider))
         elif args.command == "midseason-publish":

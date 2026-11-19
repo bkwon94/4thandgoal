@@ -1,0 +1,10 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-17[,)]"
+
+Running 2 tests using 2 workers
+
+AT-17 1280 px card heights at Stops 1 to 4: 211.390625, 211.390625, 211.390625, 211.390625
+AT-17 375 px card heights at Stops 1 to 4: 176.09375, 176.09375, 176.09375, 176.09375
+  ✓  2 [floor] › e2e/front-door-tour-look.spec.ts:150:7 › the card height is the same at all four Stops at 1280 px (AT-17) (2.0s)
+  ✓  1 [floor] › e2e/front-door-tour-look.spec.ts:150:7 › the card height is the same at all four Stops at 375 px (AT-17) (2.0s)
+
+  2 passed (2.5s)

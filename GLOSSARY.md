@@ -12,7 +12,7 @@ The band at the top of every page with the brand mark and the theme button. On a
 _Avoid_: Masthead, header, nav bar, top bar, banner
 
 **Menu**:
-The list of the destinations of a client. It shows as the menu sheet on a phone and a tablet, which drops from the top band, and as the pill bar on a desktop.
+The list of the links of a client. It shows as the menu sheet on a phone and a tablet, which drops from the top band, and as the pill bar on a desktop.
 _Avoid_: Drawer, nav, hamburger, navigation
 
 **Pill bar**:
@@ -172,9 +172,25 @@ _Avoid_: Recommendation, prompt, nudge, tip
 The list of the questions of a manager and their Answers on the front door, for one team in one fantasy week.
 _Avoid_: Chat, conversation, feed, history
 
+**Tour**:
+The short set of Stops on the front door that shows a league mate what each part of it does and where the pages are. Each browser sees it once, and the menu can show it again.
+_Avoid_: Tutorial, onboarding, walkthrough, guide, coach marks
+
+**Stop**:
+One spotlight of the Tour on one real control of the front door, with its header, its line of text, and its controls.
+_Avoid_: Step (a step is a part of the trade flow), slide, tooltip, popover
+
 **Route**:
-Where the ask box sends one typed question: a Topic, a free answer, an honest miss, or a calm refusal. Jev answers 7 typed questions in one request, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
+Where the ask box sends one typed question: a Topic, a free answer, a Site answer, an honest miss, or a calm refusal. Jev answers 8 typed questions in one request, or 10 when the request holds the pages of the site, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
 _Avoid_: Intent, classification, dispatch
+
+**Site answer**:
+The Answer to a question about the site itself, such as where a page is, what tools exist, or what one tool does. It links to each page it names, and code builds it from the Menu with no Claude text.
+_Avoid_: Help, site map, nav answer, guide
+
+**Tool**:
+A page of a client where the manager puts something in and gets a result, such as the trade analyzer or the sim. A page to read, such as the week or the rankings, is not a Tool.
+_Avoid_: App, feature, widget, utility
 
 **Honest miss**:
 The Answer to a question that this season's data cannot answer, such as injury news or a past season. It says what the site does not have and offers the 3 closest Topics. The API logs each one for 90 days (ADR 0031).
@@ -1077,9 +1093,21 @@ _Avoid_: Banner, promo
 The home tile with one big fact and a link to the midseason report. It stays after the takeover ends.
 _Avoid_: Card, teaser
 
+**Sim tile**:
+The tile of each week page, right after Standings, with Your team's playoff odds and a link to the sim page.
+_Avoid_: Report tile, odds card
+
 **Sim run**:
 One stored season of the sim, with every team's score for each week left. The replay plays one sim run per press.
 _Avoid_: Simulation, sample, scenario
+
+**What-if**:
+A set of results that a manager sets for Your team in the weeks left: a win or a loss, and above or below the median. The sim draws every other game.
+_Avoid_: Scenario, simulation, prediction
+
+**Announcement**:
+The modal that introduces one new feature, once per browser, until the visitor dismisses it or follows its link.
+_Avoid_: Popup, banner, promo
 
 **Points over the line**:
 A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.
@@ -1298,3 +1326,15 @@ _Avoid_: Tweak, chore, small change, improvement
 **Done condition**:
 The one sentence that says when one item of a quick run is done. The Judge reads it. It is not an acceptance test.
 _Avoid_: Acceptance test, criterion, definition of done
+
+**Smoke run**:
+One run of the `verify` skill that boots the site and the API and drives the flow that a change touches, before the PR opens.
+_Avoid_: Smoke test, verify step, sanity check, manual test
+
+**Flaky test**:
+A test that passes and fails on the same commit with no change. It gets a fix of its cause, or a delete with the reason written down, never a retry.
+_Avoid_: Flake (alone), intermittent test, unstable test
+
+**Flow list**:
+The list of user flows that a smoke run can drive. Each flow names the code it covers, so a diff picks its flows.
+_Avoid_: Feature map, test plan, scenario list

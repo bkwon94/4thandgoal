@@ -1,0 +1,4 @@
+sim-tile-top-seed-390x660-light.png (view): no overlap, no cover, no side scroll
+sim-tile-top-seed-390x660-dark.png (view): no overlap, no cover, no side scroll
+sim-tile-12th-team-390x660-light.png (view): no overlap, no cover, no side scroll
+sim-tile-12th-team-390x660-dark.png (view): no overlap, no cover, no side scroll

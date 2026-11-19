@@ -1,0 +1,39 @@
+{
+  "route": "/",
+  "widths": [
+    375,
+    768
+  ],
+  "steps": [
+    {
+      "wait": "[role=\"dialog\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "[role=\"dialog\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[data-tour-card]"
+    },
+    {
+      "wait": 1500
+    },
+    {
+      "click": "[data-tour-card] button:has-text(\"Skip\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "click": "button[aria-label=\"Open the menu\"]"
+    },
+    {
+      "wait": "[role=\"dialog\"] button:has-text(\"Show the tour\")"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "shot": "menu-sheet"
+    }
+  ]
+}

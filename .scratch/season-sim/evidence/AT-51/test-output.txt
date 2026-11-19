@@ -1,0 +1,33 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   390x660-light open  (27 text boxes, 0 fixed parts)
+observed true   390x660-light chip turned on by itself
+observed true   390x660-light Not now closes
+observed true   390x660-light after close  (19 text boxes, 0 fixed parts)
+observed true   810x980-light open  (27 text boxes, 0 fixed parts)
+observed true   810x980-light chip turned on by itself
+observed true   810x980-light Not now closes
+observed true   810x980-light after close  (19 text boxes, 0 fixed parts)
+observed true   1080x740-light open  (27 text boxes, 0 fixed parts)
+observed true   1080x740-light chip turned on by itself
+observed true   1080x740-light Not now closes
+observed true   1080x740-light after close  (25 text boxes, 0 fixed parts)
+observed true   1280x800-light open  (27 text boxes, 0 fixed parts)
+observed true   1280x800-light chip turned on by itself
+observed true   1280x800-light Not now closes
+observed true   1280x800-light after close  (26 text boxes, 0 fixed parts)
+observed true   390x660-dark open  (27 text boxes, 0 fixed parts)
+observed true   390x660-dark chip turned on by itself
+observed true   390x660-dark Not now closes
+observed true   390x660-dark after close  (19 text boxes, 0 fixed parts)
+observed true   810x980-dark open  (27 text boxes, 0 fixed parts)
+observed true   810x980-dark chip turned on by itself
+observed true   810x980-dark Not now closes
+observed true   810x980-dark after close  (19 text boxes, 0 fixed parts)
+observed true   1080x740-dark open  (27 text boxes, 0 fixed parts)
+observed true   1080x740-dark chip turned on by itself
+observed true   1080x740-dark Not now closes
+observed true   1080x740-dark after close  (25 text boxes, 0 fixed parts)
+observed true   1280x800-dark open  (27 text boxes, 0 fixed parts)
+observed true   1280x800-dark chip turned on by itself
+observed true   1280x800-dark Not now closes
+observed true   1280x800-dark after close  (26 text boxes, 0 fixed parts)

@@ -1,0 +1,104 @@
+{
+  "odds": {
+    "1": {
+      "playoff": 81,
+      "bye": 24,
+      "seed": 3,
+      "status": "open"
+    },
+    "2": {
+      "playoff": 81,
+      "bye": 26,
+      "seed": 4,
+      "status": "open"
+    },
+    "3": {
+      "playoff": 94,
+      "bye": 52,
+      "seed": 1,
+      "status": "open"
+    },
+    "4": {
+      "playoff": 1,
+      "bye": 0,
+      "seed": null,
+      "status": "open"
+    },
+    "5": {
+      "playoff": 82,
+      "bye": 26,
+      "seed": 4,
+      "status": "open"
+    },
+    "6": {
+      "playoff": 58,
+      "bye": 10,
+      "seed": 6,
+      "status": "open"
+    },
+    "7": {
+      "playoff": 4,
+      "bye": 1,
+      "seed": null,
+      "status": "open"
+    },
+    "8": {
+      "playoff": 39,
+      "bye": 4,
+      "seed": null,
+      "status": "open"
+    },
+    "9": {
+      "playoff": 93,
+      "bye": 47,
+      "seed": 1,
+      "status": "open"
+    },
+    "10": {
+      "playoff": 3,
+      "bye": 1,
+      "seed": null,
+      "status": "open"
+    },
+    "11": {
+      "playoff": 1,
+      "bye": 1,
+      "seed": null,
+      "status": "open"
+    },
+    "12": {
+      "playoff": 66,
+      "bye": 10,
+      "seed": 5,
+      "status": "open"
+    }
+  },
+  "facts": {
+    "ODDS.1": "The Blue Tent makes the playoffs in about 81% of runs, with a bye in 24%, most often as the 3rd seed.",
+    "ODDS.2": "All You Need Is Love makes the playoffs in about 81% of runs, with a bye in 26%, most often as the 4th seed.",
+    "ODDS.3": "Lil Fridge makes the playoffs in about 94% of runs, with a bye in 52%, most often as the 1st seed.",
+    "ODDS.4": "NFC Least makes the playoffs in about 1% of runs, with a bye in 0%.",
+    "ODDS.5": "Puka Deez... makes the playoffs in about 82% of runs, with a bye in 26%, most often as the 4th seed.",
+    "ODDS.6": "Bo Girds makes the playoffs in about 58% of runs, with a bye in 10%, most often as the 6th seed.",
+    "ODDS.7": "To Infinity and Bijan makes the playoffs in about 4% of runs, with a bye in 1%.",
+    "ODDS.8": "Return of T Mac makes the playoffs in about 39% of runs, with a bye in 4%.",
+    "ODDS.9": "Maye d'force B with U makes the playoffs in about 93% of runs, with a bye in 47%, most often as the 1st seed.",
+    "ODDS.10": "behold the lamb makes the playoffs in about 3% of runs, with a bye in 1%.",
+    "ODDS.11": "Unsolicited Dak Picks makes the playoffs in about 1% of runs, with a bye in 1%.",
+    "ODDS.12": "Teehee makes the playoffs in about 66% of runs, with a bye in 10%, most often as the 5th seed.",
+    "SW.4v5": "The playoff odds of NFC Least stay near 1% either way. A win puts the playoff odds of Puka Deez... at 92%, a loss at 72%.",
+    "SW.1v11": "A win puts the playoff odds of The Blue Tent at 91%, a loss at 70%. The playoff odds of Unsolicited Dak Picks stay near 1% either way.",
+    "ODDS.1.why": "The Blue Tent projects 113 a week from here against a 110 pace, with the 4th easiest remaining schedule.",
+    "ODDS.2.why": "All You Need Is Love projects 105 a week from here against a 107 pace, with the 10th easiest remaining schedule.",
+    "ODDS.3.why": "Lil Fridge projects 115 a week from here against a 113 pace, with the 2nd easiest remaining schedule.",
+    "ODDS.4.why": "NFC Least projects 110 a week from here against an 89 pace, with the 11th easiest remaining schedule.",
+    "ODDS.5.why": "Puka Deez... projects 108 a week from here against a 115 pace, with the easiest remaining schedule.",
+    "ODDS.6.why": "Bo Girds projects 107 a week from here against a 113 pace, with the 9th easiest remaining schedule.",
+    "ODDS.7.why": "To Infinity and Bijan projects 93 a week from here against a 96 pace, with the 8th easiest remaining schedule.",
+    "ODDS.8.why": "Return of T Mac projects 104 a week from here against a 105 pace, with the hardest remaining schedule.",
+    "ODDS.9.why": "Maye d'force B with U projects 124 a week from here against a 113 pace, with the 5th easiest remaining schedule.",
+    "ODDS.10.why": "behold the lamb projects 100 a week from here against a 98 pace, with the 7th easiest remaining schedule.",
+    "ODDS.11.why": "Unsolicited Dak Picks projects 97 a week from here against a 98 pace, with the 6th easiest remaining schedule.",
+    "ODDS.12.why": "Teehee projects 119 a week from here against a 112 pace, with the 3rd easiest remaining schedule."
+  }
+}

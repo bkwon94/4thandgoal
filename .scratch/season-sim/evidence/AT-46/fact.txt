@@ -1,0 +1,13 @@
+# The league fact of the cpc week 10 sim file, at the Spec head 49404be3. The tile shots are of the build b5de9120.
+$ git log -1 --format=%h -- clients/cpc/published/2026/week-10/sim.json
+fcb97e9e
+$ git diff --stat b5de9120 HEAD -- clients/cpc/published/2026/week-10/sim.json
+[exit 0, no lines: the file is the same at b5de9120 and at HEAD]
+$ jq -r .fact clients/cpc/published/2026/week-10/sim.json
+6 managers fight for the last 4 spots
+
+# The tile text of each shot, from readings.txt:
+sim-tile-no-team 390x660: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"
+sim-tile-no-team 810x980: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"
+sim-tile-no-team 1080x740: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"
+sim-tile-no-team 1280x800: tile text "Season sim AFTER WEEK 10 THE LEAGUE 6 managers fight for the last 4 spots Open the season sim"

@@ -209,7 +209,7 @@ class TheRepoWorkspace(unittest.TestCase):
 
     def test_a_change_in_either_side_of_the_rankings_package_selects_each_app_and_only_the_rankings(self):
         # No other package lists the rankings. The pipeline lists it, and a change in the pipeline selects the API too.
-        for path in ("packages/rankings/python/src/rankings/odds.py", "packages/rankings/site/chapters/top-three.tsx"):
+        for path in ("packages/rankings/python/src/rankings/chapter.py", "packages/rankings/site/chapters/top-three.tsx"):
             with self.subTest(path=path):
                 self.assertEqual(select_apps(REPO, [path]), ["site", "pipeline", "api"])
                 self.assertEqual(select_packages(REPO, [path]), ["rankings"])

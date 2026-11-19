@@ -1,0 +1,2 @@
+# ask-response.json and links.txt come from the step "norcal" of extra-evidence.mjs, a Playwright script, against the NorCal static export, because no verb of the runner saves a network response or a page status.
+# The full text of the script is in evidence/extra-evidence-script.txt. The shots come from the runner, with steps.json.

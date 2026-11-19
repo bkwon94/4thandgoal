@@ -14,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json rankings midseason midseason-publish egg-undo push
+.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -71,8 +71,20 @@ egg-drop: need-client need-week ## Send the confirmed eggs of a week to the API 
 page-json: need-client need-week ## Write page.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone page-json --client $(CLIENT) --season $(SEASON) --week $(WEEK)
 
+facts: need-client need-week ## Rebuild facts.json of a saved week from its saved inputs (CLIENT and WEEK required)
+	$(RUN) cornerstone facts --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
 rankings: need-client need-week ## Write rankings.json for a saved week (CLIENT and WEEK required)
 	$(RUN) cornerstone rankings --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
+# It reads the saved data of the week and calls no writer and no network. It writes only to the build folder.
+sim: need-client need-week ## Write week-NN/sim.json for a saved week, the sim step of the build (CLIENT and WEEK required)
+	$(RUN) cornerstone sim --client $(CLIENT) --season $(SEASON) --week $(WEEK)
+
+# The playoff fixture and the season-end fixture of the sim page tests (season-sim ACCEPTANCE.md): the inputs of CPC
+# 2026 week 10 with the later weeks played as stored run 1. It writes only the fixture folder of the sim package.
+sim-fixtures: ## Write the playoff and season-end fixtures of the sim page tests from CPC 2026 week 10
+	$(RUN) cornerstone sim-fixtures --client cpc --season 2026 --week 10 --out ../../packages/sim/site/fixtures
 
 # The report is one edited moment per season, so only this target builds it, never the weekly build.
 # It writes only to the build folder of the season, never to published/.

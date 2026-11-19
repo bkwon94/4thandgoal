@@ -19,6 +19,7 @@ const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
   managers: "Managers",
   analyzer: "Trade",
   waiver: "Waiver",
+  sim: "Sim",
 };
 
 /* One destination per menu item, in the order of the items. An item takes the label of its package unless it sets
@@ -26,8 +27,6 @@ const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
 export function menuPages(items: MenuItem[], links: MenuLinks, home: string): NavItem[] {
   return items.flatMap((item): NavItem[] => {
     if ("page" in item) return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
-    // The sim adds no menu item (midseason PRD), so it has no kind.
-    if (item.package === "sim") return [];
     // The egg board is not a menu item, so the menu keeps its items. The egg button of the top band opens it.
     if (item.package === "eggs") return [];
     // The midseason report adds no menu item yet: a sixth item overflows the pill bar of CPC at 1280px. The home

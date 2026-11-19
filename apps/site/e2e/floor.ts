@@ -439,6 +439,9 @@ export async function scanAxe(page: Page, scope?: string): Promise<AxeScan> {
   return { violations: lines("violation", result.violations), incomplete: lines("incomplete", result.incomplete) };
 }
 
+/* The longest wait of openPage for the animations of a page, in ms. */
+const ANIMATION_WAIT_CAP_MS = 5_000;
+
 /*
  * Opens a page in one theme. The init script stores the choice before any script of the page runs, so the boot script
  * reads it on the first paint, as for a reader. The assert on <html> then fails loud if the key or the boot script
@@ -446,6 +449,9 @@ export async function scanAxe(page: Page, scope?: string): Promise<AxeScan> {
  * Last, it waits for each finite animation to end, so the scans read the page at rest. A part that fades in on the load,
  * such as the passphrase dialog of the analyzer, has a mixed color until its fade ends, so axe and the pixel scan
  * would read a color that the reader sees for a moment only. An endless animation never ends, so the wait skips it.
+ * An animation whose end time is not a finite number, such as a drawer animation that runs with an end time of NaN,
+ * never ends either, so the wait keeps only a finite end time. The whole wait has a cap of 5 s, so a page that
+ * never settles cannot hang a run. On the cap, the scan goes on with the page as it is.
  */
 export async function openPage(page: Page, url: string, theme: Theme): Promise<void> {
   await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [THEME_KEY, theme] as const);
@@ -453,12 +459,17 @@ export async function openPage(page: Page, url: string, theme: Theme): Promise<v
   const html = page.locator("html");
   const dark = new RegExp(`(^|\\s)${DARK_CLASS}(\\s|$)`);
   await (theme === "dark" ? expect(html).toHaveClass(dark) : expect(html).not.toHaveClass(dark));
-  await page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
-        .map((animation) => animation.finished.catch(() => undefined)),
-    ),
+  await page.evaluate(
+    (cap) =>
+      Promise.race([
+        Promise.all(
+          document
+            .getAnimations()
+            .filter((animation) => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+            .map((animation) => animation.finished.catch(() => undefined)),
+        ),
+        new Promise((done) => setTimeout(done, cap)),
+      ]),
+    ANIMATION_WAIT_CAP_MS,
   );
 }

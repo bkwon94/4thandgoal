@@ -1,0 +1,5 @@
+$ ls -l clients/cpc/data/2026/week-10/raw/nflverse.json clients/cpc/data/2026/week-10/raw/slow_sources.json clients/cpc/data/2026/week-10/raw/news.json
+-rw-------  1 brian.kwon  wheel    5756 Nov 18 22:01 clients/cpc/data/2026/week-10/raw/news.json
+-rw-------  1 brian.kwon  wheel  682864 Nov 18 22:01 clients/cpc/data/2026/week-10/raw/nflverse.json
+-rw-------  1 brian.kwon  wheel  527161 Nov 18 22:01 clients/cpc/data/2026/week-10/raw/slow_sources.json
+exit: 0

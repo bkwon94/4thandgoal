@@ -1,0 +1,4 @@
+$ gh run view 44456293426 --json jobs --jq '.jobs[] | select(.name=="site-browser") | {name, conclusion, startedAt, completedAt}'
+{"completedAt":"2026-11-19T04:19:45Z","conclusion":"success","name":"site-browser","startedAt":"2026-11-19T04:08:58Z"}
+elapsed: 04:08:58 to 04:19:45 = 10 min 47 s
+exit: 0

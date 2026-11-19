@@ -1,0 +1,21 @@
+$ curl -sS -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @none.json -o at15-answer.json -w 'status %{http_code}\n'
+status 200
+[exit 0]
+
+$ cat none.json
+{"you": 6}
+[exit 0]
+
+$ jq -S '.page' at15-answer.json > answer-page.json; jq -S '.pages["6"]' /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/clients/cpc/published/2026/week-10/sim.json > file-page.json; diff -u file-page.json answer-page.json && echo 'diff is empty: the page of the answer equals the page of Bo Girds in week-10/sim.json'
+diff is empty: the page of the answer equals the page of Bo Girds in week-10/sim.json
+[exit 0]
+
+$ shasum -a 256 file-page.json answer-page.json
+47360b77d07f1ce0816eb0246b129b873e3070a3769cf684bec3a3c250fc7ccd  file-page.json
+47360b77d07f1ce0816eb0246b129b873e3070a3769cf684bec3a3c250fc7ccd  answer-page.json
+[exit 0]
+
+$ jq -c '{runs, effective_runs, set}' at15-answer.json
+{"runs":10000,"effective_runs":10000,"set":[]}
+[exit 0]
+

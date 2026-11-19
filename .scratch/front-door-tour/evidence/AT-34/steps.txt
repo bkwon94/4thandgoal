@@ -1,0 +1,12 @@
+A step list holds one route, and this test needs two pages, so agent-browser took these shots.
+
+1. Serve the cpc export of `apps/site/out` on http://127.0.0.1:4173, as in AT-2.
+2. For each theme light, dark, and each page `/2026/week-10/` and `/analyze/`, in the session `fdt-evidence`:
+   1. `agent-browser set viewport 375 900`
+   2. `agent-browser open http://127.0.0.1:4173/<page>`
+   3. `agent-browser eval "localStorage.clear(); localStorage.setItem('cpc.theme','<theme>')"`. For `/analyze/` the eval also sets `cpc.passphrase` to `test`, so the passphrase sheet does not cover the menu button. The Playwright test of AT-34 sets the same key.
+   4. `agent-browser reload`, `agent-browser wait 1500`
+   5. `agent-browser click "button[aria-label='Open the menu']"`, `agent-browser wait "nav[aria-label='Pages']"`, `agent-browser wait 1500`
+   6. `agent-browser screenshot <evidence>/AT-34/<page>-menu-375-<theme>.png` (viewport shot)
+   7. `agent-browser eval` of the count of "Show the tour" buttons, `[data-tour-card]`, `[data-tour-hole]`, and the seen key. `dom.txt` holds the result of each page and theme.
+3. `agent-browser close`

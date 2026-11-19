@@ -1,6 +1,6 @@
 """
-Builds the odds, the odds facts, the power facts, and the facts that explain each rank.
-The rankings chapter reads them. `RANKINGS` gives the chapter, its facts, and the odds to the week through the chapter port.
+Builds the odds facts, the power facts, and the facts that explain each rank. The odds come from the season sim.
+The rankings chapter reads them. `RANKINGS` gives the chapter and its facts to the week through the chapter port.
 """
 import logging
 from collections.abc import Callable
@@ -23,7 +23,6 @@ from league.models import (
 from league.numbers import round_half_up
 from league.standings_table import head_to_head, season_records, standings_order
 from league.tunables import TREND_WEEKS
-from rankings.odds import playoff_odds
 from rankings.power_rankings import power_rankings
 from rankings.tunables import SWING_FLAT, WHY_MOVE_AT, WHY_ODDS_AT
 
@@ -79,29 +78,10 @@ def sentence_range(client: Client) -> tuple[int, int]:
     return client.settings.team_count, 3 * client.settings.team_count
 
 
-def week_odds(
-    week: Week, history: History | None,
-    inputs: tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None,
-    projected: dict[int, dict[int, float]] | None,
-    client: Client,
-) -> OddsResult | None:
-    """The engine's odds after this week, or None when `odds_inputs` gave no inputs.
-
-    The engine runs once per build here, and the odds reach the saved facts, so a rewrite never runs it.
-    """
-    if inputs is None or history is None:
-        return None
-    scores, remaining = inputs
-    return playoff_odds(
-        scores, season_records(history, week.week, median_game=client.settings.median_game), remaining, season=week.season, week=week.week,
-        client=client, projected=projected,
-    )
-
-
 def odds_inputs(
     week: Week, history: History | None, client: Client,
 ) -> tuple[dict[int, list[float]], dict[int, list[tuple[int, int]]]] | None:
-    """The season scores and the remaining pairs the engine takes, or None where the sheet gives no odds."""
+    """The season scores and the remaining pairs that the season sim takes, or None where the sheet gives no odds."""
     if week.week < ODDS_FROM_WEEK or history is None or not history.complete():
         return None
     # A roster with no score in a week, such as a bye, adds no score for that week.
@@ -165,7 +145,7 @@ def odds_facts(odds: OddsResult | None, team: Callable[[int], str]) -> list[Fact
             text = f"{name} is out of the playoff race."
         else:
             text = f"{name} makes the playoffs in about {n(t.playoff)}% of runs, with a bye in {n(t.bye)}%"
-            # The engine gives no seed below SEED_SHOW_AT, so the clause drops there.
+            # The sim gives no seed below its SEED_SHOW_AT, so the clause drops there.
             text += f", most often as the {n.ord(t.seed)} seed." if t.seed is not None else "."
         out.append(fact(f"ODDS.{rid}", text, n, [name], []))
     return out
@@ -431,11 +411,11 @@ def saved_chapter(bundle: Bundle, history: History, client: Client) -> Chapter:
 
 
 class RankingsChapter:
-    """The rankings chapter of the week, through the chapter port of week.sheet.port. It gives the odds too."""
+    """The rankings chapter of the week, through the chapter port of week.sheet.port. The season sim gives the odds
+    that its facts read (ADR 0037), so it gives none itself."""
 
     def odds(self, c: Context) -> OddsResult | None:
-        """The engine's odds after this week. The engine runs once per build here."""
-        return week_odds(c.week, c.history, odds_inputs(c.week, c.history, c.client), c.projected, c.client)
+        return None
 
     def facts(self, c: Context) -> list[Fact]:
         return facts(c)

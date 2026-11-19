@@ -1,0 +1,6 @@
+The step verbs (click, fill, scroll, wait, expect, shot, url) give no way to seed a style.
+The agent seeded the style in a scratch detached worktree of 7f1a6441 at /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/8d09205e-77a3-444d-a4cd-362b838a88be/scratchpad/tg-overlap.
+The seed is one CSS rule at the end of apps/site/src/app/globals.css. See seed.diff.
+The smoke run ran in that worktree, so the build carries the seed. No tracked file of the Spec worktree changed.
+The --out folder is this evidence folder of the Spec worktree.
+The run started its own site server and its own local API on free ports, at the same time as other smoke runs of the Spec worktree.

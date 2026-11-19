@@ -1,0 +1,7 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-10[,)]"
+
+Running 1 test using 1 worker
+
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:134:5 › the Escape key counts as Skip at 1280 px (AT-10) (1.5s)
+
+  1 passed (1.8s)

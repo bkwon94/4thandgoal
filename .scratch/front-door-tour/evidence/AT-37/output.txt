@@ -1,0 +1,48 @@
+$ git diff --stat main...front-door-tour
+ .scratch/front-door-tour/ACCEPTANCE.md             | 380 +++++++++++++++
+ .scratch/front-door-tour/MAP.md                    |  32 ++
+ .scratch/front-door-tour/PRD.md                    | 198 ++++++++
+ .../decisions/01-research-the-tour-build.md        |  35 ++
+ .../decisions/01-research-the-tour-build.notes.md  | 138 ++++++
+ .../decisions/02-prototype-the-stop-look.md        |  35 ++
+ .../decisions/03-grill-stop-copy-and-replay.md     |  45 ++
+ .../decisions/04-spec-reduced-motion-and-key.md    |  23 +
+ .../issues/01-the-tour-stops-and-seen-key.md       |  25 +
+ .../issues/02-the-start-after-the-team-pick.md     |  17 +
+ .../issues/03-the-look-of-the-hole-and-the-card.md |  19 +
+ .../issues/04-the-glide-and-reduced-motion.md      |  17 +
+ .scratch/front-door-tour/issues/05-the-replay.md   |  16 +
+ GLOSSARY.md                                        |   8 +
+ apps/site/e2e/front-door-glide.spec.ts             |   4 +
+ apps/site/e2e/front-door-kept.spec.ts              |   4 +
+ apps/site/e2e/front-door-morph.spec.ts             |   4 +
+ apps/site/e2e/front-door-passphrase.spec.ts        |   4 +
+ apps/site/e2e/front-door-reduced.spec.ts           |   4 +
+ apps/site/e2e/front-door-scroll-up.spec.ts         |   4 +
+ apps/site/e2e/front-door-scroll.spec.ts            |   4 +
+ apps/site/e2e/front-door-tour-look.spec.ts         | 269 +++++++++++
+ apps/site/e2e/front-door-tour-motion.spec.ts       | 230 +++++++++
+ apps/site/e2e/front-door-tour-replay.spec.ts       | 140 ++++++
+ apps/site/e2e/front-door-tour.spec.ts              | 346 ++++++++++++++
+ apps/site/e2e/front-door.spec.ts                   |   4 +
+ apps/site/e2e/tour.ts                              |  10 +
+ apps/site/src/app/front-door/door-page.tsx         |  10 +-
+ apps/site/src/app/front-door/front-door.tsx        |   3 +
+ apps/site/src/app/front-door/motion.ts             |  11 +
+ apps/site/src/app/front-door/tour-norcal.test.tsx  |  57 +++
+ apps/site/src/app/front-door/tour-replay.test.tsx  | 125 +++++
+ apps/site/src/app/front-door/tour-replay.tsx       |  42 ++
+ apps/site/src/app/front-door/tour-store.test.ts    |  48 ++
+ apps/site/src/app/front-door/tour-store.ts         |  22 +
+ apps/site/src/app/front-door/tour.test.tsx         | 331 +++++++++++++
+ apps/site/src/app/front-door/tour.tsx              | 531 +++++++++++++++++++++
+ docs/agents/state.md                               |   1 +
+ packages/design/site/shell/README.md               |   2 +-
+ packages/design/site/shell/menu-sheet.tsx          |  32 +-
+ packages/design/site/shell/top-band.tsx            |   7 +-
+ packages/design/site/ui/README.md                  |   3 +-
+ packages/design/site/ui/stop-card.tsx              |  97 ++++
+ 43 files changed, 3330 insertions(+), 7 deletions(-)
+
+$ git diff --name-only main...front-door-tour | grep -E "^apps/(pipeline|api)/"; echo "exit $?"
+exit 1

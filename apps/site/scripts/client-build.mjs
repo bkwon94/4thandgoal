@@ -177,8 +177,16 @@ const ROUTES = {
     },
   ],
   analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
-  // The sim has no page of its own. The report page mounts its replay.
-  sim: [],
+  // The sim page reads the newest week sim file, week-NN/sim.json. The season file of the midseason replay gives no route.
+  sim: [
+    {
+      path: "sim/[season]/page.tsx",
+      source: "@/app/_routes/sim/page",
+      exports: ["default", "generateStaticParams", "generateMetadata"],
+      dynamic: true,
+      needs: (published) => hasFile(published, (path) => /(^|[\\/])week-\d{2}[\\/]sim\.json$/.test(path)),
+    },
+  ],
   // The egg board renders in the browser from the API, so it needs no published file.
   eggs: [{ path: "eggs/page.tsx", source: "@/app/_routes/eggs/page", exports: ["default", "metadata"] }],
   midseason: [
@@ -210,9 +218,14 @@ const PAGE_PARTS = { eggs: "@/app/_routes/eggs/hunt" };
    The registry imports it only for a package of the list, so the top band of a client that omits the package holds none. */
 const BAND_PARTS = { eggs: "@/app/_routes/eggs/band" };
 
-/* The strip that a package puts under the top band of the home page, such as the egg banner. The registry imports it
-   only for a package of the list, so the home page of a client that omits the package holds none. */
-const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner" };
+/* The strip that a package puts under the top band of the home page, such as the egg banner, or the sheet that a
+   package opens on the home page, such as the Announcement of the season sim. The registry imports it only for a
+   package of the list, so the home page of a client that omits the package holds none. */
+const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner", sim: "@/app/_routes/sim/home-banner" };
+
+/* The tile that a package puts on each week page after Standings, such as the Sim tile. The registry imports it only
+   for a package of the list, so the week page of a client that omits the package holds none of its code. */
+const WEEK_TILES = { sim: "@/app/_routes/sim/week-tile" };
 
 /* The managers routes build only for the latest season, so its managers file gives their params. */
 function managersFile(published) {
@@ -238,6 +251,10 @@ function routeText(slug, route) {
    never moves a part. */
 const HOME_SECTIONS = ["midseason", "rankings", "week"];
 
+/* The packages whose menu file gives a site line, the blurb and the Tool mark of its page in the Site answer. The
+   other packages, such as the egg board, show no page there. */
+const SITE_LINES = ["week", "rankings", "managers", "analyzer", "midseason", "sim"];
+
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
 function registryText(slug, values) {
@@ -246,19 +263,28 @@ function registryText(slug, values) {
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
+  const weekTiles = Object.keys(WEEK_TILES).filter((name) => values.packages.includes(name));
+  const lines = SITE_LINES.filter((name) => values.packages.includes(name));
   return [
     headerLine(slug),
-    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart } from "@/lib/client-values";`,
+    `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines, WeekTile } from "@/lib/client-values";`,
     ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
+    ...lines.map((name) => `import { siteLine as ${name}SiteLine } from "@/app/_routes/${name}/menu";`),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
     ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
     ...band.map((name) => `import { BandPart as ${name}BandPart } from "${BAND_PARTS[name]}";`),
     ...banners.map((name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`),
+    ...weekTiles.map((name) => `import { weekTile as ${name}WeekTile } from "${WEEK_TILES[name]}";`),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
     ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
+    "};",
+    "",
+    "/* The site line of each package of the client that shows in the Site answer. */",
+    "export const siteLines: SiteLines = {",
+    ...lines.map((name) => `  ${name}: ${name}SiteLine,`),
     "};",
     "",
     "/* The home tool of each package of the client that has one, in the order of the Tools chapter. */",
@@ -277,6 +303,9 @@ function registryText(slug, values) {
     "",
     "/* The strip of each package of the client under the top band of the home page. */",
     `export const homeBanners: HomeBanner[] = [${banners.map((name) => `${name}HomeBanner`).join(", ")}];`,
+    "",
+    "/* The tile of each package of the client on each week page, after Standings. */",
+    `export const weekTiles: WeekTile[] = [${weekTiles.map((name) => `${name}WeekTile`).join(", ")}];`,
     "",
   ].join("\n");
 }

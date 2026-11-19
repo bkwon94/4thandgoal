@@ -1,0 +1,36 @@
+$ cd apps/site && pnpm exec vitest run --reporter=verbose src/app/front-door/tour.test.tsx src/app/front-door/tour-store.test.ts -t "AT-26[,)]"
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/cba45791-aaaf-40ba-a72e-eeb444d7dbe5/scratchpad/front-door-tour-flags/apps/site
+
+ ↓ src/app/front-door/tour-store.test.ts > the seen store of the Tour > keeps the seen key as cpc.tour-seen, beside the other stores of the front door
+ ↓ src/app/front-door/tour-store.test.ts > the seen store of the Tour > reads a browser with no seen key as not seen
+ ↓ src/app/front-door/tour-store.test.ts > the seen store of the Tour > writes "1" and then reads as seen (AT-23)
+ ↓ src/app/front-door/tour-store.test.ts > the seen store of the Tour > reads any value as seen
+ ✓ src/app/front-door/tour-store.test.ts > the seen store of the Tour > reads as seen when the read of local storage throws (AT-26) 1ms
+ ↓ src/app/front-door/tour-store.test.ts > the seen store of the Tour > does not throw when the write of local storage throws
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > shows Stop 1 on load to a browser with Your team and no seen key, with no team sheet (AT-2)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > is a modal dialog named by its header and described by its line (AT-29, AT-39)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > writes "1" to the seen key when Stop 1 opens (AT-23)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > shows the copy, the count, and four dots of each Stop as Next goes through them, then Done ends it (AT-3, AT-7, AT-12)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > ends on Skip (AT-9)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > ends on the Escape key (AT-10)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > ends on Android Back, through the CloseWatcher of the Stop card (AT-11)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > goes to the next Stop on a press outside the card (AT-8)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > shows no Tour to a browser with the seen key (AT-24, AT-25)
+ ✓ src/app/front-door/tour.test.tsx > the Tour of the front door > shows no Tour when the read of the seen key throws, and the Suggestions still render (AT-26) 1148ms
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > aims Stop 4 at the menu button when the pill bar is hidden, and at the pill bar when the menu button is hidden (AT-4)
+ ↓ src/app/front-door/tour.test.tsx > the Tour of the front door > puts no stable id on the dim or the card, so a hold in the Tour sends no egg check (AT-33)
+ ↓ src/app/front-door/tour.test.tsx > the Stops of the Tour > aim at the Suggestions, the ask box, the team switch, and the menu button or the pill bar, by their names
+ ↓ src/app/front-door/tour.test.tsx > the Stops of the Tour > maps each refused dismiss: a press outside goes on, or ends at Stop 4, and Escape and Back count as Skip (AT-8, AT-10, AT-11)
+ ↓ src/app/front-door/tour.test.tsx > the Stops of the Tour > does nothing on a refused dismiss that the spec does not name, such as a swipe
+ ↓ src/app/front-door/tour.test.tsx > the Stop card > sends the reason back to onDismissAttempt on a close request of the browser (AT-11)
+ ↓ src/app/front-door/tour.test.tsx > the Stop card > counts an Escape once, though Chromium sends a close request right after the keydown (AT-10)
+ ↓ src/app/front-door/tour.test.tsx > the start of the Tour > shows no dim and no Stop card while the team sheet is open, and Stop 1 on the Suggestions after the pick (AT-1, AT-5)
+ ↓ src/app/front-door/tour.test.tsx > the start of the Tour > blurs a focused ask box before Stop 1 shows, so no text field has focus at Stop 1 (AT-32)
+ ↓ src/app/front-door/tour.test.tsx > the start of the Tour > waits while a modal layer is open, and shows Stop 1 after the layer leaves (AT-38)
+
+ Test Files  2 passed (2)
+      Tests  2 passed | 24 skipped (26)
+   Start at  00:27:14
+   Duration  1.90s (tests 54%, environment 28%, import 15%, transform 4%)
+

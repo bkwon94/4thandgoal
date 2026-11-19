@@ -1,0 +1,6 @@
+week card heading: Week 11 vs Maye d'force B with U
+tiles in group Results: 4
+tile: Win, beat median | 86% | 24% likely | +2 wins
+tile: Win, miss median | 65% | 5% likely | +1 win
+tile: Lose, beat median | 67% | 20% likely | +1 win
+tile: Lose, miss median | 41% | 51% likely | No wins

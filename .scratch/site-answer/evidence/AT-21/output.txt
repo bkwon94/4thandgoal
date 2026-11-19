@@ -1,0 +1,56 @@
+$ cd apps/site && CLIENT=cpc node scripts/client-build.mjs && pnpm exec vitest run src/app/page-site.test.tsx -t "AT-21" --reporter=verbose
+# Run in the Spec worktree at ca24c17a, on 2026-11-18 22:25 UTC.
+
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/site-answer/apps/site
+
+ ✓ src/app/page-site.test.tsx > the none case of a site question > shows the none rows of every cpc page for a kept key that the client lacks (AT-21) 161ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 17 skipped (18)
+   Start at  17:25:14
+   Duration  1.40s (environment 39%, import 39%, tests 12%, transform 10%)
+
+exit: 0
+
+# The source of the test, from apps/site/src/app/page-site.test.tsx at ca24c17a.
+# The helpers that the test calls (lines 16-19 and 36-58):
+const PASSPHRASE = "cornerstone-test";
+const fetchStub = vi.fn();
+const replies: Response[] = [];
+const askCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/ask"));
+async function articleWith(question: string, text: string) {
+  await waitFor(() => expect(screen.getByRole("article", { name: question }).textContent).toContain(text));
+  return screen.getByRole("article", { name: question });
+}
+
+beforeEach(() => {
+  fetchStub.mockImplementation(async (url: string) =>
+    String(url).endsWith("/ask") ? (replies.shift() ?? new Response("", { status: 500 })) : new Response("", { status: 404 }),
+  );
+  vi.stubGlobal("fetch", fetchStub);
+  localStorage.setItem("cpc.your-team", "3");
+  localStorage.setItem("cpc.passphrase", PASSPHRASE);
+});
+
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+  fetchStub.mockReset();
+  replies.length = 0;
+  vi.unstubAllGlobals();
+});
+
+/* The pages of the cpc Menu with no Home, then the midseason report and the sim, each with its label and its blurb. */
+
+# The test (lines 196-205):
+describe("the none case of a site question", () => {
+  it("shows the none rows of every cpc page for a kept key that the client lacks (AT-21)", async () => {
+    localStorage.setItem("cpc.thread", JSON.stringify({ "3": { week: 8, entries: [{ kind: "site", question: "where are the waivers", page: "waiver" }] } }));
+    render(<HomePage />);
+    const card = await articleWith("where are the waivers", "The site has no page for that. Here is what it has.");
+    const rows = within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link");
+    expect(rows.map((row) => row.getAttribute("href"))).toEqual(["/2026/week-08/", "/rankings/", "/2026/managers/", "/analyze/", "/midseason/2026/", "/midseason/2026/#sim"]);
+    expect(within(card).queryByRole("link", { name: /^Open the/ })).toBeNull();
+    expect(askCalls()).toHaveLength(0);
+  });

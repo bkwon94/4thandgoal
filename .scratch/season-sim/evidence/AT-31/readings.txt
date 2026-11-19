@@ -1,0 +1,8 @@
+light row text: Maye d'force B with U beats Bo Girds | 1 win behind you | → 72%
+light   leaf "Maye d'force B with U beats Bo Girds" scrollWidth 272 clientWidth 272 text-overflow clip white-space normal
+light   leaf "1 win behind you" scrollWidth 272 clientWidth 272 text-overflow clip white-space normal
+light   leaf "→" scrollWidth 0 clientWidth 0 text-overflow clip white-space normal
+dark row text: Maye d'force B with U beats Bo Girds | 1 win behind you | → 72%
+dark   leaf "Maye d'force B with U beats Bo Girds" scrollWidth 272 clientWidth 272 text-overflow clip white-space normal
+dark   leaf "1 win behind you" scrollWidth 272 clientWidth 272 text-overflow clip white-space normal
+dark   leaf "→" scrollWidth 0 clientWidth 0 text-overflow clip white-space normal

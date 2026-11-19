@@ -1,0 +1,28 @@
+$ cat deploy-end.txt
+deploy end 02:36:00Z
+[exit 0]
+
+$ cat after-deploy.txt
+call 1 status 200 time 1.841908s size 37096
+call 2 status 200 time 1.814216s size 37096
+call 3 status 200 time 1.892661s size 37096
+call 4 status 200 time 1.706739s size 37096
+call 5 status 200 time 1.761728s size 37096
+call 6 status 200 time 1.817471s size 37096
+call 7 status 200 time 1.715467s size 37096
+call 8 status 200 time 1.715347s size 37096
+call 9 status 200 time 1.862698s size 37096
+call 10 status 200 time 1.690854s size 37096
+[exit 0]
+
+$ python3 -I -c "import re,statistics,sys; t=[float(re.search(r\"time ([0-9.]+)s\",l).group(1)) for l in open(sys.argv[1])]; print(\"times (s):\", t); print(\"count\", len(t), \"median\", round(statistics.median(t),6), \"min\", min(t), \"max\", max(t))" after-deploy.txt
+times (s): [1.841908, 1.814216, 1.892661, 1.706739, 1.761728, 1.817471, 1.715467, 1.715347, 1.862698, 1.690854]
+count 10 median 1.787972 min 1.690854 max 1.892661
+[exit 0]
+
+$ grep -c 'status 200' after-deploy.txt
+10
+[exit 0]
+
+# Recorded on Fly before this file was written. Release v62 deployed from dbea219f at 02:35 to 02:36 UTC on 2026-11-19.
+# The deploy ended at 02:36:00 UTC (deploy-end.txt). The 10 calls ran one at a time from 02:36:00 to 02:36:19 UTC. The times are in after-deploy.txt.

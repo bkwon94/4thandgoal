@@ -1,0 +1,6 @@
+smoke/passphrase/1280-light.png
+smoke/passphrase/390-light.png
+smoke/week-report/1080-light.png
+smoke/week-report/1280-light.png
+smoke/week-report/390-light.png
+smoke/week-report/810-light.png

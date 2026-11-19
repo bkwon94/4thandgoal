@@ -1,16 +1,16 @@
-# rankings: the power rankings and the playoff odds
+# rankings: the power rankings and the odds facts
 
 ## Knows
 
-- The power rankings in `power_rankings.py`, the playoff odds engine in `odds.py`, and the numbers of `tunables.py` (`cpc-rankings`, imported as `rankings`).
+- The power rankings in `power_rankings.py` and the numbers of `tunables.py` (`cpc-rankings`, imported as `rankings`). The season sim of the sim package gives the odds (ADR 0037).
 - The rankings chapter, the odds facts, the power facts, and the why facts in `chapter.py`. The writer of `rankings.json` in `published.py`.
-- A league with no median game counts one game a week in the records, the clinch check, and the odds. Its power form has no median weight.
+- A league with no median game counts one game a week in the records and the clinch check. Its power form has no median weight.
 - The power rankings Ladder, the week choice, the top three of the home page, the schema and the types of `rankings.json`, and its fixture (`@cpc/rankings`). The loader of `rankings.json` stays in the site app, because it reads files.
 - Package values: it has no values.
 
 ## Ports
 
-- `RANKINGS` in `chapter.py` implements `ChapterSource`, the chapter port of the week. It gives the week the rankings chapter, its facts, and the odds.
+- `RANKINGS` in `chapter.py` implements `ChapterSource`, the chapter port of the week. It gives the week the rankings chapter and its facts. It gives no odds.
 - `Context` in `chapter.py` names the part of the week context that the rankings reads, so the package imports no week code.
 
 ## Does not do

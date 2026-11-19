@@ -1,0 +1,5 @@
+$ git log --oneline -1 && git merge-base HEAD 62d6b0ef && ls scripts/rebuild.py
+b9231a41 Quick win: Faster checks (#68)
+b9231a41dc8804fa91d0f9b500cbde895198fa52
+ls: scripts/rebuild.py: No such file or directory
+exit: 1
