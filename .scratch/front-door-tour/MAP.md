@@ -18,10 +18,11 @@ A first-visit Tour on the front door of each client. It shows a league mate what
 - The Stop card is a modal ui-sdk `Popover` in a new wrapper of `packages/design/site/ui/`. The spotlight is a `box-shadow` dim that `framer-motion` moves. The motion uses transitions-dev tokens. No scrolltide item fits. `decisions/01-research-the-tour-build.md`.
 - The look is Spotlight glide: a dim with a centered rounded hole, and a card with a header, ride one `GLIDE` spring together. The card places itself, not ui-sdk. Next and Done use the brand accent. `decisions/02-prototype-the-stop-look.md`.
 - Each Stop has static copy: Suggestions, Ask, Your team, and Menu. The replay is a "Show the tour" link in the menu sheet and a "?" button on desktop, both on the front door only. `decisions/03-grill-stop-copy-and-replay.md`.
+- Under reduced motion the hole jumps and the card fades. The seen key is `cpc.tour-seen`, written when Stop 1 opens. `decisions/04-spec-reduced-motion-and-key.md`, in `PRD.md`.
 
 ## NOT YET SPECIFIED
 
-- What does the Tour do under reduced motion, and what browser key marks it as seen? `decisions/04-spec-reduced-motion-and-key.md`.
+None.
 
 ## OUT OF SCOPE
 
