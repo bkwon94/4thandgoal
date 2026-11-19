@@ -20,7 +20,11 @@ export const weekTile: WeekTile = (season, week) => {
     chapter: CHAPTER,
     tile: (
       <WeekChapter id={CHAPTER.id} title={CHAPTER.label} note={`After week ${sim.week}`}>
-        <YourSimTile data={simTileOf(sim)} href={simHref(season)} />
+        {/* The chapter rail marks a chapter only while its heading holds the top 30% of the view, and the next heading
+            stays out of it. The tile alone is shorter than that band, so from the rail tier it keeps 30vh of height. */}
+        <div className="rail:min-h-[30vh]">
+          <YourSimTile data={simTileOf(sim)} href={simHref(season)} />
+        </div>
       </WeekChapter>
     ),
   };
