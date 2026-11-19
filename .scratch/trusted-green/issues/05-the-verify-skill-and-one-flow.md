@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-1, AT-6, AT-8 and AT-
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] The skill lists of Claude Code and of `codex` each name `verify` once, from one source file.
 - [ ] A smoke run of the Week report of cpc 2026 week 10 passes, at 390x660 WebKit and 1280x800, light theme.
