@@ -8,7 +8,7 @@ Spec: `.scratch/trusted-green/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] On a real git repo with a true red commit and fix commit, the script exits 0.
 - [x] A Red command that passes at the red commit fails the job and names the item.
