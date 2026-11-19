@@ -31,6 +31,7 @@ export const SHARED_GLOBS = [
   "apps/site/e2e/floor.ts",
   "apps/site/e2e/smoke.ts",
   "apps/site/e2e/smoke.spec.ts",
+  "apps/site/e2e/local-api.ts",
   ".claude/skills/verify/**",
 ];
 

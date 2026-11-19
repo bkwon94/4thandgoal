@@ -6,6 +6,8 @@ out
 .claude/worktrees/
 .claude/settings.local.json
 __pycache__/
+# The own env of make -C apps/api api-evidence, beside the shared .venv. See apps/api/Makefile.
+.venv-api-evidence/
 # The caches of the NFL data and of the API results. Each run fills them again.
 data/nfl/cache/
 data/cache/

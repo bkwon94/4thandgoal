@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Boot the site and the local API of this repo, and drive each flow of the flow list in a smoke run, the way a person uses the app. Use before the Judge of a spec or a quick run, or when Brian asks to see that a change works in the running app.
+description: Boot the site and its own local API of this repo, and drive each flow of the flow list in a smoke run, the way a person uses the app. Use before the Judge of a spec or a quick run, or when Brian asks to see that a change works in the running app.
 argument-hint: '[<flow name> ...]'
 ---
 
@@ -25,16 +25,20 @@ A change to a shared part picks each flow. The shared parts are the design packa
 
 Run each command at the root of the worktree. Put Node 24 or later first on PATH.
 
-1. Start the local API in its evidence mode in the background: `make -C apps/api api-evidence`.
-2. Run the smoke run of the picked flows: `pnpm --dir apps/site smoke --out <smoke folder> <flow name> ...`.
-3. Read the last line of the log. "Smoke run: N flows, N passed, 0 failed" is a green run.
-4. Stop the local API.
+1. Run the smoke run of the picked flows: `pnpm --dir apps/site smoke --out <smoke folder> <flow name> ...`.
+2. Read the last line of the log. "Smoke run: N flows, N passed, 0 failed" is a green run.
 
-The smoke run builds the export of the client against the local API, serves it on port 4173, and runs each flow at each size. With no flow name, it runs each flow of the list. Add `--client <slug>` for a client other than `cpc`.
+Do not start an API first. The smoke run starts its own site server and its own local API, each on a free port. The API is `make -C apps/api api-evidence` with that port, and it allows only the origin of that site server. The run builds the export of the client against that API, and runs each flow at each size. It stops the API and the server at the end, also after a failure. With no flow name, it runs each flow of the list. Add `--client <slug>` for a client other than `cpc`.
 
-The smoke folder gets `smoke.log` and one folder of shots per flow. A shot is `<width>-light.png`, or `<shot name>-<width>-light.png` for a `shot` step. A failed flow also gets `fail-<width>-light.png`, a shot of the page as it failed.
+Two sessions in two worktrees can run a smoke run at the same time. A call of a page to a local server that is not the site or the API of its run fails the flow, with the cause `foreign local call`. One checkout runs one smoke run at a time, because each run builds into the one `apps/site/out/` and `apps/site/.next/` of that checkout.
 
-A step of a flow that calls Claude waits up to 120 s for its element, because one answer of Claude takes up to a minute. The local API needs `ANTHROPIC_API_KEY` and `TYPESAFE_API_KEY` in its env for these flows.
+The API runs in its own env, `.venv-api-evidence/` at the root, so its `uv run --exact` does not change the shared `.venv` under a check. The first run of a checkout installs that env, which takes a few more seconds.
+
+To test the site with the local API stopped, add `--no-api`. The run then starts no API. Its build calls a free port that ends each connection at once.
+
+The smoke folder gets `smoke.log`, `api.log`, the output of the API of the run, and one folder of shots per flow. A shot is `<width>-light.png`, or `<shot name>-<width>-light.png` for a `shot` step. A failed flow also gets `fail-<width>-light.png`, a shot of the page as it failed.
+
+A step of a flow that calls Claude waits up to 120 s for its element, because one answer of Claude takes up to a minute. The local API needs `ANTHROPIC_API_KEY` and `TYPESAFE_API_KEY` in its env for these flows. The API of the run gets the env of the smoke run, so source `~/.secrets` in the same shell before `pnpm smoke`. Never print a key.
 
 A flow fails on each of these causes. Each line of the log names the flow, the size, and the cause:
 

@@ -1,11 +1,12 @@
 /**
- * The smoke run of the verify skill: it builds one client against the local API, serves its export, and runs the flows.
- * Run it with pnpm smoke --out <dir> [<flow name> ...], with make -C apps/api api-evidence up first.
+ * The smoke run of the verify skill: it starts its own site server and its own local API, each on a free port, builds
+ * one client against that API, and runs the flows. Run it with pnpm smoke --out <dir> [--no-api] [<flow name> ...].
  */
 import { test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
-import { buildEnv, EVIDENCE_PORT } from "./evidence";
+import { buildEnv } from "./evidence";
+import { holdPort, startApi } from "./local-api";
 import { serveDir } from "./serve";
 import { addSteps, readFlows, routeOf, runSmoke } from "./smoke";
 
@@ -17,6 +18,8 @@ const OUT = process.env.SMOKE_OUT ?? "";
 const STEPS = process.env.SMOKE_STEPS ?? "";
 const CLIENT = process.env.SMOKE_CLIENT || "cpc";
 const NAMES: string[] = JSON.parse(process.env.SMOKE_FLOWS || "[]");
+// --no-api: the run starts no API, for a test of the site with the local API stopped.
+const NO_API = process.env.SMOKE_NO_API === "1";
 
 test(`the smoke run of ${CLIENT}`, async () => {
   test.skip(!OUT, "Run it with pnpm smoke --out <dir>.");
@@ -32,21 +35,28 @@ test(`the smoke run of ${CLIENT}`, async () => {
     ...flow,
     route: routeOf(flow.route, join(ROOT, "clients", CLIENT, "published")),
   }));
-  const start = Date.now();
-  // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.
+  // The server reads each file per request, so it starts before the build, and its origin is known before the API starts.
+  const server = await serveDir(join(process.cwd(), "out"), 0);
+  // The API allows only the origin of this server, and the build bakes the URL of this API into the export.
+  const api = await (NO_API ? holdPort() : startApi({ origin: server.url, out: OUT })).catch(async (error) => {
+    await server.close();
+    throw error;
+  });
+  console.log(`site ${server.url}, API ${api.url}${NO_API ? " (no API)" : `, API log ${join(OUT, "api.log")}`}`);
   try {
-    execFileSync("pnpm", ["build"], { env: buildEnv(CLIENT), encoding: "utf8", stdio: "pipe" });
-  } catch (error) {
-    const { stdout, stderr } = error as { stdout?: string; stderr?: string };
-    throw new Error(`build ${CLIENT} failed:\n${stdout ?? ""}${stderr ?? ""}`);
-  }
-  console.log(`build ${CLIENT}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
-  // The fixed port of the evidence server, because the local API allows only its origin.
-  const server = await serveDir(join(process.cwd(), "out"), EVIDENCE_PORT);
-  try {
-    const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, out: OUT, log: (line) => console.log(line) });
+    const start = Date.now();
+    // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.
+    try {
+      execFileSync("pnpm", ["build"], { env: buildEnv(CLIENT, api.url), encoding: "utf8", stdio: "pipe" });
+    } catch (error) {
+      const { stdout, stderr } = error as { stdout?: string; stderr?: string };
+      throw new Error(`build ${CLIENT} failed:\n${stdout ?? ""}${stderr ?? ""}`);
+    }
+    console.log(`build ${CLIENT}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
+    const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, api: api.url, out: OUT, log: (line) => console.log(line) });
     if (failures.length > 0) throw new Error(`The smoke run is red:\n${failures.join("\n")}`);
   } finally {
+    await api.stop();
     await server.close();
   }
 });

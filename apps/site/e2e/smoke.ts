@@ -64,7 +64,7 @@ export type SmokeOptions = {
   client?: string;
   // The origin of the served export of the client.
   url: string;
-  // The origin of the API. A response of 4xx or 5xx from it fails the flow. The default is the local API of the evidence run.
+  // The origin of the API of the run. A response of 4xx or 5xx from it fails the flow. The default is LOCAL_API.
   api?: string;
   // The smoke folder. Each flow gets a folder of its shots, and the run writes smoke.log here.
   out: string;
@@ -244,6 +244,9 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, client: string,
       causes.push(`API error: ${response.status()} ${response.request().method()} ${response.url()}`);
     }
   });
+  page.on("request", (request) => {
+    if (isForeignLocal(request.url(), url, api)) causes.push(`foreign local call: ${request.method()} ${request.url()}`);
+  });
   page.on("requestfailed", (request) => {
     if (request.url().startsWith(api)) causes.push(`API error: ${request.method()} ${request.url()} failed: ${request.failure()?.errorText}`);
   });
@@ -269,6 +272,19 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, client: string,
  */
 function isOtherHostLoad(text: string, from: string, site: string, api: string): boolean {
   return text.startsWith("Failed to load resource") && from !== "" && !from.startsWith(site) && !from.startsWith(api);
+}
+
+/* The host names of this machine. A server on one of them is a server of this run or of another session. */
+const LOCAL_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"];
+
+/*
+ * Whether a request goes to a local server that is not the site or the API of this run. Another session can run its
+ * own site or API on this machine, and a call to it tests the code of that session, so the call fails the flow.
+ */
+function isForeignLocal(target: string, site: string, api: string): boolean {
+  const { hostname, origin, protocol } = new URL(target);
+  if (!protocol.startsWith("http") || !LOCAL_HOSTS.includes(hostname)) return false;
+  return origin !== new URL(site).origin && origin !== new URL(api).origin;
 }
 
 const seconds = (start: number) => `${((Date.now() - start) / 1000).toFixed(1)} s`;

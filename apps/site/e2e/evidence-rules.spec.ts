@@ -7,7 +7,7 @@ import { expect, test } from "@playwright/test";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildEnv, EVIDENCE_ORIGIN, EVIDENCE_PORT, runRound } from "./evidence";
+import { buildEnv, runRound } from "./evidence";
 import { serveDir } from "./serve";
 
 // The runner turns motion on, so the scroll pass, not reduced motion, is what shows a section that reveals on scroll.
@@ -362,21 +362,9 @@ test("a test with two clients puts the client first in a named shot and in the u
   ]);
 });
 
-test("the evidence server serves on its fixed port, so the API can allow its origin", async ({ page }) => {
-  const fx = fixture({});
-  const server = await serveDir(join(fx.root, "site"), EVIDENCE_PORT);
-  try {
-    expect(server.url).toBe(EVIDENCE_ORIGIN);
-    await page.goto(`${server.url}/missing/`);
-    await expect(page.locator("body")).toContainText("Lost page");
-  } finally {
-    await server.close();
-  }
-});
-
-test("the evidence build calls the local API, even when the caller env names the production API", () => {
-  const env = buildEnv("norcal", { NEXT_PUBLIC_API_URL: "https://api.4thandgoal.app", HOME: "/home/reader" });
-  expect(env).toMatchObject({ CLIENT: "norcal", NEXT_PUBLIC_API_URL: "http://localhost:8080", HOME: "/home/reader" });
+test("the evidence build calls the API of its run, even when the caller env names the production API", () => {
+  const env = buildEnv("norcal", "http://127.0.0.1:51234", { NEXT_PUBLIC_API_URL: "https://api.4thandgoal.app", HOME: "/home/reader" });
+  expect(env).toMatchObject({ CLIENT: "norcal", NEXT_PUBLIC_API_URL: "http://127.0.0.1:51234", HOME: "/home/reader" });
 });
 
 test("an expect that holds takes its shot, and an expect that fails stops the round and names the test and the step", async ({ browser }) => {

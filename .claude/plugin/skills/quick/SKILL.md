@@ -159,9 +159,8 @@ The brief of a Quick win is the brief of a Bug, with these changes:
 Run one smoke run after the last item, before the quick Judge. Skip it for a run with no change to `apps/site/` or `apps/api/`, and write `Smoke: none, no site or API change.` in the quick file. See the `verify` skill and [`format.md`](format.md#the-smoke-block).
 
 1. Pick the flows: `pnpm --dir apps/site pick --base main`.
-2. Start the local API: `make -C apps/api api-evidence`. Run it in the background.
-3. Run the flows: `pnpm --dir apps/site smoke --out .scratch/<folder>/<slug>/smoke <flow name> ...`.
-4. Write the `Smoke:` block of the quick file. Commit it with the shots.
+2. Run the flows: `pnpm --dir apps/site smoke --out .scratch/<folder>/<slug>/smoke <flow name> ...`. The run starts and stops its own local API.
+3. Write the `Smoke:` block of the quick file. Commit it with the shots.
 
 **Stop rule of step 7.** A red smoke run is a red check. Give it one fix round. If it is still red, stop before the Judge. Tell Brian the log. Open no PR.
 

@@ -4,6 +4,8 @@
  */
 import { expect, test } from "@playwright/test";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { serveDir } from "./serve";
@@ -171,9 +173,44 @@ test("a page error, a console error, and an API response of 4xx each fail the ru
   }
 });
 
+/* A stand-in API on a free port. It answers each path with a 200 and allows each origin, so only the guard can fail a call. */
+async function standInApi(): Promise<{ url: string; close: () => Promise<void> }> {
+  const server = createServer((request, response) => {
+    response.setHeader("access-control-allow-origin", "*");
+    response.end("ok");
+  });
+  await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
+  const { port } = server.address() as AddressInfo;
+  return { url: `http://127.0.0.1:${port}`, close: () => new Promise<void>((done) => server.close(() => done())) };
+}
+
+test("two runs at the same time each call only their own API, and a call to the API of the other run fails the run", async () => {
+  const [apiA, apiB] = [await standInApi(), await standInApi()];
+  const call = (api: string) => `<html><body><h1>Week 10</h1><script>fetch("${api}/health")</script></body></html>`;
+  // The page of run A calls the API of run B. The page of run B calls its own API.
+  const a = site({ week: call(apiB.url) });
+  const b = site({ week: call(apiB.url) });
+  const [siteA, siteB] = [await serveDir(a.dir), await serveDir(b.dir)];
+  try {
+    const flows = [week([{ expect: "text=Week 10" }])];
+    const [runA, runB] = await Promise.all([
+      runSmoke({ flows, url: siteA.url, api: apiA.url, out: a.out, log: () => {} }),
+      runSmoke({ flows, url: siteB.url, api: apiB.url, out: b.out, log: () => {} }),
+    ]);
+    expect(runA.failures).toEqual([
+      `FAIL Week report 390x660 webkit: foreign local call: GET ${apiB.url}/health`,
+      `FAIL Week report 1280x800 chromium: foreign local call: GET ${apiB.url}/health`,
+    ]);
+    expect(runB.failures).toEqual([]);
+  } finally {
+    for (const server of [siteA, siteB, apiA, apiB]) await server.close();
+  }
+});
+
 test("a failed image of another host is no error, because the page swaps it, but a missing file of the site fails the run", async () => {
-  // The second server stands in for an image host such as the CDN of Sleeper. It has no file, so each image gets a 404.
-  const host = await serveDir(site({}).dir);
+  // The host stands in for an image host such as the CDN of Sleeper. The name .invalid never resolves, so each image fails.
+  // A local server cannot stand in, because a call to a local server that is not of the run fails the run.
+  const host = { url: "http://cdn.invalid" };
   const image = (src: string) => `<html><body><h1>Week 10</h1><img src="${src}" alt="" onerror="this.dataset.fallback = 1"></body></html>`;
   const flows: Flow[] = [
     { ...week([]), name: "Other host", route: "/other/" },
@@ -190,7 +227,6 @@ test("a failed image of another host is no error, because the page swaps it, but
     ]);
   } finally {
     await server.close();
-    await host.close();
   }
 });
 

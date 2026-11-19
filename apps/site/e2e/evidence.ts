@@ -25,23 +25,27 @@ const SETTLE_MS = 1200;
 const CLIENT = "cpc";
 
 /*
- * The local API of make -C apps/api api-evidence. The build bakes the API URL into the export, and with no value the
- * site calls the production API. An evidence run must never call production, so the build always sets this URL.
- * LOCAL_API_URL moves the run to a local API on another port, when a second API already holds port 8080.
+ * The local API of make -C apps/api api-evidence with its default port, for the egg hunt of eggs.spec.ts and for the
+ * route stubs of the grade-bar project. A smoke run and an evidence round start their own API on a free port instead.
+ * LOCAL_API_URL moves the egg hunt to a local API on another port, when a second API already holds port 8080.
  */
 export const LOCAL_API = process.env.LOCAL_API_URL ?? "http://localhost:8080";
 
 /*
- * The fixed port of the evidence server. The API answers only the origins it allows, and a free port changes each run.
- * make -C apps/api api-evidence allows EVIDENCE_ORIGIN, so the analyzer tests of a round reach the local API.
+ * The default port of the egg hunt server. The API answers only the origins it allows, and make -C apps/api api-evidence
+ * allows EVIDENCE_ORIGIN when the caller sets no API_ORIGIN. A smoke run and an evidence round serve on a free port.
  */
 export const EVIDENCE_PORT = 4173;
 export const EVIDENCE_ORIGIN = `http://127.0.0.1:${EVIDENCE_PORT}`;
 
-/* The env of the build of one client in an evidence run: the caller env, the client, and always the local API. */
-export function buildEnv(client: string, env: Partial<NodeJS.ProcessEnv> = process.env): NodeJS.ProcessEnv {
+/*
+ * The env of the build of one client against a local API: the caller env, the client, and always the API URL. The build
+ * bakes the API URL into the export, and with no value the site calls the production API. A run must never call
+ * production, so the build always sets this URL.
+ */
+export function buildEnv(client: string, api: string, env: Partial<NodeJS.ProcessEnv> = process.env): NodeJS.ProcessEnv {
   // The types of Next mark NODE_ENV as required, but a build of the site sets it itself.
-  return { ...env, CLIENT: client, NEXT_PUBLIC_API_URL: LOCAL_API } as NodeJS.ProcessEnv;
+  return { ...env, CLIENT: client, NEXT_PUBLIC_API_URL: api } as NodeJS.ProcessEnv;
 }
 
 /*
