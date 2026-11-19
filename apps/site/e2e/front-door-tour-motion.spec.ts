@@ -92,17 +92,18 @@ function offsetOf({ hole, card }: Sample) {
 }
 
 /* A slow runner, such as a CI machine, draws a frame only every so often. This init script blocks the main thread for
-   `ms` at the first frame callback of each frame, so the Mac draws few frames in the glide, as CI does. */
+   `ms` at the first callback of each frame, so the Mac draws few frames in the glide, as CI does. The callbacks of one
+   frame share one timestamp, so each frame is blocked once, and the frames come at an even pace. */
 async function slowFrames(page: Page, ms: number) {
   await page.addInitScript((block) => {
     const raf = window.requestAnimationFrame.bind(window);
-    let last = 0;
+    let blocked = -1;
     window.requestAnimationFrame = (callback) =>
       raf((time) => {
-        if (performance.now() - last > 5) {
+        if (time !== blocked) {
+          blocked = time;
           const end = performance.now() + block;
           while (performance.now() < end);
-          last = performance.now();
         }
         callback(time);
       });
