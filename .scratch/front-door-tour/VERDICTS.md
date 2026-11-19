@@ -1,5 +1,5 @@
 ACCEPTANCE.md: 61a43e9fa3742ec0135c04703c59d71bbceba2ea
-EVIDENCE.md: 13c5fbf53f4221dee5f49b2310a47e2be77bd81e
+EVIDENCE.md: 5fffc5ca366b3d1f04eea1f6f0d3e2c65a9c3eb8
 
 Test verdicts
 AT-1: PASS
@@ -39,5 +39,5 @@ AT-34: PASS
 AT-35: PASS
 AT-36: PASS
 AT-37: PASS
-AT-38: BLOCKED The Observation says the layer is a `div` with role `dialog` that keeps `aria-modal="true"` until the 300 ms opacity fade ends, but output.txt shows only the layer name, the exit times, and the frame count, not those facts.
+AT-38: PASS
 AT-39: PASS
