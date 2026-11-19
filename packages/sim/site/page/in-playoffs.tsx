@@ -1,6 +1,6 @@
 /**
- * The sim page in the playoff weeks and after the final: the card of Your team first (its game with two tiles, its bye,
- * the out line, or the champion), the title odds of each team left, and the bracket. It reads the playoff part of the page block.
+ * The sim page in the playoff weeks and after the final: the card of Your team first (its game with two What-if tiles, its bye, the
+ * out line, or the champion), the title odds of each team left, and the bracket, from the playoff part of the page block.
  */
 "use client";
 
@@ -8,10 +8,13 @@ import { Trophy } from "lucide-react";
 import { useId } from "react";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
 import { cn } from "@cpc/design/lib/utils";
-import type { Playoffs, WeekSim } from "../schema/sim-types";
+import { Toggle, ToggleGroup } from "@cpc/design/ui/toggle-group";
+import type { Playoffs, SetResult, WeekSim } from "../schema/sim-types";
 import { CARD, LABEL, chanceText, nameOf, oddsText, roundName, scoreText, winText } from "./format";
 import { Bar } from "./parts";
 import type { Avatars } from "./sim-page";
+import type { Choice } from "./use-what-if";
+import { TILE } from "./week-page";
 
 type Round = Playoffs["rounds"][number];
 type Game = Round["games"][number];
@@ -25,15 +28,33 @@ export function seasonLine(playoffs: Playoffs, you: number): string {
   return `Seed ${playoffs.seed} · Out in the ${roundName(lost, playoffs.rounds.length).toLowerCase()}`;
 }
 
-export function InPlayoffs({ sim, you, avatars }: { sim: WeekSim; you: number; avatars: Avatars }) {
-  const playoffs = sim.pages[you].playoffs!;
+/* The What-if of the game card: the set result of the game, the title odds of the answer once it comes, and the tap. */
+export type GameWhatIf = { chosen: SetResult | null; title: number | null; onChoose: (choice: Choice) => void };
+
+/* `shown` is the playoff part that the page shows: that of the What-if answer, or the file. The game card keeps the game
+   of the file, so its tiles still show the odds of each result, as a set week of the regular season does. */
+export function InPlayoffs({
+  sim,
+  you,
+  avatars,
+  shown,
+  whatIf,
+}: {
+  sim: WeekSim;
+  you: number;
+  avatars: Avatars;
+  shown?: Playoffs;
+  whatIf?: GameWhatIf;
+}) {
+  const file = sim.pages[you].playoffs!;
+  const playoffs = shown ?? file;
   const over = playoffs.champion !== null;
   return (
     <div className="grid w-full grid-cols-1 items-start gap-sp-3 desktop:grid-cols-2">
       {over ? (
         <ChampionCard sim={sim} playoffs={playoffs} avatars={avatars} />
-      ) : playoffs.game !== null ? (
-        <GameCard sim={sim} playoffs={playoffs} />
+      ) : file.game !== null ? (
+        <GameCard sim={sim} playoffs={file} whatIf={whatIf} />
       ) : playoffs.bye ? (
         <ByeCard playoffs={playoffs} />
       ) : (
@@ -45,14 +66,23 @@ export function InPlayoffs({ sim, you, avatars }: { sim: WeekSim; you: number; a
   );
 }
 
-/* The game of Your team in this round, with the title odds after a win and after a loss. */
-function GameCard({ sim, playoffs }: { sim: WeekSim; playoffs: Playoffs }) {
+/* The game of Your team in this round, with the title odds after a win and after a loss. A tap on a tile sets that
+   result as a What-if, and a tap on the set tile clears it. The set tile shows the title odds of the answer, so it agrees
+   with the header. */
+function GameCard({ sim, playoffs, whatIf }: { sim: WeekSim; playoffs: Playoffs; whatIf?: GameWhatIf }) {
   const game = playoffs.game!;
   const title = useId();
   const index = playoffs.rounds.findIndex((round) => round.week === game.week);
   const count = playoffs.rounds.length;
   const [win, loss] = game.results;
   const next = index === count - 1 ? "The title" : `To the ${roundName(index + 1, count).toLowerCase()}`;
+  const chosen = whatIf?.chosen ?? null;
+  const oddsOf = (result: typeof win) =>
+    chosen?.game === result.game && whatIf?.title != null ? oddsText(whatIf.title) : oddsText(result.title, result.about);
+  const choose = (value: string[]) => {
+    const picked = game.results.find((result) => result.game === value[0]);
+    whatIf?.onChoose(picked === undefined ? null : { game: picked.game, median: null });
+  };
   return (
     <article className={CARD} aria-labelledby={title}>
       <span className={cn(LABEL, "text-mute")}>{roundName(index, count)}</span>
@@ -60,27 +90,36 @@ function GameCard({ sim, playoffs }: { sim: WeekSim; playoffs: Playoffs }) {
         {`Week ${game.week} vs ${nameOf(sim, game.opponent)}`}
       </h2>
       <p className="m-0 pb-sp-1 text-meta text-pretty text-mute">
-        {`${winText(index, count)} ${oddsText(win.title, win.about)} to win it all.`}
+        {`${winText(index, count)} ${oddsOf(win)} to win it all.`}
       </p>
-      <div className="grid grid-cols-2 gap-sp-2">
-        <PlayoffTile label="Win" odds={oddsText(win.title, win.about)} chance={win.chance} note={next} />
-        <PlayoffTile label="Lose" odds={oddsText(loss.title, loss.about)} chance={loss.chance} note="Season over" />
-      </div>
+      <ToggleGroup
+        aria-label="Results"
+        value={chosen === null ? [] : [chosen.game]}
+        onValueChange={choose}
+        loop
+        className="grid grid-cols-2 gap-sp-2"
+      >
+        <PlayoffTile value="win" label="Win" odds={oddsOf(win)} chance={win.chance} note={next} />
+        <PlayoffTile value="loss" label="Lose" odds={oddsOf(loss)} chance={loss.chance} note="Season over" />
+      </ToggleGroup>
     </article>
   );
 }
 
-/* One result of the bracket game: the title odds after it, how likely it is, and what it leads to. */
-function PlayoffTile({ label, odds, chance, note }: { label: string; odds: string; chance: number; note: string }) {
+/* One result of the bracket game: the title odds after it, how likely it is, and what it leads to. It has the look and
+   the press of a result tile of the regular weeks. */
+function PlayoffTile({ value, label, odds, chance, note }: { value: string; label: string; odds: string; chance: number; note: string }) {
   return (
-    <div role="group" aria-label={label} className="flex flex-col gap-sp-1 rounded-report border border-rule bg-page px-sp-3 py-sp-3">
-      <span className="text-row leading-tight font-bold">{label}</span>
+    <Toggle value={value} className={TILE}>
+      <span data-result-name className="text-row leading-tight font-bold">
+        {label}
+      </span>
       <span className="font-mono text-stat leading-none font-bold tabular-nums">{odds}</span>
-      <span className="flex flex-col pt-sp-1 text-meta leading-tight text-mute tabular-nums">
+      <span className="flex flex-col pt-sp-1 text-meta leading-tight text-mute tabular-nums group-data-pressed:text-on-dark">
         <span>Title odds</span>
         <span>{`${chanceText(chance)} · ${note}`}</span>
       </span>
-    </div>
+    </Toggle>
   );
 }
 
