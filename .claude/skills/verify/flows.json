@@ -1,9 +1,109 @@
 [
   {
+    "name": "Front door",
+    "globs": ["apps/site/src/app/page.tsx", "apps/site/src/app/front-page.tsx", "apps/site/src/app/home-*.tsx", "apps/site/src/app/front-door/**", "apps/site/src/app/_routes/ask/**", "apps/api/**"],
+    "route": "/",
+    "expected": "The team pick, then the h1 \"Ask about <team>\" and the topic chips. The question \"who has the best roster\" gets one free answer of Claude, marked Checked.",
+    "claude": true,
+    "layout": true,
+    "steps": [
+      { "click": "role=dialog[name=\"Which team is yours?\"] >> role=button" },
+      { "expect": "h1 >> text=/^Ask about /" },
+      { "expect": "role=group[name=\"Suggestions\"]" },
+      { "click": "role=button[name=\"who has the best roster\"]" },
+      { "fill": { "selector": "role=textbox[name=\"League passphrase\"]", "value": "localtest" } },
+      { "click": "role=button[name=\"Use this passphrase\"]" },
+      { "wait": "role=article[name=\"who has the best roster\"] >> role=status >> text=Checked" },
+      { "expect": "role=article[name=\"who has the best roster\"] >> role=status >> text=Checked" }
+    ]
+  },
+  {
+    "name": "Passphrase",
+    "globs": ["apps/site/src/app/front-door/passphrase-sheet.tsx", "apps/site/src/app/front-door/keyboard-tap.ts", "apps/site/src/app/front-door/ask-box.tsx"],
+    "route": "/",
+    "expected": "A question with no kept passphrase opens the sheet, and the field \"League passphrase\" has the focus, above the keyboard.",
+    "claude": false,
+    "layout": false,
+    "steps": [
+      { "click": "role=dialog[name=\"Which team is yours?\"] >> role=button" },
+      { "click": "role=button[name=\"who has the best roster\"]" },
+      { "expect": "role=dialog[name=\"What is the league passphrase?\"]" },
+      { "expect": "input[aria-label=\"League passphrase\"]:focus" }
+    ]
+  },
+  {
     "name": "Week report",
     "globs": ["apps/site/src/app/_routes/week/**", "packages/week/site/**"],
     "route": "{latest-week}",
     "expected": "The title \"Week N\" and the chapters. The chapter rail shows from the rail tier, 1152 px, so the 1280 shot holds it.",
+    "claude": false,
+    "layout": true,
     "steps": [{ "expect": "[data-hero-slot=eyebrow] >> text=/Week \\d+/" }, { "expect": "#motw" }, { "expect": "#standings" }]
+  },
+  {
+    "name": "Manager page",
+    "globs": ["apps/site/src/app/_routes/managers/**", "packages/managers/site/**"],
+    "route": "/{season}/managers/",
+    "expected": "The managers index, then one manager page with the team name and the Season So Far dial.",
+    "claude": false,
+    "layout": true,
+    "steps": [
+      { "expect": "h1 >> text=Managers" },
+      { "click": "role=list[name=\"Index List\"] >> role=button" },
+      { "click": "role=link[name=/Manager page of /] >> visible=true" },
+      { "wait": "url" },
+      { "expect": "[data-hero-slot=title]" },
+      { "expect": "role=heading[name=\"Season So Far\"]" }
+    ]
+  },
+  {
+    "name": "Analyzer",
+    "globs": ["apps/site/src/app/_routes/analyzer/**", "packages/analyzer/site/**", "apps/api/**"],
+    "route": "/analyze/",
+    "expected": "A two-team trade of one player each side, then \"Grade the Trade\": the status \"Grading the trade\", then a Lean word on its scale and a Case.",
+    "claude": true,
+    "layout": true,
+    "steps": [
+      { "fill": { "selector": "role=dialog[name=\"League Passphrase\"] >> role=textbox[name=\"Passphrase\"]", "value": "localtest" } },
+      { "click": "role=button[name=\"Continue\"]" },
+      { "wait": 500 },
+      { "click": "role=button[name=\"Pick Your Team\"]" },
+      { "wait": 1000 },
+      { "click": "role=dialog[name=\"Pick Your Team\"] >> role=list[name=\"Teams\"] >> button:enabled" },
+      { "click": "role=button[name=\"Pick Team Two\"]" },
+      { "wait": 1000 },
+      { "click": "role=dialog[name=\"Pick Team Two\"] >> role=list[name=\"Teams\"] >> button:enabled" },
+      { "click": "role=button[name=\"Add a player Your Team gets\"]" },
+      { "wait": 1000 },
+      { "click": "role=dialog >> role=checkbox" },
+      { "click": "role=dialog >> role=button[name=/^Done/]" },
+      { "click": "role=button[name=\"Add a player Team Two gets\"]" },
+      { "wait": 1000 },
+      { "click": "role=dialog >> role=checkbox" },
+      { "click": "role=dialog >> role=button[name=/^Done/]" },
+      { "click": "role=button[name=\"Grade the Trade\"]" },
+      { "expect": "role=status >> text=Grading the trade" },
+      { "wait": "[data-stable-id=lean-word]" },
+      { "expect": "role=list[name=\"The Lean scale\"]" },
+      { "expect": "[data-stable-id^=blurb]" }
+    ]
+  },
+  {
+    "name": "Power rankings",
+    "globs": ["apps/site/src/app/_routes/rankings/**", "packages/rankings/site/**"],
+    "route": "/rankings/",
+    "expected": "The eyebrow \"Week N // Power Rankings\" and the Ladder.",
+    "claude": false,
+    "layout": false,
+    "steps": [{ "expect": "[data-hero-slot=eyebrow] >> text=/Power Rankings/i" }, { "expect": "role=heading[name=\"The Ladder\"]" }]
+  },
+  {
+    "name": "Midseason report",
+    "globs": ["apps/site/src/app/_routes/midseason/**", "packages/midseason/site/**"],
+    "route": "/midseason/{season}/",
+    "expected": "The eyebrow \"<season> Midseason Report // Week N\" and the title of the report.",
+    "claude": false,
+    "layout": false,
+    "steps": [{ "expect": "[data-hero-slot=eyebrow] >> text=/Midseason Report/" }, { "expect": "h1" }]
   }
 ]

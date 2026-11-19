@@ -8,32 +8,52 @@ import { join } from "node:path";
 import { checkStep, LOCAL_API, runSteps, type EvidenceTest, type Step } from "./evidence";
 import { openPage } from "./floor";
 
-/* One flow of the flow list. The expect steps hold its expected results; "expected" says them in words for the Judge. */
-export type Flow = { name: string; globs: string[]; route: string; steps: Step[]; expected: string };
+/*
+ * One flow of the flow list. The expect steps hold its expected results; "expected" says them in words for the Judge.
+ * "claude" marks a flow whose steps call Claude, and "layout" marks a flow whose layout changes with the width.
+ */
+export type Flow = { name: string; globs: string[]; route: string; steps: Step[]; expected: string; claude: boolean; layout: boolean };
 
 /* The keys of a flow, as the spec names them. Any other key is an error. */
-const KEYS = ["name", "globs", "route", "steps", "expected"] as const;
+const KEYS = ["name", "globs", "route", "steps", "expected", "claude", "layout"] as const;
 
 /* One size of a smoke run: its name in the log, its browser, and its context. */
 type Size = { name: string; browser: "webkit" | "chromium"; width: number; context: BrowserContextOptions };
 
-// The iPhone profile with no browser type, because the size names its own browser.
+// The iPhone and iPad profiles with no browser type, because the size names its own browser.
 const { defaultBrowserType: _phoneBrowser, ...phone } = devices["iPhone 15"];
+const { defaultBrowserType: _tabletBrowser, ...tablet } = devices["iPad Pro 11"];
 
 /*
- * The sizes of each flow: the iPhone in WebKit at 390x660, the screen that Safari leaves under its bars, and the desktop
- * at 1280x800. The acceptance rounds of the evidence runner keep their own sizes.
+ * The two smoke sizes of each flow: the iPhone in WebKit at 390x660, the screen that Safari leaves under its bars, and the
+ * desktop at 1280x800. The acceptance rounds of the evidence runner keep their own sizes.
  */
-const SIZES: readonly Size[] = [
-  { name: "390x660", browser: "webkit", width: 390, context: { ...phone, viewport: { width: 390, height: 660 } } },
-  { name: "1280x800", browser: "chromium", width: 1280, context: { viewport: { width: 1280, height: 800 } } },
+const PHONE: Size = { name: "390x660", browser: "webkit", width: 390, context: { ...phone, viewport: { width: 390, height: 660 } } };
+const DESKTOP: Size = { name: "1280x800", browser: "chromium", width: 1280, context: { viewport: { width: 1280, height: 800 } } };
+
+/* The two iPad sizes of a layout flow, in WebKit as on an iPad: upright at 810x980, and on its side at 1080x740. */
+const TABLETS: readonly Size[] = [
+  { name: "810x980", browser: "webkit", width: 810, context: { ...tablet, viewport: { width: 810, height: 980 } } },
+  { name: "1080x740", browser: "webkit", width: 1080, context: { ...tablet, viewport: { width: 1080, height: 740 } } },
 ];
+
+/*
+ * The sizes of one flow. A flow that calls Claude runs once, on the iPhone, so a smoke run costs a few cents, and the
+ * Claude flag wins over the layout flag. A layout flow adds the two iPad sizes between the iPhone and the desktop.
+ */
+export function sizesOf(flow: Pick<Flow, "claude" | "layout">): readonly Size[] {
+  if (flow.claude) return [PHONE];
+  return flow.layout ? [PHONE, ...TABLETS, DESKTOP] : [PHONE, DESKTOP];
+}
 
 /* The smoke run uses the light theme only. */
 const THEME = "light";
 
 /* The time in ms that a step waits for its element. A missing element fails the flow after this time. */
 const STEP_MS = 10_000;
+
+/* The time in ms that a step of a flow that calls Claude waits for its element, because one answer of Claude takes up to a minute. */
+const CLAUDE_STEP_MS = 120_000;
 
 /* Two text boxes overlap when they share more than this many px on each axis. Less is the touch of two near lines. */
 const OVERLAP_PX = 2;
@@ -71,6 +91,19 @@ export function latestWeek(published: string): string {
   return `/${season}/${week}/`;
 }
 
+/* The token of a route for the latest published season of the client, such as /{season}/managers/. */
+export const SEASON = "{season}";
+
+/*
+ * The real route of a flow on a client: {latest-week} gives the latest published week, and {season} gives its season.
+ * The tokens keep the flow list true after each weekly publish and each new season.
+ */
+export function routeOf(route: string, published: string): string {
+  if (route === LATEST_WEEK) return latestWeek(published);
+  if (!route.includes(SEASON)) return route;
+  return route.replaceAll(SEASON, latestWeek(published).split("/")[1]);
+}
+
 /* Reads the flow list and checks each flow and each step. The error names the file and the flow. */
 export function readFlows(file: string): Flow[] {
   const list: unknown = JSON.parse(readFileSync(file, "utf8"));
@@ -82,15 +115,17 @@ export function readFlows(file: string): Flow[] {
     for (const key of Object.keys(flow)) {
       if (!(KEYS as readonly string[]).includes(key)) throw new Error(`${at}: unknown key "${key}". The known keys are ${KEYS.join(", ")}.`);
     }
-    const { name, globs, route, steps, expected } = flow as Record<string, unknown>;
+    const { name, globs, route, steps, expected, claude, layout } = flow as Record<string, unknown>;
     if (typeof name !== "string" || name === "" || names.has(name)) throw new Error(`${at}: "name" must be a distinct name`);
     names.add(name);
     if (!Array.isArray(globs) || !globs.every((glob) => typeof glob === "string" && glob !== "")) throw new Error(`${at} "${name}": "globs" must be a list of globs`);
     if (typeof route !== "string" || !(route.startsWith("/") || route === LATEST_WEEK)) {
-      throw new Error(`${at} "${name}": "route" must be a path that starts with "/", or ${LATEST_WEEK}`);
+      throw new Error(`${at} "${name}": "route" must be a path that starts with "/", with ${SEASON} for the season, or ${LATEST_WEEK}`);
     }
     if (typeof expected !== "string" || expected === "") throw new Error(`${at} "${name}": "expected" must say the expected results`);
-    return { name, globs, route, expected, steps: checkSteps(`${at} "${name}"`, steps) };
+    if (typeof claude !== "boolean") throw new Error(`${at} "${name}": "claude" must be true or false`);
+    if (typeof layout !== "boolean") throw new Error(`${at} "${name}": "layout" must be true or false`);
+    return { name, globs, route, expected, claude, layout, steps: checkSteps(`${at} "${name}"`, steps) };
   });
 }
 
@@ -130,10 +165,11 @@ async function findOverlap(page: Page): Promise<string | null> {
       const text = (element.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 40);
       return `<${element.tagName.toLowerCase()}${id}> "${text}"`;
     };
-    // The clip box of an element: the box of each ancestor with an overflow that is not visible, cut together.
+    // The clip box of an element: the box of the element and of each ancestor with an overflow that is not visible, cut
+    // together. The element counts too, so the 1 px box of a screen-reader text clips its own text away.
     const clipOf = (element: Element) => {
       let clip = { top: -Infinity, bottom: Infinity, left: -Infinity, right: Infinity };
-      for (let at = element.parentElement; at && at !== document.documentElement; at = at.parentElement) {
+      for (let at: Element | null = element; at && at !== document.documentElement; at = at.parentElement) {
         const style = getComputedStyle(at);
         if (style.overflowX === "visible" && style.overflowY === "visible") continue;
         const box = at.getBoundingClientRect();
@@ -153,13 +189,17 @@ async function findOverlap(page: Page): Promise<string | null> {
       if (!owner || !node.textContent?.trim() || owner.closest("script, style, noscript")) continue;
       if (!owner.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
       const clip = clipOf(owner);
+      // A glyph box can be taller than the line height, so with tight leading two lines of one paragraph share a few px.
+      // Each line keeps only its line height, cut evenly from the top and the bottom. A line height of "normal" cuts none.
+      const lineHeight = parseFloat(getComputedStyle(owner).lineHeight);
       const range = document.createRange();
       range.selectNodeContents(node);
       for (const line of range.getClientRects()) {
+        const trim = Number.isNaN(lineHeight) ? 0 : Math.max(0, (line.height - lineHeight) / 2);
         const box = {
           owner,
-          top: Math.max(line.top, clip.top),
-          bottom: Math.min(line.bottom, clip.bottom),
+          top: Math.max(line.top + trim, clip.top),
+          bottom: Math.min(line.bottom - trim, clip.bottom),
           left: Math.max(line.left, clip.left),
           right: Math.min(line.right, clip.right),
         };
@@ -190,11 +230,12 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, url: string, ap
   const test: EvidenceTest = { id: flow.name, file: "", folder, route: flow.route, steps: flow.steps, widths: [size.width], themes: [THEME], clients: ["cpc"] };
   const context = await browser.newContext({ ...size.context, reducedMotion: "no-preference" });
   const page = await context.newPage();
-  page.setDefaultTimeout(STEP_MS);
+  page.setDefaultTimeout(flow.claude ? CLAUDE_STEP_MS : STEP_MS);
   const causes: string[] = [];
   page.on("pageerror", (error) => causes.push(`page error: ${error.message}`));
   page.on("console", (message) => {
-    if (message.type() === "error") causes.push(`console error: ${message.text()}`);
+    if (message.type() !== "error" || isOtherHostLoad(message.text(), message.location().url, url, api)) return;
+    causes.push(`console error: ${message.text()}`);
   });
   page.on("response", (response) => {
     if (response.url().startsWith(api) && response.status() >= 400) {
@@ -219,6 +260,15 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, url: string, ap
   return causes;
 }
 
+/*
+ * Whether a console error is the load log of a file of another host, such as a headshot of the CDN of Sleeper. The site
+ * swaps a failed image of another host for its default, so the log is no fault of the page. A failed file of the site or
+ * of the API still fails the flow.
+ */
+function isOtherHostLoad(text: string, from: string, site: string, api: string): boolean {
+  return text.startsWith("Failed to load resource") && from !== "" && !from.startsWith(site) && !from.startsWith(api);
+}
+
 const seconds = (start: number) => `${((Date.now() - start) / 1000).toFixed(1)} s`;
 
 /*
@@ -238,7 +288,7 @@ export async function runSmoke(options: SmokeOptions): Promise<{ failures: strin
   try {
     for (const flow of options.flows) {
       let green = true;
-      for (const size of SIZES) {
+      for (const size of sizesOf(flow)) {
         const start = Date.now();
         const causes = await runFlow(browsers[size.browser], size, flow, options.url, options.api ?? LOCAL_API, options.out);
         const where = `${flow.name} ${size.name} ${size.browser}`;
