@@ -25,6 +25,11 @@ export const HERO_MIN_RATIO = 4.5;
 /* The reasons of an axe incomplete result that the pixel scan of a hero can judge: art under the text, and a text so
    short, such as one digit, that axe does not rate it. axe names them with these message keys. An incomplete result with any other reason, or outside a hero, still fails. */
 const PIXEL_REASONS = ["bgImage", "bgGradient", "bgOverlap", "shortTextContent"];
+/* The reason of an axe incomplete result when the page under a text differs from one text box to the next. A title that an
+   ellipsis cuts has two text boxes in Chromium, so a cut title of the sticky top band gets this reason over a scrolled page.
+   An opaque sticky or fixed box hides the page under it, and it looks the same at every scroll, so axe judges such a text again
+   at the top of the page. A text that is still incomplete there still fails. */
+const BAND_REASON = "elmPartiallyObscuring";
 
 export type TextScan = { failures: string[]; prose: number; other: number };
 export type TargetScan = { failures: string[]; exempt: string[] };
@@ -252,13 +257,53 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
     [candidates.map((node) => node.target.map(String)), HERO_SELECTOR] as const,
   );
   const handed = new Set(candidates.filter((_, i) => inHero[i]));
-  const lines = (kind: string, items: typeof result.violations) =>
+  const banded = result.incomplete.flatMap((rule) => rule.nodes).filter((node) => reason(node) === BAND_REASON && node.target.length === 1);
+  const onBand = await page.evaluate(
+    ([targets]) => {
+      // A color is opaque when it paints a pixel with full alpha. A canvas reads each CSS color form, such as oklch.
+      const canvas = document.createElement("canvas").getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+      const opaque = (color: string) => {
+        canvas.clearRect(0, 0, 1, 1);
+        canvas.fillStyle = color;
+        canvas.fillRect(0, 0, 1, 1);
+        return canvas.getImageData(0, 0, 1, 1).data[3] === 255;
+      };
+      return targets.map((target) => {
+        const node = document.querySelector(target);
+        if (node === null || window.scrollY === 0) return false;
+        // Each box from the text up to the root must be fully opaque, or the page under the band shows through.
+        let band: Element | null = null;
+        for (let el: Element | null = node; el !== null; el = el.parentElement) {
+          const style = getComputedStyle(el);
+          if (style.opacity !== "1") return false;
+          if (band === null && (style.position === "sticky" || style.position === "fixed")) band = el;
+        }
+        if (band === null) return false;
+        const style = getComputedStyle(band);
+        return style.backgroundImage === "none" && opaque(style.backgroundColor);
+      });
+    },
+    [banded.map((node) => String(node.target[0]))] as const,
+  );
+  const atTop = banded.filter((_, i) => onBand[i]);
+  for (const node of atTop) handed.add(node);
+  const lines = (kind: string, items: typeof result.violations, skip: Set<unknown>) =>
     items.flatMap((rule) =>
       rule.nodes
-        .filter((node) => !handed.has(node))
+        .filter((node) => !skip.has(node))
         .map((node) => `${kind}: ${node.target.join(" ")} ${node.failureSummary ?? rule.help}`.replace(/\s+/g, " ")),
     );
-  return [...lines("violation", result.violations), ...lines("incomplete", result.incomplete)];
+  const found = [...lines("violation", result.violations, handed), ...lines("incomplete", result.incomplete, handed)];
+  if (atTop.length === 0) return found;
+  // axe judges each text of an opaque band again at the top of the page, then the page goes back to its scroll.
+  const scroll = await page.evaluate(() => {
+    const at = { left: window.scrollX, top: window.scrollY };
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+    return at;
+  });
+  const again = await atTop.reduce((top, node) => top.include(String(node.target[0])), new AxeBuilder({ page }).withRules(["color-contrast"])).analyze();
+  await page.evaluate((at) => window.scrollTo({ ...at, behavior: "instant" }), scroll);
+  return [...found, ...lines("violation", again.violations, new Set()), ...lines("incomplete", again.incomplete, new Set())];
 }
 
 /*
