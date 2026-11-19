@@ -13,14 +13,12 @@
 ## Ports
 
 - The site API, through the client in `../lib/api.ts`. The calls are teams, analyze, and find, at `/clients/<slug>/`.
-- The passphrase in local storage, through `../lib/passphrase.ts`.
-- The teams list in session storage, through `../lib/teams-store.ts`.
+- The passphrase in local storage, through `../lib/passphrase.ts`. The teams list in session storage, through `../lib/teams-store.ts`.
 - GoatCounter events, through `packages/design/site/lib/usage.ts`.
 - Player headshots from the Sleeper CDN. The URL comes in the teams answer of the site API.
 
 ## Does not do
 
-- It grades no trade. The site API grades it, and this folder shows the answer.
-- It shows no roster grade. The roster grade lives in the managers part of the site.
+- It grades no trade and shows no roster grade. The site API grades a trade, and the managers part of the site holds the roster grade.
 - It defines no API shape. `../lib/schemas/api.ts` holds the response schemas.
 - It reads no file, no env, and no config, and it imports no app. The page gives the API target, the finder flag, and the Lock.
