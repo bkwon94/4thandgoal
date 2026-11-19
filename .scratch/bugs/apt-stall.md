@@ -27,7 +27,7 @@ Green: at `60737881`, `python3 -B scripts/apt_cache_rule.py`
 ```text
 (no output; the exit code is 0)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
