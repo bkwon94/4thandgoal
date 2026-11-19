@@ -1,0 +1,6 @@
+week switch items: ["Wk 11","Wk 12","Wk 13","Wk 14","Playoffs"]
+tap Wk 11: current item "Wk 11", headings in main "Week 11 vs Maye d'force B with U / If you lose, you drop to 48% 3 games"
+tap Wk 12: current item "Wk 12", headings in main "Week 12 vs Puka Deez... / If you lose, you drop to 37% 3 games"
+tap Wk 13: current item "Wk 13", headings in main "Week 13 vs NFC Least / If you lose, you drop to 40% 3 games"
+tap Wk 14: current item "Wk 14", headings in main "Week 14 vs Lil Fridge / If you lose, you drop to 44% 2 games"
+tap Playoffs: current item "Playoffs", headings in main "Your playoff odds / Your weeks left"

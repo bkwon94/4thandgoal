@@ -1,0 +1,731 @@
+2026 MIDSEASON REPORT // WEEK 8
+The Title Race
+All You Need Is Love leads the standings at 11-5.
+TITLE ODDS
+16.8%
+London Cooking
+TITLE ODDS
+16.3%
+Bo Girds
+TITLE ODDS
+14.5%
+Maye d'force B with U
+RECORD LEADER
+9.7%
+All You Need Is Love, 11-5, 6th in title odds
+SEE THE SIM
+
+The title odds still rank it 6th, at 9.7%. London Cooking tops them at 16.8% after 3 moves all season. Napping works, apparently.
+
+ACT I
+How We Got Here
+The State of the League
+TEAM	RECORD	PF	PA	STREAK	PLAYOFF
+01 All You Need Is Love	11-5	850.17	787.92	W3	81%
+02 Lil Fridge	10-6	909.55	797.91	L2	86%
+03 Bo Girds	9-7	921.62	867.73	L4	74%
+04 London Cooking	9-7	918.99	843.15	L2	83%
+05 Maye d'force B with U	9-7	900.65	680.77	W1	77%
+06 The Blue Tent	9-7	871.19	844.88	W2	75%
+07 Return of T Mac	9-7	832.55	834.39	W5	43%
+08 Teehee	8-8	885.98	821.78	W2	62%
+09 To Infinity and Bijan	7-9	769.09	947.27	W1	7%
+10 Unsolicited Dak Picks	6-10	793.58	917.23	L1	8%
+11 behold the lamb	6-10	765.42	878.73	L2	4%
+12 NFC Least	3-13	700.97	898.00	L1	1%
+
+First place at 11-5 buys All You Need Is Love only 81% playoff odds. Bo Girds sits 3rd and has dropped 4 head-to-head games in a row. NFC Least is 3-13 with 1% playoff odds. Pack it up.
+
+Arcs
+All You Need Is Love
+WIRE TO WIRE
+Start, weeks 1 to 4: 6-2
+Now, weeks 5 to 8: 5-3
+SMOKE AND MIRRORS
+Schedule luck: +2.7 wins
+Bo Girds
+COLLAPSE
+Start, weeks 1 to 4: 6-2
+Now, weeks 5 to 8: 3-5
+SNAKEBIT
+Schedule luck: −2.2 wins
+Maye d'force B with U
+TURNAROUND
+Start, weeks 1 to 4: 3-5
+Now, weeks 5 to 8: 6-2
+Return of T Mac
+ROLLER COASTER
+Longest win streak: 5
+Longest loss streak: 3
+TURNAROUND
+Start, weeks 1 to 4: 2-6
+Now, weeks 5 to 8: 7-1
+NFC Least
+NEVER GOT GOING
+Start, weeks 1 to 4: 0-8
+Now, weeks 5 to 8: 3-5
+
+Bo Girds opened 6-2 over the first four weeks, then faceplanted to 3-5 in the last four. Textbook collapse. Return of T Mac flipped the script: 2-6, then 7-1. NFC Least opened 0-8 and never got going.
+
+Schedule Luck
+1
+What "wins if you played everyone" means
+
+Each week, count the 11 other teams you outscored, as if you played them all that week.
+
+2
+One real example
+
+In week 3, All You Need Is Love scored 114.33 and outscored 9 of 11 teams: 0.82 of a win. Over 8 weeks it outscored 47 of 88: 4.27 wins.
+
+3
+Luck
+
+It won 7 real games, 2.73 more than 4.27. That gap is schedule luck.
+
+TEAM	REAL WINS	WINS IF YOU PLAYED EVERYONE	LUCK (GAP)	PA	CLOSE
+All You Need Is Love	7	4.27	
++2.73
+LUCKY
+788 #11	2-0
+Maye d'force B with U	5	4.09	
++0.91
+LUCKY
+681 #12	0-2
+Return of T Mac	5	4.18	
++0.82
+LUCKY
+834 #8	0-0
+Lil Fridge	5	4.64	
++0.36
+EVEN
+798 #10	0-0
+behold the lamb	3	2.91	
++0.09
+EVEN
+879 #4	1-0
+The Blue Tent	4	4.09	
+−0.09
+EVEN
+845 #6	2-1
+NFC Least	2	2.09	
+−0.09
+EVEN
+898 #3	0-0
+Unsolicited Dak Picks	3	3.36	
+−0.36
+EVEN
+917 #2	1-0
+Teehee	4	4.55	
+−0.55
+UNLUCKY
+822 #9	0-1
+To Infinity and Bijan	3	3.64	
+−0.64
+UNLUCKY
+947 #1	1-1
+London Cooking	4	5.00	
+−1.00
+UNLUCKY
+843 #7	0-2
+Bo Girds	3	5.18	
+−2.18
+UNLUCKY
+868 #5	0-0
+
+These count the 8 head-to-head games only. The median game is out. Luck is real wins minus wins if you played everyone.
+
+The Schedule Swap
+
+Each row puts your scores against another team's schedule. Here is your best and your worst.
+
+These records count all 16 games, 8 head to head and 8 median games, as in the standings. Best and worst use the 11 other schedules.
+
+Bo Girds
+REAL 9-7
+BEST 14-2 on the schedule of Maye d'force B with U+5
+WORST 8-8 on the schedule of To Infinity and Bijan−1
+To Infinity and Bijan
+REAL 7-9
+BEST 10-6 on the schedule of Maye d'force B with U or Teehee+3
+WORST 4-12 on the schedule of NFC Least−3
+behold the lamb
+REAL 6-10
+BEST 10-6 on the schedule of Maye d'force B with U+4
+WORST 4-12 on the schedule of Unsolicited Dak Picks or NFC Least−2
+London Cooking
+REAL 9-7
+BEST 13-3 on the schedule of Maye d'force B with U+4
+WORST 8-8 on the schedule of Bo Girds or Unsolicited Dak Picks−1
+Unsolicited Dak Picks
+REAL 6-10
+BEST 9-7 on the schedule of Teehee+3
+WORST 4-12 on the schedule of Bo Girds−2
+All You Need Is Love
+REAL 11-5
+BEST 11-5 on the schedule of Maye d'force B with Usame
+WORST 7-9 on the schedule of London Cooking and 2 others−4
+The Blue Tent
+REAL 9-7
+BEST 11-5 on the schedule of All You Need Is Love and 2 others+2
+WORST 7-9 on the schedule of Unsolicited Dak Picks−2
+Teehee
+REAL 8-8
+BEST 11-5 on the schedule of Maye d'force B with U+3
+WORST 7-9 on the schedule of The Blue Tent or Unsolicited Dak Picks−1
+Lil Fridge
+REAL 10-6
+BEST 11-5 on the schedule of All You Need Is Love and 2 others+1
+WORST 8-8 on the schedule of Return of T Mac−2
+Return of T Mac
+REAL 9-7
+BEST 10-6 on the schedule of Maye d'force B with U+1
+WORST 7-9 on the schedule of To Infinity and Bijan and 2 others−2
+NFC Least
+REAL 3-13
+BEST 5-11 on the schedule of Maye d'force B with U+2
+WORST 2-14 on the schedule of Lil Fridge or Unsolicited Dak Picks−1
+Maye d'force B with U
+REAL 9-7
+BEST 9-7 on the schedule of All You Need Is Love and 2 otherssame
+WORST 7-9 on the schedule of The Blue Tent or NFC Least−2
+
+All You Need Is Love has 7 head-to-head wins on scores worth 4.27. It is 2-0 in games with a margin under 5. Charmed life. London Cooking would post a better record with 7 other schedules than its own.
+
+Position Top 10
+TOTAL LEAGUE POINTS
+QB
+RB
+WR
+TE
+DEF
+01
+Jahmyr Gibbs
+DET · Maye d'force B with U
+178.8
+25.5 a game
+02
+Kenneth Walker III
+KC · Bo Girds
+149.1
+21.3 a game
+03
+Bijan Robinson
+ATL · Return of T Mac
+138.8
+17.4 a game
+04
+D'Andre Swift
+CHI · Maye d'force B with U
+138.7
+17.3 a game
+05
+Jonathan Taylor
+IND · Unsolicited Dak Picks
+133.7
+16.7 a game
+06
+Kyren Williams
+LAR · Bo Girds
+133.5
+16.7 a game
+07
+Derrick Henry
+BAL · Lil Fridge
+130.7
+16.3 a game
+08
+Jaylen Warren
+PIT · Return of T Mac
+127.3
+15.9 a game
+09
+Christian McCaffrey
+SF · Lil Fridge
+127.0
+18.1 a game
+10
+Javonte Williams
+DAL · London Cooking
+125.2
+15.7 a game
+
+behold the lamb owns the QB #1 in Josh Allen and still sits 6-10. Then it traded away CeeDee Lamb, now the WR #2, to NFC Least. Read your own team name.
+
+ACT II
+The Moves
+Draft Steals and Busts
+COST RANK AGAINST POINTS RANK
+Steals
+Matthew Golden
+WR · Bo Girds · $2
+WR44 cost, WR7 points
+110.0 pts
+Jalen Coker
+WR · NFC Least · $1
+WR58 cost, WR24 points
+64.9 pts
+Stefon Diggs
+WR · The Blue Tent · $1
+WR51 cost, WR23 points
+68.7 pts
+Aaron Jones
+RB · All You Need Is Love · $1
+RB50 cost, RB22 points
+70.3 pts
+Tyler Allgeier
+RB · Bo Girds · $2
+RB44 cost, RB20 points
+73.6 pts
+Busts
+A.J. Brown
+WR · Unsolicited Dak Picks · $39
+JUST BAD
+WR7 cost, WR60 points
+13.6 pts
+De'Von Achane
+RB · The Blue Tent · $46
+HURT
+RB10 cost, RB50 points
+21.1 pts
+Jadarian Price
+RB · The Blue Tent · $20
+HURT
+RB21 cost, RB53 points
+16.7 pts
+Saquon Barkley
+RB · behold the lamb · $58
+HURT
+RB3 cost, RB33 points
+46.0 pts
+Ladd McConkey
+WR · Bo Girds · $29
+JUST BAD
+WR15 cost, WR45 points
+43.1 pts
+Letdowns
+Bijan Robinson
+RB · To Infinity and Bijan · $81
+LETDOWN
+#1 price, RB3 points
+Last top 17 wk 4
+
+Unsolicited Dak Picks spent $39 on A.J. Brown for 13.6 points. That is 60th among drafted receivers. Official tag: just bad. NFC Least found Jalen Coker for $1, then traded him away in week 1. No survivors.
+
+Waiver Hits and Misses
+POINTS OVER THE LINE
+Hits
+Ollie Gordon II
+RB · Unsolicited Dak Picks · week 3 · $40
++30.3
+4 starts
+Braelon Allen
+RB · Return of T Mac · week 3 · $41
++18.5
+3 starts
+Emanuel Wilson
+RB · Return of T Mac · week 4 · Free add
++17.5
+1 start
+Juwan Johnson
+TE · Unsolicited Dak Picks · week 1 · Free add
++16.3
+7 starts
+Tre Tucker
+WR · All You Need Is Love · week 2 · $8
++16.0
+4 starts
+Misses
+Joe Mixon
+RB · To Infinity and Bijan · week 4 · $40
++0.0
+0 starts
+Omar Cooper Jr.
+WR · NFC Least · week 6 · $28
++13.6
+1 start
+Rico Dowdle
+RB · NFC Least · week 5 · $26
++0.0
+0 starts
+Keaton Mitchell
+RB · Unsolicited Dak Picks · week 3 · $25
+−0.8
+1 start
+Jaylen Wright
+RB · The Blue Tent · week 3 · $23
++0.0
+0 starts
+Outbid
+The Blue Tent bid $36 on Ollie Gordon II and lost to Unsolicited Dak Picks by $4. He gave +30.3 over the line.
+To Infinity and Bijan bid $20 on Ollie Gordon II and lost to Unsolicited Dak Picks by $20. He gave +30.3 over the line.
+The Blue Tent bid $32 on Braelon Allen and lost to Return of T Mac by $9. He gave +18.5 over the line.
+Streamers of QB, K, and DEF
+Return of T MacSTREAMING KING
+4 players, 11 starts
+174.4
+Bo Girds
+9 players, 14 starts
+160.7
+Lil Fridge
+5 players, 14 starts
+159.3
+NFC Least
+5 players, 11 starts
+90.4
+To Infinity and Bijan
+6 players, 9 starts
+88.5
+Show all 11
+
+To Infinity and Bijan paid $40 for Joe Mixon in week 4. Joe Mixon got 0 starts. The Blue Tent lost Ollie Gordon II to Unsolicited Dak Picks by $4. Of course it did.
+
+The Trade Report Card
+20 TRADES
+WEEK 1
+ROBBERY TO MAYE D'FORCE B WITH U
+
+Maye d'force B with U leads by 165.8 points over the line.
+
+NFC Least
+3-13 since
+Net −82.9
+MarShawn Lloyd RB +0.0
+Rhamondre Stevenson RB +22.6
+Maye d'force B with U
+9-7 since
+Net +82.9
+Jalen Coker WR +16.0
+D'Andre Swift RB +89.5
+WEEK 3
+ROBBERY TO BO GIRDS
+
+Bo Girds leads by 93.0 points over the line.
+
+Bo Girds
+5-7 since
+Net +46.5
+Kyren Williams RB +55.3
+Parker Washington WR +5.1
+Teehee
+6-6 since
+Net −46.5
+Jacory Croskey-Merritt RB −1.0
+Amon-Ra St. Brown WR +14.9
+WEEK 4
+CLEAR WIN TO BO GIRDS
+
+Bo Girds leads by 89.0 points over the line.
+
+NFC Least
+3-7 since
+Net −44.5
+Rome Odunze WR −5.6
+Ladd McConkey WR −10.1
+Tyler Warren TE +12.5
+Bo Girds
+5-5 since
+Net +44.5
+Trey McBride TE +44.3
+Jordan Addison WR −3.0
+WEEK 7 To Infinity and Bijan · Return of T Mac
+CLEAR WIN TO TO INFINITY AND BIJAN
+To Infinity and Bijan got Braelon Allen, Malik Nabers, Jared Goff, Breece Hall; Return of T Mac got Marvin Harrison Jr., Brian Robinson Jr., Bijan Robinson
+WEEK 5 To Infinity and Bijan · Return of T Mac · Teehee
+SLIGHT EDGE TO RETURN OF T MAC
+To Infinity and Bijan got Harold Fannin Jr., Terry McLaurin; Return of T Mac got Carnell Tate, Jaylen Warren; Teehee got Emanuel Wilson, Devaughn Vele, DJ Moore
+WEEK 6 NFC Least · Teehee
+SLIGHT EDGE TO TEEHEE
+NFC Least got Jacory Croskey-Merritt, David Montgomery; Teehee got Omarion Hampton, Tony Pollard
+WEEK 6 Bo Girds · To Infinity and Bijan
+SLIGHT EDGE TO TO INFINITY AND BIJAN
+Bo Girds got Lamar Jackson; To Infinity and Bijan got Patrick Mahomes, Brian Robinson Jr.
+WEEK 4 The Blue Tent · Lil Fridge
+SLIGHT EDGE TO THE BLUE TENT
+The Blue Tent got Rashee Rice, Bucky Irving, Davante Adams; Lil Fridge got Stefon Diggs, Derrick Henry
+Show all 17
+
+NFC Least traded away Jalen Coker and D'Andre Swift in week 1, a 165.8-point Robbery. Since then, 3-13. In week 4 they shipped Trey McBride to Bo Girds, graded a Clear win the other way. Hang up the phone.
+
+The Record Book
+HIGHEST SCORE
+158.96
+Maye d'force B with U, week 5
+LOWEST SCORE
+46.08
+To Infinity and Bijan, week 6
+BIGGEST MARGIN
+92.14
+Maye d'force B with U 158.96, To Infinity and Bijan 66.82, week 5
+BEATDOWN OF THE YEAR — Maye d'force B with U — Beat To Infinity and Bijan by 92.14 in week 5.
+CLOSEST GAME
+0.4
+All You Need Is Love 114.33, The Blue Tent 113.93, week 3
+HEARTBREAK OF THE YEAR — The Blue Tent — Lost to All You Need Is Love by 0.4 in week 3.
+The Awards
+MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.
+STREAMING KING — Return of T Mac — 11 starts of streamed QBs, kickers, and defenses for 174.4 points.
+BENCH CRIME OF THE YEAR — London Cooking — 27.54 points on the bench in the week 2 loss to Unsolicited Dak Picks.
+MOST ACTIVE — Bo Girds — 42 moves, adds and trades.
+SET AND FORGET — London Cooking — 3 moves and a 9-7 record.
+
+To Infinity and Bijan posted 46.08 in week 6, the lowest score of the season. Maye d'force B with U beat them by 92.14 in week 5, the biggest head-to-head margin of the season. Same victim, both records.
+
+Quick Hits
+Lineup Choices
+BENCH POINTS
+01
+NFC Least
+119.80
+02
+Teehee
+Week 2: lost to All You Need Is Love by 12.07. The best lineup scored 100.06.
+Week 3: lost to To Infinity and Bijan by 0.51. The best lineup scored 124.98.
+115.00
+03
+London Cooking
+Week 2: lost to Unsolicited Dak Picks by 1.67. The best lineup scored 139.68.
+Week 8: lost to The Blue Tent by 1.43. The best lineup scored 104.68.
+103.80
+04
+Return of T Mac
+93.90
+05
+Lil Fridge
+Week 7: lost to Return of T Mac by 11.84. The best lineup scored 104.47.
+85.02
+Show all 12
+
+Teehee left 115 points on the bench, 2nd most. Week 3: a 0.51 loss its bench would have won. Unforgivable.
+
+The Injury Toll
+STARTER GAMES LOST
+01
+The Blue Tent
+Jadarian Price (RB) 5, De'Von Achane (RB) 4, Travis Etienne Jr. (RB) 4, Davante Adams (WR) 2, Mike Evans (WR) 1, RJ Harvey (RB) 1
+17 games
+02
+behold the lamb
+Kyle Monangai (RB) 4, Saquon Barkley (RB) 3, Emeka Egbuka (WR) 2, Quinshon Judkins (RB) 1
+10 games
+03
+London Cooking
+DeVonta Smith (WR) 4, Jayden Daniels (QB) 2
+6 games
+04
+Return of T Mac
+Breece Hall (RB) 5, Carnell Tate (WR) 1
+6 games
+05
+Lil Fridge
+Caleb Williams (QB) 3
+3 games
+06
+NFC Least
+Jalen Hurts (QB) 3
+3 games
+07
+To Infinity and Bijan
+Lamar Jackson (QB) 3
+3 games
+08
+All You Need Is Love
+Jeremiyah Love (RB) 2
+2 games
+09
+Teehee
+David Montgomery (RB) 2
+2 games
+10
+Maye d'force B with U
+Justin Jefferson (WR) 1
+1 game
+11
+Bo Girds
+0 games
+12
+Unsolicited Dak Picks
+0 games
+
+The Blue Tent lost a league-high 17 starter games. Lil Fridge's 3 were all Caleb Williams. Brutal roster build.
+
+ACT III
+What Comes Next
+The Look Ahead
+WEEKS 9 TO 14
+
+The rate is the win rate of the opponents so far. A lower rate is a softer path.
+
+Maye d'force B with USOFTEST
+Opponents .440
+Week 9
+London Cooking
+9-7
+Week 10
+NFC Least
+3-13
+Week 11
+Bo Girds
+9-7
+Week 12
+Unsolicited Dak Picks
+6-10
+Week 13
+Return of T Mac
+9-7
+Week 14
+behold the lamb
+6-10
+The Blue Tent
+Opponents .460
+Week 9
+NFC Least
+3-13
+Week 10
+Bo Girds
+9-7
+Week 11
+Unsolicited Dak Picks
+6-10
+Week 12
+Return of T Mac
+9-7
+Week 13
+behold the lamb
+6-10
+Week 14
+All You Need Is Love
+11-5
+Lil Fridge
+Opponents .470
+Week 9
+behold the lamb
+6-10
+Week 10
+London Cooking
+9-7
+Week 11
+All You Need Is Love
+11-5
+Week 12
+NFC Least
+3-13
+Week 13
+To Infinity and Bijan
+7-9
+Week 14
+Bo Girds
+9-7
+Unsolicited Dak Picks
+Opponents .470
+Week 9
+To Infinity and Bijan
+7-9
+Week 10
+Teehee
+8-8
+Week 11
+The Blue Tent
+9-7
+Week 12
+Maye d'force B with U
+9-7
+Week 13
+London Cooking
+9-7
+Week 14
+NFC Least
+3-13
+London Cooking
+Opponents .480
+Week 9
+Maye d'force B with U
+9-7
+Week 10
+Lil Fridge
+10-6
+Week 11
+NFC Least
+3-13
+Week 12
+Bo Girds
+9-7
+Week 13
+Unsolicited Dak Picks
+6-10
+Week 14
+Return of T Mac
+9-7
+Show all 12
+
+Maye d'force B with U gets the softest road ahead, opponents at a 0.44 win rate. The rich get a buffet. Then there's behold the lamb: 6-10, and handed the hardest schedule, at 0.56. Some names are prophecies.
+
+Sim the Rest of the Season
+WEEKS 9 TO 17
+
+Each press replays one of 200 stored runs of the sim. The odds come from all 10,000 runs.
+
+SIM THE SEASON
+REGULAR SEASON
+9
+10
+11
+12
+13
+14
+PLAYOFFS
+15
+16
+17
+
+STANDINGS AFTER WEEK 8
+01
+All You Need Is Love
+11-5
+02
+Lil Fridge
+10-6
+03
+Bo Girds
+9-7
+04
+London Cooking
+9-7
+05
+Maye d'force B with U
+9-7
+06
+The Blue Tent
+9-7
+07
+Return of T Mac
+9-7
+08
+Teehee
+8-8
+09
+To Infinity and Bijan
+7-9
+10
+Unsolicited Dak Picks
+6-10
+11
+behold the lamb
+6-10
+12
+NFC Least
+3-13
+THE ODDS OF ALL 10,000 RUNS
+TEAM	PLAYOFF	BYE	TITLE	SEED
+All You Need Is Love	81%	33%	9.7%	–
+Lil Fridge	86%	38%	14.4%	–
+London Cooking	83%	34%	16.8%	–
+The Blue Tent	75%	23%	13.4%	–
+Maye d'force B with U	77%	26%	14.5%	–
+Bo Girds	74%	26%	16.3%	–
+Teehee	62%	13%	8.4%	–
+Return of T Mac	43%	6%	5.4%	–
+To Infinity and Bijan	7%	1%	0.3%	–
+Unsolicited Dak Picks	8%	1%	0.6%	–
+behold the lamb	4%	1%	0.2%	–
+NFC Least	1%	1%	0%	–

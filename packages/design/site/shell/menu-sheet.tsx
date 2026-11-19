@@ -9,6 +9,7 @@ import {
   CalendarDaysIcon,
   CheckIcon,
   ChevronDownIcon,
+  DicesIcon,
   HouseIcon,
   MenuIcon,
   TrophyIcon,
@@ -17,11 +18,19 @@ import {
   XIcon,
   type LucideIcon,
 } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
 type SheetKind = Exclude<NavKind, "midseason">;
+
+/* Closes the menu sheet, then runs `then` once the sheet finishes its exit. A part in the foot slot calls it, so a
+   layer that it opens never starts under the sheet. Outside the menu sheet it is null. */
+const CloseMenuSheet = createContext<((then: () => void) => void) | null>(null);
+
+export function useCloseMenuSheet() {
+  return useContext(CloseMenuSheet);
+}
 
 /* The icon of each kind of destination. The name in the row names the item, so each icon is decorative. */
 export const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
@@ -31,6 +40,7 @@ export const ICONS: Record<Exclude<NavKind, "midseason">, LucideIcon> = {
   managers: UsersIcon,
   analyzer: ArrowLeftRightIcon,
   waiver: WalletIcon,
+  sim: DicesIcon,
 };
 
 /* The desktop tier, the same breakpoint as the desktop variant, --breakpoint-desktop in globals.css. */
@@ -44,6 +54,7 @@ const NOTES: Record<SheetKind, string> = {
   managers: "Grades and records",
   analyzer: "Check a trade",
   waiver: "Adds worth a claim",
+  sim: "Your path to the playoffs",
 };
 
 type MenuSheetProps = {
@@ -54,15 +65,29 @@ type MenuSheetProps = {
   current?: string;
   // The href of the open page.
   pageHref?: string;
+  // The rows of the open page under the rows of the pages. The app layer passes them, so the shell names no part of a page.
+  foot?: ReactNode;
 };
 
 /* The sheet drops from the top edge, rests at the height of its rows, and moves on the default iOS spring of the
    Drawer, with no tune (decision 08). Under reduced motion the Drawer fades it and does not slide it (ADR 0034). */
-export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetProps) {
+export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSheetProps) {
   const items = all.filter((item): item is NavItem & { kind: SheetKind } => item.kind !== "midseason");
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
+  // The step that a foot row asks to run once the sheet is closed.
+  const afterClose = useRef<(() => void) | null>(null);
+  const closeThen = (then: () => void) => {
+    afterClose.current = then;
+    setOpen(false);
+  };
+  const closed = (isOpen: boolean) => {
+    const then = afterClose.current;
+    if (isOpen || !then) return;
+    afterClose.current = null;
+    then();
+  };
 
   // The desktop tier hides the sheet and its button. A modal sheet left open there keeps the page inert under a hidden
   // sheet, with no way out, so the sheet closes once the window reaches the desktop tier.
@@ -92,6 +117,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
       side="top"
       open={open}
       onOpenChange={setOpen}
+      onOpenChangeComplete={closed}
       persistentElements={band}
       container={typeof document === "undefined" ? undefined : document.body}
     >
@@ -146,6 +172,11 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
             })}
           </ul>
         </nav>
+        {foot && (
+          <CloseMenuSheet.Provider value={closeThen}>
+            <div className="mx-auto w-full max-w-band px-gutter pb-sp-1">{foot}</div>
+          </CloseMenuSheet.Provider>
+        )}
         {/* The grip at the bottom edge shows that the sheet drags. */}
         <SheetGrip className="mb-sp-2" />
       </SheetContent>

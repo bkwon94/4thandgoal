@@ -1,0 +1,27 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-33[,)]"
+
+Running 1 test using 1 worker
+
+AT-33 network log, 18 requests:
+GET http://127.0.0.1:51774/
+GET http://127.0.0.1:51774/_next/static/media/jetbrains_mono_latin_variable.p.1bkzbscqrt8rl.woff2
+GET http://127.0.0.1:51774/_next/static/media/space_grotesk_latin_variable-s.p.2cyn07wtgehh0.woff2
+GET http://127.0.0.1:51774/_next/static/chunks/0fis7u8ztr5zy.css
+GET http://127.0.0.1:51774/brand/logo.png
+GET http://127.0.0.1:51774/_next/static/chunks/08wqf82sdpkgs.js
+GET http://127.0.0.1:51774/_next/static/chunks/225om3pb6rgq3.js
+GET http://127.0.0.1:51774/_next/static/chunks/3sc26kxz0wnj9.js
+GET http://127.0.0.1:51774/_next/static/chunks/turbopack-3-ry682tkyiqk.js
+GET http://127.0.0.1:51774/_next/static/chunks/2x-7epk9nhgnj.js
+GET http://127.0.0.1:51774/_next/static/chunks/346u-7kaj3cvd.js
+GET http://127.0.0.1:51774/_next/static/chunks/1ya_byy7vs3pv.js
+GET http://127.0.0.1:51774/_next/static/chunks/1m2kk7i-c7y6_.js
+GET http://127.0.0.1:51774/_next/static/chunks/0wxffx1qi0bk8.js
+GET https://gc.zgo.at/count.js
+GET https://api.4thandgoal.app/clients/cpc/eggs/board
+GET http://127.0.0.1:51774/2026/week-10/avatars/6.jpg
+POST https://api.4thandgoal.app/clients/cpc/suggestions
+AT-33 egg check requests: []
+  ✓  1 [floor] › e2e/front-door-tour.spec.ts:240:5 › a 2 s hold on the dim and on the card sends no egg check (AT-33) (5.1s)
+
+  1 passed (5.4s)

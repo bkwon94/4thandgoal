@@ -2,6 +2,7 @@
 The wire code of the week build: it gives the week package the chapter source of each package that the client takes.
 Outside this folder, a module of the app imports the week build and the rankings chapter only from here.
 """
+from cornerstone.season_sim import SIM_ODDS
 from league.client import Client
 from league.models import Bundle
 from rankings.chapter import (
@@ -13,7 +14,6 @@ from rankings.chapter import (
     rankings_chapter,
     saved_chapter,
     swing_facts,
-    week_odds,
 )
 from week import sheet as week_sheet
 from week.sheet import (
@@ -28,9 +28,9 @@ from week.sheet import (
     write_bundle,
 )
 
-# The chapter source of each package that gives the week a chapter, by package name. The rankings package gives
-# its chapter and the odds. A client that omits a package gets no chapter from it.
-CHAPTER_SOURCES: dict[str, ChapterSource] = {"rankings": RANKINGS}
+# The chapter source of each package that gives the week a chapter or the odds, by package name. The rankings package
+# gives its chapter, and the sim package gives the odds (ADR 0037). A client that omits a package gets nothing from it.
+CHAPTER_SOURCES: dict[str, ChapterSource] = {"rankings": RANKINGS, "sim": SIM_ODDS}
 
 
 def chapter_sources(client: Client) -> tuple[ChapterSource, ...]:
@@ -46,5 +46,5 @@ def build_bundle(*args, client: Client, **kwargs) -> Bundle:
 __all__ = [
     "CHAPTER_SOURCES", "Context", "build_bundle", "chapter_sources", "check_week_is_buildable", "odds_facts",
     "odds_inputs", "power_facts", "projected_totals", "rank_why_facts", "rankings_chapter", "read_bundle",
-    "saved_chapter", "standings_facts", "storyline_facts", "swing_facts", "week_dates", "week_odds", "write_bundle",
+    "saved_chapter", "standings_facts", "storyline_facts", "swing_facts", "week_dates", "write_bundle",
 ]

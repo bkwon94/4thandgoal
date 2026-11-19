@@ -1,0 +1,5 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed true   AT-54 drag down closes the Announcement
+observed true   AT-54 Not now closes the Announcement
+observed true   AT-54 Escape closes the Announcement
+observed true   AT-54 tap on the dim closes the Announcement

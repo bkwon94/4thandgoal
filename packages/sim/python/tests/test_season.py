@@ -3,10 +3,11 @@ Tests for the season sim: small hand-built leagues at the seam of season_sim, wi
 sample of runs. The real data of CPC and NorCal runs in tests/test_sim.py of the pipeline.
 """
 import pytest
+from rejection import rejection_odds
 
 from league.league_settings import LeagueSettings
-from sim.published import SIM_FILE, read_sim, sim_file, write_sim
-from sim.season import season_sim
+from sim.published import SIM_FILE, read_sim, read_week_sim, sim_file, week_sim_file, write_sim, write_week_sim
+from sim.season import SetResult, SimStopped, rerun, season_sim
 
 SEASON = 2026
 # Eight rosters, 6 playoff spots and 2 byes, as in CPC and NorCal. The regular season ends at week 4.
@@ -58,9 +59,9 @@ RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid) for rid in ROSTERS}
 REMAINING = {3: [(1, 2), (3, 4), (5, 6), (7, 8)], 4: [(1, 3), (2, 4), (5, 7), (6, 8)]}
 
 
-def _sim(scores=SCORES, records=RECORDS, remaining=REMAINING, **kwargs):
+def _sim(scores=SCORES, records=RECORDS, remaining=REMAINING, runs=400, **kwargs):
     settings = _settings(reseed=True, median_game=True)
-    return season_sim(scores, records, remaining, season=SEASON, week=2, settings=settings, runs=400, **kwargs)
+    return season_sim(scores, records, remaining, season=SEASON, week=2, settings=settings, runs=runs, **kwargs)
 
 
 def test_one_input_gives_one_output_whatever_the_dict_order():
@@ -136,3 +137,136 @@ def test_sim_json_holds_the_names_the_odds_and_the_sample_and_reads_back(tmp_pat
     assert len(data.sample) == 10
     assert data.teams[1].roster_id == 1
     assert write_sim(sim_file(_sim(sample=10), names), tmp_path).read_bytes() == out.read_bytes()
+    # The season file keeps the shape that the midseason replay reads.
+    assert b"effective_runs" not in out.read_bytes()
+
+
+def test_a_run_with_no_set_result_has_effective_runs_equal_to_runs():
+    assert _sim().effective_runs == 400
+
+
+def _score(run, rid: int, column: int) -> float:
+    """The stored score of a regular week, which is never None."""
+    score = run.scores[rid][column]
+    assert score is not None
+    return score
+
+
+def _gap(weighted, reference: dict[int, float]) -> float:
+    """The largest gap in points between the playoff odds of the sim and of the reference, over the open teams."""
+    return max(abs(weighted.teams[rid].playoff - odds) for rid, odds in reference.items()
+               if weighted.teams[rid].status == "open")
+
+
+# The gaps allow for the noise of the two draws. At 20,000 runs the weighted sim keeps about 8,000 effective runs, so
+# the sample error of a 50 percent number is about 0.75 points for the two draws together. Over 24 seeds the mean gap
+# of each team is under 0.3 points, so the method has no bias.
+GAP = 2.0
+
+
+def test_a_set_result_with_a_median_agrees_with_the_rejection_reference():
+    held = [SetResult(week=3, game="loss", median="above")]
+    result = _sim(you=1, set_results=held, runs=20_000)
+    reference, _, kept = rejection_odds(SCORES, RECORDS, REMAINING, _settings(reseed=True, median_game=True), 1,
+                                        held, runs=100_000, seed=7)
+    assert _gap(result, reference) <= GAP
+    # The weight keeps more of each draw than rejection does.
+    assert kept / 100_000 < result.effective_runs / result.runs < 1
+    # Each stored run is a season where the set result holds: roster 1 loses to roster 2 and beats the median.
+    for run in result.sample:
+        ordered = sorted((_score(run, rid, 0) for rid in ROSTERS), reverse=True)
+        assert _score(run, 1, 0) <= _score(run, 2, 0)
+        assert _score(run, 1, 0) > (ordered[3] + ordered[4]) / 2
+
+
+def test_a_set_result_in_a_league_with_no_median_game_agrees_with_the_rejection_reference():
+    settings = _settings(reseed=True, median_game=False)
+    held = [SetResult(week=4, game="win")]
+    result = season_sim(SCORES, RECORDS, REMAINING, season=SEASON, week=2, settings=settings, runs=20_000, you=8,
+                        set_results=held)
+    reference, _, _ = rejection_odds(SCORES, RECORDS, REMAINING, settings, 8, held, runs=40_000, seed=7)
+    assert _gap(result, reference) <= GAP
+    assert result.effective_runs < result.runs
+    for run in result.sample:
+        assert _score(run, 8, 1) > _score(run, 6, 1)
+
+
+# The regular season is over, so the seeds are set: roster 4 meets roster 5 in round 1, in week 5.
+BRACKET_SCORES = {rid: [100.0 + 4 * rid, 112.0 - 3 * rid, 95.0 + rid] for rid in ROSTERS}
+
+
+def _bracket_sim(held: list[SetResult], runs: int = 20_000):
+    return season_sim(BRACKET_SCORES, FINAL_RECORDS, {}, season=SEASON, week=4, settings=_settings(reseed=True),
+                      runs=runs, you=4, set_results=held)
+
+
+def test_a_set_bracket_game_agrees_with_the_rejection_reference():
+    held = [SetResult(week=5, game="loss")]
+    result = _bracket_sim(held)
+    _, titles, _ = rejection_odds(BRACKET_SCORES, FINAL_RECORDS, {}, _settings(reseed=True), 4, held, runs=40_000,
+                                  seed=7)
+    assert result.teams[4].title == 0 and result.teams[4].final == 0
+    assert result.effective_runs < result.runs
+    assert max(abs(result.teams[rid].title - titles[rid]) for rid in ROSTERS) <= GAP
+    for run in result.sample:
+        assert (4, 5) in run.bracket[0] and 5 in {rid for pair in run.bracket[1] for rid in pair}
+
+
+@pytest.mark.parametrize(("you", "week"), [(1, 5), (4, 6)])
+def test_a_bracket_game_whose_teams_are_not_set_raises(you, week):
+    # Roster 1 has a bye in week 5. The opponent of roster 4 in week 6 depends on the other game of round 1.
+    with pytest.raises(ValueError, match=f"week {week} has no set teams"):
+        season_sim(BRACKET_SCORES, FINAL_RECORDS, {}, season=SEASON, week=4, settings=_settings(reseed=True),
+                   runs=200, you=you, set_results=[SetResult(week=week, game="win")])
+
+
+def test_the_same_set_results_give_the_same_output_byte_for_byte():
+    held = [SetResult(week=3, game="win", median="below"), SetResult(week=4, game="loss", median="above")]
+    first = _sim(you=3, set_results=held, sample=20).model_dump_json()
+    assert _sim(you=3, set_results=list(reversed(held)), sample=20).model_dump_json() == first
+
+
+@pytest.mark.parametrize(("held", "message"), [
+    ([SetResult(week=2, game="win", median="above")], "week 2 is not a week left"),
+    ([SetResult(week=3, game="win")], "week 3 needs above or below the median"),
+    ([SetResult(week=5, game="win")], "week 5 has no set teams"),
+    ([SetResult(week=3, game="win", median="above"), SetResult(week=3, game="loss", median="below")], "one set"),
+])
+def test_a_bad_set_result_raises_a_value_error_that_names_it(held, message):
+    with pytest.raises(ValueError, match=message):
+        _sim(you=1, set_results=held)
+
+
+def _week_file(tmp_path, **kwargs):
+    """The sim of the week, written to its week file and read back, as the What-if of the API reads it."""
+    result = _sim(pages=list(ROSTERS), **kwargs)
+    out = write_week_sim(week_sim_file(result, {rid: f"Team {rid}" for rid in ROSTERS}), tmp_path)
+    return result, read_week_sim(out)
+
+
+def test_a_rerun_of_the_week_file_with_no_set_result_gives_the_numbers_of_the_file(tmp_path):
+    result, file = _week_file(tmp_path)
+    again = rerun(file, pages=[1])
+    assert again.pages[1] == result.pages[1] == file.pages[1]
+    assert again.teams == result.teams
+    assert again.sample == result.sample
+
+
+def test_a_rerun_of_the_week_file_with_a_set_result_equals_the_sim_of_the_week_with_it(tmp_path):
+    held = [SetResult(week=3, game="win", median="above")]
+    _, file = _week_file(tmp_path)
+    expected = _sim(you=1, set_results=held, pages=[1])
+    again = rerun(file, you=1, set_results=held, pages=[1])
+    assert again.model_dump_json() == expected.model_dump_json()
+
+
+def test_a_stop_ends_the_sim_between_blocks_before_all_its_runs():
+    checks = []
+
+    def stop() -> bool:
+        checks.append(1)
+        return len(checks) > 1
+
+    with pytest.raises(SimStopped) as stopped:
+        _sim(runs=5_000, stop=stop)
+    assert 0 < stopped.value.done < 5_000

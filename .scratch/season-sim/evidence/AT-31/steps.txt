@@ -1,0 +1,12 @@
+Script: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/sim.mjs (run: node sim.mjs AT-31)
+Shared parts: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/lib.mjs
+Built from: 42644789, in a detached worktree of that commit (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/../season-sim-site), because the background `make check` builds the site in the Spec worktree.
+Build: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/build-all.sh. It runs `CLIENT=<slug> NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build` in apps/site and copies `out/` per build.
+Exports: cpc on http://127.0.0.1:4173, norcal on 4174. The fixture builds copy one fixture into clients/cpc/published/2026/week-10/sim.json, build cpc, then `git restore` the file: playoffs (week-sim-playoffs.json, week 14) on 4175, round-2 (week-sim-round-2.json, week 15) on 4176, final (week-sim-final.json, week 17) on 4177.
+Server: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/serve.mjs. A folder gives index.html. A missing path gives 404.html with the status 404.
+Browser: Playwright WebKit. Sizes: 390x660 (iPhone 15), 810x980 (iPad gen 7), 1080x740 (iPad gen 7 landscape), 1280x800 (no device). Themes: light and dark through `cpc.theme`.
+Local storage per context: `cpc.theme`, `cpc.passphrase`, `cpc.your-team` (roster id, or none), and `cpc.announcement.season-sim-2026` = seen, unless the test needs the Announcement.
+Overlap check: probe() in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/ev/lib.mjs. It finds text boxes that overlap, text that runs off the side, a box that covers a text box at its center, and a page that scrolls sideways. A full shot checks each scroll stop of 0.8 of the view. Results are in overlap.txt.
+
+Steps:
+Open /sim/2026/ of cpc with roster 1 (The Blue Tent), whose week 11 root-for card has "Maye d'force B with U beats Bo Girds". At 390x660, tap the toggle. Scroll the row into view. Read scrollWidth and clientWidth of each text leaf. Take a view shot and a full shot.

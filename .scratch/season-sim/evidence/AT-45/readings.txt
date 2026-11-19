@@ -1,0 +1,9 @@
+sim-tile-bo-girds 390x660: tile text "Season sim AFTER WEEK 10 PLAYOFF ODDS 58% Win 5 of the 8 left and you're in. Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-bo-girds 810x980: tile text "Season sim AFTER WEEK 10 PLAYOFF ODDS 58% Win 5 of the 8 left and you're in. Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-bo-girds 1080x740: tile text "Season sim AFTER WEEK 10 PLAYOFF ODDS 58% Win 5 of the 8 left and you're in. Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+sim-tile-bo-girds 1280x800: tile text "Season sim AFTER WEEK 10 PLAYOFF ODDS 58% Win 5 of the 8 left and you're in. Open the season sim"; link href /sim/2026/; ids around the tile: standings > standings-heading > sim > sim-heading > next-week
+measure.mjs (light, roster 6): computed font size of each uppercase label in #sim, and the height of section#sim
+390x660: labels "After week 10" 12px, "Playoff odds" 12px; section#sim height 160px, min-height auto; view height 660px
+810x980: labels "After week 10" 13px, "Playoff odds" 13px; section#sim height 166px, min-height auto; view height 980px
+1080x740: labels "After week 10" 14px, "Playoff odds" 14px; section#sim height 175px, min-height auto; view height 740px
+1280x800: labels "After week 10" 14px, "Playoff odds" 14px; section#sim height 278px, min-height auto; view height 800px

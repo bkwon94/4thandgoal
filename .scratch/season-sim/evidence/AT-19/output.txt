@@ -1,0 +1,13 @@
+$ curl -sS -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' --data @win-above.json --max-time 0.1 -o /dev/null -w 'status %{http_code} time %{time_total}s\n'
+curl: (28) Operation timed out after 108 milliseconds with 0 bytes received
+status 000 time 0.108186s
+[exit 28]
+
+$ cat win-above.json
+{"you": 6, "set": [{"week": 11, "game": "win", "median": "above"}]}
+[exit 0]
+
+$ sed -n '59,$p' /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/api-8791.log
+INFO:     cornerstone_api.what_if: What-if of cpc stopped after 250 of 10000 runs: the client went away
+[exit 0]
+

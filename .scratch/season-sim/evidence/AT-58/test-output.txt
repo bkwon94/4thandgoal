@@ -1,0 +1,29 @@
+$ node announcement.mjs   (WebKit, cpc export of b5de9120 on http://127.0.0.1:4173)
+observed false  AT-58 Escape closes the team picker with no team set  (picker on the page: 1)
+observed false  AT-58 a tap on the dim closes the team picker with no team set  (picker on the page: 1)
+observed false  AT-58 a drag down closes the team picker with no team set  (picker on the page: 1)
+observed true   AT-58 reading: cpc.your-team after the three tries  (null)
+observed true   AT-58 the reload with no team shows no Announcement  (team picker open on the reload: 1)
+observed true   AT-58 a later load after a team is set shows the Announcement
+
+--- the comment of apps/site/src/app/front-door/team-sheet.tsx at b5de9120, lines 2-3 and 25-27:
+ * The sheet that asks for Your team. It lists the teams of the league by name. On the first visit it has no skip, no close,
+ * and no login, because every Suggestion of the front door comes from Your team (decision 08). On a change of team it closes and keeps the old team.
+/* onClose comes only on a change of team. Without it, the sheet of the first visit is not dismissible: a drag, Escape, and a
+   tap on the dim do nothing, and it has no close button. The Drawer owns the slide, the drag, the dim, the focus trap, and
+   the fade under reduced motion. */
+
+--- $ pnpm exec vitest run src/app/_routes/sim/announcement.test.tsx --reporter=verbose   (apps/site of the detached worktree at b5de9120)
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > opens with the copy of the spec about 0.7 s after load, with Bo Girds set (AT-51) 180ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > stays hidden on a reload after Not now (AT-55) 45ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > stays hidden on a reload after a press of Open the sim (AT-55) 19ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > does not open on the page it links to (AT-56) 1ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > does not open over another sheet, and that skipped load does not count (AT-56, AT-57) 16ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > does not open with no team set, and opens on a later load after a team is set (AT-57, AT-58) 23ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > skips the load of the team picker after a pick before the beat, and opens on the next load (AT-57) 11ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > does not open with a kept team that is not in the sim file 1ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > does not open 1 day past its end date (AT-59) 1ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > stops on its end date, 1 week after the release 1ms
+ ✓ src/app/_routes/sim/announcement.test.tsx > the sim Announcement on the home page > opens on the last day before its end date 8ms
+ Test Files  1 passed (1)
+      Tests  11 passed (11)

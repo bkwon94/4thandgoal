@@ -37,10 +37,18 @@ describe("menuPages", () => {
     ]);
   });
 
-  it("gives no destination for the sim, so the menu keeps its items", () => {
-    const links = { ...LINKS, sim: () => ({ label: "Sim", href: "/sim/" }) };
+  it("gives the sim page a destination, Season sim (AT-50)", () => {
+    const links = { ...LINKS, sim: () => ({ label: "Season sim", href: "/sim/2026/" }) };
     const pages = menuPages([{ page: "home" }, { package: "sim" }], links, "/");
-    expect(pages.map((page) => page.kind)).toEqual(["home"]);
+    expect(pages).toEqual([
+      { kind: "home", label: "Home", short: "Home", href: "/" },
+      { kind: "sim", label: "Season sim", short: "Sim", href: "/sim/2026/" },
+    ]);
+  });
+
+  it("lists no sim page when no week of the season has a sim file", () => {
+    const pages = menuPages([{ package: "sim" }], { ...LINKS, sim: () => null }, "/");
+    expect(pages).toEqual([]);
   });
 
   it("lists no midseason item, because a sixth item overflows the pill bar of CPC at 1280px", () => {

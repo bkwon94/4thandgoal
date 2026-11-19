@@ -1,0 +1,52 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone python /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/scripts/facts_and_rankings.py /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/at2-facts.json
+# The same run as AT-2: the facts step of run_build (make_bundle) on the saved raw week. See evidence/AT-2/output.txt for its log.
+
+$ python3 -I /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/scripts/at3_facts.py /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/at2-facts.json clients/cpc/published/2026/week-10/sim.json
+ODDS.1: The Blue Tent makes the playoffs in about 81% of runs, with a bye in 24%, most often as the 3rd seed.
+    playoff: fact 81, sim.json teams.1.playoff 81
+    bye: fact 24, sim.json teams.1.bye 24
+ODDS.2: All You Need Is Love makes the playoffs in about 81% of runs, with a bye in 26%, most often as the 4th seed.
+    playoff: fact 81, sim.json teams.2.playoff 81
+    bye: fact 26, sim.json teams.2.bye 26
+ODDS.3: Lil Fridge makes the playoffs in about 94% of runs, with a bye in 52%, most often as the 1st seed.
+    playoff: fact 94, sim.json teams.3.playoff 94
+    bye: fact 52, sim.json teams.3.bye 52
+ODDS.4: NFC Least makes the playoffs in about 1% of runs, with a bye in 0%.
+    playoff: fact 1, sim.json teams.4.playoff 1
+    bye: fact 0, sim.json teams.4.bye 0
+ODDS.5: Puka Deez... makes the playoffs in about 82% of runs, with a bye in 26%, most often as the 4th seed.
+    playoff: fact 82, sim.json teams.5.playoff 82
+    bye: fact 26, sim.json teams.5.bye 26
+ODDS.6: Bo Girds makes the playoffs in about 58% of runs, with a bye in 10%, most often as the 6th seed.
+    playoff: fact 58, sim.json teams.6.playoff 58
+    bye: fact 10, sim.json teams.6.bye 10
+ODDS.7: To Infinity and Bijan makes the playoffs in about 4% of runs, with a bye in 1%.
+    playoff: fact 4, sim.json teams.7.playoff 4
+    bye: fact 1, sim.json teams.7.bye 1
+ODDS.8: Return of T Mac makes the playoffs in about 39% of runs, with a bye in 4%.
+    playoff: fact 39, sim.json teams.8.playoff 39
+    bye: fact 4, sim.json teams.8.bye 4
+ODDS.9: Maye d'force B with U makes the playoffs in about 93% of runs, with a bye in 47%, most often as the 1st seed.
+    playoff: fact 93, sim.json teams.9.playoff 93
+    bye: fact 47, sim.json teams.9.bye 47
+ODDS.10: behold the lamb makes the playoffs in about 3% of runs, with a bye in 1%.
+    playoff: fact 3, sim.json teams.10.playoff 3
+    bye: fact 1, sim.json teams.10.bye 1
+ODDS.11: Unsolicited Dak Picks makes the playoffs in about 1% of runs, with a bye in 1%.
+    playoff: fact 1, sim.json teams.11.playoff 1
+    bye: fact 1, sim.json teams.11.bye 1
+ODDS.12: Teehee makes the playoffs in about 66% of runs, with a bye in 10%, most often as the 5th seed.
+    playoff: fact 66, sim.json teams.12.playoff 66
+    bye: fact 10, sim.json teams.12.bye 10
+SW.4v5: The playoff odds of NFC Least stay near 1% either way. A win puts the playoff odds of Puka Deez... at 92%, a loss at 72%.
+    NFC Least: no number in the fact (sim.json swings win 1, loss 1)
+    Puka Deez... after a win: fact 92, sim.json swings 4v5 92
+    Puka Deez... after a loss: fact 72, sim.json swings 4v5 72
+SW.1v11: A win puts the playoff odds of The Blue Tent at 91%, a loss at 70%. The playoff odds of Unsolicited Dak Picks stay near 1% either way.
+    The Blue Tent after a win: fact 91, sim.json swings 1v11 91
+    The Blue Tent after a loss: fact 70, sim.json swings 1v11 70
+    Unsolicited Dak Picks: no number in the fact (sim.json swings win 1, loss 1)
+
+odds numbers in the facts: 28; equal to the file: 28
+[exit 0]
+

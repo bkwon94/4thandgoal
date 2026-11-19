@@ -1,0 +1,4 @@
+playoffs-top-seed-390x660-light.png (full page): no overlap, no cover, no side scroll
+playoffs-top-seed-390x660-dark.png (full page): no overlap, no cover, no side scroll
+playoffs-seed-3-390x660-light.png (full page): no overlap, no cover, no side scroll
+playoffs-seed-3-390x660-dark.png (full page): no overlap, no cover, no side scroll

@@ -1,0 +1,18 @@
+# The context of each hit of a banned word, in WebKit at 390x660, Your team 6, on the exports of the Spec head 49404be3 (cpc on 4173, norcal on 4174).
+# Words: rival, brian, jev, advisor, finder, front door, whole words, any case. The walk reads every text node of body, also the text of SCRIPT elements, which the page does not show.
+$ node at62-context.mjs
+cpc /sim/2026/: 0 hits; #sim on page: false; sections in order: none
+cpc /2026/week-10/: 0 hits; #sim on page: true; sections in order: matchups > game-changer > awards > leaders > median > standings > sim > next-week
+cpc /: 0 hits; #sim on page: false; sections in order: none
+norcal /sim/2026/: 0 hits; #sim on page: false; sections in order: none
+norcal /2026/week-10/: 2 hits; #sim on page: true; sections in order: matchups > game-changer > awards > leaders > trades > standings > sim > next-week
+  hit "Brian" (word brian) in SPAN, section#next-week, heading "Next week", inside #sim: false
+    text around: "On bye Hunter Henry TE · Puka Nacua WR · Davante Adams WR · Brian Robinson Jr. RB"
+  hit "Brian" (word brian) in SCRIPT, no section with an id, heading "none", inside #sim: false
+    script text, 100 chars each side: "}],\" WR\"]}],[\"$\",\"span\",\"8154\",{\"children\":[\" · \",[\"$\",\"span\",null,{\"children\":\"Brian Robinson Jr.\"}],\" RB\"]}]]]}]]}]]}]}],[\"$\",\"article\",\"4\",{\"id\":\"next-game-4-7\",\"d
+norcal /: 2 hits; #sim on page: false; sections in order: none
+  hit "Brian" (word brian) in SCRIPT, no section with an id, heading "none", inside #sim: false
+    script text, 100 chars each side: abel\":\"Mitseeker5000\",\"value\":\"6-4\",\"note\":\"Bye: Hunter Henry, Puka Nacua, Davante Adams, Brian Robinson Jr.\",\"roster_id\":6,\"you\":false}],\"text\":[\"Skol Daddy puts its win streak on t
+  hit "Brian" (word brian) in SCRIPT, no section with an id, heading "none", inside #sim: false
+    script text, 100 chars each side: abel\":\"Mitseeker5000\",\"value\":\"6-4\",\"note\":\"Bye: Hunter Henry, Puka Nacua, Davante Adams, Brian Robinson Jr.\",\"roster_id\":6,\"you\":true},{\"label\":\"Skol Daddy\",\"value\":\"5-5\",\"not
+(exit 0)

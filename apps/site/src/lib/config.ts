@@ -6,6 +6,7 @@
 // A type import only, so the next.config loader never loads the analyzer package.
 import type { ApiTarget } from "@cpc/analyzer/lib/api";
 import type { EggsTarget } from "@cpc/eggs/lib/api";
+import type { WhatIfTarget } from "@cpc/sim/lib/what-if-api";
 import type { AskTarget } from "../app/front-door/ask-api";
 import { clientValues } from "../generated/client-values";
 
@@ -21,6 +22,9 @@ export const apiTarget: ApiTarget = { url: apiUrl, client: clientValues.slug, se
 
 // The eggs routes of the API: the base URL and the slug of the client. Each call goes to /clients/<slug>/eggs/.
 export const eggsTarget: EggsTarget = { url: apiUrl, client: clientValues.slug };
+
+// The What-if of the sim page: the base URL and the slug of the client. Each call goes to /clients/<slug>/sim/what-if.
+export const simTarget: WhatIfTarget = { url: apiUrl, client: clientValues.slug };
 
 // The ask box of the front door: the base URL and the slug of the client. Each question goes to /clients/<slug>/ask.
 export const askTarget: AskTarget = { url: apiUrl, client: clientValues.slug };

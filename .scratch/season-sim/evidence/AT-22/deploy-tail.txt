@@ -1,0 +1,30 @@
+#32 pushing manifest for registry.fly.io/cpcfantasy-api:deployment-01M7RTGK8XV2TMV2R7YQ33BY80@sha256:f0a234444fedcddd917ae99fb19a7f314a08c3c7f1430b0ca889b78fcda7728a 0.0s done
+#32 DONE 7.1s
+
+#6 [internal] load build context
+--> Build Summary:  (​)
+--> Building image done
+image: registry.fly.io/cpcfantasy-api:deployment-01M7RTGK8XV2TMV2R7YQ33BY80
+image size: 136 MB
+
+Watch your deployment at https://fly.io/apps/cpcfantasy-api/monitoring
+
+Updating existing machines in 'cpcfantasy-api' with rolling strategy
+> Acquiring lease for d893e0dc125258
+> Acquired lease for d893e0dc125258
+> Updating machine config for d893e0dc125258
+> Updating d893e0dc125258 [app]
+> Updated machine config for d893e0dc125258
+> Waiting for machine d893e0dc125258 to reach a good state
+> Machine d893e0dc125258 reached started state
+> Running smoke checks on machine d893e0dc125258
+> Running machine checks on machine d893e0dc125258
+> Checking health of machine d893e0dc125258
+✔ Machine d893e0dc125258 is now in a good state
+> Clearing lease for d893e0dc125258
+✔ Cleared lease for d893e0dc125258
+Checking DNS configuration for cpcfantasy-api.fly.dev
+✓ DNS configuration verified
+
+Visit your newly deployed app at https://cpcfantasy-api.fly.dev/
+

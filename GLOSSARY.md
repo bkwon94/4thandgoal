@@ -172,6 +172,14 @@ _Avoid_: Recommendation, prompt, nudge, tip
 The list of the questions of a manager and their Answers on the front door, for one team in one fantasy week.
 _Avoid_: Chat, conversation, feed, history
 
+**Tour**:
+The short set of Stops on the front door that shows a league mate what each part of it does and where the pages are. Each browser sees it once, and the menu can show it again.
+_Avoid_: Tutorial, onboarding, walkthrough, guide, coach marks
+
+**Stop**:
+One spotlight of the Tour on one real control of the front door, with its header, its line of text, and its controls.
+_Avoid_: Step (a step is a part of the trade flow), slide, tooltip, popover
+
 **Route**:
 Where the ask box sends one typed question: a Topic, a free answer, a Site answer, an honest miss, or a calm refusal. Jev answers 8 typed questions in one request, or 10 when the request holds the pages of the site, and a table in code picks the route from the answers with the cutoffs 0.7 and 0.3.
 _Avoid_: Intent, classification, dispatch
@@ -1063,9 +1071,21 @@ _Avoid_: Banner, promo
 The home tile with one big fact and a link to the midseason report. It stays after the takeover ends.
 _Avoid_: Card, teaser
 
+**Sim tile**:
+The tile of each week page, right after Standings, with Your team's playoff odds and a link to the sim page.
+_Avoid_: Report tile, odds card
+
 **Sim run**:
 One stored season of the sim, with every team's score for each week left. The replay plays one sim run per press.
 _Avoid_: Simulation, sample, scenario
+
+**What-if**:
+A set of results that a manager sets for Your team in the weeks left: a win or a loss, and above or below the median. The sim draws every other game.
+_Avoid_: Scenario, simulation, prediction
+
+**Announcement**:
+The modal that introduces one new feature, once per browser, until the visitor dismisses it or follows its link.
+_Avoid_: Popup, banner, promo
 
 **Points over the line**:
 A player's points in one start minus that week's score at the line of his position: RB36, WR36, or TE24. It ranks the waiver pickups of the midseason report. K and DEF have no line, so they have none.

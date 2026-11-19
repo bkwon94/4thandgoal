@@ -1,0 +1,7 @@
+# md5 of each /midseason/2026/ shot at 390x660 in WebKit: the branch build 42644789 beside the main build b9231a41.
+# Command: md5 -q <branch shot>; md5 -q <main shot>
+client   theme  branch-md5                         main-md5                           same
+cpc      light  11f5c552811deed6cdcb36996faf1dc6   11f5c552811deed6cdcb36996faf1dc6   yes
+cpc      dark   200db7e0226f15f42eb873c30f32a398   200db7e0226f15f42eb873c30f32a398   yes
+norcal   light  24a8f397bb5b83e769316c01257dc173   24a8f397bb5b83e769316c01257dc173   yes
+norcal   dark   c79b1788db8d64db211fcdc82a20de76   c79b1788db8d64db211fcdc82a20de76   yes

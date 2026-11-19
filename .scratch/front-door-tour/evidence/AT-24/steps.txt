@@ -1,0 +1,13 @@
+No runner verb opens the front door a second time, so agent-browser took these shots.
+
+1. Serve the cpc export of `apps/site/out` on http://127.0.0.1:4173, as in AT-2.
+2. For each width 375, 768, 1280 and each theme light, dark, in the session `fdt-evidence`:
+   1. `agent-browser set viewport <width> 900`
+   2. `agent-browser eval "localStorage.clear(); localStorage.setItem('cpc.theme','<theme>'); localStorage.setItem('cpc.your-team','6')"`
+   3. `agent-browser reload`, `agent-browser wait "[data-tour-card]"`, `agent-browser wait 1500`
+   4. `agent-browser click "[data-tour-card] button:has-text('Skip')"` (Skip at Stop 1), `agent-browser wait 1000`
+   5. `agent-browser open http://127.0.0.1:4173/` (the second visit), `agent-browser wait 2000`
+   6. Scroll to the end and back: `agent-browser eval "window.scrollTo(0, document.body.scrollHeight)"`, `agent-browser wait 1500`, `agent-browser eval "window.scrollTo(0, 0)"`
+   7. `agent-browser screenshot <evidence>/AT-24/second-visit-<width>-<theme>.png --full`
+   8. `agent-browser eval` of the count of `[data-tour-card]` and `[data-tour-hole]` and the seen key. `dom.txt` holds the result of each width and theme.
+3. `agent-browser close`

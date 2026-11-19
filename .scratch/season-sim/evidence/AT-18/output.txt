@@ -1,0 +1,31 @@
+$ curl -sS -X POST http://127.0.0.1:8791/clients/cpc/sim/what-if -H 'Content-Type: application/json' -H 'Accept-Encoding: gzip' --data @win-above.json -D at18-headers.txt -o at18-body.gz -w 'status %{http_code}, size_download %{size_download} bytes\n'
+status 200, size_download 37087 bytes
+[exit 0]
+
+$ cat at18-headers.txt
+HTTP/1.1 200 OK
+date: Thu, 19 Nov 2026 03:00:23 GMT
+server: uvicorn
+content-length: 37087
+content-type: application/json
+vary: Origin, Accept-Encoding
+content-encoding: gzip
+
+[exit 0]
+
+$ wc -c < at18-body.gz
+   37087
+[exit 0]
+
+$ file at18-body.gz
+at18-body.gz: gzip compressed data, max compression, original size modulo 2^32 139274
+[exit 0]
+
+$ gunzip -c at18-body.gz | wc -c
+  139274
+[exit 0]
+
+$ gunzip -c at18-body.gz | jq -c '{week, runs, you}'
+{"week":10,"runs":10000,"you":6}
+[exit 0]
+

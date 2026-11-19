@@ -1,0 +1,16 @@
+cpc sim page: 469 chars, hits none
+  text: Bo Girds 11-9 · 4 weeks left 58% PLAYOFF ODDS Win 5 of the 8 left and you're in. Game wins and median wins both count. Tap for all. Wk 11 Wk 12 Wk 13 Wk 14 Play
+cpc replay: 815 chars, hits none
+  text: CORNERSTONE FANTASY FOOTBALL LEAGUE Bo Girds 11-9 · 4 weeks left 58% PLAYOFF ODDS Win 5 of the 8 left and you're in. Game wins and median wins both count. Tap f
+cpc sim tile: 96 chars, hits none
+  text: Season sim AFTER WEEK 10 PLAYOFF ODDS 58% Win 5 of the 8 left and you're in. Open the season sim
+cpc announcement: 320 chars, hits none
+  text: YOUR TEAM Bo Girds +28 86% PLAYOFF ODDS Playoff odds 86% 5 The Blue Tent 81% 6 Bo Girds 86% PLAYOFF LINE 7 Return of T Mac 39% What-if: Bo Girds win both ON COR
+norcal sim page: 319 chars, hits none
+  text: Mitseeker5000 6-4 · 4 weeks left 82% PLAYOFF ODDS Win 2 of the 4 left and you're in. Tap for all. Wk 11 Wk 12 Wk 13 Wk 14 Playoffs Week 11 vs Skol Daddy Tap a r
+norcal replay: 625 chars, hits none
+  text: NORCAL APEX 6 Mitseeker5000 6-4 · 4 weeks left 82% PLAYOFF ODDS Win 2 of the 4 left and you're in. Tap for all. Wk 11 Wk 12 Wk 13 Wk 14 Playoffs Week 11 vs Skol
+norcal sim tile: 96 chars, hits none
+  text: Season sim AFTER WEEK 10 PLAYOFF ODDS 82% Win 2 of the 4 left and you're in. Open the season sim
+norcal announcement: 287 chars, hits none
+  text: YOUR TEAM Mitseeker5000 +13 95% PLAYOFF ODDS Playoff odds 95% 2 puurdygood 94% 3 Mitseeker5000 95% 4 Davlionman 66% What-if: Mitseeker5000 win ON NORCAL APEX 6:

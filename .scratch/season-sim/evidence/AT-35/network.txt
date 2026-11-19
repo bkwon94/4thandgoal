@@ -1,0 +1,5 @@
++1315 ms start POST http://localhost:8080/clients/cpc/sim/what-if {"you":6,"set":[{"week":11,"game":"win","median":"above"}]}
++1422 ms failed "cancelled" http://localhost:8080/clients/cpc/sim/what-if
++1423 ms start POST http://localhost:8080/clients/cpc/sim/what-if {"you":6,"set":[{"week":11,"game":"loss","median":"below"}]}
++3631 ms finished 200 http://localhost:8080/clients/cpc/sim/what-if
+gap between the two taps, read in the page: 110 ms

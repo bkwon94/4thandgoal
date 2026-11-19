@@ -24,9 +24,12 @@ type TopBandProps = {
   // The buttons of the packages of the client, such as the egg button, just before the theme button. The app layer
   // passes them, so the shell names no package. A client with none passes none.
   actions?: ReactNode;
+  // The rows of the open page at the foot of the menu sheet, such as the replay of the Tour on the front door. The app
+  // layer passes them, so the shell names no part of a page. A page with none passes none.
+  menuFoot?: ReactNode;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children, actions }: TopBandProps) {
+export function TopBand({ title, brand, menu, pageHref, children, actions, menuFoot }: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   return (
     <>
@@ -63,7 +66,7 @@ export function TopBand({ title, brand, menu, pageHref, children, actions }: Top
             {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
             <ThemeButton className="[@media(scripting:none)]:hidden" />
-            <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} />
+            <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} foot={menuFoot} />
           </div>
         </div>
       </header>

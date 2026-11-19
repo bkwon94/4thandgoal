@@ -7,7 +7,7 @@
 export type Destination = { label: string; href: string };
 
 /* The kind of a destination. The menu sheet picks the icon of each item from it. */
-export type NavKind = "home" | "week" | "rankings" | "managers" | "analyzer" | "waiver" | "midseason";
+export type NavKind = "home" | "week" | "rankings" | "managers" | "analyzer" | "waiver" | "sim" | "midseason";
 
 /* One destination of the menu. The pill bar shows the full label, and the short label is for a menu with little room. */
 export type NavItem = Destination & { kind: NavKind; short: string };

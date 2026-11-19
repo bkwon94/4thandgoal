@@ -1,0 +1,83 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-20[,)]"
+
+Running 1 test using 1 worker
+
+AT-20 frame samples of the hole:
+0 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+1 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+2 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+3 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+4 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+5 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+6 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+7 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+8 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+9 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+10 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+11 {"hole":{"x":10,"y":321.390625,"width":363,"height":56},"header":"Suggestions"}
+12 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+13 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+14 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+15 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+16 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+17 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+18 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+19 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+20 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+21 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+22 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+23 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+24 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+25 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+26 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+27 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+28 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+29 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Suggestions"}
+30 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+31 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+32 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+33 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+34 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+35 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+36 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+37 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+38 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+39 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+40 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+41 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+42 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+43 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+44 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+45 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+46 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+47 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+48 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+49 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"SuggestionsAsk"}
+50 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+51 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+52 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+53 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+54 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+55 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+56 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+57 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+58 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+59 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+60 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+61 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+62 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+63 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+64 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+65 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+66 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+67 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+68 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+69 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+70 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+71 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+72 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+73 {"hole":{"x":10,"y":377.390625,"width":355,"height":66},"header":"Ask"}
+AT-20 samples: 74, frames between the Stops: 0
+  ✓  1 [floor] › e2e/front-door-tour-motion.spec.ts:197:7 › iPhone 375x660 under reduced motion › the hole jumps from the Suggestions to the ask box, and Stop 2 shows its full copy (AT-20) (2.1s)
+
+  1 passed (2.6s)

@@ -1,9 +1,9 @@
-# The Python side of the rankings package: the power rankings, the playoff odds, the rankings chapter, and rankings.json.
+# The Python side of the rankings package: the power rankings, the odds facts, the rankings chapter, and rankings.json.
 # It lists only the league and the facts packages, so "uv run --exact --package cpc-rankings" fails an import of an app.
 [project]
 name = "cpc-rankings"
 version = "0.1.0"
-description = "The power rankings, the playoff odds engine, the rankings chapter, and the writer of rankings.json."
+description = "The power rankings, the odds facts, the rankings chapter, and the writer of rankings.json."
 authors = [
     { name = "Brian Kwon", email = "bkwon94@gmail.com" }
 ]

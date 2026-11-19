@@ -14,8 +14,8 @@ from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 from cornerstone.pipeline import run_build
 from league.models import History, PastWeek, Sentence, Verdict, VerifyOut
 from league.paths import history_root, week_dir
-from rankings.odds import playoff_odds
 from rankings.power_rankings import power_rankings
+from sim.season import season_sim, weekly_odds
 
 WEEKS = 6
 
@@ -70,7 +70,7 @@ def _last_week_odds(client):
     records = {rid: (w, 26 - w, 1000.0 + rid) for rid, w in wins.items()}
     scores = {rid: [100.0 + rid] * 13 for rid in range(1, 13)}
     remaining = {14: [(1, 12), (2, 11), (3, 10), (4, 9), (5, 8), (6, 7)]}
-    return playoff_odds(scores, records, remaining, season=2026, week=13, client=client, runs=200)
+    return weekly_odds(season_sim(scores, records, remaining, season=2026, week=13, settings=client.settings, runs=200))
 
 
 def test_a_league_with_no_median_game_counts_one_win_a_week_left_in_the_odds():

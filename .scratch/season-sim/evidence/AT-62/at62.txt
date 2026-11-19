@@ -1,0 +1,7 @@
+cpc /sim/2026/index.html chars 245 hits none
+cpc /2026/week-10/index.html chars 10395 hits none
+cpc /index.html chars 223 hits none
+norcal /sim/2026/index.html chars 197 hits none
+norcal /2026/week-10/index.html chars 8750 hits ['brian']
+norcal /index.html chars 175 hits none
+source files 1866 hits outside comments none

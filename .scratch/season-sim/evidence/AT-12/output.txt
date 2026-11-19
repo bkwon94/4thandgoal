@@ -1,0 +1,26 @@
+$ uv run --exact --package cornerstone pytest -s -v -p no:xdist tests/test_sim.py -k same_set_results
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 21 items / 20 deselected / 1 selected
+
+tests/test_sim.py::test_two_runs_with_the_same_set_results_give_equal_output_byte_for_byte AT-12: 9ae007349bc5ac7ed5f333aaa617e4b7d4e8fbdef9b03da51a5508e82be8c472 9ae007349bc5ac7ed5f333aaa617e4b7d4e8fbdef9b03da51a5508e82be8c472
+PASSED
+
+====================== 1 passed, 20 deselected in 10.84s =======================
+[exit 0]
+
+# A second instrument: the two real What-if posts of AT-68 (Bo Girds set to win week 11 above the median) on the local API at 42644789. The page block of each answer, hashed.
+$ cat win-above.json
+{"you": 6, "set": [{"week": 11, "game": "win", "median": "above"}]}
+[exit 0]
+
+$ jq -c '.page' at68-answer-1.json > page-1.json; jq -c '.page' at68-answer-2.json > page-2.json; shasum -a 256 page-1.json page-2.json; cmp page-1.json page-2.json && echo 'the two page blocks are equal byte for byte'
+534f16eba48761e2479c51dae9e9fb5b6ddc2df3490b531f75c8cc66c6779aa4  page-1.json
+534f16eba48761e2479c51dae9e9fb5b6ddc2df3490b531f75c8cc66c6779aa4  page-2.json
+the two page blocks are equal byte for byte
+[exit 0]
+

@@ -1,0 +1,9 @@
+$ cd apps/site && pnpm exec playwright test --project=floor e2e/front-door-tour -g "AT-19[,)]"
+
+Running 1 test using 1 worker
+
+AT-19 before at 390x660: hole {"x":10,"y":377.390625,"width":370,"height":66,"radius":33}, ask box {"x":16,"y":383.390625,"width":358,"height":54}
+AT-19 after at 660x390: hole {"x":60,"y":306.921875,"width":540,"height":66,"radius":33}, ask box {"x":66,"y":312.921875,"width":528,"height":54}
+  ✓  1 [floor] › e2e/front-door-tour-look.spec.ts:216:7 › iPhone 390x660 › after a turn of the phone from 390x660 to 660x390 at Stop 2, the hole stays on the ask box (AT-19) (3.8s)
+
+  1 passed (4.3s)

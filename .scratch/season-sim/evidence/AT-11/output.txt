@@ -1,0 +1,15 @@
+$ uv run --exact --package cornerstone pytest -s -v -p no:xdist tests/test_sim.py -k rejection_reference
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/7169efb8-161d-49b8-b8f0-64097daad76e/scratchpad/season-sim-ev/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 21 items / 20 deselected / 1 selected
+
+tests/test_sim.py::test_a_set_loss_below_the_median_agrees_with_an_exact_rejection_reference AT-11: weighted 42 (9170 effective runs), reference 42.21 (31105 kept), gap 0.21
+PASSED
+
+====================== 1 passed, 20 deselected in 14.26s =======================
+[exit 0]
+
