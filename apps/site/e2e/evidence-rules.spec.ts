@@ -378,3 +378,14 @@ test("the evidence build calls the local API, even when the caller env names the
   const env = buildEnv("norcal", { NEXT_PUBLIC_API_URL: "https://api.4thandgoal.app", HOME: "/home/reader" });
   expect(env).toMatchObject({ CLIENT: "norcal", NEXT_PUBLIC_API_URL: "http://localhost:8080", HOME: "/home/reader" });
 });
+
+test("an expect that holds takes its shot, and an expect that fails stops the round and names the test and the step", async ({ browser }) => {
+  const one = { widths: [1280], themes: ["dark"] };
+  const fx = fixture({ "AT-1": { route: "/verbs/", steps: [{ expect: "text=Far" }, { expect: "#name" }], ...one } });
+  await run(browser, fx);
+  expect(readdirSync(fx.folder("AT-1")).sort()).toEqual(["1280-dark.png", "steps.json"]);
+
+  const bad = fixture({ "AT-2": { route: "/verbs/", steps: [{ expect: "#name" }, { expect: "text=Week 99" }], ...one } });
+  await expect(run(browser, bad)).rejects.toThrow(/AT-2 .*step 2 \{"expect":"text=Week 99"\}: the expect failed: "text=Week 99" is not visible/);
+  expect(readdirSync(bad.folder("AT-2"))).toEqual(["steps.json"]);
+});

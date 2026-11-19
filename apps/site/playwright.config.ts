@@ -17,8 +17,8 @@ export default defineConfig({
     reducedMotion: "reduce",
   },
   projects: [
-    // The project "rules" proves each scan of the floor, and each rule of the evidence runner, on small real pages.
-    { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts"] },
+    // The project "rules" proves each scan of the floor, and each rule of the evidence runner and the smoke run, on small real pages.
+    { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts", "smoke-rules.spec.ts"] },
     // The project "floor" runs the floor on the static export in out/ of the current CLIENT, and checks the hero scene of
     // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027). It also checks
     // the layout of the front door, and the idle mesh of the analyzer hero.
@@ -31,6 +31,9 @@ export default defineConfig({
     { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "analyze-headshot.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
+    // The smoke run of the verify skill drives each picked flow in WebKit and Chromium, with motion on, against the local API.
+    // It launches its own two browsers. Run it with pnpm smoke --out <dir>.
+    { name: "smoke", testMatch: "smoke.spec.ts", use: { reducedMotion: "no-preference" } },
     // The project "open-card" checks find-in-page and the frame rate of the Open card on the export of cpc, with motion on.
     // It records evidence for ADR 0028, so no check of CI runs it.
     { name: "open-card", testMatch: "open-card.spec.ts", use: { reducedMotion: "no-preference" } },

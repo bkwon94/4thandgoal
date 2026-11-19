@@ -18,6 +18,7 @@
     "test:floor": "playwright test --project=rules",
     "test:eggs": "playwright test --project=eggs",
     "evidence": "node scripts/evidence.mjs",
+    "smoke": "node scripts/smoke.mjs",
     "check:grade-bar": "CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build && pnpm check:grade-bar-export",
     "check:grade-bar-export": "playwright test --project=grade-bar",
     "check:open-card": "playwright test --project=open-card",
