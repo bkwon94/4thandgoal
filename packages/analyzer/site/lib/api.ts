@@ -4,7 +4,15 @@
  */
 import type { z, ZodType } from "zod";
 import type { AnalyzeResponse, FindResponse } from "./analyze-types";
-import { analyzeResponseSchema, findResponseSchema, playerSchema, teamSchema, teamsResponseSchema } from "./schemas/api";
+import {
+  analyzeResponseSchema,
+  findResponseSchema,
+  playerSchema,
+  teamSchema,
+  teamsResponseSchema,
+  tradeWireResponseSchema,
+  wireTradeSchema,
+} from "./schemas/api";
 
 /* The API that a call goes to: its base URL, the slug of the client, and the season the routes read.
    The page builds it from the config of the app, so the package reads no env. */
@@ -17,6 +25,7 @@ function clientBase(target: ApiTarget): string {
 
 export type TeamPlayer = z.infer<typeof playerSchema>;
 export type Team = z.infer<typeof teamSchema>;
+export type WireTrade = z.infer<typeof wireTradeSchema>;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -110,6 +119,15 @@ export async function fetchTeams(target: ApiTarget, passphrase: string): Promise
   });
   if (!response.ok) throw await toApiError(response);
   return parseBody(teamsResponseSchema, await response.json(), "/teams").teams;
+}
+
+/* The accepted trades of the current leg, newest first, from the Trade Wire route. */
+export async function fetchTradeWire(target: ApiTarget, passphrase: string): Promise<WireTrade[]> {
+  const response = await fetch(`${clientBase(target)}/deadline/trades`, {
+    headers: { "X-League-Passphrase": passphrase },
+  });
+  if (!response.ok) throw await toApiError(response);
+  return parseBody(tradeWireResponseSchema, await response.json(), "/deadline/trades").trades;
 }
 
 /* A given player and the roster id of the side he goes to. See ADR 0008. */

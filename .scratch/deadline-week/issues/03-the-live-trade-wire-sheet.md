@@ -10,8 +10,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-5, AT-6, AT-18, AT-19
 
 **Status:** ready-for-agent
 
-- [ ] The Deadline banner has the name "Open the Trade Wire, N new trades", and the badge matches the count of the route.
-- [ ] A new trade from the route shows at the top within 15 s, with the slide of transitions-dev, and no slide under reduced motion.
-- [ ] No route call goes out while the tab hides, and one goes out within 1 s of the show.
+- [x] The Deadline banner has the name "Open the Trade Wire, N new trades", and the badge matches the count of the route.
+- [x] A new trade from the route shows at the top within 15 s, with the slide of transitions-dev, and no slide under reduced motion.
+- [x] No route call goes out while the tab hides, and one goes out within 1 s of the show.
 - [ ] The empty lines, the failed read note, and the hidden links after the Lock show in a real browser.
 - [ ] The gaps between rows and between trades are each even within 1 px, in both themes, at the four sizes.

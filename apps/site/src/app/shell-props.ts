@@ -8,7 +8,8 @@ import { createElement, type ReactNode } from "react";
 import { bandParts, menuLinks } from "@/generated/registry";
 import type { ClientValues, MenuItem, MenuLinks } from "@/lib/client-values";
 import { listWeekSummaries } from "@/lib/data/week-data";
-import { homeHref, logoSrc } from "@/lib/routes";
+import { analyzeHref, homeHref, logoSrc } from "@/lib/routes";
+import { apiTarget, finderOn } from "@/lib/config";
 import { DeadlineBanner } from "@cpc/analyzer/deadline/deadline-banner";
 import { ENDS_AFTER_MS } from "@cpc/analyzer/lib/deadline";
 
@@ -58,10 +59,16 @@ export function takesEggs(): boolean {
 }
 
 /* The Deadline banner of a client with a Lock, for a build before Deadline week ends. A build after it holds no banner.
-   A page open across the end hides the banner by itself, because the banner reads the clock of the reader. */
+   A page open across the end hides the banner by itself, because the banner reads the clock of the reader. The banner
+   reads the Trade Wire of the client, and its sheet links to the two modes of the analyzer. Find needs the finder flag. */
 export function deadlineStrip(lock: number | null = clientValues.lock): ReactNode {
   if (lock === null || Date.now() >= lock + ENDS_AFTER_MS) return null;
-  return createElement(DeadlineBanner, { lock });
+  return createElement(DeadlineBanner, {
+    lock,
+    api: apiTarget,
+    gradeHref: analyzeHref("grade"),
+    findHref: finderOn ? analyzeHref("find") : null,
+  });
 }
 
 export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode; strip: ReactNode } {

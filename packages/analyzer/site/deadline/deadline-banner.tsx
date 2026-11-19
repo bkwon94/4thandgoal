@@ -4,11 +4,16 @@
  */
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useLayoutEffect, useRef } from "react";
-import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "@cpc/design/ui/sheet";
+import { Sheet, SheetBackdrop, SheetTrigger } from "@cpc/design/ui/sheet";
+import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
+import type { ApiTarget } from "../lib/api";
 import type { Deadline, DeadlinePhase } from "../lib/deadline";
 import { useDeadline } from "../lib/use-deadline";
+import { useTradeWire } from "../lib/use-trade-wire";
+import { LiveDot, SMOOTH_OUT, type TradeLinks, WireSheet } from "./wire-sheet";
 
 /* The surface of each phase, from the theme tokens only, so the banner reads in light and in dark. */
 const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {
@@ -19,8 +24,10 @@ const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {
 
 const PASSED = "The trade deadline has passed. Good luck in the playoffs.";
 
-/* The banner for the Lock `lock`, in ms since the epoch. The app passes it only for a client with a Lock. */
-export function DeadlineBanner({ lock }: { lock: number }) {
+/* The banner for the Lock `lock`, in ms since the epoch. The app passes it only for a client with a Lock. It also passes
+   the API of the Trade Wire route and the trade links, because the package reads no config. findHref is null while the
+   finder flag is off. */
+export function DeadlineBanner({ lock, api, gradeHref, findHref }: { lock: number; api: ApiTarget } & TradeLinks) {
   const deadline = useDeadline(lock);
   const ref = useRef<HTMLDivElement>(null);
   const ended = deadline?.phase === "ended";
@@ -46,7 +53,7 @@ export function DeadlineBanner({ lock }: { lock: number }) {
   const phase = deadline?.phase ?? "open";
   return (
     <div ref={ref} data-deadline-banner="" data-phase={phase}>
-      {deadline === null ? <Placeholder /> : <Banner deadline={deadline} />}
+      {deadline === null ? <Placeholder /> : <Banner deadline={deadline} api={api} links={{ gradeHref, findHref }} />}
     </div>
   );
 }
@@ -61,10 +68,20 @@ function Placeholder() {
   );
 }
 
-function Banner({ deadline }: { deadline: Deadline }) {
+/* The name of the button. Before the first read the count is not known, so the name gives none. */
+function nameOf(closed: boolean, count: number | null): string {
+  if (closed) return "Open the Trade Wire, final. The trade deadline has passed.";
+  if (count === null) return "Open the Trade Wire";
+  return `Open the Trade Wire, ${count} new ${count === 1 ? "trade" : "trades"}`;
+}
+
+function Banner({ deadline, api, links }: { deadline: Deadline; api: ApiTarget; links: TradeLinks }) {
   const phase = deadline.phase === "ended" ? "closed" : deadline.phase;
   const closed = phase === "closed";
-  const name = closed ? "Open the Trade Wire, final. The trade deadline has passed." : "Open the Trade Wire";
+  // The poll stops at the trade deadline. After it the hook reads once more for the final list.
+  const wire = useTradeWire(api, !closed);
+  const count = wire.trades === null ? null : wire.trades.length;
+  const name = nameOf(closed, count);
   return (
     <Sheet side="bottom" container={typeof document === "undefined" ? undefined : document.body}>
       {/* The press of transitions.dev: the grid sinks to 0.98 in 150 ms with the ease-out while the press holds, and the
@@ -76,17 +93,27 @@ function Banner({ deadline }: { deadline: Deadline }) {
           TONE[phase],
         )}
       >
-        <Grid phase={phase} countdown={deadline.countdown} />
+        <Grid phase={phase} countdown={deadline.countdown} count={count ?? 0} />
       </SheetTrigger>
       <SheetBackdrop />
-      <WireSheet closed={closed} countdown={deadline.countdown} />
+      <WireSheet closed={closed} countdown={deadline.countdown} wire={wire} links={links} />
     </Sheet>
   );
 }
 
 /* One grid: a gutter for the live dot, then one left edge for the eyebrow and the countdown, then "Trade Wire" and its
    badge on the right, centred on the two lines. The pad above and under the grid is the same. */
-function Grid({ phase, countdown, hidden = false }: { phase: Exclude<DeadlinePhase, "ended">; countdown: string | null; hidden?: boolean }) {
+function Grid({
+  phase,
+  countdown,
+  count = 0,
+  hidden = false,
+}: {
+  phase: Exclude<DeadlinePhase, "ended">;
+  countdown: string | null;
+  count?: number;
+  hidden?: boolean;
+}) {
   const closed = phase === "closed";
   const last = phase === "last-hours";
   return (
@@ -120,44 +147,49 @@ function Grid({ phase, countdown, hidden = false }: { phase: Exclude<DeadlinePha
       )}
       <span className="col-start-3 row-span-2 row-start-1 flex items-center gap-sp-2 text-row font-bold">
         Trade Wire
-        {/* The count of new trades comes with the Trade Wire. With no trade the badge leaves, so the banner never says
-            "0 new". After the trade deadline the badge reads Final. */}
-        {closed && (
+        {/* The count of the trades of the week. With no trade the badge leaves, so the banner never says "0 new". After
+            the trade deadline the badge reads Final. The name of the button carries the count, so the badge is hidden
+            from a screen reader. */}
+        {closed ? (
           <span aria-hidden="true" className="rounded-pill border border-rule bg-card px-sp-2 py-sp-0 font-mono text-meta text-mute">
             Final
           </span>
+        ) : (
+          count > 0 && (
+            <span
+              aria-hidden="true"
+              data-deadline-badge
+              className={cn(
+                "flex items-center gap-[0.25em] rounded-pill px-sp-2 py-sp-0 font-mono text-meta",
+                last ? "bg-on-dark text-accent" : "bg-accent text-on-dark",
+              )}
+            >
+              <Count value={count} /> new
+            </span>
+          )
         )}
       </span>
     </span>
   );
 }
 
-/* The live dot: a soft ring grows and fades while the trade deadline is open. It rests under reduced motion. */
-function LiveDot({ className }: { className?: string }) {
-  return <span aria-hidden="true" className={cn("deadline-live relative size-sp-2 flex-none rounded-full bg-accent", className)} />;
-}
-
-/* The sheet of the Trade Wire: the eyebrow with the countdown, the title, and the list. The list of trades comes with the
-   Trade Wire route, so the sheet shows the empty line for now. */
-function WireSheet({ closed, countdown }: { closed: boolean; countdown: string | null }) {
+/* A count that changes in place, as the number subtle change of transitions.dev: the new digit rises in with a short
+   cross-fade, so "2 new" turns "3 new" without a jump. Under reduced motion the digit swaps with a plain fade. */
+function Count({ value }: { value: number }) {
+  const off = useMotionOff();
   return (
-    <SheetContent
-      data-wire-sheet
-      className="mx-auto flex max-h-[85dvh] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card shadow-sheet"
-    >
-      <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />
-      <div className="flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-3 pb-sp-2">
-        <span className="font-mono text-label leading-tight font-bold tracking-caps text-mute uppercase">
-          {closed ? "Final" : `Trade deadline ${countdown}`}
-        </span>
-        <SheetTitle className="m-0 text-score leading-tight font-bold tracking-tight">Trade Wire</SheetTitle>
-      </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-sp-5 pb-[calc(var(--spacing-sp-6)+env(safe-area-inset-bottom))]">
-        <p data-wire-empty className="m-0 border-t border-rule py-sp-6 text-center text-row text-mute">
-          {closed ? "No trades this week." : "No trades yet this week."}
-        </p>
-      </div>
-      <SheetClose className="sr-only">Close</SheetClose>
-    </SheetContent>
+    <span className="relative inline-grid overflow-hidden tabular-nums">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={value}
+          initial={off ? { opacity: 0 } : { opacity: 0, y: 6, filter: "blur(2px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={off ? { opacity: 0 } : { opacity: 0, y: -6, filter: "blur(2px)" }}
+          transition={{ duration: 0.25, ease: SMOOTH_OUT }}
+        >
+          {value}
+        </motion.span>
+      </AnimatePresence>
+    </span>
   );
 }
