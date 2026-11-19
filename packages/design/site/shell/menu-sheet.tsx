@@ -87,6 +87,8 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
   };
 
   const week = items.find((item) => item.kind === "week");
+  // The week row opens the newest week, so "Past weeks" holds only the older weeks.
+  const past = weeks.slice(1);
   // The container moves the dim and the sheet out of the band to the body. In place they sit inside the band, and the
   // Drawer then takes a tap on the dim as a tap on the persistent band, so the tap does not close the sheet. The dim and
   // the sheet render only once open, in the browser, so the server never reads document.
@@ -141,8 +143,8 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
                     </span>
                     {here && <CheckIcon aria-hidden data-check="" className="size-sp-5 flex-none text-accent-ink" strokeWidth={2.5} />}
                   </a>
-                  {item === week && weeks.length > 0 && (
-                    <PastWeeks weeks={weeks} pageHref={pageHref} open={pastOpen} onToggle={() => setPastOpen((was) => !was)} />
+                  {item === week && past.length > 0 && (
+                    <PastWeeks weeks={past} pageHref={pageHref} open={pastOpen} onToggle={() => setPastOpen((was) => !was)} />
                   )}
                 </li>
               );
@@ -158,7 +160,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref }: MenuSheetPro
 
 type PastWeeksProps = { weeks: WeekLink[]; pageHref?: string; open: boolean; onToggle: () => void };
 
-/* "Past weeks" under the week row, and the chips of every week that it opens, newest first. The list grows on the
+/* "Past weeks" under the week row, and the chips of each week older than the newest that it opens, newest first. The list grows on the
    grid rows, so it pushes the rows under it down and never covers them. */
 function PastWeeks({ weeks, pageHref, open, onToggle }: PastWeeksProps) {
   const id = useId();
