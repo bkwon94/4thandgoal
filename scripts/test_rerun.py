@@ -20,10 +20,6 @@ BUG = "def add(a, b):\n    return a + b + 1\n"
 FIX = "def add(a, b):\n    return a + b\n"
 FAILURE_LINE = "AssertionError: add(2, 2) gave 5"
 COMMAND = "python3 -B loop.py"
-# A loop that prints its failure line with the ANSI color codes of Vitest on GitHub Actions.
-COLOR_LOOP = ("import sys\nfrom calc import add\nif add(2, 2) != 4:\n"
-              "    print('\\x1b[2m Test Files \\x1b[22m \\x1b[1m\\x1b[31m1 failed\\x1b[39m\\x1b[22m\\x1b[90m (1)\\x1b[39m')\n"
-              "    sys.exit(1)\nprint('loop passed')\n")
 
 
 def quick_file(red: str, fix: str, failure_line: str = FAILURE_LINE, command: str = COMMAND,
@@ -163,14 +159,6 @@ class TheRerun(unittest.TestCase):
         # A quick file may cut a long line with "...", as pytest does. Each cut part must still show, in order.
         red, fix = self.red_and_fix()
         self.commit({".scratch/bugs/add.md": quick_file(red, fix, "AssertionError: add...gave 5")})
-        result = self.rerun()
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-
-    def test_a_quoted_line_matches_output_with_ansi_color_codes(self):
-        # Vitest on GitHub Actions colors its output, so the codes sit inside the line that the Red block quotes.
-        red = self.commit({"loop.py": COLOR_LOOP})
-        fix = self.commit({"calc.py": FIX})
-        self.commit({".scratch/bugs/add.md": quick_file(red, fix, "Test Files  1 failed (1)")})
         result = self.rerun()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 

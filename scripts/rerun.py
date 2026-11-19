@@ -27,8 +27,6 @@ FAILURE_MARK = re.compile(r"FAIL|Error|✘|×|\bfailed\b|^E\s")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 # A quick file may cut a long line with "...", as pytest does, so a cut matches any text.
 CUT = re.compile(r"\.\.\.|…")
-# A tool such as Vitest on GitHub Actions colors its output with ANSI codes, so the compare drops each code.
-ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 # The site client build that a site loop needs at each commit, as the site job of Check does before its tests.
 CLIENT_BUILD = "CLIENT=cpc node scripts/client-build.mjs"
 # A loop that runs longer than this counts as a failure, so a hung command cannot hold the job.
@@ -130,7 +128,7 @@ def read_runs(item: Item, body: str) -> None:
 
 
 def normal(text: str) -> str:
-    return " ".join(NUMBER.sub("0", ANSI.sub("", text)).split())
+    return " ".join(NUMBER.sub("0", text).split())
 
 
 def shows(line: str, printed: str) -> bool:
