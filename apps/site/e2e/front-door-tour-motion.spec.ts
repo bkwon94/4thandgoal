@@ -93,21 +93,26 @@ function offsetOf({ hole, card }: Sample) {
   };
 }
 
-/* A slow runner, such as a CI machine, draws a frame only every so often. This init script blocks the main thread for
-   `ms` at the first callback of each frame, so the Mac draws few frames in the glide, as CI does. The callbacks of one
-   frame share one timestamp, so each frame is blocked once, and the frames come at an even pace. */
-async function slowFrames(page: Page, ms: number) {
-  await page.addInitScript((block) => {
+/* The glide is a spring that runs on the clock of the page, and the samples read that clock too. On a loaded runner a
+   frame can come 300 ms or more after the one before it. Then the frame after the start of the 450 ms glide shows the
+   hole at the new Stop already, and a real glide looks like a jump. This init script gives the page a clock of frames:
+   `performance.now` and the time of each frame move by exactly `ms` per frame, whatever the real time between frames.
+   So the test sees the same frames of the glide on a fast Mac and on a loaded runner. The callbacks of one frame share
+   one timestamp, so the clock moves once per frame. */
+async function frameClock(page: Page, ms: number) {
+  await page.addInitScript((step) => {
     const raf = window.requestAnimationFrame.bind(window);
-    let blocked = -1;
+    const start = performance.now();
+    let frames = 0;
+    let last = -1;
+    Object.defineProperty(performance, "now", { configurable: true, value: () => start + frames * step });
     window.requestAnimationFrame = (callback) =>
       raf((time) => {
-        if (time !== blocked) {
-          blocked = time;
-          const end = performance.now() + block;
-          while (performance.now() < end);
+        if (time !== last) {
+          last = time;
+          frames += 1;
         }
-        callback(time);
+        callback(performance.now());
       });
   }, ms);
 }
@@ -139,8 +144,9 @@ async function lateGlideFrames(page: Page, ms: number) {
   }, ms);
 }
 
-/* AT-15: tap Next on Stop 1 and check each frame of the move to Stop 2. */
-async function glideTogether(page: Page) {
+/* AT-15: tap Next on Stop 1 and check each frame of the move to Stop 2, with a frame every `frameMs` of the page clock. */
+async function glideTogether(page: Page, frameMs = 1000 / 60) {
+  await frameClock(page, frameMs);
   await openTour(page);
   await startSamples(page, readFrame);
   await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
@@ -191,8 +197,7 @@ test.describe("iPhone 390x660 with motion on", () => {
   });
 
   test("on a slow runner with 150 ms frames, the hole and the card still glide together (AT-15)", async ({ page }) => {
-    await slowFrames(page, 150);
-    await glideTogether(page);
+    await glideTogether(page, 150);
   });
 
   test("when the first frames of the glide come 400 ms late, the hole and the card still glide together (AT-15)", async ({ page }) => {
