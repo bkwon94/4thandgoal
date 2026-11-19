@@ -19,7 +19,8 @@ export function TeamPick({ sim, onPick }: { sim: WeekSim; onPick: (id: number) =
         <h1 id="sim-pick-title" className="m-0 text-stat leading-tight font-bold text-balance">
           Pick your team
         </h1>
-        <p className="m-0 text-meta text-pretty text-mute">See what your team needs to make the playoffs.</p>
+        {/* A sub line of the heading, so it is other text of the floor at 11px or more, not prose (ADR 0025). */}
+        <div className="text-meta text-pretty text-mute">See what your team needs to make the playoffs.</div>
         <ul aria-label="Teams" className="m-0 grid list-none grid-cols-1 gap-x-sp-3 p-0 tablet:grid-cols-2">
           {ids.map((id) => (
             <li key={id} className="border-t border-rule">
