@@ -12,8 +12,10 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each don
 
 Done condition: The tour dims the page more in both themes while the spotlight and tour card stay clear.
 Method: text only.
-Red: pending
-Green: pending
-Test verdict: pending
+Red: none, text only.
+Green: at `92228e3f`, the tour backdrop changes from 45% to 65% black.
+Test verdict: none
 
 ## Comments
+
+The phone-size preview shows the new shade in both themes. Team selection opens the tour. Next and Skip work in both themes.
