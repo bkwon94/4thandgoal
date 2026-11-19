@@ -8,7 +8,7 @@ Spec: `.scratch/season-sim/PRD.md`. Acceptance tests AT-38 to AT-41. Decision 04
 
 **Blocked by:** 06.
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] "Sim week 11" plays the games with Bo Girds first and one median line, then the standings in the Race style (AT-38).
 - [x] "Sim the season" plays Season, Playoffs, and Champion with no scroll, and the controls stay in their own row (AT-39).
