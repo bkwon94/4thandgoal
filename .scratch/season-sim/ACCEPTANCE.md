@@ -263,7 +263,7 @@ Evidence: the screenshot at 390x660 and the overlap check.
 AT-32: A noisy number shows "about"
 App: site
 Stories: 15
-Given: a result with the "about" flag in the file.
+Given: a ladder step with the "about" flag in the real file, and a result tile with the flag in a unit test.
 When: the reader looks at its tile.
 Then: the number reads "about X%".
 Evidence: the screenshot and the result in the file.
@@ -471,7 +471,7 @@ Evidence: screenshots of both loads at 390x660.
 AT-58: The Announcement does not open with no team set
 App: site
 Stories: 51
-Given: a fresh browser where the reader closed the team picker with no team.
+Given: a fresh browser with no team set. The team picker cannot close with no team.
 When: the reader reloads the home page.
 Then: the Announcement does not open, and it opens on a later load after a team is set.
 Evidence: the test output.

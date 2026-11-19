@@ -415,7 +415,7 @@ Observation: The first load shows only "Which team is yours?" and no Announcemen
 App: site
 Then: the Announcement does not open, and it opens on a later load after a team is set.
 Files: `evidence/AT-58/0-after-close-tries-390x660-dark.png`, `evidence/AT-58/1-reload-no-team-390x660-dark.png`, `evidence/AT-58/2-later-load-team-set-390x660-dark.png`, `evidence/AT-58/steps.txt`, `evidence/AT-58/test-output.txt`
-Observation: The Given state is still not reached at b5de9120: Escape, a tap on the dim, and a mouse drag down each left the first-visit team picker open, with `cpc.your-team` null. F4 does not change the picker, and `team-sheet.tsx` says the first-visit sheet is not dismissible. The reload with no team shows the picker again and no Announcement, and a later load with `cpc.your-team` 6 shows the Announcement. The vitest output shows the 11 tests of `announcement.test.tsx` passed, with the AT-57, AT-58 test among them.
+Observation: The shots start from a fresh browser with no team set, at b5de9120: Escape, a tap on the dim, and a mouse drag down each leave the first-visit team picker open, with `cpc.your-team` null. The reload with no team shows the picker again and no Announcement, and a later load with `cpc.your-team` 6 shows the Announcement. The vitest output shows the 11 tests of `announcement.test.tsx` passed, with the AT-57, AT-58 test among them.
 
 ## AT-59: The Announcement stops after its end date
 
