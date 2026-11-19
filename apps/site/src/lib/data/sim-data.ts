@@ -8,8 +8,10 @@ import { simSchema, weekSimSchema } from "@cpc/sim/schema/sim";
 import type { Sim, WeekSim } from "@cpc/sim/schema/sim-types";
 import { readPublished } from "./published-file";
 
-/* The sim file layout version this site reads. It counts apart from the other published files. */
-const SCHEMA_VERSION = 1;
+/* The layout versions of the two sim files this site reads. Each file counts apart, as in sim/published.py, so a change
+   to one never breaks the reader of the other. */
+const SIM_SCHEMA_VERSION = 1;
+const WEEK_SIM_SCHEMA_VERSION = 1;
 const FILE = "sim.json";
 const SEASON = /^\d{4}$/;
 const WEEK = /^week-\d{2}$/;
@@ -18,7 +20,7 @@ const publicDir = () => join(process.cwd(), "public");
 
 /* A schema change must fail the build loud, the same rule as the week reader. A season with no file gives null. */
 export function loadSim(season: string): Sim | null {
-  return readPublished(join(publicDir(), season, FILE), SCHEMA_VERSION, simSchema);
+  return readPublished(join(publicDir(), season, FILE), SIM_SCHEMA_VERSION, simSchema);
 }
 
 /* The week folders of a season that hold a week sim file, oldest first. The names sort as numbers, week-09 before week-10. */
@@ -41,11 +43,11 @@ export function weekSimSeasons(): string[] {
 /* The week sim file of the newest week of the season, which the sim page reads. A season with none gives null. */
 export function latestWeekSim(season: string): WeekSim | null {
   const week = simWeeks(season).at(-1);
-  return week === undefined ? null : readPublished(join(publicDir(), season, week, FILE), SCHEMA_VERSION, weekSimSchema);
+  return week === undefined ? null : readPublished(join(publicDir(), season, week, FILE), WEEK_SIM_SCHEMA_VERSION, weekSimSchema);
 }
 
 /* The week sim file of one week folder, such as "week-10", which the Sim tile of that week page reads. A week with no
    file gives null, so an older week page has no tile. */
 export function loadWeekSim(season: string, week: string): WeekSim | null {
-  return readPublished(join(publicDir(), season, week, FILE), SCHEMA_VERSION, weekSimSchema);
+  return readPublished(join(publicDir(), season, week, FILE), WEEK_SIM_SCHEMA_VERSION, weekSimSchema);
 }
