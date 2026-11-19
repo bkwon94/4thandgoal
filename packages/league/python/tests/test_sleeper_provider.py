@@ -3,15 +3,16 @@ Tests for the Sleeper adapter of the provider port: the cache dir it takes in it
 of the projections ahead. Each test passes an httpx.MockTransport, so no test calls the network (ADR 0015).
 """
 import json
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import httpx
 
 from league.parse import parse_trades
 from league.provider.base import Provider
 from league.provider.raw import RawTransaction
-from league.provider.sleeper import SleeperProvider, fetch_current_transactions
+from league.provider.sleeper import SleeperProvider, fetch_current_transactions, week_of
 
 PLAYERS = {"4046": {"position": "QB", "team": "BUF"}}
 
@@ -113,3 +114,9 @@ def test_a_transaction_keeps_status_updated_as_an_extra_and_the_trade_takes_its_
     trades = parse_trades(raw)
     assert trades and all(
         each.accepted == datetime.fromtimestamp(sent[each.transaction_id] / 1000, tz=UTC) for each in trades)
+
+
+def test_the_lock_at_00_00_eastern_on_2026_11_24_falls_in_week_11():
+    # Week 1 of 2026 starts on Thursday 2026-09-10, so the Monday night games of week 11 end on 2026-11-24.
+    lock = datetime(2026, 11, 24, 0, 0, tzinfo=ZoneInfo("America/New_York"))
+    assert week_of(lock, date(2026, 9, 10)) == 11

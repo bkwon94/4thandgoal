@@ -4,8 +4,11 @@ transactions of leg 9 of cpc, with the live week 10 rosters of cpc for the names
 """
 import dataclasses
 import json
+from datetime import datetime
+from functools import partial
 from pathlib import Path
 
+import httpx
 import test_api
 import test_start_sit
 from fakes import FakeJev
@@ -14,6 +17,7 @@ from test_api import HEADERS, _here
 
 from cornerstone_api.app import create_app
 from league.provider.raw import RawTransaction
+from league.provider.sleeper import fetch_current_transactions
 
 repo = test_api.repo
 settings = test_api.settings
@@ -33,13 +37,15 @@ class Wire:
         self.leg = leg
         self.answer = answer if answer is not None else json.loads(RECORDED.read_text())
         self.reads = 0
+        self.until: datetime | None = None
 
-    def __call__(self, league_id: str):
+    def __call__(self, league_id: str, *, until: datetime | None = None):
         self.reads += 1
+        self.until = until
         return self.leg, [RawTransaction.model_validate(each) for each in self.answer]
 
 
-def _api(settings, sources, wire: Wire) -> TestClient:
+def _api(settings, sources, wire) -> TestClient:
     """An app over cpc on its recorded week 10, with `wire` as the Sleeper read of the transactions."""
     cpc = dataclasses.replace(test_start_sit._sources(_here(sources, settings), "cpc", test_start_sit.BEFORE_KICKOFF),
                               fetch_transactions=wire)
@@ -121,3 +127,27 @@ def test_a_call_with_no_passphrase_answers_401_and_40_calls_from_one_address_all
     refused = api.get(TRADE_WIRE.format(slug="cpc"))
     assert refused.status_code == 401 and refused.content == b""
     assert [api.get(TRADE_WIRE.format(slug="cpc"), headers=HEADERS).status_code for _ in range(40)] == [200] * 40
+
+
+def test_the_route_reads_the_leg_of_the_week_of_the_lock_after_sleeper_moves_to_leg_12(settings, sources):
+    # The Lock of cpc is in week 11. Sleeper is in leg 12, one day after the Lock, so the route reads leg 11.
+    paths: list[str] = []
+    week_11 = [{**each, "leg": 11} for each in json.loads(RECORDED.read_text())]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        paths.append(request.url.path)
+        if request.url.path.endswith("/state/nfl"):
+            return httpx.Response(200, json={"leg": 12, "season_start_date": "2026-09-10"})
+        return httpx.Response(200, json=week_11 if request.url.path.endswith("/transactions/11") else [])
+
+    api = _api(settings, sources, partial(fetch_current_transactions, transport=httpx.MockTransport(handler)))
+    response = api.get(TRADE_WIRE.format(slug="cpc"), headers=HEADERS)
+    assert response.status_code == 200, response.text
+    assert response.json()["leg"] == 11 and paths[1].endswith("/transactions/11")
+    assert {trade["transaction_id"] for trade in response.json()["trades"]} == {TRADE_W, OTHER_TRADE}
+
+
+def test_the_route_gives_the_lock_of_the_client_config_to_the_sleeper_read(settings, sources):
+    wire = Wire()
+    _trades(_api(settings, sources, wire))
+    assert wire.until == datetime.fromisoformat("2026-11-24T00:00:00-05:00")
