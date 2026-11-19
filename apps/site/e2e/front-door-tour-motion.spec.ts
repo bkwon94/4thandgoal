@@ -234,24 +234,51 @@ test.describe("iPhone 390x660 with motion on", () => {
 /* Short scrolls down and back. The control crosses the middle line of the screen, so the side of the card flips. A
    pause near the fade of the card lets the card fade out, and the scroll back flips the side again before the card
    comes back. The pause that does it moves with the load of the machine, so the test steps through the pauses around
-   the fade. After each scroll the card must show again within 3 s, beside its hole, and never over its control. */
+   the fade. After each scroll the card must show again within 3 s, beside its hole, and never over its control.
+   The page samples each frame after the scroll back with one frame loop of its own, until the card shows and the hole
+   holds still for 20 frames. So the test sees each frame of the return, not only the frame of one late read. In each
+   pause the hole is still on its way back when the card can start to return, so a card that comes back before its hole
+   lands covers the control in some frame on every run, on a fast Mac and on a loaded runner. */
 async function cardShowsAfterScrollBursts(page: Page) {
   for (let pause = 120; pause <= 220; pause += 5) {
-    await page.evaluate(async (wait) => {
-      window.scrollTo(0, 60);
-      await new Promise((done) => setTimeout(done, wait));
-      window.scrollTo(0, 0);
-    }, pause);
-    await expect
-      .poll(() => page.evaluate(readFrame).then(({ opacity }) => opacity), { message: `the card shows again after a scroll with a pause of ${pause} ms`, timeout: 3000 })
-      .toBe(1);
-    const frame: Sample = await page.evaluate(readFrame);
+    const samples: Sample[] = await page.evaluate(
+      async ({ wait, source }) => {
+        const read = new Function(`return (${source})()`) as () => Sample;
+        window.scrollTo(0, 60);
+        await new Promise((done) => setTimeout(done, wait));
+        window.scrollTo(0, 0);
+        const frames: Sample[] = [];
+        const start = Date.now();
+        await new Promise<void>((done) => {
+          const tick = () => {
+            frames.push(read());
+            const last = frames.slice(-21).map((frame) => JSON.stringify(frame.hole));
+            const still = last.length > 20 && last.every((hole) => hole === last[0]) && frames.at(-1)!.opacity === 1;
+            if (still || Date.now() - start > 3000) done();
+            else requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+        return frames;
+      },
+      { wait: pause, source: readFrame.toString() },
+    );
+    const frame = samples.at(-1)!;
     const { below, gap } = offsetOf(frame);
     // The card sits under a control in the top half of the screen and over a control in the bottom half.
     const holeInTopHalf = frame.hole.y + frame.hole.height / 2 <= page.viewportSize()!.height / 2;
     console.log(`E1 card at rest after a scroll with a pause of ${pause} ms: ${JSON.stringify({ hole: frame.hole, card: frame.card, opacity: frame.opacity, below, gap })}`);
+    expect(frame.opacity, `the card shows again after a scroll with a pause of ${pause} ms`).toBe(1);
     expect(below, `the card takes the side of its control after a pause of ${pause} ms`).toBe(holeInTopHalf);
     expect(gap, `the card does not cover its control after a pause of ${pause} ms`).toBeGreaterThanOrEqual(0);
+    // The card returns from its faintest frame. From that frame on, each frame that shows the card has it beside its hole.
+    const faintest = samples.reduce((low, sample, index) => (sample.opacity < samples[low].opacity ? index : low), 0);
+    const covers = samples
+      .slice(faintest)
+      .map((sample, index) => ({ index: faintest + index, opacity: sample.opacity, gap: offsetOf(sample).gap, hole: sample.hole.y }))
+      .filter((sample) => sample.opacity > 0 && sample.gap < 0)
+      .map(({ index, opacity, gap, hole }) => `frame ${index}: opacity ${opacity}, gap ${gap.toFixed(1)} px, hole top ${hole.toFixed(1)}`);
+    expect(covers, `the card covers its control as it comes back after a pause of ${pause} ms`).toEqual([]);
   }
 }
 
