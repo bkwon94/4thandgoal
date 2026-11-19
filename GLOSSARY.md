@@ -84,7 +84,7 @@ The page that lists the twelve teams of a season and links to each manager page.
 _Avoid_: Roster list, team list, directory
 
 **Hero**:
-The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. It holds its content in the six hero slots. On a manager page it holds the avatar, the team name, the grade, and the record.
+The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. It holds its content in the seven hero slots. On a manager page it holds the avatar, the team name, the grade, and the record.
 _Avoid_: Header, banner, masthead, title block
 
 **Hero slot**:

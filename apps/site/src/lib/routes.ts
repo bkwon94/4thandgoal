@@ -3,10 +3,12 @@
  * The app layer calls them, so a link change starts in this file.
  */
 import { managerHrefFrom, managerHrefOrNull } from "@cpc/league/hrefs";
+import type { AnalyzerMode } from "@cpc/analyzer/lib/mode";
 
 export const homeHref = () => "/";
 export const rankingsHref = () => "/rankings/";
-export const analyzeHref = () => "/analyze/";
+/* With a mode, the analyzer opens on that half of its switch, such as /analyze/?mode=find for the links of the Trade Wire. */
+export const analyzeHref = (mode?: AnalyzerMode) => (mode === undefined ? "/analyze/" : `/analyze/?mode=${mode}`);
 /* The egg board of a client of the eggs package. */
 export const eggsHref = () => "/eggs/";
 /* The week is the folder name, such as week-06, as the published folders name it. */
