@@ -1,0 +1,19 @@
+
+> 4thandgoal-site@0.1.0 smoke ~/repos/4thandgoal/.claude/worktrees/trusted-green/apps/site
+> node scripts/smoke.mjs "--out" "<scratch>/proof/spec-smoke" "Week report" "Passphrase"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:61066, API http://127.0.0.1:61067, API log <scratch>/proof/spec-smoke/api.log
+build cpc: 7.6 s
+PASS Passphrase 390x660 webkit in 10.0 s
+PASS Passphrase 1280x800 chromium in 4.4 s
+PASS Week report 390x660 webkit in 4.1 s
+PASS Week report 810x980 webkit in 3.4 s
+PASS Week report 1080x740 webkit in 3.7 s
+PASS Week report 1280x800 chromium in 3.5 s
+Smoke run: 2 flows, 2 passed, 0 failed
+  ✓  1 [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc (41.4s)
+
+  1 passed (42.0s)
