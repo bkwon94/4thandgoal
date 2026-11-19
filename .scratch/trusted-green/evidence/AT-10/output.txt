@@ -5,9 +5,10 @@
 
 Running 1 test using 1 worker
 
-build cpc: 8.1 s
-PASS Analyzer 390x660 webkit in 24.6 s
+site http://127.0.0.1:62644, API http://127.0.0.1:62645, API log /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-10/smoke/api.log
+build cpc: 6.9 s
+PASS Analyzer 390x660 webkit in 18.1 s
 Smoke run: 1 flow, 1 passed, 0 failed
-  ✓  1 [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc (34.0s)
+  ✓  1 [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc (29.2s)
 
-  1 passed (34.6s)
+  1 passed (29.7s)

@@ -1,21 +1,21 @@
-$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-overlap && pnpm --dir apps/site smoke --out /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-8/smoke/ "Week report"
 
-> 4thandgoal-site@0.1.0 smoke /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-overlap/apps/site
-> node scripts/smoke.mjs "--out" "/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-8/smoke/" "Week report"
+> 4thandgoal-site@0.1.0 smoke /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/8d09205e-77a3-444d-a4cd-362b838a88be/scratchpad/tg-overlap/apps/site
+> node scripts/smoke.mjs --out /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-8/smoke/ 'Week report'
 
 
 Running 1 test using 1 worker
 
-build cpc: 3.8 s
+site http://127.0.0.1:61692, API http://127.0.0.1:61693, API log /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trusted-green/.scratch/trusted-green/evidence/AT-8/smoke/api.log
+build cpc: 6.6 s
 FAIL Week report 390x660 webkit: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
 FAIL Week report 810x980 webkit: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
 FAIL Week report 1080x740 webkit: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
 FAIL Week report 1280x800 chromium: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
 Smoke run: 1 flow, 0 passed, 1 failed
-  ✘  1 [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc (20.0s)
+  ✘  1 [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc (32.3s)
 
 
-  1) [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc ───────────────────────────────────────
+  1) [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc ───────────────────────────────────────
 
     Error: The smoke run is red:
     FAIL Week report 390x660 webkit: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
@@ -23,20 +23,17 @@ Smoke run: 1 flow, 0 passed, 1 failed
     FAIL Week report 1080x740 webkit: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
     FAIL Week report 1280x800 chromium: overlap: <h1> "Lil Fridge by 2.86" and <div> "Week 10 // Matchup of the Week"
 
-      46 |   try {
-      47 |     const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, out: OUT, log: (line) => console.log(line) });
-    > 48 |     if (failures.length > 0) throw new Error(`The smoke run is red:
-${failures.join("
-")}`);
+      55 |     console.log(`build ${CLIENT}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
+      56 |     const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, api: api.url, out: OUT, log: (line) => console.log(line) });
+    > 57 |     if (failures.length > 0) throw new Error(`The smoke run is red:\n${failures.join("\n")}`);
          |                                    ^
-      49 |   } finally {
-      50 |     await server.close();
-      51 |   }
-        at /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-overlap/apps/site/e2e/smoke.spec.ts:48:36
+      58 |   } finally {
+      59 |     await api.stop();
+      60 |     await server.close();
+        at /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/8d09205e-77a3-444d-a4cd-362b838a88be/scratchpad/tg-overlap/apps/site/e2e/smoke.spec.ts:57:36
 
     Error Context: test-results/smoke-the-smoke-run-of-cpc-smoke/error-context.md
 
   1 failed
-    [smoke] › e2e/smoke.spec.ts:21:5 › the smoke run of cpc ────────────────────────────────────────
+    [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc ────────────────────────────────────────
  ELIFECYCLE  Command failed with exit code 1.
-exit: 1

@@ -1,8 +1,8 @@
-FAIL Analyzer 390x660 webkit: API error: GET http://localhost:8080/clients/cpc/eggs/board failed: Could not connect to the server.
-FAIL Analyzer 390x660 webkit: console error: Failed to load resource: Could not connect to the server.
-FAIL Analyzer 390x660 webkit: console error: Could not connect to the server.
-FAIL Analyzer 390x660 webkit: page error: /localhost:8080/clients/cpc/teams?season=2026 due to access control checks.
-FAIL Analyzer 390x660 webkit: API error: GET http://localhost:8080/clients/cpc/teams?season=2026 failed: Could not connect to the server.
-FAIL Analyzer 390x660 webkit: console error: Failed to load resource: Could not connect to the server.
+FAIL Analyzer 390x660 webkit: API error: GET http://127.0.0.1:62262/clients/cpc/eggs/board failed: The network connection was lost.
+FAIL Analyzer 390x660 webkit: console error: Failed to load resource: The network connection was lost.
+FAIL Analyzer 390x660 webkit: console error: The network connection was lost.
+FAIL Analyzer 390x660 webkit: page error: /127.0.0.1:62262/clients/cpc/teams?season=2026 due to access control checks.
+FAIL Analyzer 390x660 webkit: API error: GET http://127.0.0.1:62262/clients/cpc/teams?season=2026 failed: The network connection was lost.
+FAIL Analyzer 390x660 webkit: console error: Failed to load resource: The network connection was lost.
 FAIL Analyzer 390x660 webkit: step 4 {"click":"role=button[name=\"Pick Your Team\"]"}: locator.click: Timeout 120000ms exceeded.
 Smoke run: 1 flow, 0 passed, 1 failed

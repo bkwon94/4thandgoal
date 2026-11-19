@@ -1,15 +1,6 @@
-$ ls -R smoke
-passphrase
-smoke.log
-week-report
-
-smoke/passphrase:
-1280-light.png
-390-light.png
-
-smoke/week-report:
-1080-light.png
-1280-light.png
-390-light.png
-810-light.png
-exit: 0
+smoke/passphrase/1280-light.png
+smoke/passphrase/390-light.png
+smoke/week-report/1080-light.png
+smoke/week-report/1280-light.png
+smoke/week-report/390-light.png
+smoke/week-report/810-light.png

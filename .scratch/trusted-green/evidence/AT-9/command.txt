@@ -1,1 +1,1 @@
-pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-9/smoke/ "Week report" "Passphrase"
+pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-9/smoke/ Week report Passphrase

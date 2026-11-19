@@ -1,1 +1,1 @@
-pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-7/smoke/ "Analyzer"
+pnpm --dir apps/site smoke --out .scratch/trusted-green/evidence/AT-7/smoke/ --no-api Analyzer
