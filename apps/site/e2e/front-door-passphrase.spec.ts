@@ -78,24 +78,35 @@ async function stallKeyboardSlide(page: Page) {
   });
 }
 
-/* The box of the passphrase and the top of the keyboard, in px of the page, read once the sheet comes to rest. */
+/* The box of the passphrase and the top of the keyboard, in px of the page, read once the sheet comes to rest. Two equal
+   reads are no proof of rest, because a loaded runner can draw no frame between them while the slide still moves. So the
+   read waits for the Drawer to take the keyboard inset, and then for each running motion of the sheet to end. */
 async function boxAndKeyboard(page: Page) {
   const field = page.getByRole("dialog").getByLabel("League passphrase", { exact: true }).and(page.locator("input"));
   const form = page.getByRole("dialog").getByRole("form", { name: "League passphrase" });
-  let last = "";
-  for (;;) {
-    await page.waitForTimeout(150);
-    const read = JSON.stringify(
-      await form.evaluate((formEl, keyboard) => {
-        const box = formEl.getBoundingClientRect();
-        return { top: Math.round(box.top), bottom: Math.round(box.bottom), keyboard: innerHeight - keyboard };
-      }, KEYBOARD),
-    );
-    if (read === last) break;
-    last = read;
-  }
+  // The Drawer writes --keyboard-inset on the host of the sheet, and starts its keyboard slide in the same step.
+  const inset = () =>
+    form.evaluate((formEl) => {
+      let el: HTMLElement | SVGElement | null = formEl;
+      while (el && !el.style.getPropertyValue("--keyboard-inset")) el = el.parentElement;
+      return el?.style.getPropertyValue("--keyboard-inset") ?? "";
+    });
+  await expect.poll(inset, { message: "the Drawer lifts the sheet by the keyboard" }).toBe(`${KEYBOARD}px`);
+  const place = await form.evaluate(async (formEl, keyboard) => {
+    let host: HTMLElement | SVGElement | null = formEl;
+    while (host && !host.style.getPropertyValue("--keyboard-inset")) host = host.parentElement;
+    /* A motion runs on the clock of the document. The Drawer also keeps paused animations for the dim and the drag, and
+       animations on a scroll timeline that follow the scroll of the sheet. Those never end on their own, so they do not
+       count. A canceled slide rejects its finished promise, so allSettled waits for each. */
+    const moving = (host ?? formEl)
+      .getAnimations({ subtree: true })
+      .filter((animation) => animation.playState === "running" && animation.timeline === document.timeline);
+    await Promise.allSettled(moving.map((animation) => animation.finished));
+    const box = formEl.getBoundingClientRect();
+    return { top: Math.round(box.top), bottom: Math.round(box.bottom), keyboard: innerHeight - keyboard };
+  }, KEYBOARD);
   await expect(field).toBeFocused();
-  return JSON.parse(last) as { top: number; bottom: number; keyboard: number };
+  return place;
 }
 
 /* A tap focuses the field first, and then the keyboard rises, as on iOS. */
