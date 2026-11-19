@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] One pure function of the time and the Lock gives the state (open, last hours, closed, ended) and the countdown text, with tests at the edges: 3 h before, the Lock, and one day after.
 - [x] The Deadline banner shows on each CPC page in both themes, with equal top and bottom padding and one left edge for both lines.
