@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { REPO_ROOT } from "./client-build.mjs";
+import { stepsOfClient } from "./client-steps.mjs";
 
 const clientsDir = join(REPO_ROOT, "clients");
 const slugs = readdirSync(clientsDir)
@@ -14,9 +15,9 @@ const slugs = readdirSync(clientsDir)
 
 for (const slug of slugs) {
   // The floor runs while out/ holds this client, because the next build replaces out/.
-  for (const script of ["build", "check:export", "check:floor"]) {
+  for (const { script, env } of stepsOfClient(slug)) {
     console.log(`==> site ${script}: ${slug}`);
-    const run = spawnSync("pnpm", [script], { stdio: "inherit", env: { ...process.env, CLIENT: slug } });
+    const run = spawnSync("pnpm", [script], { stdio: "inherit", env: { ...process.env, ...env, CLIENT: slug } });
     if (run.status !== 0) {
       console.error(`The site ${script} of the client ${slug} failed.`);
       process.exit(run.status ?? 1);
