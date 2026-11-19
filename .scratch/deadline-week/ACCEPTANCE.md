@@ -355,7 +355,7 @@ App: api
 Stories: 71
 Given: The press of AT-41.
 When: The evidence agent reads the Shortlist.
-Then: No player of Bo Girds and no partner shows in a second offer before each other player and partner with an offer shows once.
+Then: The best offer of each player of Bo Girds and the best offer of each partner come before a second form of any trade.
 Evidence: the Shortlist with the player and the partner of each offer.
 
 AT-44: The Spares tree lists a player only with cover who can play now
