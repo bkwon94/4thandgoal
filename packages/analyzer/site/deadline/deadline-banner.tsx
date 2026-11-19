@@ -13,7 +13,8 @@ import type { ApiTarget } from "../lib/api";
 import type { Deadline, DeadlinePhase } from "../lib/deadline";
 import { useDeadline } from "../lib/use-deadline";
 import { useTradeWire } from "../lib/use-trade-wire";
-import { LiveDot, SMOOTH_OUT, type TradeLinks, WireSheet } from "./wire-sheet";
+import { SMOOTH_OUT } from "@cpc/design/lib/motion";
+import { LiveDot, type TradeLinks, WireSheet } from "./wire-sheet";
 
 /* The surface of each phase, from the theme tokens only, so the banner reads in light and in dark. */
 const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {

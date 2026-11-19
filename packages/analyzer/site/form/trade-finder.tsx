@@ -20,7 +20,7 @@ import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/u
 import { PendingButton } from "@cpc/design/ui/pending-button";
 import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "@cpc/design/ui/segmented-control";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { EASE_OUT } from "@cpc/design/lib/motion";
+import { EASE_OUT, SMOOTH_OUT } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
@@ -282,7 +282,8 @@ function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }
         Why it works · {trade.bullets.length}
         <ChevronDown
           aria-hidden="true"
-          className="size-sp-4 transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-open:-scale-y-100 motion-reduce:transition-none"
+          style={{ transitionTimingFunction: `cubic-bezier(${SMOOTH_OUT.join(",")})` }}
+          className="size-sp-4 transition-transform duration-250 group-data-open:-scale-y-100 motion-reduce:transition-none"
         />
       </CollapsibleTrigger>
       <CollapsiblePanel>

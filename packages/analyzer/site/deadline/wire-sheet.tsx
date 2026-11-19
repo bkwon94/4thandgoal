@@ -8,12 +8,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SheetClose, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
+import { SMOOTH_OUT } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
 import type { WireTrade } from "../lib/api";
 import type { TradeWire } from "../lib/use-trade-wire";
-
-/* The smooth-out ease of transitions.dev, for a panel that opens and for a change of position. */
-export const SMOOTH_OUT = [0.22, 1, 0.36, 1] as const;
 
 /* The day and the time in Eastern, as the managers read the NFL clock: "Fri 7:04 PM". Some engines put a narrow space
    before PM, so each engine gives the same text. */
