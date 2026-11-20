@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-63, AT-64, and AT-71.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test with one partner of 1,200 offers sends 3 or more requests, each under 64,000 tokens by the estimate, and no offer passes as unsure.
 - [x] A test with a fixed clock and two presses of 300,000 tokens each, at once, never holds more than 100,000 tokens in one second.
