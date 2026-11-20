@@ -4,8 +4,10 @@
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import "@/fixtures/cpc-site";
+import { afterEach, beforeEach, describe, expect, it, mock, onTestFinished } from "bun:test";
+import { stubGlobal } from "../test/stubs";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
 import HomePage from "@/app/front-door/door-page";
 import FrontPage from "@/app/front-page";
@@ -27,30 +29,33 @@ import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { week6, week8 } from "@cpc/week/fixtures/week-page";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
-import { readFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 // The jsdom stand-ins that the Drawer of the team sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The import
+   of cpc-site runs first, because the week reader takes its folder when it loads. Each test sets the folder again,
+   because the file puts the real folder back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
+/* The stub of matchMedia lasts for one test, so each test sets it before Framer Motion reads it. */
+beforeEach(() =>
+  stubGlobal(
+    "matchMedia",
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList,
+  ),
 );
 
 const player = (id: string, name: string) => ({
@@ -123,11 +128,6 @@ async function pickPlayer(side: string, from: string, name: string) {
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 }
 
-afterEach(cleanup);
-afterAll(() => {
-  vi.unstubAllGlobals();
-});
-
 describe("Reduced motion", () => {
   it("shows the Lean word still, in the plain fade of the result", () => {
     render(<AnalyzeResult doc={fixtureJson as AnalyzeResponse} />);
@@ -196,9 +196,9 @@ describe("Reduced motion", () => {
   });
 
   it("shows no sweep while the grade runs", async () => {
-    vi.stubGlobal(
+    stubGlobal(
       "fetch",
-      vi.fn(() => new Promise(() => {})),
+      mock(() => new Promise(() => {})),
     );
     render(
       <TradeForm
@@ -227,9 +227,9 @@ describe("Reduced motion", () => {
   });
 
   it("fades the headshots into the stage on the tap of Grade, with no rise and no blur", async () => {
-    vi.stubGlobal(
+    stubGlobal(
       "fetch",
-      vi.fn(() => new Promise(() => {})),
+      mock(() => new Promise(() => {})),
     );
     render(
       <TradeForm
@@ -281,8 +281,12 @@ describe("Reduced motion on the trade form", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
     // The exit takes the instant transition, so the side leaves by the next frame. A real exit fails the short wait.
+    // A failed `expect` on an element makes Bun format the whole happy-dom tree, which takes seconds, so the wait throws its own error.
     await waitFor(
-      () => expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull(),
+      () => {
+        if (screen.queryByRole("region", { name: "Team Three gets" }))
+          throw new Error("The side is still there.");
+      },
       { timeout: 50 },
     );
   });

@@ -4,7 +4,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 /* The lint runs from the repo root, because Oxlint takes no path with "..". */
 const ROOT_DIR = join(process.cwd(), "..", "..");

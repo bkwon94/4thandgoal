@@ -4,7 +4,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { GRADE_WEIGHTS } from "@cpc/managers/page/grade-weights";
 
 /* The tunables file of the pipeline. The test sits in the app layer, because a package test reads no file (ADR 0012). */

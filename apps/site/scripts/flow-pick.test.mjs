@@ -2,8 +2,7 @@
  * Tests of the flow pick of the verify skill on the real flow list: the globs of a diff pick the flows.
  * A diff of one app folder picks its flow, a diff of the pipeline picks none, and a shared part picks each flow.
  */
-// @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { describePick, FLOW_LIST, pickFlows, readFlowGlobs } from "./flow-pick.mjs";
 
 const flows = readFlowGlobs(FLOW_LIST);

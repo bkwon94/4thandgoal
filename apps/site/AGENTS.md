@@ -12,7 +12,7 @@ Run these in `apps/site/`.
 - Dev server: `CLIENT=cpc pnpm dev`
 - Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.
 - Test: `pnpm test`. It runs Vitest, then `pnpm test:bun`. The tests read the generated files, so run `pnpm check:fast` or a build first.
-- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. It runs `bun test` from `apps/site` on the folders of `scripts/bun-test-files.mjs`. Vitest skips those folders. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it.
+- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. It runs `bun test --isolate` from `apps/site` on the folders and files of `scripts/bun-test-files.mjs`, so each file has its own global and module registry. Vitest skips them. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it.
 - Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.
 - Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page. It runs the parallel pass, then the tests tagged `@timing` alone with one worker.
 - Test the rules of the floor, the evidence runner, and the smoke run: `pnpm test:floor`. It needs Chromium and WebKit once: `pnpm exec playwright install chromium webkit`.
@@ -39,7 +39,7 @@ The tests move to `bun test` one folder at a time (ADR 0038). Until the last mov
 6. In a test of a package, change `vi.stubGlobal("x", fake)` to `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
 7. Remove each `vi.unstubAllGlobals()` and `vi.unstubAllEnvs()`. The preload restores each spy and each stub after each test.
 8. Move each spy and each stub at the top level of a file into `beforeEach`. The restore after the first test removes a top-level one.
-9. Change the setup of a test with `vi.resetModules` or `vi.hoisted`. Bun has neither call.
+9. Change `vi.resetModules()` to `resetModules()` of `apps/site/test/reset-modules.ts`. A file that loads a module with an env or `process.cwd` value resets the modules after each test. Change `vi.hoisted` to an import with a side effect that runs first, such as `@/fixtures/cpc-site`. Bun has no `vi.hoisted`.
 10. Add the folder to `BUN_TEST_DIRS` in `scripts/bun-test-files.mjs`.
 11. Run `pnpm test:bun`. Compare the count of each file with step 1, and name each change in the ticket.
 

@@ -3,7 +3,6 @@
  * A test reads this copy in place of public/ or clients/<slug>/published/, so a weekly publish never changes what a test sees.
  */
 import { join } from "node:path";
-import { vi } from "vitest";
 
 /* The clients that the copy holds. */
 export type FixtureClient = "cpc" | "norcal";
@@ -21,7 +20,17 @@ export function fixturePublished(slug: FixtureClient, ...path: string[]): string
   return join(SITES, slug, "public", ...path);
 }
 
-/* Points the working folder at the fixed site folder of one client, so each reader of public/ reads the fixed copy. */
+/* The real working folder function, kept from the first load of this module. */
+const realCwd = process.cwd;
+
+/* Points the working folder at the fixed site folder of one client, so each reader of public/ reads the fixed copy.
+   It sets `process.cwd` itself and no spy of one runner, because Vitest and `bun test` both run the tests that call it.
+   A test file under `bun test` calls `restoreFixtureSite` after each test. */
 export function readFixtureSite(slug: FixtureClient = "cpc"): void {
-  vi.spyOn(process, "cwd").mockReturnValue(fixtureSite(slug));
+  process.cwd = () => fixtureSite(slug);
+}
+
+/* Puts the real working folder function back. */
+export function restoreFixtureSite(): void {
+  process.cwd = realCwd;
 }

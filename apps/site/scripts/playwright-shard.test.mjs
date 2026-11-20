@@ -2,8 +2,9 @@
  * Tests of the shard of a Playwright run, read from the env value PLAYWRIGHT_SHARD, and of the serial projects of the config.
  * CI runs the browser check in a matrix of shards. The serial projects keep one worker in each shard.
  */
-// @vitest-environment node
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "bun:test";
+import { resetModules } from "../test/reset-modules";
+import { stubEnv } from "../test/stubs";
 import { shardOfEnv } from "./playwright-shard.mjs";
 
 describe("the shard of a Playwright run", () => {
@@ -25,14 +26,12 @@ describe("the shard of a Playwright run", () => {
 
 /* The config as Playwright reads it, with PLAYWRIGHT_SHARD set to `shard`. The config reads the env when it loads. */
 async function configWithShard(shard) {
-  vi.resetModules();
-  vi.stubEnv("PLAYWRIGHT_SHARD", shard);
+  resetModules();
+  stubEnv("PLAYWRIGHT_SHARD", shard);
   return (await import("../playwright.config.ts")).default;
 }
 
 describe("the Playwright config", () => {
-  afterEach(() => vi.unstubAllEnvs());
-
   it("runs the shard that PLAYWRIGHT_SHARD names, and every test with no value", async () => {
     expect((await configWithShard("3/4")).shard).toEqual({ current: 3, total: 4 });
     expect((await configWithShard("")).shard).toBeNull();

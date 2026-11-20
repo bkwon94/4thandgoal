@@ -2,10 +2,9 @@
  * Tests of the fixture client of the midseason report: a copy of a real client that takes midseason and sim, with the
  * package fixtures in its published season folder, so the floor of the report runs before any client publishes one.
  */
-// @vitest-environment node
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { parse } from "smol-toml";
 import { buildClient, REPO_ROOT } from "./client-build.mjs";
 import { fixtureRoot } from "./midseason-fixture.mjs";

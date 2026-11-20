@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type Offense, report } from "./rule-report";
 
 /* The tracker and the state file sit at the repo root, so the rule asks git for the root and not the folder of the app. */

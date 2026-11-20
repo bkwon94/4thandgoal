@@ -5,14 +5,11 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, spyOn } from "bun:test";
+import { resetModules } from "../../../test/reset-modules";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 /* The rankings fixture with a week 5 before week 6, where each team's playoff odds are 10 points lower.
    The fixture's own week before week 6 is week 1, which has no odds. */
@@ -41,9 +38,9 @@ async function readerOver({ managers, rankings }: { managers?: unknown; rankings
     writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
   if (rankings !== undefined)
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The week reader reads the working folder when it loads, so reset it to pick up the temp folder.
-  vi.resetModules();
+  resetModules();
   return import("./manager-data");
 }
 

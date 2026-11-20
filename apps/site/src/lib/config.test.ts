@@ -2,12 +2,11 @@
  * Smoke test of the config module. It checks the env defaults, the env overrides, and the values of the client build.
  * The fast check builds the cpc client first, so the client values are the values of clients/cpc/client.toml.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
+import { resetModules } from "../../test/reset-modules";
+import { stubEnv } from "../../test/stubs";
 
-afterEach(() => {
-  vi.unstubAllEnvs();
-  vi.resetModules();
-});
+afterEach(resetModules);
 
 describe("config", () => {
   it("uses the defaults when the env is empty", async () => {
@@ -16,13 +15,13 @@ describe("config", () => {
   });
 
   it("reads the env when it is set", async () => {
-    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8080");
+    stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8080");
     const { apiUrl } = await import("./config");
     expect(apiUrl).toBe("http://localhost:8080");
   });
 
   it("has no base path, because each client serves at the root of its own host", async () => {
-    vi.stubEnv("NEXT_PUBLIC_BASE_PATH", "/site");
+    stubEnv("NEXT_PUBLIC_BASE_PATH", "/site");
     const config = await import("./config");
     expect(config).not.toHaveProperty("basePath");
   });
@@ -35,15 +34,15 @@ describe("config", () => {
   });
 
   it("aims the analyzer at the routes of the cpc client of the API", async () => {
-    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8080");
+    stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8080");
     const { apiTarget } = await import("./config");
     expect(apiTarget).toEqual({ url: "http://localhost:8080", client: "cpc", season: 2026 });
   });
 
   it("ignores the old env flags of the season, the finder, the waiver page, and the usage code", async () => {
-    vi.stubEnv("NEXT_PUBLIC_SEASON", "2027");
-    vi.stubEnv("NEXT_PUBLIC_FINDER", "on");
-    vi.stubEnv("NEXT_PUBLIC_USAGE_CODE", "other");
+    stubEnv("NEXT_PUBLIC_SEASON", "2027");
+    stubEnv("NEXT_PUBLIC_FINDER", "on");
+    stubEnv("NEXT_PUBLIC_USAGE_CODE", "other");
     const config = await import("./config");
     expect(config.season).toBe(2026);
     expect(config.finderOn).toBe(false);

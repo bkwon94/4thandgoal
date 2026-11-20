@@ -2,12 +2,11 @@
  * Tests the type check script of the site: it runs `next typegen`, then `bun check`, and it fails on a type error.
  * The error case points the script at a scratch project, so the real code stays untouched.
  */
-// @vitest-environment node
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "bun:test";
 
 const site = join(import.meta.dirname, "..");
 const script = JSON.parse(readFileSync(join(site, "package.json"), "utf8")).scripts.typecheck;
