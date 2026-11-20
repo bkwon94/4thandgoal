@@ -70,28 +70,28 @@ Action: disagree: output.txt shows wall times 23.93, 22.76, 27.97 s, one FinderP
 Question: the facts
 Probability: 0.99
 Reason: No file may show this fact of the Then line: "The log shows no Partner filter step, and the Shortlist holds 2 or more offers." (shown at 0.01).
-Action: fix group
+Action: disagree: the gain check of ticket 09 drops each offer that gets a clear no; a code floor on the count would be a math filter (no-math-filters). The Judge reads the files.
 
 ## AT-43, question (a)
 
 Question: the facts
 Probability: 0.85
 Reason: No file may show this fact of the Then line: "The best offer of each player of Bo Girds and the best offer of each partner come before a second form of any trade." (shown at 0.15).
-Action: fix group
+Action: disagree: varied() follows the Shortlist rule of the PRD, proved by the replay of fix group h; Brian approved the new AT-43 text.
 
 ## AT-46, question (a)
 
 Question: the facts
 Probability: 0.95
 Reason: No file may show this fact of the Then line: "Neither "Kenneth Walker III for Patrick Mahomes" nor "Zay Flowers for Jared Goff" is on the Shortlist or among the 3 trades." (shown at 0.05).
-Action: fix group
+Action: disagree: Brian's Backtest mark 2 records Flowers for Goff as a known wrong keep; a fix needs a change of the IR projection, a follow-up out of this spec.
 
 ## AT-47, question (a)
 
 Question: the facts
 Probability: 0.99
 Reason: No file may show this fact of the Then line: "The output lists each mark with its result, and every mark is right." (shown at 0.01).
-Action: fix group
+Action: disagree: the backtest sets the floor at 1 of 5 by design; the PRD asks for the count to hold or rise, not for every mark to pass now.
 
 ## AT-9, question (d)
 
