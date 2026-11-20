@@ -840,18 +840,25 @@ def test_the_find_stream_sends_the_lean_and_the_case_with_each_trade(api):
 # The time after which the client of AT-48 cuts the stream, and the most time that a log line may take to show.
 CUT_SECONDS = 5
 LOG_WAIT_SECONDS = 5
+# The most time that the client of AT-48 waits for the pick stage. A loaded machine can take more than CUT_SECONDS to
+# reach it, because the search runs first.
+STAGE_WAIT_SECONDS = 30
+# The step line that the held pick sends before it holds, so the client knows that the stream stands on the pick stage.
+HELD_LINE = "The pick holds for the test"
 
 
 class HeldPick:
-    """A Finder pick that holds until the test lets it go, so the stream stays open on its pick stage."""
+    """A Finder pick that holds until the test lets it go, so the stream stays open on its pick stage. It sends the
+    step HELD_LINE first, so a client can wait for the pick stage and not for a fixed time."""
 
     def __init__(self, pick):
         self.pick = pick
         self.go = threading.Event()
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, stage, **kwargs):
+        stage(HELD_LINE)
         self.go.wait(timeout=30)
-        return self.pick(*args, **kwargs)
+        return self.pick(*args, stage=stage, **kwargs)
 
 
 @contextlib.contextmanager
@@ -872,17 +879,19 @@ def _served(app):
         thread.join(timeout=10)
 
 
-def _read_then_cut(port: int, path: str, body: dict, seconds: float) -> str:
-    """Post `body` to `path` on a raw socket, read what comes for `seconds`, then close the socket, as a browser that
-    drops the stream does. The text that came before the cut."""
+def _read_then_cut(port: int, path: str, body: dict, seconds: float, until: str) -> tuple[str, float]:
+    """Post `body` to `path` on a raw socket, read what comes for `seconds` and until the text `until` comes, then close
+    the socket, as a browser that drops the stream does. The text that came before the cut, and the seconds from the
+    send to the cut. The wait for `until` stops after STAGE_WAIT_SECONDS, so a stream that never sends it still ends."""
     payload = json.dumps(body).encode()
     head = (f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
             f"X-League-Passphrase: {HEADERS['X-League-Passphrase']}\r\nContent-Length: {len(payload)}\r\n\r\n")
     received = b""
     with socket.create_connection(("127.0.0.1", port)) as client:
+        sent = time.monotonic()
         client.sendall(head.encode() + payload)
-        end = time.monotonic() + seconds
-        while (left := end - time.monotonic()) > 0:
+        end, last = sent + seconds, sent + STAGE_WAIT_SECONDS
+        while (left := (end if until.encode() in received else last) - time.monotonic()) > 0:
             client.settimeout(left)
             try:
                 chunk = client.recv(65536)
@@ -891,7 +900,8 @@ def _read_then_cut(port: int, path: str, body: dict, seconds: float) -> str:
             if not chunk:
                 break
             received += chunk
-    return received.decode(errors="replace")
+        cut = time.monotonic() - sent
+    return received.decode(errors="replace"), cut
 
 
 def _failed_lines(caplog) -> list[str]:
@@ -907,7 +917,8 @@ def _wait_for_line(caplog) -> list[str]:
 
 def test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev,
                                                                                               caplog):
-    # AT-48: the client cuts the trade ideas stream after 5 s, while the pick stage works.
+    # AT-48: the client cuts the trade ideas stream after 5 s, while the pick stage works. The client waits for the
+    # step of the held pick before the cut, because a loaded machine can still run the search at 5 s.
     caplog.set_level(logging.INFO)
     news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
     held = HeldPick(functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair()))
@@ -915,7 +926,8 @@ def test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_an
                      finder_search=functools.partial(search, jev=jev), finder_pick=held)
     with _served(app) as port:
         try:
-            received = _read_then_cut(port, IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, CUT_SECONDS)
+            received, cut = _read_then_cut(port, IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, CUT_SECONDS,
+                                           HELD_LINE)
             _wait_for_line(caplog)
         finally:
             held.go.set()
@@ -928,10 +940,11 @@ def test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_an
     [line] = lines
     assert "topic=trade_ideas" in line
     assert "cause=client-cut" in line
+    assert steps[-1] == HELD_LINE
     assert f'stage="{steps[-1]}"' in line
     seconds = float(re.search(r"seconds=([0-9.]+)", line).group(1))
     # The stream starts after the team read of the route, a moment after the client sends, so its count runs a bit short.
-    assert CUT_SECONDS - 2 <= seconds <= CUT_SECONDS + 1
+    assert cut - 2 <= seconds <= cut + 1
 
 
 def test_a_press_that_fails_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev, caplog):
