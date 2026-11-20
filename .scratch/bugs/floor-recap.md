@@ -31,7 +31,7 @@ Green: at `2950b4d5`, `(CLIENT=cpc pnpm build || CLIENT=cpc pnpm build) > /dev/n
   ✓  6 [floor] › e2e/floor.spec.ts:169:11 › full floor: cpc /2026/week-10/ tap button[aria-controls="recap-3"]:not([aria-label]) light 1280px (1.2s)
   6 passed (4.0s)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
