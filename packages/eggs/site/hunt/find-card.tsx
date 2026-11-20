@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { type MouseEvent, useEffect, useState } from "react";
 import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
@@ -46,7 +47,7 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
     return () => clearTimeout(timer);
   }, [phase]);
 
-  const crackEgg = (event: MouseEvent<HTMLButtonElement>) => {
+  const crackEgg = (event: MouseEvent<HTMLElement>) => {
     // With motion off, the tap shows the letter at once, with no crack.
     if (!motion) {
       setPhase("letter");
@@ -91,7 +92,7 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
             {/* The ground reaches past the art to the edges of the hero, and never above or below the art. */}
             <ArtGround inset="inset-y-0 -inset-x-16" />
             {phase !== "letter" && (
-              <button
+              <PendingButton
                 type="button"
                 aria-label="Crack the egg"
                 disabled={phase === "cracking"}
@@ -100,7 +101,7 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
               >
                 <span aria-hidden="true" className="egg-halo" />
                 <Egg crack={crack} motion={motion} />
-              </button>
+              </PendingButton>
             )}
             {phase !== "egg" && (
               // The box of the egg art, so a point of the art is a point in px of this box.
@@ -142,13 +143,13 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
                   The first claim wins. Another manager can still beat you to it.
                 </p>
               </div>
-              <button
+              <PendingButton
                 type="button"
                 onClick={onClaim}
                 className="press min-h-touch rounded-pill bg-accent text-lead text-on-dark shadow-orb w-full font-bold"
               >
                 Claim {letter}
-              </button>
+              </PendingButton>
             </div>
           ) : (
             <div className="gap-sp-1 flex flex-col">
@@ -158,13 +159,13 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
               <p className="text-lead text-on-dark-2">Tap it to crack it open.</p>
             </div>
           )}
-          <button
+          <PendingButton
             type="button"
             onClick={onClose}
             className="press min-h-touch rounded-pill border-rule-dark bg-band text-body text-on-dark w-full border font-bold"
           >
             Close
-          </button>
+          </PendingButton>
         </div>
       </HeroFrame>
     </div>

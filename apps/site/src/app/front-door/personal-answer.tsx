@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef } from "react";
 import { RotateCwIcon } from "lucide-react";
@@ -86,14 +87,14 @@ export function StaleLine({ line, onRefresh }: { line: string; onRefresh: () => 
       <p role="status" className="text-meta text-ink m-0 leading-tight font-semibold">
         {line}
       </p>
-      <button
+      <PendingButton
         type="button"
         onClick={onRefresh}
         className="press min-h-touch gap-sp-1 rounded-pill border-door-hair bg-card px-sp-3 text-meta text-ink hover-fine:bg-raised flex items-center border leading-tight font-semibold"
       >
         <RotateCwIcon aria-hidden className="size-sp-4" strokeWidth={2.25} />
         {REFRESH_LABEL}
-      </button>
+      </PendingButton>
     </motion.div>
   );
 }

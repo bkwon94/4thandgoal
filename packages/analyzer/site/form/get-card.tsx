@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { PlusIcon, XIcon } from "lucide-react";
 import { useId } from "react";
@@ -61,7 +62,7 @@ export function GetCard({
             </span>
           </div>
           {onRemove && (
-            <button
+            <PendingButton
               type="button"
               aria-label={`Remove ${title}`}
               disabled={locked}
@@ -69,7 +70,7 @@ export function GetCard({
               className={`${ICON_BUTTON} -mr-sp-2`}
             >
               <XIcon aria-hidden="true" className="size-sp-5" />
-            </button>
+            </PendingButton>
           )}
         </div>
         {/* The list stays in the page, so the last row can animate out. empty:hidden drops the empty list from the layout. */}
@@ -98,7 +99,7 @@ export function GetCard({
                     <span className="text-ink font-bold">from {from.team}</span>
                   </span>
                 </span>
-                <button
+                <PendingButton
                   type="button"
                   aria-label={`Remove ${player.name}`}
                   disabled={locked}
@@ -106,12 +107,12 @@ export function GetCard({
                   className={ICON_BUTTON}
                 >
                   <XIcon aria-hidden="true" className="size-sp-4" />
-                </button>
+                </PendingButton>
               </motion.li>
             ))}
           </AnimatePresence>
         </ul>
-        <button
+        <PendingButton
           type="button"
           disabled={!canAdd || locked}
           onClick={onAdd}
@@ -119,7 +120,7 @@ export function GetCard({
         >
           <PlusIcon aria-hidden="true" className="size-sp-4" />
           Add a player {title} gets
-        </button>
+        </PendingButton>
       </Card>
     </section>
   );

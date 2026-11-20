@@ -11,6 +11,10 @@ import { MISS_LEAD } from "./front-door/miss-card";
 import { FIXING_LINE } from "./front-door/free-answer";
 import HomePage from "./front-door/door-page";
 
+/* The path to "Checked" holds "Checking" for HOLD_MS after the stream, and a loaded CPU can take seconds for the
+   renders before it. So each wait for an Answer gets 8 s, inside a test limit of 15 s. */
+vi.setConfig({ testTimeout: 15_000 });
+
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
    restore of the mocks removes it. */
@@ -90,7 +94,7 @@ function watchEarly(text: string) {
 async function articleWith(question: string, text: string) {
   await waitFor(
     () => expect(screen.getByRole("article", { name: question }).textContent).toContain(text),
-    { timeout: 3000 },
+    { timeout: 8000 },
   );
   return screen.getByRole("article", { name: question });
 }
@@ -235,7 +239,7 @@ describe("the free answer of Lil Fridge", () => {
         expect(localStorage.getItem("cpc.thread")).toContain("you beat NFC Least");
         expectShown(screen.getByRole("article", { name: "week 1 results" }));
       },
-      { timeout: 3000 },
+      { timeout: 8000 },
     );
   });
 
@@ -585,7 +589,7 @@ describe("the text block of an Answer", () => {
     // The kept card takes the place of the live card, and a reload shows the same marks with no stream.
     await waitFor(
       () => expect(localStorage.getItem("cpc.thread")).toContain("Kenneth Walker III"),
-      { timeout: 3000 },
+      { timeout: 8000 },
     );
     cleanup();
     render(<HomePage />);

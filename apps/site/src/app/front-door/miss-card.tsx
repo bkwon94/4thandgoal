@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { motion } from "framer-motion";
 import { forwardRef, type ReactNode } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -188,13 +189,13 @@ export const NoteCard = forwardRef<
           <div className="gap-sp-2 flex flex-wrap">
             {topic && onPick && <TopicChip topic={topic} team={team} index={0} onPick={onPick} />}
             {action && (
-              <button
+              <PendingButton
                 type="button"
                 onClick={action.onClick}
                 className="press min-h-touch rounded-pill bg-ink px-sp-4 text-body text-card flex items-center leading-tight font-semibold"
               >
                 {action.label}
-              </button>
+              </PendingButton>
             )}
           </div>
         )}

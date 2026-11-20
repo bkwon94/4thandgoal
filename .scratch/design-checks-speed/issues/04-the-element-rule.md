@@ -10,8 +10,8 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-1, AT-2, AT-12,
 
 **Status:** ready-for-agent
 
-- [ ] A fixture with a raw `<button>` fails, and the message names the rule, the line, and the wrapper.
-- [ ] A fixture with a raw `<dialog>` fails with the rule and the line.
-- [ ] No raw `<button>` remains in site code outside `ui` and outside test files.
+- [x] A fixture with a raw `<button>` fails, and the message names the rule, the line, and the wrapper.
+- [x] A fixture with a raw `<dialog>` fails with the rule and the line.
+- [x] No raw `<button>` remains in site code outside `ui` and outside test files.
 - [ ] A commit that adds a raw `<button>` to a site file fails the hook and does not land.
-- [ ] The lint of all site code exits 0.
+- [x] The lint of all site code exits 0.

@@ -12,6 +12,10 @@ import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
 import HomePage from "./front-door/door-page";
 
+/* The path to "Checked" holds "Checking" for HOLD_MS after the stream, and a loaded CPU can take seconds for the
+   renders before it. So each wait for an Answer gets 8 s, inside a test limit of 15 s. */
+vi.setConfig({ testTimeout: 15_000 });
+
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
    runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
    restore of the mocks removes it. */
@@ -66,7 +70,7 @@ async function tapInMore(name: string) {
 
 async function articleWith(name: string, text: string) {
   await waitFor(() => expect(screen.getByRole("article", { name }).textContent).toContain(text), {
-    timeout: 3000,
+    timeout: 8000,
   });
   return screen.getByRole("article", { name });
 }

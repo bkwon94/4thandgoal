@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { LayoutGroup, motion } from "framer-motion";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
@@ -39,7 +40,7 @@ export function WeekSwitch({
                 key={String(item)}
                 className={cn("min-w-0 flex-1", item === PLAYOFFS && "flex-[1.6]")}
               >
-                <button
+                <PendingButton
                   type="button"
                   aria-current={on ? "page" : undefined}
                   onClick={() => onOpen(item)}
@@ -72,7 +73,7 @@ export function WeekSwitch({
                       <span className="sr-only">, set</span>
                     </>
                   )}
-                </button>
+                </PendingButton>
               </li>
             );
           })}

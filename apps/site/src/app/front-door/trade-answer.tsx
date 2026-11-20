@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { motion } from "framer-motion";
 import { forwardRef, useId, useState, type ReactNode } from "react";
 import { ArrowRightIcon } from "lucide-react";
@@ -177,7 +178,7 @@ function CaseText({ text }: { text: string }) {
         {text}
       </p>
       {!open && (
-        <button
+        <PendingButton
           type="button"
           aria-expanded={false}
           aria-controls={id}
@@ -185,7 +186,7 @@ function CaseText({ text }: { text: string }) {
           className="press -mx-sp-2 min-h-touch rounded-pill px-sp-2 text-meta text-accent-ink tablet:hidden font-semibold underline underline-offset-4"
         >
           Read the full case
-        </button>
+        </PendingButton>
       )}
     </div>
   );

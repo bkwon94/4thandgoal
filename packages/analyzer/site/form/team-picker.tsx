@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { Team } from "../lib/api";
@@ -106,7 +107,7 @@ export function TeamPicker({
               </span>
             </label>
             {collapsed && (
-              <button
+              <PendingButton
                 type="button"
                 onClick={reopen}
                 disabled={locked}
@@ -114,7 +115,7 @@ export function TeamPicker({
                 className="press min-h-touch rounded-card px-sp-4 text-meta text-on-dark flex-none cursor-pointer font-bold tracking-wide uppercase underline underline-offset-4 disabled:cursor-not-allowed"
               >
                 Change
-              </button>
+              </PendingButton>
             )}
           </div>
         </div>

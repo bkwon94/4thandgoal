@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { ChevronRight } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@cpc/design/lib/utils";
@@ -58,7 +59,7 @@ export function PlayoffsPage({
         <ul className="m-0 list-none p-0">
           {page.weeks.map((week) => (
             <li key={week.week} className="border-rule border-t first:border-t-0">
-              <button
+              <PendingButton
                 type="button"
                 onClick={() => onOpen(week.week)}
                 className={cn(
@@ -69,7 +70,7 @@ export function PlayoffsPage({
                 <span className="text-body flex-none font-bold tabular-nums">{`Week ${week.week}`}</span>
                 <span className="text-meta text-mute min-w-0 flex-1 text-pretty">{`vs ${nameOf(sim, week.opponent)}`}</span>
                 <ChevronRight aria-hidden className="text-mute size-4 flex-none" />
-              </button>
+              </PendingButton>
             </li>
           ))}
         </ul>
