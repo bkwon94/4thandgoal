@@ -10,6 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from analyzer.fair_cache import FairCache, fair_key
 from analyzer.jev_waves import SPLIT_TOKENS, JevWaves, WaveRequest, estimated_tokens
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
@@ -169,6 +170,16 @@ def _team_state(snapshot: Snapshot, roster_id: int, charts: bool = False) -> dic
 
 def _pair_state(snapshot: Snapshot, asker: int, partner: int, charts: bool = False) -> dict:
     return {"teams": {"asker": _team_state(snapshot, asker, charts), "partner": _team_state(snapshot, partner, charts)}}
+
+
+def _fair_state(snapshot: Snapshot, first: int, second: int) -> dict:
+    """The two teams of the fair question in roster id order, each player with his chart value.
+
+    It names no asker, so a press of either team sends the same state, and one cached answer serves both (decision
+    19). A real Jev run moved the fair mean by 0.047 on average when the labels `asker` and `partner` swapped, against
+    0.018 between two runs of the same request.
+    """
+    return {"teams": [_team_state(snapshot, rid, charts=True) for rid in sorted((first, second))]}
 
 
 def in_pool(snapshot: Snapshot, pid: str, roster_id: int) -> bool:
@@ -505,33 +516,77 @@ def fair_requests(snapshot: Snapshot, asker: int, partner: int, offers: list[Pro
                   order: str) -> list[WaveRequest]:
     """The fair requests of step 1 for one partner and one side order, each under SPLIT_TOKENS by the estimate.
 
-    The state is the pair state with the `chart_value` of each player, and the sides of each offer under
+    The state is the fair state of the two teams, which names no asker, and the sides of each offer under
     `offers.<n>.sides`, each with its players and its `chart_sum`.
     """
-    return _split(_pair_state(snapshot, asker, partner, charts=True), offers,
+    return _split(_fair_state(snapshot, asker, partner), offers,
                   lambda run, start: _fair_lines(snapshot, run, start, order),
                   lambda run, start: _fair_questions(snapshot, run, start, order))
 
 
+def ask_fair(snapshot: Snapshot, offers_by_pair: dict[tuple[int, int], list[ProposedTrade]], waves: JevWaves,
+             cache: FairCache) -> int:
+    """Ask the fair question of each offer in each side order that the cache does not hold, and store each answer.
+    Return the count of questions asked.
+
+    The requests of every pair go in one set of waves. A failed request stores no answer, because a failed call is an
+    error and never a no, so the next press or warm-up asks it again.
+    """
+    groups: dict[str, list[WaveRequest]] = {}
+    asked: dict[str, tuple[str, list[ProposedTrade]]] = {}
+    for (first, second), offers in offers_by_pair.items():
+        for order in ORDERS:
+            missing = [trade for trade in offers if fair_key(snapshot, trade, order) not in cache]
+            if missing:
+                group = f"{first}-{second}.{order}"
+                groups[group] = fair_requests(snapshot, first, second, missing, order)
+                asked[group] = (order, missing)
+    if not groups:
+        return 0
+    answers = _offer_answers(groups, {group: len(missing) for group, (_, missing) in asked.items()}, waves, "fair")
+    for group, (order, missing) in asked.items():
+        for trade, nouls in zip(missing, answers[group], strict=True):
+            if nouls is not None:
+                cache.put(fair_key(snapshot, trade, order), nouls["fair"])
+    return sum(len(missing) for _, missing in asked.values())
+
+
+def warm_fair(snapshot: Snapshot, cache: FairCache, waves: JevWaves) -> tuple[int, int]:
+    """The warm-up of the fair cache: the Value offers of every team pair, and each fair question that the cache does
+    not hold, asked through `waves` (decision 19). Return the count of fair questions of all offers and the count asked.
+
+    Each answer of the client from another chart week leaves the cache first. A changed roster or a new chart week
+    gives new keys, so a second warm-up asks only those.
+    """
+    cache.keep_week(snapshot.client.slug, snapshot.season, snapshot.as_of.chart_week)
+    offers_by_pair = {(first, second): value_offers(first, second, snapshot)
+                      for first, second in combinations(sorted(snapshot.rosters), 2)}
+    asked = ask_fair(snapshot, offers_by_pair, waves, cache)
+    return 2 * sum(len(offers) for offers in offers_by_pair.values()), asked
+
+
 def fair_means(snapshot: Snapshot, asker: int, offers_by_partner: dict[int, list[ProposedTrade]],
-               waves: JevWaves) -> dict[int, list[float | None]]:
+               waves: JevWaves, cache: FairCache | None = None) -> dict[int, list[float | None]]:
     """The fair answer of each offer of each partner, the mean of its answers in the two side orders, in the order of
     its offers.
 
+    Each answer comes from the cache when it holds the key, and else from Jev live, and the live answer goes into the
+    cache (decision 19). With no cache, the press asks each question live. A miss is never an error.
     An order whose request failed adds no answer, because a failed call is an error and never a no. An offer with no
     answer in either order gets None.
     """
-    groups = {f"{rid}.{order}": fair_requests(snapshot, asker, rid, partner_offers, order)
-              for rid, partner_offers in offers_by_partner.items() if partner_offers for order in ORDERS}
-    counts = {f"{rid}.{order}": len(partner_offers) for rid, partner_offers in offers_by_partner.items()
-              for order in ORDERS}
-    answers = _offer_answers(groups, counts, waves, "fair")
+    cache = FairCache() if cache is None else cache
+    pairs = {(asker, rid): partner_offers for rid, partner_offers in offers_by_partner.items() if partner_offers}
+    live = ask_fair(snapshot, pairs, waves, cache)
     means: dict[int, list[float | None]] = {}
     for rid, partner_offers in offers_by_partner.items():
         means[rid] = []
-        for n in range(len(partner_offers)):
-            ps = [nouls["fair"] for order in ORDERS if (nouls := answers[f"{rid}.{order}"][n]) is not None]
+        for trade in partner_offers:
+            ps = [p for order in ORDERS if (p := cache.get(fair_key(snapshot, trade, order))) is not None]
             means[rid].append(sum(ps) / len(ps) if ps else None)
+    total = 2 * sum(len(partner_offers) for partner_offers in offers_by_partner.values())
+    log.info("Finder fair answers of %s: %d questions, %d from the cache, %d asked live", snapshot.teams[asker].name,
+             total, total - live, live)
     return means
 
 
@@ -587,7 +642,7 @@ def _no_read(roster_id: int) -> None:
 
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
            stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None,
-           read: Callable[[int], None] = _no_read) -> Shortlist:
+           read: Callable[[int], None] = _no_read, fair_cache: FairCache | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner reads: the Spares tree of `spares_tree.py` on both sides of each pair. It stops no partner and
@@ -614,8 +669,17 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     the fair check, and the shortlist. The lines of the Value offers and the fair check carry their counts. The lines name no inner tool, because the site shows them. The default drops
     them. `read` gets the roster id of each partner as the first step reads it, so the site can light each team in
     turn. The default drops it.
+    With a `fair_cache`, step 1 reads each fair answer that it holds and asks only the rest live (decision 19).
     """
     waves = waves or JevWaves(jev)
+    # The press is live on the pacer for its whole search, so the warm-up of the fair cache waits (decision 19).
+    with waves.pacer.press():
+        return _search(asker, partner, snapshot, waves, stage, anchor, limit, read, fair_cache)
+
+
+def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves, stage: Stage, anchor: Anchor | None,
+            limit: Limit | None, read: Callable[[int], None], fair_cache: FairCache | None) -> Shortlist:
+    """The body of `search`, while the press is live on the pacer."""
     if anchor is not None and anchor.side == "gets":
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
         partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
@@ -675,7 +739,7 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
 
     # Step 1: the fair Noul of each Value offer in both side orders. A clear no on the mean drops the offer.
     stage(f"Checking {_trades(len(offers))} for fairness", live=True)
-    means = fair_means(snapshot, asker, offers_by_partner, waves)
+    means = fair_means(snapshot, asker, offers_by_partner, waves, fair_cache)
     fair_by_id: dict[str, float] = {}
     unfair: list[str] = []
     for rid, partner_offers in offers_by_partner.items():

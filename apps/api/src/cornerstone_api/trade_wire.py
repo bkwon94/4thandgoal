@@ -65,5 +65,8 @@ def trades(request: Request, served: analyzer_routes.ServedClient) -> dict:
     """The accepted trades of the leg that Sleeper is in, capped at the week of the Lock, newest first by the time Sleeper accepted them."""
     slug = served.client.slug
     season = served.client.values.latest_season
-    return request.app.state.trade_wires[slug].get_or_build(
+    wire = request.app.state.trade_wires[slug].get_or_build(
         season, lambda: _build(request.app.state.sources[slug], served, season))
+    # A new trade moves players, so the fair warm-up asks the fair questions of the offers that hold them (decision 19).
+    request.app.state.fair_warmer.trades_seen(slug, [trade["transaction_id"] for trade in wire["trades"]])
+    return wire

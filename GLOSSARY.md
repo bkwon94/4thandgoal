@@ -613,6 +613,16 @@ _Avoid_: value filter, band, fair filter
 An Offer that the Value screen gives. Each Offer is a Value offer.
 _Avoid_: value pair, value trade, math offer
 
+**Fair cache**:
+The fair answers of the Value offers in the memory of the API process. The key is the client, the season, the chart
+week, and the player ids of each side in the side order. One answer serves a press of either team (decision 19).
+_Avoid_: prefetch store, fair store
+
+**Fair warm-up**:
+The worker of the API that fills the Fair cache for every team pair before a press. It asks only the keys that the
+cache does not hold, and it waits while a press is live.
+_Avoid_: prewarm, prefetch
+
 **Shortlist**:
 The trades of the finder that pass the Jev questions, for the Advisor to read. It holds 10 offers. The best offer of
 each shape direction comes first, then the best of each partner, then the best of each player that the asker gives.

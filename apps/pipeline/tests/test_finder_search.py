@@ -218,7 +218,7 @@ def test_each_fair_request_holds_the_chart_value_of_each_player_and_the_chart_su
     names = {snap.teams[ASKER].name, snap.teams[PARTNER].name}
     firsts = set()
     for request in requests:
-        for team in request.state["teams"].values():
+        for team in request.state["teams"]:
             assert all("chart_value" in player for player in team["players"])
         for key, question in request.questions.items():
             n = key.partition("|")[0]

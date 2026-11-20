@@ -9,6 +9,7 @@ Run it with `uv run uvicorn --factory cornerstone_api.app:app_from_env --host 0.
 At start it reads each client folder under clients/, and a bad client.toml stops the start.
 Each client answers at /clients/<slug>/. The old paths with no client answer as cpc, so an old page still works.
 On start, the real app refreshes the slow sources in a background thread, so the first request finds them on disk.
+On start, the real app also warms the fair cache of the Finder in a background thread (decision 19).
 """
 import functools
 import hmac
@@ -27,6 +28,7 @@ from fastapi.responses import JSONResponse
 from analyzer import routes as analyzer_routes
 from analyzer.advisor import read_trade
 from analyzer.cache import ResultCache, TeamsCache
+from analyzer.fair_cache import FairCache
 from analyzer.finder_pick import pick_trades
 from analyzer.finder_search import search as search_trades
 from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
@@ -40,6 +42,7 @@ from cornerstone_api import refresh as refresh_routes
 from cornerstone_api import what_if as what_if_routes
 from cornerstone_api.answer_store import AnswerStore
 from cornerstone_api.caps import Caps
+from cornerstone_api.fair_warm import FairWarmer
 from cornerstone_api.miss_log import MissLog
 from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, LiveCache
 from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
@@ -244,12 +247,13 @@ def create_app(
         settings: Settings, clients: Sequence[Client], sources: Mapping[str, Sources] | None = None,
         analyzer: analyzer_routes.Analyzer | None = None, finder_search: analyzer_routes.FinderSearch | None = None,
         finder_pick: analyzer_routes.FinderPicker | None = None,
-        *, refresh_on_start: bool = False, jev: Jev | None = None,
+        *, refresh_on_start: bool = False, warm_on_start: bool = False, jev: Jev | None = None,
         sell_high: analyzer_routes.SellHighPicker | None = None) -> FastAPI:
     """The app that serves each of `clients`. Tests give fixture-backed sources by slug, an analyzer, a finder
     search, a finder pick, the Jev of the ask route, and a sell high pick. The defaults are the real ones.
 
     With `refresh_on_start`, a daemon thread refreshes the slow sources. It is off by default, so a test makes no fetch.
+    With `warm_on_start`, a daemon thread warms the fair cache of the Finder. It is off by default, so a test asks no Jev.
     """
     # A client with no passphrase would run open, so the app refuses it. Settings.from_env stops the real start first.
     for client in clients:
@@ -289,8 +293,12 @@ def create_app(
     # The default is the real Advisor with the real Claude call, the real Jev, and the real news feed. A test injects a
     # stub Advisor, FakeJev, and a recorded feed, so no test needs the network.
     app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
-    # The Finder search asks the real Jev by default, so a test injects a search with FakeJev.
-    app.state.finder_search = finder_search or functools.partial(search_trades, jev=JEV)
+    # The fair answers of the Finder, shared by each press and the warm-up of every client. The key holds the client.
+    app.state.fair_cache = FairCache()
+    # The worker of the fair cache. A press and the Trade Wire wake it, and it runs only with `warm_on_start`.
+    app.state.fair_warmer = FairWarmer(app.state.served, app.state.fair_cache, jev or JEV)
+    # The Finder search asks the real Jev by default, so a test injects a search with FakeJev. It reads the fair cache.
+    app.state.finder_search = finder_search or functools.partial(search_trades, jev=JEV, fair_cache=app.state.fair_cache)
     # The Finder pick makes the real Claude call with the real news feed and the real Jev by default, so a test injects
     # a stub call and FakeJev.
     app.state.finder_pick = finder_pick or functools.partial(pick_trades, news=NEWS, jev=JEV)
@@ -358,6 +366,7 @@ def create_app(
         app.state.refresh_thread = threading.Thread(
             target=refresh_sources_on_start, args=(settings, app.state.sources), name="start-up-refresh", daemon=True)
         app.state.refresh_thread.start()
+    app.state.fair_warm_thread = app.state.fair_warmer.start() if warm_on_start else None
 
     return app
 
@@ -400,4 +409,4 @@ def app_from_env() -> FastAPI:
     # never holds one.
     settings = Settings.from_env((client.slug for client in clients),
                                  (client.slug for client in clients if "eggs" in client.values.packages))
-    return create_app(settings, clients, refresh_on_start=True)
+    return create_app(settings, clients, refresh_on_start=True, warm_on_start=True)

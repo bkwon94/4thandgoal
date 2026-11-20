@@ -1,15 +1,17 @@
 """
 The Jev requests of one press, sent in waves under the TypeSafe rate limits of requests and tokens per second.
 Each wave runs its requests at once. A wave goes at once while the last second has room for its count of requests and
-tokens, and it waits only for the room. Every press of the process shares one pacer for that room.
+tokens, and it waits only for the room. Every press of the process shares one pacer for that room, and the warm-up of the
+fair cache waits while a press is live.
 """
 import json
 import logging
 import math
 import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
 from dataclasses import dataclass
 
 from league.jev_port import Jev, JevError, JevResponse, NoulQuestion
@@ -79,24 +81,47 @@ class Pacer:
         self.sleep = sleep
         # The start time, the requests, and the tokens of each wave that started less than one second ago.
         self._sent: list[tuple[float, int, int]] = []
+        # The count of presses that are live now. A background wave waits while it is above 0.
+        self._presses = 0
         self._lock = threading.Lock()
 
-    def reserve(self, count: int, tokens: int) -> None:
+    @contextmanager
+    def press(self) -> Iterator[None]:
+        """Mark a press live for the time of the block, so the warm-up of the fair cache sends no wave (decision 19)."""
+        with self._lock:
+            self._presses += 1
+        try:
+            yield
+        finally:
+            with self._lock:
+                self._presses -= 1
+
+    @property
+    def live(self) -> bool:
+        """True while a press is live."""
+        with self._lock:
+            return self._presses > 0
+
+    def reserve(self, count: int, tokens: int, background: bool = False) -> None:
         """Wait until the last second has room for `count` more requests and `tokens` more tokens, then count them.
 
         The check and the count happen under one lock, so two threads never take the same room. The wait happens
-        outside it, so one waiting press never stops the clock of another.
+        outside it, so one waiting press never stops the clock of another. A `background` wave also waits one second
+        at a time while a press is live, so a press goes first.
         """
         while True:
             with self._lock:
                 now = self.clock()
                 self._sent = [wave for wave in self._sent if wave[0] + WAVE_SECONDS > now]
-                if (sum(wave[1] for wave in self._sent) + count <= REQUESTS_PER_SECOND
+                if background and self._presses > 0:
+                    wait = WAVE_SECONDS
+                elif (sum(wave[1] for wave in self._sent) + count <= REQUESTS_PER_SECOND
                         and sum(wave[2] for wave in self._sent) + tokens <= TOKENS_PER_SECOND):
                     self._sent.append((now, count, tokens))
                     return
-                # The oldest wave leaves the second first, so its end is the soonest time that can make room.
-                wait = self._sent[0][0] + WAVE_SECONDS - now
+                else:
+                    # The oldest wave leaves the second first, so its end is the soonest time that can make room.
+                    wait = self._sent[0][0] + WAVE_SECONDS - now
             self.sleep(wait)
 
 
@@ -111,10 +136,14 @@ class JevWaves:
     counts it. A press sends about 11 requests and 27k tokens per wave, so a wave seldom waits (decision 02).
     """
 
-    def __init__(self, jev: Jev, pacer: Pacer = PACER):
+    def __init__(self, jev: Jev, pacer: Pacer = PACER, background: bool = False):
         self.jev = jev
         self.pacer = pacer
+        # True for the warm-up of the fair cache: each wave waits while a press is live.
+        self.background = background
         self.waves_sent = 0
+        # The input tokens that TypeSafe counted for each answered request, so the warm-up can log its size.
+        self.input_tokens = 0
 
     def ask(self, requests: dict[str, WaveRequest], label: str,
             answered: Callable[[str], None] | None = None) -> dict[str, JevResponse | None]:
@@ -127,7 +156,7 @@ class JevWaves:
         answers: dict[str, JevResponse | None] = {}
         for keys in plan_waves(requests):
             tokens = sum(estimated_tokens(requests[key]) for key in keys)
-            self.pacer.reserve(len(keys), tokens)
+            self.pacer.reserve(len(keys), tokens, background=self.background)
             self.waves_sent += 1
             log.info("Jev wave %d (%s): %d requests, about %d tokens", self.waves_sent, label, len(keys), tokens)
             with ThreadPoolExecutor(max_workers=len(keys)) as pool:
@@ -143,6 +172,7 @@ class JevWaves:
                     answers[key] = None
                 else:
                     answers[key] = result
+                    self.input_tokens += result.input_tokens
         return answers
 
     def _one(self, request: WaveRequest) -> JevResponse | JevError:

@@ -390,6 +390,8 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
         served.teams_cache.clear(pair.season)
         # The same words as check_trade, so the form shows one message for a roster that is gone.
         raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
+    # A press with rosters or a chart week that the fair warm-up has not seen wakes it, so the other pairs warm too.
+    request.app.state.fair_warmer.check(snapshot)
     cache = served.cache
     key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor, pair.limit)
     cached = cache.get(key)

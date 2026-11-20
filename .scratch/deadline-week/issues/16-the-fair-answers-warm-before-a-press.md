@@ -10,8 +10,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 19. Acceptance tests AT-55 to AT
 
 **Status:** ready-for-agent
 
-- [ ] A real test shows that the mean of the two side orders does not move when the labels `asker` and `partner` swap, or the fair state names no asker.
-- [ ] A test shows that a press of team A and a press of team B read the same cached answers for the offers between them.
-- [ ] A test shows that a moved player gives new keys only for the offers that hold him.
-- [ ] A test with a fixed clock shows that the warm-up sends no request while a press is live.
-- [ ] A real press for Bo Girds on a warm local API asks no fair question live and gives a Shortlist of 10.
+- [x] A real test shows that the mean of the two side orders does not move when the labels `asker` and `partner` swap, or the fair state names no asker.
+- [x] A test shows that a press of team A and a press of team B read the same cached answers for the offers between them.
+- [x] A test shows that a moved player gives new keys only for the offers that hold him.
+- [x] A test with a fixed clock shows that the warm-up sends no request while a press is live.
+- [x] A real press for Bo Girds on a warm local API asks no fair question live and gives a Shortlist of 10.
