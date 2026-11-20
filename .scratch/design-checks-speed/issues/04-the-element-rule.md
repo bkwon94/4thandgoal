@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-1, AT-2, AT-12,
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fixture with a raw `<button>` fails, and the message names the rule, the line, and the wrapper.
 - [x] A fixture with a raw `<dialog>` fails with the rule and the line.
