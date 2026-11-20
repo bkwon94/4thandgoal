@@ -10,7 +10,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-63, AT-64, and AT-71.
 
 **Status:** ready-for-agent
 
-- [ ] A test with one partner of 1,200 offers sends 3 or more requests, each under 64,000 tokens by the estimate, and no offer passes as unsure.
-- [ ] A test with a fixed clock and two presses of 300,000 tokens each, at once, never holds more than 100,000 tokens in one second.
-- [ ] No Jev request of a real press sends `TypeSafe-Danger-Zone-Long-Context`.
-- [ ] A real press for Bo Girds and every team on the local API gives the same kind of Shortlist as before this ticket.
+- [x] A test with one partner of 1,200 offers sends 3 or more requests, each under 64,000 tokens by the estimate, and no offer passes as unsure.
+- [x] A test with a fixed clock and two presses of 300,000 tokens each, at once, never holds more than 100,000 tokens in one second.
+- [x] No Jev request of a real press sends `TypeSafe-Danger-Zone-Long-Context`.
+- [x] A real press for Bo Girds and every team on the local API gives the same kind of Shortlist as before this ticket.
