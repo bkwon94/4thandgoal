@@ -338,35 +338,24 @@ def offer_id(trade: ProposedTrade) -> str:
 
 def varied(offers: list[ShortlistOffer], keep: int) -> list[ShortlistOffer]:
     """At most `keep` offers, in an order with variety: the best offer for each player that the asker gives and for
-    each partner, before more forms of the same trade (decision 01).
+    each partner, before more forms of the same trade (decision 01, AT-43).
 
-    Each next offer is the one with the fewest early repeats, then the highest score. An early repeat is a player of
-    the asker, or a partner, already on the list while another one with an offer is not yet on it. It picks what the
-    Advisor reads, and it cuts no offer by a score that the list would hold anyway.
+    The best offers come first, by score, highest first. One offer can be the best for a player and for a partner. Every
+    other offer comes after them, by score. It picks what the Advisor reads, and it cuts no offer by a score that the
+    list would hold anyway. With more best offers than `keep`, the list holds only best offers.
     """
-    players = {pid for offer in offers for pid in offer.trade.sides[0].player_ids}
-    partners = {side.roster_id for offer in offers for side in offer.trade.sides[1:]}
-    left = sorted(offers, key=lambda offer: (-offer.score, offer.offer_id))
-    chosen: list[ShortlistOffer] = []
-    seen_players: set[str] = set()
-    seen_partners: set[int] = set()
-
-    def repeats(offer: ShortlistOffer) -> int:
-        count = 0
-        if seen_players < players:
-            count += sum(pid in seen_players for pid in offer.trade.sides[0].player_ids)
-        if seen_partners < partners:
-            count += sum(side.roster_id in seen_partners for side in offer.trade.sides[1:])
-        return count
-
-    while left and len(chosen) < keep:
-        # min keeps the first of a tie, and `left` is in score order, so the higher score wins a tie.
-        best = min(left, key=repeats)
-        left.remove(best)
-        chosen.append(best)
-        seen_players |= set(best.trade.sides[0].player_ids)
-        seen_partners |= {side.roster_id for side in best.trade.sides[1:]}
-    return chosen
+    # A tie of scores goes to the lower offer id, so the order is the same on each run.
+    ranked = sorted(offers, key=lambda offer: (-offer.score, offer.offer_id))
+    best: dict[tuple[str, str | int], str] = {}
+    for offer in ranked:
+        for pid in offer.trade.sides[0].player_ids:
+            best.setdefault(("player", pid), offer.offer_id)
+        for side in offer.trade.sides[1:]:
+            best.setdefault(("partner", side.roster_id), offer.offer_id)
+    best_ids = set(best.values())
+    firsts = [offer for offer in ranked if offer.offer_id in best_ids]
+    rest = [offer for offer in ranked if offer.offer_id not in best_ids]
+    return (firsts + rest)[:keep]
 
 
 def lineup_points(snapshot: Snapshot, roster: list[str]) -> Decimal:
