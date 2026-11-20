@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-10, AT-11, and 
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fixture part with no `Use it when:` line fails with the doc rule and the file.
 - [x] Each component file of `ui` and `parts` has both lines.
