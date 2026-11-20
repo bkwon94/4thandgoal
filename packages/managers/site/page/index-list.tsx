@@ -107,7 +107,8 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
   };
 
   /* From the desktop tier the ledger takes 53% of the width, a gap of 5%, and the stage the rest, as in the item.
-     The stage is sticky under the top band. Under the desktop tier the stage is not shown, and the ledger is the page. */
+     The stage is sticky under the top band. It reads the band height token, which grows by the Deadline banner, so the
+     stage never sits under the banner. Under the desktop tier the stage is not shown, and the ledger is the page. */
   return (
     <div className="ix desktop:grid desktop:grid-cols-[minmax(0,53fr)_minmax(0,42fr)] desktop:items-start desktop:gap-x-[5%]">
       <div>
@@ -179,7 +180,7 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
       {staged && (
         <div
           data-ix-stage
-          className="hidden desktop:sticky desktop:top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px+var(--spacing-sp-4))] desktop:block"
+          className="hidden desktop:sticky desktop:top-[calc(var(--spacing-band-height)+var(--spacing-sp-4))] desktop:block"
         >
           <IndexStage row={staged} teams={teams} />
         </div>

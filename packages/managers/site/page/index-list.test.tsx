@@ -1,6 +1,6 @@
 /**
  * Tests for the Index list part with the rows of the real CPC week 8 files.
- * They check a chip with no team, and the letter roll that keeps the name of a row as one plain text.
+ * They check a chip with no team, the letter roll that keeps the name of a row as one plain text, and the sticky top of the stage.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
@@ -53,5 +53,13 @@ describe("IndexList", () => {
     // "The Blue Tent" has 11 letters and two spaces. The spaces stay plain spaces, so the name wraps between words.
     expect(head.querySelectorAll(".ix-letter")).toHaveLength(11);
     expect(head.querySelector(".ix-name")?.textContent).toBe("The Blue Tent");
+  });
+
+  it("sticks the stage under the band by the band height token", () => {
+    const { container } = render(<IndexList rows={cpcRows()} teams={12} />);
+    const stage = container.querySelector("[data-ix-stage]")!;
+    // The token grows by the Deadline banner, so the stage follows the band when the banner shows.
+    expect(stage.className).toContain("desktop:sticky");
+    expect(stage.className).toContain("desktop:top-[calc(var(--spacing-band-height)+var(--spacing-sp-4))]");
   });
 });
