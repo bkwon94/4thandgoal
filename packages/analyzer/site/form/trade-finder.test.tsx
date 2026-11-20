@@ -3,7 +3,7 @@
  * fetch is a test stub, and each test reads the screen.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { apiTarget, findResponse as fixtureJson } from "../lib/fixtures/api";
 import type { FindResponse } from "../lib/analyze-types";
 import type { Team } from "../lib/api";
@@ -23,10 +23,10 @@ const TEAMS: Team[] = Array.from({ length: 12 }, (_, i) => ({
   players: [],
 }));
 
-const fetchStub = vi.fn();
-const onUnauthorized = vi.fn();
-const onOpen = vi.fn();
-const onRostersStale = vi.fn();
+const fetchStub = mock();
+const onUnauthorized = mock();
+const onOpen = mock();
+const onRostersStale = mock();
 
 function answer(status: number, body: unknown = {}, headers: Record<string, string> = {}) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
@@ -52,7 +52,7 @@ beforeEach(() => {
   onUnauthorized.mockReset();
   onOpen.mockReset();
   onRostersStale.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
   render(
     <TradeFinder
       teams={TEAMS}
@@ -68,7 +68,6 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
 });
 
 describe("TradeFinder", () => {

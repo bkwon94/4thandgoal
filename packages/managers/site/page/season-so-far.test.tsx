@@ -3,7 +3,7 @@
  * They read the dots, the week labels, and the legend of the points line, the bench lines, and the season tiles.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import type { Manager } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";
 import { SeasonSoFar } from "./season-so-far";

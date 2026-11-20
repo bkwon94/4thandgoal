@@ -3,7 +3,7 @@
  * They check a chip with no team, and the letter roll that keeps the name of a row as one plain text.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import managersJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
 import rankingsJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/rankings.json";
 import { managersFileSchema } from "../schema/managers";
@@ -55,7 +55,10 @@ describe("IndexList", () => {
 
   it("gives each letter of a name its own roll window, and keeps the name as one text for a reader", () => {
     render(<IndexList rows={cpcRows()} teams={12} />);
-    const head = screen.getByRole("button", { name: /The Blue Tent/ });
+    // happy-dom gives each span of a letter a space in the computed name, so the match ignores the spaces.
+    const head = screen.getByRole("button", {
+      name: (name) => name.replaceAll(" ", "").includes("TheBlueTent"),
+    });
     // "The Blue Tent" has 11 letters and two spaces. The spaces stay plain spaces, so the name wraps between words.
     expect(head.querySelectorAll(".ix-letter")).toHaveLength(11);
     expect(head.querySelector(".ix-name")?.textContent).toBe("The Blue Tent");

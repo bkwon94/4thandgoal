@@ -3,7 +3,7 @@
  * The sides are trade B and trade T of the spec, real cpc trades of 2026, and each test reads the screen.
  */
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { TradeOnStage, type StageSide } from "./trade-on-stage";
 
 const headshot = (id: string) => `https://sleepercdn.com/content/nfl/players/${id}.jpg`;

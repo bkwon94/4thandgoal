@@ -3,7 +3,7 @@
  * The grading prop drives the state, because a grade that the finder starts has no press of the button.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { GradeBar } from "./grade-bar";
 
 afterEach(cleanup);

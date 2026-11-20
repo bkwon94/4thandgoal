@@ -3,7 +3,7 @@
  * The banner names the day of the last drop and the count left, and a hide stays until the next drop.
  */
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { EggsError, type Board } from "../lib/api";
 import { board, fakeEggsApi } from "../lib/fixtures/eggs-api";
 import { EggBanner, EggBannerScreen } from "./egg-banner";

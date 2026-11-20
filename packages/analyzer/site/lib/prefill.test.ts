@@ -2,7 +2,7 @@
  * Tests for the prefill of the trade form: the query of a link of the front door, and the sides it fills.
  * A link names Your team, the partner, and only the players that the front door is sure of.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { prefillQuery, prefillSides, readPrefill } from "./prefill";
 
 describe("the prefill of the Trade page", () => {
