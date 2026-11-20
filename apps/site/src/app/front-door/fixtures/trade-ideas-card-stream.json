@@ -100,6 +100,16 @@
                 ]
               }
             ],
+            "totals": [
+              {
+                "roster_id": 3,
+                "trade_value": null
+              },
+              {
+                "roster_id": 12,
+                "trade_value": null
+              }
+            ],
             "lean": null,
             "case": null,
             "bullets": [
@@ -188,6 +198,16 @@
                     "from": 3
                   }
                 ]
+              }
+            ],
+            "totals": [
+              {
+                "roster_id": 3,
+                "trade_value": null
+              },
+              {
+                "roster_id": 12,
+                "trade_value": null
               }
             ],
             "lean": null,

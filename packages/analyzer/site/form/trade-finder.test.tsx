@@ -7,7 +7,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, findResponse as fixtureJson } from "../lib/fixtures/api";
-import type { FindResponse } from "../lib/analyze-types";
+import type { FindResponse, FinderTrade, NearIdea } from "../lib/analyze-types";
 import type { Team } from "../lib/api";
 import { TradeFinder } from "./trade-finder";
 
@@ -35,6 +35,63 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
 }
 
+/* The players of the fixture by name, and one more player of the asker, so a test can build a 3-for-2. */
+type Player = FinderTrade["sides"][number]["gives"][number];
+const PLAYERS: Record<string, Player> = Object.fromEntries(
+  [...fixture.trades, ...fixture.near].flatMap((trade) => trade.sides.flatMap((side) => side.gives)).map(({ to: _to, ...player }) => [player.name, player]),
+);
+PLAYERS["Kenneth Walker III"] = { player_id: "8151", name: "Kenneth Walker III", position: "RB", nfl_team: "SEA", headshot: "https://sleepercdn.com/content/nfl/players/8151.jpg", season_rank: "RB8", recent_rank: null };
+const ASKER = fixture.trade_pair.asker;
+const PARTNER = { roster_id: 10, team: "behold the lamb" };
+
+/* One offer of the asker with roster 10, in the shape of the find answer: the sides in order and the trade value total
+   of each side, the chart sum of the players that the side gives. */
+function offerOf(give: string[], get: string[], [giveValue, getValue]: [number | null, number | null]) {
+  const gives = give.map((name) => PLAYERS[name]);
+  const gets = get.map((name) => PLAYERS[name]);
+  return {
+    offer_id: `2:${gives.map((p) => p.player_id).join("+")}-10:${gets.map((p) => p.player_id).join("+")}`,
+    sides: [
+      { ...ASKER, gives: gives.map((p) => ({ ...p, to: 10 })), gets: gets.map((p) => ({ ...p, from: 10 })) },
+      { ...PARTNER, gives: gets.map((p) => ({ ...p, to: 2 })), gets: gives.map((p) => ({ ...p, from: 2 })) },
+    ],
+    totals: [
+      { roster_id: 2, trade_value: giveValue },
+      { roster_id: 10, trade_value: getValue },
+    ],
+  };
+}
+
+/* A pick of the find answer with the read of the first fixture trade. */
+function pickOf(give: string[], get: string[], totals: [number | null, number | null]): FinderTrade {
+  const { lean, case: text, bullets, fact_lines } = fixture.trades[0];
+  return { ...offerOf(give, get, totals), lean, case: text, bullets, fact_lines };
+}
+
+function nearOf(give: string[], get: string[], reason: string): NearIdea {
+  return { ...offerOf(give, get, [30, 28]), reason };
+}
+
+/* A find answer of 5 picks, a 1-for-1, a 2-for-1, a 3-for-2, and two more, and 3 near ideas. */
+const ONE_FOR_ONE = pickOf(["Tre Tucker"], ["Emeka Egbuka"], [24.5, 22.0]);
+const TWO_FOR_ONE = pickOf(["Tre Tucker", "Colston Loveland"], ["Emeka Egbuka"], [26.5, 25.0]);
+const THREE_FOR_TWO = pickOf(["Kenneth Walker III", "Tre Tucker", "Colston Loveland"], ["Emeka Egbuka", "Roschon Johnson"], [62.5, 68.0]);
+const FIVE: FindResponse = {
+  ...fixture,
+  trades: [
+    ONE_FOR_ONE,
+    TWO_FOR_ONE,
+    THREE_FOR_TWO,
+    pickOf(["Colston Loveland"], ["Germie Bernard"], [10.0, 10.2]),
+    pickOf(["Kenneth Walker III"], ["Emeka Egbuka"], [40.0, 30.0]),
+  ],
+  near: [
+    nearOf(["Tre Tucker"], ["Germie Bernard"], "The other lineup gets worse."),
+    nearOf(["Colston Loveland"], ["Roschon Johnson"], "Your lineup gets no better."),
+    nearOf(["Kenneth Walker III", "Tre Tucker"], ["Emeka Egbuka"], "You give much more than you get."),
+  ],
+};
+
 /* One part of the find stream as a `data:` line. */
 const line = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`);
 const step = (text: string, live: boolean) => ({ type: "data-step", data: { line: text, live } });
@@ -61,16 +118,16 @@ function heldStream() {
 /* The five steps of a find with every team, as the find stream sends them, then the document. */
 function streamOf(doc: unknown) {
   const parts = [
-    step("Reading every team", true),
+    step("Reading 11 teams", true),
     team(1),
     step("Read 11 teams", false),
-    step("Looking for players who fit", true),
-    step("Found 18 players who fit", false),
-    step("Building offers", true),
-    step("Built 42 offers", false),
-    step("Making a shortlist", true),
+    step("Matching trade value", true),
+    step("Matched 4,667 trades by trade value", false),
+    step("Checking 4,667 trades for fairness", true),
+    step("Checked 4,667 trades for fairness", false),
+    step("Checking 77 against both lineups", true),
     step("Made a shortlist of 9", false),
-    step("Picking the best 3", true),
+    step("Picking the best 5", true),
     step("Picked the best 3", false),
     done(doc),
   ];
@@ -152,26 +209,26 @@ describe("TradeFinder", () => {
   it("shows the wait in the stage lines, one real step at a time, each line held until the next step", async () => {
     const stream = heldStream();
     find();
-    await stream.send(step("Reading every team", true));
-    expect(stageLine()).toBe("1 of 5 · Reading every team");
+    await stream.send(step("Reading 11 teams", true));
+    expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
     // The done line of a step does not move the line, so the line holds until the next step starts.
     await stream.send(step("Read 11 teams", false));
-    expect(stageLine()).toBe("1 of 5 · Reading every team");
+    expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
     // Each line shows for at least one swap, so the next line comes after that hold.
-    await stream.send(step("Looking for players who fit", true));
-    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Looking for players who fit"));
-    await stream.send(step("Found 18 players who fit", false), step("Building offers", true), step("Built 42 offers", false), step("Making a shortlist", true));
-    await waitFor(() => expect(stageLine()).toBe("4 of 5 · Making a shortlist"));
+    await stream.send(step("Matching trade value", true));
+    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Matching trade value"));
+    await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+    await waitFor(() => expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups"));
     // A screen reader hears the step in the one status of the wait, and no line names a chart.
-    expect(screen.getByRole("status").textContent).toBe("4 of 5 · Making a shortlist");
+    expect(screen.getByRole("status").textContent).toBe("4 of 5 · Checking 77 against both lineups");
     expect(screen.queryByText(/chart/i)).toBeNull();
   });
 
   it("shows each step line in order when two steps arrive in the same tick", async () => {
     const stream = heldStream();
     find();
-    await stream.send(step("Reading every team", true), step("Read 11 teams", false), step("Looking for players who fit", true));
-    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Looking for players who fit"));
+    await stream.send(step("Reading 11 teams", true), step("Read 11 teams", false), step("Matching trade value", true));
+    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Matching trade value"));
     // The stream can end one step and start two more at the same moment. The wait records each line that shows.
     const seen = [stageLine()];
     const watch = new MutationObserver(() => {
@@ -179,12 +236,12 @@ describe("TradeFinder", () => {
     });
     watch.observe(document.body, { subtree: true, childList: true, characterData: true });
     try {
-      await stream.send(step("Found 18 players who fit", false), step("Building offers", true), step("Built 42 offers", false), step("Making a shortlist", true));
-      await waitFor(() => expect(stageLine()).toBe("4 of 5 · Making a shortlist"));
+      await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+      await waitFor(() => expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups"));
     } finally {
       watch.disconnect();
     }
-    expect(seen).toEqual(["2 of 5 · Looking for players who fit", "3 of 5 · Building offers", "4 of 5 · Making a shortlist"]);
+    expect(seen).toEqual(["2 of 5 · Matching trade value", "3 of 5 · Checking 4,667 trades for fairness", "4 of 5 · Checking 77 against both lineups"]);
   });
 
   it("shows the wait in the hero of the grade wait, with the same title level and the mesh", async () => {
@@ -192,7 +249,10 @@ describe("TradeFinder", () => {
     find();
     const hero = (await screen.findByRole("region", { name: "Finding Trades" })) as HTMLElement;
     expect(within(hero).getByRole("heading", { level: 2, name: "Finding Trades" })).toBeTruthy();
-    expect(within(hero).getByText("This can take about 25 seconds.")).toBeTruthy();
+    // The wait makes no promise of how long it takes, so no line counts seconds or minutes (AT-68).
+    expect(hero.textContent).not.toMatch(/This can take/);
+    expect(hero.textContent).not.toMatch(/\d+\s*(?:s|sec|secs|seconds?|min|mins|minutes?)\b/i);
+    expect(hero.textContent).not.toMatch(/\b(?:seconds?|minutes?)\b/i);
     expect(hero.querySelector('[aria-busy="true"]')).toBeTruthy();
     // The stage lines part is the same part as the grade wait.
     expect(hero.querySelector(".t-think")).toBeTruthy();
@@ -201,7 +261,7 @@ describe("TradeFinder", () => {
   it("lights the avatar of each team as the stream reports it read, in the order of the stream", async () => {
     const stream = heldStream();
     find();
-    await stream.send(step("Reading every team", true));
+    await stream.send(step("Reading 11 teams", true));
     // The wait shows the eleven partners, none lit before the first read.
     expect(document.querySelectorAll("[data-team-read]")).toHaveLength(11);
     expect(litTeams()).toEqual([]);
@@ -270,7 +330,7 @@ describe("TradeFinder", () => {
     expect(JSON.parse(fetchStub.mock.calls[1][1].body)).toEqual({ season: 2026, asker: 2 });
   });
 
-  it("lands up to three cards in one list under the hero, each led by its Lean, with the Case and no headline", async () => {
+  it("lands the cards in one list under the hero, each led by its Lean, with the Case and no headline", async () => {
     streamOf(fixture);
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
@@ -282,6 +342,101 @@ describe("TradeFinder", () => {
       expect(within(card).getByText(trade.case!)).toBeTruthy();
       for (const side of trade.sides) for (const player of side.gives) expect(card.textContent).toContain(player.name);
     });
+  });
+
+  it("shows each trade as a Ledger: You get and You give columns, a row per player with the rank, and a total under each", async () => {
+    streamOf(FIVE);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(5));
+    const [one, two, three] = cards();
+    const column = (card: HTMLElement, name: RegExp) => within(card).getByRole("list", { name });
+    // The 1-for-1, the 2-for-1, and the 3-for-2 each name the count of each column.
+    expect(within(one).getByText("You get · 1")).toBeTruthy();
+    expect(within(one).getByText("You give · 1")).toBeTruthy();
+    expect(within(two).getByText("You get · 1")).toBeTruthy();
+    expect(within(two).getByText("You give · 2")).toBeTruthy();
+    expect(within(three).getByText("You get · 2")).toBeTruthy();
+    expect(within(three).getByText("You give · 3")).toBeTruthy();
+    // Each row shows the name, then the position, the NFL team, and the rank.
+    const gets = within(column(three, /You get/)).getAllByRole("listitem");
+    expect(gets.map((row) => row.textContent)).toEqual(["Emeka EgbukaWR · TB · WR24", "Roschon JohnsonRB · CHI · RB50"]);
+    const gives = within(column(three, /You give/)).getAllByRole("listitem");
+    expect(gives.map((row) => row.textContent)).toEqual(["Kenneth Walker IIIRB · SEA · RB8", "Tre TuckerWR · LV · WR16", "Colston LovelandTE · CHI · TE26"]);
+    // No row shows a trade value. The total of each column sits under it.
+    for (const row of [...gets, ...gives]) expect(row.textContent).not.toMatch(/\d+\.\d/);
+    expect(within(three).getByText("68.0").closest("[data-total]")?.textContent).toBe("Trade value 68.0");
+    expect(within(three).getByText("62.5").closest("[data-total]")?.textContent).toBe("Trade value 62.5");
+  });
+
+  it("states the gap of the two totals in one plain line under them", async () => {
+    streamOf(FIVE);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(5));
+    const gap = (card: HTMLElement) => card.querySelector("[data-gap]")?.textContent;
+    // 68.0 for You get and 62.5 for You give (AT-66).
+    expect(gap(cards()[2])).toBe("You get 9% more trade value");
+    // 22.0 back for 24.5 given: the asker gives 11% more.
+    expect(gap(cards()[0])).toBe("You give 11% more trade value");
+    // 10.2 back for 10.0 given is within a few percent.
+    expect(gap(cards()[3])).toBe("Even in trade value");
+    expect(gap(cards()[4])).toBe("You give 33% more trade value");
+  });
+
+  it("shows no total and no gap line when the week has no chart", async () => {
+    streamOf({ ...fixture, trades: [pickOf(["Tre Tucker"], ["Emeka Egbuka"], [null, null])], near: [] });
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(1));
+    expect(cards()[0].querySelector("[data-total]")).toBeNull();
+    expect(cards()[0].querySelector("[data-gap]")).toBeNull();
+    expect(cards()[0].textContent).toContain("You get · 1");
+  });
+
+  it("shows no gap line when a side has no trade value", async () => {
+    // The first fixture trade gets Roschon Johnson, who has no chart value, so the get total is 0.0.
+    streamOf(fixture);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    expect(cards()[0].querySelector("[data-gap]")).toBeNull();
+    expect(cards()[1].querySelector("[data-gap]")?.textContent).toBe("You give 56% more trade value");
+  });
+
+  it("shows up to 5 cards, then the near ideas folded under Close, but not sent", async () => {
+    streamOf(FIVE);
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(5));
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 5", "Trade 2 of 5", "Trade 3 of 5", "Trade 4 of 5", "Trade 5 of 5"]);
+    const fold = screen.getByRole("button", { name: "Close, but not sent · 3" });
+    expect(fold.getAttribute("aria-expanded")).toBe("false");
+    // The closed fold shows no idea.
+    expect(screen.queryByText(FIVE.near[0].reason)).toBeNull();
+    fireEvent.click(fold);
+    expect(fold.getAttribute("aria-expanded")).toBe("true");
+    const panel = document.getElementById(fold.getAttribute("aria-controls")!) as HTMLElement;
+    expect(panel.hasAttribute("hidden")).toBe(false);
+    const ideas = within(panel).getAllByRole("listitem");
+    expect(ideas).toHaveLength(3);
+    FIVE.near.forEach((idea, i) => {
+      expect(ideas[i].textContent).toContain(idea.reason);
+      for (const side of idea.sides) for (const player of side.gives) expect(ideas[i].textContent).toContain(player.name);
+    });
+    // The fold sits after the last card.
+    expect(cards()[4].compareDocumentPosition(fold) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("keeps at most 5 picks and 3 near ideas", async () => {
+    const extra = pickOf(["Tre Tucker"], ["Roschon Johnson"], [20, 21]);
+    const more = nearOf(["Tre Tucker"], ["Roschon Johnson"], "One more reason.");
+    streamOf({ ...FIVE, trades: [...FIVE.trades, extra], near: [...FIVE.near, more] });
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(5));
+    expect(screen.getByRole("button", { name: "Close, but not sent · 3" })).toBeTruthy();
+  });
+
+  it("shows no near fold when the answer has no near idea", async () => {
+    streamOf({ ...FIVE, near: [] });
+    find();
+    await waitFor(() => expect(cards()).toHaveLength(5));
+    expect(screen.queryByRole("button", { name: /Close, but not sent/ })).toBeNull();
   });
 
   it("clamps the Case of a card to 3 lines", async () => {
@@ -430,7 +585,7 @@ describe("TradeFinder", () => {
   it("shows the line of an error part of the stream, and Try Again runs the find again", async () => {
     const stream = heldStream();
     find();
-    await stream.send(step("Reading every team", true), { type: "data-error", data: { status: 503, line: "The search failed. Try again." } });
+    await stream.send(step("Reading 11 teams", true), { type: "data-error", data: { status: 503, line: "The search failed. Try again." } });
     expect(await screen.findByText("The search failed. Try again.")).toBeTruthy();
     streamOf(fixture);
     fireEvent.click(screen.getByRole("button", { name: "Try Again" }));

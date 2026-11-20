@@ -583,8 +583,9 @@ def live_then_done(steps: list[dict]) -> list[str]:
 def test_each_stage_of_trade_ideas_sends_a_live_line_then_its_done_line(api):
     steps = _of(_ideas(api), "data-step")
     live = [step["line"] for step in steps if step["live"]]
-    assert live == ["Reading every team", "Matching trade value", live[2], "Making a shortlist", "Picking the best 5"]
+    assert live == ["Reading 11 teams", "Matching trade value", live[2], live[3], "Picking the best 5"]
     assert re.fullmatch(r"Checking [\d,]+ trades for fairness", live[2])
+    assert re.fullmatch(r"Checking ([\d,]+|one trade|no trades) against both lineups", live[3])
     done = live_then_done(steps)
     assert done[0] == "Read 11 teams" and done[-1] == "Picked the best 3"
 

@@ -131,6 +131,13 @@ export const analyzeResponseSchema = z.object({
   stale: z.array(z.string()),
 });
 
+/* The trade value total of one side of a finder offer: the sum of the week's chart values of the players that the side
+   gives, to one decimal. Null for a week with no chart. The Ledger card shows it under each column (decision 17). */
+export const tradeTotalSchema = z.object({
+  roster_id: z.number(),
+  trade_value: z.number().nullable(),
+});
+
 /* One trade of the finder. The sides share the analyze document's side shape, and the Bullets share its Bullet shape,
    so the site renders a side and a row one way. A pick has the Lean, the Case, and 2 to 4 Bullets, and no fact line.
    After a fallback, the Lean and the Case are null, no Bullet stands, and fact_lines holds plain facts of the offer. */
@@ -138,6 +145,9 @@ export const finderTradeSchema = z.object({
   // The id of the offer on the shortlist, such as "2:10213-10:10235". The card keys on it.
   offer_id: z.string(),
   sides: z.array(tradeSideSchema),
+  // The trade value total of each side, in the order of the sides. The key is required, so a trade Answer kept in the
+  // browser before the totals fails the parse and drops on a reload.
+  totals: z.array(tradeTotalSchema),
   // The Lean of the pick for the asker: Send it, Lean yes, or Gut call. The read of the analyzer uses the same scale.
   lean: leanSchema.nullable(),
   // The Case under the Lean: at most 3 sentences, the condition first.
@@ -151,6 +161,7 @@ export const finderTradeSchema = z.object({
 export const nearIdeaSchema = z.object({
   offer_id: z.string(),
   sides: z.array(tradeSideSchema),
+  totals: z.array(tradeTotalSchema),
   reason: z.string(),
 });
 
@@ -162,7 +173,7 @@ export const findResponseSchema = z.object({
     // Null for a find with no partner. Each trade then names its own partner in its sides.
     partner: z.object({ roster_id: z.number(), team: z.string() }).nullable(),
   }),
-  // Up to three picks, best first. After a fallback, every offer of the shortlist, in its order.
+  // Up to five picks, best first. After a fallback, every offer of the shortlist, in its order.
   trades: z.array(finderTradeSchema),
   // Up to three near ideas, best first. With no pick, at least one when the search built an offer. The key is
   // required, so a trade Answer kept in the browser before the near ideas fails the parse and drops on a reload.

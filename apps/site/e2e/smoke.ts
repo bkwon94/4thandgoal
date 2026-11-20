@@ -159,7 +159,7 @@ export function addSteps(flows: readonly Flow[], file: string): Flow[] {
  * Finds the first two texts that overlap on the page, and names each one. A text is the box of each line of a visible
  * text node, cut to the boxes of its ancestors that clip it. Two texts of one element never count.
  */
-async function findOverlap(page: Page): Promise<string | null> {
+export async function findOverlap(page: Page): Promise<string | null> {
   return page.evaluate((limit) => {
     type Box = { owner: Element; top: number; bottom: number; left: number; right: number };
     const describe = (element: Element) => {

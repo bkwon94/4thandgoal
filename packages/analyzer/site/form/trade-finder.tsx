@@ -1,14 +1,16 @@
 /**
  * Find mode of the analyzer: the dark hero with Your team, the partner choice, the position chips, and the find button.
- * The find streams its real steps into the same wait as a grade, then up to three cards of the picks land in one list.
+ * The find streams its real steps into the same wait as a grade, then up to five Ledger cards land in one list, with
+ * the near ideas folded under them.
  */
 "use client";
 
 import { motion } from "framer-motion";
 import { ChevronDown, RotateCcw, Users } from "lucide-react";
 import { type ReactNode, useEffect, useLayoutEffect, useState } from "react";
-import { AsOfLine, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
+import { AsOfLine, NoChartLine } from "./analyze-result";
 import { BulletRows } from "./bullet-rows";
+import { Ledger, ledgerOf, NearIdeas } from "./ledger";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { Hero } from "@cpc/design/parts/hero";
 import { HeroMesh } from "@cpc/design/parts/hero-mesh";
@@ -28,12 +30,17 @@ import { useRequest } from "./use-request";
 import type { FindResponse, FinderTrade, Lean } from "../lib/analyze-types";
 import { ApiError, type ApiTarget, type FindRequest, streamFind, toErrorLine, type Team } from "../lib/api";
 
-// The finder asks Jev in waves and makes one Claude call, so it waits as long as a cold grade.
-const TIMEOUT_MS = 60_000;
+// A press can wait on a live fair check while the warm-up of the fair cache runs, and two presses share one Jev
+// budget, so the finder waits much longer than a grade before it gives up.
+const TIMEOUT_MS = 180_000;
 
-// The steps of a find, in the order the stream sends them: the teams, the players who fit, the offers, the
-// shortlist, and the pick. The wait line counts them, so the reader knows how far the search is.
+// The steps of a find, in the order the stream sends them: the teams, the trade value match, the fair check, the
+// check against both lineups, and the pick. The wait line counts them, so the reader knows how far the search is.
 const FIND_STEPS = 5;
+
+// The pick sends up to 5 trades and up to 3 near ideas (decision 17). The page keeps to that count.
+const MAX_PICKS = 5;
+const MAX_NEAR = 3;
 
 /* The position chips. Any sends no limit. Each other chip sends its position as aim_position, the same field that a
    typed question such as "trade ideas for an RB" sets on the front door. */
@@ -193,19 +200,13 @@ function PositionChips({ value, onChange, disabled }: { value: Aim; onChange: (a
   );
 }
 
-/* The asker's side goes first, as on the analyze result, so "You Get" always leads the card. */
-function swapSides(trade: FinderTrade, asker: number): SwapSide[] {
-  const sides = trade.sides.map((side) => ({ ...side, mine: side.roster_id === asker }));
-  return sides.sort((a, b) => Number(b.mine) - Number(a.mine));
-}
-
 /* The first live line of a find, as the stream sends it, so the wait shows it before the first part arrives and the
-   first part changes nothing. */
-function firstLine(partner: number | null): string {
-  return partner === null ? "Reading every team" : "Reading their roster";
+   first part changes nothing. With no partner the search reads every other team, so the line counts them. */
+function firstLine(partner: number | null, partners: number): string {
+  return partner === null && partners > 1 ? `Reading ${partners} teams` : "Reading their roster";
 }
 
-/* The wait line: the place of the running step and its live line, such as "4 of 5 · Making a shortlist". */
+/* The wait line: the place of the running step and its live line, such as "4 of 5 · Checking 77 against both lineups". */
 function waitLine(step: number, line: string): string {
   return `${Math.min(step, FIND_STEPS)} of ${FIND_STEPS} · ${line}`;
 }
@@ -269,7 +270,8 @@ function FindWaitHero({ eyebrow, toggle, lines, teams, read }: { eyebrow?: React
       eyebrow={eyebrow}
       toggle={toggle}
       title="Finding Trades"
-      meta="This can take about 25 seconds."
+      // The meta keeps the question of the idle hero. It names no time, because a press can wait on a live check.
+      meta="Who has a trade for you?"
       feature={
         <div aria-busy="true">
           <p role="status" className="sr-only">
@@ -314,14 +316,13 @@ function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }
   );
 }
 
-/* One finder trade: the Lean, the Case of at most 3 lines with its condition first, the swap card, and the folded
+/* One finder trade: the Lean, the Case of at most 3 lines with its condition first, the Ledger, and the folded
    Bullets. The pick writes no headline, so one voice speaks. After a fallback the trade has no Lean and no Bullet, so
    the card lists its plain fact lines. The cards rise in one after another, 80 ms apart, as the texts reveal of
    transitions.dev. With motion off, they show at once. */
 function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; disabled: boolean }) {
   const off = useMotionOff();
-  const sides = swapSides(trade, asker);
-  const partner = sides.find((side) => !side.mine);
+  const { partner } = ledgerOf(trade, asker);
   return (
     <motion.article
       aria-label={`Trade ${index + 1} of ${count}`}
@@ -338,10 +339,10 @@ function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: F
             Trade {index + 1} of {count}
           </h3>
         )}
-        {partner && <span className="min-w-0 truncate text-meta text-mute">With {partner.team}</span>}
+        <span className="min-w-0 truncate text-meta text-mute">With {partner}</span>
       </div>
       {trade.case !== null && <p className="m-0 line-clamp-3 max-w-measure text-body leading-body text-pretty text-ink-2">{trade.case}</p>}
-      <SwapCard sides={sides} />
+      <Ledger offer={trade} asker={asker} />
       {trade.bullets.length > 0 && <FoldedBullets trade={trade} idBase={`pick-${index + 1}`} />}
       {trade.fact_lines.length > 0 && (
         <ul aria-label="Facts" className="m-0 flex max-w-measure list-none flex-col gap-sp-2 p-0 text-meta text-ink-2">
@@ -357,9 +358,26 @@ function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: F
   );
 }
 
-/* The finder result: the cards in one list, or the empty line, then the as-of line. */
+/* The near fold rises in after the last card, with the same rise as the cards. With motion off, it shows at once. */
+function NearFold({ doc, after }: { doc: FindResponse; after: number }) {
+  const off = useMotionOff();
+  if (doc.near.length === 0) return null;
+  return (
+    <motion.div
+      initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: after * 0.08 }}
+    >
+      <NearIdeas near={doc.near.slice(0, MAX_NEAR)} asker={doc.trade_pair.asker.roster_id} />
+    </motion.div>
+  );
+}
+
+/* The finder result: the cards in one list, or the empty line, then the near ideas folded, then the as-of line. After
+   a fallback the list holds every offer of the shortlist, so only the picks keep to the count of 5. */
 function FinderResult({ doc, onOpen, disabled }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; disabled: boolean }) {
   const asker = doc.trade_pair.asker.roster_id;
+  const trades = doc.fallback ? doc.trades : doc.trades.slice(0, MAX_PICKS);
   return (
     <div className="flex flex-col gap-sp-4 pt-sp-5">
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
@@ -367,15 +385,16 @@ function FinderResult({ doc, onOpen, disabled }: { doc: FindResponse; onOpen: (t
       {doc.fallback && doc.trades.length > 0 && (
         <p className="m-0 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
       )}
-      {doc.trades.length > 0 && (
+      {trades.length > 0 && (
         <ol aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
-          {doc.trades.map((trade, i) => (
+          {trades.map((trade, i) => (
             <li key={trade.offer_id}>
-              <FinderCard trade={trade} asker={asker} index={i} count={doc.trades.length} onOpen={() => onOpen(trade, doc)} disabled={disabled} />
+              <FinderCard trade={trade} asker={asker} index={i} count={trades.length} onOpen={() => onOpen(trade, doc)} disabled={disabled} />
             </li>
           ))}
         </ol>
       )}
+      <NearFold doc={doc} after={trades.length} />
       <div className="pb-sp-5">
         <NoChartLine asOf={doc.as_of} />
         <AsOfLine doc={doc} />
@@ -435,7 +454,7 @@ export function TradeFinder({
       timedOut = true;
       controller.abort();
     }, TIMEOUT_MS);
-    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner))], read: [] });
+    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner, partners.length))], read: [] });
     // A live line starts a step, so it moves the wait line on. A done line ends the step, and the line holds until
     // the next step starts, because the next live line follows it at once.
     let step = 0;

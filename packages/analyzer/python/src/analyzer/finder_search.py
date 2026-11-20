@@ -642,6 +642,11 @@ def _trades(count: int) -> str:
     return {0: "no trades", 1: "one trade"}.get(count, f"{count:,} trades")
 
 
+def _count(count: int) -> str:
+    """The count of trades for a step line that names no noun after it, such as "77", "one trade", or "no trades"."""
+    return {0: "no trades", 1: "one trade"}.get(count, f"{count:,}")
+
+
 def _log_shapes(snapshot: Snapshot, asker: int, offers: list[ProposedTrade]) -> None:
     """One log line with the count of Value offers of the asker, in all and by shape direction."""
     counts = {f"{gives}-for-{gets}": 0 for gives, gets in SHAPES}
@@ -704,7 +709,7 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
         partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)
-    stage("Reading every team" if len(partners) > 1 else "Reading their roster", live=True)
+    stage(f"Reading {len(partners)} teams" if len(partners) > 1 else "Reading their roster", live=True)
 
     reads: list[PartnerRead] = []
     # The players of each partner with a Spares tree "yes", by player id, each with the weak slot of the asker that he
@@ -776,13 +781,14 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
     log.info("Finder fair step of %s: checked %d, dropped %d, no answer %d", snapshot.teams[asker].name, len(offers),
              len(unfair), len(offers) - len(fair_by_id))
     stage(f"Checked {_trades(len(offers))} for fairness")
-    stage("Making a shortlist", live=True)
 
     # Step 2 reads the STEP_TWO_PER_GROUP best offers of each partner and shape direction, by the fair mean, so no
     # shape and no partner disappears before the gain drop, and the request count stays small (decision 16).
     offers_by_partner = {rid: group_bests(partner_offers, fair_by_id)
                          for rid, partner_offers in offers_by_partner.items()}
     step_two = [offer_id(trade) for partner_offers in offers_by_partner.values() for trade in partner_offers]
+    # The line names the gain question of both lineups, with the count that step 2 asks about (decision 17).
+    stage(f"Checking {_count(len(step_two))} against both lineups", live=True)
     log.info("Finder step 2 of %s: %d offers, the %d best of each partner and shape direction",
              snapshot.teams[asker].name, len(step_two), STEP_TWO_PER_GROUP)
     for trade in (trade for partner_offers in offers_by_partner.values() for trade in partner_offers):

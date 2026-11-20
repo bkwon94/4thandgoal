@@ -523,8 +523,8 @@ test.describe("the wait, with motion on", () => {
     const hero = page.locator(FIND_WAIT_HERO);
     await expect(hero).toBeVisible();
     await expect(hero.locator("canvas[data-hero-mesh]")).toBeVisible();
-    await expect(hero.locator(".t-think .t-think-text:last-child")).toHaveText("1 of 5 · Reading every team");
-    await expect(hero.getByRole("status")).toHaveText("1 of 5 · Reading every team");
+    await expect(hero.locator(".t-think .t-think-text:last-child")).toHaveText(`1 of 5 · Reading ${TEAMS.length - 1} teams`);
+    await expect(hero.getByRole("status")).toHaveText(`1 of 5 · Reading ${TEAMS.length - 1} teams`);
     // The switch locks during the wait: a tap on Grade a trade leaves Find a trade checked and the wait on the page.
     await expect(mode.getByRole("radio", { name: "Grade a trade" })).toBeDisabled();
     await expect(mode.getByRole("radio", { name: "Find a trade" })).toBeDisabled();

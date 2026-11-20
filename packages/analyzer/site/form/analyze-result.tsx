@@ -1,6 +1,6 @@
 /**
  * The analyzer result from one analyze document, in one column: the trade on the stage, the Lean on its scale, the Case, the fairness line, and one tab per side.
- * It arrives in a staged reveal of about 1 s over the mesh. The trade finder shows SwapCard and reuses AsOfLine. No letter grade shows anywhere.
+ * It arrives in a staged reveal of about 1 s over the mesh. The trade finder reuses AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 

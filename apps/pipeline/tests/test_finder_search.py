@@ -249,6 +249,20 @@ def test_the_stream_reports_the_count_of_value_offers_and_the_count_checked_for_
     assert (f"Checked {count} trades for fairness", False) in lines
 
 
+def test_the_live_lines_name_the_teams_read_and_the_count_checked_against_both_lineups(snap):
+    lines = []
+    found = search(ASKER, None, snap, FakeJev(), stage=lambda line, live=False: lines.append((line, live)))
+    live = [line for line, is_live in lines if is_live]
+    assert live[0] == "Reading 11 teams"
+    assert live[3] == f"Checking {len(found.step_two):,} against both lineups"
+
+
+def test_with_one_partner_the_first_live_line_reads_their_roster(snap):
+    lines = []
+    search(ASKER, PARTNER, snap, FakeJev(), stage=lambda line, live=False: lines.append((line, live)))
+    assert lines[0] == ("Reading their roster", True)
+
+
 def _filter_requests(jev):
     return [r for r in jev.requests if r.questions and all(key.startswith("spare:") for key in r.questions)]
 
