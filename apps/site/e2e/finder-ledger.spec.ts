@@ -1,9 +1,6 @@
 /**
  * The Ledger cards and the near fold of the Finder, in WebKit, as Safari runs, on the phone, the iPad, and the desktop.
- * It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed bar over content.
- * It also streams the trades one part at a time, and checks that each card shows as its part comes, with the count line,
- * and that the first card scrolls into view. On a fixed clock, it checks that step 5 names each Shortlist trade in turn on
- * one line of the wait.
+ * It checks the layout of each shape, the streamed cards with their count line, and the step 5 lines of the wait.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -91,10 +88,14 @@ const LEAD = [
 ].map(([line, live]) => ({ type: "data-step", data: { line, live } }));
 const LEAD_PARTS = [...LEAD, { type: "data-shortlist", data: { trades: SHORTLIST } }, { type: "data-step", data: { line: "Picking the best 5", live: true } }];
 
-/* The parts of a streamed find: one trade part per trade of the fixture, in order, each with the count of the trades,
-   then the answer with the whole document. */
+/* The parts of a streamed find: one trade part per trade of the fixture, in order, each with the most trades that the
+   pick can keep, then the part that says the pick has no more trades, then the answer with the whole document. */
+// The pick can keep 5, as the live line "Picking the best 5" says, and it keeps the 4 trades of the fixture. So the
+// trades-done part follows the last trade, as the API sends it when the picks list closes.
+const MOST = 5;
 const STREAMED = [
-  ...DOC.trades.map((trade, index) => ({ type: "data-trade", data: { index, most: DOC.trades.length, trade } })),
+  ...DOC.trades.map((trade, index) => ({ type: "data-trade", data: { index, most: MOST, trade } })),
+  { type: "data-trades-done", data: {} },
   { type: "data-answer", data: { kind: "find", document: DOC } },
 ];
 
@@ -181,6 +182,8 @@ for (const viewport of VIEWPORTS) {
   test.describe(viewport.name, () => {
     test.use(viewport.use);
     for (const theme of ["light", "dark"] as const) {
+      // It streams the trades one part at a time. Each card shows as its part comes, with the count line, and the
+      // first card scrolls into view.
       test(`each card shows as its trade part comes, with the count line under the cards, ${theme} (AT-72)`, async ({ page }, info) => {
         await openFinder(page, theme, true);
         const cards = page.getByRole("article");
@@ -191,9 +194,8 @@ for (const viewport of VIEWPORTS) {
         for (let shown = 1; shown <= count; shown++) {
           await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
           await expect(cards).toHaveCount(shown);
-          const left = count - shown;
-          if (left > 0) await expect(more).toHaveText(`Writing ${left} more ${left === 1 ? "trade" : "trades"}`);
-          else await expect(more).toHaveCount(0);
+          const left = MOST - shown;
+          await expect(more).toHaveText(`Writing ${left} more ${left === 1 ? "trade" : "trades"}`);
           // The wait stays while the cards come, and the near fold waits for the end.
           await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
           await expect(page.getByRole("button", { name: /Close, but not sent/ })).toHaveCount(0);
@@ -208,6 +210,11 @@ for (const viewport of VIEWPORTS) {
             await page.screenshot({ path: info.outputPath(`stream-first-card-${theme}.png`), fullPage: true });
           }
         }
+        // The pick has no more trades, so the count line goes under the last card before the answer comes.
+        await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
+        await expect(more).toHaveCount(0);
+        await expect(cards.last()).toHaveAttribute("aria-label", `Trade ${count} of ${count}`);
+        await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
         await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
         await expect(page.getByRole("button", { name: `Close, but not sent · ${DOC.near.length}` })).toBeVisible();
         await expect(cards).toHaveCount(count);
@@ -217,6 +224,7 @@ for (const viewport of VIEWPORTS) {
       });
 
       for (const motion of ["no-preference", "reduce"] as const) {
+        // On a fixed clock, step 5 names each Shortlist trade in turn on one line of the wait.
         test(`step 5 names each Shortlist trade on one line, motion ${motion}, ${theme} (AT-36, AT-73)`, async ({ page }, info) => {
           await page.emulateMedia({ reducedMotion: motion });
           await openFinder(page, theme, true, true);
@@ -276,6 +284,8 @@ for (const viewport of VIEWPORTS) {
         });
       }
 
+      // It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed
+      // bar over content.
       test(`the Ledger cards and the near fold, with no overlap and no fixed bar over content, ${theme} (AT-65, AT-66, AT-67)`, async ({ page }, info) => {
         await openFinder(page, theme);
         const cards = page.getByRole("article");

@@ -416,7 +416,7 @@ function NearFold({ doc, after }: { doc: FindResponse; after: number }) {
     <motion.div
       initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.5, ease: EASE_OUT, delay: after * 0.08 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: after * STAGGER_S }}
     >
       <NearIdeas near={doc.near.slice(0, MAX_NEAR)} asker={doc.trade_pair.asker.roster_id} />
     </motion.div>
@@ -631,6 +631,12 @@ export function TradeFinder({
         setFind((now) =>
           now.status === "finding" && !now.trades.some((kept) => kept.offer_id === trade.offer_id) ? { ...now, trades: [...now.trades, trade], most } : now,
         );
+      },
+      // The pick has no more trades, so the most is the count of the cards, and the count line goes. A trade of a
+      // later attempt can still come, and it sets the most again.
+      onTradesDone: () => {
+        if (!run.isCurrent()) return;
+        setFind((now) => (now.status === "finding" ? { ...now, most: now.trades.length } : now));
       },
     };
     try {

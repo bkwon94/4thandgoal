@@ -180,6 +180,21 @@ describe("streamFind", () => {
     expect(cancel).not.toHaveBeenCalled();
   });
 
+  it("tells the finder when the pick has no more trades, before the document", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        streamOf([
+          { type: "data-trades-done", data: {} },
+          { type: "data-answer", data: { kind: "find", document: findResponse } },
+        ]),
+      ),
+    );
+    const seen: string[] = [];
+    await streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {}, onTradesDone: () => seen.push("done") }, new AbortController().signal);
+    expect(seen).toEqual(["done"]);
+  });
+
   it("throws a 502 for a stream that ends with no document", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamOf([{ type: "data-step", data: { line: "Reading every team", live: true } }])));
     await expect(streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {} }, new AbortController().signal)).rejects.toMatchObject({ status: 502 });

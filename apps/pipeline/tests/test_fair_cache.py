@@ -3,6 +3,8 @@ Tests for the fair cache of decision 19: the fair state names no asker, a press 
 the warm-up stored, a moved player gives new keys only for his offers, and the warm-up waits while a press is live.
 """
 import shutil
+import threading
+import time
 import zlib
 from contextlib import ExitStack
 
@@ -12,7 +14,7 @@ from fakes import FakeJev
 
 from analyzer.fair_cache import FairCache
 from analyzer.finder_search import fair_requests, offer_id, search, value_offers, warm_fair
-from analyzer.jev_waves import PACER, JevWaves, Pacer
+from analyzer.jev_waves import WAVE_SECONDS, JevWaves, Pacer
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
 
@@ -136,13 +138,31 @@ def test_the_warm_up_sends_no_request_while_a_press_is_live(snap):
     assert asked == keys and len(jev.requests) > 0
 
 
-def test_a_press_is_live_on_the_pacer_while_it_asks_jev(snap):
-    live: list[bool] = []
+def test_a_background_wave_waits_while_a_search_asks_jev(snap):
+    # The background wave starts while the search asks Jev. It waits one second at a time until the search ends.
+    waits: list[float] = []
+    went = threading.Event()
+
+    def sleep(seconds):
+        waits.append(seconds)
+        time.sleep(0.005)
+
+    pacer = Pacer(sleep=sleep)
+
+    def background():
+        pacer.reserve(1, 1, background=True)
+        went.set()
+
+    started: list[threading.Thread] = []
 
     def answer(key, question, state):
-        live.append(PACER.live)
+        if not started:
+            started.append(threading.Thread(target=background))
+            started[0].start()
         return 0.9
 
-    search(TEAM_A, TEAM_B, snap, FakeJev(answer=answer))
-    assert live and all(live)
-    assert not PACER.live
+    jev = FakeJev(answer=answer)
+    search(TEAM_A, TEAM_B, snap, jev, waves=JevWaves(jev, pacer=pacer))
+    started[0].join(timeout=5)
+    assert went.is_set()
+    assert WAVE_SECONDS in waits

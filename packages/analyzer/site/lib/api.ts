@@ -182,12 +182,14 @@ export type FindRequest = { season: number; asker: number; partner?: number; lim
 /* What the find stream gives the finder before its document: each step line, live while its step works, the roster id
    of each team as the search reads it, and each trade of the pick as soon as it stands, with its place in the pick
    order and the most trades that the pick can keep, and the trades of the Shortlist by their players before the pick
-   starts (decision 20). */
+   starts (decision 20). `onTradesDone` says that the pick has no more trades, so the count line can go before the
+   document comes. The document stays the truth. */
 export type FindEvents = {
   onStep: (line: string, live: boolean) => void;
   onTeam: (rosterId: number) => void;
   onTrade?: (index: number, most: number, trade: FinderTrade) => void;
   onShortlist?: (trades: ShortlistTrade[]) => void;
+  onTradesDone?: () => void;
 };
 
 /* One player of a Shortlist trade: his full name, and his short name for a narrow line, such as "Walker". */
@@ -203,6 +205,7 @@ const findPartSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("data-team"), data: z.object({ roster_id: z.number() }) }),
   z.object({ type: z.literal("data-trade"), data: z.object({ index: z.number(), most: z.number(), trade: finderTradeSchema }) }),
   z.object({ type: z.literal("data-shortlist"), data: z.object({ trades: z.array(shortlistTradeSchema) }) }),
+  z.object({ type: z.literal("data-trades-done"), data: z.object({}) }),
   z.object({ type: z.literal("data-answer"), data: z.object({ kind: z.literal("find"), document: findResponseSchema }) }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
 ]);
@@ -241,6 +244,7 @@ export async function streamFind(target: ApiTarget, passphrase: string, body: Fi
       if (type === "data-team") events.onTeam(data.roster_id);
       if (type === "data-trade") events.onTrade?.(data.index, data.most, data.trade);
       if (type === "data-shortlist") events.onShortlist?.(data.trades);
+      if (type === "data-trades-done") events.onTradesDone?.();
       if (type === "data-error") throw new ApiError(data.status, data.line, undefined, data.line);
       if (type === "data-answer") {
         void drain(reader);

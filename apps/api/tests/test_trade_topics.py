@@ -763,6 +763,16 @@ def test_the_find_stream_sends_each_trade_as_its_own_part_before_the_answer(api)
         "data-step")
 
 
+def test_the_find_stream_says_the_pick_has_no_more_trades_before_the_pick_ends(api):
+    # Ticket 17: the site drops the count line when the pick has no more trades, so the part comes after the last
+    # trade and before the done line of step 5, which waits for the end of the call.
+    parts = _find_stream(api)
+    kinds = [(part["type"], part.get("data", {}).get("line")) for part in parts]
+    [end] = [i for i, (kind, _) in enumerate(kinds) if kind == "data-trades-done"]
+    assert max(i for i, (kind, _) in enumerate(kinds) if kind == "data-trade") < end
+    assert end < kinds.index(("data-step", "Picked the best 3"))
+
+
 def test_the_find_stream_sends_the_shortlist_by_player_names_before_step_5(api):
     # AT-73 and decision 20: step 5 names the trades it weighs, so the stream sends each Shortlist trade by its players.
     parts = _find_stream(api)
@@ -796,7 +806,9 @@ def test_trade_ideas_of_the_front_door_send_no_shortlist_part(api):
 
 def test_trade_ideas_of_the_front_door_send_no_trade_part(api):
     # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
-    assert _of(_ideas(api), "data-trade") == []
+    parts = _ideas(api)
+    assert _of(parts, "data-trade") == []
+    assert _of(parts, "data-trades-done") == []
 
 
 def test_a_trade_of_the_find_stream_holds_no_headline(api):
