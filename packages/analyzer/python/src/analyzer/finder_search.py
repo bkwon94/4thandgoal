@@ -44,6 +44,9 @@ FAIR = {
 # step 1 asks once with the asker first and once with the partner first, and code takes the mean (decision 15).
 ORDERS = ("asker", "partner")
 SHORTLIST_KEEP = 10  # the offers that the Advisor reads, spread by `varied` (decision 16)
+# The offers of each partner and shape direction that go to step 2, by the fair mean. The gain check of step 2 drops
+# most offers, so the best one alone left the Shortlist with 3 to 6 offers, not 10. Brian chose 3 on 2026-11-20.
+STEP_TWO_PER_GROUP = 3
 # The answer that an offer holds after a failed shortlist request: the middle of the unsure band. A failed call is an
 # error, never a no, so the offer goes on as an unsure answer does, and the pick sheet states no Jev answer for it.
 UNSURE = (NO_AT + YES_AT) / 2
@@ -128,8 +131,8 @@ class Shortlist(BaseModel):
     # The offers that a side's gain answer dropped with a clear no, with their answers, so the log and the evidence
     # can show why.
     dropped: list[ShortlistOffer] = []
-    # The ids of the offers that step 2 asked about: the best offer of each partner and shape direction, by the fair
-    # mean, in the order of the partners and of their offers.
+    # The ids of the offers that step 2 asked about: the STEP_TWO_PER_GROUP best offers of each partner and shape
+    # direction, by the fair mean, in the order of the partners and of their offers.
     step_two: list[str] = []
 
 
@@ -309,19 +312,17 @@ def varied(offers: list[ShortlistOffer], keep: int) -> list[ShortlistOffer]:
 
 
 def group_bests(offers: list[ProposedTrade], fair_by_id: dict[str, float]) -> list[ProposedTrade]:
-    """The best offer of each partner and shape direction, by the fair mean, in the order of the offers (decision 16).
+    """The STEP_TWO_PER_GROUP best offers of each partner and shape direction, by the fair mean, in the order of the
+    offers (decision 16).
 
     An offer with no fair mean, after failed requests, counts as UNSURE, because a failed call is never a no. A tie
     goes to the lower offer id, so the pick is the same on each run.
     """
-    best: dict[tuple[int, str], tuple[float, str]] = {}
+    ranks: dict[tuple[int, str], list[tuple[float, str]]] = {}
     for trade in offers:
         oid = offer_id(trade)
-        key = (trade.sides[1].roster_id, shape(trade))
-        rank = (-fair_by_id.get(oid, UNSURE), oid)
-        if key not in best or rank < best[key]:
-            best[key] = rank
-    chosen = {oid for _, oid in best.values()}
+        ranks.setdefault((trade.sides[1].roster_id, shape(trade)), []).append((-fair_by_id.get(oid, UNSURE), oid))
+    chosen = {oid for group in ranks.values() for _, oid in sorted(group)[:STEP_TWO_PER_GROUP]}
     return [trade for trade in offers if offer_id(trade) in chosen]
 
 
@@ -597,11 +598,11 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
        and the hard rules (decision 14, ADR 0038). No cap follows the screen.
     3. Step 1, the fair check: Jev asks the fair Noul of each Value offer once in each side order, and code takes the
        mean. A clear no on the mean, below NO_AT, drops the offer (decision 15).
-    4. Step 2 and the shortlist: the offers that passed step 1 group by partner and shape direction, and the best of
-       each group by the fair mean goes on (decision 16). Jev asks the need and the gain of each side. A clear no on
-       the gain of a side drops the offer, and an unsure answer stays. No need answer drops an offer. The score is the
-       fair mean alone. `varied` keeps SHORTLIST_KEEP offers: the best of each shape direction, then of each partner,
-       then of each player that the asker gives, then the rest by score.
+    4. Step 2 and the shortlist: the offers that passed step 1 group by partner and shape direction, and the
+       STEP_TWO_PER_GROUP best of each group by the fair mean go on (decision 16). Jev asks the need and the gain of
+       each side. A clear no on the gain of a side drops the offer, and an unsure answer stays. No need answer drops an
+       offer. The score is the fair mean alone. `varied` keeps SHORTLIST_KEEP offers: the best of each shape
+       direction, then of each partner, then of each player that the asker gives, then the rest by score.
     A failed Jev request logs, and it never reads as a no and never stops the press. A failed Spares tree request marks
     the read failed. A failed fair request adds no answer, so its offers go on. A failed shortlist request lets its
     offers go on, each as an unsure answer.
@@ -693,13 +694,13 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     stage(f"Checked {_trades(len(offers))} for fairness")
     stage("Making a shortlist", live=True)
 
-    # Step 2 reads the best offer of each partner and shape direction, by the fair mean, so no shape and no partner
-    # disappears before the gain drop, and the request count stays small (decision 16).
+    # Step 2 reads the STEP_TWO_PER_GROUP best offers of each partner and shape direction, by the fair mean, so no
+    # shape and no partner disappears before the gain drop, and the request count stays small (decision 16).
     offers_by_partner = {rid: group_bests(partner_offers, fair_by_id)
                          for rid, partner_offers in offers_by_partner.items()}
     step_two = [offer_id(trade) for partner_offers in offers_by_partner.values() for trade in partner_offers]
-    log.info("Finder step 2 of %s: %d offers, the best of each partner and shape direction",
-             snapshot.teams[asker].name, len(step_two))
+    log.info("Finder step 2 of %s: %d offers, the %d best of each partner and shape direction",
+             snapshot.teams[asker].name, len(step_two), STEP_TWO_PER_GROUP)
     for trade in (trade for partner_offers in offers_by_partner.values() for trade in partner_offers):
         _log_offer(snapshot, trade)
 

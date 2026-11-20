@@ -10,8 +10,12 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-43, AT-45, AT-46, AT-
 
 **Status:** in-review
 
-- [x] A real press for Bo Girds sends at most one offer per partner and shape direction to step 2, no more than 77, each the highest fair mean of its group.
+- [x] A real press for Bo Girds sends at most three offers per partner and shape direction to step 2, no more than 231, each among the three highest fair means of its group.
 - [x] Tests with fixed answers show that a gain of 0.2 drops an offer, 0.5 keeps it, a failed call raises an error, and need answers of 0.1 on both sides drop nothing.
 - [x] A test shows a Spares tree "yes" as a pick sheet fact on a Value offer, with the same count of offers.
 - [x] The Shortlist of a real press puts the best offer of each shape direction first, then of each partner, then of each player, and the rest by fair mean.
 - [x] Neither "Kenneth Walker III for Patrick Mahomes" nor "Zay Flowers for Jared Goff" is on the Shortlist of a real press, and the backtest command passes its bar.
+
+## Comments
+
+- 2026-11-20: Brian chose the top 3 offers of each partner and shape direction for step 2, because the gain check left the Shortlist thin.

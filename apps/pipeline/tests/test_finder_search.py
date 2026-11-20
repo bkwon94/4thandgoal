@@ -175,22 +175,21 @@ def _scattered_fair(key, question, state):
     return 0.31 + (int(n) * 7919 % 61) / 100 if kind == "fair" else 0.9
 
 
-def test_step_two_gets_the_best_offer_of_each_partner_and_shape_direction(snap):
+def test_step_two_gets_the_three_best_offers_of_each_partner_and_shape_direction(snap):
     jev = FakeJev(answer=_scattered_fair)
     found = search(ASKER, None, snap, jev)
     groups: dict[tuple[int, str], list[str]] = {}
     for trade in found.offers:
         groups.setdefault((trade.sides[1].roster_id, _shape(trade)), []).append(offer_id(trade))
-    assert len(groups) > 11
-    # One offer per partner and shape direction, at most 11 partners times 7 shape directions.
-    assert len(found.step_two) == len(groups) <= 77
-    by_id = {offer_id(trade): trade for trade in found.offers}
-    for oid in found.step_two:
-        trade = by_id[oid]
-        group = groups[(trade.sides[1].roster_id, _shape(trade))]
-        # The highest fair mean of the group. A tie goes to the lower offer id.
-        assert all(found.fair_means[oid] >= found.fair_means[other] for other in group)
-        assert len(group) == 1 or any(found.fair_means[oid] > found.fair_means[other] for other in group)
+    assert len(groups) > 11 and any(len(group) > 3 for group in groups.values())
+    # Up to three offers per partner and shape direction, at most 11 partners times 7 shape directions times 3.
+    assert len(found.step_two) == sum(min(3, len(group)) for group in groups.values()) <= 231
+    chosen = set(found.step_two)
+    for group in groups.values():
+        picked = [oid for oid in group if oid in chosen]
+        rest = [oid for oid in group if oid not in chosen]
+        # The highest fair means of the group. A tie goes to the lower offer id.
+        assert all(found.fair_means[oid] >= found.fair_means[other] for oid in picked for other in rest)
     # Step 2 asks about these offers and no other.
     # Each partner numbers its own offers from 0, so the count sums the offers of each request.
     assert sum(len(r.state["offers"]) for r in _shortlist_requests(jev)) == len(found.step_two)
@@ -200,7 +199,8 @@ def test_step_two_asks_the_need_and_the_gain_of_each_side_and_no_fair_question(s
     jev = FakeJev()
     found = search(ASKER, PARTNER, snap, jev)
     questions, _ = _shortlist_merged(jev)
-    assert len(found.step_two) == len({_shape(t) for t in found.offers})
+    shapes = [_shape(t) for t in found.offers]
+    assert len(found.step_two) == sum(min(3, shapes.count(s)) for s in set(shapes))
     assert set(questions) == {f"{n}|{kind}.{rid}" for n in range(len(found.step_two))
                               for kind in ("need", "gain") for rid in (ASKER, PARTNER)}
 
