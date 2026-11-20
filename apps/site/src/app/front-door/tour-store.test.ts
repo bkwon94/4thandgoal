@@ -2,26 +2,10 @@
  * Tests for the seen store of the Tour: the key `cpc.tour-seen` in local storage, one read and one write.
  * A blocked store counts as seen, so a browser with no storage never gets the Tour.
  */
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { TOUR_SEEN_KEY, markTourSeen, tourSeen } from "./tour-store";
 
-/* The real local storage, kept while a test swaps in a blocked one. */
-const realStorage = Object.getOwnPropertyDescriptor(globalThis, "localStorage")!;
-
-/* Swaps local storage for one whose read and write throw `error`, as a browser with blocked storage does. happy-dom binds
-   each method of the store to the store on its first read, so a spy on Storage.prototype misses it. */
-function blockStorage(error: Error): void {
-  const fail = () => {
-    throw error;
-  };
-  Object.defineProperty(globalThis, "localStorage", {
-    configurable: true,
-    get: () => ({ getItem: fail, setItem: fail }),
-  });
-}
-
 afterEach(() => {
-  Object.defineProperty(globalThis, "localStorage", realStorage);
   localStorage.clear();
 });
 
@@ -48,12 +32,16 @@ describe("the seen store of the Tour", () => {
   });
 
   it("reads as seen when the read of local storage throws (AT-26)", () => {
-    blockStorage(new Error("SecurityError"));
+    spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("SecurityError");
+    });
     expect(tourSeen()).toBe(true);
   });
 
   it("does not throw when the write of local storage throws", () => {
-    blockStorage(new Error("QuotaExceededError"));
+    spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("QuotaExceededError");
+    });
     expect(() => markTourSeen()).not.toThrow();
   });
 });

@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { week6 } from "@cpc/week/fixtures/week-page";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import type { WaiverBoard, WaiverPlayer } from "@cpc/waiver/types";
@@ -17,7 +17,6 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 function renderBoard(board: WaiverBoard = waiver) {
@@ -336,10 +335,10 @@ describe("the team pick across visits", () => {
   });
 
   it("keeps the page working for the visit when storage throws", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("blocked");
     });
     renderBoard();

@@ -6,7 +6,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { cpSync, mkdtempSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { fireEvent } from "@testing-library/react";
 import { type FixtureClient, fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
@@ -15,7 +15,6 @@ import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 /* A temp public/ folder with the week 6 page, the rankings file, and the managers file when one is given. */
@@ -29,9 +28,8 @@ async function routeOver(managers?: unknown) {
   writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankingsFixture));
   if (managers !== undefined)
     writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
   return import("./page");
 }
 
@@ -43,8 +41,7 @@ async function routeOfClient(slug: FixtureClient) {
     recursive: true,
     filter: (source) => statSync(source).isDirectory() || source.endsWith(".json"),
   });
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
   return import("./page");
 }
 

@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { parse } from "smol-toml";
 import { cleanup, render, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import { fixturePublished, readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import type { MenuItem, PackageName } from "@/lib/client-values";
 import { clientValues } from "@/generated/client-values";
 import { menuLinks, siteLines } from "@/generated/registry";
@@ -15,6 +15,7 @@ import { SiteAnswer } from "./front-door/site-answer";
 import { sitePages } from "./site-pages";
 
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 afterEach(() => cleanup());
 
 const { items } = clientValues.menu;

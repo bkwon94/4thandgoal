@@ -5,7 +5,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { stubPhone } from "../../../../test/phone";
-import { readFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import { homeHref } from "@/lib/routes";
 import { pageTitle } from "@/app/shell-props";
 import AskPage, { metadata } from "./page";
@@ -13,6 +13,7 @@ import AskPage, { metadata } from "./page";
 import "@cpc/design/ui/sheet-jsdom";
 
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 /* The menu sheet closes at the desktop tier, so each test sees a phone. */
 beforeEach(stubPhone);

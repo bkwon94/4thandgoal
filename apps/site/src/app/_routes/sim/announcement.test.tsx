@@ -3,7 +3,7 @@
  * Each render is one page load. It opens 0.7 s after load, once per browser, and never over a sheet or with no team.
  */
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest, setSystemTime } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 import { weekSim } from "@cpc/sim/fixtures/sim";
@@ -20,8 +20,9 @@ const IN_THE_WEEK = new Date(`${SIM_ANNOUNCEMENT.stops}T12:00:00`).getTime() - 3
 
 let putBack = () => {};
 beforeEach(() => {
-  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "Date"] });
-  vi.setSystemTime(IN_THE_WEEK);
+  // Bun fakes each timer and `Date` together. It has no choice of which ones to fake.
+  jest.useFakeTimers();
+  setSystemTime(IN_THE_WEEK);
   putBack = standInForAnimate();
   localStorage.clear();
   window.history.replaceState(null, "", "/");
@@ -29,7 +30,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   putBack();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 const title = () => screen.queryByRole("dialog", { name: "See your path to the playoffs" });
@@ -37,7 +38,7 @@ const title = () => screen.queryByRole("dialog", { name: "See your path to the p
 /* One page load of the home page: mount the Announcement, then let the load beat pass. Unmount it before the next load. */
 function load() {
   const page = render(<SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />);
-  act(() => vi.advanceTimersByTime(LOAD_BEAT_MS));
+  act(() => jest.advanceTimersByTime(LOAD_BEAT_MS));
   return page;
 }
 
@@ -45,9 +46,9 @@ describe("the sim Announcement on the home page", () => {
   it("opens with the copy of the spec about 0.7 s after load, with Bo Girds set (AT-51)", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     render(<SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />);
-    act(() => vi.advanceTimersByTime(LOAD_BEAT_MS - 1));
+    act(() => jest.advanceTimersByTime(LOAD_BEAT_MS - 1));
     expect(title()).toBeNull();
-    act(() => vi.advanceTimersByTime(1));
+    act(() => jest.advanceTimersByTime(1));
     const sheet = title()!;
     expect(sheet).toBeTruthy();
     for (const copy of [
@@ -68,7 +69,7 @@ describe("the sim Announcement on the home page", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     const first = load();
     fireEvent.click(screen.getByRole("button", { name: "Not now" }));
-    act(() => vi.advanceTimersByTime(1000));
+    act(() => jest.advanceTimersByTime(1000));
     expect(title()).toBeNull();
     first.unmount();
     load();
@@ -99,7 +100,7 @@ describe("the sim Announcement on the home page", () => {
         <SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />
       </>,
     );
-    act(() => vi.advanceTimersByTime(LOAD_BEAT_MS * 3));
+    act(() => jest.advanceTimersByTime(LOAD_BEAT_MS * 3));
     expect(screen.getByRole("dialog", { name: "Which team is yours?" })).toBeTruthy();
     expect(title()).toBeNull();
     first.unmount();
@@ -118,9 +119,9 @@ describe("the sim Announcement on the home page", () => {
 
   it("skips the load of the team picker after a pick before the beat, and opens on the next load (AT-57)", () => {
     const first = render(<SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />);
-    act(() => vi.advanceTimersByTime(LOAD_BEAT_MS / 2));
+    act(() => jest.advanceTimersByTime(LOAD_BEAT_MS / 2));
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
-    act(() => vi.advanceTimersByTime(LOAD_BEAT_MS * 3));
+    act(() => jest.advanceTimersByTime(LOAD_BEAT_MS * 3));
     expect(title()).toBeNull();
     first.unmount();
     load();
@@ -135,21 +136,21 @@ describe("the sim Announcement on the home page", () => {
 
   it("does not open 1 day past its end date (AT-59)", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
-    vi.setSystemTime(new Date(`${SIM_ANNOUNCEMENT.stops}T12:00:00`).getTime() + 86_400_000);
+    setSystemTime(new Date(`${SIM_ANNOUNCEMENT.stops}T12:00:00`).getTime() + 86_400_000);
     load();
     expect(title()).toBeNull();
   });
 
   it("stops on its end date, 1 week after the release", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
-    vi.setSystemTime(new Date(`${SIM_ANNOUNCEMENT.release}T00:00:00`).getTime() + 7 * 86_400_000);
+    setSystemTime(new Date(`${SIM_ANNOUNCEMENT.release}T00:00:00`).getTime() + 7 * 86_400_000);
     load();
     expect(title()).toBeNull();
   });
 
   it("opens on the last day before its end date", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
-    vi.setSystemTime(new Date(`${SIM_ANNOUNCEMENT.stops}T00:00:00`).getTime() - 60_000);
+    setSystemTime(new Date(`${SIM_ANNOUNCEMENT.stops}T00:00:00`).getTime() - 60_000);
     load();
     expect(title()).toBeTruthy();
   });

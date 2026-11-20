@@ -6,7 +6,7 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import type { EggCheck } from "@cpc/eggs/lib/api";
-import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import { fixturePublished, readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import { listenForEggs, SELECT_SETTLE_MS, TAP_GAP_MS } from "@cpc/eggs/listener/listener";
 import midseasonFixture from "@cpc/midseason/fixtures/midseason.json";
 import { sim as simFixture } from "@cpc/sim/fixtures/sim";
@@ -20,8 +20,9 @@ import NotFound from "../../not-found";
 import { publicOver, removePublics } from "../midseason/temp-public";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the spy, because the preload restores each spy after each test. */
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 let sent: EggCheck[];
 let stop: (() => void) | undefined;

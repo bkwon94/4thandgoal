@@ -3,18 +3,19 @@
  * fetch is a test stub at the fetch seam that answers as the ask route of the API does, with the real Menu of the cpc build.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, to week 8, so a weekly publish never changes these tests. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const replies: Response[] = [];
 const askCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/ask"));
 
@@ -57,7 +58,7 @@ beforeEach(() => {
       ? (replies.shift() ?? new Response("", { status: 500 }))
       : new Response("", { status: 404 }),
   );
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -67,7 +68,6 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   replies.length = 0;
-  vi.unstubAllGlobals();
 });
 
 /* The pages of the cpc Menu with no Home, then the midseason report and the sim, each with its label and its blurb. */

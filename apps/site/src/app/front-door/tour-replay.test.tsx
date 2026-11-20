@@ -5,7 +5,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { stubPhone } from "../../../test/phone";
-import { readFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import AnalyzePage from "@/app/_routes/analyzer/page";
 import HomePage from "./door-page";
 // The jsdom stand-ins of the browser APIs that the popover and the menu sheet need.
@@ -13,6 +13,7 @@ import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 /* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
 beforeEach(stubPhone);

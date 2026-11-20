@@ -5,7 +5,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import { readFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import checkStream from "./front-door/fixtures/trade-check-stream.json";
 import formStream from "./front-door/fixtures/trade-form-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
@@ -13,8 +13,9 @@ import sellStream from "./front-door/fixtures/sell-high-stream.json";
 import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the spy, because the preload restores each spy after each test. */
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const SURE = "is Courtland Sutton for Kenneth Walker fair";

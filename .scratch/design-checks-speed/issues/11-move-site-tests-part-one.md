@@ -14,24 +14,21 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests none alone. It fee
 - [x] The count of tests that pass equals the count before the move for these files, or the ticket names each change.
 - [x] The fast site check exits 0.
 
-**Counts:** `apps/site/src/app/` holds 58 test files with 619 passing tests on Vitest. 40 files move to `bun test`. They had 294 passing tests on Vitest, and they have 294 on `bun test`, with the same count in each file.
+**Counts:** `apps/site/src/app/` holds 58 test files with 619 passing tests on Vitest. 53 files move to `bun test`. They had 516 passing tests on Vitest, and they have 516 on `bun test`, with the same count in each file.
 
-**Files on Vitest, named for Brian:** 18 files stay on Vitest, with 325 tests. Each one fails on a fault of happy-dom under `bun test`, as ticket 10 found:
-
-- No page URL, so a root-relative `img` src fires `error` and the avatar swaps to its default: `_routes/managers/manager-page`, `_routes/managers/page`, `_routes/rankings/page`, `_routes/waiver/page`, `_routes/waiver/war-chest`, `front-page`.
-- No page URL, so a relative `fetch` or `history.replaceState` fails: `_routes/sim/announcement`, `page-free`, `page-personal`, `page-grade-blocks`, `page-site`, `page-suggestions`, `page-topic-sweep`.
-- No frame limit, so an exit or a wait stalls, or the file runs past 4 minutes: `page`, `page-ask`, `front-door/suggestions`, `front-door/steps`.
-- `spyOn(Storage.prototype, ...)` has no effect after the first read: `front-door/tour`.
-
-`waiver/page` also expects the Node date text "Fri, Oct 23, 10:05 AM". Bun gives "Fri, Oct 23 at 10:05 AM".
+**Files on Vitest, named for Brian:** 5 files stay on Vitest, with 103 tests: `page-free`, `page-personal`, `page-grade-blocks`, `page-suggestions`, and `page-topic-sweep`. Each one streams an Answer. happy-dom puts its own stream classes on the globals, and the native `pipeThrough` of Bun refuses them: "The transform's 'readable' property must be a ReadableStream". The Answer then shows "The question did not go through". This fault is proven in `page-free`, `page-personal`, `page-grade-blocks`, and one test of `page-suggestions`. In `page-topic-sweep`, 8 personal Topics show no block, and in `page-suggestions` AT-44 finds no chip of Waiver targets. The same fault is the likely cause, but not proven.
 
 **Changes:**
 
-- `scripts/bun-test.mjs` runs `bun test --isolate`. Without it, a file sees the DOM nodes and the module state of the files before it, and the Tour tests failed by the order of the run.
-- `BUN_TEST_DIRS` takes a folder or one file. A folder with a file on Vitest lists each moved file. The Vitest config skips each entry and each file under it.
-- `src/lib/data/week-data.ts` reads the working folder on each call, not once when it loads, so a test needs no `vi.resetModules` to point it at a fixture folder.
-- `test/phone.ts` gives `stubPhone`. happy-dom has a desktop-wide window, so the menu sheet closed at once. Three tests stub `matchMedia` as a phone, as the jsdom stand-in did.
+- `BUN_TEST_DIRS` lists `src/app/_routes`, `src/app/front-door`, and `src/app/fonts` as folders, and each moved file of the `src/app` root as its own entry.
+- `src/lib/data/week-data.ts` reads the working folder on each call, not once when it loads, so a test needs no `resetModules` to point it at a fixture folder.
+- `test/phone.ts` gives `stubPhone`. happy-dom has a desktop-wide window, so the menu sheet closed at once. Six tests stub `matchMedia` as a phone, as the jsdom stand-in did.
+- Each moved file that calls `readFixtureSite` calls `restoreFixtureSite` after each test.
 - `home-flag` sets the flag on `clientValues` in the test, in place of `vi.doMock`, because the page reads it when it renders.
-- `tour-store` swaps `localStorage` for a blocked store, in place of a spy on `Storage.prototype`.
 - `not-found` and `eggs/targets` drop the jsdom stubs of `matchMedia` and `IntersectionObserver`, because happy-dom has both.
-- `eggs/targets` reads the status line inside the replay, not in the whole body.
+- `eggs/targets` reads the status line inside the replay, because the ui-sdk announcer is also a status line.
+- `waiver/page` takes the date of Node, "Oct 23, 10:05", or of Bun, "Oct 23 at 10:05".
+- `front-door/steps` lets the Framer Motion frames end, 1 s on fake timers, before it checks that no timer runs. A live spinner still leaves one timer.
+- `page` fixes only `Date` with `setSystemTime`, in place of fake timers that fake only `Date`. `sim/announcement` fakes each timer, because Bun has no choice of which timers to fake.
+- `front-door/suggestions` checks one call and its value in place of `toHaveBeenCalledExactlyOnceWith`, which Bun lacks.
+- `page-free` and `page-personal` stay on Vitest, so their 8 s waits from ticket 04 stay as they are.

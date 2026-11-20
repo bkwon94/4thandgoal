@@ -6,18 +6,35 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
-import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  onTestFinished,
+  setSystemTime,
+  spyOn,
+} from "bun:test";
+import { stubPhone } from "../../test/phone";
+import {
+  type FixtureClient,
+  fixturePublished,
+  readFixtureSite,
+  restoreFixtureSite,
+} from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
+afterEach(restoreFixtureSite);
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
    action. */
 beforeEach(() => localStorage.setItem("cpc.passphrase", "cornerstone-test"));
@@ -29,7 +46,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.restoreAllMocks();
 });
 
 describe("the front door of cpc", () => {
@@ -193,10 +209,10 @@ describe("the front door of cpc", () => {
   });
 });
 
-/* The clock of a test: a fixed day of the fantasy week. 2026-11-10 is a Tuesday and 2026-11-11 is a Wednesday. */
+/* The clock of a test: a fixed day of the fantasy week. 2026-11-10 is a Tuesday and 2026-11-11 is a Wednesday.
+   `setSystemTime` of `bun:test` fixes only `Date`, so each timer of the page still runs. */
 function onDay(iso: string) {
-  vi.useFakeTimers({ toFake: ["Date"] });
-  vi.setSystemTime(new Date(iso));
+  setSystemTime(new Date(iso));
 }
 
 /* The Suggestion chips of the front door, in their order, by their names. "More" leads the row. */
@@ -206,7 +222,7 @@ async function suggestionChips() {
 }
 
 describe("the Suggestions of Lil Fridge", () => {
-  afterEach(() => vi.useRealTimers());
+  afterEach(() => setSystemTime());
 
   it("show 3 Suggestions, each with a Topic name and one number, and More lists all 14 Topics (AT-4)", async () => {
     onDay("2026-11-11T12:00:00");
@@ -355,9 +371,8 @@ async function homeOfClient(
       writeFileSync(path, JSON.stringify({ ...JSON.parse(readFileSync(path, "utf8")), week: 9 }));
     }
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
   return (await import("./front-door/door-page")).default;
 }
 
@@ -488,7 +503,6 @@ describe("the Thread of Lil Fridge", () => {
 
     // The Tuesday build publishes week 9.
     cleanup();
-    vi.restoreAllMocks();
     const WeekNine = await homeOfClient("cpc", { nextWeek: true });
     render(<WeekNine />);
     await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
@@ -501,7 +515,7 @@ describe("the Thread of Lil Fridge", () => {
   it("empties the Thread at once on Clear, with no confirm, and keeps the opened Topics off the Suggestions (AT-36)", async () => {
     onDay("2026-11-11T12:00:00");
     localStorage.setItem("cpc.your-team", "3");
-    const confirm = vi.spyOn(window, "confirm");
+    const confirm = spyOn(window, "confirm");
     render(<HomePage />);
     const rankings = (await suggestionChips()).find((chip) =>
       chip.getAttribute("aria-label")?.startsWith("Power rankings"),

@@ -4,12 +4,13 @@
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { readFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import NotFound from "./not-found";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the spy, because the preload restores each spy after each test. */
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 afterEach(() => cleanup());
 
