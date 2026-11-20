@@ -1,8 +1,6 @@
 """
-The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 5 offers, each with a Lean, a
-Case of at most 3 sentences, and 2 to 4 Bullets, and up to 3 near ideas, each with the reason it fell short. A failed
-pick gets one repair call on its own sheet. With no pick and no near idea left, the shortlist stands with fact lines.
-A stream can get each pick as soon as it stands, while the call still writes the rest.
+The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 5 offers and up to 3 near ideas.
+A failed pick gets one repair call on its own sheet, and a stream gets each pick as soon as it stands.
 """
 import contextvars
 import logging
@@ -58,6 +56,7 @@ REPAIR_PROMPT_FILE = "finder_pick_repair.md"
 MAX_PICKS = 5
 # The most near ideas of one press. An idea is an idea, so a list with offers always shows at least one.
 MAX_NEAR = 3
+# Each pick has a Lean, a Case, and 2 to 4 Bullets.
 MIN_BULLETS, MAX_BULLETS = 2, 4
 # The lines of a press whose search kept no offer. No Claude call runs, so code writes them. NO_PARTNER is for a
 # search where no team passed the partner filter, and NO_OFFER for a search where the teams that passed gave no offer.
@@ -565,6 +564,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     near = [] if out is None else standing_near(out, {offer.offer_id for _, offer in stand}, shortlist, snapshot,
                                                 sheets)
     if not stand and not near:
+        # With no pick and no near idea left, the shortlist stands with fact lines.
         # A code answer never takes the place of advice, so the shortlist shows plain facts with no Lean and no Case.
         return FinderPicks(picks=[FinderPick(offer=offer, lean=None, case=None, bullets=[],
                                              fact_lines=_fact_lines(offer, sheets[offer.offer_id]))

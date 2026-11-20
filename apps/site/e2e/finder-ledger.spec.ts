@@ -1,9 +1,6 @@
 /**
  * The Ledger cards and the near fold of the Finder, in WebKit, as Safari runs, on the phone, the iPad, and the desktop.
- * It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed bar over content.
- * It also streams the trades one part at a time, and checks that each card shows as its part comes, with the count line,
- * and that the first card scrolls into view. On a fixed clock, it checks that step 5 names each Shortlist trade in turn on
- * one line of the wait.
+ * It checks the layout of each shape, the streamed cards with their count line, and the step 5 lines of the wait.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -181,6 +178,8 @@ for (const viewport of VIEWPORTS) {
   test.describe(viewport.name, () => {
     test.use(viewport.use);
     for (const theme of ["light", "dark"] as const) {
+      // It streams the trades one part at a time. Each card shows as its part comes, with the count line, and the
+      // first card scrolls into view.
       test(`each card shows as its trade part comes, with the count line under the cards, ${theme} (AT-72)`, async ({ page }, info) => {
         await openFinder(page, theme, true);
         const cards = page.getByRole("article");
@@ -217,6 +216,7 @@ for (const viewport of VIEWPORTS) {
       });
 
       for (const motion of ["no-preference", "reduce"] as const) {
+        // On a fixed clock, step 5 names each Shortlist trade in turn on one line of the wait.
         test(`step 5 names each Shortlist trade on one line, motion ${motion}, ${theme} (AT-36, AT-73)`, async ({ page }, info) => {
           await page.emulateMedia({ reducedMotion: motion });
           await openFinder(page, theme, true, true);
@@ -276,6 +276,8 @@ for (const viewport of VIEWPORTS) {
         });
       }
 
+      // It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed
+      // bar over content.
       test(`the Ledger cards and the near fold, with no overlap and no fixed bar over content, ${theme} (AT-65, AT-66, AT-67)`, async ({ page }, info) => {
         await openFinder(page, theme);
         const cards = page.getByRole("article");
