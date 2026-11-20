@@ -5,10 +5,14 @@ They read the week 6 snapshot and use FakeJev, so no test calls TypeSafe.
 import logging
 import re
 import shutil
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
+import httpx2
 import pytest
 from cpc import cpc_client
 from fakes import FakeJev, no_news
+from typesafe_sdk import RetryPolicy, TypeSafeClient
 
 from analyzer.finder_pick import offer_sheet
 from analyzer.finder_search import (
@@ -20,17 +24,29 @@ from analyzer.finder_search import (
     Limit,
     ShortlistOffer,
     _out_with_no_return,
+    build_offers,
     in_pool,
     offer_id,
     search,
+    shortlist_answers,
     varied,
 )
-from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
+from analyzer.jev_waves import (
+    PACER,
+    REQUEST_TOKENS,
+    REQUESTS_PER_SECOND,
+    JevWaves,
+    Pacer,
+    WaveRequest,
+    estimated_tokens,
+    plan_waves,
+)
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import pair_spares
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_jev import FACT_PREFIX, TRADE_POSITIONS, weak_slot_rows
 from analyzer.trade_news import NewsFeed
+from league.jev import TypeSafeJev
 from league.jev_port import JevError, NoulQuestion
 from league.slow_sources import load_slow_sources
 from league.snapshot import load_snapshot
@@ -408,6 +424,29 @@ def test_the_pick_sheet_of_an_offer_with_a_failed_shortlist_request_states_no_je
     assert any(key.startswith(FACT_PREFIX) for key in offer_sheet(answered, snap, NewsFeed(fetch=no_news)))
 
 
+class _ContextLimitJev(FakeJev):
+    """A FakeJev that fails a request above the 64k context of one TypeSafe request, as TypeSafe does."""
+    def ask(self, state, questions):
+        if estimated_tokens(WaveRequest(state, dict(questions))) >= REQUEST_TOKENS:
+            raise JevError("the request is above the context of the model")
+        return super().ask(state, questions)
+
+
+def test_a_partner_of_1200_offers_splits_under_64k_and_no_offer_passes_as_unsure(snap):
+    every = {rid: [pid for pid in snap.rosters[rid] if in_pool(snap, pid, rid)] for rid in (ASKER, PARTNER)}
+    offers = build_offers(ASKER, PARTNER, every[ASKER], every[PARTNER], snap)[:1200]
+    assert len(offers) == 1200
+    jev = _ContextLimitJev(yes=0.8)
+    answers = shortlist_answers(snap, ASKER, {PARTNER: offers}, JevWaves(jev))
+    assert len(jev.requests) >= 3
+    assert all(estimated_tokens(WaveRequest(r.state, dict(r.questions))) < 64_000 for r in jev.requests)
+    assert len(answers[PARTNER]) == 1200
+    for nouls in answers[PARTNER]:
+        assert nouls is not None
+        assert nouls == {"fair": 0.8, f"need.{ASKER}": 0.8, f"need.{PARTNER}": 0.8,
+                         f"gain.{ASKER}": 0.8, f"gain.{PARTNER}": 0.8}
+
+
 def _last_pool_player(snap, roster_id):
     """The pool player of the roster with the last id in string order. A tie of the FakeJev answers breaks by the id, so
     he is never one of the top targets on his own."""
@@ -593,7 +632,7 @@ def test_a_full_wave_waits_until_the_last_second_has_room_for_its_requests():
         now[0] += seconds
 
     jev = FakeJev()
-    pacer = JevWaves(jev, clock=lambda: now[0], sleep=sleep)
+    pacer = JevWaves(jev, pacer=Pacer(clock=lambda: now[0], sleep=sleep))
     answers = pacer.ask(_tiny(170), "test")
     assert len(answers) == 170 and all(answer is not None for answer in answers.values())
     assert len(jev.requests) == 170
@@ -608,7 +647,104 @@ def test_small_waves_of_one_press_go_one_after_the_other_with_no_wait():
     # wait for the rest of the second (decision 02).
     now = [0.0]
     slept = []
-    pacer = JevWaves(FakeJev(), clock=lambda: now[0], sleep=lambda seconds: slept.append(seconds))
+    pacer = JevWaves(FakeJev(), pacer=Pacer(clock=lambda: now[0], sleep=lambda seconds: slept.append(seconds)))
     for _ in range(3):
         pacer.ask(_tiny(11), "test")
     assert slept == []
+
+
+class _FixedClock:
+    """A clock that moves only when every press waits, so no press sends while the clock of another runs ahead.
+
+    A sleep of a press notes its wake time. When no press is awake, the clock jumps to the soonest wake time and wakes
+    each press that waits for it. A press that ends calls `done`, so it no longer holds the clock.
+    """
+    def __init__(self, presses):
+        self.now = 0.0
+        self._awake = presses
+        self._wakes: list[float] = []
+        self._turn = threading.Condition()
+
+    def __call__(self):
+        with self._turn:
+            return self.now
+
+    def sleep(self, seconds):
+        with self._turn:
+            wake = self.now + seconds
+            self._wakes.append(wake)
+            self._awake -= 1
+            self._advance()
+            while self.now < wake:
+                self._turn.wait()
+
+    def done(self):
+        with self._turn:
+            self._awake -= 1
+            self._advance()
+
+    def _advance(self):
+        if self._awake == 0 and self._wakes:
+            self.now = min(self._wakes)
+            woken = [wake for wake in self._wakes if wake <= self.now]
+            self._wakes = [wake for wake in self._wakes if wake > self.now]
+            self._awake += len(woken)
+            self._turn.notify_all()
+
+
+class _TimedJev(FakeJev):
+    """A FakeJev that keeps the clock time and the estimated tokens of each request as it goes out."""
+    def __init__(self, clock):
+        super().__init__()
+        self.clock = clock
+        self.sent: list[tuple[float, int]] = []
+
+    def ask(self, state, questions):
+        with self._lock:
+            self.sent.append((self.clock(), estimated_tokens(WaveRequest(state, dict(questions)))))
+        return super().ask(state, questions)
+
+
+def test_each_press_uses_the_one_pacer_of_the_process():
+    assert JevWaves(FakeJev()).pacer is PACER and JevWaves(FakeJev()).pacer is PACER
+
+
+def test_two_presses_at_once_share_one_pacer_and_hold_100000_tokens_or_fewer_in_each_second():
+    clock = _FixedClock(presses=2)
+    # The process has one pacer. The test gives the two presses one pacer of its own, so a fixed clock runs it.
+    shared = Pacer(clock=clock, sleep=clock.sleep)
+    jev = _TimedJev(clock)
+    # About 30,000 characters of state is about 10,000 tokens by the high guess, so 30 requests are about 300,000.
+    press = {str(i): WaveRequest({"text": "x" * 30_000}, {}) for i in range(30)}
+    assert 299_000 < sum(estimated_tokens(request) for request in press.values()) < 301_000
+    # Each press makes its own JevWaves, as the API does for each Finder press.
+    def run(label):
+        try:
+            return JevWaves(jev, pacer=shared).ask(press, label)
+        finally:
+            clock.done()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        presses = [pool.submit(run, label) for label in ("first", "second")]
+        assert all(len(done.result()) == 30 for done in presses)
+    assert len(jev.sent) == 60
+    for start, _ in jev.sent:
+        held = sum(tokens for at, tokens in jev.sent if start <= at < start + 1.0)
+        assert held <= 100_000, (start, held)
+
+
+def test_no_jev_request_of_a_press_sends_the_long_context_header(snap):
+    # The real TypeSafe adapter sends each request of a press to a transport that keeps its headers and fails it. The
+    # press goes on after each failure, so its Spares tree, its targets, and its shortlist each send their requests.
+    sent = []
+
+    def keep(request):
+        sent.append(request.headers)
+        return httpx2.Response(503)
+
+    client = TypeSafeClient(api_key="test-key", transport=httpx2.MockTransport(keep),
+                            retry=RetryPolicy(max_retries=0))
+    found = search(ASKER, None, snap, TypeSafeJev(client))
+    assert found.shortlist and all(offer.failed for offer in found.shortlist)
+    assert len(sent) > 11
+    assert not any("TypeSafe-Danger-Zone-Long-Context" in headers for headers in sent)

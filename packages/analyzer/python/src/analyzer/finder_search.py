@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from analyzer.jev_waves import JevWaves, WaveRequest
+from analyzer.jev_waves import REQUEST_TOKENS, JevWaves, WaveRequest, estimated_tokens
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
 from analyzer.stage import Stage, quiet
@@ -390,14 +390,19 @@ def lineup_line(snapshot: Snapshot, trade: ProposedTrade, roster_id: int) -> str
             f"after, so its lineup {word} {abs(change):.1f} points a week.")
 
 
-def _shortlist_state(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade]) -> dict:
-    """The pair state with the lineup points of each side of each offer, under `offers.<n>`."""
+def _offer_lines(snapshot: Snapshot, offers: list[ProposedTrade], start: int) -> dict:
+    """The trade and the lineup points of each side of each offer, by offer number from `start`."""
+    return {str(n): {"trade": "; ".join(f"{snapshot.teams[side.roster_id].name} gives "
+                                        f"{_names(snapshot, side.player_ids)}" for side in trade.sides),
+                     "lineup_points": [lineup_line(snapshot, trade, side.roster_id) for side in trade.sides]}
+            for n, trade in enumerate(offers, start)}
+
+
+def _shortlist_state(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade],
+                     start: int = 0) -> dict:
+    """The pair state with the lineup points of each side of each offer, under `offers.<n>`, from `start`."""
     state = _pair_state(snapshot, asker, partner)
-    state["offers"] = {str(n): {"trade": "; ".join(f"{snapshot.teams[side.roster_id].name} gives "
-                                                   f"{_names(snapshot, side.player_ids)}" for side in trade.sides),
-                                "lineup_points": [lineup_line(snapshot, trade, side.roster_id)
-                                                  for side in trade.sides]}
-                       for n, trade in enumerate(offers)}
+    state["offers"] = _offer_lines(snapshot, offers, start)
     return state
 
 
@@ -407,14 +412,65 @@ def shortlist_request(snapshot: Snapshot, asker: int, partner: int, offers: list
     return WaveRequest(_shortlist_state(snapshot, asker, partner, offers), _shortlist_questions(offers, snapshot))
 
 
-def _shortlist_questions(offers: list[ProposedTrade], snapshot: Snapshot) -> dict[str, NoulQuestion]:
+def shortlist_requests(snapshot: Snapshot, asker: int, partner: int,
+                       offers: list[ProposedTrade]) -> list[WaveRequest]:
+    """The shortlist requests of a partner, each under REQUEST_TOKENS by the estimate, with the offers in order.
+
+    Each request holds the pair state and a run of the offers, and each offer keeps its number in the whole list, so
+    the answers of every request merge by key. One request for a long list fails above the context of the model, and
+    each of its offers then passes as unsure (decision 14).
+    """
+    base = estimated_tokens(WaveRequest(_pair_state(snapshot, asker, partner), {}))
+    requests: list[WaveRequest] = []
+    start, tokens = 0, base
+    for n, trade in enumerate(offers):
+        # The sum of the parts is a little over the estimate of the whole request, so each request stays under.
+        cost = estimated_tokens(WaveRequest({"offers": _offer_lines(snapshot, [trade], n)},
+                                            _shortlist_questions([trade], snapshot, n)))
+        if n > start and tokens + cost >= REQUEST_TOKENS:
+            requests.append(_shortlist_run(snapshot, asker, partner, offers[start:n], start))
+            start, tokens = n, base
+        tokens += cost
+    if start < len(offers):
+        requests.append(_shortlist_run(snapshot, asker, partner, offers[start:], start))
+    return requests
+
+
+def _shortlist_run(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade],
+                   start: int) -> WaveRequest:
+    return WaveRequest(_shortlist_state(snapshot, asker, partner, offers, start),
+                       _shortlist_questions(offers, snapshot, start))
+
+
+def shortlist_answers(snapshot: Snapshot, asker: int, offers_by_partner: dict[int, list[ProposedTrade]],
+                      waves: JevWaves) -> dict[int, list[dict[str, float] | None]]:
+    """The Jev answers of each offer of each partner, in the order of its offers, keyed "fair", "need.<roster id>",
+    and "gain.<roster id>". An offer whose request failed gets None, which is never a no.
+    """
+    requests = {f"{rid}.{part}": request for rid, partner_offers in offers_by_partner.items() if partner_offers
+                for part, request in enumerate(shortlist_requests(snapshot, asker, rid, partner_offers))}
+    judged = waves.ask(requests, "shortlist")
+    by_offer: dict[int, dict[int, dict[str, float]]] = {}
+    for key, response in judged.items():
+        if response is None:
+            continue
+        offer_nouls = by_offer.setdefault(int(key.partition(".")[0]), {})
+        for question, p in response.nouls.items():
+            n, _, name = question.partition("|")
+            offer_nouls.setdefault(int(n), {})[name] = p
+    return {rid: [by_offer.get(rid, {}).get(n) for n in range(len(partner_offers))]
+            for rid, partner_offers in offers_by_partner.items()}
+
+
+def _shortlist_questions(offers: list[ProposedTrade], snapshot: Snapshot,
+                         start: int = 0) -> dict[str, NoulQuestion]:
     """The fair question, the need question of each side, and the gain question of each side of each offer, keyed
     "<offer n>|fair", "<offer n>|need.<roster id>", and "<offer n>|gain.<roster id>".
 
     The fair and need questions are those of one trade, so the shortlist and the read of one trade ask the same words.
     """
     questions = {}
-    for n, trade in enumerate(offers):
+    for n, trade in enumerate(offers, start):
         for key, question in trade_jev_questions(trade, snapshot).items():
             if key == "fair" or key.startswith("need."):
                 questions[f"{n}|{key}"] = question
@@ -573,21 +629,19 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     for trade in offers:
         _log_offer(snapshot, trade)
 
-    judged = waves.ask({str(rid): shortlist_request(snapshot, asker, rid, offers_by_partner[rid])
-                        for rid in offers_by_partner if offers_by_partner[rid]}, "shortlist")
+    judged = shortlist_answers(snapshot, asker, offers_by_partner, waves)
     rated_offers = []
     dropped = []
     for rid, partner_offers in offers_by_partner.items():
-        response = judged.get(str(rid))
-        nouls = None if response is None else response.nouls
-        if nouls is None:
+        failed = sum(nouls is None for nouls in judged[rid])
+        if failed:
             # A failed call is an error, never a no, so each offer goes on as an unsure answer does.
             log.info("Finder shortlist with %s: failed request, %d offers go on as unsure", snapshot.teams[rid].name,
-                     len(partner_offers))
-        for n, trade in enumerate(partner_offers):
-            fair = _answer(nouls, f"{n}|fair")
-            needs = {side.roster_id: _answer(nouls, f"{n}|need.{side.roster_id}") for side in trade.sides}
-            gains = {side.roster_id: _answer(nouls, f"{n}|gain.{side.roster_id}") for side in trade.sides}
+                     failed)
+        for trade, nouls in zip(partner_offers, judged[rid], strict=True):
+            fair = _answer(nouls, "fair")
+            needs = {side.roster_id: _answer(nouls, f"need.{side.roster_id}") for side in trade.sides}
+            gains = {side.roster_id: _answer(nouls, f"gain.{side.roster_id}") for side in trade.sides}
             score = fair
             for p in needs.values():
                 score *= p

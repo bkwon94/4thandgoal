@@ -1,11 +1,12 @@
 """
 The Jev requests of one press, sent in waves under the TypeSafe rate limits of requests and tokens per second.
 Each wave runs its requests at once. A wave goes at once while the last second has room for its count of requests and
-tokens, and it waits only for the room.
+tokens, and it waits only for the room. Every press of the process shares one pacer for that room.
 """
 import json
 import logging
 import math
+import threading
 import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -18,6 +19,9 @@ log = logging.getLogger(__name__)
 # The limits of the TypeSafe account, from its dashboard: 80 requests per second and 100,000 tokens per second.
 REQUESTS_PER_SECOND = 80
 TOKENS_PER_SECOND = 100_000
+# The context of one Jev request. A larger request fails, so a caller splits its questions into requests under it. The
+# long-context header of TypeSafe lifts the limit, and Brian chose the split over it (decision 14).
+REQUEST_TOKENS = 64_000
 # A token is about 4 characters of the JSON. The count uses 3, so a wave keeps some headroom.
 CHARS_PER_TOKEN = 3
 WAVE_SECONDS = 1.0
@@ -54,33 +58,55 @@ def plan_waves(requests: dict[str, WaveRequest]) -> list[list[str]]:
     return waves
 
 
-class JevWaves:
-    """The pacer of the Jev requests of one press. It keeps the start time, the requests, and the tokens of each wave
-    of the last second across calls of `ask`.
+class Pacer:
+    """The budget of the TypeSafe account for one second: the start time, the requests, and the tokens of each wave of
+    the last second.
 
-    So the partner filter, the targets, and the shortlist share one budget per second, as TypeSafe counts it. A press
-    sends about 11 requests and 27k tokens per wave, so a wave seldom waits (decision 02).
+    TypeSafe counts the limits for the whole account, so every press of one process shares the one PACER. Two
+    presses with a pacer each could pass the limit together (decision 16). The Fly app runs one process.
     """
 
-    def __init__(self, jev: Jev, clock: Callable[[], float] = time.monotonic,
-                 sleep: Callable[[float], None] = time.sleep):
-        self.jev = jev
+    def __init__(self, clock: Callable[[], float] = time.monotonic, sleep: Callable[[float], None] = time.sleep):
         self.clock = clock
         self.sleep = sleep
         # The start time, the requests, and the tokens of each wave that started less than one second ago.
         self._sent: list[tuple[float, int, int]] = []
-        self.waves_sent = 0
+        self._lock = threading.Lock()
 
-    def _wait_for_room(self, count: int, tokens: int) -> None:
-        """Wait until the last second has room for `count` more requests and `tokens` more tokens."""
+    def reserve(self, count: int, tokens: int) -> None:
+        """Wait until the last second has room for `count` more requests and `tokens` more tokens, then count them.
+
+        The check and the count happen under one lock, so two threads never take the same room. The wait happens
+        outside it, so one waiting press never stops the clock of another.
+        """
         while True:
-            now = self.clock()
-            self._sent = [wave for wave in self._sent if wave[0] + WAVE_SECONDS > now]
-            if (sum(wave[1] for wave in self._sent) + count <= REQUESTS_PER_SECOND
-                    and sum(wave[2] for wave in self._sent) + tokens <= TOKENS_PER_SECOND):
-                return
-            # The oldest wave leaves the second first, so its end is the soonest time that can make room.
-            self.sleep(self._sent[0][0] + WAVE_SECONDS - now)
+            with self._lock:
+                now = self.clock()
+                self._sent = [wave for wave in self._sent if wave[0] + WAVE_SECONDS > now]
+                if (sum(wave[1] for wave in self._sent) + count <= REQUESTS_PER_SECOND
+                        and sum(wave[2] for wave in self._sent) + tokens <= TOKENS_PER_SECOND):
+                    self._sent.append((now, count, tokens))
+                    return
+                # The oldest wave leaves the second first, so its end is the soonest time that can make room.
+                wait = self._sent[0][0] + WAVE_SECONDS - now
+            self.sleep(wait)
+
+
+# The one pacer of the process. Each JevWaves uses it unless a test gives its own.
+PACER = Pacer()
+
+
+class JevWaves:
+    """The Jev requests of one press, in waves under the budget of the shared pacer.
+
+    So the partner filter, the targets, and the shortlist of every press share one budget per second, as TypeSafe
+    counts it. A press sends about 11 requests and 27k tokens per wave, so a wave seldom waits (decision 02).
+    """
+
+    def __init__(self, jev: Jev, pacer: Pacer = PACER):
+        self.jev = jev
+        self.pacer = pacer
+        self.waves_sent = 0
 
     def ask(self, requests: dict[str, WaveRequest], label: str,
             answered: Callable[[str], None] | None = None) -> dict[str, JevResponse | None]:
@@ -93,8 +119,7 @@ class JevWaves:
         answers: dict[str, JevResponse | None] = {}
         for keys in plan_waves(requests):
             tokens = sum(estimated_tokens(requests[key]) for key in keys)
-            self._wait_for_room(len(keys), tokens)
-            self._sent.append((self.clock(), len(keys), tokens))
+            self.pacer.reserve(len(keys), tokens)
             self.waves_sent += 1
             log.info("Jev wave %d (%s): %d requests, about %d tokens", self.waves_sent, label, len(keys), tokens)
             with ThreadPoolExecutor(max_workers=len(keys)) as pool:
