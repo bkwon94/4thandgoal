@@ -35,10 +35,11 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: pending
+Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 7 passed, 0 failed". Shots in `.scratch/bugs/floor-recap/smoke/`.
 
 ## Comments
 
 - CI error: "incomplete: .max-rail\:sr-only Fix any of the following: Element's background color could not be determined because it partially overlaps other elements". It first shows on main at `ac287f48` (#78); main at `fd05189c` and `8780eefb` failed on other tests.
 - The cpc tests of recap 3 at 1280px fail only in Linux Chromium. Mac Chromium sets the title at 360.67px, so it fits and has one text box. A probe in the image `mcr.microsoft.com/playwright:v1.64.1-noble` showed the 378.41px title, the two boxes, and the incomplete result in dark and light. At the top of the page axe passes the title in both themes. On CI the Red command also fails these two floor tests at `f1f0c14b`.
 - The title cut is by design: the band gives the pill bar its full labels first. So the fix is in the floor check, not in `apps/site/src`.
+- Brian chose to cherry-pick `5432d4f8` of PR #80 as `eeff9922`: the overlap check of the smoke run counts only the texts of an open modal layer. Without it, the `Front door` flow failed on the old Tour overlap that PR #80 fixes.
