@@ -2,7 +2,7 @@
  * Tests for the week page formats. The examples come from the pipeline's fmt filter,
  * so the React page prints the same numbers as the old page.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { count, gap, num, oneDecimal, record, shortName, thousands } from "./format";
 
 describe("num", () => {

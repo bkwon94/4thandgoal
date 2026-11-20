@@ -3,7 +3,7 @@
  * After hydration the page must turn off the CSS safety rule, so Framer Motion owns the reveal.
  */
 import { cleanup, render } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { Reveal } from "./reveal";
 
 afterEach(() => {

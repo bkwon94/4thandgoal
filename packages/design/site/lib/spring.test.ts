@@ -2,7 +2,7 @@
  * Tests for the spring sampler of the Open card. It turns a damped spring into a CSS linear() curve.
  * They check the curve that a browser reads: its start, its end, and its small overshoot.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { springCurve } from "./spring";
 
 /* The stops of a linear() curve, as numbers. */

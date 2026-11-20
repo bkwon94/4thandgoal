@@ -3,7 +3,7 @@
  * They read what a reader sees by role, name, and text, not the class names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { Card } from "./card";
 import { Hero } from "./hero";
 import { PhotoFrame, initialsOf } from "./photo-frame";
@@ -11,21 +11,23 @@ import { Rise } from "./rise";
 import type { HeroScene } from "./scene-math";
 import { Tile } from "./tile";
 
-/* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
+/* Framer Motion reads matchMedia. The stub matches no query, so each test sees a phone with motion on. The preload
+   restores each spy after each test, so each test sets the stub again. */
+const noMatch = (query: string) =>
+  ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as unknown as MediaQueryList;
+
+beforeEach(() => {
+  spyOn(window, "matchMedia").mockImplementation(noMatch);
+});
 
 afterEach(() => cleanup());
 
@@ -40,7 +42,6 @@ const SCENE: HeroScene = {
   restIndex: 1,
   mode: "settle",
 };
-afterAll(() => vi.unstubAllGlobals());
 
 describe("Hero", () => {
   it("takes no free content, and renders a hero with only a title in a region named by its label (AT-14)", () => {

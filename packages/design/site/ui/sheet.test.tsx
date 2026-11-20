@@ -3,7 +3,7 @@
  * They read the role and the name of the open sheet, not its class names.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { Sheet, SheetClose, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "./sheet";
 // The jsdom stand-ins that the Drawer needs.
 import "./sheet-jsdom";

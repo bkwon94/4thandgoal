@@ -12,7 +12,8 @@
     "prebuild": "node scripts/client-build.mjs",
     "build": "next build",
     "typecheck": "next typegen && bun check --no-script",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:bun",
+    "test:bun": "node scripts/bun-test.mjs",
     "lint": "cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs}",
     "fmt": "cd ../.. && bun fmt --no-script --ignore-pattern apps/site/next-env.d.ts ${FMT_FILES:-'apps/site/**/*.{ts,tsx,mjs,mts,css}' 'packages/*/site/**/*.{ts,tsx,css}' packages/design/lint/plugin.mjs}",
     "fmt:check": "cd ../.. && bun fmt --no-script --check --no-error-on-unmatched-pattern --ignore-pattern apps/site/next-env.d.ts ${FMT_FILES:-'apps/site/**/*.{ts,tsx,mjs,mts,css}' 'packages/*/site/**/*.{ts,tsx,css}' packages/design/lint/plugin.mjs}",
@@ -28,7 +29,7 @@
     "check:open-card": "playwright test --project=open-card",
     "check": "pnpm check:fast && pnpm check:browser",
     "check:browser": "pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
-    "check:fast": "pnpm lint && pnpm fmt:check && CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED",
+    "check:fast": "pnpm lint && pnpm fmt:check && CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED && pnpm test:bun",
     "hook:install": "prek install"
   },
   "dependencies": {
@@ -58,10 +59,12 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@happy-dom/global-registrator": "^21.0.4",
     "@playwright/test": "~1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
+    "@types/bun": "1.4.5",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

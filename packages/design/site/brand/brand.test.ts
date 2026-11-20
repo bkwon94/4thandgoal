@@ -2,7 +2,7 @@
  * Tests of the brand: the formula of each derived role, an override, the paint order of the two sets, and the contrast.
  * Each test reads the brand CSS or the colors that a real brand gives.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   brandCss,
   colorsOf,

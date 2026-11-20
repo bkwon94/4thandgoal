@@ -2,7 +2,7 @@
  * Tests for the motion of the hero scene: the scatter, the settle of about 1.5 s, the dust that stops at rest, and the drift.
  * They need no canvas, so they check the places that the canvas draws at each time after entry.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type HeroScene, placeLights } from "./scene-math";
 import {
   REST_MS,
