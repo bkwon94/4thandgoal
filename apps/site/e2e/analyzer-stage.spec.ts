@@ -18,6 +18,7 @@ const HERO = 'section[aria-label="Trade Analyzer"]';
 const CANVAS = `${HERO} canvas[data-hero-mesh]`;
 const WAIT_HERO = 'section[aria-label="Grading the Trade"]';
 const WAIT_CANVAS = `${WAIT_HERO} canvas[data-hero-mesh]`;
+const FIND_WAIT_HERO = 'section[aria-label="Finding Trades"]';
 const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
 
 /* The teams of the latest weekly build of the client, as the teams route of the API gives them. */
@@ -509,19 +510,32 @@ test.describe("the wait, with motion on", () => {
     });
   }
 
-  test(`finder wait: ${CLIENT} the Finder wait shows the Sweep bar, and the hero shows no wait mesh and no stage line (AT-23)`, async ({ page }, info) => {
+  /* The find wait is the grade wait in Find mode: the same hero with its mesh, and StageLines with the running step of
+     the stream. The route holds the find stream, so the wait stays on its first step, and the switch stays locked. */
+  test(`finder wait: ${CLIENT} the Find wait shows the hero mesh and the first step in StageLines, and the switch locks on Find a trade, 1280px (AT-32, AT-36)`, async ({ page }, info) => {
     test.skip(CLIENT !== "norcal", "the Finder is on in norcal only");
     await page.setViewportSize({ width: 1280, height: 900 });
     const trade = stageTrade(TEAMS);
     await openAnalyzer(page, `?team=${trade.team}`);
+    const mode = page.getByRole("radiogroup", { name: "Mode" });
+    await mode.getByRole("radio", { name: "Find a trade" }).click();
     await page.getByRole("button", { name: "Find a Trade" }).click();
-    const finder = page.locator('section[aria-labelledby="find-trade"]');
-    await expect(finder.getByRole("button", { name: "Finding…" })).toBeVisible();
-    await expect(finder.locator('[role="presentation"]')).toBeVisible();
-    await finder.screenshot({ path: info.outputPath(`finder-wait-${CLIENT}-1280.png`) });
-    expect(await finder.locator("canvas").count()).toBe(0);
+    const hero = page.locator(FIND_WAIT_HERO);
+    await expect(hero).toBeVisible();
+    await expect(hero.locator("canvas[data-hero-mesh]")).toBeVisible();
+    await expect(hero.locator(".t-think .t-think-text:last-child")).toHaveText("1 of 5 · Reading every team");
+    await expect(hero.getByRole("status")).toHaveText("1 of 5 · Reading every team");
+    // The switch locks during the wait: a tap on Grade a trade leaves Find a trade checked and the wait on the page.
+    await expect(mode.getByRole("radio", { name: "Grade a trade" })).toBeDisabled();
+    await expect(mode.getByRole("radio", { name: "Find a trade" })).toBeDisabled();
+    await mode.getByRole("radio", { name: "Grade a trade" }).click({ force: true });
+    await expect(mode.getByRole("radio", { name: "Find a trade" })).toBeChecked();
+    await expect(hero).toBeVisible();
+    await lineAtRest(page);
+    await hero.screenshot({ path: info.outputPath(`finder-wait-${CLIENT}-1280.png`) });
+    // The grade wait hero, and the idle hero of Find mode with its find button, are off the page while the find waits.
     expect(await page.locator(WAIT_HERO).count()).toBe(0);
-    expect(await page.locator(".t-think").count()).toBe(0);
+    await expect(page.getByRole("button", { name: "Find a Trade" })).toHaveCount(0);
   });
 });
 
