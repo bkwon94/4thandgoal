@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-23.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A type error in a scratch copy fails the type check with its file and line.
 - [x] The type check runs `next typegen` before `bun check`.
