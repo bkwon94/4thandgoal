@@ -10,6 +10,6 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-23.
 
 **Status:** ready-for-agent
 
-- [ ] A type error in a scratch copy fails the type check with its file and line.
-- [ ] The type check runs `next typegen` before `bun check`.
-- [ ] The type check of the real code exits 0.
+- [x] A type error in a scratch copy fails the type check with its file and line.
+- [x] The type check runs `next typegen` before `bun check`.
+- [x] The type check of the real code exits 0.

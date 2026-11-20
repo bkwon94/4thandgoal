@@ -18,6 +18,7 @@ Run these in `apps/site/`.
 - Flow pick: `pnpm pick [--base <ref>] [<file> ...]`. It prints the flows that the diff since the merge base picks. The default base is `main`.
 - Smoke run: `pnpm smoke --out <dir> [<flow name> ...]`. It drives the flows of `.claude/skills/verify/flows.json` at 390x660 WebKit and 1280x800. A layout flow adds 810x980 and 1080x740. A flow that calls Claude runs once, at 390x660. It starts its own site server and its own local API, each on a free port, and stops both at the end. Add `--no-api` for a run with the local API stopped. The `verify` skill says how.
 - Check all: `pnpm check`. It runs the fast check, the rules of the floor, then the build, `check:export`, and `check:floor` of each client under `clients/`. For a client with the finder on, it also builds it a second time against the local API URL and runs the grade-bar project on that export. Then it builds the fixture client of the midseason report and runs the floor of the report on it. CI runs it on every push.
+- Type check: `pnpm typecheck`. It runs `next typegen`, then `bun check --no-script`. The flag stops `bun check` from running the script `check` of this app. It needs Bun 1.4.5 or later.
 - Fast check: `pnpm check:fast`. It runs the client build of `cpc`, typecheck, and test. The hook runs it.
 
 ## Rules
