@@ -5,21 +5,21 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock, setSystemTime } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
 import { TOPICS, dayOrder } from "./front-door/topics";
 import HomePage from "./front-door/door-page";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const streams: (() => Response)[] = [];
 
 // The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
@@ -74,16 +74,15 @@ function keepThread(entries: unknown[]) {
   );
 }
 
-/* The clock of a test: 2026-11-12 is a Thursday. */
+/* The clock of a test: 2026-11-12 is a Thursday. `setSystemTime` of `bun:test` fixes only `Date`, so each timer of the
+   page still runs. */
 function onThursday() {
-  vi.useFakeTimers({ toFake: ["Date"] });
-  vi.setSystemTime(new Date("2026-11-12T12:00:00"));
+  setSystemTime(new Date("2026-11-12T12:00:00"));
 }
 
 /* The clock of a test: 2026-11-11 is a Wednesday. */
 function onWednesday() {
-  vi.useFakeTimers({ toFake: ["Date"] });
-  vi.setSystemTime(new Date("2026-11-11T12:00:00"));
+  setSystemTime(new Date("2026-11-11T12:00:00"));
 }
 
 async function suggestionChips() {
@@ -123,7 +122,7 @@ beforeEach(() => {
       return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", String(LIL_FRIDGE));
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -133,9 +132,7 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   streams.length = 0;
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
+  setSystemTime();
 });
 
 describe("the Suggestions that the API serves", () => {

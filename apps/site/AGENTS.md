@@ -45,8 +45,9 @@ The tests move to `bun test` one folder at a time (ADR 0038). Until the last mov
 
 The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. A test that depends on jsdom gets a fix for happy-dom. If it needs a real jsdom feature, the ticket names it for Brian.
 
-The preload makes happy-dom act as a browser in four more ways. `test/dom.test.ts` proves each one.
+The preload makes happy-dom act as a browser in five more ways. `test/dom.test.ts` proves each one.
 
+- `TransformStream` and `WritableStream` are the web stream classes of Bun. happy-dom sets them to the Node classes `Stream.Transform` and `Stream.Writable`, so the native `pipeThrough` refused them, and each streamed Answer showed "The question did not go through".
 - A failed expect prints a node as its markup. Bun prints each own property of an object, and a happy-dom node reaches the whole window. With no fix, each failed check of a `waitFor` on a node prints megabytes, and one test stalls for minutes.
 - `requestAnimationFrame` runs about 60 frames each second. Each callback of one frame gets the same time. The frame timer keeps the real `setTimeout`. A test that fakes `setTimeout` leaves the frames running. Never use `jest.useFakeTimers` in a test that renders Framer Motion, because it drops each timer that is pending when it ends.
 - The page URL is `http://localhost:3000/`, so a relative `img` src resolves and fires no `error`.

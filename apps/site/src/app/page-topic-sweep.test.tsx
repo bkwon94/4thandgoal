@@ -6,7 +6,9 @@ import { cpSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { resetModules } from "../../test/reset-modules";
+import { stubGlobal } from "../../test/stubs";
 import sellStream from "./front-door/fixtures/sell-high-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-card-stream.json";
 import { TOPICS } from "./front-door/topics";
@@ -60,9 +62,9 @@ const roots: string[] = [];
 let opened = "";
 
 beforeEach(() => {
-  vi.stubGlobal(
+  stubGlobal(
     "fetch",
-    vi.fn(async (url: string) => {
+    mock(async (url: string) => {
       const end = String(url).split("/").pop();
       const routed = end === "personal" || end === "sell-high" || end === "trade-ideas";
       return routed && STREAM_OF[opened] ? STREAM_OF[opened]() : new Response("", { status: 404 });
@@ -75,8 +77,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 /* The front door over week 9 of one league, with Bo Girds as Your team. */
@@ -86,9 +86,9 @@ async function doorOf(league: League) {
   cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), {
     recursive: true,
   });
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // A reset gives each league a fresh load of the page, so no module state of one league reaches the next.
+  resetModules();
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }

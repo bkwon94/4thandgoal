@@ -1,6 +1,7 @@
 /**
  * Tests for the DOM that the preload of `bun test` gives each test file. It must act as a browser does where a test sees it:
- * a canceled animation, the frame rate, the page URL, the storage spies, and a short print of each node in a failed expect.
+ * a canceled animation, the frame rate, the page URL, the storage spies, a short print of each node in a failed expect,
+ * and the web stream classes.
  */
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
 
@@ -103,5 +104,21 @@ describe("the DOM of bun test", () => {
     // Bun prints each own property of an object, and a happy-dom node reaches the whole window. That print is megabytes.
     expect(message).toContain("<section");
     expect(message.length).toBeLessThan(10_000);
+  });
+
+  it("pipes a stream through a TransformStream and writes to a WritableStream, as a browser does", async () => {
+    // An Answer streams through `pipeThrough`. Bun's native `pipeThrough` takes only a web TransformStream.
+    const piped = new Response("data: hi\n\n")
+      .body!.pipeThrough(new TextDecoderStream())
+      .pipeThrough(new TransformStream());
+    expect((await piped.getReader().read()).value).toBe("data: hi\n\n");
+
+    const written: string[] = [];
+    const writer = new WritableStream<string>({
+      write: (chunk) => void written.push(chunk),
+    }).getWriter();
+    await writer.write("chunk");
+    await writer.close();
+    expect(written).toEqual(["chunk"]);
   });
 });

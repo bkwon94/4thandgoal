@@ -5,9 +5,16 @@
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 import { afterEach, mock } from "bun:test";
 
+// happy-dom sets `TransformStream` to `Stream.Transform` and `WritableStream` to `Stream.Writable` of Node. Those are not
+// web streams, so Bun's native `pipeThrough` refuses them and each streamed Answer fails. A browser has the web stream
+// classes, so the preload keeps the native ones of Bun.
+const { TransformStream: webTransformStream, WritableStream: webWritableStream } = globalThis;
+
 // A page always has a URL. With none, happy-dom resolves a relative `img` src to nothing and fires `error`, so an avatar
 // shows its default image. The URL is the one of the dev server.
 GlobalRegistrator.register({ url: "http://localhost:3000/" });
+globalThis.TransformStream = webTransformStream;
+globalThis.WritableStream = webWritableStream;
 
 // happy-dom runs each animation frame as soon as it can, so a loop of `requestAnimationFrame` runs some hundred thousand
 // frames each second and holds the CPU. A browser runs about 60. This queue runs the callbacks of each frame together,
