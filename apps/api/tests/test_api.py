@@ -10,6 +10,7 @@ import math
 import os
 import re
 import shutil
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
@@ -1658,6 +1659,38 @@ def test_a_pick_that_fails_its_repair_is_never_sent(settings, sources):
     picks, sent, offers = _streamed(settings, sources, picker, repair)
     assert [pick.offer.offer_id for pick, _, _ in sent] == offers[1:3]
     assert [pick for pick, _, _ in sent] == picks.picks
+
+
+def test_a_failed_attempt_never_waits_for_its_repairs_and_drops_those_not_started(settings, sources):
+    # Each answer has 5 bad picks and too many near ideas, so both attempts fail. The 5 repairs of the first attempt
+    # hold the workers, so the 5 repairs of the second attempt wait in the queue, and they never start.
+    def bad_five(user):
+        labels = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)
+        bad = {"text": "The trade lands in week 9.", "mark": "for", "fact_id": "trade.week"}
+        picks = [_passing_pick_of(label) for label in labels[:5]]
+        for pick in picks:
+            pick["bullets"] = [bad, *pick["bullets"][1:]]
+        near = [{"label": labels[5], "reason": "The trade lands in the middle of the season.", "fact_id": "trade.week"}]
+        return {"picks": picks, "near": near * 4, "none_line": None}
+
+    released = threading.Event()
+
+    def held_repair(user):
+        released.wait(timeout=5)
+        return passing_repair(user)
+
+    picker = CountedPicker(bad_five)
+    repair = StubRepair(held_repair)
+    try:
+        picks, sent, _ = _streamed(settings, sources, picker, repair)
+        assert not released.is_set()
+    finally:
+        released.set()
+    assert len(picker.calls) == 2
+    # The fifth repair of the first attempt can still wait for its worker when the attempt fails, so it can drop too.
+    # No repair of the second attempt ever starts.
+    assert 1 <= len(repair.calls) <= 5
+    assert picks.fallback and not sent
 
 
 def test_a_retried_pick_call_never_sends_one_trade_twice(settings, sources):

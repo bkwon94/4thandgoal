@@ -447,9 +447,13 @@ class _PickWatch:
         """Send each pick that stands, in the order of the pick, up to the first pick whose repair still runs."""
         with self._lock:
             while self._next < len(self._results) and self._results[self._next].done():
+                # A closed watch reads no result, because close() cancels each repair that has not started.
+                if self._closed:
+                    self._next += 1
+                    continue
                 pick, fixed = self._picks[self._next], self._results[self._next].result()
                 self._next += 1
-                if pick is None or fixed is None or self._closed:
+                if pick is None or fixed is None:
                     continue
                 offer = self._offers[label_of(pick.label)]
                 if offer.offer_id not in self._sent:
@@ -457,9 +461,14 @@ class _PickWatch:
                     self._send(_finder_pick(fixed, offer, self._sheets[offer.offer_id]), self._most)
 
     def close(self) -> None:
-        """Send nothing more, because the answer of this call failed."""
+        """Send nothing more, because the answer of this call failed. Cancel each repair that has not started, so the
+        press pays for no repair that it never uses. A repair that runs now ends in its pool, and its pick drops."""
         with self._lock:
             self._closed = True
+            results = list(self._results)
+        # The cancel runs outside the lock, because a cancel runs the done callback, and the callback takes the lock.
+        for future in results:
+            future.cancel()
 
     def finish(self, out: FinderPickOut) -> list[tuple[PickOut, ShortlistOffer]]:
         """Check each pick of the whole answer that the stream did not hold whole yet, wait for each repair, send each
@@ -535,8 +544,10 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     sheets = offer_sheets(shortlist, snapshot, news)
     sent: set[str] = set()
     watches: list[_PickWatch] = []
-    with ThreadPoolExecutor(max_workers=MAX_PICKS) as pool:
-
+    # No `with` block holds the pool, because its exit waits for every repair, and a repair of a failed attempt is of
+    # no use. The shutdown at the end waits for none: finish() already waited for each repair of the answer that stands.
+    pool = ThreadPoolExecutor(max_workers=MAX_PICKS)
+    try:
         def attempt(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
             watch = _PickWatch(shortlist, snapshot, sheets, repair_call, pool, on_pick or _drop, sent, most)
             watches.append(watch)
@@ -561,6 +572,8 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
         if out is None and watches:
             watches[-1].close()
         stand = [] if out is None or not out.picks else watches[-1].finish(out)
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
     near = [] if out is None else standing_near(out, {offer.offer_id for _, offer in stand}, shortlist, snapshot,
                                                 sheets)
     if not stand and not near:
