@@ -235,8 +235,9 @@ export function weighLine(trade: ShortlistTrade): string {
    shows for at least STEP_HOLD_MS before the next one. A line with nothing queued behind it holds until the next line
    comes, and a line that has held gives way at once.
    On step 5, the line names one trade of the Shortlist every WEIGH_MS, in the order of the Shortlist, and starts again
-   at the first while the pick still runs. The step line shows first, so the reader sees the step and its count. The
-   lines stop when the first card lands: the card is the answer, so the wait goes back to the step line and holds. */
+   at the first while the pick still runs. The step line shows first for STEP_HOLD_MS, as each step line does, so the
+   reader sees the step and its count, and the first trade line comes soon after. The lines stop when the first card
+   lands: the card is the answer, so the wait goes back to the step line and holds. No card waits for a line. */
 function useWaitLine(lines: string[], weighs: string[], landed: boolean): string {
   const [index, setIndex] = useState(0);
   // The index of the line that has shown for its hold. The hold is kept with its index, so a new line starts unheld.
@@ -255,7 +256,9 @@ function useWaitLine(lines: string[], weighs: string[], landed: boolean): string
   const [turn, setTurn] = useState(0);
   useEffect(() => {
     if (!weighing) return;
-    const next = setTimeout(() => setTurn(turn + 1), WEIGH_MS);
+    // The step line holds as long as each step line, and each trade line holds WEIGH_MS. A pick of 15 s after step 5
+    // starts so shows at least 3 trade lines, even when steps 2 to 5 queue behind each other's holds (AT-73).
+    const next = setTimeout(() => setTurn(turn + 1), turn === 0 ? STEP_HOLD_MS : WEIGH_MS);
     return () => clearTimeout(next);
   }, [weighing, turn]);
   return weighing && turn > 0 ? weighs[(turn - 1) % weighs.length] : line;

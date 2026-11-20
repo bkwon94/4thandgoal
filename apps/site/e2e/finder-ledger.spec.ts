@@ -248,8 +248,11 @@ for (const viewport of VIEWPORTS) {
           }
           const seen: string[] = [];
           const fits: string[] = [];
+          // The step 5 line holds 1.5 s, as each step line does, and then each trade line holds 3 s (V2).
+          await page.clock.runFor(1400);
+          await expect(status).toHaveText("5 of 5 · Picking the best 5");
           for (let turn = 0; turn < SHORTLIST.length + 1; turn++) {
-            await page.clock.runFor(3000);
+            await page.clock.runFor(turn === 0 ? 100 : 3000);
             // The page renders the new line after the timer fires, so the read waits for the line to change.
             await expect(status).not.toHaveText(seen.at(-1) ?? "5 of 5 · Picking the best 5");
             const text = (await status.textContent())!;
