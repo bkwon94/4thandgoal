@@ -96,12 +96,6 @@ class Pacer:
             with self._lock:
                 self._presses -= 1
 
-    @property
-    def live(self) -> bool:
-        """True while a press is live."""
-        with self._lock:
-            return self._presses > 0
-
     def reserve(self, count: int, tokens: int, background: bool = False) -> None:
         """Wait until the last second has room for `count` more requests and `tokens` more tokens, then count them.
 
