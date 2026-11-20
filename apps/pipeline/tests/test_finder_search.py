@@ -18,14 +18,17 @@ from analyzer.finder_search import (
     WIDER_MAX,
     Anchor,
     Limit,
+    ShortlistOffer,
     _out_with_no_return,
     in_pool,
     offer_id,
     search,
+    varied,
 )
 from analyzer.jev_waves import REQUESTS_PER_SECOND, JevWaves, WaveRequest, plan_waves
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import pair_spares
+from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
 from analyzer.trade_jev import FACT_PREFIX, TRADE_POSITIONS, weak_slot_rows
 from analyzer.trade_news import NewsFeed
 from league.jev_port import JevError, NoulQuestion
@@ -196,20 +199,61 @@ def _rising_fair(key, question, state):
     return 0.99 - 0.001 * int(number) if kind == "fair" else 0.9
 
 
+def _best_ids(shortlist):
+    """The ids of the best offers: for each player of the asker and for each partner, the offer with the highest score.
+    A tie goes to the lower offer id."""
+    best: dict[tuple[str, object], ShortlistOffer] = {}
+    for offer in sorted(shortlist, key=lambda offer: (-offer.score, offer.offer_id)):
+        keys = [("player", pid) for pid in offer.trade.sides[0].player_ids]
+        keys += [("partner", side.roster_id) for side in offer.trade.sides[1:]]
+        for key in keys:
+            best.setdefault(key, offer)
+    return {offer.offer_id for offer in best.values()}
+
+
 def _assert_varied(found):
-    """No player of the asker and no partner shows in a second offer before each one with an offer shows once."""
-    all_players = {pid for trade in found.offers for pid in trade.sides[0].player_ids}
-    all_partners = {trade.sides[1].roster_id for trade in found.offers}
-    seen_players: set[str] = set()
-    seen_partners: set[int] = set()
-    for offer in found.shortlist:
-        players, partner = set(offer.trade.sides[0].player_ids), offer.trade.sides[1].roster_id
-        if players & seen_players:
-            assert seen_players >= all_players, offer.offer_id
-        if partner in seen_partners:
-            assert seen_partners >= all_partners, offer.offer_id
-        seen_players |= players
-        seen_partners.add(partner)
+    """AT-43: the best offer of each player of the asker and the best offer of each partner come before a second form
+    of any trade. The best offers come by score, and so do the other offers.
+
+    The best offers lead the list, so a list with any other offer holds every best offer, and the best of the list is
+    the best of the search."""
+    best = _best_ids(found.shortlist)
+    flags = [offer.offer_id in best for offer in found.shortlist]
+    assert flags == sorted(flags, reverse=True), [offer.offer_id for offer in found.shortlist]
+    for group in (found.shortlist[:sum(flags)], found.shortlist[sum(flags):]):
+        scores = [offer.score for offer in group]
+        assert scores == sorted(scores, reverse=True)
+
+
+def _offer(gives: str, partner: int, gets: str, score: float) -> ShortlistOffer:
+    trade = ProposedTrade(season=2026, asker=6, sides=[
+        TradeSide(roster_id=6, gives=[GivenPlayer(player_id=gives, to=partner)]),
+        TradeSide(roster_id=partner, gives=[GivenPlayer(player_id=gets, to=6)])])
+    return ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=score, needs={6: 1.0, partner: 1.0},
+                          score=score)
+
+
+def test_the_best_offer_of_each_player_and_each_partner_comes_before_a_second_form():
+    # The rated offers of press 3 of AT-41 (evidence/AT-43/shortlist.txt). Bo Girds is roster 6. McBride is 8130,
+    # Flowers 9997, and Golden 12501. Partner 11 gives Prescott 3294 or Stroud 9758, partner 7 gives Mahomes 4046 or
+    # Goff 3163, and partner 3 gives Williams 11560.
+    offers = [_offer("8130", 11, "3294", 0.442), _offer("9997", 7, "4046", 0.256), _offer("12501", 11, "3294", 0.343),
+              _offer("8130", 3, "11560", 0.130), _offer("12501", 11, "9758", 0.281), _offer("9997", 11, "3294", 0.265),
+              _offer("8130", 11, "9758", 0.252), _offer("9997", 11, "9758", 0.208), _offer("9997", 7, "3163", 0.204),
+              _offer("12501", 7, "4046", 0.181)]
+    shortlist = varied(offers, SHORTLIST_KEEP)
+    # The best of McBride, of Golden, and of partner 11, then the best of Flowers (0.265), of partner 7, and of
+    # partner 3. Then the other forms by score.
+    assert [offer.score for offer in shortlist] == [0.442, 0.343, 0.265, 0.256, 0.130,
+                                                    0.281, 0.252, 0.208, 0.204, 0.181]
+
+
+def test_a_list_with_more_best_offers_than_it_keeps_holds_only_best_offers_by_score():
+    offers = [_offer(f"p{n}", 20 + n, f"g{n}", 0.1 + 0.01 * n) for n in range(12)]
+    offers += [_offer("p11", 20, "g99", 0.9)]
+    shortlist = varied(offers, SHORTLIST_KEEP)
+    # 0.9 is the best of p11 and of partner 20, so it leads. The other 11 best offers fill the list by score.
+    assert [offer.score for offer in shortlist] == pytest.approx([0.9] + [0.1 + 0.01 * n for n in range(11, 2, -1)])
 
 
 def test_the_shortlist_holds_the_best_offer_for_each_player_of_the_asker_before_more_forms(snap):
@@ -231,8 +275,8 @@ def test_the_shortlist_holds_an_offer_for_each_partner_before_more_forms(snap):
     _assert_varied(found)
     partners = {trade.sides[1].roster_id for trade in found.offers}
     assert len(partners) >= 2
-    shown = [offer.trade.sides[1].roster_id for offer in found.shortlist]
-    assert len(set(shown)) == min(len(partners), len(shown))
+    # The best offer of each partner is a best offer, and the best offers of this search fit on the list.
+    assert {offer.trade.sides[1].roster_id for offer in found.shortlist} == partners
 
 
 def test_a_failed_jev_request_on_every_step_never_raises_and_never_hides_a_partner(snap):
