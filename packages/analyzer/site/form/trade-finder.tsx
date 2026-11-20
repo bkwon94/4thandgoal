@@ -632,6 +632,12 @@ export function TradeFinder({
           now.status === "finding" && !now.trades.some((kept) => kept.offer_id === trade.offer_id) ? { ...now, trades: [...now.trades, trade], most } : now,
         );
       },
+      // The pick has no more trades, so the most is the count of the cards, and the count line goes. A trade of a
+      // later attempt can still come, and it sets the most again.
+      onTradesDone: () => {
+        if (!run.isCurrent()) return;
+        setFind((now) => (now.status === "finding" ? { ...now, most: now.trades.length } : now));
+      },
     };
     try {
       const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim), events, controller.signal);

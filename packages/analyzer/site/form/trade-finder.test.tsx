@@ -98,6 +98,8 @@ const step = (text: string, live: boolean) => ({ type: "data-step", data: { line
 const team = (rosterId: number) => ({ type: "data-team", data: { roster_id: rosterId } });
 const done = (doc: unknown) => ({ type: "data-answer", data: { kind: "find", document: doc } });
 const trade = (index: number, most: number, item: unknown) => ({ type: "data-trade", data: { index, most, trade: item } });
+/* The part that says the pick has no more trades. */
+const tradesDone = { type: "data-trades-done", data: {} };
 /* The Shortlist part: each trade by its players, the full name and the short name of each, from the side of the asker. */
 const named = (name: string, last: string) => ({ name, last });
 const shortlist = (...trades: { gives: { name: string; last: string }[]; gets: { name: string; last: string }[] }[]) => ({
@@ -543,6 +545,23 @@ describe("TradeFinder", () => {
     await screen.findByRole("button", { name: /^Close, but not sent/ });
     expect(cards()).toHaveLength(3);
     expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
+  });
+
+  it("drops the count line as soon as the stream says the pick has no more trades, before the answer", async () => {
+    // Ticket 17: the count line counts the trades still to come until the last card shows. The pick kept 3 of 5.
+    const stream = heldStream();
+    find();
+    await stream.send(trade(0, 5, FIVE.trades[0]), trade(1, 5, FIVE.trades[1]), trade(2, 5, FIVE.trades[2]));
+    expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
+    await stream.send(tradesDone);
+    expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 3", "Trade 2 of 3", "Trade 3 of 3"]);
+    // The answer has not come, so the wait stays on screen.
+    expect(screen.getByRole("region", { name: "Finding Trades" })).toBeTruthy();
+    await stream.send(done({ ...FIVE, trades: FIVE.trades.slice(0, 3) }));
+    stream.end();
+    await screen.findByRole("button", { name: /^Close, but not sent/ });
+    expect(cards()).toHaveLength(3);
   });
 
   it("shows up to 5 cards, then the near ideas folded under Close, but not sent", async () => {

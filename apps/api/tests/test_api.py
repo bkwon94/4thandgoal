@@ -1618,16 +1618,18 @@ class CountedPicker(StubPicker):
         return out
 
 
-def _streamed(settings, sources, picker, repair=None):
+def _streamed(settings, sources, picker, repair=None, ends=None):
     """The picks of one press of asker 2 over every team, and each pick that the press sent as it stood, with the count
-    of snapshots that the picker had streamed at the send."""
+    of snapshots that the picker had streamed at the send. With `ends`, it gets the count of snapshots at each word of
+    the press that the pick has no more trades."""
     jev = FakeJev()
     snapshot = _find_client(settings, sources, jev=jev).app.state.served["cpc"].sources.snapshot(2026)
     shortlist = search(2, None, snapshot, jev)
     sent = []
     picks = pick_trades(shortlist, snapshot, news=NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED), jev=jev,
                         call=picker, repair_call=repair or StubRepair(),
-                        on_pick=lambda pick, most: sent.append((pick, picker.fed, most)))
+                        on_pick=lambda pick, most: sent.append((pick, picker.fed, most)),
+                        **({} if ends is None else {"on_picks_end": lambda: ends.append(picker.fed)}))
     return picks, sent, [offer.offer_id for offer in shortlist.shortlist]
 
 
@@ -1642,6 +1644,26 @@ def test_each_pick_is_sent_as_soon_as_it_stands_while_the_call_still_streams(set
     assert [fed for _, fed, _ in sent] == sorted(fed for _, fed, _ in sent)
     # The shortlist holds more than 5 offers, so the press can keep 5 and the count of the trades still to come is 5.
     assert {most for _, _, most in sent} == {5}
+
+
+def test_the_press_says_the_pick_has_no_more_trades_as_soon_as_the_picks_list_closes(settings, sources):
+    # Ticket 17: the count line goes when the last card shows. The pick keeps 3 of 5, so the press says so as soon as
+    # the streamed JSON closes the picks list, while the call still writes its near ideas.
+    picker = CountedPicker()
+    ends = []
+    picks, sent, _ = _streamed(settings, sources, picker, ends=ends)
+    assert len(picks.picks) == 3
+    [end] = ends
+    assert sent[-1][1] <= end < picker.total
+
+
+def test_the_press_says_the_pick_has_no_more_trades_only_after_a_repaired_pick_goes_out(settings, sources):
+    picker = CountedPicker(_bad_pick({"text": "The trade lands in week 9."}))
+    ends = []
+    _, sent, offers = _streamed(settings, sources, picker, StubRepair(), ends=ends)
+    assert [pick.offer.offer_id for pick, _, _ in sent] == offers[:3]
+    [end] = ends
+    assert end >= max(fed for _, fed, _ in sent)
 
 
 def test_a_pick_that_fails_a_guard_is_sent_after_its_repair_and_the_later_picks_keep_their_order(settings, sources):

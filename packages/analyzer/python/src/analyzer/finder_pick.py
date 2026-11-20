@@ -164,6 +164,15 @@ def _drop(pick: FinderPick, most: int) -> None:
     """The default send of a pick: a press with no stream sends no pick before its end."""
 
 
+# The word that the pick has no more trades, sent once, as soon as the streamed picks list closes and each of its picks
+# stood or dropped. A stream sends it, so the site drops the count line when the pick keeps fewer than the most.
+OnPicksEnd = Callable[[], None]
+
+
+def _no_end() -> None:
+    """The default word of the end: a press with no stream sends no word before its end."""
+
+
 class FinderPicks(BaseModel):
     """What a Finder press gives: the picks, the near ideas, the plain line when no pick stands, and whether the call
     fell back."""
@@ -379,7 +388,8 @@ class _PickWatch:
     """
 
     def __init__(self, shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str, dict[str, Fact]],
-                 repair_call: ClaudeCall, pool: ThreadPoolExecutor, send: OnPick, sent: set[str], most: int) -> None:
+                 repair_call: ClaudeCall, pool: ThreadPoolExecutor, send: OnPick, sent: set[str], most: int,
+                 end: OnPicksEnd = _no_end) -> None:
         self._offers = labeled(shortlist)
         self._asker = shortlist.asker
         self._snapshot = snapshot
@@ -389,6 +399,10 @@ class _PickWatch:
         self._send = send
         self._sent = sent
         self._most = most
+        self._end = end
+        # True once the picks list of the call has closed, so no pick comes after the picks that the watch holds.
+        self._ended = False
+        self._end_sent = False
         self._picks: list[PickOut | None] = []
         self._results: list[Future[PickOut | None]] = []
         self._next = 0
@@ -414,6 +428,9 @@ class _PickWatch:
                 # The whole answer fails its parse too, so the call fails and runs again.
                 pick = None
             self._start(pick)
+        if ended and not self._ended:
+            self._ended = True
+            self._flush()
 
     def _start(self, pick: PickOut | None) -> None:
         """Check one whole pick, and stand it, start its repair, or drop it."""
@@ -459,6 +476,10 @@ class _PickWatch:
                 if offer.offer_id not in self._sent:
                     self._sent.add(offer.offer_id)
                     self._send(_finder_pick(fixed, offer, self._sheets[offer.offer_id]), self._most)
+            # The picks list has closed and each pick stood or dropped, so no trade of this call is still to come.
+            if self._ended and self._next == len(self._results) and not self._closed and not self._end_sent:
+                self._end_sent = True
+                self._end()
 
     def close(self) -> None:
         """Send nothing more, because the answer of this call failed. Cancel each repair that has not started, so the
@@ -475,6 +496,8 @@ class _PickWatch:
         pick that is left, and give the picks that stand, in the order of the pick."""
         for pick in out.picks[len(self._picks):]:
             self._start(pick)
+        # The whole answer is in, so its picks list has closed, even when the stream never showed the close.
+        self._ended = True
         stand = []
         for pick, future in zip(self._picks, self._results, strict=True):
             fixed = future.result()
@@ -519,7 +542,8 @@ def _log_checks(stand: list[tuple[PickOut, ShortlistOffer]], near: list[tuple[Ne
 
 def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev: Jev,
                 call: ClaudeCall = finder_pick_call, repair_call: ClaudeCall = finder_repair_call,
-                stage: Stage = quiet, defer: Defer = run_now, on_pick: OnPick | None = None) -> FinderPicks:
+                stage: Stage = quiet, defer: Defer = run_now, on_pick: OnPick | None = None,
+                on_picks_end: OnPicksEnd = _no_end) -> FinderPicks:
     """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
     NO_PARTNER line when no team passed the partner filter, else the NO_OFFER line.
 
@@ -533,6 +557,8 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     `defer` gets the log-only Jev checks, so a route runs them after its Answer goes out. The default runs them now.
     With `on_pick`, the pick call streams, and each pick goes to `on_pick` as soon as it stands, with its guards passed
     or repaired, in the order of the pick, with the most picks of the press (decision 20). The `call` must then take `on_text`, as finder_pick_call does.
+    With `on_pick`, `on_picks_end` gets one word when the pick has no more trades: as soon as the streamed picks list
+    closes and each of its picks stood or dropped. A later attempt can still send a trade after it.
     The FinderPicks that the press gives stay the truth: a pick that went out from a failed answer is not in them.
     """
     if not shortlist.shortlist:
@@ -549,7 +575,8 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     pool = ThreadPoolExecutor(max_workers=MAX_PICKS)
     try:
         def attempt(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
-            watch = _PickWatch(shortlist, snapshot, sheets, repair_call, pool, on_pick or _drop, sent, most)
+            watch = _PickWatch(shortlist, snapshot, sheets, repair_call, pool, on_pick or _drop, sent, most,
+                               on_picks_end)
             watches.append(watch)
             try:
                 # Only a press that sends each pick streams the call, so a call with no stream keeps its plain shape.
