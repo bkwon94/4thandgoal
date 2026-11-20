@@ -50,7 +50,7 @@ The proof that the loop still fails when a hero text of the wait drops below 4.5
     +   "pixel: hero \"Grading the Trade\" span.t-think-text \"Checking roster fit\" is 3.23:1 on #151515, under 4.5:1",
   5 failed
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
