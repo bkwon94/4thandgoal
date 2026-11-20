@@ -1496,11 +1496,21 @@ class StubPicker:
         offers = self.shortlists[-1].shortlist
         return [offers[LABELS.index(label)].offer_id for label in labels]
 
-    def __call__(self, system, user, output_model):
+    def __call__(self, system, user, output_model, on_text=None):
         assert output_model is FinderPickOut
         self.calls.append((system, user))
         build = self.builders[min(len(self.calls), len(self.builders)) - 1]
-        return FinderPickOut.model_validate(build(user))
+        out = build(user)
+        if on_text is not None:
+            # A streamed call gives the JSON text as it grows, as the stream of the Claude API does.
+            for snapshot in streamed_snapshots(json.dumps(out)):
+                on_text(snapshot)
+        return FinderPickOut.model_validate(out)
+
+
+def streamed_snapshots(text: str, size: int = 40) -> list[str]:
+    """The text of a streamed answer as it grows, one snapshot per chunk of `size` characters, the last one whole."""
+    return [text[:end] for end in range(size, len(text), size)] + [text]
 
 
 def passing_repair(user: str) -> dict:
@@ -1587,6 +1597,77 @@ def test_the_log_only_jev_checks_of_the_picks_wait_until_the_caller_runs_them(se
     [job] = later
     job()
     assert len([r for r in jev.requests if _is_check(r)]) == len(picks.picks)
+
+
+class CountedPicker(StubPicker):
+    """A StubPicker that counts the snapshots it has streamed, so a test sees how far the call stood at a send."""
+
+    def __init__(self, *builders):
+        super().__init__(*builders)
+        self.fed = 0
+        self.total = 0
+
+    def __call__(self, system, user, output_model, on_text=None):
+        def counted(snapshot):
+            self.fed += 1
+            on_text(snapshot)
+
+        out = super().__call__(system, user, output_model, None if on_text is None else counted)
+        self.total = self.fed
+        return out
+
+
+def _streamed(settings, sources, picker, repair=None):
+    """The picks of one press of asker 2 over every team, and each pick that the press sent as it stood, with the count
+    of snapshots that the picker had streamed at the send."""
+    jev = FakeJev()
+    snapshot = _find_client(settings, sources, jev=jev).app.state.served["cpc"].sources.snapshot(2026)
+    shortlist = search(2, None, snapshot, jev)
+    sent = []
+    picks = pick_trades(shortlist, snapshot, news=NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED), jev=jev,
+                        call=picker, repair_call=repair or StubRepair(),
+                        on_pick=lambda pick, most: sent.append((pick, picker.fed, most)))
+    return picks, sent, [offer.offer_id for offer in shortlist.shortlist]
+
+
+def test_each_pick_is_sent_as_soon_as_it_stands_while_the_call_still_streams(settings, sources):
+    # Decision 20 and AT-72: the first card shows long before the last.
+    picker = CountedPicker()
+    picks, sent, _ = _streamed(settings, sources, picker)
+    assert len(picks.picks) == 3
+    assert [pick for pick, _, _ in sent] == picks.picks
+    # The first pick goes out while the rest of the answer still streams, not at its end.
+    assert sent[0][1] < picker.total
+    assert [fed for _, fed, _ in sent] == sorted(fed for _, fed, _ in sent)
+    # The shortlist holds more than 5 offers, so the press can keep 5 and the count of the trades still to come is 5.
+    assert {most for _, _, most in sent} == {5}
+
+
+def test_a_pick_that_fails_a_guard_is_sent_after_its_repair_and_the_later_picks_keep_their_order(settings, sources):
+    picker = CountedPicker(_bad_pick({"text": "The trade lands in week 9."}))
+    repair = StubRepair()
+    picks, sent, offers = _streamed(settings, sources, picker, repair)
+    assert len(repair.calls) == 1
+    assert [pick.offer.offer_id for pick, _, _ in sent] == offers[:3]
+    assert [pick for pick, _, _ in sent] == picks.picks
+
+
+def test_a_pick_that_fails_its_repair_is_never_sent(settings, sources):
+    picker = CountedPicker(_bad_pick({"text": "The trade lands in week 9."}))
+    repair = StubRepair(lambda user: passing_repair(user) | {"lean": "Lean no"})
+    picks, sent, offers = _streamed(settings, sources, picker, repair)
+    assert [pick.offer.offer_id for pick, _, _ in sent] == offers[1:3]
+    assert [pick for pick, _, _ in sent] == picks.picks
+
+
+def test_a_retried_pick_call_never_sends_one_trade_twice(settings, sources):
+    # The first answer picks offer A twice, so the whole call runs again. Offer A went out once already.
+    picker = CountedPicker(lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2},
+                           passing_pick)
+    picks, sent, offers = _streamed(settings, sources, picker)
+    assert len(picker.calls) == 2
+    assert [pick.offer.offer_id for pick, _, _ in sent] == offers[:3]
+    assert [pick.offer.offer_id for pick in picks.picks] == offers[:3]
 
 
 def test_only_send_it_lean_yes_and_gut_call_come_back_as_trades(settings, sources):

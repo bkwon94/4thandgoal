@@ -746,6 +746,28 @@ def test_the_find_stream_reports_the_one_partner_it_reads(api):
     assert teams == [LIL_FRIDGE]
 
 
+def test_the_find_stream_sends_each_trade_as_its_own_part_before_the_answer(api):
+    # AT-72 and decision 20: each trade part holds the same fields as its trade in the Answer, in the pick order.
+    parts = _find_stream(api)
+    trades = _of(parts, "data-trade")
+    [answer] = _of(parts, "data-answer")
+    assert len(trades) == 3
+    assert [part["trade"] for part in trades] == answer["document"]["trades"]
+    assert [part["index"] for part in trades] == [0, 1, 2]
+    # The pick can keep 5, so the site counts the trades still to come from 5, as the step line "Picking the best 5".
+    assert {part["most"] for part in trades} == {5}
+    kinds = [part["type"] for part in parts]
+    assert max(i for i, kind in enumerate(kinds) if kind == "data-trade") < kinds.index("data-answer")
+    # The last step line, "Picked the best 3", comes after the trades, so the wait line holds until the last card.
+    assert max(i for i, kind in enumerate(kinds) if kind == "data-trade") < len(kinds) - 1 - kinds[::-1].index(
+        "data-step")
+
+
+def test_trade_ideas_of_the_front_door_send_no_trade_part(api):
+    # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
+    assert _of(_ideas(api), "data-trade") == []
+
+
 def test_a_trade_of_the_find_stream_holds_no_headline(api):
     [answer] = _of(_find_stream(api), "data-answer")
     assert all("headline" not in trade for trade in answer["document"]["trades"])

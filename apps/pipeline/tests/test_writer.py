@@ -365,6 +365,53 @@ def test_the_finder_pick_call_runs_on_sonnet_and_the_read_call_on_opus():
     assert sent["output_config"] == {"effort": "medium"}
 
 
+def _streamed_writer(chunks):
+    """A ClaudeWriter over a stub client whose stream gives `chunks` of text, and the dict of its request keywords."""
+    from facts.writer import ClaudeWriter
+
+    sent = {}
+    usage = type("Usage", (), {"cache_creation_input_tokens": 0, "cache_read_input_tokens": 0, "input_tokens": 1,
+                               "output_tokens": 5})
+
+    class Stream:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def __iter__(self):
+            snapshot = ""
+            for chunk in chunks:
+                snapshot += chunk
+                yield type("TextEvent", (), {"type": "text", "text": chunk, "snapshot": snapshot})()
+
+        def get_final_message(self):
+            return type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage})()
+
+    class Messages:
+        def stream(self, **kwargs):
+            sent.update(kwargs)
+            return Stream()
+
+    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})()), sent
+
+
+def test_the_finder_pick_call_with_on_text_streams_the_text_as_it_grows():
+    # Decision 20: the pick streams its answer, so each trade card can show as soon as it stands.
+    from analyzer.finder_pick import FinderPickOut
+    from facts.writer import finder_pick_call
+
+    writer, sent = _streamed_writer(['{"pi', 'cks": [', ']}'])
+    texts = []
+    assert finder_pick_call("finder system", "user text", FinderPickOut, writer=writer,
+                            on_text=texts.append) == "parsed"
+    assert texts == ['{"pi', '{"picks": [', '{"picks": []}']
+    assert sent["model"] == "claude-sonnet-5-5"
+    assert sent["output_config"] == {"effort": "medium"}
+    assert sent["output_format"] is FinderPickOut
+
+
 def test_the_finder_repair_call_runs_on_sonnet_at_low_effort():
     # A repair fixes the text of one pick on one sheet, so it is a small call. Low effort keeps it short, so the
     # repairs of a press stay within the time and the cost of AT-33.

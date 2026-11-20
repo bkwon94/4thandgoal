@@ -1,13 +1,13 @@
 /**
  * Find mode of the analyzer: the dark hero with Your team, the partner choice, the position chips, and the find button.
- * The find streams its real steps into the same wait as a grade, then up to five Ledger cards land in one list, with
- * the near ideas folded under them.
+ * The find streams its real steps into the same wait as a grade, and each of up to five Ledger cards lands in one list
+ * as the pick sends it, with the near ideas folded under them at the end.
  */
 "use client";
 
 import { motion } from "framer-motion";
 import { ChevronDown, RotateCcw, Users } from "lucide-react";
-import { type ReactNode, useEffect, useLayoutEffect, useState } from "react";
+import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AsOfLine, NoChartLine } from "./analyze-result";
 import { BulletRows } from "./bullet-rows";
 import { Ledger, ledgerOf, NearIdeas } from "./ledger";
@@ -47,10 +47,11 @@ const MAX_NEAR = 3;
 const AIMS = ["Any", "RB", "WR", "TE", "QB"] as const;
 type Aim = (typeof AIMS)[number];
 
-/* The wait holds each wait line of the stream in order, and the teams that the search read. */
+/* The wait holds each wait line of the stream in order, the teams that the search read, each trade that the pick has
+   sent so far, and the most trades that the pick can keep. */
 type FindState =
   | { status: "idle" }
-  | { status: "finding"; lines: string[]; read: number[] }
+  | { status: "finding"; lines: string[]; read: number[]; trades: FinderTrade[]; most: number }
   | { status: "done"; doc: FindResponse }
   | { status: "error"; message: string };
 
@@ -318,9 +319,9 @@ function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }
 
 /* One finder trade: the Lean, the Case of at most 3 lines with its condition first, the Ledger, and the folded
    Bullets. The pick writes no headline, so one voice speaks. After a fallback the trade has no Lean and no Bullet, so
-   the card lists its plain fact lines. The cards rise in one after another, 80 ms apart, as the texts reveal of
-   transitions.dev. With motion off, they show at once. */
-function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; disabled: boolean }) {
+   the card lists its plain fact lines. A card rises in as it lands, as the texts reveal of transitions.dev. Cards that
+   land together rise one after another, `delay` seconds apart from the first. With motion off, they show at once. */
+function FinderCard({ trade, asker, index, count, delay, onOpen, disabled }: { trade: FinderTrade; asker: number; index: number; count: number; delay: number; onOpen: () => void; disabled: boolean }) {
   const off = useMotionOff();
   const { partner } = ledgerOf(trade, asker);
   return (
@@ -328,7 +329,7 @@ function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: F
       aria-label={`Trade ${index + 1} of ${count}`}
       initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.5, ease: EASE_OUT, delay: index * 0.08 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay }}
       className="flex flex-col gap-sp-3 rounded-card border border-rule bg-page p-sp-4"
     >
       <div className="flex items-baseline justify-between gap-sp-3">
@@ -358,7 +359,8 @@ function FinderCard({ trade, asker, index, count, onOpen, disabled }: { trade: F
   );
 }
 
-/* The near fold rises in after the last card, with the same rise as the cards. With motion off, it shows at once. */
+/* The near fold rises in after the last card, with the same rise as the cards, `after` cards of stagger later. With
+   motion off, it shows at once. */
 function NearFold({ doc, after }: { doc: FindResponse; after: number }) {
   const off = useMotionOff();
   if (doc.near.length === 0) return null;
@@ -373,32 +375,115 @@ function NearFold({ doc, after }: { doc: FindResponse; after: number }) {
   );
 }
 
+/* The gap of the rise of two cards that land together, as the texts reveal of transitions.dev. */
+const STAGGER_S = 0.08;
+
+/* The line under the cards while the pick still writes, such as "Writing 4 more trades". It shimmers as a line of work
+   in flight, as the shimmer text of transitions-dev, and a new count comes in through a small blur in place. It
+   slides down with the list as a card lands. It names no time and no inner tool. With motion off, it holds still in
+   the mute ink and swaps at once. */
+function MoreLine({ left }: { left: number }) {
+  const off = useMotionOff();
+  const text = `Writing ${left} more ${left === 1 ? "trade" : "trades"}`;
+  return (
+    <motion.p
+      layout={off ? false : "position"}
+      aria-live="polite"
+      initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.5, ease: EASE_OUT }}
+      className="m-0 grid min-h-touch items-center text-row font-bold"
+    >
+      {/* The key gives each count its own span, so a new count comes in through a small blur in place. The old count
+          goes in the same frame, so the line never holds two counts. */}
+      <motion.span
+        key={text}
+        className={cn(
+          "col-start-1 row-start-1",
+          off
+            ? "text-mute"
+            : "bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%]",
+        )}
+        initial={off ? false : { opacity: 0, filter: "blur(2px)", backgroundPosition: "100% 0%" }}
+        animate={off ? undefined : { opacity: 1, filter: "blur(0px)", backgroundPosition: "0% 0%" }}
+        transition={{
+          opacity: { duration: 0.15, ease: "easeInOut" },
+          filter: { duration: 0.15, ease: "easeInOut" },
+          backgroundPosition: { duration: 2, ease: "linear", repeat: Infinity },
+        }}
+      >
+        {text}
+      </motion.span>
+    </motion.p>
+  );
+}
+
 /* The finder result: the cards in one list, or the empty line, then the near ideas folded, then the as-of line. After
-   a fallback the list holds every offer of the shortlist, so only the picks keep to the count of 5. */
-function FinderResult({ doc, onOpen, disabled }: { doc: FindResponse; onOpen: (trade: FinderTrade, doc: FindResponse) => void; disabled: boolean }) {
-  const asker = doc.trade_pair.asker.roster_id;
-  const trades = doc.fallback ? doc.trades : doc.trades.slice(0, MAX_PICKS);
+   a fallback the list holds every offer of the shortlist, so only the picks keep to the count of 5.
+   While the pick still writes, `doc` is null: the list holds the trades of the stream so far, a line under them counts
+   the trades still to come, and the button of each card waits for the document. The part stays mounted from the first
+   card to the document, so a card that showed does not rise again, and the document is the truth for the list. */
+function FinderResult({
+  trades: streamed,
+  most,
+  asker,
+  doc,
+  onOpen,
+  disabled,
+}: {
+  trades: FinderTrade[];
+  most: number;
+  asker: number;
+  doc: FindResponse | null;
+  onOpen: (trade: FinderTrade, doc: FindResponse) => void;
+  disabled: boolean;
+}) {
+  const all = doc === null ? streamed : doc.trades;
+  const trades = doc?.fallback ? all : all.slice(0, MAX_PICKS);
+  // The count of cards that showed in an earlier render. A card past it lands now, so the stagger counts from it.
+  const shown = useRef(0);
+  const before = Math.min(shown.current, trades.length);
+  useEffect(() => {
+    shown.current = trades.length;
+  });
+  const left = doc === null ? Math.min(most, MAX_PICKS) - trades.length : 0;
+  const count = doc === null ? Math.max(Math.min(most, MAX_PICKS), trades.length) : trades.length;
+  if (doc === null && trades.length === 0) return null;
   return (
     <div className="flex flex-col gap-sp-4 pt-sp-5">
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
-      {doc.empty !== null && <p className="m-0 text-lead font-bold">{doc.empty}</p>}
-      {doc.fallback && doc.trades.length > 0 && (
+      {doc !== null && doc.empty !== null && <p className="m-0 text-lead font-bold">{doc.empty}</p>}
+      {doc !== null && doc.fallback && doc.trades.length > 0 && (
         <p className="m-0 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
       )}
       {trades.length > 0 && (
         <ol aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {trades.map((trade, i) => (
             <li key={trade.offer_id}>
-              <FinderCard trade={trade} asker={asker} index={i} count={trades.length} onOpen={() => onOpen(trade, doc)} disabled={disabled} />
+              <FinderCard
+                trade={trade}
+                asker={asker}
+                index={i}
+                count={count}
+                delay={Math.max(0, i - before) * STAGGER_S}
+                onOpen={() => doc !== null && onOpen(trade, doc)}
+                disabled={disabled || doc === null}
+              />
             </li>
           ))}
         </ol>
       )}
-      <NearFold doc={doc} after={trades.length} />
-      <div className="pb-sp-5">
-        <NoChartLine asOf={doc.as_of} />
-        <AsOfLine doc={doc} />
-      </div>
+      {/* The line goes at once as the last card lands, so the eye follows the card and not a fade under it. */}
+      {left > 0 && <MoreLine left={left} />}
+      {doc !== null && (
+        <>
+          <NearFold doc={doc} after={Math.max(0, trades.length - before)} />
+          <div className="pb-sp-5">
+            <NoChartLine asOf={doc.as_of} />
+            <AsOfLine doc={doc} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -454,7 +539,7 @@ export function TradeFinder({
       timedOut = true;
       controller.abort();
     }, TIMEOUT_MS);
-    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner, partners.length))], read: [] });
+    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner, partners.length))], read: [], trades: [], most: MAX_PICKS });
     // A live line starts a step, so it moves the wait line on. A done line ends the step, and the line holds until
     // the next step starts, because the next live line follows it at once.
     let step = 0;
@@ -469,6 +554,13 @@ export function TradeFinder({
       onTeam: (rosterId: number) => {
         if (!run.isCurrent()) return;
         setFind((now) => (now.status === "finding" && !now.read.includes(rosterId) ? { ...now, read: [...now.read, rosterId] } : now));
+      },
+      // The pick sends its trades in order, so each new trade joins the end of the list.
+      onTrade: (_index: number, most: number, trade: FinderTrade) => {
+        if (!run.isCurrent()) return;
+        setFind((now) =>
+          now.status === "finding" && !now.trades.some((kept) => kept.offer_id === trade.offer_id) ? { ...now, trades: [...now.trades, trade], most } : now,
+        );
       },
     };
     try {
@@ -530,6 +622,14 @@ export function TradeFinder({
       </PendingButton>
     );
 
+  // The cards: the trades of the stream so far while the search runs, then the document.
+  const result =
+    find.status === "done"
+      ? { trades: [], most: 0, asker: find.doc.trade_pair.asker.roster_id, doc: find.doc }
+      : find.status === "finding" && asker !== null
+        ? { trades: find.trades, most: find.most, asker, doc: null }
+        : null;
+
   // The wait shows the teams the search reads: the picked partner, or the eleven other teams.
   const searched = partner === null ? partners : partners.filter((team) => team.roster_id === partner);
 
@@ -540,7 +640,9 @@ export function TradeFinder({
       ) : (
         <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
       )}
-      {find.status === "done" && <FinderResult doc={find.doc} onOpen={onOpen} disabled={locked} />}
+      {/* One part in one place shows the cards of the stream and then the cards of the document, so React keeps it
+          mounted and a card that showed stays where it is. */}
+      {result !== null && <FinderResult {...result} onOpen={onOpen} disabled={locked} />}
     </section>
   );
 }

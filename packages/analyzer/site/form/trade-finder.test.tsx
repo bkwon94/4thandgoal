@@ -97,6 +97,7 @@ const line = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify
 const step = (text: string, live: boolean) => ({ type: "data-step", data: { line: text, live } });
 const team = (rosterId: number) => ({ type: "data-team", data: { roster_id: rosterId } });
 const done = (doc: unknown) => ({ type: "data-answer", data: { kind: "find", document: doc } });
+const trade = (index: number, most: number, item: unknown) => ({ type: "data-trade", data: { index, most, trade: item } });
 
 /* A find stream that the test feeds part by part, so a test can read the wait between two parts. */
 function heldStream() {
@@ -398,6 +399,52 @@ describe("TradeFinder", () => {
     await waitFor(() => expect(cards()).toHaveLength(3));
     expect(cards()[0].querySelector("[data-gap]")).toBeNull();
     expect(cards()[1].querySelector("[data-gap]")?.textContent).toBe("You give 56% more trade value");
+  });
+
+  it("shows each card as its trade part comes, and the count line counts the trades still to come down to none", async () => {
+    // AT-72 and decision 20: the first card shows long before the last.
+    const stream = heldStream();
+    find();
+    await stream.send(step("Picking the best 5", true));
+    expect(cards()).toHaveLength(0);
+    expect(screen.queryByText(/^Writing \d+ more trade/)).toBeNull();
+    await stream.send(trade(0, 5, FIVE.trades[0]));
+    expect(cards()).toHaveLength(1);
+    expect(within(cards()[0]).getByText(FIVE.trades[0].lean as string)).toBeTruthy();
+    expect(screen.getByText("Writing 4 more trades")).toBeTruthy();
+    // The wait stays on screen while the cards come, and the near fold waits for the end.
+    expect(screen.getByRole("region", { name: "Finding Trades" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Close, but not sent/ })).toBeNull();
+    // A card of the stream has no document of the find yet, so its button waits for the end.
+    expect((within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement).disabled).toBe(true);
+    await stream.send(trade(1, 5, FIVE.trades[1]), trade(2, 5, FIVE.trades[2]));
+    expect(cards()).toHaveLength(3);
+    expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
+    await stream.send(trade(3, 5, FIVE.trades[3]));
+    expect(screen.getByText("Writing 1 more trade")).toBeTruthy();
+    await stream.send(trade(4, 5, FIVE.trades[4]));
+    expect(cards()).toHaveLength(5);
+    expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
+    // The cards keep the order of the stream.
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual([1, 2, 3, 4, 5].map((n) => `Trade ${n} of 5`));
+    await stream.send(step("Picked the best 5", false), done(FIVE));
+    stream.end();
+    await screen.findByRole("button", { name: /^Close, but not sent/ });
+    expect(cards()).toHaveLength(5);
+    expect((within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("shows the cards of the answer when it keeps fewer trades than the stream counted", async () => {
+    // The pick can keep 3 of 5, so the answer ends the count line, and the answer is the truth.
+    const stream = heldStream();
+    find();
+    await stream.send(trade(0, 5, FIVE.trades[0]), trade(1, 5, FIVE.trades[1]), trade(2, 5, FIVE.trades[2]));
+    expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
+    await stream.send(done({ ...FIVE, trades: FIVE.trades.slice(0, 3) }));
+    stream.end();
+    await screen.findByRole("button", { name: /^Close, but not sent/ });
+    expect(cards()).toHaveLength(3);
+    expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
   });
 
   it("shows up to 5 cards, then the near ideas folded under Close, but not sent", async () => {

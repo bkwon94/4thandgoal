@@ -1,6 +1,7 @@
 /**
  * The Ledger cards and the near fold of the Finder, in WebKit, as Safari runs, on the phone, the iPad, and the desktop.
  * It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed bar over content.
+ * It also streams the trades one part at a time, and checks that each card shows as its part comes, with the count line.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -62,8 +63,37 @@ test.afterAll(async () => {
   await server?.close();
 });
 
-/* Opens the analyzer in Find mode with the asker as Your team, taps Find, and waits for the cards. */
-async function openFinder(page: Page, theme: Theme) {
+/* The parts of a streamed find: one trade part per trade of the fixture, in order, each with the count of the trades,
+   then the answer with the whole document. */
+const STREAMED = [
+  ...DOC.trades.map((trade, index) => ({ type: "data-trade", data: { index, most: DOC.trades.length, trade } })),
+  { type: "data-answer", data: { kind: "find", document: DOC } },
+];
+
+/* A find stream that the test feeds one part at a time. The browser fetch of the find stream gets a held body, and
+   window.__sendNext sends the next part, so the test reads the page between two parts. Every other request goes on. */
+async function holdFindStream(page: Page) {
+  await page.addInitScript((parts) => {
+    const realFetch = window.fetch.bind(window);
+    window.fetch = async (input, init) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (!url.includes("/find-stream")) return realFetch(input, init);
+      let controller!: ReadableStreamDefaultController<Uint8Array>;
+      const body = new ReadableStream<Uint8Array>({ start: (c) => void (controller = c) });
+      const left = [...parts];
+      (window as unknown as { __sendNext: () => number }).__sendNext = () => {
+        controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(left.shift())}\n\n`));
+        if (left.length === 0) controller.close();
+        return left.length;
+      };
+      return new Response(body, { status: 200, headers: { "content-type": "text/event-stream" } });
+    };
+  }, STREAMED);
+}
+
+/* Opens the analyzer in Find mode with the asker as Your team, taps Find, and waits for the cards. With `streamed`,
+   the find stream is held, so no card shows until the test sends its part. */
+async function openFinder(page: Page, theme: Theme, streamed = false) {
   await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
@@ -76,11 +106,25 @@ async function openFinder(page: Page, theme: Theme) {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", String(asker));
   }, ASKER);
+  if (streamed) await holdFindStream(page);
   await openPage(page, `${server.url}/analyze/?mode=find`, theme);
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();
-  await expect(page.getByRole("article")).toHaveCount(DOC.trades.length);
+  if (!streamed) await expect(page.getByRole("article")).toHaveCount(DOC.trades.length);
+}
+
+/* No text of the page overlaps another, and the page never scrolls sideways. The fixed and sticky parts sit over
+   content that the reader scrolls past, so the scan hides each one for its run. */
+async function expectNoOverlap(page: Page) {
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll<HTMLElement>("body *")) if (["fixed", "sticky"].includes(getComputedStyle(el).position)) el.style.visibility = "hidden";
+  });
+  expect(await findOverlap(page)).toBeNull();
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll<HTMLElement>("body *")) if (el.style.visibility === "hidden") el.style.visibility = "";
+  });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 }
 
 /* The fixed and sticky parts of the page that show and cover a part of the screen. */
@@ -97,6 +141,36 @@ for (const viewport of VIEWPORTS) {
   test.describe(viewport.name, () => {
     test.use(viewport.use);
     for (const theme of ["light", "dark"] as const) {
+      test(`each card shows as its trade part comes, with the count line under the cards, ${theme} (AT-72)`, async ({ page }, info) => {
+        await openFinder(page, theme, true);
+        const cards = page.getByRole("article");
+        const more = page.getByText(/^Writing \d+ more trades?$/);
+        await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
+        await expect(cards).toHaveCount(0);
+        const count = DOC.trades.length;
+        for (let shown = 1; shown <= count; shown++) {
+          await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
+          await expect(cards).toHaveCount(shown);
+          const left = count - shown;
+          if (left > 0) await expect(more).toHaveText(`Writing ${left} more ${left === 1 ? "trade" : "trades"}`);
+          else await expect(more).toHaveCount(0);
+          // The wait stays while the cards come, and the near fold waits for the end.
+          await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
+          await expect(page.getByRole("button", { name: /Close, but not sent/ })).toHaveCount(0);
+          if (shown === 1) {
+            await expectNoOverlap(page);
+            await cards.first().scrollIntoViewIfNeeded();
+            await page.screenshot({ path: info.outputPath(`stream-first-card-${theme}.png`), fullPage: true });
+          }
+        }
+        await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
+        await expect(page.getByRole("button", { name: `Close, but not sent · ${DOC.near.length}` })).toBeVisible();
+        await expect(cards).toHaveCount(count);
+        await expect(cards.first().getByRole("button", { name: "See the Full Result" })).toBeEnabled();
+        await expectNoOverlap(page);
+        await page.screenshot({ path: info.outputPath(`stream-last-card-${theme}.png`), fullPage: true });
+      });
+
       test(`the Ledger cards and the near fold, with no overlap and no fixed bar over content, ${theme} (AT-65, AT-66, AT-67)`, async ({ page }, info) => {
         await openFinder(page, theme);
         const cards = page.getByRole("article");

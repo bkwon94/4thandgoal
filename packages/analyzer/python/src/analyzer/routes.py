@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
-from analyzer.finder_pick import Defer, FinderPicks
+from analyzer.finder_pick import Defer, FinderPick, FinderPicks
 from analyzer.finder_search import Anchor, Limit, Shortlist, chart_value
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.sell_high import SellHigh, SellHighFailed
@@ -325,6 +325,20 @@ def _totals(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
             for side in trade.sides]
 
 
+def finder_trade(pick: FinderPick, snapshot: Snapshot) -> dict:
+    """One trade of the finder document: its offer id, its sides, the totals, the Lean, the Case, the Bullets, and the
+    fact lines. The find stream sends each trade in this shape as soon as it stands, so a card shows before the end."""
+    return {
+        "offer_id": pick.offer.offer_id,
+        "sides": _echoed_sides(pick.offer.trade, snapshot),
+        "totals": _totals(pick.offer.trade, snapshot),
+        "lean": pick.lean,
+        "case": pick.case,
+        "bullets": [bullet.model_dump() for bullet in pick.bullets],
+        "fact_lines": pick.fact_lines,
+    }
+
+
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
@@ -335,18 +349,7 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
     Lean, no Case, and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the
     press, so the page needs no words of its own. No trade holds a score.
     """
-    trades = [
-        {
-            "offer_id": pick.offer.offer_id,
-            "sides": _echoed_sides(pick.offer.trade, snapshot),
-            "totals": _totals(pick.offer.trade, snapshot),
-            "lean": pick.lean,
-            "case": pick.case,
-            "bullets": [bullet.model_dump() for bullet in pick.bullets],
-            "fact_lines": pick.fact_lines,
-        }
-        for pick in picks.picks
-    ]
+    trades = [finder_trade(pick, snapshot) for pick in picks.picks]
     # The offers that the pick weighed and would not send, each with the reason it fell short. An idea is an idea, so
     # a list with offers always shows one, even when no pick stands.
     near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot),
@@ -380,20 +383,24 @@ def find(request: Request, pair: FindRequest, served: ServedClient, background: 
 
 
 def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None,
-                defer: Defer | None = None, read: Callable[[int], None] | None = None) -> dict:
+                defer: Defer | None = None, read: Callable[[int], None] | None = None,
+                trade: Callable[[dict, int], None] | None = None) -> dict:
     """The find press of the route, for the route, the find stream, and the trade ideas of the front door.
 
     With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
     keyword and send no line, because the plain route streams no step. With `defer`, the pick hands it the log-only
     Jev checks, so the caller runs them after its Answer goes out. With `read`, the search hands it the roster id of
-    each team as it reads it, so a stream can report each team in turn.
+    each team as it reads it, so a stream can report each team in turn. With `trade`, the pick streams, and `trade` gets
+    each trade in the shape of the document as soon as it stands, with the most trades that the pick can keep, so a
+    stream can show each card in turn and count the trades still to come (decision 20).
+    A cached repeat sends no trade, because its document comes at once.
     """
     with _press_log("find", served):
-        return _find(request, pair, served, stage, defer, read)
+        return _find(request, pair, served, stage, defer, read, trade)
 
 
 def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None,
-          read: Callable[[int], None] | None) -> dict:
+          read: Callable[[int], None] | None, trade: Callable[[dict, int], None] | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -423,6 +430,9 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     # The search gets the read keyword only from a stream, as it gets the stage.
     reads = {} if read is None else {"read": read}
     deferred = {} if defer is None else {"defer": defer}
+    # The pick gets the on_pick keyword only from a stream that sends each trade, as it gets the stage.
+    if trade is not None:
+        deferred["on_pick"] = lambda pick, most: trade(finder_trade(pick, snapshot), most)
     shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored, **reads)
     picks = request.app.state.finder_pick(shortlist, snapshot, **staged, **deferred)
     document = finder_document(pair, snapshot, picks)

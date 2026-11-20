@@ -2,15 +2,19 @@
 The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 5 offers, each with a Lean, a
 Case of at most 3 sentences, and 2 to 4 Bullets, and up to 3 near ideas, each with the reason it fell short. A failed
 pick gets one repair call on its own sheet. With no pick and no near idea left, the shortlist stands with fact lines.
+A stream can get each pick as soon as it stands, while the call still writes the rest.
 """
 import contextvars
 import logging
 import re
 import string
+import threading
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
+from typing import Protocol, cast
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
+from pydantic_core import from_json
 
 from analyzer.advisor import (
     CONDITION,
@@ -78,6 +82,13 @@ Job = Callable[[], None]
 Defer = Callable[[Job], None]
 
 
+class StreamedCall(Protocol):
+    """The Claude call of the pick with a stream: it gives `on_text` the JSON text of its answer as the text grows."""
+
+    def __call__(self, system: str, user: str, output_model: type[BaseModel], *,
+                 on_text: Callable[[str], None]) -> BaseModel: ...
+
+
 def run_now(job: Job) -> None:
     """The default Defer: it runs the job at once, for a caller with no Answer to send first."""
     job()
@@ -143,6 +154,15 @@ class _PickSide(BaseModel):
 
     roster_id: int
     bullets: list[Bullet]
+
+
+# One pick that stands, sent to the caller as soon as it stands, in the order of the pick, with the most picks that the
+# press can keep, so a stream can count the trades still to come. A stream sends it as a trade.
+OnPick = Callable[[FinderPick, int], None]
+
+
+def _drop(pick: FinderPick, most: int) -> None:
+    """The default send of a pick: a press with no stream sends no pick before its end."""
 
 
 class FinderPicks(BaseModel):
@@ -275,22 +295,6 @@ def pick_failures(label: str, pick: PickOut, offer: ShortlistOffer, snapshot: Sn
     return failures + bullet_fails + guard.text_failures(f"{label} case", pick.case, cited)
 
 
-def check_picks(out: FinderPickOut, shortlist: Shortlist, snapshot: Snapshot,
-                sheets: dict[str, dict[str, Fact]]) -> list[list[str]]:
-    """The guards that each pick breaks, in the order of the picks. An empty list means that pick stands, so one bad
-    pick never fails the picks that pass."""
-    offers = labeled(shortlist)
-    failures = []
-    for number, pick in enumerate(out.picks, start=1):
-        label = f"pick {number}"
-        offer = offers.get(label_of(pick.label))
-        if offer is None:
-            failures.append([f"{label}: offer {pick.label} is not on the shortlist"])
-            continue
-        failures.append(pick_failures(label, pick, offer, snapshot, sheets[offer.offer_id]))
-    return failures
-
-
 def near_failures(label: str, near: NearOut, offer: ShortlistOffer, snapshot: Snapshot,
                   sheet: dict[str, Fact]) -> list[str]:
     """Every guard that one near idea breaks, on the sheet of its offer. Its reason is checked as one Bullet that cites
@@ -365,35 +369,119 @@ def _repair(number: int, pick: PickOut, failures: list[str], label: str, offer: 
     return fixed
 
 
-def _repair_picks(out: FinderPickOut, failures: list[list[str]], shortlist: Shortlist, snapshot: Snapshot,
-                  sheets: dict[str, dict[str, Fact]], call: ClaudeCall) -> list[tuple[PickOut, ShortlistOffer]]:
-    """The picks that stand, in the order of the picks, each with its offer: each pick that passed, and each failed
-    pick that one repair call fixed. The repairs run at the same time, so the time of a press adds the longest repair
-    only."""
-    offers = labeled(shortlist)
-    jobs = {}
-    for number, (pick, fails) in enumerate(zip(out.picks, failures, strict=True), start=1):
-        if fails:
-            log.warning("finder pick %d failed: %s", number, ANY_NUMBER.sub("#", "; ".join(fails)))
-        if fails and label_of(pick.label) in offers:
-            jobs[number] = pick, fails
-    repaired: dict[int, PickOut | None] = {}
-    if jobs:
-        with ThreadPoolExecutor(max_workers=len(jobs)) as pool:
-            # Each repair runs in a copy of the context of the press, so the press meter counts its call.
-            futures = {}
-            for number, (pick, fails) in jobs.items():
-                label = label_of(pick.label)
-                offer = offers[label]
-                futures[number] = pool.submit(contextvars.copy_context().run, _repair, number, pick, fails, label,
-                                              offer, shortlist.asker, snapshot, sheets[offer.offer_id], call)
-            repaired = {number: future.result() for number, future in futures.items()}
-    stand = []
-    for number, (pick, fails) in enumerate(zip(out.picks, failures, strict=True), start=1):
-        fixed = repaired.get(number) if fails else pick
-        if fixed is not None:
-            stand.append((fixed, offers[label_of(pick.label)]))
-    return stand
+class _PickWatch:
+    """The picks of one pick call, each checked as soon as the call has written it whole. A pick that passes stands at
+    once, and a pick that fails gets its repair call at once, in a thread of `pool`, so the repairs run at the same
+    time. Each pick that stands goes to `send` in the order of the pick, so a stream shows the first trade long before
+    the call ends (decision 20).
+
+    `sent` holds the offer id of each pick that went out. The attempts of one press share it, so a retried call never
+    sends one trade twice. A closed watch sends nothing more, because the answer of its call failed.
+    """
+
+    def __init__(self, shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str, dict[str, Fact]],
+                 repair_call: ClaudeCall, pool: ThreadPoolExecutor, send: OnPick, sent: set[str], most: int) -> None:
+        self._offers = labeled(shortlist)
+        self._asker = shortlist.asker
+        self._snapshot = snapshot
+        self._sheets = sheets
+        self._repair_call = repair_call
+        self._pool = pool
+        self._send = send
+        self._sent = sent
+        self._most = most
+        self._picks: list[PickOut | None] = []
+        self._results: list[Future[PickOut | None]] = []
+        self._next = 0
+        self._closed = False
+        # A repair ends in its own thread, so its send and the send of the call thread take turns.
+        self._lock = threading.Lock()
+
+    def feed(self, text: str) -> None:
+        """Read the JSON text of the call so far, and check each pick that it now holds whole. A pick is whole when the
+        next pick starts, or when the picks list ends, which a key after "picks" shows."""
+        try:
+            partial = from_json(text, allow_partial=True)
+        except ValueError:
+            return
+        if not isinstance(partial, dict) or not isinstance(partial.get("picks"), list):
+            return
+        picks = partial["picks"]
+        ended = next(iter(partial)) == "picks" and len(partial) > 1
+        for index in range(len(self._picks), len(picks) if ended else len(picks) - 1):
+            try:
+                pick = PickOut.model_validate(picks[index])
+            except ValidationError:
+                # The whole answer fails its parse too, so the call fails and runs again.
+                pick = None
+            self._start(pick)
+
+    def _start(self, pick: PickOut | None) -> None:
+        """Check one whole pick, and stand it, start its repair, or drop it."""
+        number = len(self._picks) + 1
+        label = None if pick is None else label_of(pick.label)
+        offer = None if label is None else self._offers.get(label)
+        earlier = {label_of(p.label) for p in self._picks if p is not None}
+        future: Future[PickOut | None] = Future()
+        if pick is None or label is None or offer is None or label in earlier or number > MAX_PICKS:
+            # A pick off the list, a repeat, or a pick past the most has no repair. The response check drops it or
+            # runs the call again.
+            if pick is not None and offer is None:
+                log.warning("finder pick %d failed: offer %s is not on the shortlist", number, pick.label)
+            future.set_result(None)
+        else:
+            sheet = self._sheets[offer.offer_id]
+            fails = pick_failures(f"pick {number}", pick, offer, self._snapshot, sheet)
+            if fails:
+                log.warning("finder pick %d failed: %s", number, ANY_NUMBER.sub("#", "; ".join(fails)))
+                # The repair runs in a copy of the context of the press, so the press meter counts its call.
+                future = self._pool.submit(contextvars.copy_context().run, _repair, number, pick, fails, label,
+                                           offer, self._asker, self._snapshot, sheet, self._repair_call)
+            else:
+                future.set_result(pick)
+        with self._lock:
+            self._picks.append(pick)
+            self._results.append(future)
+        future.add_done_callback(lambda _: self._flush())
+
+    def _flush(self) -> None:
+        """Send each pick that stands, in the order of the pick, up to the first pick whose repair still runs."""
+        with self._lock:
+            while self._next < len(self._results) and self._results[self._next].done():
+                pick, fixed = self._picks[self._next], self._results[self._next].result()
+                self._next += 1
+                if pick is None or fixed is None or self._closed:
+                    continue
+                offer = self._offers[label_of(pick.label)]
+                if offer.offer_id not in self._sent:
+                    self._sent.add(offer.offer_id)
+                    self._send(_finder_pick(fixed, offer, self._sheets[offer.offer_id]), self._most)
+
+    def close(self) -> None:
+        """Send nothing more, because the answer of this call failed."""
+        with self._lock:
+            self._closed = True
+
+    def finish(self, out: FinderPickOut) -> list[tuple[PickOut, ShortlistOffer]]:
+        """Check each pick of the whole answer that the stream did not hold whole yet, wait for each repair, send each
+        pick that is left, and give the picks that stand, in the order of the pick."""
+        for pick in out.picks[len(self._picks):]:
+            self._start(pick)
+        stand = []
+        for pick, future in zip(self._picks, self._results, strict=True):
+            fixed = future.result()
+            if pick is not None and fixed is not None:
+                stand.append((fixed, self._offers[label_of(pick.label)]))
+        # A done callback of a repair can run after its result is ready, so this flush sends each pick before the end.
+        self._flush()
+        self.close()
+        return stand
+
+
+def _finder_pick(pick: PickOut, offer: ShortlistOffer, sheet: dict[str, Fact]) -> FinderPick:
+    """One trade of the finder document from a pick that stands."""
+    return FinderPick(offer=offer, lean=pick.lean, case=pick.case, fact_lines=[],
+                      bullets=read_bullets(pick.bullets, sheet))
 
 
 def _fact_lines(offer: ShortlistOffer, sheet: dict[str, Fact]) -> list[str]:
@@ -423,7 +511,7 @@ def _log_checks(stand: list[tuple[PickOut, ShortlistOffer]], near: list[tuple[Ne
 
 def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev: Jev,
                 call: ClaudeCall = finder_pick_call, repair_call: ClaudeCall = finder_repair_call,
-                stage: Stage = quiet, defer: Defer = run_now) -> FinderPicks:
+                stage: Stage = quiet, defer: Defer = run_now, on_pick: OnPick | None = None) -> FinderPicks:
     """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
     NO_PARTNER line when no team passed the partner filter, else the NO_OFFER line.
 
@@ -435,6 +523,9 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     fact lines and the fallback flag.
     `stage` gets one live line before the call and one done line when the picks stand. The default drops them.
     `defer` gets the log-only Jev checks, so a route runs them after its Answer goes out. The default runs them now.
+    With `on_pick`, the pick call streams, and each pick goes to `on_pick` as soon as it stands, with its guards passed
+    or repaired, in the order of the pick, with the most picks of the press (decision 20). The `call` must then take `on_text`, as finder_pick_call does.
+    The FinderPicks that the press gives stay the truth: a pick that went out from a failed answer is not in them.
     """
     if not shortlist.shortlist:
         passed = any(read.passed for read in shortlist.partners)
@@ -443,11 +534,34 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     # A pick with no offer that stands sends no done line, so the site drops this live line with the Answer.
     stage(f"Picking the best {most}" if most > 1 else "Picking the best one", live=True)
     sheets = offer_sheets(shortlist, snapshot, news)
-    out = call_with_retry(
-        call, lambda feedback: build_pick_prompt(shortlist, snapshot, sheets, feedback), FinderPickOut,
-        lambda out: response_failures(out, shortlist), subject="finder pick", log_label="finder pick", logger=log)
-    stand = [] if out is None or not out.picks else _repair_picks(
-        out, check_picks(out, shortlist, snapshot, sheets), shortlist, snapshot, sheets, repair_call)
+    sent: set[str] = set()
+    watches: list[_PickWatch] = []
+    with ThreadPoolExecutor(max_workers=MAX_PICKS) as pool:
+
+        def attempt(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
+            watch = _PickWatch(shortlist, snapshot, sheets, repair_call, pool, on_pick or _drop, sent, most)
+            watches.append(watch)
+            try:
+                # Only a press that sends each pick streams the call, so a call with no stream keeps its plain shape.
+                if on_pick is None:
+                    return call(system, user, output_model)
+                return cast(StreamedCall, call)(system, user, output_model, on_text=watch.feed)
+            except BaseException:
+                watch.close()
+                raise
+
+        def check(out: FinderPickOut) -> list[str]:
+            failures = response_failures(out, shortlist)
+            if failures:
+                watches[-1].close()
+            return failures
+
+        out = call_with_retry(
+            attempt, lambda feedback: build_pick_prompt(shortlist, snapshot, sheets, feedback), FinderPickOut,
+            check, subject="finder pick", log_label="finder pick", logger=log)
+        if out is None and watches:
+            watches[-1].close()
+        stand = [] if out is None or not out.picks else watches[-1].finish(out)
     near = [] if out is None else standing_near(out, {offer.offer_id for _, offer in stand}, shortlist, snapshot,
                                                 sheets)
     if not stand and not near:
@@ -462,8 +576,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     else:
         # No offer is a clear win, so the done line names the ideas that the pick weighed.
         stage(f"Kept {len(near)} ideas to weigh" if len(near) > 1 else "Kept one idea to weigh")
-    picks = [FinderPick(offer=offer, lean=pick.lean, case=pick.case, fact_lines=[],
-                        bullets=read_bullets(pick.bullets, sheets[offer.offer_id])) for pick, offer in stand]
+    picks = [_finder_pick(pick, offer, sheets[offer.offer_id]) for pick, offer in stand]
     short_line = None
     if stand and len(stand) < most and out is not None:
         short_line = out.short_line

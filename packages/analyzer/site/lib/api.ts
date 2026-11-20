@@ -3,10 +3,11 @@
  * Each call goes to the routes of one client, /clients/<slug>/. A failed call throws an ApiError, and the caller decides.
  */
 import { z, type ZodType } from "zod";
-import type { AnalyzeResponse, FindResponse } from "./analyze-types";
+import type { AnalyzeResponse, FindResponse, FinderTrade } from "./analyze-types";
 import {
   analyzeResponseSchema,
   findResponseSchema,
+  finderTradeSchema,
   playerSchema,
   teamSchema,
   teamsResponseSchema,
@@ -178,17 +179,20 @@ export function postAnalyze(
    Limit that a typed question of trade ideas sets. */
 export type FindRequest = { season: number; asker: number; partner?: number; limit?: { aim_position: string } };
 
-/* What the find stream gives the finder before its document: each step line, live while its step works, and the
-   roster id of each team as the search reads it. */
+/* What the find stream gives the finder before its document: each step line, live while its step works, the roster id
+   of each team as the search reads it, and each trade of the pick as soon as it stands, with its place in the pick
+   order and the most trades that the pick can keep (decision 20). */
 export type FindEvents = {
   onStep: (line: string, live: boolean) => void;
   onTeam: (rosterId: number) => void;
+  onTrade?: (index: number, most: number, trade: FinderTrade) => void;
 };
 
 /* One part of the find stream that the site reads. The stream sends more parts, such as the start, and the reader skips them. */
 const findPartSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("data-step"), data: z.object({ line: z.string(), live: z.boolean().optional() }) }),
   z.object({ type: z.literal("data-team"), data: z.object({ roster_id: z.number() }) }),
+  z.object({ type: z.literal("data-trade"), data: z.object({ index: z.number(), most: z.number(), trade: finderTradeSchema }) }),
   z.object({ type: z.literal("data-answer"), data: z.object({ kind: z.literal("find"), document: findResponseSchema }) }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
 ]);
@@ -225,6 +229,7 @@ export async function streamFind(target: ApiTarget, passphrase: string, body: Fi
       const { type, data } = part.data;
       if (type === "data-step") events.onStep(data.line, data.live ?? false);
       if (type === "data-team") events.onTeam(data.roster_id);
+      if (type === "data-trade") events.onTrade?.(data.index, data.most, data.trade);
       if (type === "data-error") throw new ApiError(data.status, data.line, undefined, data.line);
       if (type === "data-answer") {
         void drain(reader);

@@ -10,7 +10,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 20. Acceptance test AT-72.
 
 **Status:** ready-for-agent
 
-- [ ] A test shows that the find stream sends each trade as its own event before the final answer, with the same fields as the trade in the final answer.
-- [ ] A real press for Bo Girds on the local API sends the first trade event before the last one, with the time of each.
-- [ ] A site test shows each card as its event comes, and the count line counts down to none.
-- [ ] A real press on a local build shows the first card before the last, at 375, 768, and 1280 px, in both themes.
+- [x] A test shows that the find stream sends each trade as its own event before the final answer, with the same fields as the trade in the final answer.
+- [x] A real press for Bo Girds on the local API sends the first trade event before the last one, with the time of each.
+- [x] A site test shows each card as its event comes, and the count line counts down to none.
+- [x] A real press on a local build shows the first card before the last, at 375, 768, and 1280 px, in both themes.
