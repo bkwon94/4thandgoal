@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 19. Acceptance tests AT-55 to AT
 
 **Blocked by:** 13
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A real test shows that the mean of the two side orders does not move when the labels `asker` and `partner` swap, or the fair state names no asker.
 - [x] A test shows that a press of team A and a press of team B read the same cached answers for the offers between them.
