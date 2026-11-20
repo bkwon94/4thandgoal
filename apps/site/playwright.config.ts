@@ -3,6 +3,7 @@
  * Run the evidence project with pnpm evidence <slug>.
  */
 import { defineConfig, devices } from "@playwright/test";
+import { shardOfEnv } from "./scripts/playwright-shard.mjs";
 
 // The specs of the floor. The projects "floor" and "floor-timing" split them by the tag @timing.
 const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts", "menu-sheet.spec.ts"];
@@ -14,6 +15,9 @@ export default defineConfig({
   workers: process.env.CI ? 4 : 2,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
+  // CI runs the browser check in a matrix of shards, and each job sets PLAYWRIGHT_SHARD, such as "2/4". Each Playwright run of
+  // the check then takes only its own part of the tests. A shard with no test of a project passes. No value runs every test.
+  shard: shardOfEnv(process.env.PLAYWRIGHT_SHARD),
   reporter: "list",
   use: {
     ...devices["Desktop Chrome"],
@@ -36,11 +40,14 @@ export default defineConfig({
     // The project "floor-timing" runs the tests of the floor that assert a wall-time limit. Run it after the project "floor",
     // with one worker (scripts/check-floor.mjs does both). CPU load from other workers delays a frame, so a limit of 100 ms
     // fails in a parallel run and holds in a run alone.
+    // The one worker still runs one test at a time. fullyParallel lets a shard take single tests, not a whole file, so the
+    // timing tests spread over the shards of CI. Most of them sit in one file.
     {
       name: "floor-timing",
       testMatch: FLOOR_SPECS,
       grep: /@timing/,
-      fullyParallel: false,
+      fullyParallel: true,
+      workers: 1,
     },
     // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
     // It also checks the headshot frames of the analyzer result on the same export.
@@ -56,6 +63,6 @@ export default defineConfig({
     // The end-to-end run of the egg hunt against the local API. It starts no API, unlike the smoke run and the evidence
     // round, so run make -C apps/api api-evidence first, with its default port and origin.
     // One worker, because the two widths claim the same test egg one after the other.
-    { name: "eggs", testMatch: "eggs.spec.ts", fullyParallel: false },
+    { name: "eggs", testMatch: "eggs.spec.ts", fullyParallel: false, workers: 1 },
   ],
 });
