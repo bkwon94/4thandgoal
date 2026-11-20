@@ -31,10 +31,10 @@ The Finder is fair-first: it finds fair trades of four shapes by chart value, an
 - Without a screen, a press has 95k to 242k candidates, and a 5% band leaves 4k to 10k. One fair Noul each costs $0.02 to $0.05 but runs 5 to 11 times over the rate limit. `decisions/13-research-candidate-size-and-cost.md`.
 - The Value screen: four shapes in both directions, the side that gets more players gets 100% to 125% of the other sum, 1-for-1 within 10%, a floor of 5 per player on a multi-player side, no cap. ADR 0038 limits the exception to `no-math-filters`. `decisions/14-grill-value-screen.md`.
 - Jev questions in two steps: fair on every offer, asked in both side orders and averaged in code, with chart values in the state; then need and gain on the offers that pass. A clear no on fair or on a gain drops the offer. Need is a reason. The Spares tree builds no offers; its answers are reasons. `decisions/15-grill-jev-questions-per-shape.md`.
+- The Value screen is the one source of offers; the targets step and the wider pass go. Spares tree yeses become pick sheet facts. Step 2 gets the best offer per partner and shape direction. The score is fair alone. `varied()` puts the best per shape, then per partner, then per player first, in a Shortlist of 10. One shared pacer per API process. `decisions/16-grill-merge-and-variety.md`.
 
 ## NOT YET SPECIFIED
 
-- How do the Spares tree answers attach to a Value offer, and how does the Shortlist spread and order the offers? `decisions/16-grill-merge-and-variety.md`.
 - How do the new shapes look in the pick, the wait, and the cards? `decisions/17-prototype-shape-cards.md`.
 - Which acceptance tests change? `decisions/18-spec-changed-acceptance-tests.md`.
 
