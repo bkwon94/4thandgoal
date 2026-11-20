@@ -5,7 +5,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "smol-toml";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { brandCss, colorsOf, type BrandFile } from "@cpc/design/brand/brand";
 import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 

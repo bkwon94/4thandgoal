@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { UIMessage } from "ai";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { personalResultSchema, personalViewOf } from "./personal-stream";
 
 /* The data of the `data-block` part of the recorded stream of Weak spots, which predates the kind. */

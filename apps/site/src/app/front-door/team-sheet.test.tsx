@@ -3,7 +3,7 @@
  * A drag down closes the sheet on a change of team, and the sheet of the first visit has no close of any kind.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 import type { DoorTeam } from "@/lib/data/front-door-data";

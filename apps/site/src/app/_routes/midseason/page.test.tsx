@@ -3,7 +3,7 @@
  * They read what a reader sees: a static param per season with the file, and the report of that season.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import fixture from "@cpc/midseason/fixtures/midseason.json";
 import simFixture from "@cpc/sim/fixtures/sim.json";
 import { publicOver, removePublics } from "./temp-public";

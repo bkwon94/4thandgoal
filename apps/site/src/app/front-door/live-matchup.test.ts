@@ -2,7 +2,7 @@
  * Tests for the live card of Your next matchup: the read of the API stream that the API test recorded over the live
  * Sleeper week 10 of cpc, and the line of its read time.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import stream from "./fixtures/next-matchup-stream.json";
 import { liveMatchupOf, readTimeLine } from "./live-matchup";
 

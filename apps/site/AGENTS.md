@@ -40,10 +40,10 @@ The tests move to `bun test` one folder at a time (ADR 0038). Until the last mov
 7. Remove each `vi.unstubAllGlobals()` and `vi.unstubAllEnvs()`. The preload restores each spy and each stub after each test.
 8. Move each spy and each stub at the top level of a file into `beforeEach`. The restore after the first test removes a top-level one.
 9. Change the setup of a test with `vi.resetModules` or `vi.hoisted`. Bun has neither call.
-10. Add the folder to `BUN_TEST_DIRS` in `scripts/bun-test-files.mjs`.
+10. Add the folder to `BUN_TEST_DIRS` in `scripts/bun-test-files.mjs`. If a file of the folder stays on Vitest, add each moved file instead.
 11. Run `pnpm test:bun`. Compare the count of each file with step 1, and name each change in the ticket.
 
-The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. A test that depends on jsdom gets a fix for happy-dom. If it needs a real jsdom feature, the ticket names it for Brian.
+The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. A test that depends on jsdom gets a fix for happy-dom. If it needs a real jsdom feature, the ticket names it for Brian.
 
 ## Rules
 

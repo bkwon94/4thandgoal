@@ -4,7 +4,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { answerBlockOf, answerBlockSchema, blockText } from "./answer-block";
 
 /* The data of the `data-block` part of a recorded stream. */
@@ -34,7 +34,7 @@ describe("the block union of the site", () => {
     ["moves-feed", "feed"],
     ["moves-feed-week-6", "feed"],
   ])("passes the %s block of a recorded free answer as the kind %s", (name, kind) => {
-    expect(answerBlockOf(recordedBlock(name))?.kind).toBe(kind);
+    expect<string | undefined>(answerBlockOf(recordedBlock(name))?.kind).toBe(kind);
   });
 
   it("passes no data part with a kind outside the union or with no kind", () => {

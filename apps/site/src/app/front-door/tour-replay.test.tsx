@@ -3,7 +3,8 @@
  * Each test renders the page with the fixed copy of the published data of cpc, as a browser that already saw the Tour.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { stubPhone } from "../../../test/phone";
 import { readFixtureSite } from "@/fixtures/sites";
 import AnalyzePage from "@/app/_routes/analyzer/page";
 import HomePage from "./door-page";
@@ -11,7 +12,10 @@ import HomePage from "./door-page";
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
+
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
 
 const BO_GIRDS = "6";
 

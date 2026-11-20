@@ -3,7 +3,7 @@
  * it when it is not Your team. Also the request of Refresh for a trade Answer, and the request of a typed question
  * of trade ideas.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { ideasRequestOf, tradeRequestOf } from "./ask-thread";
 import ideasStream from "./fixtures/trade-ideas-stream.json";
 import { personalName } from "./thread";

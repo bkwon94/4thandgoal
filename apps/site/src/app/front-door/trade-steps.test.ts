@@ -2,7 +2,7 @@
  * Tests for the steps of a trade stream: a live line names the stage at work, and its done line takes its place.
  * A live line with no done line drops when the Answer comes.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { addStep, endSteps, noSteps } from "./trade-api";
 
 describe("the steps of a trade stream", () => {

@@ -6,17 +6,16 @@ import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { copyFileSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
+import { stubGlobal } from "../../../../test/stubs";
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 import { YOUR_TEAM_KEY } from "@cpc/analyzer/lib/your-team";
 import WeekPage from "./page";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the spy, because the preload restores each spy after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 
 /* The hero and the eight chapters in the order of the spec (decision 05): the id each one sets and the words of its heading.
@@ -42,27 +41,6 @@ function setReducedMotion(on: boolean) {
   motionChange?.();
 }
 
-/* jsdom has no matchMedia. Framer Motion reads it once per file and then listens for a change, so the stub runs at the top. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      get matches() {
-        return reduceMotion && query.includes("prefers-reduced-motion");
-      },
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: (_type: string, listener: () => void) => {
-        motionChange = listener;
-      },
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
-
 /* jsdom has no IntersectionObserver. The stub keeps each observer and its targets, so a test reports a chapter in or out of view. */
 const observers = new Set<ObserverStub>();
 
@@ -83,7 +61,31 @@ class ObserverStub {
   }
 }
 
-vi.stubGlobal("IntersectionObserver", ObserverStub);
+/* The stubs of matchMedia and IntersectionObserver. Framer Motion reads matchMedia and then listens for a change, and
+   the stub of IntersectionObserver keeps each observer, so a test reports a chapter in or out of view. The preload
+   restores each stub after each test, so each test sets them again. */
+beforeEach(() => {
+  stubGlobal(
+    "matchMedia",
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        get matches() {
+          return reduceMotion && query.includes("prefers-reduced-motion");
+        },
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: (_type: string, listener: () => void) => {
+          motionChange = listener;
+        },
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as unknown as MediaQueryList,
+  );
+  stubGlobal("IntersectionObserver", ObserverStub);
+});
 
 /* Reports to each observer of the chapter with this id that the chapter is in or out of view, as a scroll does. */
 function reportChapter(id: string, inView: boolean) {
@@ -122,13 +124,9 @@ afterEach(() => {
   cleanup();
   setReducedMotion(false);
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
 });
 
-afterAll(() => {
-  vi.unstubAllGlobals();
-});
+afterAll(() => {});
 
 describe("WeekPage chapters", () => {
   it("renders the nine chapters in the report's order with their ids", async () => {
@@ -367,9 +365,8 @@ async function publicWithWeeks() {
       join(season, week, "page.json"),
     );
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
   return (await import("./page")).default;
 }
 
@@ -433,8 +430,7 @@ async function renderWeekWithNoMedian() {
   mkdirSync(folder, { recursive: true });
   const { median: _median, ...blurbs } = JSON.parse(weekPageJson()).blurbs;
   writeFileSync(join(folder, "page.json"), weekPageJson({ median: null, blurbs }));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
   const Page = (await import("./page")).default;
   render(await Page({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
 }
@@ -473,8 +469,7 @@ async function publicWithWeekSim() {
   mkdirSync(folder, { recursive: true });
   writeFileSync(join(folder, "page.json"), weekPageJson({ week: 10 }));
   writeFileSync(join(folder, "sim.json"), JSON.stringify(weekSimJson));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
   return (await import("./page")).default;
 }
 

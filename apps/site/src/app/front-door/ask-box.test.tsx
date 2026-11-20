@@ -3,7 +3,7 @@
  * carries data-keyboard, and it clears on blur. jsdom has no keyboard, so a real phone run checks the place above it.
  */
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { AskBox } from "./ask-box";
 
 afterEach(() => cleanup());
@@ -58,7 +58,7 @@ describe("AskBox and the keyboard", () => {
   /* A sent question closes the keyboard, so the Answer shows. The blur comes after the submit, so the press of ticket 34
      still sends on its first tap (ticket 37). */
   it("closes the keyboard once a question goes", () => {
-    const onAsk = vi.fn();
+    const onAsk = mock();
     render(<AskBox onAsk={onAsk} />);
     act(() => field().focus());
     fireEvent.change(field(), { target: { value: "Who should I start?" } });

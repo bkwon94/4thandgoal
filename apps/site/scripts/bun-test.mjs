@@ -11,7 +11,9 @@ const SITE = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 
 // Bun reads a path that starts with "../" as a path, not as a name filter, so each folder goes from apps/site to the root.
 const paths = BUN_TEST_DIRS.map((dir) => `../../${dir}`);
-const run = spawnSync("bun", ["test", ...paths, ...process.argv.slice(2)], {
+// --isolate gives each file a fresh global and module registry, as Vitest does. Without it, a file inherits the DOM
+// nodes, module state, and module mocks of the files before it, and a test passes or fails by the order of the run.
+const run = spawnSync("bun", ["test", "--isolate", ...paths, ...process.argv.slice(2)], {
   cwd: SITE,
   stdio: "inherit",
 });

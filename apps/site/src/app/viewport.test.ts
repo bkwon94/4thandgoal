@@ -2,7 +2,7 @@
  * Tests for the viewport of every page, which the root layout exports. An iPhone gives a page its safe area only with viewport-fit=cover, so
  * the ask box of the front door can keep clear of the home bar (AT-47).
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { SITE_VIEWPORT as viewport } from "./viewport";
 
 describe("the viewport of the root layout", () => {

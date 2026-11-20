@@ -3,33 +3,28 @@
  * the front door. Each test renders the page with the fixed copy of the published data of cpc (ticket 43 of front-door).
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { readFixtureSite } from "@/fixtures/sites";
 import { clientValues } from "@/generated/client-values";
 // The jsdom stand-ins that the Drawer of the team sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
 beforeEach(() => readFixtureSite("cpc"));
+
+/* The flag of the build, so each test sets the flag back after it changes it. */
+const builtFrontDoor = clientValues.frontDoor;
 
 afterEach(() => {
   cleanup();
-  vi.doUnmock("@/generated/client-values");
-  vi.restoreAllMocks();
+  clientValues.frontDoor = builtFrontDoor;
   localStorage.clear();
 });
 
-/* The page at / of a build with the flag front_door set to `frontDoor`. */
+/* The page at / of a build with the flag front_door set to `frontDoor`. The page reads the flag when it renders, so
+   the test sets the flag on the client values that the page imports. */
 async function homeWithFlag(frontDoor: boolean) {
-  const values = await vi.importActual<typeof import("@/generated/client-values")>(
-    "@/generated/client-values",
-  );
-  vi.resetModules();
-  readFixtureSite("cpc");
-  vi.doMock("@/generated/client-values", () => ({
-    clientValues: { ...values.clientValues, frontDoor },
-  }));
+  clientValues.frontDoor = frontDoor;
   return (await import("./page")).default;
 }
 

@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import type { EggCheck } from "@cpc/eggs/lib/api";
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { listenForEggs, SELECT_SETTLE_MS, TAP_GAP_MS } from "@cpc/eggs/listener/listener";
@@ -19,38 +19,9 @@ import type { AnalyzeResponse } from "@cpc/analyzer/lib/analyze-types";
 import NotFound from "../../not-found";
 import { publicOver, removePublics } from "../midseason/temp-public";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the spy, because the preload restores each spy after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-
-/* jsdom has no matchMedia and no IntersectionObserver. Framer Motion and Reveal read them. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
-vi.stubGlobal(
-  "IntersectionObserver",
-  class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-    takeRecords() {
-      return [];
-    }
-  },
-);
 
 let sent: EggCheck[];
 let stop: (() => void) | undefined;
@@ -64,8 +35,7 @@ afterEach(() => {
   stop = undefined;
   cleanup();
   removePublics();
-  vi.useRealTimers();
-  vi.restoreAllMocks();
+  jest.useRealTimers();
 });
 
 /* Starts the listener of the egg hunt on the page, as the hunt does. */
@@ -87,7 +57,7 @@ function tap(element: Element, gap = 100) {
   fireEvent.pointerUp(element, { isPrimary: true });
   fireEvent.click(element);
   act(() => {
-    vi.advanceTimersByTime(gap);
+    jest.advanceTimersByTime(gap);
   });
 }
 
@@ -102,7 +72,6 @@ const WEEK_8 = JSON.parse(
 
 describe("the targets of the week page", () => {
   async function renderWeek8() {
-    vi.resetModules();
     const { default: WeekPage } = await import("../week/page");
     render(await WeekPage({ params: Promise.resolve({ season: "2026", week: "week-08" }) }));
   }
@@ -125,7 +94,7 @@ describe("the targets of the week page", () => {
 
   it("gives the recap line of each game a stable id once its card opens, and a normal tap sends no check (AT-25)", async () => {
     await renderWeek8();
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     listen("/2026/week-08/");
     const games = within(document.getElementById("matchups")!).getAllByRole("button");
     tap(games[0], TAP_GAP_MS + 1);
@@ -136,7 +105,7 @@ describe("the targets of the week page", () => {
 
   it("sends one check for a tap combo with the trail of the two taps before the double-tap (AT-28)", async () => {
     await renderWeek8();
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     listen("/2026/week-08/");
     const [a, b] = idsOf("number");
     const c = idsOf("award")[0];
@@ -178,7 +147,7 @@ describe("the targets of the midseason report", () => {
 
   it("names the open Show all of a long list among the open states", async () => {
     await renderReport();
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     listen("/midseason/2026/");
     const showAll = screen.getAllByRole("button", { name: /^Show all/ })[0];
     tap(showAll, TAP_GAP_MS + 1);
@@ -192,11 +161,11 @@ describe("the targets of the midseason report", () => {
 
   it("sends one check with the hold for a hold of 3.5 seconds on the Luck cell of Lil Fridge (AT-27)", async () => {
     await renderReport();
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     listen("/midseason/2026/");
     fireEvent.pointerDown(target("luck-3"), { isPrimary: true });
     act(() => {
-      vi.advanceTimersByTime(3500);
+      jest.advanceTimersByTime(3500);
     });
     fireEvent.pointerUp(target("luck-3"), { isPrimary: true });
     // The chosen chip of the Top 10 is an open state, so the check names it.
@@ -212,7 +181,7 @@ describe("the targets of the midseason report", () => {
 
   it("sends one check with the word and the id of the blurb for one selected word (AT-29)", async () => {
     await renderReport();
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     listen("/midseason/2026/");
     const blurb = target(idsOf("blurb")[0]);
     const text = blurb.firstChild!;
@@ -224,9 +193,10 @@ describe("the targets of the midseason report", () => {
     document.getSelection()!.addRange(range);
     fireEvent(document, new Event("selectionchange"));
     act(() => {
-      vi.advanceTimersByTime(SELECT_SETTLE_MS + 1);
+      jest.advanceTimersByTime(SELECT_SETTLE_MS + 1);
     });
-    expect(sent).toEqual([
+    // The types of `bun:test` hold the expected value to the type of `sent`, and the id of a node may be null.
+    expect<unknown>(sent).toEqual([
       {
         page: "/midseason/2026/",
         target: blurb.getAttribute("data-stable-id"),
@@ -240,23 +210,25 @@ describe("the targets of the midseason report", () => {
 
 describe("the targets of the sim replay", () => {
   it("counts 2 taps on one standings row as one double-tap while the frame of the replay changes (AT-30)", () => {
-    vi.useFakeTimers();
-    render(<SimReplay sim={simFixture} pick={() => 0} />);
+    jest.useFakeTimers();
+    const { container } = render(<SimReplay sim={simFixture} pick={() => 0} />);
     listen("/midseason/2026/");
     fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
     const first = beatsOf(replaySeason(simFixture, 0))[0];
     const row = () =>
       target(`sim-row-${replaySeason(simFixture, 0).weeks[0].standings[0].roster_id}`);
-    const frame = () => screen.getByRole("status").textContent;
+    // The replay holds its own status line. The run keeps one announcer of ui-sdk in the body from an earlier file, so
+    // the query reads only the replay.
+    const frame = () => within(container).getByRole("status").textContent;
     act(() => {
-      vi.advanceTimersByTime(first.ms - 150);
+      jest.advanceTimersByTime(first.ms - 150);
     });
     const before = frame();
     tap(row(), 200);
     // The beat ends inside the gap, so the second tap lands on the next frame.
     expect(frame()).not.toBe(before);
     tap(row(), TAP_GAP_MS + 1);
-    expect(sent.map((check) => [check.target, check.action])).toEqual([
+    expect<unknown>(sent.map((check) => [check.target, check.action])).toEqual([
       [row().getAttribute("data-stable-id"), "tap2"],
     ]);
   });
@@ -268,7 +240,6 @@ describe("the targets of a manager page", () => {
   it("gives each result chip, odds tile, roster row, move row, and best add row a stable id", async () => {
     const manager = MANAGERS.managers.find((entry: { roster_id: number }) => entry.roster_id === 3);
     // The readers read the working folder when they load, so they load again after the temp folder of a report test.
-    vi.resetModules();
     const { default: ManagerPage } = await import("../managers/manager-page");
     render(await ManagerPage({ params: Promise.resolve({ season: "2026", roster: "3" }) }));
     expect(idsOf("result")).toHaveLength(manager.weeks.length);
@@ -283,7 +254,6 @@ describe("the targets of a manager page", () => {
 
 describe("the targets of the rankings page", () => {
   it("gives the 01 of the hero, each ladder tile, and each movement row a stable id", async () => {
-    vi.resetModules();
     const { default: RankingsPage } = await import("../rankings/page");
     render(<RankingsPage />);
     expect(idsOf("rank-hero")).toHaveLength(1);
@@ -327,7 +297,7 @@ describe("the targets of the analyzer result", () => {
   it("sends the two teams of the trade and the answer on a double-tap of the Lean word (AT-54)", () => {
     const doc = analyzeResponse as AnalyzeResponse;
     render(<AnalyzeResult doc={doc} />);
-    vi.useFakeTimers();
+    jest.useFakeTimers();
     listen("/analyzer/");
     tap(target("lean-word"));
     tap(target("lean-word"), TAP_GAP_MS + 1);

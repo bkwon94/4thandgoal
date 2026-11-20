@@ -4,7 +4,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 const GLOBALS = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
 

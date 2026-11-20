@@ -24,6 +24,7 @@ export default defineConfig({
       "apps/site/scripts/**/*.test.mjs",
       "packages/*/site/**/*.test.{ts,tsx}",
     ],
-    exclude: [...configDefaults.exclude, ...BUN_TEST_DIRS.map((dir) => `${dir}/**`)],
+    // An entry is a folder or one test file, so the exclude names the entry itself and each file under it.
+    exclude: [...configDefaults.exclude, ...BUN_TEST_DIRS.flatMap((dir) => [dir, `${dir}/**`])],
   },
 });
