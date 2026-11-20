@@ -130,10 +130,12 @@ function Grid({
         <span className="col-start-2 row-span-2 text-row leading-tight font-bold text-pretty">{PASSED}</span>
       ) : (
         <>
+          {/* The eyebrow takes the meta size, the smallest size of the scale over the floor of 11px for other text at
+              every tier. The label size is 10px on a phone, under the floor. */}
           <span
             data-deadline-eyebrow
             className={cn(
-              "col-start-2 row-start-1 font-mono text-label leading-tight font-bold tracking-caps uppercase",
+              "col-start-2 row-start-1 font-mono text-meta leading-tight font-bold tracking-caps uppercase",
               last ? "deadline-shimmer text-on-dark" : "text-mute",
             )}
           >
