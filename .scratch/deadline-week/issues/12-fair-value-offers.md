@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-55, AT-56, AT-57, AT-
 
 **Blocked by:** 11
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A real press for Bo Girds and every team, on the 2026 week 11 snapshot, builds Value offers of all 7 shape directions.
 - [x] Every Value offer of that press is inside the band with its direction, and no player under 5 trade value sits on a side of 2 or 3 players.
