@@ -416,7 +416,7 @@ function NearFold({ doc, after }: { doc: FindResponse; after: number }) {
     <motion.div
       initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.5, ease: EASE_OUT, delay: after * 0.08 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: after * STAGGER_S }}
     >
       <NearIdeas near={doc.near.slice(0, MAX_NEAR)} asker={doc.trade_pair.asker.roster_id} />
     </motion.div>
