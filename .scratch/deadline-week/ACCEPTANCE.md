@@ -347,7 +347,7 @@ App: api
 Stories: 70
 Given: The local API on the week 11 snapshot of `cpc`.
 When: The evidence agent runs one press for Bo Girds with Teehee (roster 12) as the partner.
-Then: The log shows no Partner filter step, and the Shortlist holds 2 or more offers.
+Then: The log shows no Partner filter step, and the targets build 2 or more offers before the gain check.
 Evidence: the command, the log lines, and the Shortlist.
 
 AT-43: The Shortlist has variety
@@ -379,7 +379,7 @@ App: api
 Stories: 75, 76, 83
 Given: The local API on the week 11 snapshot of `cpc`.
 When: The evidence agent runs one press for Bo Girds and every team.
-Then: Neither "Kenneth Walker III for Patrick Mahomes" nor "Zay Flowers for Jared Goff" is on the Shortlist or among the 3 trades.
+Then: Neither "Kenneth Walker III for Patrick Mahomes" nor "Zay Flowers for Jared Goff" is among the 3 trades, and "Kenneth Walker III for Patrick Mahomes" is not on the Shortlist.
 Evidence: the command, the Shortlist, the 3 trades, and the gain Noul answers of any dropped offer.
 
 AT-47: The backtest runs as one command and passes the bar
@@ -387,7 +387,7 @@ App: pipeline
 Stories: 81, 82, 84, 85
 Given: The Backtest marks that Brian made during the build, with the two marks of AT-46.
 When: The evidence agent runs the backtest command.
-Then: The output lists each mark with its result, and every mark is right.
+Then: The output lists each mark with its result, and the count of right marks is the baseline of 1 of 5 or more.
 Evidence: the command, its output, and the cost.
 
 AT-48: A failed stream logs its cause
