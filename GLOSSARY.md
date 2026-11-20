@@ -73,7 +73,11 @@ _Avoid_: Dropdown, chooser, selector, list
 
 **Swap card**:
 The chapter of the result that shows what every side gives and gets.
-_Avoid_: Trade summary, exchange, ledger
+_Avoid_: Trade summary, exchange, ledger, tally
+
+**Offer tally**:
+The block of a Finder card that shows one offer in two columns, "You get" and "You give". Each player row shows the name, the position, the NFL team, and the rank. Under each column sits its trade value total. One gap line under the totals reads, for example, "You get 9% more trade value". The code names the block `Ledger`. It is not the ledger of the Managers index.
+_Avoid_: Ledger, swap card, offer card
 
 **Manager page**:
 The page for one team of the league, for one season, with its grade, odds, moves, and performers.
@@ -662,7 +666,7 @@ _Avoid_: finder result, suggestions
 **Inner word**:
 A word of the code that a manager does not use: "trade value", "highest-value", "best lineup", "the line",
 "hole", "return bet", "one step", "no step", "takes RB", "takes WR", "takes TE", "takes QB", and "sits on the
-bench". No bullet and no case holds one. "The better player" replaces "the highest-value player". "Star",
+bench". No bullet and no case holds one. The Offer tally is the one place that shows "trade value". "The better player" replaces "the highest-value player". "Star",
 "opportunity", and "win-now move" are words a manager uses, so they are not inner words.
 _Avoid_: banned word (alone)
 
@@ -699,7 +703,7 @@ _Avoid_: missing, late
 
 **Trade value**:
 A player's worth on the half-PPR redraft trade value chart for the week of the trade. It is a fact the
-Advisor weighs, and the words never appear on a page.
+Advisor weighs. The words show on a page in one place: the two totals and the gap line of the Offer tally.
 _Avoid_: value (alone), chart value, price
 
 **Chart week**:
