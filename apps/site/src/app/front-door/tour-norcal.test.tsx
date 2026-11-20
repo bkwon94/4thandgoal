@@ -3,14 +3,15 @@
  * Girds is roster 7, and the league mate picks Bo Girds on a new browser. The Stops show the same copy as on cpc.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import HomePage from "./door-page";
 // The jsdom stand-ins of the browser APIs that the popover and the menu sheet need.
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the norcal data, so a weekly publish never changes these tests. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("norcal"));
+beforeEach(() => readFixtureSite("norcal"));
+afterEach(restoreFixtureSite);
 
 /* The copy of the Stops, word for word from the table of the PRD (decision 03). */
 const COPY = [
@@ -42,7 +43,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   localStorage.clear();
-  vi.restoreAllMocks();
 });
 
 describe("the Tour of the norcal front door", () => {

@@ -6,14 +6,17 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
+import { stubPhone } from "../../../../test/phone";
 import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
 
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
+
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
   // A chip click sets the hash, so a test must not leak its week into the next test.
   window.history.replaceState(null, "", "/");
 });
@@ -30,9 +33,8 @@ async function pageOver(rankings?: unknown) {
   if (rankings !== undefined) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
   return (await import("./page")).default;
 }
 

@@ -3,8 +3,10 @@
  * with Bo Girds as Your team, and reads what a league mate sees: the Stop card, its copy, its count, and the seen key.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { stubPhone } from "../../../test/phone";
+import { stubGlobal } from "../../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import { StopCard, StopCardContent, StopCardTitle } from "@cpc/design/ui/stop-card";
 import HomePage from "./door-page";
 import { STOPS, dismissStep } from "./tour";
@@ -12,7 +14,11 @@ import { STOPS, dismissStep } from "./tour";
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+beforeEach(() => readFixtureSite("cpc"));
+
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
+afterEach(restoreFixtureSite);
 
 const BO_GIRDS = "6";
 
@@ -51,8 +57,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   localStorage.clear();
-  vi.restoreAllMocks();
-  vi.unstubAllGlobals();
 });
 
 const findCard = (name: string) => screen.findByRole("dialog", { name }, { timeout: 2000 });
@@ -154,10 +158,7 @@ describe("the Tour of the front door", () => {
 
   it("shows no Tour when the read of the seen key throws, and the Suggestions still render (AT-26)", async () => {
     const read = Storage.prototype.getItem;
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(function (
-      this: Storage,
-      key: string,
-    ) {
+    spyOn(Storage.prototype, "getItem").mockImplementation(function (this: Storage, key: string) {
       if (key === "cpc.tour-seen") throw new Error("SecurityError");
       return read.call(this, key);
     });
@@ -208,7 +209,7 @@ describe("the Stops of the Tour", () => {
       'button[aria-label^="Your team:"]',
       'button[aria-label="Open the menu"], nav[aria-label="Site menu"]',
     ]);
-    expect(STOPS.map(({ header, line }) => ({ header, line }))).toEqual(COPY);
+    expect<unknown>(STOPS.map(({ header, line }) => ({ header, line }))).toEqual(COPY);
   });
 
   it("maps each refused dismiss: a press outside goes on, or ends at Stop 4, and Escape and Back count as Skip (AT-8, AT-10, AT-11)", () => {
@@ -247,7 +248,7 @@ function stubCloseWatcher() {
       this.destroyed = true;
     }
   }
-  vi.stubGlobal("CloseWatcher", FakeCloseWatcher);
+  stubGlobal("CloseWatcher", FakeCloseWatcher);
   return {
     live: () => {
       const watcher = made.filter((one) => !one.destroyed).at(-1);
@@ -269,7 +270,7 @@ describe("the Stop card", () => {
 
   it("sends the reason back to onDismissAttempt on a close request of the browser (AT-11)", async () => {
     const watchers = stubCloseWatcher();
-    const onDismissAttempt = vi.fn();
+    const onDismissAttempt = mock();
     renderCard(onDismissAttempt);
     await screen.findByRole("dialog", { name: "A Stop" });
     act(() => watchers.live().close());
@@ -278,7 +279,7 @@ describe("the Stop card", () => {
 
   it("counts an Escape once, though Chromium sends a close request right after the keydown (AT-10)", async () => {
     const watchers = stubCloseWatcher();
-    const onDismissAttempt = vi.fn();
+    const onDismissAttempt = mock();
     renderCard(onDismissAttempt);
     const card = await screen.findByRole("dialog", { name: "A Stop" });
     act(() => {

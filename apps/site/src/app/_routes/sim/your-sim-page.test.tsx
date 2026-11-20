@@ -4,7 +4,7 @@
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { weekSim } from "@cpc/sim/fixtures/sim";
 import { getYourTeam, setYourTeam } from "@/app/front-door/your-team-store";
 import { YourSimPage } from "./your-sim-page";

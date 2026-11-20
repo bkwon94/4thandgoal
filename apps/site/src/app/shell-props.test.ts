@@ -4,19 +4,22 @@
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { createElement, type ReactElement } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { stubPhone } from "../../test/phone";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import { TopBand } from "@cpc/design/shell/top-band";
 import type { MenuLinks } from "@/lib/client-values";
 import "@cpc/design/ui/sheet-jsdom";
 import { BandPart } from "./_routes/eggs/band";
 import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
+
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {

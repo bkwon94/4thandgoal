@@ -6,16 +6,16 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "smol-toml";
 import { cleanup, render, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { fixturePublished, readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import type { MenuItem, PackageName } from "@/lib/client-values";
 import { clientValues } from "@/generated/client-values";
 import { menuLinks, siteLines } from "@/generated/registry";
 import { SiteAnswer } from "./front-door/site-answer";
 import { sitePages } from "./site-pages";
 
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 afterEach(() => cleanup());
 
 const { items } = clientValues.menu;
@@ -112,7 +112,6 @@ describe("the list view of NorCal (AT-13)", () => {
   it("holds only the pages of the NorCal Menu, plus its report and its sim, and each link opens a NorCal page", async () => {
     readFixtureSite("norcal");
     // The readers of public/ read the working folder when they load, so reset them to read the NorCal data.
-    vi.resetModules();
     const { sitePages: pagesOf } = await import("./site-pages");
     const { menuLinks: links, siteLines: lines } = await import("@/generated/registry");
     const { SiteAnswer: Answer } = await import("./front-door/site-answer");

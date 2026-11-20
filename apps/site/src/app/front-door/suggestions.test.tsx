@@ -5,7 +5,7 @@
  * in the ask box (ticket 37).
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { Suggestions } from "./suggestions";
 
 afterEach(() => cleanup());
@@ -28,7 +28,7 @@ describe("Suggestions", () => {
   });
 
   it("shows the whole fact and Open on the first tap, and opens the Topic on the second tap (AT-43)", () => {
-    const onPick = vi.fn();
+    const onPick = mock();
     render(
       <Suggestions
         picks={["week_recap", "power_rankings"]}
@@ -52,15 +52,16 @@ describe("Suggestions", () => {
   });
 
   it("opens the Topic on a tap on the strip", () => {
-    const onPick = vi.fn();
+    const onPick = mock();
     render(<Suggestions picks={["week_recap"]} {...props} facts={FACTS} onPick={onPick} />);
     fireEvent.click(screen.getByRole("button", { name: /^Week recap/ }));
     fireEvent.click(screen.getByRole("button", { name: "Open Week recap" }));
-    expect(onPick).toHaveBeenCalledExactlyOnceWith("week_recap");
+    expect(onPick).toHaveBeenCalledTimes(1);
+    expect(onPick).toHaveBeenCalledWith("week_recap");
   });
 
   it("moves the strip to the fact of another chip on its tap, and opens no Topic (AT-44)", async () => {
-    const onPick = vi.fn();
+    const onPick = mock();
     render(
       <Suggestions
         picks={["week_recap", "power_rankings"]}
@@ -135,7 +136,7 @@ describe("Suggestions", () => {
   });
 
   it("closes the keyboard after a row of More or the second tap on a chip acts", () => {
-    const onPick = vi.fn();
+    const onPick = mock();
     const { rerender } = render(
       <>
         <input aria-label="Ask a question" />

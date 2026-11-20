@@ -6,7 +6,8 @@ import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 
 /* Bo Girds, the team of the acceptance tests, in each league. */
@@ -16,9 +17,9 @@ type League = keyof typeof BO_GIRDS;
 const roots: string[] = [];
 
 beforeEach(() => {
-  vi.stubGlobal(
+  stubGlobal(
     "fetch",
-    vi.fn(async () => new Response("", { status: 404 })),
+    mock(async () => new Response("", { status: 404 })),
   );
 });
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
@@ -29,8 +30,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 /* The front door over week 9 of one league, with Bo Girds as Your team. With `sim`, the season holds the real week sim
@@ -46,9 +45,8 @@ async function doorOf(league: League, { sim = false } = {}) {
     mkdirSync(join(root, "public", "2026", "week-10"), { recursive: true });
     writeFileSync(join(root, "public", "2026", "week-10", "sim.json"), JSON.stringify(weekSimJson));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }

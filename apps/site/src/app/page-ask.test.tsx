@@ -4,21 +4,25 @@
  * call of the page, such as the egg board, gets a 404, so only the ask route counts.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import { stubPhone } from "../../test/phone";
+import { stubGlobal } from "../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 import { REFUSE_LINE } from "./front-door/ask-thread";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
+afterEach(restoreFixtureSite);
+
 const PASSPHRASE = "cornerstone-test";
-const fetchStub = vi.fn();
+const fetchStub = mock();
 /* The answers of the ask route, in the order of the calls. */
 const replies: Response[] = [];
 
@@ -69,7 +73,7 @@ beforeEach(() => {
       ? (replies.shift() ?? new Response("", { status: 500 }))
       : new Response("", { status: 404 }),
   );
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -79,7 +83,6 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   replies.length = 0;
-  vi.unstubAllGlobals();
 });
 
 describe("the ask box of Lil Fridge", () => {

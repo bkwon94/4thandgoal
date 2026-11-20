@@ -4,7 +4,7 @@
  */
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 import { publicOver, removePublics } from "../midseason/temp-public";
 

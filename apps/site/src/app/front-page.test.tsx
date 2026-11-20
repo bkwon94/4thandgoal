@@ -6,19 +6,24 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import {
+  type FixtureClient,
+  fixturePublished,
+  readFixtureSite,
+  restoreFixtureSite,
+} from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
 import { week8 } from "@cpc/week/fixtures/week-page";
 import { season } from "@/lib/config";
 import HomePage from "./front-page";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 /* The temp public/ folders that homeOver made, so each test removes its own folder. */
 const roots: string[] = [];
@@ -26,10 +31,8 @@ const roots: string[] = [];
 afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.unstubAllGlobals();
   localStorage.clear();
   sessionStorage.clear();
-  vi.restoreAllMocks();
 });
 
 describe("HomePage", () => {
@@ -172,8 +175,8 @@ describe("HomePage", () => {
     const teams = [
       { roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [] },
     ];
-    const fetchStub = vi.fn().mockResolvedValue(new Response(JSON.stringify({ teams })));
-    vi.stubGlobal("fetch", fetchStub);
+    const fetchStub = mock().mockResolvedValue(new Response(JSON.stringify({ teams })));
+    stubGlobal("fetch", fetchStub);
     render(<HomePage />);
 
     // The list renders without a wait on the fetch.
@@ -186,8 +189,8 @@ describe("HomePage", () => {
   });
 
   it("skips the fetch with no passphrase", () => {
-    const fetchStub = vi.fn();
-    vi.stubGlobal("fetch", fetchStub);
+    const fetchStub = mock();
+    stubGlobal("fetch", fetchStub);
     render(<HomePage />);
     expect(fetchStub).not.toHaveBeenCalled();
   });
@@ -239,9 +242,8 @@ function tempRoot(): string {
 }
 
 async function homeAt(root: string) {
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
   return (await import("./front-page")).default;
 }
 

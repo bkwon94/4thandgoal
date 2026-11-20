@@ -6,7 +6,8 @@ import { cpSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
 import liveStream from "./front-door/fixtures/next-matchup-stream.json";
 
 /* Bo Girds, the team of the acceptance tests, in each league. */
@@ -16,9 +17,9 @@ type League = keyof typeof BO_GIRDS;
 const roots: string[] = [];
 
 beforeEach(() => {
-  vi.stubGlobal(
+  stubGlobal(
     "fetch",
-    vi.fn(async () => new Response("", { status: 404 })),
+    mock(async () => new Response("", { status: 404 })),
   );
 });
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
@@ -29,8 +30,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 /* The front door over week 9 of one league, with Bo Girds as Your team. */
@@ -41,9 +40,8 @@ async function doorOf(league: League) {
   cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), {
     recursive: true,
   });
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }
@@ -121,12 +119,12 @@ const sse = (parts: unknown[]) =>
 
 describe("the live card of Your next matchup", () => {
   it("swaps in the projected totals and the win odds of the live week, with the time of the read (AT-25)", async () => {
-    const fetchStub = vi.fn(async (url: string) =>
+    const fetchStub = mock(async (url: string) =>
       String(url).endsWith("/next-matchup")
         ? new Response(sse(liveStream), { headers: { "Content-Type": "text/event-stream" } })
         : new Response("", { status: 404 }),
     );
-    vi.stubGlobal("fetch", fetchStub);
+    stubGlobal("fetch", fetchStub);
     localStorage.setItem("cpc.passphrase", "cornerstone-test");
     const Door = await doorOf("cpc");
     render(<Door />);

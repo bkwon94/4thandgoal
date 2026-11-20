@@ -2,7 +2,7 @@
  * Tests for the turns of the Thread that each typed question carries: the question and the shown answer text of each
  * earlier item, oldest first, with the oldest cut first past the limit and no item in flight.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { DoorAnswer } from "@/lib/data/front-door-data";
 import { ALL_PAGES, MISSING_PAGE } from "./ask-api";
 import type { ThreadItem } from "./ask-thread";

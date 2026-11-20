@@ -5,7 +5,7 @@
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { vi } from "vitest";
+import { spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 
 const roots: string[] = [];
@@ -38,12 +38,10 @@ export function publicOver({
     writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
   if (sim !== undefined)
     writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
 }
 
 /* Removes each temp folder of the test and gives the working folder back. Call it after each test. */
 export function removePublics(): void {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.restoreAllMocks();
 }

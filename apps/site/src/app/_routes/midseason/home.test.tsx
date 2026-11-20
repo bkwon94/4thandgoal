@@ -3,7 +3,7 @@
  * and the real midseason fixture of CPC week 8, then reads the part that the home page gets for the latest week.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import fixture from "@cpc/midseason/fixtures/midseason.json";
 import { publicOver, removePublics } from "./temp-public";
 

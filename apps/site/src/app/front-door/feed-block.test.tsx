@@ -5,11 +5,11 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 
-/* The test sets the reduced-motion switch for each case. */
-const motion = vi.hoisted(() => ({ off: false }));
-vi.mock("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
+/* The test sets the reduced-motion switch for each case, and each test sets it back to off at its end. */
+const motion = { off: false };
+mock.module("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
 
 const { FeedView, feedBlockSchema } = await import("./feed-block");
 
@@ -27,7 +27,7 @@ function recordedFeed() {
   return feedBlockSchema.parse(part.data);
 }
 
-beforeEach(() => {
+afterEach(() => {
   motion.off = false;
 });
 

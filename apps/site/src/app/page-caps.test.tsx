@@ -3,15 +3,15 @@
  * fetch is a test stub that answers as the ask route and the trade routes of the API do past a cap.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const QUESTION = "highest scoring team this season";
@@ -21,7 +21,7 @@ const CLOSEST = ["playoff_race", "your_season", "power_rankings"];
 // The words that a cap line never holds: no internal name, no "rival", and never the commissioner by name.
 const INNER_NAMES = ["jev", "advisor", "finder", "rival", "brian"];
 const TEAMS = ["lil fridge", "bo girds"];
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const replies: Record<string, Response[]> = { "/ask": [], "/ask/free": [], "/trade-ideas": [] };
 
 const callsTo = (path: string) =>
@@ -64,7 +64,7 @@ beforeEach(() => {
       ? (replies[path].shift() ?? new Response("", { status: 500 }))
       : new Response("", { status: 404 });
   });
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -74,7 +74,6 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   for (const list of Object.values(replies)) list.length = 0;
-  vi.unstubAllGlobals();
 });
 
 describe("the caps of the front door", () => {

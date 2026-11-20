@@ -3,7 +3,7 @@
  * Each side shows on the stage of the title hero with a count of the players it gets, and the hero ground is the mesh (AT-1, AT-2).
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget } from "@cpc/analyzer/lib/fixtures/api";
 import type { Team } from "@cpc/analyzer/lib/api";

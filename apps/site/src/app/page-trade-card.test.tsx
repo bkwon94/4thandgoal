@@ -3,18 +3,19 @@
  * Lean of a Trade check, and the one card of Trade ideas with a row per offer. The streams are real runs with the card.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import checkStream from "./front-door/fixtures/trade-check-card-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-card-stream.json";
 import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, as in page-trade.test.tsx. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const SURE = "is Courtland Sutton for Kenneth Walker fair";
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const replies: Record<string, Response[]> = { "/ask": [], "/trade-check": [], "/trade-ideas": [] };
 
 const sse = (parts: unknown[]) =>
@@ -69,7 +70,7 @@ beforeEach(() => {
       ? (replies[path].shift() ?? new Response("", { status: 500 }))
       : new Response("", { status: 404 });
   });
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
   localStorage.setItem("cpc.passphrase", "cornerstone-test");
 });
@@ -79,7 +80,6 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   for (const list of Object.values(replies)) list.length = 0;
-  vi.unstubAllGlobals();
 });
 
 describe("the trade card of a Trade check", () => {
