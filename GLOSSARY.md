@@ -599,8 +599,20 @@ the targets only.
 _Avoid_: candidate, pick
 
 **Offer**:
-A trade that the finder builds from the targets of both sides, before Jev makes the shortlist. It has one player or two on each side. In code it is a `ProposedTrade`, and it has an `offer_id`.
+A trade that the finder builds before Jev makes the shortlist, from the targets, the Spares tree, or the Value screen. Each side gives one to three players. In code it is a `ProposedTrade`, and it has an `offer_id`.
 _Avoid_: proposal, option
+
+**Shape**:
+How many players each side of a trade gives, such as 1-for-1, 2-for-1, 3-for-1, or 3-for-2. A shape counts in both directions.
+_Avoid_: format, trade type, size
+
+**Value screen**:
+The one cut of the finder by math. It keeps a trade only when the sums of the trade chart values of the two sides sit close together, before Jev reads it. The side that gets more players must get the larger sum.
+_Avoid_: value filter, band, fair filter
+
+**Value offer**:
+An Offer that the Value screen gives, not the Spares tree.
+_Avoid_: value pair, value trade, math offer
 
 **Shortlist**:
 The trades of the finder that pass the Jev questions, for the Advisor to read. It holds the best offer for each

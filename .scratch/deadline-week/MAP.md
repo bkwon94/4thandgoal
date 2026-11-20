@@ -29,16 +29,18 @@ The Finder is fair-first: it finds fair trades of four shapes by chart value, an
 
 - The Spares tree lists a player when his team has a backup above the line behind him who can play now: 117 of 132 pairs. `decisions/12-spec-spares-tree-reading.md`.
 - Without a screen, a press has 95k to 242k candidates, and a 5% band leaves 4k to 10k. One fair Noul each costs $0.02 to $0.05 but runs 5 to 11 times over the rate limit. `decisions/13-research-candidate-size-and-cost.md`.
+- The Value screen: four shapes in both directions, the side that gets more players gets 100% to 125% of the other sum, 1-for-1 within 10%, a floor of 5 per player on a multi-player side, no cap. ADR 0038 limits the exception to `no-math-filters`. `decisions/14-grill-value-screen.md`.
 
 ## NOT YET SPECIFIED
 
-- What value screen cuts the candidate list in code? `decisions/14-grill-value-screen.md`.
 - Which questions does Jev answer for each shape? `decisions/15-grill-jev-questions-per-shape.md`.
 - How do the Spares tree and the value pairs merge, and how does the Shortlist spread them? `decisions/16-grill-merge-and-variety.md`.
 - How do the new shapes look in the pick, the wait, and the cards? `decisions/17-prototype-shape-cards.md`.
 - Which acceptance tests change? `decisions/18-spec-changed-acceptance-tests.md`.
 
 ## OUT OF SCOPE
+
+- Why the week 11 chart has no value for 29 pool players. A follow-up; the Spares tree still offers them (decision 14).
 
 - A push alert. Brian said it is not necessary.
 - Norcal. The dinner is a CPC event.
@@ -47,6 +49,6 @@ The Finder is fair-first: it finds fair trades of four shapes by chart value, an
 - A theme for the whole site. The deadline look stays on the trade pages and the banner.
 - The Accept tree ("would the other manager accept?" split per the playbook). Real trades give only accepted labels, so it needs made-up rejects and its own backtest. After the event (decision 05).
 - The split of the target question into "would start" and "would fill a weak spot". After the event (decision 05).
-- A Jev tree for fair. A tree that combines fair answers ranks trades by a score, against `no-math-filters` (decision 05).
+- A Jev tree for fair. A tree that combines fair answers ranks trades by a score, against `no-math-filters` (decision 05). The Value screen of decision 14 is the one math cut, by ADR 0038.
 - A Finder for three-team trades. About $0.11 and 31 to 33 s for each press, and 3 to 4 days of build. Brian scrapped it (decisions 10, 11).
 - The Deadline Board. The Finder answers the same question for one manager, and real needs and spares need the Spares tree on each team (decision 08).
