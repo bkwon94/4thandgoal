@@ -7,6 +7,8 @@ Spec branch: `deadline-week`.
 
 One spec makes the trade deadline of week 11 a special event on the CPC site, live by Fri 2026-11-20 night. The event turns off by itself after Sleeper locks trades on Mon 2026-11-23 night. The Finder turns on in CPC only after Brian checks it on the phone.
 
+The Finder is fair-first: it finds fair trades of four shapes by chart value, and shows varied ideas, not only need fills. Source: `.handoff/deadline-week-fair-finder.md`, Brian's rulings of 2026-11-19.
+
 ## DECISIONS SO FAR
 
 - CPC only. Live by Thu 2026-11-19 night, Fri 2026-11-20 night at the latest. Sleeper locks trades after the week 11 games end, on Mon 2026-11-23 night. Brian, in the Stage 1 grill.
@@ -29,6 +31,12 @@ One spec makes the trade deadline of week 11 a special event on the CPC site, li
 
 ## NOT YET SPECIFIED
 
+- How many candidates does each shape give, and what do the Jev calls cost? `decisions/13-research-candidate-size-and-cost.md`.
+- What value screen cuts the candidate list in code? `decisions/14-grill-value-screen.md`.
+- Which questions does Jev answer for each shape? `decisions/15-grill-jev-questions-per-shape.md`.
+- How do the Spares tree and the value pairs merge, and how does the Shortlist spread them? `decisions/16-grill-merge-and-variety.md`.
+- How do the new shapes look in the pick, the wait, and the cards? `decisions/17-prototype-shape-cards.md`.
+- Which acceptance tests change? `decisions/18-spec-changed-acceptance-tests.md`.
 
 ## OUT OF SCOPE
 
