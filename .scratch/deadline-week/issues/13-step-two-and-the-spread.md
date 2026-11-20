@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-43, AT-45, AT-46, AT-
 
 **Blocked by:** 12
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A real press for Bo Girds sends at most one offer per partner and shape direction to step 2, no more than 77, each the highest fair mean of its group.
 - [x] Tests with fixed answers show that a gain of 0.2 drops an offer, 0.5 keeps it, a failed call raises an error, and need answers of 0.1 on both sides drop nothing.
