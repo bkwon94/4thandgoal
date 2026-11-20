@@ -20,9 +20,9 @@ week 1 results
 ”
 
 More
-Next game
-Playoffs
-Ranks
+Holes
+Roster
+Waivers
 Not your team? Change it
 Grade a trade
 TRADE DEADLINE ~2H 41M 10S
@@ -45,9 +45,9 @@ Open the menu
 Open the Trade Wire, 1 new trade
 Thread
 Suggestions
-Your next matchup: Next: Maye d'force B with U, 12-8
-Playoff race: 57% playoff odds
-Power rankings: 8th, down 4
+Weak spots: QB ranks 12th of 12
+How you stack up: Grade C, QB ranks 12th of 12
+Waiver targets: Free agents for the QB slot
 Ask
 Ask a question | Ask about your team or the league
 Send

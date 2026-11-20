@@ -9,90 +9,6 @@
  },
  "trades": [
   {
-   "offer_id": "6:8130-11:3294",
-   "sides": [
-    {
-     "roster_id": 6,
-     "team": "Bo Girds",
-     "gives": [
-      {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
-       "to": 11
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "3294",
-       "name": "Dak Prescott",
-       "position": "QB",
-       "nfl_team": "DAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
-       "season_rank": "QB4",
-       "recent_rank": null,
-       "from": 11
-      }
-     ]
-    },
-    {
-     "roster_id": 11,
-     "team": "Unsolicited Dak Picks",
-     "gives": [
-      {
-       "player_id": "3294",
-       "name": "Dak Prescott",
-       "position": "QB",
-       "nfl_team": "DAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
-       "season_rank": "QB4",
-       "recent_rank": null,
-       "to": 6
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
-       "from": 6
-      }
-     ]
-    }
-   ],
-   "lean": "Lean yes",
-   "case": "If you want real QB help now, this is worth it. Prescott fills your empty QB slot, and Unsolicited Dak Picks is out of the race and gets the better player.",
-   "bullets": [
-    {
-     "text": "Prescott is the QB4 this season, a big step up from the weak QB slot you have now.",
-     "mark": "for",
-     "fact_id": "3294.ppg",
-     "fact_text": "Dak Prescott (QB, DAL) scored 20.8 points per game over 10 games before the trade. His Season rank is QB4, by total points this season."
-    },
-    {
-     "text": "You still keep one TE in the top 24 after giving up McBride.",
-     "mark": "even",
-     "fact_id": "6.depth.te",
-     "fact_text": "For Bo Girds, the TEs in the top 24 go from 2 to 1."
-    },
-    {
-     "text": "Unsolicited Dak Picks is out of the race and wants the better player for the rest of the season, so the other manager should say yes.",
-     "mark": "for",
-     "fact_id": "11.measure.standing",
-     "fact_text": "The standing measure for Unsolicited Dak Picks: Out of the playoff race, so you want the better player for the rest of the season, and you get him."
-    }
-   ],
-   "fact_lines": []
-  },
-  {
    "offer_id": "6:9997-11:3294",
    "sides": [
     {
@@ -106,7 +22,7 @@
        "nfl_team": "BAL",
        "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
        "season_rank": "WR12",
-       "recent_rank": "WR35",
+       "recent_rank": "WR32",
        "to": 11
       }
      ],
@@ -146,32 +62,122 @@
        "nfl_team": "BAL",
        "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
        "season_rank": "WR12",
-       "recent_rank": "WR35",
+       "recent_rank": "WR32",
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "lean": "Lean yes",
+   "case": "If you want a top QB now and believe Flowers keeps cooling off, this is worth it. You fix your empty QB slot with the best QB on the list. Dak Picks is out of the race and gets a WR it needs.",
+   "bullets": [
+    {
+     "text": "Prescott is QB4 this season, and your QB slot is empty right now.",
+     "mark": "for",
+     "fact_id": "3294.ppg",
+     "fact_text": "Dak Prescott (QB, DAL) scored 20.8 points per game over 10 games before the trade. His Season rank is QB4, by total points this season."
+    },
+    {
+     "text": "Flowers has slipped to WR32 over the last four weeks, so you sell him while the name still carries weight.",
+     "mark": "for",
+     "fact_id": "9997.ppg",
+     "fact_text": "Zay Flowers (WR, BAL) scored 12.7 points per game over 9 games before the trade. His Season rank is WR12, by total points this season. His Recent rank is WR32, by points per game over the last 4 weeks."
+    },
+    {
+     "text": "Dak Picks gets a WR for a QB spot it has covered twice, so the other manager should say yes.",
+     "mark": "even",
+     "fact_id": "11.measure.fit",
+     "fact_text": "The roster fit measure for Unsolicited Dak Picks: You go from 2 QBs in the top 24 to 1 and go from 3 WRs in the top 36 to 4, and you get the better player, but Brown is out with no return week on file."
+    },
+    {
+     "text": "Your WRs in the top 36 go from 3 to 2, so your flex spot gets thin.",
+     "mark": "against",
+     "fact_id": "6.depth.wr",
+     "fact_text": "For Bo Girds, the WRs in the top 36 go from 3 to 2."
+    }
+   ],
+   "fact_lines": []
+  },
+  {
+   "offer_id": "6:9997-7:4046",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR32",
+       "to": 7
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "4046",
+       "name": "Patrick Mahomes",
+       "position": "QB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
+       "season_rank": "QB9",
+       "recent_rank": null,
+       "from": 7
+      }
+     ]
+    },
+    {
+     "roster_id": 7,
+     "team": "To Infinity and Bijan",
+     "gives": [
+      {
+       "player_id": "4046",
+       "name": "Patrick Mahomes",
+       "position": "QB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
+       "season_rank": "QB9",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR32",
        "from": 6
       }
      ]
     }
    ],
    "lean": "Gut call",
-   "case": "If you believe Flowers keeps cooling off, this is worth it. You turn a fading WR into a top QB, and Unsolicited Dak Picks gets the better player.",
+   "case": "If you trust Mahomes to stay a top QB on a strong offense, this is a fair swap. You fill your QB need and the other manager gets a WR for the stretch run. It costs you WR depth.",
    "bullets": [
     {
-     "text": "Prescott is the QB4 this season, and he fills your empty QB slot.",
+     "text": "The Chiefs rank 5th of 32 on offense, which backs Mahomes as a QB you can start.",
      "mark": "for",
-     "fact_id": "3294.ppg",
-     "fact_text": "Dak Prescott (QB, DAL) scored 20.8 points per game over 10 games before the trade. His Season rank is QB4, by total points this season."
+     "fact_id": "4046.nfl_team",
+     "fact_text": "Patrick Mahomes's NFL team, the Chiefs, ranks 5th of 32 on offense: 11.45 expected points added per 100 plays over 9 games before the trade."
     },
     {
-     "text": "Flowers has cooled to WR35 over the last four weeks, so you sell him at a soft point.",
-     "mark": "for",
-     "fact_id": "9997.ppg",
-     "fact_text": "Zay Flowers (WR, BAL) scored 12.7 points per game over 9 games before the trade. His Season rank is WR12, by total points this season. His Recent rank is WR35, by points per game over the last 4 weeks."
+     "text": "To Infinity and Bijan is out of the race but still needs points, and Flowers adds WR help, so the other manager can say yes.",
+     "mark": "even",
+     "fact_id": "7.measure.standing",
+     "fact_text": "The standing measure for To Infinity and Bijan: Outside a playoff spot but still in the race, so you need points now, and this trade adds some."
     },
     {
-     "text": "Your FLEX2 slot gets thin, with Antonio Williams at WR62.",
+     "text": "Your WRs in the top 36 go from 3 to 2, leaving your flex spot short.",
      "mark": "against",
-     "fact_id": "6.hole.flex2",
-     "fact_text": "For Bo Girds, the trade leaves FLEX2 short: Antonio Williams is WR62. Zay Flowers held FLEX1 before the trade. The best free agent at WR is Michael Wilson, WR25."
+     "fact_id": "6.depth.wr",
+     "fact_text": "For Bo Girds, the WRs in the top 36 go from 3 to 2."
     }
    ],
    "fact_lines": []
@@ -238,72 +244,10 @@
      ]
     }
    ],
-   "reason": "Stroud is only QB8 this season, so you get less at QB than from the Prescott deal."
+   "reason": "You give up the top TE for a QB, and your TEs in the top 24 go from 2 to 1."
   },
   {
-   "offer_id": "6:9487-11:9758",
-   "sides": [
-    {
-     "roster_id": 6,
-     "team": "Bo Girds",
-     "gives": [
-      {
-       "player_id": "9487",
-       "name": "Parker Washington",
-       "position": "WR",
-       "nfl_team": "JAX",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
-       "season_rank": "WR10",
-       "recent_rank": null,
-       "to": 11
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "9758",
-       "name": "C.J. Stroud",
-       "position": "QB",
-       "nfl_team": "HOU",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
-       "season_rank": "QB8",
-       "recent_rank": null,
-       "from": 11
-      }
-     ]
-    },
-    {
-     "roster_id": 11,
-     "team": "Unsolicited Dak Picks",
-     "gives": [
-      {
-       "player_id": "9758",
-       "name": "C.J. Stroud",
-       "position": "QB",
-       "nfl_team": "HOU",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
-       "season_rank": "QB8",
-       "recent_rank": null,
-       "to": 6
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "9487",
-       "name": "Parker Washington",
-       "position": "WR",
-       "nfl_team": "JAX",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
-       "season_rank": "WR10",
-       "recent_rank": null,
-       "from": 6
-      }
-     ]
-    }
-   ],
-   "reason": "You give up a strong WR and leave your FLEX2 slot thin, with Antonio Williams at WR62."
-  },
-  {
-   "offer_id": "6:8130-3:11560",
+   "offer_id": "6:8130-11:3294",
    "sides": [
     {
      "roster_id": 6,
@@ -317,6 +261,68 @@
        "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
        "season_rank": "TE1",
        "recent_rank": null,
+       "to": 11
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "3294",
+       "name": "Dak Prescott",
+       "position": "QB",
+       "nfl_team": "DAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
+       "season_rank": "QB4",
+       "recent_rank": null,
+       "from": 11
+      }
+     ]
+    },
+    {
+     "roster_id": 11,
+     "team": "Unsolicited Dak Picks",
+     "gives": [
+      {
+       "player_id": "3294",
+       "name": "Dak Prescott",
+       "position": "QB",
+       "nfl_team": "DAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
+       "season_rank": "QB4",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "8130",
+       "name": "Trey McBride",
+       "position": "TE",
+       "nfl_team": "ARI",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
+       "season_rank": "TE1",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "reason": "You give up the TE1 for Prescott, which costs you a top player at a scarce spot."
+  },
+  {
+   "offer_id": "6:9997-3:11560",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR32",
        "to": 3
       }
      ],
@@ -350,32 +356,35 @@
      ],
      "gets": [
       {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR32",
        "from": 6
       }
      ]
     }
    ],
-   "reason": "Williams is only QB23 this season, a weak return for McBride."
+   "reason": "Williams is only QB23, so he adds little over what you can find elsewhere."
   }
  ],
  "empty": null,
  "as_of": {
   "chart_week": 11,
-  "stats_through": 10,
+  "stats_through": 11,
   "completed_through": 10,
-  "rosters_fetched": "2026-11-19T18:04:36.320982-05:00",
+  "rosters_fetched": "2026-11-19T20:44:39.792539-05:00",
   "known_games": {
    "week": 11,
-   "games": 0,
-   "in_progress": 0,
-   "pending": {}
+   "games": 1,
+   "in_progress": 1,
+   "pending": {
+    "snaps": 1,
+    "usage": 1
+   }
   },
   "no_chart": false,
   "no_chart_note": null

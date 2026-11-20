@@ -521,9 +521,13 @@ test.describe("off", () => {
         const g = await grip.boundingBox();
         const measure = () => content.evaluate((el) => {
           const r = el.getBoundingClientRect();
+          // The bleed: the child [data-slot=sheet-bleed] when present, else the ::after of the content.
+          const child = el.querySelector(':scope > [data-slot="sheet-bleed"]');
           const after = getComputedStyle(el, "::after");
-          const afterHeight = parseFloat(after.height) || 0;
-          return { boxTop: +r.top.toFixed(1), boxBottom: +r.bottom.toFixed(1), bleedHeight: afterHeight, bleedBackground: after.backgroundColor, boxBackground: getComputedStyle(el).backgroundColor, surfaceBottom: +(r.bottom + afterHeight).toFixed(1), viewportBottom: window.innerHeight };
+          const b = child ? child.getBoundingClientRect() : null;
+          const bleedHeight = child ? b.height : parseFloat(after.height) || 0;
+          const bleedBottom = child ? b.bottom : r.bottom + bleedHeight;
+          return { bleedSource: child ? "child [data-slot=sheet-bleed]" : "::after", bleedAriaHidden: child ? child.getAttribute("aria-hidden") : null, boxTop: +r.top.toFixed(1), boxBottom: +r.bottom.toFixed(1), bleedTop: child ? +b.top.toFixed(1) : +r.bottom.toFixed(1), bleedHeight: +bleedHeight.toFixed(1), bleedBackground: child ? getComputedStyle(child).backgroundColor : after.backgroundColor, boxBackground: getComputedStyle(el).backgroundColor, surfaceBottom: +bleedBottom.toFixed(1), viewportBottom: window.innerHeight };
         });
         const before = await measure();
         await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2);
