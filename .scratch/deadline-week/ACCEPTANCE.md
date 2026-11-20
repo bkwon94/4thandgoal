@@ -402,7 +402,7 @@ Evidence: the command and the log line.
 AT-49: The first call of a trade Topic does not fail
 App: site
 Stories: 87
-Given: The front door of `cpc` against the deployed API of the spec branch, with Bo Girds as the team.
+Given: The front door of `cpc` against one fresh local evidence API of the spec branch, with Bo Girds as the team.
 When: The reader asks for trade ideas 10 times, each in a fresh session with no cache.
 Then: All 10 answers arrive with no retry line.
 Evidence: the time and the result of each run, the API log of each run, and screenshots of one answer at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -596,7 +596,7 @@ App: site
 Stories: 114
 Given: The press of AT-72.
 When: The wait reaches step 5.
-Then: Step 5 shows at least 3 lines one after the other, each names a real trade of the Shortlist of the press by its players, and each line stays on screen about 3 s.
+Then: While the pick runs, step 5 changes its line about every 3 s, and each line names a real trade of the Shortlist of the press by its players. A press whose pick runs 15 s or more after step 5 starts shows at least 3 such lines. A faster pick shows fewer, and no card waits for a line.
 Evidence: the Shortlist of the press, the line text with times, and screenshots of two step 5 lines at 375 px in the light theme and the dark theme.
 
 ## Trace
@@ -730,3 +730,4 @@ Out of scope "A push alert", "Norcal", "A theme for the whole site", "A stream o
 
 - 2026-11-19: Brian approved the tests of the fair-first Finder (decisions 13 to 17). AT-36, AT-38, AT-41, AT-43, AT-45, and AT-46 changed. AT-42 is retired. AT-55 to AT-71 are new. AT-41 lost its 30 s limit, because it is a time claim.
 - 2026-11-20: Brian approved four changes. AT-60 counts the 3 best offers of each group, up to 231. AT-65 needs three different shapes, not a 1-for-1 and a 2-for-1, because the gain check drops every 1-for-1, 2-for-1, and 3-for-1 offer of Bo Girds. AT-36 holds each step line at least about 1.5 s. AT-72 and AT-73 are new (decision 20). The prewarm left Out of scope (decision 19).
+- 2026-11-20: Brian approved two changes after the first Judge round. AT-49 runs on one fresh local evidence API, because no unmerged branch deploys to Fly for evidence. AT-73 asks for 3 lines only when the pick runs 15 s or more, because a fast pick must not wait for a line.
