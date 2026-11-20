@@ -234,6 +234,25 @@ describe("the Trade Wire", () => {
     expect(sheet().textContent).toContain("Updated 3s ago");
   });
 
+  it("counts the seconds from the read, so the line reads 3s at 3 s after a read off the second (AT-21)", async () => {
+    await bannerAt("2026-11-21T09:55:00-05:00");
+    // The sheet opens 400 ms after the read, so a tick that starts at the open lags the read by 400 ms.
+    await wait(400);
+    fireEvent.click(trigger());
+    expect(sheet().textContent).toContain("Updated 0s ago");
+    await wait(599);
+    expect(sheet().textContent).toContain("Updated 0s ago");
+    await wait(1);
+    expect(sheet().textContent).toContain("Updated 1s ago");
+    await wait(2000);
+    expect(sheet().textContent).toContain("Updated 3s ago");
+    // The poll reads again at 10 s, and the count starts again at that read.
+    await wait(7000);
+    expect(sheet().textContent).toContain("Updated 0s ago");
+    await wait(3000);
+    expect(sheet().textContent).toContain("Updated 3s ago");
+  });
+
   it("polls each 10 s, sends no call while the tab hides, and calls at once when it shows (AT-22)", async () => {
     await bannerAt("2026-11-21T09:55:00-05:00");
     expect(fetchStub).toHaveBeenCalledTimes(1);
