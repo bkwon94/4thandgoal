@@ -288,6 +288,98 @@ const lineAtRest = (page: Page) =>
     ),
   );
 
+/* The count of the frames the mesh of the wait drew. */
+const waitFrames = (page: Page) => page.locator(WAIT_CANVAS).evaluate((el) => Number((el as HTMLCanvasElement).dataset.meshFrames ?? 0));
+
+/* The timers of the page can hold for a sample of the wait. While they hold, a timer that comes due waits, and it runs
+   when they let go, as a timer runs late on a loaded runner. A cleared timer does not run. The frames of the mesh do not
+   hold. */
+async function holdableTimers(page: Page) {
+  await page.addInitScript(() => {
+    const w = window as unknown as { timersHeld: boolean; letTimersGo: () => void };
+    const later = window.setTimeout;
+    const stop = window.clearTimeout;
+    const due = new Map<number, () => void>();
+    w.timersHeld = false;
+    window.setTimeout = ((callback: TimerHandler, ms?: number, ...args: unknown[]) => {
+      if (typeof callback !== "function") return later(callback, ms, ...args);
+      const id: number = later(() => (w.timersHeld ? due.set(id, () => callback(...args)) : callback(...args)), ms);
+      return id;
+    }) as typeof window.setTimeout;
+    window.clearTimeout = ((id?: number) => {
+      if (id !== undefined) due.delete(id);
+      stop(id);
+    }) as typeof window.clearTimeout;
+    w.letTimersGo = () => {
+      w.timersHeld = false;
+      const run = [...due.values()];
+      due.clear();
+      for (const callback of run) callback();
+    };
+  });
+}
+
+/* One sample of the wait hero for AT-20. The timers of the page hold for the whole sample, so no line of the stage
+   starts to swap or to rise between the check of rest and the read. A render that a timer started before the hold runs
+   first: React runs it in a MessageChannel task, and the task of this wait comes after it. Then each finite animation,
+   such as the rise of a line, ends, and the scan reads the hero. A line that waits for its rise still has opacity 0,
+   so the scan skips it. */
+async function sampleWaitHero(page: Page): Promise<string[]> {
+  await page.evaluate(() => {
+    (window as unknown as { timersHeld: boolean }).timersHeld = true;
+  });
+  try {
+    await page.evaluate(
+      () =>
+        new Promise<void>((done) => {
+          const channel = new MessageChannel();
+          channel.port1.onmessage = () => done();
+          channel.port2.postMessage(null);
+        }),
+    );
+    await lineAtRest(page);
+    return await scanHeroPixels(page, WAIT_HERO);
+  } finally {
+    await page.evaluate(() => (window as unknown as { letTimersGo: () => void }).letTimersGo());
+  }
+}
+
+/* A loaded runner checks that the stage line is at rest, and then reads it late, so the next line can start to rise
+   between the check and the read. This init script makes that order sure on each run. It holds the release of each next
+   line, the timer of 50 ms that starts its rise, until the next check of rest, which reads document.getAnimations. At that
+   check it lets the release go and starts a lag of 300 ms, so the check waits that long before the read. The next line
+   rises over 1.5 s, so the read lands early in the rise and not at its end. */
+async function lateRise(page: Page) {
+  await page.addInitScript(() => {
+    const later = window.setTimeout;
+    let held: (() => void) | null = null;
+    window.setTimeout = ((callback: TimerHandler, ms?: number, ...args: unknown[]) => {
+      if (ms === 50 && typeof callback === "function" && document.querySelector(".t-think-text.is-enter-start")) {
+        held = () => callback(...args);
+        return 0;
+      }
+      return later(callback, ms, ...args);
+    }) as typeof window.setTimeout;
+    const getAnimations = Document.prototype.getAnimations;
+    Document.prototype.getAnimations = function (this: Document) {
+      if (held) {
+        window.setTimeout(held, 0);
+        held = null;
+        const lag = document.createElement("i");
+        lag.hidden = true;
+        document.body.append(lag);
+        lag.animate([{ opacity: 0 }, { opacity: 1 }], 300).finished.then(() => lag.remove());
+      }
+      return getAnimations.call(this);
+    };
+    document.addEventListener("DOMContentLoaded", () => {
+      const rise = document.createElement("style");
+      rise.textContent = ".t-think-text:not(.is-exit) { transition-duration: 1.5s; }";
+      document.head.append(rise);
+    });
+  });
+}
+
 /* The pull of each weight under the mesh now, in the order of the sides, which the canvas keeps for the evidence. */
 const pulls = (page: Page) =>
   page.locator(WAIT_CANVAS).evaluate((el) => ((el as HTMLCanvasElement).dataset.meshPulls ?? "").split(",").filter(Boolean).map(Number));
@@ -425,28 +517,39 @@ test.describe("the wait, with motion on", () => {
   });
 
   /* The mesh moves in the wait, so the scan reads it at least 10 times over 3 s and keeps each failure it finds. */
+  async function waitContrast(page: Page, theme: Theme, width: number, shot: string) {
+    await holdableTimers(page);
+    await page.setViewportSize({ width, height: 900 });
+    await openAnalyzer(page, stageQuery(), theme);
+    await settle(page);
+    await tapAndTimeWait(page);
+    const start = Date.now();
+    const failures: string[] = [];
+    let samples = 0;
+    while (samples < 10 || Date.now() - start < 3000) {
+      failures.push(...(await sampleWaitHero(page)));
+      samples++;
+      // Each sample reads a new place of the mesh, so the next one waits until the mesh draws 5 more frames.
+      const drawn = await waitFrames(page);
+      await expect.poll(() => waitFrames(page)).toBeGreaterThanOrEqual(drawn + 5);
+    }
+    await page.locator(WAIT_HERO).screenshot({ path: shot });
+    console.log(`wait contrast: ${CLIENT} ${theme} ${width}px: ${samples} samples over ${Date.now() - start} ms`);
+    expect([...new Set(failures)], `the wait hero of ${CLIENT} breaks the readability floor`).toEqual([]);
+  }
+
   for (const theme of ["dark", "light"] as const) {
     for (const width of [390, 1280]) {
       test(`wait contrast: ${CLIENT} each hero text reaches 4.5:1 in 10 samples over 3 s of the wait, ${theme} ${width}px (AT-20)`, async ({ page }, info) => {
-        await page.setViewportSize({ width, height: 900 });
-        await openAnalyzer(page, stageQuery(), theme);
-        await settle(page);
-        await tapAndTimeWait(page);
-        const start = Date.now();
-        const failures: string[] = [];
-        let samples = 0;
-        while (samples < 10 || Date.now() - start < 3000) {
-          await lineAtRest(page);
-          failures.push(...(await scanHeroPixels(page, WAIT_HERO)));
-          samples++;
-          await page.waitForTimeout(150);
-        }
-        await page.locator(WAIT_HERO).screenshot({ path: info.outputPath(`wait-contrast-${CLIENT}-${theme}-${width}.png`) });
-        console.log(`wait contrast: ${CLIENT} ${theme} ${width}px: ${samples} samples over ${Date.now() - start} ms`);
-        expect([...new Set(failures)], `the wait hero of ${CLIENT} breaks the readability floor`).toEqual([]);
+        await waitContrast(page, theme, width, info.outputPath(`wait-contrast-${CLIENT}-${theme}-${width}.png`));
       });
     }
   }
+
+  test(`wait contrast: ${CLIENT} each hero text reaches 4.5:1 in 10 samples over 3 s of the wait when the frames of the wait come late, light 1280px (AT-20)`, async ({ page }, info) => {
+    await lateRise(page);
+    await waitContrast(page, "light", 1280, info.outputPath(`wait-contrast-late-${CLIENT}-light-1280.png`));
+  });
 
   for (const width of [375, 768, 1280]) {
     test(`stage rise: ${CLIENT} the headshots of each side rise into its row within 1 s of the tap, ${width}px (AT-29)`, { tag: "@timing" }, async ({ page }, info) => {
