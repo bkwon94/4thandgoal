@@ -10,10 +10,16 @@ import { expect, type Page } from "@playwright/test";
 export const PROSE_SELECTOR = "p, [data-prose]";
 export const PROSE_MIN_PX = 16;
 export const OTHER_MIN_PX = 11;
-/* Each link and button is 44px or more on each side, the WCAG 2.5.5 size. A link inside prose is exempt, as 2.5.5 allows. */
+/* Each link and button is 44px or more on each side, the WCAG 2.5.5 size. A link inside prose is exempt, as 2.5.5 allows.
+   A form proxy is not a target either. ui-sdk renders one native input right after the control of a segmented control item,
+   a switch, or a checkbox, so a form gets its value. The proxy has aria-hidden, tabindex -1, and no pointer events, so a reader
+   cannot tap it, reach it with a key, or hear it. A tap goes to its control. The scan skips the proxy only when that control,
+   the element right before it, is a target or has the role radio, checkbox, or switch, and is 44px or more on each side.
+   So a small control still fails through its proxy, and a hidden input with no control before it still fails. */
 export const TARGET_MIN_PX = 44;
 const TARGET_SELECTOR =
   "a[href], button, input:not([type=hidden]), select, textarea, summary, label[for], [role=button], [role=link], [role=tab]";
+const PROXY_CONTROL_SELECTOR = `${TARGET_SELECTOR}, [role=radio], [role=checkbox], [role=switch]`;
 
 /* The two forms of a hero. A hero is a `section` that carries the hero texture. HeroFrame renders a section whose art layer, a direct child
    with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
@@ -27,7 +33,7 @@ export const HERO_MIN_RATIO = 4.5;
 const PIXEL_REASONS = ["bgImage", "bgGradient", "bgOverlap", "shortTextContent"];
 
 export type TextScan = { failures: string[]; prose: number; other: number };
-export type TargetScan = { failures: string[]; exempt: string[] };
+export type TargetScan = { failures: string[]; exempt: string[]; proxies: string[] };
 
 const LIMITS = {
   proseSelector: PROSE_SELECTOR,
@@ -35,6 +41,7 @@ const LIMITS = {
   otherMin: OTHER_MIN_PX,
   targetSelector: TARGET_SELECTOR,
   targetMin: TARGET_MIN_PX,
+  proxyControlSelector: PROXY_CONTROL_SELECTOR,
   heroSelector: HERO_SELECTOR,
 };
 
@@ -171,19 +178,33 @@ function inPage({ scan, limits, scope }: InPage): unknown {
   if (scan === "targets") {
     const failures: string[] = [];
     const exempt: string[] = [];
+    const proxies: string[] = [];
+    const size = (box: DOMRect) => `${Math.round(box.width)}x${Math.round(box.height)}px`;
     for (const el of document.querySelectorAll(limits.targetSelector)) {
       if (!visible(el)) continue;
       if (el.tagName === "A" && el.closest(limits.proseSelector)) {
         exempt.push(describe(el));
         continue;
       }
+      const control = el.previousElementSibling;
+      const proxy =
+        el.tagName === "INPUT" &&
+        el.getAttribute("aria-hidden") === "true" &&
+        el.getAttribute("tabindex") === "-1" &&
+        getComputedStyle(el).pointerEvents === "none";
+      if (proxy && control !== null && control.matches(limits.proxyControlSelector) && visible(control)) {
+        const box = control.getBoundingClientRect();
+        if (box.width >= limits.targetMin && box.height >= limits.targetMin) {
+          proxies.push(`${describe(el)} is the form proxy of ${describe(control)} at ${size(box)}`);
+          continue;
+        }
+      }
       const box = el.getBoundingClientRect();
       if (box.width < limits.targetMin || box.height < limits.targetMin) {
-        const size = `${Math.round(box.width)}x${Math.round(box.height)}px`;
-        failures.push(`${describe(el)} is ${size}, under the tap floor of ${limits.targetMin}px`);
+        failures.push(`${describe(el)} is ${size(box)}, under the tap floor of ${limits.targetMin}px`);
       }
     }
-    return { failures, exempt };
+    return { failures, exempt, proxies };
   }
 
   // The count of each tier counts elements, not text nodes, so a paragraph with a link counts once, and its link once.
@@ -210,7 +231,7 @@ export async function scanText(page: Page): Promise<TextScan> {
   return (await page.evaluate<unknown, InPage>(inPage, { scan: "text", limits: LIMITS })) as TextScan;
 }
 
-/* Reads the box of each visible link, button, and form control. */
+/* Reads the box of each visible link, button, and form control. It lists each skipped link inside prose and each skipped form proxy. */
 export async function scanTargets(page: Page): Promise<TargetScan> {
   return (await page.evaluate<unknown, InPage>(inPage, { scan: "targets", limits: LIMITS })) as TargetScan;
 }
