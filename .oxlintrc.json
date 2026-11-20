@@ -1,0 +1,45 @@
+{
+  "$schema": "./apps/site/node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": [
+    "./packages/design/lint/plugin.mjs"
+  ],
+  "categories": {
+    "correctness": "off"
+  },
+  "ignorePatterns": [
+    "**/.next/**",
+    "**/out/**",
+    "apps/site/public/**",
+    "apps/site/test-results/**",
+    "apps/site/src/generated/**",
+    "apps/site/src/app/(client)/**",
+    "apps/site/next-env.d.ts"
+  ],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": [
+              "@ui-sdk",
+              "@ui-sdk/*"
+            ],
+            "message": "Only packages/design/site/ui/ imports @ui-sdk (ADR 0035). Import the wrapper in the ui folder of the design package."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "packages/design/site/ui/**",
+        "packages/design/lint/fixtures/ui/**"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}
