@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 import type { Bullet, Mark as MarkKind } from "../lib/analyze-types";
@@ -53,7 +54,7 @@ function BulletRow({
       data-open={open}
       className="group/row border-rule border-b last:border-b-0"
     >
-      <button
+      <PendingButton
         type="button"
         aria-expanded={open}
         aria-controls={factId}
@@ -66,7 +67,7 @@ function BulletRow({
           aria-hidden="true"
           className="mt-sp-0 size-sp-5 text-mute transition-transform duration-250 ease-out group-data-[open=true]/row:[transform:scaleY(-1)] motion-reduce:transition-none [&_path]:[vector-effect:non-scaling-stroke]"
         />
-      </button>
+      </PendingButton>
       <div
         id={factId}
         aria-hidden={!open}

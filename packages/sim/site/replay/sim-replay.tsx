@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { thousands } from "@cpc/design/format/format";
@@ -218,13 +219,17 @@ export function SimReplay({
         {`Each press replays one of ${sim.sample.length} stored runs of the sim. The odds come from all ${thousands(sim.runs)} runs.`}
       </p>
       <div className="gap-sp-2 flex flex-wrap">
-        <button type="button" onClick={press} className={`${BUTTON} bg-accent text-white`}>
+        <PendingButton type="button" onClick={press} className={`${BUTTON} bg-accent text-white`}>
           Sim the season
-        </button>
+        </PendingButton>
         {running && (
-          <button type="button" onClick={skip} className={`${BUTTON} border-rule text-ink border`}>
+          <PendingButton
+            type="button"
+            onClick={skip}
+            className={`${BUTTON} border-rule text-ink border`}
+          >
             Skip to the end
-          </button>
+          </PendingButton>
         )}
       </div>
       {/* The stage takes the full width of the column at every width, and the odds sit below it. Beside the odds on a

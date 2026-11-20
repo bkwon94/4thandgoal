@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "../ui/pending-button";
 import { ChevronDown } from "lucide-react";
 import {
   type CSSProperties,
@@ -131,7 +132,7 @@ export function OpenCard({
 
   const body = (
     <>
-      <button
+      <PendingButton
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
@@ -144,7 +145,7 @@ export function OpenCard({
         )}
       >
         {head}
-      </button>
+      </PendingButton>
       <div className="oc-body">
         <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
           <div
@@ -189,7 +190,7 @@ export function OpenCard({
         </div>
       </div>
       {!row && (
-        <button
+        <PendingButton
           type="button"
           aria-expanded={open}
           aria-controls={panelId}
@@ -198,7 +199,7 @@ export function OpenCard({
           className="min-h-touch text-mute grid w-full cursor-pointer place-items-center border-0 bg-transparent p-0 [-webkit-tap-highlight-color:transparent]"
         >
           <ChevronDown aria-hidden="true" className="oc-chevron size-sp-5" strokeWidth={1.6} />
-        </button>
+        </PendingButton>
       )}
     </>
   );

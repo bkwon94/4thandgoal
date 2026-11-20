@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "../ui/pending-button";
 import {
   ArrowLeftRightIcon,
   CalendarDaysIcon,
@@ -252,7 +253,7 @@ function PastWeeks({ weeks, pageHref, open, onToggle }: PastWeeksProps) {
   const id = useId();
   return (
     <div className="pl-[calc(var(--spacing-touch)+var(--spacing-sp-5))]">
-      <button
+      <PendingButton
         type="button"
         aria-expanded={open}
         aria-controls={id}
@@ -265,7 +266,7 @@ function PastWeeks({ weeks, pageHref, open, onToggle }: PastWeeksProps) {
           data-open={open || undefined}
           className="menu-chevron size-sp-4"
         />
-      </button>
+      </PendingButton>
       {/* The pad sits on the inner list, never on the grid track, so the closed track has no height left. */}
       <div
         id={id}

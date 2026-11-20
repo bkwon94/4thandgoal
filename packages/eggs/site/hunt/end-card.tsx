@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import type { ReactNode } from "react";
 import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
@@ -158,13 +159,13 @@ function Shell({
             <p className="text-lead text-on-dark-2">{line}</p>
           </div>
           <div className="gap-sp-2 flex w-full flex-col items-center">
-            <button
+            <PendingButton
               type="button"
               onClick={onClose}
               className="press min-h-touch rounded-pill bg-on-dark text-lead text-band w-full font-bold"
             >
               Back to the page
-            </button>
+            </PendingButton>
             {board && (
               <a
                 href="/eggs/"

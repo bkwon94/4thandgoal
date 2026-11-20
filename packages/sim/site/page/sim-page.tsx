@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, RotateCcw, Shuffle } from "lucide-react";
 import { useState } from "react";
@@ -298,7 +299,7 @@ function SimButtons({
   return (
     <div className="gap-sp-2 flex w-full">
       {week !== null && (
-        <button
+        <PendingButton
           type="button"
           disabled={waiting}
           onClick={() => onAsk({ mode: "week", week })}
@@ -306,9 +307,9 @@ function SimButtons({
         >
           <Play aria-hidden className="size-4" />
           {`Sim week ${week}`}
-        </button>
+        </PendingButton>
       )}
-      <button
+      <PendingButton
         type="button"
         disabled={waiting}
         onClick={() => onAsk({ mode: "season" })}
@@ -316,7 +317,7 @@ function SimButtons({
       >
         <Shuffle aria-hidden className="size-4" />
         Sim the season
-      </button>
+      </PendingButton>
     </div>
   );
 }
@@ -345,7 +346,7 @@ function SetLine({ set, onReset }: { set: SetResult[]; onReset: () => void }) {
               <span className="font-bold">What-if: </span>
               {setText(set)}
             </p>
-            <button
+            <PendingButton
               type="button"
               onClick={onReset}
               className={cn(
@@ -355,7 +356,7 @@ function SetLine({ set, onReset }: { set: SetResult[]; onReset: () => void }) {
             >
               <RotateCcw aria-hidden className="size-4" />
               Reset
-            </button>
+            </PendingButton>
           </div>
         </motion.section>
       )}

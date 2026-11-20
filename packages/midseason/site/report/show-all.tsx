@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useState, type ReactNode } from "react";
 import { cn } from "@cpc/design/lib/utils";
 import { openId } from "@cpc/design/lib/stable-id";
@@ -30,7 +31,7 @@ export function ShowAll({
       {/* A mono text control with a chevron and no border (decision ticket 15). The chevron turns by a CSS transition,
           so the reduced-motion rule of globals.css stops the turn. */}
       {long && (
-        <button
+        <PendingButton
           type="button"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
@@ -51,7 +52,7 @@ export function ShowAll({
           >
             <path d="M6 9l6 6 6-6" />
           </svg>
-        </button>
+        </PendingButton>
       )}
     </div>
   );

@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useState } from "react";
 import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
@@ -76,7 +77,7 @@ export function PositionLeaders({
         {leaders.map(({ position }) => {
           const on = position === board?.position;
           return (
-            <button
+            <PendingButton
               key={position}
               type="button"
               aria-pressed={on}
@@ -88,7 +89,7 @@ export function PositionLeaders({
               )}
             >
               {position}
-            </button>
+            </PendingButton>
           );
         })}
       </div>

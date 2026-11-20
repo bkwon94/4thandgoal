@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useId, useState } from "react";
 import { ChevronDownIcon, LockIcon } from "lucide-react";
 import { z } from "zod";
@@ -255,7 +256,7 @@ function Row({ row, open, onToggle }: { row: LineupRow; open: boolean; onToggle:
   }
   return (
     <li className="border-rule border-b last:border-b-0" data-slot={row.slot}>
-      <button
+      <PendingButton
         type="button"
         aria-expanded={open}
         aria-controls={id}
@@ -263,7 +264,7 @@ function Row({ row, open, onToggle }: { row: LineupRow; open: boolean; onToggle:
         className={`${ROW_GRID} press w-full cursor-pointer bg-transparent text-left`}
       >
         <RowLine row={row} open={open} />
-      </button>
+      </PendingButton>
       <Detail id={id} open={open} fact={detail.fact} line={detail.line} />
     </li>
   );
@@ -334,22 +335,22 @@ function TotalToggle({
         aria-hidden
         className={`rounded-pill border-door-hair bg-card absolute inset-y-[2px] left-[2px] w-[calc(50%-2px)] border transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${withSwaps ? "translate-x-full" : "translate-x-0"}`}
       />
-      <button
+      <PendingButton
         type="button"
         aria-pressed={!withSwaps}
         onClick={() => onChange(false)}
         className={segment}
       >
         By projection
-      </button>
-      <button
+      </PendingButton>
+      <PendingButton
         type="button"
         aria-pressed={withSwaps}
         onClick={() => onChange(true)}
         className={segment}
       >
         {swapsLabel(swaps)}
-      </button>
+      </PendingButton>
     </span>
   );
 }

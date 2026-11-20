@@ -16,6 +16,7 @@
     "apps/site/next-env.d.ts"
   ],
   "rules": {
+    "design/no-raw-element": "error",
     "no-restricted-imports": [
       "error",
       {

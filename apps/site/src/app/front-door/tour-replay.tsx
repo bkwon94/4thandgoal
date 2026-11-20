@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { CircleHelpIcon } from "lucide-react";
 import { useCloseMenuSheet } from "@cpc/design/shell/menu-sheet";
 import { replayTour } from "./tour";
@@ -13,7 +14,7 @@ import { replayTour } from "./tour";
 export function TourRow() {
   const closeThen = useCloseMenuSheet();
   return (
-    <button
+    <PendingButton
       type="button"
       onClick={() => (closeThen ? closeThen(replayTour) : replayTour())}
       className="press min-h-dock gap-sp-3 rounded-tile px-sp-2 text-ink hover-fine:bg-raised flex w-full items-center text-left"
@@ -25,7 +26,7 @@ export function TourRow() {
         <CircleHelpIcon className="size-sp-5" />
       </span>
       <span className="text-body truncate leading-tight font-semibold">Show the tour</span>
-    </button>
+    </PendingButton>
   );
 }
 
@@ -33,13 +34,13 @@ export function TourRow() {
    phone and a tablet reach the Tour from the menu sheet. It hides with scripts off, as the theme button does. */
 export function TourButton() {
   return (
-    <button
+    <PendingButton
       type="button"
       aria-label="Show the tour"
       onClick={replayTour}
       className="press size-touch text-ink hover-fine:text-accent-ink desktop:flex hidden flex-none items-center justify-center [@media(scripting:none)]:hidden"
     >
       <CircleHelpIcon aria-hidden className="size-sp-5" />
-    </button>
+    </PendingButton>
   );
 }

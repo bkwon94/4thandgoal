@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
@@ -242,7 +243,7 @@ function WhyRow({ offer }: { offer: TradeOffer }) {
   const id = useId();
   return (
     <div className="border-rule flex flex-col border-t">
-      <button
+      <PendingButton
         type="button"
         aria-expanded={open}
         aria-controls={id}
@@ -251,7 +252,7 @@ function WhyRow({ offer }: { offer: TradeOffer }) {
       >
         Why
         <Chevron open={open} />
-      </button>
+      </PendingButton>
       <Detail id={id} open={open}>
         <div className="gap-sp-3 pb-sp-3 flex flex-col">
           {offer.case && <p className="text-body leading-body text-ink-2 m-0">{offer.case}</p>}
@@ -335,7 +336,7 @@ function OfferRow({
   const id = useId();
   return (
     <li data-offer className="border-rule flex flex-col border-b last:border-b-0">
-      <button
+      <PendingButton
         type="button"
         data-row
         aria-expanded={open}
@@ -348,7 +349,7 @@ function OfferRow({
           <span className="text-body leading-body text-ink font-semibold">{offer.gist}</span>
         </span>
         <Chevron open={open} />
-      </button>
+      </PendingButton>
       <Detail id={id} open={open}>
         <div className="pb-sp-4">
           <OfferBody offer={offer} live={live && open} action={action} standalone={false} />

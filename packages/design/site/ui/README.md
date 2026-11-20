@@ -21,4 +21,5 @@ None.
 - It holds no state of the site.
 - It holds no `cn` helper. `site/lib/utils.ts` holds it.
 - No file outside this folder imports `@ui-sdk`. The Oxlint rule `no-restricted-imports` in `.oxlintrc.json` fails on one.
+- No site file outside this folder renders a raw `<button>` or `<dialog>`. The plugin rule `design/no-raw-element` fails on one and names the wrapper: `PendingButton` for a button, `Dialog` for a dialog. Test files are exempt.
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).
