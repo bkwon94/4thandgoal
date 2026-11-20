@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests none alone. It fee
 
 **Blocked by:** 08
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] The 40 files pass on `bun test` with no `vi.` call and no `vitest` import.
 - [x] The count of tests that pass equals the count before the move for these files, or the ticket names each change.
