@@ -16,13 +16,13 @@ One spec. The hook and CI catch misuse of the design parts, each part has a "use
 - The code that fails a design check today gets a fix in this spec, with no allowlist. Each raw `<button>` moves to a wrapper of `ui/`. Each repeated arbitrary Tailwind value gets a role token. A true one-off keeps a one-line ignore comment with a reason. Brian, 2026-11-20.
 - The "use it when / do not use it when" doc lives in the top docstring of each part file, as two fixed lines that a check can parse. The READMEs keep their "Knows" lists. Brian, 2026-11-20.
 - The speed list: the Bun swap, a CI cache of `node_modules`, 4 shards of the unit suite in CI, diff-only tests on a PR with a full run when a config file or the lock file changes, and parallel steps in `make check-fast` with a cap for the hook. Brian, 2026-11-20.
+- The look tokens have two tiers: a scale step and a role token. The spacing scale stays a scale. Three role tokens, `--color-accent-wash`, `-chosen`, and `-hover`, replace the chip washes. `--oc-dur` and `--es-dur` are runtime values, not tokens. Brian, 2026-11-20. `decisions/04-grill-token-roles.md`.
 
 ## NOT YET SPECIFIED
 
 - What does the latest Bun do for install with a workspace, test with `happy-dom` and the `vi.*` calls, shards, `--changed`, check, lint with a plugin API, and fmt? `decisions/01-research-bun-latest.md`.
 - What are the baseline times of `make check-fast` and of each CI job, and what does `create_app` cost per API test? `decisions/02-research-baseline-times.md`.
 - Which design rules ship, and which tool runs each one? `decisions/03-grill-design-rules.md`.
-- What role name does each token get that is not a role now? `decisions/04-grill-token-roles.md`.
 
 ## OUT OF SCOPE
 
