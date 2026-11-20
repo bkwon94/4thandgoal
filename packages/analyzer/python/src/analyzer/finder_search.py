@@ -545,7 +545,10 @@ def ask_fair(snapshot: Snapshot, offers_by_pair: dict[tuple[int, int], list[Prop
 
     The requests of every pair go in one set of waves. A failed request stores no answer, because a failed call is an
     error and never a no, so the next press or warm-up asks it again.
+    Each answer of the client from another chart week leaves the cache first. The worker warms only some clients, so a
+    press drops the old weeks too, and the cache of a client that is not warmed stays small.
     """
+    cache.keep_week(snapshot.client.slug, snapshot.season, snapshot.as_of.chart_week)
     groups: dict[str, list[WaveRequest]] = {}
     asked: dict[str, tuple[SideOrder, list[ProposedTrade]]] = {}
     for (first, second), offers in offers_by_pair.items():
@@ -569,10 +572,9 @@ def warm_fair(snapshot: Snapshot, cache: FairCache, waves: JevWaves) -> tuple[in
     """The warm-up of the fair cache: the Value offers of every team pair, and each fair question that the cache does
     not hold, asked through `waves` (decision 19). Return the count of fair questions of all offers and the count asked.
 
-    Each answer of the client from another chart week leaves the cache first. A changed roster or a new chart week
-    gives new keys, so a second warm-up asks only those.
+    Each answer of the client from another chart week leaves the cache first, in `ask_fair`. A changed roster or a new
+    chart week gives new keys, so a second warm-up asks only those.
     """
-    cache.keep_week(snapshot.client.slug, snapshot.season, snapshot.as_of.chart_week)
     offers_by_pair = {(first, second): value_offers(first, second, snapshot)
                       for first, second in combinations(sorted(snapshot.rosters), 2)}
     asked = ask_fair(snapshot, offers_by_pair, waves, cache)

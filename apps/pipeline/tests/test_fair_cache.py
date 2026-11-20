@@ -100,6 +100,21 @@ def test_a_press_of_team_b_reads_the_answers_that_a_press_of_team_a_stored(snap)
     assert {_flipped(oid): mean for oid, mean in found_a.fair_means.items()} == found_b.fair_means
 
 
+def test_a_press_drops_the_answers_of_its_client_from_an_old_chart_week_and_keeps_those_of_another_client(snap):
+    # A client that the worker never warms, such as norcal, gets each answer from a press, so a press keeps the cache
+    # small too.
+    cache = FairCache()
+    other = ("norcal", snap.season, snap.as_of.chart_week, ("1",), ("2",))
+    cache.put(other, 0.5)
+    search(TEAM_A, TEAM_B, snap, FakeJev(), fair_cache=cache)
+    old_week = len(cache) - 1
+    assert old_week > 0
+    next_week = snap.model_copy(update={"as_of": snap.as_of.model_copy(update={"chart_week": 10})})
+    search(TEAM_A, TEAM_B, next_week, FakeJev(), fair_cache=cache)
+    assert len(cache) == old_week + 1
+    assert other in cache
+
+
 def _asked_offers(jev) -> list[list[str]]:
     """The player names of each offer that a fair question of the Jev asked about."""
     return [[player["name"] for side in line["sides"] for player in side["gives"]]
