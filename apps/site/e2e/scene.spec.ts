@@ -140,12 +140,39 @@ test.describe(`the scene of the week page of ${CLIENT}, at rest`, () => {
 
   test("draws the settled chart at once, the same at 0.1 s and 2.5 s, in both themes (AT-31, AT-33)", async ({ page }) => {
     await page.setViewportSize(PHONE);
+    // A slow phone reports the entry of the hero late. The page holds each report of the view for 30 frames, so the late
+    // start happens on each run. The page also records each state that the canvas marks, from its first frame on.
+    await page.addInitScript(() => {
+      const Real = window.IntersectionObserver;
+      window.IntersectionObserver = class extends Real {
+        constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+          super((entries, observer) => {
+            let frames = 30;
+            const wait = () => (--frames > 0 ? requestAnimationFrame(wait) : callback(entries, observer));
+            requestAnimationFrame(wait);
+          }, options);
+        }
+      };
+      const states: string[] = [];
+      (window as unknown as { sceneStates: string[] }).sceneStates = states;
+      new MutationObserver((changes) => {
+        for (const change of changes) {
+          const value = (change.target as HTMLElement).dataset.sceneState;
+          if (value && value !== states.at(-1)) states.push(value);
+        }
+      }).observe(document, { subtree: true, attributes: true, attributeFilter: ["data-scene-state"] });
+    });
+    const statesOf = () => page.evaluate(() => (window as unknown as { sceneStates: string[] }).sceneStates);
     await openWeek(page, "light");
+    // The entry is the first frame that the canvas draws.
+    await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", /./);
     await page.waitForTimeout(100);
     expect(await stateOf(page)).toBe("rest");
     const early = await frameOf(page);
     await page.waitForTimeout(2400);
     expect(await frameOf(page)).toBe(early);
+    // The canvas marks only the rest, from its first frame to 2.5 s: no blank chart and no play before it.
+    expect(await statesOf()).toEqual(["rest"]);
     // The hero stays dark in the light theme, and the canvas draws the same lights in both themes.
     const band = await tokenOf(page, "--color-band");
     expect(await page.locator("section").first().evaluate((hero) => getComputedStyle(hero).backgroundColor)).toBe(

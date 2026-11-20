@@ -9,7 +9,10 @@ import { useCallback, useEffect, useState } from "react";
 /* The page settles first, so a sheet that the page opens on load, such as the team sheet, shows before the check. */
 export const LOAD_BEAT_MS = 700;
 
-const keyOf = (id: string) => `cpc.announcement.${id}`;
+/* The seen key of each Announcement starts with this prefix and ends with its id. */
+export const ANNOUNCEMENT_KEY_PREFIX = "cpc.announcement.";
+
+const keyOf = (id: string) => `${ANNOUNCEMENT_KEY_PREFIX}${id}`;
 
 /* Every access is guarded, because a private window or blocked site data makes storage throw. Blocked storage reads as
    not seen, so the Announcement can show on each load there. */

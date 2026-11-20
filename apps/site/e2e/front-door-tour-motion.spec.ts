@@ -93,27 +93,60 @@ function offsetOf({ hole, card }: Sample) {
   };
 }
 
-/* A slow runner, such as a CI machine, draws a frame only every so often. This init script blocks the main thread for
-   `ms` at the first callback of each frame, so the Mac draws few frames in the glide, as CI does. The callbacks of one
-   frame share one timestamp, so each frame is blocked once, and the frames come at an even pace. */
-async function slowFrames(page: Page, ms: number) {
-  await page.addInitScript((block) => {
+/* The glide is a spring that runs on the clock of the page, and the samples read that clock too. On a loaded runner a
+   frame can come 300 ms or more after the one before it. Then the frame after the start of the 450 ms glide shows the
+   hole at the new Stop already, and a real glide looks like a jump. This init script gives the page a clock of frames:
+   `performance.now` and the time of each frame move by exactly `ms` per frame, whatever the real time between frames.
+   So the test sees the same frames of the glide on a fast Mac and on a loaded runner. The callbacks of one frame share
+   one timestamp, so the clock moves once per frame. */
+async function frameClock(page: Page, ms: number) {
+  await page.addInitScript((step) => {
     const raf = window.requestAnimationFrame.bind(window);
-    let blocked = -1;
+    const start = performance.now();
+    let frames = 0;
+    let last = -1;
+    Object.defineProperty(performance, "now", { configurable: true, value: () => start + frames * step });
     window.requestAnimationFrame = (callback) =>
       raf((time) => {
-        if (time !== blocked) {
+        if (time !== last) {
+          last = time;
+          frames += 1;
+        }
+        callback(performance.now());
+      });
+  }, ms);
+}
+
+/* A loaded runner can stall for a few frames just as the glide starts. This init script waits until the Tour marks the
+   control of Stop 2, and then blocks the main thread for `ms` at the first callback of each of the next 3 frames. So the
+   frames of the glide come late on each run. The block reads Date.now, so a clock of the page does not move it. */
+async function lateGlideFrames(page: Page, ms: number) {
+  await page.addInitScript((block) => {
+    const raf = window.requestAnimationFrame.bind(window);
+    let marks = 0;
+    let left = 0;
+    let blocked = -1;
+    new MutationObserver((records) => {
+      for (const record of records) {
+        if ((record.target as Element).hasAttribute("data-tour-target") && ++marks === 2) left = 3;
+      }
+    }).observe(document, { attributes: true, subtree: true, attributeFilter: ["data-tour-target"] });
+    window.requestAnimationFrame = (callback) =>
+      raf((time) => {
+        if (left > 0 && time !== blocked) {
           blocked = time;
-          const end = performance.now() + block;
-          while (performance.now() < end);
+          left -= 1;
+          const end = Date.now() + block;
+          while (Date.now() < end);
         }
         callback(time);
       });
   }, ms);
 }
 
-/* AT-15: tap Next on Stop 1 and check each frame of the move to Stop 2. */
-async function glideTogether(page: Page) {
+/* AT-15: tap Next on Stop 1 and check each frame of the move to Stop 2, with a frame every `frameMs` of the page clock. */
+async function glideTogether(page: Page, frameMs = 1000 / 60) {
+  await frameClock(page, frameMs);
   await openTour(page);
   await startSamples(page, readFrame);
   await page.getByRole("dialog", { name: "Suggestions" }).getByRole("button", { name: "Next" }).click();
@@ -164,7 +197,11 @@ test.describe("iPhone 390x660 with motion on", () => {
   });
 
   test("on a slow runner with 150 ms frames, the hole and the card still glide together (AT-15)", async ({ page }) => {
-    await slowFrames(page, 150);
+    await glideTogether(page, 150);
+  });
+
+  test("when the first frames of the glide come 400 ms late, the hole and the card still glide together (AT-15)", async ({ page }) => {
+    await lateGlideFrames(page, 400);
     await glideTogether(page);
   });
 
@@ -197,24 +234,51 @@ test.describe("iPhone 390x660 with motion on", () => {
 /* Short scrolls down and back. The control crosses the middle line of the screen, so the side of the card flips. A
    pause near the fade of the card lets the card fade out, and the scroll back flips the side again before the card
    comes back. The pause that does it moves with the load of the machine, so the test steps through the pauses around
-   the fade. After each scroll the card must show again within 3 s, beside its hole, and never over its control. */
+   the fade. After each scroll the card must show again within 3 s, beside its hole, and never over its control.
+   The page samples each frame after the scroll back with one frame loop of its own, until the card shows and the hole
+   holds still for 20 frames. So the test sees each frame of the return, not only the frame of one late read. In each
+   pause the hole is still on its way back when the card can start to return, so a card that comes back before its hole
+   lands covers the control in some frame on every run, on a fast Mac and on a loaded runner. */
 async function cardShowsAfterScrollBursts(page: Page) {
   for (let pause = 120; pause <= 220; pause += 5) {
-    await page.evaluate(async (wait) => {
-      window.scrollTo(0, 60);
-      await new Promise((done) => setTimeout(done, wait));
-      window.scrollTo(0, 0);
-    }, pause);
-    await expect
-      .poll(() => page.evaluate(readFrame).then(({ opacity }) => opacity), { message: `the card shows again after a scroll with a pause of ${pause} ms`, timeout: 3000 })
-      .toBe(1);
-    const frame: Sample = await page.evaluate(readFrame);
+    const samples: Sample[] = await page.evaluate(
+      async ({ wait, source }) => {
+        const read = new Function(`return (${source})()`) as () => Sample;
+        window.scrollTo(0, 60);
+        await new Promise((done) => setTimeout(done, wait));
+        window.scrollTo(0, 0);
+        const frames: Sample[] = [];
+        const start = Date.now();
+        await new Promise<void>((done) => {
+          const tick = () => {
+            frames.push(read());
+            const last = frames.slice(-21).map((frame) => JSON.stringify(frame.hole));
+            const still = last.length > 20 && last.every((hole) => hole === last[0]) && frames.at(-1)!.opacity === 1;
+            if (still || Date.now() - start > 3000) done();
+            else requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+        return frames;
+      },
+      { wait: pause, source: readFrame.toString() },
+    );
+    const frame = samples.at(-1)!;
     const { below, gap } = offsetOf(frame);
     // The card sits under a control in the top half of the screen and over a control in the bottom half.
     const holeInTopHalf = frame.hole.y + frame.hole.height / 2 <= page.viewportSize()!.height / 2;
     console.log(`E1 card at rest after a scroll with a pause of ${pause} ms: ${JSON.stringify({ hole: frame.hole, card: frame.card, opacity: frame.opacity, below, gap })}`);
+    expect(frame.opacity, `the card shows again after a scroll with a pause of ${pause} ms`).toBe(1);
     expect(below, `the card takes the side of its control after a pause of ${pause} ms`).toBe(holeInTopHalf);
     expect(gap, `the card does not cover its control after a pause of ${pause} ms`).toBeGreaterThanOrEqual(0);
+    // The card returns from its faintest frame. From that frame on, each frame that shows the card has it beside its hole.
+    const faintest = samples.reduce((low, sample, index) => (sample.opacity < samples[low].opacity ? index : low), 0);
+    const covers = samples
+      .slice(faintest)
+      .map((sample, index) => ({ index: faintest + index, opacity: sample.opacity, gap: offsetOf(sample).gap, hole: sample.hole.y }))
+      .filter((sample) => sample.opacity > 0 && sample.gap < 0)
+      .map(({ index, opacity, gap, hole }) => `frame ${index}: opacity ${opacity}, gap ${gap.toFixed(1)} px, hole top ${hole.toFixed(1)}`);
+    expect(covers, `the card covers its control as it comes back after a pause of ${pause} ms`).toEqual([]);
   }
 }
 
