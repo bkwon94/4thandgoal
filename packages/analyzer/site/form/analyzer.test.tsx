@@ -3,7 +3,7 @@
  * fetch is a test stub. Each test reads the screen, the stored passphrase, and the stored teams.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget } from "../lib/fixtures/api";
 import { Analyzer } from "./analyzer";
@@ -23,7 +23,7 @@ const TEAMS = {
   ],
 };
 
-const fetchStub = vi.fn();
+const fetchStub = mock();
 
 function answer(status: number, body: unknown = {}, headers: Record<string, string> = {}) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
@@ -105,12 +105,11 @@ beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
   fetchStub.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
 });
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
 });
 
 async function submitPassphrase(value: string) {

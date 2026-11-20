@@ -3,7 +3,7 @@
  * They read the name of the trigger, the four part lines in order, the lead sentence, the close on Escape, and no trigger with no grade.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import type { Manager } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";
 import { ManagerHero } from "./manager-hero";

@@ -43,6 +43,18 @@ describe("the DOM of bun test", () => {
     expect(frames).toBeLessThanOrEqual(14);
   });
 
+  it("keeps the frames running when a test replaces setTimeout with a fake", async () => {
+    const fake = spyOn(globalThis, "setTimeout").mockImplementation(
+      (() => 0) as unknown as typeof setTimeout,
+    );
+    // A frame timer on the fake `setTimeout` would never fire, and the frame timer would stay set.
+    requestAnimationFrame(() => {});
+    fake.mockRestore();
+    const frame = new Promise((resolve) => requestAnimationFrame(resolve));
+    const timeout = new Promise((resolve) => setTimeout(() => resolve("stalled"), 200));
+    expect(await Promise.race([frame, timeout])).not.toBe("stalled");
+  });
+
   it("gives each callback of one frame the same time, and runs no canceled callback", async () => {
     const times: number[] = [];
     requestAnimationFrame((time) => times.push(time));

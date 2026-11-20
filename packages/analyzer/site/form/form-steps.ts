@@ -3,7 +3,8 @@
  * The tests of the trade form and of the analyzer both build a trade on the screen with these steps.
  */
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
-import { expect } from "vitest";
+
+// This file imports no test runner, so a Vitest file and a `bun test` file can both use it. A wait throws its own error.
 
 export type SideTitle = "Your Team" | "Team Two" | "Team Three" | "Team Four";
 
@@ -21,7 +22,9 @@ export const addPlayer = (side: SideTitle) =>
 export async function chooseTeam(team: string) {
   const picker = await screen.findByRole("dialog", { name: /^Pick / });
   fireEvent.click(within(picker).getByRole("button", { name: new RegExp(team) }));
-  await waitFor(() => expect(picker.isConnected).toBe(false));
+  await waitFor(() => {
+    if (picker.isConnected) throw new Error("The picker is still open.");
+  });
 }
 
 export async function pickTeam(side: SideTitle, team: string) {
@@ -37,7 +40,9 @@ export async function pickPlayers(side: SideTitle, from: string, ...names: strin
   for (const name of names)
     fireEvent.click(within(open).getByRole("checkbox", { name: new RegExp(name) }));
   fireEvent.click(within(open).getByRole("button", { name: /^Done/ }));
-  await waitFor(() => expect(open.isConnected).toBe(false));
+  await waitFor(() => {
+    if (open.isConnected) throw new Error("The sheet is still open.");
+  });
 }
 
 /* A trade of two teams with one player for each card. My team gets the player of the other team, and the other team gets mine. */
