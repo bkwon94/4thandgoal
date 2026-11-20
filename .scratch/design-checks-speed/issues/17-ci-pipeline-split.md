@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-33.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The ticket records the time of each half before the split.
 - [x] One job runs the parallel pipeline tests, and another runs the serial pipeline tests.
