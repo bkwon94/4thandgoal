@@ -500,7 +500,9 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
     A trade part goes out with each trade of the pick as soon as it stands, with its index in the pick order, the most
     trades that the pick can keep, and the fields of a trade of the document, so each card shows in turn (decision 20).
     A Shortlist part goes out before the pick with each trade of the Shortlist by the names of its players, so the wait
-    of step 5 names the trade that the pick weighs (decision 20). The Answer holds the whole document.
+    of step 5 names the trade that the pick weighs (decision 20). A trades-done part goes out once when the pick has no
+    more trades, so the site drops the count line when the pick keeps fewer than it can. The Answer holds the whole
+    document, and it stays the truth.
 
     It counts one grade, as the plain find route does, and the caps of the front door do not apply.
     """
@@ -518,7 +520,8 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
         document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=defer,
                                                read=lambda roster_id: emit("data-team", {"roster_id": roster_id}),
                                                trade=trade,
-                                               weigh=lambda trades: emit("data-shortlist", {"trades": trades}))
+                                               weigh=lambda trades: emit("data-shortlist", {"trades": trades}),
+                                               trades_done=lambda: emit("data-trades-done", {}))
         emit("data-answer", {"kind": "find", "document": document})
 
     return stream("trade_ideas", work)

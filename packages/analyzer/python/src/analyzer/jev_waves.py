@@ -1,8 +1,6 @@
 """
 The Jev requests of one press, sent in waves under the TypeSafe rate limits of requests and tokens per second.
-Each wave runs its requests at once. A wave goes at once while the last second has room for its count of requests and
-tokens, and it waits only for the room. Every press of the process shares one pacer for that room, and the warm-up of the
-fair cache waits while a press is live.
+Each wave runs its requests at once, and every press of the process shares one pacer for the room of each second.
 """
 import json
 import logging
@@ -96,12 +94,6 @@ class Pacer:
             with self._lock:
                 self._presses -= 1
 
-    @property
-    def live(self) -> bool:
-        """True while a press is live."""
-        with self._lock:
-            return self._presses > 0
-
     def reserve(self, count: int, tokens: int, background: bool = False) -> None:
         """Wait until the last second has room for `count` more requests and `tokens` more tokens, then count them.
 
@@ -156,6 +148,8 @@ class JevWaves:
         answers: dict[str, JevResponse | None] = {}
         for keys in plan_waves(requests):
             tokens = sum(estimated_tokens(requests[key]) for key in keys)
+            # A wave goes at once while the last second has room for its count of requests and tokens, and it waits
+            # only for the room. The warm-up of the fair cache also waits while a press is live.
             self.pacer.reserve(len(keys), tokens, background=self.background)
             self.waves_sent += 1
             log.info("Jev wave %d (%s): %d requests, about %d tokens", self.waves_sent, label, len(keys), tokens)

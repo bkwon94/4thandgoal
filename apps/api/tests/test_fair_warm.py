@@ -89,3 +89,22 @@ def test_a_warm_up_asks_no_fair_question_for_norcal_and_still_warms_cpc(settings
     assert len(jev.requests) == 0 and len(app.state.fair_cache) == 0
     warmer.warm(cpc)
     assert len(jev.requests) > 0 and len(app.state.fair_cache) > 1000
+
+
+def test_a_press_of_a_client_outside_the_warm_slugs_never_wakes_the_worker(settings, sources):
+    jev = FakeJev()
+    app = _app(settings, sources, jev)
+    cpc = app.state.served[SLUG]
+    snapshot = cpc.sources.snapshot(cpc.client.values.latest_season)
+    norcal = snapshot.model_copy(update={"client": snapshot.client.model_copy(update={"slug": "norcal"})})
+    warmer = FairWarmer(app.state.served, app.state.fair_cache, jev)
+    warmer.check(norcal)
+    assert not warmer.wake.is_set()
+
+
+def test_a_trade_wire_answer_of_a_client_outside_the_warm_slugs_never_wakes_the_worker(settings, sources):
+    jev = FakeJev()
+    app = _app(settings, sources, jev)
+    warmer = FairWarmer(app.state.served, app.state.fair_cache, jev)
+    warmer.trades_seen("norcal", ["1"])
+    assert not warmer.wake.is_set()
