@@ -161,7 +161,7 @@ export function addSteps(flows: readonly Flow[], file: string): Flow[] {
  * shows, such as a Stop card of the Tour or a sheet, only the texts inside it count: the layer makes the page under it
  * inert and covers it by design, so a text of the page under the layer is no text that a person reads then.
  */
-async function findOverlap(page: Page): Promise<string | null> {
+export async function findOverlap(page: Page): Promise<string | null> {
   return page.evaluate((limit) => {
     type Box = { owner: Element; top: number; bottom: number; left: number; right: number };
     const describe = (element: Element) => {

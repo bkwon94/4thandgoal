@@ -192,7 +192,9 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
   let layout: SceneLayout | null = null;
   let scatter: ScenePoint[] = [];
   let dust: DustPoint[] = [];
-  let state: SceneState = "idle";
+  // Under reduced motion nothing waits for the entry, so the first frame is the settled chart, even when a slow phone
+  // reports the view late (story 37). With motion, the scene waits in `idle` for the entry.
+  let state: SceneState = motionOff ? (settles ? "rest" : "drift") : "idle";
   let startedAt = 0;
   let plays = 0;
   let loop = 0;
