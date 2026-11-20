@@ -1,7 +1,7 @@
 # The week 10 floor test fails on main after the tap on recap 3
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-floor-recap`.
 Source: the session of 2026-11-19. Main Check run 44611529354 at `ac287f48` and PRs #80 and #81 fail it.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -43,3 +43,7 @@ Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyze
 - The cpc tests of recap 3 at 1280px fail only in Linux Chromium. Mac Chromium sets the title at 360.67px, so it fits and has one text box. A probe in the image `mcr.microsoft.com/playwright:v1.64.1-noble` showed the 378.41px title, the two boxes, and the incomplete result in dark and light. At the top of the page axe passes the title in both themes. On CI the Red command also fails these two floor tests at `f1f0c14b`.
 - The title cut is by design: the band gives the pill bar its full labels first. So the fix is in the floor check, not in `apps/site/src`.
 - Brian chose to cherry-pick `5432d4f8` of PR #80 as `eeff9922`: the overlap check of the smoke run counts only the texts of an open modal layer. Without it, the `Front door` flow failed on the old Tour overlap that PR #80 fixes.
+- Closes with the squash merge of the PR of `bug-floor-recap`. Commits: `f1f0c14b`, `2950b4d5`, `eeff9922`. Date: 2026-11-19.
+- The loop went red on 2 floor rules at `f1f0c14b` and green on 6 tests at `2950b4d5`; `make check-fast` passes; the smoke run gives 7 of 7.
+- Later: the cut band title shows only in Linux Chromium, so a local Mac run of the floor cannot catch this kind of fault.
+- Read 3 files: AGENTS.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md; the count of the builder subagent is not in this line.
