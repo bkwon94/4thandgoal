@@ -21,14 +21,14 @@ One spec. The hook and CI catch misuse of the design parts, each part has a "use
 - pnpm stays the installer. Bun runs on the `node_modules` that pnpm installs. Brian, 2026-11-20. `decisions/05-grill-bun-install-path.md`.
 - The tests move to native `bun:test` calls plus one helper for `stubGlobal` and `stubEnv`, in happy-dom. The files move in batches on the spec branch, and `main` gets one swap. CI shards and runs `--changed` on a PR. The measured time sets the shard count. Brian, 2026-11-20. `decisions/06-grill-bun-test-port.md`.
 - The baselines: a full `make check-fast` takes 195 s, and Vitest is 138 s of it. The CI run takes 754 s, and site-browser sets it at 746 s. `create_app` costs 4 ms per call, so the shared API app drops. `decisions/02-research-baseline-times.md`.
+- Five design rules ship in one Oxlint config and a local plugin at `packages/design/lint/`: the `@ui-sdk` import, no raw color, no raw `<button>` or `<dialog>`, no arbitrary color or spacing value (32 uses), and the part docstring lines. The landmines rules stay out. `decisions/03-grill-design-rules.md`.
 
 ## NOT YET SPECIFIED
 
 - What is the CI target, given a run of 754 s set by site-browser? `decisions/07-grill-ci-target.md`.
-- Which design rules ship, and which tool runs each one? `decisions/03-grill-design-rules.md`.
 
 ## OUT OF SCOPE
 
 - The move from pnpm to `bun install`. Brian keeps pnpm for now. It is a follow-up after this spec.
 - The Python tools of the pipeline and the API, such as `pytest` and `ruff`. Bun does not run Python.
-- The landmines spike. It stays a Quick Win in the queue, unless ticket 03 takes in its timing rules.
+- The landmines spike. It stays a Quick Win in the queue, after this spec merges, because its rules know Vitest names that this spec removes.
