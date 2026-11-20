@@ -26,7 +26,7 @@ from fastapi.testclient import TestClient
 
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
-from analyzer.finder_pick import LABELS, NO_OFFER, NO_PARTNER, SAME_FACT, FinderPickOut, PickOut, pick_trades
+from analyzer.finder_pick import LABELS, NO_OFFER, SAME_FACT, FinderPickOut, PickOut, pick_trades
 from analyzer.finder_search import search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.trade import ProposedTrade
@@ -1908,14 +1908,25 @@ def test_an_empty_shortlist_gives_the_empty_line_and_makes_no_claude_call(settin
     doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_partner)).post(
         "/find", json={"season": 2026, "asker": 2, "limit": KEEP_ALL}, headers=HEADERS).json()
     assert doc["trades"] == [] and doc["near"] == []
-    # No team passed the partner filter, so the line says that no team fits, not that the pick found nothing.
-    assert doc["empty"] == NO_PARTNER
+    # Each Spares tree answer is a clear no, but the Spares tree gives reasons, never a gate (decision 16). So the line
+    # says that no player fits the ask, not that no team can spare one.
+    assert doc["empty"] == NO_OFFER
     assert doc["fallback"] is False
     assert picker.calls == []
     # The finder reads the same bounds and the same known games as the grade.
     assert doc["as_of"]["stats_through"] == 6
     assert doc["as_of"]["completed_through"] == 5
     assert doc["as_of"]["known_games"] == {"week": 6, "games": 14, "in_progress": 0, "pending": {"usage": 8}}
+
+
+def test_a_picked_partner_with_a_clear_no_on_each_spare_gets_its_offers_and_the_no_offer_line(settings, sources):
+    jev = FakeJev(answer=_no_partner)
+    client = _find_client(settings, sources, StubPicker(), jev=jev)
+    # A clear no on each Spares tree answer drops no offer of the partner, so the pick still gets trades.
+    assert client.post("/find", json=FIND, headers=HEADERS).json()["trades"]
+    # With no offer left by the limit, the empty line is NO_OFFER, never a line about spares.
+    doc = client.post("/find", json={**FIND, "limit": KEEP_ALL}, headers=HEADERS).json()
+    assert doc["trades"] == [] and doc["empty"] == NO_OFFER
 
 
 def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_call(settings, sources):

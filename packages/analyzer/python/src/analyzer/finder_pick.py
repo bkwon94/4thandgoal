@@ -58,9 +58,8 @@ MAX_PICKS = 5
 MAX_NEAR = 3
 # Each pick has a Lean, a Case, and 2 to 4 Bullets.
 MIN_BULLETS, MAX_BULLETS = 2, 4
-# The lines of a press whose search kept no offer. No Claude call runs, so code writes them. NO_PARTNER is for a
-# search where no team passed the partner filter, and NO_OFFER for a search where the teams that passed gave no offer.
-NO_PARTNER = "No other team has a starter for your weak spots that it can spare, so no trade came up."
+# The line of a press whose search kept no offer. No Claude call runs, so code writes it. The Spares tree gives reasons,
+# never a gate (decision 16), so no Spares tree answer picks this line.
 NO_OFFER = "No team has a player who fits this ask, so no trade came up."
 # The line when each pick failed its repair and only near ideas stand, so the Advisor gave no none_line of its own.
 NO_CLEAR_PICK = "No offer on the list is a clear win, so these are ideas to weigh."
@@ -545,7 +544,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
                 stage: Stage = quiet, defer: Defer = run_now, on_pick: OnPick | None = None,
                 on_picks_end: OnPicksEnd = _no_end) -> FinderPicks:
     """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
-    NO_PARTNER line when no team passed the partner filter, else the NO_OFFER line.
+    NO_OFFER line.
 
     One call picks the best 5 across every partner. Each offer has a label, A to J, in the prompt, and code maps the
     label back to its offer. A failure of the whole response retries the pick call once with the failures as feedback.
@@ -562,8 +561,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     The FinderPicks that the press gives stay the truth: a pick that went out from a failed answer is not in them.
     """
     if not shortlist.shortlist:
-        passed = any(read.passed for read in shortlist.partners)
-        return FinderPicks(picks=[], none_line=NO_OFFER if passed else NO_PARTNER, fallback=False)
+        return FinderPicks(picks=[], none_line=NO_OFFER, fallback=False)
     most = min(MAX_PICKS, len(shortlist.shortlist))
     # A pick with no offer that stands sends no done line, so the site drops this live line with the Answer.
     stage(f"Picking the best {most}" if most > 1 else "Picking the best one", live=True)
