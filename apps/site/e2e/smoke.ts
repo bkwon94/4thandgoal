@@ -157,7 +157,9 @@ export function addSteps(flows: readonly Flow[], file: string): Flow[] {
 
 /*
  * Finds the first two texts that overlap on the page, and names each one. A text is the box of each line of a visible
- * text node, cut to the boxes of its ancestors that clip it. Two texts of one element never count.
+ * text node, cut to the boxes of its ancestors that clip it. Two texts of one element never count. While a modal layer
+ * shows, such as a Stop card of the Tour or a sheet, only the texts inside it count: the layer makes the page under it
+ * inert and covers it by design, so a text of the page under the layer is no text that a person reads then.
  */
 async function findOverlap(page: Page): Promise<string | null> {
   return page.evaluate((limit) => {
@@ -184,12 +186,15 @@ async function findOverlap(page: Page): Promise<string | null> {
       }
       return clip;
     };
+    // The open modal layers, by the layer rule of the front door: an element with aria-modal="true" that shows.
+    const layers = [...document.querySelectorAll('[aria-modal="true"]')].filter((layer) => layer.checkVisibility());
     const boxes: Box[] = [];
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const owner = node.parentElement;
       if (!owner || !node.textContent?.trim() || owner.closest("script, style, noscript")) continue;
       if (!owner.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+      if (layers.length > 0 && !layers.some((layer) => layer.contains(owner))) continue;
       const clip = clipOf(owner);
       // A glyph box can be taller than the line height, so with tight leading two lines of one paragraph share a few px.
       // Each line keeps only its line height, cut evenly from the top and the bottom. A line height of "normal" cuts none.
