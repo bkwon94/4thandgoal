@@ -296,10 +296,10 @@ Evidence: both request bodies, and screenshots of the hero with "RB" picked at 3
 
 AT-36: The Finder wait shows the real steps in `StageLines`
 App: site
-Stories: 53, 54, 55, 57
+Stories: 53, 54, 55, 109
 Given: The analyzer of `cpc` in Find mode, with Bo Girds as the asker and every team, against the local API.
 When: The reader taps "Find".
-Then: One line at a time shows each real step, such as "4 of 5 · Making a shortlist", and each line holds until the next step ends.
+Then: One line at a time shows each real step with the counts of the press, such as "3 of 5 · Checking 9,412 trades for fairness", and each line holds until the next step ends.
 Evidence: the step events of the stream with times, the line text with times, the `StageLines` part in the DOM, and screenshots of two lines at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-37: The team avatars light up in turn
@@ -312,10 +312,10 @@ Evidence: the lit state of each avatar with times, and screenshots of the wait a
 
 AT-38: The Finder trades show as cards with the Lean and a short Case
 App: site
-Stories: 58, 59, 60, 61, 62, 63
+Stories: 59, 60, 61, 62, 63
 Given: The Finder result of AT-36.
 When: The result lands.
-Then: Up to 3 cards show in one list under the hero, each with a Lean of Send it, Lean yes, or Gut call, a Case of at most 3 lines, folded Bullets, and no headline.
+Then: Up to 5 cards show in one list under the hero, each with a Lean of Send it, Lean yes, or Gut call, a Case of at most 3 lines, folded Bullets, and no headline.
 Evidence: the find answer, and screenshots of the cards at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-39: A tap on a card opens the trade already graded
@@ -334,15 +334,16 @@ When: The reader taps "Find".
 Then: The hero shows the error line and a "Try Again" button.
 Evidence: screenshots of the hero at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
-AT-41: A press of the Finder takes about 25 s
+AT-41: A press runs one pick call with no id retry
 App: api
-Stories: 67, 68, 69
+Stories: 68
 Given: The local API on the week 11 snapshot of `cpc`.
 When: The evidence agent runs one press for Bo Girds (roster 6) and every team, three times.
-Then: Each press ends in 30 s or less, with one pick call and no id retry.
-Evidence: the command, the time of each press, the log lines of each step, and the cost.
+Then: Each press runs one pick call, and no id retry line shows in the log.
+Evidence: the command, the log lines of each step, and the cost.
 
-AT-42: One picked partner skips the Partner filter
+AT-42: Retired. One picked partner skips the Partner filter
+Retired: the Spares tree gates no partner, and the targets step is gone (decisions 15 and 16).
 App: api
 Stories: 70
 Given: The local API on the week 11 snapshot of `cpc`.
@@ -352,11 +353,11 @@ Evidence: the command, the log lines, and the Shortlist.
 
 AT-43: The Shortlist has variety
 App: api
-Stories: 71
+Stories: 101, 102
 Given: The press of AT-41.
 When: The evidence agent reads the Shortlist.
-Then: The best offer of each player of Bo Girds and the best offer of each partner come before a second form of any trade.
-Evidence: the Shortlist with the player and the partner of each offer.
+Then: The best offer of each shape direction comes first, then the best offer of each partner, then the best offer of each player of Bo Girds, before a second form of any trade.
+Evidence: the Shortlist with the shape direction, the partner, the players, and the fair mean of each offer.
 
 AT-44: The Spares tree lists a player only with cover who can play now
 App: pipeline
@@ -368,19 +369,19 @@ Evidence: the test command and its output.
 
 AT-45: A clear no stops, an unsure answer passes, and a failed call is an error
 App: pipeline
-Stories: 77, 78
-Given: The Spares tree and the gain Noul with fixed Jev answers of 0.2, 0.5, and a failed call.
+Stories: 77, 78, 97
+Given: The fair mean and the gain Noul with fixed Jev answers of 0.2, 0.5, and a failed call.
 When: The evidence agent runs the decision tests.
-Then: 0.2 stops, 0.5 passes, and the failed call raises an error, not a stop.
+Then: 0.2 drops the offer, 0.5 keeps it, and the failed call raises an error, not a drop.
 Evidence: the test command and its output.
 
 AT-46: The two bad ideas never come back
 App: api
-Stories: 75, 76, 83
+Stories: 75, 76, 83, 98
 Given: The local API on the week 11 snapshot of `cpc`.
 When: The evidence agent runs one press for Bo Girds and every team.
-Then: Neither "Kenneth Walker III for Patrick Mahomes" nor "Zay Flowers for Jared Goff" is among the 3 trades, and "Kenneth Walker III for Patrick Mahomes" is not on the Shortlist.
-Evidence: the command, the Shortlist, the 3 trades, and the gain Noul answers of any dropped offer.
+Then: Neither "Kenneth Walker III for Patrick Mahomes" nor "Zay Flowers for Jared Goff" is among the 5 trades, and "Kenneth Walker III for Patrick Mahomes" is not on the Shortlist.
+Evidence: the command, the Shortlist, the 5 trades, and the gain Noul answers of any dropped offer.
 
 AT-47: The backtest runs as one command and passes the bar
 App: pipeline
@@ -446,6 +447,142 @@ When: The evidence agent compares the `next` version with `main`.
 Then: The version is the same.
 Evidence: the two version lines.
 
+AT-55: The Value offers hold every shape in both directions
+App: api
+Stories: 89, 90, 91
+Given: The local API on the 2026 week 11 snapshot of `cpc`.
+When: The evidence agent runs one press for Bo Girds (roster 6) and every team.
+Then: The Value offers include all 7 shape directions: 1-for-1, 2-for-1, 1-for-2, 3-for-1, 1-for-3, 3-for-2, and 2-for-3.
+Evidence: the command, and the count of Value offers per shape direction from the log.
+
+AT-56: Each Value offer is inside the band with its direction
+App: api
+Stories: 92, 93
+Given: The press of AT-55.
+When: The evidence agent checks the trade value sums of each Value offer.
+Then: On each uneven offer, the side that gets more players has 100% to 125% of the other sum, and each 1-for-1 is within 10% either way.
+Evidence: the command, the count of offers checked, and the count outside the band, which is 0.
+
+AT-57: No filler and no player without a chart value
+App: api
+Stories: 94
+Given: The press of AT-55.
+When: The evidence agent checks the players of each Value offer.
+Then: No player under 5 trade value sits on a side of 2 or 3 players, and Justin Herbert is in no Value offer.
+Evidence: the command, the lowest trade value on a side of 2 or 3 players, and the search for Justin Herbert.
+
+AT-58: The fair check reads the chart facts in both side orders
+App: pipeline
+Stories: 95, 96, 97
+Given: The week 11 rosters of `cpc`, with Jev answers fixed in the test.
+When: The evidence agent runs the fair step tests.
+Then: Each fair request holds `chart_value` and `chart_sum`, answers of 0.2 and 0.3 drop the offer, and answers of 0.1 and 0.6 keep it.
+Evidence: the test command and its output, and one fair request payload.
+
+AT-59: A need answer drops no offer
+App: pipeline
+Stories: 99
+Given: The week 11 rosters of `cpc`, with Jev answers fixed in the test.
+When: The evidence agent runs the step 2 tests with need answers of 0.1 on both sides and a gain of 0.8.
+Then: The offer stays on the Shortlist.
+Evidence: the test command and its output.
+
+AT-60: Step 2 gets the best offer of each group
+App: api
+Stories: 101, 102
+Given: The press of AT-55.
+When: The evidence agent reads the offers that reach step 2.
+Then: Step 2 holds at most one offer per partner and shape direction, no more than 77 offers, and each is the highest fair mean of its group.
+Evidence: the command, and the step 2 offers with their group and fair mean.
+
+AT-61: A Spares tree yes is a fact, not a gate
+App: pipeline
+Stories: 100
+Given: The week 11 rosters of `cpc`, with Jev answers fixed in the test.
+When: The evidence agent runs the Spares tree fact test, with a "yes" for a QB that Bo Girds gets in one Value offer.
+Then: That offer gets the fact "fills the weak slot QB, and the partner can spare him", and the count of offers stays the same.
+Evidence: the test command and its output.
+
+AT-62: The Shortlist order follows the fair answer
+App: pipeline
+Stories: 102
+Given: The week 11 rosters of `cpc`, with Jev answers fixed in the test.
+When: The evidence agent runs the `varied()` tests.
+Then: After the best offers, the rest follow by the fair mean, highest first.
+Evidence: the test command and its output.
+
+AT-63: A large partner splits under the 64k context
+App: pipeline
+Stories: 112
+Given: The week 11 rosters of `cpc`, with Jev answers fixed in the test.
+When: The evidence agent runs the request test with one partner of 1,200 offers.
+Then: The partner sends 3 or more requests, each under 64,000 tokens by the estimate, and no offer passes as unsure.
+Evidence: the test command and its output.
+
+AT-64: Two presses share one pacer
+App: pipeline
+Stories: 112
+Given: One API process with a fixed clock, and two presses of 300,000 tokens each.
+When: The evidence agent runs the pacer test with both presses at once.
+Then: No second holds more than 100,000 tokens across both presses.
+Evidence: the test command and its output.
+
+AT-65: The trade card is the Ledger
+App: site
+Stories: 104, 105, 106, 108
+Given: The Finder result of AT-36, with a 1-for-1, a 2-for-1, and a 3-for-2 among the cards.
+When: The result lands.
+Then: Each card shows "You get · N" and "You give · N" columns, each player row shows the position, the NFL team, and the rank with no trade value, and a total shows under each column.
+Evidence: the find answer, and screenshots of the three cards at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-66: The card states the gap in plain words
+App: site
+Stories: 107
+Given: A card whose totals are 68.0 for "You get" and 62.5 for "You give".
+When: The card renders.
+Then: The card shows "You get 9% more trade value" under the totals.
+Evidence: the test command and its output, and screenshots of the card at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-67: Five picks, with the near ideas folded
+App: site
+Stories: 103
+Given: The Finder result of AT-36.
+When: The result lands.
+Then: Up to 5 cards show, then "Close, but not sent · N", folded, with up to 3 near ideas under it.
+Evidence: the find answer, and screenshots of the list with the fold closed and open at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-68: The wait states no time
+App: site
+Stories: 110
+Given: The analyzer of `cpc` in Find mode.
+When: The reader taps "Find".
+Then: The hero shows no "This can take about 25 seconds." and no other count of seconds or minutes.
+Evidence: the text of the hero during the wait, and screenshots at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-69: An anchor and a limit hold on every Value offer
+App: api
+Stories: 111
+Given: The local API on the 2026 week 11 snapshot of `cpc`.
+When: The evidence agent runs a press for Bo Girds around Trey McBride, then a press with an aim of RB.
+Then: Each Value offer of the first press holds Trey McBride, and each Value offer of the second press brings Bo Girds an RB.
+Evidence: the commands, and the Value offers of each press.
+
+AT-70: The picks spread across shapes and partners
+App: api
+Stories: 89, 101
+Given: The press of AT-55.
+When: The evidence agent reads the 5 picks.
+Then: The picks hold at least 2 shapes and at least 3 partners.
+Evidence: the command, and the 5 picks with the shape and the partner of each.
+
+AT-71: No request sends the long-context header
+App: api
+Stories: none
+Given: The press of AT-55.
+When: The evidence agent reads the Jev requests of the press.
+Then: No request sends the header `TypeSafe-Danger-Zone-Long-Context`.
+Evidence: the command, and the headers of the Jev requests from the log or a search of the code.
+
 ## Trace
 
 Story 1: AT-1
@@ -504,8 +641,8 @@ Story 53: AT-36
 Story 54: AT-36
 Story 55: AT-36
 Story 56: AT-37
-Story 57: AT-36
-Story 58: AT-38
+Story 57: no test. Reason: replaced by story 109 (AT-36).
+Story 58: no test. Reason: replaced by story 103 (AT-67).
 Story 59: AT-38
 Story 60: AT-38
 Story 61: AT-38
@@ -514,13 +651,13 @@ Story 63: AT-38
 Story 64: AT-39
 Story 65: no test. Reason: no real press of week 11 gives an empty result, and the empty line stays as the Finder has it now.
 Story 66: AT-40
-Story 67: AT-41
+Story 67: no test. Reason: replaced by story 110 (AT-68).
 Story 68: AT-41
-Story 69: AT-41
-Story 70: AT-42
-Story 71: AT-43
-Story 72: AT-44
-Story 73: AT-44
+Story 69: no test. Reason: replaced by story 103 (AT-67).
+Story 70: no test. Reason: replaced by stories 89 to 91; AT-42 is retired.
+Story 71: no test. Reason: replaced by stories 101 and 102 (AT-43).
+Story 72: no test. Reason: replaced by story 99 (AT-59).
+Story 73: no test. Reason: replaced by story 100 (AT-61). AT-44 still checks the list.
 Story 74: AT-44
 Story 75: AT-46
 Story 76: AT-46
@@ -536,6 +673,34 @@ Story 85: AT-47
 Story 86: AT-48
 Story 87: AT-49
 Story 88: AT-12
+Story 89: AT-55, AT-70
+Story 90: AT-55
+Story 91: AT-55
+Story 92: AT-56
+Story 93: AT-56
+Story 94: AT-57
+Story 95: AT-58
+Story 96: AT-58
+Story 97: AT-45, AT-58
+Story 98: AT-46
+Story 99: AT-59
+Story 100: AT-61
+Story 101: AT-43, AT-60, AT-70
+Story 102: AT-43, AT-60, AT-62
+Story 103: AT-67
+Story 104: AT-65
+Story 105: AT-65
+Story 106: AT-65
+Story 107: AT-66
+Story 108: AT-65
+Story 109: AT-36
+Story 110: AT-68
+Story 111: AT-69
+Story 112: AT-63, AT-64
+Out of scope "The long-context header of TypeSafe": AT-71
+Out of scope "A trade value on each player row of a card": AT-65
+Out of scope "A cap on the count of trades after the Value screen": AT-60
+Out of scope "A second Fly machine for the API", "The cause of the 29 pool players with no week 11 chart value": no test. Reason: no ticket builds near them.
 Out of scope "The Deadline Board": AT-52
 Out of scope "A Finder for three-team trades": AT-53
 Out of scope "The upgrade of Next.js": AT-54
@@ -545,4 +710,4 @@ Out of scope "A push alert", "Norcal", "A theme for the whole site", "A stream o
 
 ## Revisions
 
-None yet.
+- 2026-11-19: Brian approved the tests of the fair-first Finder (decisions 13 to 17). AT-36, AT-38, AT-41, AT-43, AT-45, and AT-46 changed. AT-42 is retired. AT-55 to AT-71 are new. AT-41 lost its 30 s limit, because it is a time claim.
