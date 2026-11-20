@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-8, AT-9, and AT
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fixture file outside `ui` that imports `@ui-sdk/react` fails the lint with `no-restricted-imports` and its line.
 - [x] A fixture file inside the fixture copy of `ui` that imports `@ui-sdk/react` passes.
