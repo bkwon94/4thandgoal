@@ -106,13 +106,16 @@ class NearOut(BaseModel):
 
 
 class FinderPickOut(BaseModel):
-    """The structured output of the pick call: up to 5 picks, up to 3 near ideas, and with no pick a plain line that
-    says why."""
+    """The structured output of the pick call: up to 5 picks, up to 3 near ideas, with no pick a plain line that says
+    why, and with fewer than 5 picks a plain line that says why it kept fewer."""
 
     # The count is a description only, as with the Bullets: the guard checks it.
     picks: list[PickOut] = Field(description=f"Up to {MAX_PICKS} picks")
     near: list[NearOut] = Field(description=f"Up to {MAX_NEAR} near ideas; at least 1 when there is no pick")
     none_line: str | None
+    # The pick kept 3, 2, and 2 of 10 offers in three real presses, so it must say why it keeps fewer than 5. The line
+    # only logs and rides in the document, so no guard checks it and no retry waits on it.
+    short_line: str | None = Field(default=None, description=f"Why the pick keeps fewer than {MAX_PICKS}, else null")
 
 
 class FinderPick(BaseModel):
@@ -150,6 +153,8 @@ class FinderPicks(BaseModel):
     near: list[NearIdea] = []
     none_line: str | None
     fallback: bool
+    # The plain line of the Advisor on why it kept fewer picks than it could, or None when it kept the most.
+    short_line: str | None = None
 
 
 def spare_facts(offer: ShortlistOffer, snapshot: Snapshot) -> dict[str, Fact]:
@@ -459,5 +464,10 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
         stage(f"Kept {len(near)} ideas to weigh" if len(near) > 1 else "Kept one idea to weigh")
     picks = [FinderPick(offer=offer, lean=pick.lean, case=pick.case, fact_lines=[],
                         bullets=read_bullets(pick.bullets, sheets[offer.offer_id])) for pick, offer in stand]
+    short_line = None
+    if stand and len(stand) < most and out is not None:
+        short_line = out.short_line
+        log.info("finder pick kept %d of %d: %s", len(stand), most, short_line or "no reason given")
     return FinderPicks(picks=picks, near=[NearIdea(offer=offer, reason=idea.reason) for idea, offer in near],
-                       none_line=None if stand or out is None else out.none_line or NO_CLEAR_PICK, fallback=False)
+                       none_line=None if stand or out is None else out.none_line or NO_CLEAR_PICK, fallback=False,
+                       short_line=short_line)

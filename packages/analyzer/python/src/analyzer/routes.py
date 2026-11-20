@@ -360,6 +360,8 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
         "near": near,
         # The key is always there, so the document keeps one shape with a list and without one.
         "empty": None if trades else picks.none_line,
+        # Why the pick kept fewer than 5 trades, or None. The site does not show it; it is for the log and a review.
+        "short_line": picks.short_line,
         "as_of": _as_of(snapshot),
         "fallback": picks.fallback,
         "missing": list(snapshot.missing),

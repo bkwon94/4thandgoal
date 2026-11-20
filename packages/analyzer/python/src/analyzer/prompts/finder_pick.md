@@ -30,9 +30,11 @@ in a certain direction of what they should do on a trade."
 ## What you give
 
 1. picks: up to 5 offers that you would send, best first, each once, from any team of the list.
-   Pick only an offer you would advise: one that helps the asker and that the other manager would
-   take. Fewer good picks beat five weak ones. Spread the picks across teams and shapes when the
-   offers allow, so the asker gets varied ideas, not five forms of one trade.
+   Keep 5 picks unless an offer is clearly bad for the asker. The asker asked for ideas, so an offer
+   that helps him a little and that the other manager would take is a pick, with a Gut call when it
+   is close. A partner is the other team of an offer. A shape is how many players the asker gives and
+   gets, such as 2-for-1. When the list has them, use at least 3 partners and at least 2 shapes
+   in the picks, so the asker gets varied ideas, not five forms of one trade.
    - label: the one letter of the offer, such as "B".
    - lean: the Lean you would give this trade for the asker if he graded it alone: Send it, Lean
      yes, Gut call, Lean no, or Pass. Pick only an offer that reads Send it, Lean yes, or Gut call.
@@ -51,7 +53,9 @@ in a certain direction of what they should do on a trade."
      words, such as "You give up your RB1 for a quarterback who sits until your starter is back."
      The rules of a Bullet hold for it.
    - fact_id: the one ID on the sheet of that offer that the reason rests on.
-3. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
+3. short_line: null when you give 5 picks. When you give 1 to 4 picks, say in one plain sentence why
+   you kept fewer, with no number, such as "The other offers give up your only reliable RB."
+4. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
    one plain sentence with no number and no name, such as "No offer on the list helps your lineup
    enough to send."
 
