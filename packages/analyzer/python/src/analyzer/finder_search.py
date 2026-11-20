@@ -144,19 +144,15 @@ def _out_with_no_return(snapshot: Snapshot, player_id: str) -> bool:
     # The injury Measure uses the same statuses, so a player the Finder skips is one the sheet reads as out.
     return snapshot.players[player_id].injury_status in OUT_STATUSES and player_id not in snapshot.returns
 
-def _player_line(snapshot: Snapshot, pid: str, starters: set[str], charts: bool) -> dict:
+def _player_line(snapshot: Snapshot, pid: str, starters: set[str]) -> dict:
     player = snapshot.players[pid]
     season, _ = shown_ranks(snapshot, pid)
-    line = {"name": player.name, "position": player.position, "nfl_team": player.nfl_team,
+    return {"name": player.name, "position": player.position, "nfl_team": player.nfl_team,
             "season_rank": season, "starter": pid in starters, "status": player.injury_status}
-    if charts:
-        line["chart_value"] = chart_value(snapshot, pid)
-    return line
 
 
-def _team_state(snapshot: Snapshot, roster_id: int, charts: bool = False) -> dict:
-    """One team as the questions read it: the name, the weak starting slots, the depth that code counts, the players.
-    With `charts`, each player line holds his `chart_value` too, None for a player with no chart value."""
+def _team_state(snapshot: Snapshot, roster_id: int) -> dict:
+    """One team as the questions read it: the name, the weak starting slots, the depth that code counts, the players."""
     roster = snapshot.rosters[roster_id]
     starters = {slot.player for slot in lineup_now(roster, snapshot) if slot.player is not None}
     players = [pid for pid in roster if snapshot.players[pid].position in TRADE_POSITIONS]
@@ -166,21 +162,24 @@ def _team_state(snapshot: Snapshot, roster_id: int, charts: bool = False) -> dic
     return {"roster_id": roster_id, "name": snapshot.teams[roster_id].name,
             "weak_starting_slots": weak_starting_slots(snapshot, roster_id),
             "depth": depth,
-            "players": [_player_line(snapshot, pid, starters, charts) for pid in players]}
+            "players": [_player_line(snapshot, pid, starters) for pid in players]}
 
 
-def _pair_state(snapshot: Snapshot, asker: int, partner: int, charts: bool = False) -> dict:
-    return {"teams": {"asker": _team_state(snapshot, asker, charts), "partner": _team_state(snapshot, partner, charts)}}
+def _pair_state(snapshot: Snapshot, asker: int, partner: int) -> dict:
+    return {"teams": {"asker": _team_state(snapshot, asker), "partner": _team_state(snapshot, partner)}}
 
 
 def _fair_state(snapshot: Snapshot, first: int, second: int) -> dict:
-    """The two teams of the fair question in roster id order, each player with his chart value.
+    """The names of the two teams of the fair question in roster id order. The players of each side, their chart values,
+    and the chart sums go under `offers.<n>.sides`.
 
     It names no asker, so a press of either team sends the same state, and one cached answer serves both (decision
     19). A real Jev run moved the fair mean by 0.047 on average when the labels `asker` and `partner` swapped, against
     0.018 between two runs of the same request.
+    It holds no lineup, no depth, and no injury status, because the fair key holds only the chart week and the players
+    of each side. So no cached answer reads a lineup that has changed since.
     """
-    return {"teams": [_team_state(snapshot, rid, charts=True) for rid in sorted((first, second))]}
+    return {"teams": [snapshot.teams[rid].name for rid in sorted((first, second))]}
 
 
 def in_pool(snapshot: Snapshot, pid: str, roster_id: int) -> bool:

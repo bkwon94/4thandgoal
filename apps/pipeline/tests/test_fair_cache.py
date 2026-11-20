@@ -40,8 +40,33 @@ def test_the_fair_state_names_no_asker_so_a_press_of_either_team_sends_the_same_
         [from_b] = fair_requests(snap, TEAM_B, TEAM_A, flipped, other)
         assert from_a.state == from_b.state
         assert from_a.questions == from_b.questions
-        assert "asker" not in from_a.state["teams"] and "partner" not in from_a.state["teams"]
-        assert [team["roster_id"] for team in from_a.state["teams"]] == [TEAM_A, TEAM_B]
+        assert from_a.state["teams"] == [snap.teams[TEAM_A].name, snap.teams[TEAM_B].name]
+
+
+def test_the_fair_state_holds_only_the_team_names_and_the_players_chart_values_and_sums_of_each_side(snap):
+    # The key holds only the chart week and the players of each side, so the state holds no lineup (decision 19).
+    offers = value_offers(TEAM_A, TEAM_B, snap)[:20]
+    [request] = fair_requests(snap, TEAM_A, TEAM_B, offers, "asker")
+    assert set(request.state) == {"teams", "offers"}
+    for line in request.state["offers"].values():
+        assert set(line) == {"sides"}
+        for side in line["sides"]:
+            assert set(side) == {"team", "gives", "chart_sum"}
+            assert all(set(player) == {"name", "chart_value"} for player in side["gives"])
+
+
+def test_an_injury_and_a_roster_move_outside_the_offers_leave_the_fair_request_the_same(snap):
+    offers = value_offers(TEAM_A, TEAM_B, snap)[:20]
+    in_offers = {pid for trade in offers for side in trade.sides for pid in side.player_ids}
+    benched = next(pid for pid in snap.rosters[TEAM_A] if pid not in in_offers)
+    added = next(pid for rid, roster in snap.rosters.items() if rid not in (TEAM_A, TEAM_B) for pid in roster)
+    players = {**snap.players, benched: snap.players[benched].model_copy(update={"injury_status": "Out"})}
+    rosters = {rid: list(roster) for rid, roster in snap.rosters.items()}
+    rosters[TEAM_B].append(added)
+    changed = snap.model_copy(update={"players": players, "rosters": rosters})
+    for order in ("asker", "partner"):
+        assert fair_requests(changed, TEAM_A, TEAM_B, offers, order) == fair_requests(snap, TEAM_A, TEAM_B, offers,
+                                                                                     order)
 
 
 def _fair_questions(jev) -> int:
