@@ -116,6 +116,7 @@ export function Announcement({
           </div>
         </div>
         {/* The end of the sheet keeps the home bar of an iPhone clear. */}
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step */}
         <div className="gap-sp-1 px-sp-5 pt-sp-4 flex flex-none flex-col pb-[calc(var(--spacing-sp-2)+env(safe-area-inset-bottom))]">
           <a
             href={href}

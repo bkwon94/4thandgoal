@@ -68,6 +68,7 @@ export function PassphraseSheet({
           </p>
         </div>
         {/* The end of the sheet keeps the home bar of an iPhone clear. The keyboard covers the home bar, so the pad drops then. */}
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step */}
         <div className="gap-sp-2 px-sp-5 pt-sp-1 tablet:pb-sp-4 flex flex-col pb-[calc(var(--spacing-sp-4)+var(--spacing-door-safe))]">
           <form
             aria-label="League passphrase"

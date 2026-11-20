@@ -159,7 +159,7 @@ function GapBar({
     : {};
   return (
     <span aria-hidden className="relative block h-1">
-      <span className="bg-rule absolute inset-y-[-2px] left-1/2 w-px" />
+      <span className="bg-rule -inset-y-sp-0 absolute left-1/2 w-px" />
       <motion.span
         data-gap={side}
         className={`rounded-pill absolute inset-y-0 ${side === "you" ? "bg-accent right-1/2 origin-right" : "bg-mute left-1/2 origin-left"}`}

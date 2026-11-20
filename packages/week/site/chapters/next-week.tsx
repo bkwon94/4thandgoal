@@ -21,6 +21,7 @@ export function gameId(when: "last" | "next", a: number, b: number): string {
    The line wraps and never cuts, so a long list stays whole. */
 function ByeLine({ byes }: { byes: ByePlayer[] }) {
   return (
+    // oxlint-disable-next-line design/no-arbitrary-value -- the bye line lines up under the name, past the avatar and one step
     <div className="text-meta leading-body text-mute pl-[calc(var(--spacing-avatar)+var(--spacing-sp-3))]">
       <span className="tracking-caps font-mono uppercase">On bye</span>{" "}
       {byes.map((player, index) => (

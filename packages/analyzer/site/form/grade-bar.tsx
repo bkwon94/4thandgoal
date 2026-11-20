@@ -36,6 +36,7 @@ export function GradeBar({ ready, grading, inEditSheet, level, onGrade }: GradeB
         {level > 0 && (
           <span
             data-orbit=""
+            // oxlint-disable-next-line design/no-arbitrary-value -- the orbit of the pending bar is a gradient, which no color token holds
             className="absolute top-1/2 left-1/2 aspect-square w-[140%] -translate-x-1/2 -translate-y-1/2 animate-spin bg-[conic-gradient(transparent_0_70%,var(--color-accent-text)_85%,transparent_100%)] [animation-duration:3.4s] motion-reduce:hidden"
           />
         )}
@@ -63,6 +64,7 @@ export function GradeBar({ ready, grading, inEditSheet, level, onGrade }: GradeB
   if (inEditSheet) return button;
 
   return (
+    // oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step
     <div className="mt-sp-4 max-w-page sticky bottom-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))] z-30 mx-auto">
       {button}
     </div>

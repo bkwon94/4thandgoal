@@ -333,6 +333,7 @@ function BracketGame({
             className={cn(
               "gap-sp-2 border-rule px-sp-3 py-sp-2 flex items-center border-t first:border-t-0",
               lost && "text-mute",
+              // oxlint-disable-next-line design/no-arbitrary-value -- the inset accent bar marks the row of the reader, a one-off
               id === you && "shadow-[inset_3px_0_0_var(--color-accent)]",
             )}
           >

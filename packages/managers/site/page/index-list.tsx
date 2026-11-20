@@ -110,6 +110,7 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
   /* From the desktop tier the ledger takes 53% of the width, a gap of 5%, and the stage the rest, as in the item.
      The stage is sticky under the top band. Under the desktop tier the stage is not shown, and the ledger is the page. */
   return (
+    // oxlint-disable-next-line design/no-arbitrary-value -- the gap is 5 percent of the width, as in the layout of the item
     <div className="ix desktop:grid desktop:grid-cols-[minmax(0,53fr)_minmax(0,42fr)] desktop:items-start desktop:gap-x-[5%]">
       <div>
         {/* The id is the target of the playoff race Answer of the front door. */}
@@ -191,7 +192,8 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
       {staged && (
         <div
           data-ix-stage
-          className="desktop:sticky desktop:top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px+var(--spacing-sp-4))] desktop:block hidden"
+          // oxlint-disable-next-line design/no-arbitrary-value -- the stage sits one step under the top band, a one-off
+          className="desktop:sticky desktop:top-[calc(var(--spacing-band-height)+var(--spacing-sp-4))] desktop:block hidden"
         >
           <IndexStage row={staged} teams={teams} />
         </div>

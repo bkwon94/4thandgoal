@@ -394,6 +394,7 @@ function Player({
       <div
         role="group"
         aria-label="Replay controls"
+        // oxlint-disable-next-line design/no-arbitrary-value -- the controls keep the larger of one step and the safe-area inset, a one-off
         className="gap-sp-2 pt-sp-3 flex flex-none items-center pb-[max(var(--spacing-sp-3),var(--spacing-door-safe))]"
       >
         {off ? (

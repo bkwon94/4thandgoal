@@ -253,6 +253,11 @@
   /* The halo of the send button, as the Send Halo of scrolltide: the accent, which grows with the question. */
   --color-door-halo: color-mix(in srgb, var(--color-accent) 50%, transparent);
   --color-door-halo-ring: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  /* The accent washes of the chips of a site answer: a tile at rest, a chosen Tool, and the hover of both. Each mixes the
+       accent into the card, and the .dark block below mixes it into the raised surface, so a chip needs no dark: class. */
+  --color-accent-wash: color-mix(in srgb, var(--color-accent) 10%, var(--color-card));
+  --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 20%, var(--color-card));
+  --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 28%, var(--color-card));
 
   /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
   --shadow-orb: 0 0 24px var(--color-accent-glow);
@@ -357,6 +362,10 @@
   --color-door-hair: color-mix(in srgb, var(--color-ink) 10%, transparent);
   --color-door-focus: color-mix(in srgb, var(--color-accent) 55%, var(--color-door-hair));
   --color-door-name: var(--color-accent-ink);
+  /* The accent washes of the chips: the raised surface at rest, then the accent into the raised surface. */
+  --color-accent-wash: var(--color-raised);
+  --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 24%, var(--color-raised));
+  --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 34%, var(--color-raised));
   /* A top edge of light on the ask box and the cards, and a deep shadow under the ask box, so it floats over the page. */
   --door-lift:
     inset 0 1px 0 color-mix(in srgb, var(--color-ink) 6%, transparent),

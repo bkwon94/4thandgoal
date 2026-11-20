@@ -80,6 +80,7 @@ export function LadderSheet({
           <span />
           <span className={cn(LABEL, "text-mute text-right")}>Likely</span>
         </div>
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step */}
         <ol className="px-sp-4 m-0 min-h-0 list-none overflow-y-auto overscroll-contain pb-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))]">
           {[...page.ladder].reverse().map((step) => {
             const inZone = page.need !== null && step.more_wins >= page.need;
