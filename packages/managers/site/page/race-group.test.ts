@@ -2,7 +2,7 @@
  * Tests for the race group of a team, the group of the chips of the Index list.
  * They cover a clinched team, an eliminated team, the 75% edge of In, the 25% edge of Bubble, and a team with no odds.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { raceGroup } from "./race-group";
 
 describe("raceGroup", () => {

@@ -2,16 +2,20 @@
  * Tests for the client of the eggs routes against a real local HTTP server: the wait of a 429 and the reason of a refusal.
  * The server answers as the API does, so the test reads the real parse of each answer.
  */
-// @vitest-environment node
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { EggsError, eggsApi, type EggsApi } from "./api";
 
 let server: Server;
 let api: EggsApi;
 
 beforeAll(async () => {
+  // The test server sits on another origin than the happy-dom page, and the real API answers a browser with CORS headers.
+  // The test reads the parse of each answer, so it turns the same-origin check of happy-dom off.
+  (
+    window as unknown as { happyDOM: { settings: { fetch: { disableSameOriginPolicy: boolean } } } }
+  ).happyDOM.settings.fetch.disableSameOriginPolicy = true;
   server = createServer((request, response) => {
     response.setHeader("Content-Type", "application/json");
     if (request.url?.endsWith("/check")) {

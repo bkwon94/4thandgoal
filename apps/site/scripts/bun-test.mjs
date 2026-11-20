@@ -11,7 +11,9 @@ const SITE = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 
 // Bun reads a path that starts with "../" as a path, not as a name filter, so each folder goes from apps/site to the root.
 const paths = BUN_TEST_DIRS.map((dir) => `../../${dir}`);
-const run = spawnSync("bun", ["test", ...paths, ...process.argv.slice(2)], {
+// --isolate gives each file a fresh global and module registry, as Vitest does. Framer Motion reads matchMedia once per
+// module, so a motion-off file that runs after a motion-on file reads the wrong value without it.
+const run = spawnSync("bun", ["test", "--isolate", ...paths, ...process.argv.slice(2)], {
   cwd: SITE,
   stdio: "inherit",
 });

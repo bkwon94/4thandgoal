@@ -2,7 +2,7 @@
  * Parses the two API fixtures with the response schemas.
  * A fixture that drifts from its schema fails here, and the message names the bad field.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import analyzeJson from "../fixtures/analyze-response.json";
 import findJson from "../fixtures/find-response.json";
 import { analyzeResponseSchema, findResponseSchema, teamsResponseSchema } from "./api";

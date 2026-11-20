@@ -3,7 +3,7 @@
  * They read the rows a reader sees: the order, the quiet lines, the numbers, and the empty line.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import type { Manager } from "../schema/manager-types";
 import { BestAdds } from "./best-adds";
 import { managers as fixture } from "../fixtures/managers";

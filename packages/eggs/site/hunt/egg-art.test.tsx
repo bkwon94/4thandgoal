@@ -3,7 +3,7 @@
  * The browser lays out and paints the art, so these tests read the elements and the classes that set the look.
  */
 import { cleanup, render } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { crackOf, EGG_MIDDLE } from "./crack";
 import { Egg, SlotRow } from "./egg-art";
 import { slotsOf } from "./slots";

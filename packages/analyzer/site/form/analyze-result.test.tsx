@@ -3,7 +3,7 @@
  * They check what a reader sees, not the class names.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import {
   analyzeResponse as fixtureJson,
   analyzeResponseThree as threeJson,
@@ -354,7 +354,7 @@ describe("AnalyzeResult", () => {
     expect(fact.closest("[aria-hidden='true']")).not.toBeNull();
     fireEvent.click(row);
     expect(row.getAttribute("aria-expanded")).toBe("true");
-    expect(row.getAttribute("aria-controls")).toBe(fact.closest("[id]")?.id);
+    expect(row.getAttribute("aria-controls")).toBe(fact.closest("[id]")?.id ?? null);
     expect(fact.closest("[aria-hidden='true']")).toBeNull();
     expect(row.compareDocumentPosition(fact) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(row);

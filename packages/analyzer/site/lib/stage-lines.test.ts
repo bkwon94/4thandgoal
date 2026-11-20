@@ -2,7 +2,7 @@
  * Tests for the stage lines: the 12 lines that one trade on the stage gives, and the rules that each list keeps.
  * Trade T is the real trade of the acceptance tests, and the second trade is the real three-side fixture.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { analyzeResponseThree } from "./fixtures/api";
 import { stageLines, type StageTrade } from "./stage-lines";
 

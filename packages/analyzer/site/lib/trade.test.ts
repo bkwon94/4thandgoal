@@ -2,7 +2,7 @@
  * Tests for the trade of the Stack: the body of POST /analyze that a set of picks builds, the gate of the grade, and the halo level.
  * The bodies on the right are the bodies that the form on main sends for the same trade, from its own tests.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { analyzeRequest, everySideTrades, haloLevel, type Sides } from "./trade";
 
 describe("analyzeRequest", () => {

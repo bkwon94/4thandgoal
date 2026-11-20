@@ -3,7 +3,7 @@
  * A variant of the fixture gives each other state: a won egg word, an egg word with no letters, a close race, and a tie.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { EggsError, type Board } from "../lib/api";
 import { board, boardWith, fakeEggsApi } from "../lib/fixtures/eggs-api";
 import { EggBoard } from "./egg-board";
