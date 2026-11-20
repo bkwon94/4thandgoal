@@ -53,8 +53,10 @@ class FairWarmer:
         self._trades: dict[str, list[str]] = {}
 
     def check(self, snapshot: Snapshot) -> None:
-        """Wake the worker when the snapshot of a press differs from the last warm-up of its client."""
-        if signature(snapshot) != self._signatures.get(snapshot.client.slug):
+        """Wake the worker when the snapshot of a press differs from the last warm-up of its client. A client outside
+        WARM_SLUGS never gets a signature, so it must never wake the worker: each wake would load the snapshot of cpc."""
+        slug = snapshot.client.slug
+        if slug in WARM_SLUGS and signature(snapshot) != self._signatures.get(slug):
             self.wake.set()
 
     def trades_seen(self, slug: str, trade_ids: list[str]) -> None:
