@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 20. Acceptance test AT-72.
 
 **Blocked by:** 16
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A test shows that the find stream sends each trade as its own event before the final answer, with the same fields as the trade in the final answer.
 - [x] A real press for Bo Girds on the local API sends the first trade event before the last one, with the time of each.
