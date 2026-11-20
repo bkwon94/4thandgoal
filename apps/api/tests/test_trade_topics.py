@@ -52,7 +52,13 @@ from league.provider.sleeper import load_raw
 # The fixtures of the analyzer tests: the repo with the week 6 history, its settings, and the recorded sources.
 repo = test_api.repo
 settings = test_api.settings
-sources = test_api.sources
+
+
+@pytest.fixture
+def sources(fixture_raw_dir, chart_week9):
+    """The recorded sources with the week 9 chart. The week 6 chart holds only 25 values, too few for the Value screen
+    of the Finder to build offers for each team."""
+    return test_api.recorded_sources(fixture_raw_dir, chart_week9)
 
 CHECK = "/clients/cpc/trade-check"
 IDEAS = "/clients/cpc/trade-ideas"
@@ -339,11 +345,11 @@ def test_trade_ideas_run_in_a_client_with_the_finder_off_and_give_the_find_docum
 
 
 def test_the_steps_of_trade_ideas_count_the_offers_before_the_whole_answer(api):
-    # AT-28: plain steps such as "Built 42 offers" show before the Answer.
+    # AT-28: plain steps such as "Matched 4,667 trades by trade value" show before the Answer.
     parts = _parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS))
     lines = [step["line"] for step in _of(parts, "data-step")]
     assert "Read 11 teams" in lines
-    assert any(line.startswith("Built ") and line.endswith(" offers") for line in lines)
+    assert any(re.fullmatch(r"Matched [\d,]+ trades by trade value", line) for line in lines)
     kinds = [part["type"] for part in parts]
     assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
 
@@ -576,9 +582,9 @@ def live_then_done(steps: list[dict]) -> list[str]:
 
 def test_each_stage_of_trade_ideas_sends_a_live_line_then_its_done_line(api):
     steps = _of(_ideas(api), "data-step")
-    assert [step["line"] for step in steps if step["live"]] == [
-        "Reading every team", "Looking for players who fit", "Building offers", "Making a shortlist",
-        "Picking the best 3"]
+    live = [step["line"] for step in steps if step["live"]]
+    assert live == ["Reading every team", "Matching trade value", live[2], "Making a shortlist", "Picking the best 3"]
+    assert re.fullmatch(r"Checking [\d,]+ trades for fairness", live[2])
     done = live_then_done(steps)
     assert done[0] == "Read 11 teams" and done[-1] == "Picked the best 3"
 
@@ -709,15 +715,15 @@ def _find_stream(api, **body):
 
 
 def test_the_find_stream_sends_one_step_line_as_each_of_the_five_steps_ends(api):
-    # AT-41 and ticket 06: "Read 11 teams", "Found 18 players who fit", "Built 42 offers", "Made a shortlist of 9",
-    # "Picked the best 3".
+    # AT-41 and ticket 12: "Read 11 teams", "Matched 4,667 trades by trade value", "Checked 4,667 trades for
+    # fairness", "Made a shortlist of 9", "Picked the best 3".
     parts = _find_stream(api)
     done = live_then_done(_of(parts, "data-step"))
     assert done[0] == "Read 11 teams"
-    # In the week 6 fixture the one weak slot of Bo Girds is QB and no team has a QB to spare, so the Spares tree stops
-    # each pair and the wider pass builds the offers. The line still says how many players fit.
-    assert re.fullmatch(r"Found (\d+ players who fit|one player who fits|no players who fit)", done[1]), done
-    assert re.fullmatch(r"Built \d+ offers", done[2]), done
+    matched = re.fullmatch(r"Matched ([\d,]+) trades by trade value", done[1])
+    assert matched, done
+    # Step 1 checks each Value offer for fairness, so both lines carry the same count.
+    assert done[2] == f"Checked {matched[1]} trades for fairness", done
     assert re.fullmatch(r"Made a shortlist of \d+", done[3]), done
     assert done[4:] == ["Picked the best 3"]
     kinds = [part["type"] for part in parts]

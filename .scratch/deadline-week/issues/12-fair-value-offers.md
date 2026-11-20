@@ -10,8 +10,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-55, AT-56, AT-57, AT-
 
 **Status:** ready-for-agent
 
-- [ ] A real press for Bo Girds and every team, on the 2026 week 11 snapshot, builds Value offers of all 7 shape directions.
-- [ ] Every Value offer of that press is inside the band with its direction, and no player under 5 trade value sits on a side of 2 or 3 players.
-- [ ] Justin Herbert, who has no chart value, is in no Value offer.
-- [ ] A test with fixed answers shows that 0.2 and 0.3 drop the offer and 0.1 and 0.6 keep it, and each fair request holds `chart_value` and `chart_sum`.
-- [ ] A press around Trey McBride gives Value offers that all hold him, and a press with an aim of RB gives Value offers that all bring Bo Girds an RB.
+- [x] A real press for Bo Girds and every team, on the 2026 week 11 snapshot, builds Value offers of all 7 shape directions.
+- [x] Every Value offer of that press is inside the band with its direction, and no player under 5 trade value sits on a side of 2 or 3 players.
+- [x] Justin Herbert, who has no chart value, is in no Value offer.
+- [x] A test with fixed answers shows that 0.2 and 0.3 drop the offer and 0.1 and 0.6 keep it, and each fair request holds `chart_value` and `chart_sum`.
+- [x] A press around Trey McBride gives Value offers that all hold him, and a press with an aim of RB gives Value offers that all bring Bo Girds an RB.

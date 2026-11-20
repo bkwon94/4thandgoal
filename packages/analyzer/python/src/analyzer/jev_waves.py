@@ -19,11 +19,14 @@ log = logging.getLogger(__name__)
 # The limits of the TypeSafe account, from its dashboard: 80 requests per second and 100,000 tokens per second.
 REQUESTS_PER_SECOND = 80
 TOKENS_PER_SECOND = 100_000
-# The context of one Jev request. A larger request fails, so a caller splits its questions into requests under it. The
-# long-context header of TypeSafe lifts the limit, and Brian chose the split over it (decision 14).
-REQUEST_TOKENS = 64_000
-# A token is about 4 characters of the JSON. The count uses 3, so a wave keeps some headroom.
-CHARS_PER_TOKEN = 3
+# The most input tokens of one Jev request. The context is 64k, and the prompt of TypeSafe fills part of it: TypeSafe
+# took a request of 54,100 input tokens and refused one of about 54,600 with max_tokens_exceeded. A caller splits its
+# questions into requests under it. The long-context header of TypeSafe lifts the limit, and Brian chose the split over
+# it (decision 14).
+REQUEST_TOKENS = 54_000
+# TypeSafe counted about 2.35 characters of a Finder request per token: names, numbers, and keys, not plain prose. The
+# count uses 2, so the estimate stays over the real count, and a request split under REQUEST_TOKENS fits the context.
+CHARS_PER_TOKEN = 2
 WAVE_SECONDS = 1.0
 
 

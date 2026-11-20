@@ -36,9 +36,11 @@ from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
 from facts.writer import FINDER_PICK_MODEL, ClaudeWriter
+from league.chart import match_chart
 from league.client import ClientError
 from league.jev_port import JevError
 from league.live import RefreshResult
+from league.models import ChartRead, ChartValues
 from league.nflverse import CACHE_MAX_AGE_SECONDS, DEPTH_CHARTS_URL, SCHEDULES_URL, cache_path
 from league.paths import client_dir, league_file
 from league.provider.raw import RawLeague, RawTrending
@@ -99,16 +101,32 @@ def _recorded_trending() -> list[RawTrending]:
     return [RawTrending.model_validate(row) for row in json.loads(path.read_text())]
 
 
-@pytest.fixture
-def sources(fixture_raw_dir, chart_week6):
+def recorded_sources(raw_dir: Path, chart: ChartValues) -> Sources:
+    """The sources of the recorded week 6 data, with `chart` as the chart of the week. No source calls the network."""
     return Sources(
-        fetch_sleeper=lambda league_id: (load_raw(fixture_raw_dir), FETCHED),
+        fetch_sleeper=lambda league_id: (load_raw(raw_dir), FETCHED),
         fetch_nflverse=_no_network,
         fetch_history_week=_no_history_fetch,
-        read_chart=lambda repo, season_start, week, lines, **_: chart_week6,
+        read_chart=lambda repo, season_start, week, lines, **_: chart,
         clock=lambda: NOW, client=CLIENT, fetch_trending=_recorded_trending,
         fetch_sleeper_scores=_no_kickoffs, fetch_espn_scoreboard=_no_kickoffs,
     )
+
+
+@pytest.fixture
+def sources(fixture_raw_dir, chart_week6):
+    return recorded_sources(fixture_raw_dir, chart_week6)
+
+
+# The real read of the week 9 chart. The week 6 chart holds only 25 values, too few for the Value screen of the Finder
+# to build offers for each team.
+WEEK_9_READ = Path(__file__).resolve().parents[2] / "pipeline" / "tests" / "fixtures" / "charts" / "read-week-09.json"
+
+
+def with_week_9_chart(sources: Sources) -> Sources:
+    """The sources with the week 9 chart read, matched to the league players of the week as the CLI does."""
+    read = ChartRead.model_validate_json(WEEK_9_READ.read_text(encoding="utf-8"))
+    return dataclasses.replace(sources, read_chart=lambda repo, season_start, week, lines, **_: match_chart(read, lines))
 
 
 @pytest.fixture
@@ -1507,12 +1525,15 @@ def _no_partner(key, question, state):
     return 0.1 if key.startswith("spare:") else 0.9
 
 
-def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None, repair=None):
+def _find_client(settings, sources, picker=None, clock=None, jev=None, news=None, repair=None, week_9_chart=True):
     """A client whose Finder search asks `jev` (FakeJev by default), whose pick makes the call of `picker`, and whose
     repair of a failed pick makes the call of `repair`.
 
-    With a clock, the grade and general limits read it.
+    With a clock, the grade and general limits read it. With `week_9_chart`, the sources read the week 9 chart, so the
+    Value screen builds offers.
     """
+    if week_9_chart:
+        sources = with_week_9_chart(sources)
     news = news or NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
     jev = jev or FakeJev()
     picker = picker or StubPicker()
@@ -1626,7 +1647,8 @@ def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_lean_a_case_an
         assert item["fact_lines"] == []
         # The asker's side comes first, as in the analyze document.
         assert item["sides"][0]["roster_id"] == 2
-    assert doc["as_of"]["chart_week"] == 6
+    # The find client reads the week 9 chart, so the Value screen has values to sum.
+    assert doc["as_of"]["chart_week"] == 9
 
 
 def test_find_with_no_partner_runs_the_spares_tree_on_every_other_team(settings, sources, caplog):
@@ -1660,7 +1682,7 @@ def test_a_find_with_no_partner_and_one_with_a_partner_have_two_cache_keys(setti
     assert finder_cache_key(2026, 2, None, snapshot) != finder_cache_key(2026, 2, 3, snapshot)
 
 
-# A limit that keeps every position, so the wider pass of a search with no offer builds no idea either.
+# A limit that keeps every position, so the Value screen builds no offer.
 KEEP_ALL = {"keep_positions": ["QB", "RB", "WR", "TE"]}
 
 
@@ -1691,10 +1713,12 @@ def test_an_empty_find_counts_one_grade_and_a_repeat_is_cached_with_no_claude_ca
 
 
 def test_a_find_in_a_week_with_no_chart_answers_and_says_so(settings, fixture_raw_dir):
-    response = _find_client(settings, _no_chart_sources(fixture_raw_dir)).post("/find", json=FIND, headers=HEADERS)
+    response = _find_client(settings, _no_chart_sources(fixture_raw_dir), week_9_chart=False).post(
+        "/find", json=FIND, headers=HEADERS)
     assert response.status_code == 200
     doc = response.json()
-    assert doc["trades"]
+    # A player with no chart value never enters a Value offer, so a week with no chart has no trade (ADR 0038).
+    assert doc["trades"] == [] and doc["near"] == []
     assert doc["as_of"]["no_chart"] is True
     assert doc["as_of"]["no_chart_note"] == "This week's player values are not out yet."
 
@@ -2091,29 +2115,14 @@ def test_the_reason_of_each_near_idea_gets_the_jev_check_and_it_only_logs(settin
     assert [r.questions[next(iter(r.questions))].instructions["bullet"] for r in checks[-2:]] == [NEAR_REASON] * 2
 
 
-def _no_target(key, question, state):
-    """A Jev that passes every partner and wants no player, so the search builds no offer."""
-    return 0.1 if re.fullmatch(r"\d+\.\w+", key) else 0.9
-
-
 def test_a_search_that_builds_no_offer_says_why_in_one_plain_line(settings, sources):
     picker = StubPicker()
-    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_target)).post(
+    doc = _find_client(settings, sources, picker).post(
         "/find", json=FIND | {"limit": KEEP_ALL}, headers=HEADERS).json()
     assert doc["trades"] == [] and doc["near"] == []
     assert doc["empty"] == NO_OFFER
     assert "fits" in NO_OFFER
     assert picker.calls == []
-
-
-def test_a_search_with_no_offer_sends_the_ideas_of_the_wider_pass_to_the_pick(settings, sources):
-    picker = StubPicker()
-    doc = _find_client(settings, sources, picker, jev=FakeJev(answer=_no_target)).post(
-        "/find", json=FIND, headers=HEADERS).json()
-    # The targets built no offer, so the wider pass gave the pick its ideas, and the empty line does not show.
-    assert len(picker.calls) >= 1
-    assert doc["trades"] or doc["near"]
-    assert doc["empty"] != NO_OFFER
 
 
 def _assert_the_shortlist_fallback(doc, user):
