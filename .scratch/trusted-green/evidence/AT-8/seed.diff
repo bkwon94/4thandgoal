@@ -1,0 +1,14 @@
+diff --git a/apps/site/src/app/globals.css b/apps/site/src/app/globals.css
+index 2d5a03af..56c371c1 100644
+--- a/apps/site/src/app/globals.css
++++ b/apps/site/src/app/globals.css
+@@ -1811,3 +1811,9 @@ html:not([data-hydrated]) [data-draw] {
+         animation-name: stream-word-fade;
+     }
+ }
++
++/* AT-8 seed: move the eyebrow of the hero down over the title. */
++[data-hero-slot="eyebrow"] {
++    position: relative;
++    top: 48px;
++}

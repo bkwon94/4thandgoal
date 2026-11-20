@@ -1,0 +1,29 @@
+$ grep -n '' .github/workflows/rerun.yml | sed -n '26,52p'
+26:      # The script checks out the red commit and the fix commit of each item, so it needs the full history.
+27:      - name: Check out the PR
+28:        uses: actions/checkout@v7
+29:        with:
+30:          ref: ${{ github.event.pull_request.head.sha }}
+31:          fetch-depth: 0
+32:
+33:      # The run always reads its scripts from main. A PR that edits scripts/rerun.py or scripts/scope.py must not judge itself.
+34:      # The folder is untracked in the checkout of the PR, so the checkouts of the script leave it alone.
+35:      - name: Check out the re-run script from main
+36:        uses: actions/checkout@v7
+37:        with:
+38:          ref: ${{ github.event.repository.default_branch }}
+39:          path: rerun-main
+40:          sparse-checkout: |
+41:            scripts/rerun.py
+42:            scripts/scope.py
+43:          sparse-checkout-cone-mode: false
+44:
+45:      - name: Find the members that the loops need
+46:        id: needs
+47:        env:
+48:          BASE: ${{ github.event.pull_request.base.sha }}
+49:          HEAD: ${{ github.event.pull_request.head.sha }}
+50:          BASE_REF: ${{ github.event.repository.default_branch }}
+51:        run: |
+52:          set -euo pipefail
+exit: 0

@@ -1,0 +1,17 @@
+$ grep -nE "smoke run|smoke/|smoke.log|Judge" .claude/plugin/skills/implement/SKILL.md | grep -iE "smoke run"
+39:3. **The evidence.** Run the smoke run, record the evidence of each `AT-<n>`, and write `EVIDENCE.md`. See [`evidence.md`](evidence.md).
+49:- Run the smoke run after the last ticket, before the Judge. A red smoke run stops the work before the Judge. See [`evidence.md`](evidence.md#the-smoke-run).
+
+$ grep -nEi 'smoke|stop' .claude/plugin/skills/implement/evidence.md
+31:## The smoke run
+33:Run one smoke run after the last ticket merge, before the first site test and before the Judge. Skip it only when the diff of the spec against `main` has no change to `apps/site/` or `apps/api/`. See the `verify` skill.
+37:3. Run the flows: `pnpm --dir apps/site smoke --out .scratch/<slug>/evidence/smoke <flow name> ...`.
+38:4. Stop the API.
+39:5. Put the last line of `smoke.log` at the top of `EVIDENCE.md`, with the path of the smoke folder `evidence/smoke/`.
+41:The folder `evidence/smoke/` holds `smoke.log` and the shots of each flow.
+43:A red smoke run is a red check. Fix the cause with a fix group, and run the smoke run again once. If it is still red, stop before the Judge. Tell Brian the log. Start no Judge and open no PR.
+64:5. Stop the API when the round is done.
+93:With no `shot` step, the runner takes one shot after the last step. A step list with only `route` gives one shot for each width and theme. An unknown key or verb stops the run before the first shot. The error names the file and the step.
+117:5. Stop the server and close the browser when the last such test is done.
+143:Never stop to ask Brian about a flag. A flag is advice, and the Judge is still the gate.
+179:**Stop rule of stage 3.** Commit `EVIDENCE.md`, `FLAGS.md`, and `evidence/` on the Spec branch with the message `Record the evidence of <slug>`. The hook must pass. Then go to stage 4, [`judge.md`](judge.md). If a site build or a pipeline command fails, stop. Tell Brian the command and its error.

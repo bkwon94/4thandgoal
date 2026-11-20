@@ -1,0 +1,19 @@
+
+> 4thandgoal-site@0.1.0 smoke <scratch>/tg-second/apps/site
+> node scripts/smoke.mjs "--out" "<scratch>/proof/second-smoke" "Week report" "Passphrase"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:61098, API http://127.0.0.1:61099, API log <scratch>/proof/second-smoke/api.log
+build cpc: 5.9 s
+PASS Passphrase 390x660 webkit in 8.9 s
+PASS Passphrase 1280x800 chromium in 4.1 s
+PASS Week report 390x660 webkit in 4.1 s
+PASS Week report 810x980 webkit in 3.4 s
+PASS Week report 1080x740 webkit in 3.6 s
+PASS Week report 1280x800 chromium in 3.4 s
+Smoke run: 2 flows, 2 passed, 0 failed
+  ✓  1 [smoke] › e2e/smoke.spec.ts:24:5 › the smoke run of cpc (36.5s)
+
+  1 passed (36.9s)

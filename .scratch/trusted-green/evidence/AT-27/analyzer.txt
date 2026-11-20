@@ -1,0 +1,14 @@
+$ uv run --exact --package cpc-analyzer pytest -v -p no:cacheprovider tests/test_properties_handcuff_value.py
+Installed 5 packages in 5ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/packages/analyzer/python
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_properties_handcuff_value.py::test_a_handcuff_in_a_trade_has_a_trade_value_of_0 PASSED [100%]
+
+============================== 1 passed in 0.99s ===============================
+exit: 0

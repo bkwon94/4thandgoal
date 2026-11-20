@@ -1,0 +1,13 @@
+$ pnpm --dir apps/site pick
+
+> 4thandgoal-site@0.1.0 pick /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/pickclone/apps/site
+> node scripts/flow-pick.mjs
+
+Front door
+Passphrase
+Week report
+Manager page
+Analyzer
+Power rankings
+Midseason report
+exit: 0

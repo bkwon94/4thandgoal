@@ -3,9 +3,12 @@
  * It checks the pad and the shape of the hole, the place and the height of the card, the scroll into view, and the follow.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { skipAnnouncements } from "./announcement";
 import { serveDir } from "./serve";
+import { findOverlap } from "./smoke";
+import { skipTour } from "./tour";
 
 const OUT = join(process.cwd(), "out");
 // The client build writes the hidden /ask/ route only while the flag front_door is off. Then / is the home page.
@@ -42,6 +45,41 @@ async function openTour(page: Page, theme?: "light" | "dark") {
   );
   await page.goto(`${server.url}${DOOR}`);
   await expect(card(page, "Suggestions")).toBeVisible();
+}
+
+/* The stream of a free answer that the API recorded. */
+const FREE = readFileSync(join(process.cwd(), "src", "fixtures", "free-answer", "fix.sse"), "utf8");
+const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST" };
+
+/* A browser with Your team, a kept passphrase, and the seen key, so the Tour shows only on a replay. The fake of the API
+   port routes each question to a free answer and sends the recorded stream, so the run needs no key of Claude. */
+async function openDoorWithFreeAnswer(page: Page) {
+  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route("**/clients/*/ask", (route) =>
+    route.fulfill({
+      status: route.request().method() === "OPTIONS" ? 204 : 200,
+      headers: CORS,
+      contentType: "application/json",
+      body: JSON.stringify({ route: "free", line: null, topic: null, team: null, closest: [], suggestion: null }),
+    }),
+  );
+  await page.route("**/clients/*/ask/free", (route) =>
+    route.request().method() === "OPTIONS"
+      ? route.fulfill({ status: 204, headers: CORS })
+      : route.fulfill({
+          status: 200,
+          headers: { ...CORS, "access-control-expose-headers": "*", "x-vercel-ai-ui-message-stream": "v1" },
+          contentType: "text/event-stream",
+          body: FREE,
+        }),
+  );
+  await skipTour(page);
+  await skipAnnouncements(page);
+  await page.addInitScript((team) => {
+    localStorage.setItem("cpc.passphrase", "test");
+    localStorage.setItem("cpc.your-team", team);
+  }, BO_GIRDS);
+  await page.goto(`${server.url}${DOOR}`);
 }
 
 const card = (page: Page, name: string) => page.getByRole("dialog", { name });
@@ -212,6 +250,19 @@ test.describe("iPhone 390x660", () => {
       expect(control.y + control.height, `${header}: bottom edge in ${view.height}`).toBeLessThanOrEqual(view.height + 1);
       // The Suggestions row bleeds to both edges and scrolls sideways, so its box is the width of the screen.
       expect(control.x + control.width, `${header}: right edge in ${view.width}`).toBeLessThanOrEqual(view.width + 1);
+    });
+  });
+
+  test("the overlap check of the smoke run finds no overlap when each Stop shows over the first answer", async ({ page }) => {
+    await openDoorWithFreeAnswer(page);
+    await page.getByRole("textbox", { name: "Ask a question" }).fill("who has the best roster");
+    await page.getByRole("button", { name: "Send" }).click();
+    await expect(page.getByRole("article", { name: "who has the best roster" }).getByRole("status").getByText("Checked")).toBeVisible();
+    await page.getByRole("button", { name: "Open the menu" }).click();
+    await page.getByRole("button", { name: "Show the tour" }).click();
+    await eachStop(page, async (header) => {
+      // The copy of the card cross-fades after the hole rests, so the check polls until the fade ends.
+      await expect.poll(() => findOverlap(page), { message: `${header}: the overlap check of the smoke run` }).toBeNull();
     });
   });
 

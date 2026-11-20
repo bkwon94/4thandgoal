@@ -3,7 +3,7 @@
  * Each page is plain HTML that the browser lays out, so the scans measure real boxes, sizes, and colors.
  */
 import { BOOT_SCRIPT, DARK_CLASS } from "@cpc/design/lib/theme";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -172,6 +172,41 @@ test("axe color-contrast with a scope checks only the open part, so text that th
   expect(failures).toEqual([expect.stringMatching(/^violation: a .*contrast.*#bbbbbb/)]);
 });
 
+/*
+ * A sticky band with a title that an ellipsis cuts by 1px, over a page scrolled under the band, as the top band shows at
+ * 1280px when the pill bar takes all the room. Chromium gives such a title two text boxes: the full text and the cut text.
+ * The tile under the band ends between the centers of the two boxes, so axe finds a different stack under each box.
+ */
+async function bandOverScrolledPage(page: Page, titleColor: string) {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.setContent(`<body style="margin:0;background:#fff">
+    <header style="position:sticky;top:0;z-index:1;background:#fff;padding:16px">
+      <span class="title" style="display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:700 16px sans-serif;color:${titleColor}">Cornerstone Fantasy Football League</span>
+    </header>
+    <main style="height:3000px;padding-top:600px"><div class="tile" style="height:400px;background:#eee"></div></main>
+  </body>`);
+  await page.evaluate(() => {
+    const title = document.querySelector(".title") as HTMLElement;
+    const range = document.createRange();
+    range.selectNodeContents(title.firstChild as Text);
+    title.style.width = `${range.getBoundingClientRect().width - 1}px`;
+    const centers = [...range.getClientRects()].map((rect) => (rect.left + rect.right) / 2);
+    const tile = document.querySelector(".tile") as HTMLElement;
+    tile.style.width = `${(Math.min(...centers) + Math.max(...centers)) / 2}px`;
+    window.scrollTo({ top: tile.getBoundingClientRect().top + window.scrollY - 20, behavior: "instant" });
+  });
+}
+
+test("a band title cut by an ellipsis over a scrolled page passes, because its opaque band hides the page under it", async ({ page }) => {
+  await bandOverScrolledPage(page, "#111");
+  expect(await scanContrast(page)).toEqual([]);
+});
+
+test("a faint band title cut by an ellipsis over a scrolled page still fails", async ({ page }) => {
+  await bandOverScrolledPage(page, "#bbb");
+  expect(await scanContrast(page)).toEqual([expect.stringMatching(/^violation: span .*contrast.*#bbbbbb/)]);
+});
+
 test("the full axe scan counts the violations and the incomplete items apart, and passes a clean part", async ({ page }) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<html lang="en"><head><title>Axe</title></head><body><main style="background:#fff">
@@ -204,4 +239,40 @@ test("openPage sets each theme through the shipped boot script and the server gi
     await server.close();
     rmSync(dir, { recursive: true });
   }
+});
+
+/*
+ * Each page below holds an animation that never finishes. A test timeout of 15 s fails a run that hangs, and the cap
+ * of openPage is 5 s, so a pass proves that the cap and the finite rule both hold.
+ */
+const HANG_TIMEOUT = 15_000;
+
+async function openHangPage(page: Parameters<typeof openPage>[0], body: string): Promise<void> {
+  const dir = mkdtempSync(join(tmpdir(), "floor-"));
+  writeFileSync(join(dir, "index.html"), `<html><body><div id="box">Box</div><script>${body}</script></body></html>`);
+  const server = await serveDir(dir);
+  try {
+    await openPage(page, `${server.url}/`, "light");
+  } finally {
+    await server.close();
+    rmSync(dir, { recursive: true });
+  }
+}
+
+test("openPage does not hang on an animation with an end time that is not finite", async ({ page }) => {
+  test.setTimeout(HANG_TIMEOUT);
+  // A scroll-driven animation has an end time that is not a number, and it stays running.
+  await openHangPage(
+    page,
+    `const box = document.getElementById("box");
+     const timeline = new ScrollTimeline({ source: document.documentElement });
+     box.animate({ opacity: [0, 1] }, { timeline, fill: "both" });`,
+  );
+  const ends = await page.evaluate(() => document.getAnimations().map((animation) => animation.effect?.getComputedTiming().endTime));
+  expect(ends.some((end) => typeof end !== "number" || !Number.isFinite(end))).toBe(true);
+});
+
+test("openPage does not hang on a finite animation that never finishes", async ({ page }) => {
+  test.setTimeout(HANG_TIMEOUT);
+  await openHangPage(page, `const animation = document.getElementById("box").animate({ opacity: [0, 1] }, 1000); animation.pause();`);
 });

@@ -1,0 +1,14 @@
+$ uv run --exact --package cpc-league pytest -v -p no:cacheprovider tests/test_properties_star_ranks.py
+Uninstalled 2 packages in 1ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/packages/league/python
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_properties_star_ranks.py::test_a_star_count_is_never_negative_and_a_position_with_no_slot_is_absent PASSED [100%]
+
+============================== 1 passed in 0.16s ===============================
+exit: 0

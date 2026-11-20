@@ -1,0 +1,13 @@
+c9b6282c417c50e8c524a11e5ee979a4530494be
+Map trusted-green: the checks that let a green PR merge with no second look
+
+ .scratch/trusted-green/MAP.md                      | 39 ++++++++++++++++++++++
+ .../decisions/01-grill-destination-and-seams.md    | 33 ++++++++++++++++++
+ .../decisions/02-research-codex-repo-skill.md      | 17 ++++++++++
+ .../03-research-rebuild-matches-published.md       | 17 ++++++++++
+ .../decisions/04-grill-what-smoke-run-drives.md    | 17 ++++++++++
+ .../decisions/05-spec-approved-diff-list.md        | 17 ++++++++++
+ .../decisions/06-spec-property-test-targets.md     | 17 ++++++++++
+ .../decisions/07-spec-red-green-rerun-job.md       | 17 ++++++++++
+ GLOSSARY.md                                        |  8 +++++
+ 9 files changed, 182 insertions(+)

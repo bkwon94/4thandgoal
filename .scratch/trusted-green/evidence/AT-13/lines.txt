@@ -1,0 +1,10 @@
+$ grep -nE "^Smoke:|^Rebuild:|<client> <file> <JSON path>" .claude/plugin/skills/quick/format.md
+31:Smoke: <the flows that ran, the result line of the log, and the smoke folder>
+35:Rebuild:
+36:- <client> <file> <JSON path>: <reason>
+131:Smoke: flows `Week report`, `Analyzer`. "Smoke run: 2 flows, 2 passed, 0 failed". Shots in `.scratch/bugs/<slug>/smoke/`.
+141:Rebuild:
+142:- <client> <file> <JSON path>: <reason>
+
+$ grep -n "Does the smoke run show" .claude/plugin/skills/quick/judge.md
+62:3. Does the smoke run show the changed flow at work?

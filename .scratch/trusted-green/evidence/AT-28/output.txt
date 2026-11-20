@@ -1,0 +1,54 @@
+$ uv run --exact --package cpc-managers pytest -v -p no:cacheprovider 'tests/test_properties_grade.py::test_the_letter_never_gets_worse_as_the_score_goes_up'
+Uninstalled 4 packages in 8ms
+Installed 1 package in 1ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b6bb37d7-df26-4690-9649-5497df48c3d2/scratchpad/tg-props/packages/managers/python
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_properties_grade.py::test_the_letter_never_gets_worse_as_the_score_goes_up FAILED [100%]
+
+=================================== FAILURES ===================================
+____________ test_the_letter_never_gets_worse_as_the_score_goes_up _____________
+
+    @_hit_each_cut
+>   @settings(max_examples=500)
+                   ^^^
+
+tests/test_properties_grade.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../.venv/lib/python3.11/site-packages/hypothesis/core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+low = 79.0, step = 1.0
+
+    @_hit_each_cut
+    @settings(max_examples=500)
+    @given(scores, st.one_of(st.just(1.0), st.floats(min_value=0.0, max_value=100.0)))
+    def test_the_letter_never_gets_worse_as_the_score_goes_up(low, step):
+        high = min(100.0, low + step)
+        order = "DCBA"
+>       assert order.index(grade_letter(low)) <= order.index(grade_letter(high)), (
+            f"score {low} gives {grade_letter(low)} and score {high} gives {grade_letter(high)}")
+E       AssertionError: score 79.0 gives A and score 80.0 gives B
+E       assert 3 <= 2
+E        +  where 3 = <built-in method index of str object at 0x1076eb230>('A')
+E        +    where <built-in method index of str object at 0x1076eb230> = 'DCBA'.index
+E        +    and   'A' = grade_letter(79.0)
+E        +  and   2 = <built-in method index of str object at 0x1076eb230>('B')
+E        +    where <built-in method index of str object at 0x1076eb230> = 'DCBA'.index
+E        +    and   'B' = grade_letter(80.0)
+E       Failing explicit example: test_the_letter_never_gets_worse_as_the_score_goes_up(
+E           low=79.0,
+E           step=1.0,
+E       )
+
+tests/test_properties_grade.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_properties_grade.py::test_the_letter_never_gets_worse_as_the_score_goes_up
+============================== 1 failed in 1.04s ===============================
+exit: 1

@@ -26,6 +26,15 @@ Red: <the command, and its output>
 Green: <the same command at the fixed commit, and its output>
 Test verdict: PASS, FAIL, BLOCKED, or none for a text-only item.
 
+## Smoke
+
+Smoke: <the flows that ran, the result line of the log, and the smoke folder>
+
+## Rebuild
+
+Rebuild:
+- <client> <file> <JSON path>: <reason>
+
 ## Comments
 ````
 
@@ -113,6 +122,27 @@ Red: none, text only.
 Green: at `<commit>`, the diff of the text.
 Test verdict: none
 ```
+
+## The Smoke block
+
+Step 7 of the skill writes one `Smoke:` block for the run. It names the flows that ran, the last line of `smoke.log`, and the smoke folder `.scratch/<bugs or quick-wins>/<slug>/smoke/`.
+
+```markdown
+Smoke: flows `Week report`, `Analyzer`. "Smoke run: 2 flows, 2 passed, 0 failed". Shots in `.scratch/bugs/<slug>/smoke/`.
+```
+
+A run with no change to the site or the API writes `Smoke: none, no site or API change.` A red smoke run stops the run before the Judge.
+
+## The Rebuild block
+
+A run that changes the output of the pipeline on purpose lists each changed value in a `Rebuild:` block. One list line holds one value:
+
+```markdown
+Rebuild:
+- <client> <file> <JSON path>: <reason>
+```
+
+The `<client>` is a client slug, the `<file>` is a file of the build, and the `<JSON path>` starts with `$`. The reason is one sentence. Backticks around a part are allowed. A run with no change of output writes no block. The check of the rebuild reads these lines.
 
 ## The Test verdict line
 

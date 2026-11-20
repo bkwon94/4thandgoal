@@ -23,7 +23,7 @@ const WIDTHS = [375, 1280];
 // The phone width of the readability floor.
 const FLOOR_PHONE = { width: 390, height: 844 };
 // The port of the served export. The API answers only the origins it allows, so EGGS_PORT moves the run off
-// EVIDENCE_PORT only together with CORNERSTONE_ALLOWED_ORIGINS of the API.
+// EVIDENCE_PORT only together with API_ORIGIN of make -C apps/api api-evidence.
 const PORT = Number(process.env.EGGS_PORT ?? EVIDENCE_PORT);
 
 let server: { url: string; close: () => Promise<void> };
@@ -33,7 +33,7 @@ let word: string;
 
 test.beforeAll(async () => {
   test.setTimeout(600_000);
-  execFileSync("pnpm", ["build"], { env: buildEnv("cpc"), encoding: "utf8", stdio: "pipe" });
+  execFileSync("pnpm", ["build"], { env: buildEnv("cpc", LOCAL_API), encoding: "utf8", stdio: "pipe" });
   server = await serveDir(OUT, PORT);
   const drop = await fetch(`${LOCAL_API}/clients/cpc/eggs/drop`, {
     method: "POST",

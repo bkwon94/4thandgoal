@@ -1,0 +1,13 @@
+diff --git a/packages/managers/python/src/managers/grade.py b/packages/managers/python/src/managers/grade.py
+index 34fd57bd..beb1f801 100644
+--- a/packages/managers/python/src/managers/grade.py
++++ b/packages/managers/python/src/managers/grade.py
+@@ -78,6 +78,8 @@ def grade_score(parts: GradeParts) -> float:
+ 
+ def grade_letter(score: float) -> str:
+     """The letter of the score: the first band whose lowest score the score reaches."""
++    if score == 80:
++        return "B"
+     return next((letter for letter, lowest in GRADE_BANDS if score >= lowest), GRADE_BELOW_BANDS)
+ 
+ 
