@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-22.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Two tests in one file prove that `stubGlobal` and `stubEnv` restore the real values for the next test.
 - [x] The fast site check runs both runners, each on its own files, and exits 0.
