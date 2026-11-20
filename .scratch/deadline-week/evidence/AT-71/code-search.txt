@@ -1,0 +1,5 @@
+$ grep -rn 'Long-Context\|Danger-Zone\|danger_zone\|long_context' packages apps --include='*.py'   # 2026-11-20 16:18, head 98d79f98
+packages/league/python/src/league/jev.py:16:IMAGES_HEADER = {"TypeSafe-Danger-Zone-Images": "true"}
+apps/pipeline/tests/test_finder_search.py:951:def test_no_jev_request_of_a_press_sends_the_long_context_header(snap):
+apps/pipeline/tests/test_finder_search.py:965:    assert not any("TypeSafe-Danger-Zone-Long-Context" in headers for headers in sent)
+# exit: 0

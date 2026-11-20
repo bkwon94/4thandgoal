@@ -1,0 +1,3 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone python spares_week11.py   # the script is evidence/AT-44/spares_week11.py.txt; 2026-11-20 16:15, live Sleeper
+live snapshot of cpc: season 2026, week 11
+pairs: 132, listed players over all pairs: 672, listed with no backup who can cover now: 0

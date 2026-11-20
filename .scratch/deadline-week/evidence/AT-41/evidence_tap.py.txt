@@ -1,0 +1,39 @@
+"""
+A uvicorn factory for the evidence of deadline-week: the real API app of app_from_env, with a tap on the Finder search.
+The tap writes the Shortlist of each press, with the chart value of each player of each Value offer, to SHORTLIST_OUT.
+"""
+import json
+import os
+import time
+from pathlib import Path
+
+from analyzer.finder_search import chart_value
+from cornerstone_api.app import app_from_env
+
+
+def app():
+    real = app_from_env()
+    search = real.state.finder_search
+    out = Path(os.environ["SHORTLIST_OUT"])
+    out.mkdir(parents=True, exist_ok=True)
+
+    def tapped(*args, **kwargs):
+        # The tap calls the real search with the same arguments, and only writes its answer to a file.
+        result = search(*args, **kwargs)
+        stamp = time.strftime("%H%M%S")
+        anchor = kwargs.get("anchor")
+        limit = kwargs.get("limit")
+        meta = {"asker": args[0], "partner": args[1], "anchor": anchor.model_dump() if hasattr(anchor, "model_dump") else repr(anchor),
+                "limit": limit.model_dump() if hasattr(limit, "model_dump") else repr(limit), "written": time.strftime("%H:%M:%S")}
+        snapshot = args[2]
+        # The chart value and name of each player of each Value offer, so the evidence can check the band and the filler.
+        pids = {pid for trade in result.offers for side in trade.sides for pid in side.player_ids}
+        players = {pid: {"name": snapshot.players[pid].name, "position": snapshot.players[pid].position,
+                         "chart_value": chart_value(snapshot, pid)} for pid in pids}
+        dump = {"press": meta, "players": players, "teams": {rid: team.name for rid, team in snapshot.teams.items()},
+                "shortlist": json.loads(result.model_dump_json())}
+        (out / f"shortlist-{stamp}.json").write_text(json.dumps(dump, indent=1, default=str))
+        return result
+
+    real.state.finder_search = tapped
+    return real

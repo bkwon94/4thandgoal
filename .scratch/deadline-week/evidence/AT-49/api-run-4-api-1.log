@@ -1,0 +1,29 @@
+# The API log of AT-49 run 4: lines 17009 to    17113 of the log of the evidence API, with the Jev and Sleeper HTTP request lines cut.
+INFO:     127.0.0.1:58906 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58907 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58905 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58906 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58907 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58905 - "OPTIONS /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58906 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.5s cost=$0.0000 claude_calls=0
+WARNING:     cornerstone_api.trade_topics: Trade stream failed: topic=trade_ideas cause=HTTPException-429 stage="start" seconds=3.5
+INFO:     127.0.0.1:58906 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58952 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58977 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58988 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58995 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59003 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59047 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59080 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59109 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59123 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59143 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59154 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59158 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59163 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59167 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59175 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59181 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59184 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK

@@ -1,51 +1,39 @@
-# AT-43, read against the Then line Brian approved: "The best offer of each player of Bo Girds and the best offer of each partner come before a second form of any trade."
-# Source: the 4 presses of AT-41 (evidence/AT-41/api.log). varied() orders the Shortlist, and line 616 of finder_search.py logs it in that order.
-$ python3 at43.py evidence/AT-41/press-summary.txt   (script copied as at43.py.txt)
-===== press 0: 10 offers, in Shortlist order (the order of varied(), as the log prints it)
- 1. score 0.467  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score); first offer of this partner (its best score)
- 2. score 0.270  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  -> first offer of this player (his best score); first offer of this partner (its best score)
- 3. score 0.435  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score)
- 4. score 0.135  Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  -> first offer of this partner (its best score)
- 5. score 0.314  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 6. score 0.310  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 7. score 0.266  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  -> a further form: player and partner already shown
- 8. score 0.255  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  -> a further form: player and partner already shown
- 9. score 0.201  Bo Girds gives Matthew Golden; To Infinity and Bijan gives Patrick Mahomes  -> a further form: player and partner already shown
-10. score 0.196  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
-   last offer that brings a new player or partner: #4; first further form: #5
-===== press 1: 10 offers, in Shortlist order (the order of varied(), as the log prints it)
- 1. score 0.430  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score); first offer of this partner (its best score)
- 2. score 0.255  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  -> first offer of this player (his best score); first offer of this partner (its best score)
- 3. score 0.348  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score)
- 4. score 0.242  Bo Girds gives Parker Washington; Unsolicited Dak Picks gives C.J. Stroud  -> first offer of this player (his best score)
- 5. score 0.127  Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  -> first offer of this partner (its best score)
- 6. score 0.274  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 7. score 0.270  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 8. score 0.255  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  -> a further form: player and partner already shown
- 9. score 0.240  Bo Girds gives Parker Washington; Unsolicited Dak Picks gives Dak Prescott  -> a further form: player and partner already shown
-10. score 0.222  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  -> a further form: player and partner already shown
-   last offer that brings a new player or partner: #5; first further form: #6
-===== press 2: 10 offers, in Shortlist order (the order of varied(), as the log prints it)
- 1. score 0.417  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score); first offer of this partner (its best score)
- 2. score 0.323  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  -> first offer of this player (his best score); first offer of this partner (its best score)
- 3. score 0.375  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score)
- 4. score 0.116  Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  -> first offer of this partner (its best score)
- 5. score 0.310  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 6. score 0.304  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 7. score 0.238  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  -> a further form: player and partner already shown
- 8. score 0.231  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  -> a further form: player and partner already shown
- 9. score 0.227  Bo Girds gives Matthew Golden; To Infinity and Bijan gives Patrick Mahomes  -> a further form: player and partner already shown
-10. score 0.194  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
-   last offer that brings a new player or partner: #4; first further form: #5
-===== press 3: 10 offers, in Shortlist order (the order of varied(), as the log prints it)
- 1. score 0.442  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score); first offer of this partner (its best score)
- 2. score 0.256  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Patrick Mahomes  -> first offer of this player (his best score is 0.265); first offer of this partner (its best score)
- 3. score 0.343  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives Dak Prescott  -> first offer of this player (his best score)
- 4. score 0.130  Bo Girds gives Trey McBride; Lil Fridge gives Caleb Williams  -> first offer of this partner (its best score)
- 5. score 0.281  Bo Girds gives Matthew Golden; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 6. score 0.265  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives Dak Prescott  -> a further form: player and partner already shown
- 7. score 0.252  Bo Girds gives Trey McBride; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 8. score 0.208  Bo Girds gives Zay Flowers; Unsolicited Dak Picks gives C.J. Stroud  -> a further form: player and partner already shown
- 9. score 0.204  Bo Girds gives Zay Flowers; To Infinity and Bijan gives Jared Goff  -> a further form: player and partner already shown
-10. score 0.181  Bo Girds gives Matthew Golden; To Infinity and Bijan gives Patrick Mahomes  -> a further form: player and partner already shown
-   last offer that brings a new player or partner: #4; first further form: #5
+== press 1 (evidence/AT-41/press-1-shortlist.json)
+n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)
+1 | 1-for-2 | To Infinity and Bijan | Blake Corum | Ladd McConkey + Patrick Mahomes | 0.970 | shape=1-for-2 (best 0.970), partner=To Infinity and Bijan (best 0.970), gives=Blake Corum (best 0.970)
+2 | 2-for-3 | To Infinity and Bijan | Matthew Golden + Parker Washington | Malik Nabers + KC Concepcion Jr. + Jared Goff | 0.970 | shape=2-for-3 (best 0.970), gives=Matthew Golden (best 0.970), gives=Parker Washington (best 0.970)
+3 | 1-for-3 | Teehee | Kenneth Walker III | Sam LaPorta + Bhayshul Tuten + Trevor Lawrence | 0.970 | shape=1-for-3 (best 0.970), partner=Teehee (best 0.970), gives=Kenneth Walker III (best 0.970)
+4 | 1-for-2 | Return of T Mac | Blake Corum | Tyler Shough + Jaylen Waddle | 0.970 | partner=Return of T Mac (best 0.970)
+5 | 1-for-3 | Unsolicited Dak Picks | Zay Flowers | Caleb Douglas + Tank Dell + C.J. Stroud | 0.970 | partner=Unsolicited Dak Picks (best 0.970), gives=Zay Flowers (best 0.970)
+6 | 2-for-3 | Lil Fridge | Kenneth Walker III + Zay Flowers | Caleb Williams + Travis Kelce + Christian McCaffrey | 0.960 | partner=Lil Fridge (best 0.960)
+7 | 2-for-3 | Return of T Mac | Kyren Williams + Zay Flowers | T.J. Hockenson + Jordan Love + Jaylen Warren | 0.970 | gives=Kyren Williams (best 0.970)
+8 | 1-for-2 | Return of T Mac | Kyren Williams | Rome Odunze + Jordan Love | 0.970 | none new: a further form
+9 | 1-for-3 | Teehee | Kenneth Walker III | DJ Moore + Tony Pollard + Trevor Lawrence | 0.970 | none new: a further form
+10 | 1-for-2 | Return of T Mac | Kenneth Walker III | Tyler Shough + Bijan Robinson | 0.970 | none new: a further form
+rated offers (step 2 less gain drops): 16; shape directions among them: ['1-for-2', '1-for-3', '2-for-3']
+== press 2 (evidence/AT-41/press-2-shortlist.json)
+n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)
+1 | 1-for-2 | To Infinity and Bijan | Blake Corum | Ladd McConkey + Patrick Mahomes | 0.970 | shape=1-for-2 (best 0.970), partner=To Infinity and Bijan (best 0.970), gives=Blake Corum (best 0.970)
+2 | 2-for-3 | To Infinity and Bijan | Matthew Golden + Parker Washington | Malik Nabers + KC Concepcion Jr. + Jared Goff | 0.970 | shape=2-for-3 (best 0.970), gives=Matthew Golden (best 0.970), gives=Parker Washington (best 0.970)
+3 | 1-for-3 | Teehee | Kenneth Walker III | Sam LaPorta + Bhayshul Tuten + Trevor Lawrence | 0.970 | shape=1-for-3 (best 0.970), partner=Teehee (best 0.970), gives=Kenneth Walker III (best 0.970)
+4 | 1-for-2 | Return of T Mac | Blake Corum | Tyler Shough + Jaylen Waddle | 0.970 | partner=Return of T Mac (best 0.970)
+5 | 1-for-3 | Unsolicited Dak Picks | Zay Flowers | Caleb Douglas + Tank Dell + C.J. Stroud | 0.970 | partner=Unsolicited Dak Picks (best 0.970), gives=Zay Flowers (best 0.970)
+6 | 2-for-3 | Lil Fridge | Kenneth Walker III + Zay Flowers | Caleb Williams + Travis Kelce + Christian McCaffrey | 0.960 | partner=Lil Fridge (best 0.960)
+7 | 2-for-3 | Return of T Mac | Kyren Williams + Zay Flowers | T.J. Hockenson + Jordan Love + Jaylen Warren | 0.970 | gives=Kyren Williams (best 0.970)
+8 | 1-for-2 | Return of T Mac | Kyren Williams | Rome Odunze + Jordan Love | 0.970 | none new: a further form
+9 | 1-for-3 | Teehee | Kenneth Walker III | DJ Moore + Tony Pollard + Trevor Lawrence | 0.970 | none new: a further form
+10 | 1-for-2 | Return of T Mac | Kenneth Walker III | Tyler Shough + Bijan Robinson | 0.970 | none new: a further form
+rated offers (step 2 less gain drops): 16; shape directions among them: ['1-for-2', '1-for-3', '2-for-3']
+== press 3 (evidence/AT-41/press-3-shortlist.json)
+n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)
+1 | 1-for-2 | To Infinity and Bijan | Blake Corum | Ladd McConkey + Patrick Mahomes | 0.970 | shape=1-for-2 (best 0.970), partner=To Infinity and Bijan (best 0.970), gives=Blake Corum (best 0.970)
+2 | 2-for-3 | To Infinity and Bijan | Matthew Golden + Parker Washington | Malik Nabers + KC Concepcion Jr. + Jared Goff | 0.970 | shape=2-for-3 (best 0.970), gives=Matthew Golden (best 0.970), gives=Parker Washington (best 0.970)
+3 | 1-for-3 | Teehee | Kenneth Walker III | Sam LaPorta + Bhayshul Tuten + Trevor Lawrence | 0.970 | shape=1-for-3 (best 0.970), partner=Teehee (best 0.970), gives=Kenneth Walker III (best 0.970)
+4 | 1-for-2 | Return of T Mac | Blake Corum | Tyler Shough + Jaylen Waddle | 0.970 | partner=Return of T Mac (best 0.970)
+5 | 1-for-3 | Unsolicited Dak Picks | Zay Flowers | Caleb Douglas + Tank Dell + C.J. Stroud | 0.970 | partner=Unsolicited Dak Picks (best 0.970), gives=Zay Flowers (best 0.970)
+6 | 2-for-3 | Lil Fridge | Kenneth Walker III + Zay Flowers | Caleb Williams + Travis Kelce + Christian McCaffrey | 0.960 | partner=Lil Fridge (best 0.960)
+7 | 2-for-3 | Return of T Mac | Kyren Williams + Zay Flowers | T.J. Hockenson + Jordan Love + Jaylen Warren | 0.970 | gives=Kyren Williams (best 0.970)
+8 | 1-for-2 | Return of T Mac | Kyren Williams | Rome Odunze + Jordan Love | 0.970 | none new: a further form
+9 | 1-for-3 | Teehee | Kenneth Walker III | DJ Moore + Tony Pollard + Trevor Lawrence | 0.970 | none new: a further form
+10 | 1-for-2 | Return of T Mac | Kenneth Walker III | Tyler Shough + Bijan Robinson | 0.970 | none new: a further form
+rated offers (step 2 less gain drops): 16; shape directions among them: ['1-for-2', '1-for-3', '2-for-3']

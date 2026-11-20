@@ -1,0 +1,51 @@
+$ cd apps/site && pnpm exec vitest run packages/analyzer/site/form/trade-finder.test.tsx -t "states the gap of the two totals" --reporter verbose   # 2026-11-20 16:32, head 98d79f98
+
+ RUN  v5.0.5 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/apps/site
+
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the wait in the stage lines, one real step at a time, each line held until the next step
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > holds each step line at least 1.5 s, even when the steps end faster
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > names one Shortlist trade at a time on step 5, each held about 3 s, and loops
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > stops the step 5 lines when the first card shows
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > keeps the step 5 line when the stream sends no Shortlist
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the wait in the hero of the grade wait, with the same title level and the mesh
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > lights the avatar of each team as the stream reports it read, in the order of the stream
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows only the picked partner in the wait
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > tells the form that a search runs, and that it ended
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > lists Every team first, then the eleven other teams and not the asker
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > keeps the find button on with no partner picked
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > posts the season and the asker with no partner to the find stream with the passphrase
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > posts the picked partner, and Every team clears it
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > lands the cards in one list under the hero, each led by its Lean, with the Case and no headline
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows each trade as a Ledger: You get and You give columns, a row per player with the rank, and a total under each
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > states the gap of the two totals in one plain line under them 218ms
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no total and no gap line when the week has no chart
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no gap line when a side has no trade value
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows each card as its trade part comes, and the count line counts the trades still to come down to none
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the cards of the answer when it keeps fewer trades than the stream counted
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > drops the count line as soon as the stream says the pick has no more trades, before the answer
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows up to 5 cards, then the near ideas folded under Close, but not sent
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > keeps at most 5 picks and 3 near ideas
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no near fold when the answer has no near idea
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > clamps the Case of a card to 3 lines
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > folds the Bullets of a card under one button, and a tap opens the rows with their Marks
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > opens the fact of a Bullet row on a tap
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no letter grade on any card
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows Find in one hero with its title, the line, Your team, the partner, the chips, and the button
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > hands a pick of Your team to the form
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > names each result card by its place, with See the Full Result
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > opens the trade of a card with the document of the find, so the form shows its read
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the fact lines of each shortlist offer after a fallback, with no Lean and no row
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the empty line when no trade works
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the as-of line as on the analyze result
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the wait line on a 429
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the API message on a 422
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the error line and Try Again in the hero when the find route answers 500
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the line of an error part of the stream, and Try Again runs the find again
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the same down line as the trade form on a 503 with no detail
+ ↓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > asks for the passphrase again on a 401
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 40 skipped (41)
+   Start at  16:32:30
+   Duration  1.55s (environment 41%, import 38%, tests 15%, transform 6%)
+

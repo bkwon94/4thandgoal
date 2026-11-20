@@ -1,6 +1,6 @@
-$ grep -n 'segmented-control' packages/analyzer/site/form/mode-switch.tsx packages/design/site/ui/segmented-control.tsx
+$ grep -n 'segmented-control' packages/analyzer/site/form/mode-switch.tsx packages/design/site/ui/segmented-control.tsx   # head 98d79f98
 packages/analyzer/site/form/mode-switch.tsx:13:} from "@cpc/design/ui/segmented-control";
 packages/design/site/ui/segmented-control.tsx:13:} from "@ui-sdk/react/segmented-control"
-packages/design/site/ui/segmented-control.tsx:43:        "absolute top-(--segmented-control-indicator-top) left-(--segmented-control-indicator-left) -z-10 h-(--segmented-control-indicator-height) w-(--segmented-control-indicator-width) rounded-pill bg-card shadow-ask transition-[left,width] duration-250 ease-(--ease-out) motion-reduce:transition-none group-data-[tone=dark]/seg:bg-on-dark group-data-[tone=dark]/seg:shadow-none",
+packages/design/site/ui/segmented-control.tsx:43:        "absolute top-(--segmented-control-indicator-top) left-(--segmented-control-indicator-left) -z-10 h-(--segmented-control-indicator-height) w-(-
 $ git grep -n '@ui-sdk/react/segmented-control' -- apps packages
 packages/design/site/ui/segmented-control.tsx:13:} from "@ui-sdk/react/segmented-control"

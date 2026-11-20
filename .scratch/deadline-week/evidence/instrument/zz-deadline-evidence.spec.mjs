@@ -827,18 +827,27 @@ test.describe("on", () => {
     }
   });
 
-  /* AT-36 to AT-39: one real press per size and theme against the local API, with the result cache emptied first. */
-  test("AT-36 to AT-39", async ({ browser }) => {
+  /* Every file under the result cache, at any depth, so each press makes a real search and a real pick call. */
+  function clearResults() {
+    const walk = (d) => { for (const f of existsSync(d) ? readdirSync(d) : []) { const p = join(d, f); if (statSync(p).isDirectory()) walk(p); else rmSync(p); } };
+    walk(CACHE);
+  }
+
+  /* AT-36 to AT-39, AT-65, AT-67, AT-72, and AT-73: one real press per size and theme against the local API, with the
+     result cache emptied first. The page clock runs in real time, because the wait lines hold by real time. */
+  test("AT-36 to AT-39 and AT-65 and AT-67 and AT-72 and AT-73", async ({ browser }) => {
     test.skip(!want("AT-36"));
-    test.setTimeout(1_200_000);
-    for (const at of ["AT-36", "AT-37", "AT-38", "AT-39"]) fresh(at, "measure.jsonl");
+    test.setTimeout(2_400_000);
+    for (const at of ["AT-36", "AT-37", "AT-38", "AT-39", "AT-65", "AT-67", "AT-72", "AT-73"]) fresh(at, "measure.jsonl");
     for (const c of COMBOS) {
-      for (const f of existsSync(join(CACHE, "cpc")) ? readdirSync(join(CACHE, "cpc")) : []) if (/^[0-9a-f]{64}\.json$/.test(f)) rmSync(join(CACHE, "cpc", f));
+      clearResults();
       const page = await newPage(browser, c);
-      // The tee of the stream: a copy of each chunk of the find stream with its time, read beside the page.
+      // The tee of the stream: a copy of each chunk of the find stream with its time, read beside the page. The observer
+      // records the status line, the lit avatars, the count of cards, and the count line under the cards, with times.
       await page.addInitScript(() => {
         window.__chunks = [];
         window.__lines = [];
+        window.__cards = [];
         const real = window.fetch;
         window.fetch = async (...args) => {
           const response = await real(...args);
@@ -862,45 +871,150 @@ test.describe("on", () => {
           const last = window.__lines[window.__lines.length - 1];
           const lit = [...document.querySelectorAll("[data-team-read]")].filter((el) => el.getAttribute("data-lit") === "true").map((el) => el.getAttribute("data-team-read"));
           if (text !== null && (!last || last[1] !== text || last[2].length !== lit.length)) window.__lines.push([Math.round(performance.now()), text, lit]);
-        }).observe(document, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["data-lit"] });
+          const cards = [...document.querySelectorAll('ol[aria-label="Trade ideas"] article')];
+          const more = [...document.querySelectorAll("p[aria-live=polite]")].map((p) => p.textContent).find((t) => /^Writing \d+ more/.test(t ?? "")) ?? null;
+          // The document has landed when the button "See the Full Result" of a card is on. The fold button of the Bullets is
+          // always on, so the check names the button by its text.
+          const ready = [...document.querySelectorAll('ol[aria-label="Trade ideas"] article button')].some((b) => b.textContent.trim() === "See the Full Result" && !b.disabled);
+          const prev = window.__cards[window.__cards.length - 1];
+          if (cards.length > 0 && (!prev || prev[1] !== cards.length || prev[2] !== more || prev[4] !== ready)) window.__cards.push([Math.round(performance.now()), cards.length, more, cards.map((a) => a.getAttribute("aria-label")), ready]);
+        }).observe(document, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["data-lit", "disabled"] });
       });
       const requests = [];
       page.on("request", (r) => requests.push({ ms: Date.now(), method: r.method(), url: r.url() }));
       await open(page, c, { path: "/analyze/?mode=find" });
       await findReady(page);
       const tap = await page.evaluate(() => Math.round(performance.now()));
+      const tapWall = new Date().toISOString();
       await page.getByRole("button", { name: "Find a Trade" }).click();
       const status = page.locator('section[aria-label="Finding Trades"] [role=status]');
       await status.waitFor();
       await page.waitForTimeout(400);
       await page.screenshot({ path: shotPath("AT-36", "line-1", c) });
-      await page.waitForFunction(() => /^[3-5] of 5/.test(document.querySelector('section[aria-label="Finding Trades"] [role=status]')?.textContent ?? ""), null, { timeout: 60_000 });
+      await page.waitForFunction(() => /^[3-5] of 5/.test(document.querySelector('section[aria-label="Finding Trades"] [role=status]')?.textContent ?? ""), null, { timeout: 120_000 });
       await page.waitForTimeout(300);
       await page.screenshot({ path: shotPath("AT-36", "line-2", c) });
       if (c.width === 375 && c.theme === "light") writeFileSync(join(dir("AT-36"), "stagelines-dom.html"), await page.locator('section[aria-label="Finding Trades"]').evaluate((el) => el.querySelector(".t-think")?.closest("[aria-hidden]")?.outerHTML ?? el.outerHTML));
       await page.screenshot({ path: shotPath("AT-37", "", c) });
-      await page.locator('ol[aria-label="Trade ideas"]').or(page.getByText(/no trade/i)).first().waitFor({ timeout: 150_000 });
+      // AT-73: two step 5 lines that name a Shortlist trade, at 375 px. A step 5 line is a status line with no "N of 5".
+      const weigh = () => page.evaluate(() => { const t = document.querySelector('section[aria-label="Finding Trades"] [role=status]')?.textContent ?? ""; return /^\d of 5/.test(t) || t === "" ? null : t; });
+      if (c.width === 375) {
+        let first = null;
+        for (const until = Date.now() + 120_000; Date.now() < until && !first; await page.waitForTimeout(100)) {
+          first = await weigh().catch(() => null);
+          if ((await page.locator('ol[aria-label="Trade ideas"] article').count()) > 0) break;
+        }
+        if (first) {
+          await page.waitForTimeout(500);
+          await page.screenshot({ path: shotPath("AT-73", "step5-line-1", c) });
+          let second = null;
+          for (const until = Date.now() + 10_000; Date.now() < until; await page.waitForTimeout(100)) {
+            const t = await weigh().catch(() => null);
+            if (t && t !== first) { second = t; break; }
+            if ((await page.locator('ol[aria-label="Trade ideas"] article').count()) > 0) break;
+          }
+          if (second) {
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: shotPath("AT-73", "step5-line-2", c) });
+          }
+        }
+      }
+      // AT-72: the shot after the first card, while the stream still writes.
+      const cardsLoc = page.locator('ol[aria-label="Trade ideas"] article');
+      await cardsLoc.first().or(page.getByText(/no trade/i)).first().waitFor({ timeout: 200_000 });
+      await page.waitForTimeout(700);
+      await page.screenshot({ path: shotPath("AT-72", "first-card", c), fullPage: true });
+      // The document lands when the button of each card is on.
+      await expect(page.getByRole("button", { name: "See the Full Result" }).first()).toBeEnabled({ timeout: 200_000 }).catch(() => undefined);
       await page.waitForTimeout(1500);
+      await page.screenshot({ path: shotPath("AT-72", "last-card", c), fullPage: true });
       const chunks = await page.evaluate(() => window.__chunks);
       const lines = await page.evaluate(() => window.__lines);
-      writeFileSync(join(dir("AT-36"), `stream-${c.width}-${c.theme}.txt`), chunks.map(([t, s]) => s.split("\n").filter(Boolean).map((l) => `${((t - tap) / 1000).toFixed(2)} s  ${l}`).join("\n")).join("\n"));
-      note("AT-36", "measure.jsonl", { ...c, tapAtMs: tap, lineTextWithSecondsFromTap: lines.map(([t, text]) => [+((t - tap) / 1000).toFixed(2), text]) });
-      note("AT-37", "measure.jsonl", { ...c, litAvatarsWithSecondsFromTap: lines.filter((l, i) => i === 0 || l[2].length !== lines[i - 1][2].length).map(([t, , lit]) => [+((t - tap) / 1000).toFixed(2), lit]), teamPartsOfStreamInOrder: chunks.flatMap(([, s]) => [...s.matchAll(/"data-team", "data": \{"roster_id": (\d+)\}/g)].map((m) => m[1])) });
-      const answer = chunks.map(([, s]) => s).join("").split("\n").find((l) => l.includes('"data-answer"'));
-      if (answer) writeFileSync(join(dir("AT-38"), `find-answer-${c.width}-${c.theme}.json`), JSON.stringify(JSON.parse(answer.slice(6)).data.document, null, 1));
+      const cardLog = await page.evaluate(() => window.__cards);
+      const sec = (t) => +((t - tap) / 1000).toFixed(2);
+      writeFileSync(join(dir("AT-36"), `stream-${c.width}-${c.theme}.txt`), `# tap at ${tapWall}; each line: seconds from the tap, then the stream line\n` + chunks.map(([t, s]) => s.split("\n").filter(Boolean).map((l) => `${((t - tap) / 1000).toFixed(2)} s  ${l}`).join("\n")).join("\n"));
+      const events = chunks.flatMap(([t, s]) => s.split("\n").filter((l) => l.startsWith("data: {")).map((l) => [sec(t), JSON.parse(l.slice(6))]));
+      const lineTimes = lines.map(([t, text]) => [sec(t), text]);
+      const held = lineTimes.map(([t, text], i) => (i === 0 || lineTimes[i - 1][1] !== text ? { from: t, text } : null)).filter(Boolean).map((x, i, all) => ({ ...x, until: all[i + 1]?.from ?? null, heldSeconds: all[i + 1] ? +(all[i + 1].from - x.from).toFixed(2) : null }));
+      note("AT-36", "measure.jsonl", { ...c, tapAt: tapWall, stepEventsWithSecondsFromTap: events.filter(([, e]) => e.type === "data-step").map(([t, e]) => [t, e.data.line, e.data.live]), lineTextWithSecondsFromTap: held });
+      note("AT-37", "measure.jsonl", { ...c, litAvatarsWithSecondsFromTap: lines.filter((l, i) => i === 0 || l[2].length !== lines[i - 1][2].length).map(([t, , lit]) => [sec(t), lit]), teamPartsOfStreamInOrder: events.filter(([, e]) => e.type === "data-team").map(([, e]) => e.data.roster_id) });
+      const answerEvent = events.find(([, e]) => e.type === "data-answer");
+      const doc = answerEvent ? answerEvent[1].data.document : null;
+      if (doc) for (const at of ["AT-38", "AT-65", "AT-67"]) writeFileSync(join(dir(at), `find-answer-${c.width}-${c.theme}.json`), JSON.stringify(doc, null, 1));
+      const shortlist = events.find(([, e]) => e.type === "data-shortlist");
+      note("AT-72", "measure.jsonl", { ...c, tapAt: tapWall, tradeEventsWithSecondsFromTap: events.filter(([, e]) => ["data-trade", "data-trades-done", "data-answer"].includes(e.type)).map(([t, e]) => e.type === "data-trade" ? [t, e.type, { index: e.data.index, most: e.data.most, offer_id: e.data.trade.offer_id }] : [t, e.type]), cardsInDomWithSecondsFromTap: cardLog.map(([t, n, more, labels, ready]) => ({ t: sec(t), cards: n, countLine: more, labels, buttonsOn: ready })) });
+      note("AT-73", "measure.jsonl", { ...c, shortlistEvent: shortlist ? [shortlist[0], shortlist[1].data] : null, step5LinesWithSecondsFromTap: held.filter((x) => !/^\d of 5/.test(x.text) || /^5 of 5/.test(x.text)) });
       const cards = page.locator('ol[aria-label="Trade ideas"] article');
-      note("AT-38", "measure.jsonl", { ...c, cardCount: await cards.count(), cards: await cards.evaluateAll((els) => els.map((el) => ({ lean: el.querySelector("h3")?.textContent, caseLines: (() => { const p = el.querySelector("p.line-clamp-3"); if (!p) return null; const lh = parseFloat(getComputedStyle(p).lineHeight); return { text: p.textContent, renderedLines: Math.round(p.getBoundingClientRect().height / lh), clamp: getComputedStyle(p).webkitLineClamp }; })(), bulletsFolded: el.querySelector("[data-open]") === null && !!el.querySelector("button[aria-expanded=false]"), headings: [...el.querySelectorAll("h1,h2,h3,h4")].map((h) => h.textContent) }))) });
+      note("AT-38", "measure.jsonl", { ...c, cardCount: await cards.count(), cards: await cards.evaluateAll((els) => els.map((el) => ({ label: el.getAttribute("aria-label"), lean: el.querySelector("h3")?.textContent, caseLines: (() => { const p = el.querySelector("p.line-clamp-3"); if (!p) return null; const lh = parseFloat(getComputedStyle(p).lineHeight); return { text: p.textContent, renderedLines: Math.round(p.getBoundingClientRect().height / lh), clamp: getComputedStyle(p).webkitLineClamp }; })(), bulletsFolded: !!el.querySelector("button[aria-expanded=false]") && !el.querySelector("button[aria-expanded=true]"), headings: [...el.querySelectorAll("h1,h2,h3,h4")].map((h) => h.textContent) }))) });
+      note("AT-65", "measure.jsonl", { ...c, cards: await cards.evaluateAll((els) => els.map((el) => ({ label: el.getAttribute("aria-label"), columns: [...el.querySelectorAll("ul[aria-label]")].filter((u) => ["You get", "You give"].includes(u.getAttribute("aria-label"))).map((u) => ({ heading: u.previousElementSibling?.textContent, rows: [...u.querySelectorAll("li")].map((li) => li.innerText.replace(/\n/g, " | ")), total: u.nextElementSibling?.matches("[data-total]") ? u.nextElementSibling.textContent : null })), gap: el.querySelector("[data-gap]")?.textContent ?? null }))) });
       await page.screenshot({ path: shotPath("AT-38", "", c), fullPage: true });
+      // AT-67: the fold closed, then open.
+      const fold = page.getByRole("button", { name: /^Close, but not sent/ });
+      const foldText = await fold.innerText().catch(() => null);
+      await page.screenshot({ path: shotPath("AT-67", "fold-closed", c), fullPage: true });
+      let nearRows = null;
+      if (foldText) {
+        await fold.click();
+        await page.waitForTimeout(800);
+        nearRows = await page.locator("[data-open] ul li, [data-panel-open] ul li").allInnerTexts().catch(() => null);
+        if (!nearRows || nearRows.length === 0) nearRows = await fold.locator("xpath=../..").locator("ul li").allInnerTexts().catch(() => null);
+        await page.screenshot({ path: shotPath("AT-67", "fold-open", c), fullPage: true });
+      }
+      note("AT-67", "measure.jsonl", { ...c, cardCount: await cards.count(), foldButton: foldText, foldExpandedBeforeTap: false, nearRowsAfterOpen: nearRows });
+      // AT-39: a tap on the first card.
       const mark = requests.length;
       const clickAt = Date.now();
       const openButton = cards.first().getByRole("button", { name: "See the Full Result" });
       let tapError = null;
-      const openState = await openButton.evaluate((el) => ({ disabled: el.disabled, ariaDisabled: el.getAttribute("aria-disabled"), text: el.textContent })).catch((e) => String(e).slice(0, 200));
       await openButton.click({ timeout: 15_000 }).catch((e) => (tapError = String(e).slice(0, 300)));
       await page.waitForTimeout(3000);
       const after = requests.slice(mark).filter((r) => !r.url.startsWith(SITE));
-      note("AT-39", "measure.jsonl", { ...c, url: page.url(), apiRequestsAfterTap: after.map((r) => ({ ...r, msAfterTap: r.ms - clickAt })), analyzeRequests: after.filter((r) => /\/analyze(\?|$)/.test(new URL(r.url).pathname)).length, openButton: openState, tapError, modeSwitch: await page.locator('[aria-label="Mode"]').first().ariaSnapshot({ timeout: 5000 }).catch(() => null), heroTitles: await page.locator("main [data-hero-slot=title]").allInnerTexts() });
+      note("AT-39", "measure.jsonl", { ...c, url: page.url(), apiRequestsAfterTap: after.map((r) => ({ ...r, msAfterTap: r.ms - clickAt })), analyzeRequests: after.filter((r) => /\/analyze(\?|$)/.test(new URL(r.url).pathname)).length, tapError, modeSwitch: await page.locator('[aria-label="Mode"]').first().ariaSnapshot({ timeout: 5000 }).catch(() => null), heroTitles: await page.locator("main [data-hero-slot=title]").allInnerTexts() });
       await page.screenshot({ path: shotPath("AT-39", "", c), fullPage: true });
+      await page.context().close();
+    }
+  });
+
+  /* AT-66: a card whose totals are 68.0 for "You get" and 62.5 for "You give". The find route serves a real answer of
+     this round, whose first trade has those two totals set, as the Given says. */
+  test("AT-66", async ({ browser }) => {
+    test.skip(!want("AT-66"));
+    fresh("AT-66", "measure.jsonl");
+    const doc = JSON.parse(readFileSync(join(E, "AT-66", "served-answer.json"), "utf8"));
+    const body = `data: ${JSON.stringify({ type: "data-answer", data: { kind: "find", document: doc } })}\n\ndata: [DONE]\n\n`;
+    for (const c of COMBOS) {
+      const page = await newPage(browser, c);
+      await page.route(/\/find-stream/, (route) => (route.request().method() === "OPTIONS" ? route.fulfill({ status: 204, headers: CORS }) : route.fulfill({ status: 200, headers: { ...CORS, "content-type": "text/event-stream" }, body })));
+      await open(page, c, { time: OPEN, path: "/analyze/?mode=find" });
+      await findReady(page);
+      await page.getByRole("button", { name: "Find a Trade" }).click();
+      const card = page.locator('ol[aria-label="Trade ideas"] article').first();
+      await card.waitFor({ timeout: 30_000 });
+      await page.waitForTimeout(1200);
+      note("AT-66", "measure.jsonl", { ...c, totals: await card.locator("[data-total]").allInnerTexts(), gap: await card.locator("[data-gap]").innerText().catch(() => null) });
+      await card.scrollIntoViewIfNeeded();
+      await card.screenshot({ path: shotPath("AT-66", "card", c) });
+      await page.context().close();
+    }
+  });
+
+  /* AT-68: the text of the hero during a held wait. */
+  test("AT-68", async ({ browser }) => {
+    test.skip(!want("AT-68"));
+    fresh("AT-68", "measure.jsonl");
+    for (const c of COMBOS) {
+      const page = await newPage(browser, c);
+      await holdFind(page);
+      await open(page, c, { time: OPEN, path: "/analyze/?mode=find" });
+      await findReady(page);
+      await page.getByRole("button", { name: "Find a Trade" }).click();
+      const hero = page.locator('section[aria-label="Finding Trades"]');
+      await hero.waitFor();
+      await page.waitForTimeout(1500);
+      const text = await hero.innerText();
+      const main = await page.locator("main").innerText();
+      note("AT-68", "measure.jsonl", { ...c, heroText: text, about25: /about 25 seconds/i.test(main), countsOfTime: [...main.matchAll(/\b\d+\s*(s|sec|secs|second|seconds|min|mins|minute|minutes)\b/gi)].map((m) => m[0]) });
+      await page.screenshot({ path: shotPath("AT-68", "", c) });
       await page.context().close();
     }
   });

@@ -1,0 +1,23 @@
+"""AT-58 on the live week 11 of cpc: the fair request of one Value offer of Bo Girds in each side order, built by the
+real fair_requests with no Jev call. It prints the state and the question of each request."""
+import json
+from dataclasses import asdict
+from pathlib import Path
+from cornerstone import cli
+from analyzer.finder_search import fair_requests, value_offers
+from league.client import load_client
+from league.paths import provider_cache_dir
+from league.provider.sleeper import SleeperProvider
+
+root = cli.find_root(Path.cwd())
+provider = SleeperProvider(provider_cache_dir(cli.nfl_dir(root)))
+client = load_client(root, "cpc", 2026, provider.fetch_settings, cli.VALUE_MODELS)
+snap = cli._live_snapshot(client, 2026, provider)
+print(f"live snapshot of cpc: season 2026, week {snap.week}, chart week {snap.as_of.chart_week}")
+partner = 11
+offers = value_offers(6, partner, snap)
+print(f"Value offers of Bo Girds with {snap.teams[partner].name}: {len(offers)}; the request below holds the first one")
+for order in ("asker", "partner"):
+    (request,) = fair_requests(snap, 6, partner, offers[:1], order)
+    print(f"--- side order {order} ---")
+    print(json.dumps({"state": request.state, "questions": {k: {"instructions": q.instructions, "yes": q.yes, "no": q.no} for k, q in request.questions.items()}}, indent=1))

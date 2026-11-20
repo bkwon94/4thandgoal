@@ -1,0 +1,19 @@
+#!/bin/zsh
+# The API presses of the round: three plain presses for Bo Girds and every team, then one around Trey McBride and one with an aim of RB.
+S=/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad
+B=http://127.0.0.1:8391/clients/cpc
+mkdir -p $S/api-presses
+press() {
+  name=$1; body=$2
+  find $S/api-run/results -type f -delete
+  echo "$name start $(date +%H:%M:%S) lines $(wc -l < $S/api-main.log)" >> $S/api-presses/marks.txt
+  wall=$(python3 $S/tools/press.py $B "$body" $S/api-presses/$name-stream.txt)
+  sleep 2
+  echo "$name end $(date +%H:%M:%S) wall $wall lines $(wc -l < $S/api-main.log) shortlist $(ls -t $S/presses | head -1)" >> $S/api-presses/marks.txt
+}
+press press-1 '{"season":2026,"asker":6}'
+press press-2 '{"season":2026,"asker":6}'
+press press-3 '{"season":2026,"asker":6}'
+press press-anchor '{"season":2026,"asker":6,"anchor":{"player_id":"8130","side":"gives"}}'
+press press-aim-rb '{"season":2026,"asker":6,"limit":{"aim_position":"RB"}}'
+echo done >> $S/api-presses/marks.txt

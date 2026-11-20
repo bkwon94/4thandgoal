@@ -120,3 +120,94 @@ Question: motion
 Probability: 0.84
 Reason: The Then line may ask for motion (at 0.98), and the files hold no video, no timed frames, and no log of animation values (a log at 0.14).
 Action: disagree: the Then line asks for the order of the lit avatars, and measure.jsonl gives each lit set with its time and the stream order (cacd779f).
+
+## AT-9, question (d)
+
+Question: the Observation
+Probability: 0.78
+Reason: No file may show this sentence of the Observation: "The button name is "Open the Trade Wire, final." (shown at 0.02, a result of the Then line at 0.80).
+Action: disagree: the quote cuts at the period inside the name; measure.jsonl bannerAriaSnapshot holds "Open the Trade Wire, final. The trade deadline has passed." on each line (98d79f98).
+
+## AT-15, question (a)
+
+Question: the facts
+Probability: 0.92
+Reason: No file may show this fact of the Then line: "The log shows one Sleeper read for the first two calls and a second Sleeper read for the call at 6 s." (shown at 0.08).
+Action: disagree: output.txt shows two httpx Sleeper reads after the call at 0.44 s, none after the call at 2.22 s, and two after the call at 6.32 s (98d79f98).
+
+## AT-36, question (b)
+
+Question: motion
+Probability: 0.79
+Reason: The Then line may ask for motion (at 0.81), and the files hold no video, no timed frames, and no log of animation values (a log at 0.03).
+Action: disagree: the Then line asks for one line at a time with its hold, and measure.jsonl gives each line with its start and hold time; it asks for no animation value (98d79f98).
+
+## AT-37, question (b)
+
+Question: motion
+Probability: 0.76
+Reason: The Then line may ask for motion (at 0.97), and the files hold no video, no timed frames, and no log of animation values (a log at 0.22).
+Action: disagree: the Then line asks for the order of the lit avatars, and measure.jsonl gives each lit set with its time and the stream order (98d79f98).
+
+## AT-38, question (a)
+
+Question: the facts
+Probability: 0.71
+Reason: No file may show this fact of the Then line: "Up to 5 cards show in one list under the hero, each with a Lean of Send it, Lean yes, or Gut call, a Case of at most 3 lines, folded Bullets, and no headline." (shown at 0.29).
+Action: disagree: measure.jsonl gives 4 or 5 cards per result, each Lean, renderedLines 2 or 3 with clamp 3, bulletsFolded true, and the Lean as the only heading (98d79f98).
+
+## AT-45, question (d)
+
+Question: the Observation
+Probability: 0.77
+Reason: No file may show this sentence of the Observation: "In the fair step, a mean of 0.25 drops and 0.35 stays, and a failed fair request drops no offer." (shown at 0.19, a result of the Then line at 0.95).
+Action: recorded again
+
+## AT-49, question (a)
+
+Question: the facts
+Probability: 0.78
+Reason: No file may show this fact of the Then line: "All 10 answers arrive with no retry line." (shown at 0.22).
+Action: disagree: runs.txt and run-<n>.json give runs 1 to 10 each with the trade ideas answer and 0 retry lines; the extra 429 ask on API 1 is labeled and shows no retry line (98d79f98).
+
+## AT-49, question (d)
+
+Question: the Observation
+Probability: 0.74
+Reason: No file may show this sentence of the Observation: "All 10 runs end with the trade ideas answer in 45.6 to 78.0 s, with 0 retry lines on the page, one POST /trade-ideas that answers 200, and 0 lines "Trade stream failed" in the API log of each run (runs.txt, run-<n>.json, api-run-<n>.log)." (shown at 0.20, a result of the Then line at 0.92).
+Action: disagree: runs.txt, run-<n>.json, and api-run-<n>.log of runs 1 to 10 hold each time, the POST status 200, and 0 'Trade stream failed' lines (98d79f98).
+
+## AT-59, question (a)
+
+Question: the facts
+Probability: 0.78
+Reason: No file may show this fact of the Then line: "The offer stays on the Shortlist." (shown at 0.22).
+Action: recorded again
+
+## AT-61, question (a)
+
+Question: the facts
+Probability: 0.94
+Reason: No file may show this fact of the Then line: "That offer gets the fact "fills the weak slot QB, and the partner can spare him", and the count of offers stays the same." (shown at 0.06).
+Action: recorded again
+
+## AT-63, question (a)
+
+Question: the facts
+Probability: 0.92
+Reason: No file may show this fact of the Then line: "The partner sends 3 or more requests, each under 64,000 tokens by the estimate, and no offer passes as unsure." (shown at 0.08).
+Action: recorded again
+
+## AT-72, question (b)
+
+Question: motion
+Probability: 0.82
+Reason: The Then line may ask for motion (at 0.85), and the files hold no video, no timed frames, and no log of animation values (a log at 0.04).
+Action: disagree: the Then line asks when each card shows, and measure.jsonl gives each trade part and each card count in the DOM with its time (98d79f98).
+
+## AT-61, question (a)
+
+Question: the facts
+Probability: 0.84
+Reason: No file may show this fact of the Then line: "That offer gets the fact "fills the weak slot QB, and the partner can spare him", and the count of offers stays the same." (shown at 0.16).
+Action: disagree: after one new recording the flag stays; output.txt asserts the fact for the slot of each listed player with equal counts, and the live Shortlist dumps hold a QB Spares yes on each offer (98d79f98).

@@ -9,142 +9,136 @@
  },
  "trades": [
   {
-   "offer_id": "6:9997-11:3294",
+   "offer_id": "6:8151-8:12545+9509",
    "sides": [
     {
      "roster_id": 6,
      "team": "Bo Girds",
      "gives": [
       {
-       "player_id": "9997",
-       "name": "Zay Flowers",
-       "position": "WR",
-       "nfl_team": "BAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
-       "season_rank": "WR12",
-       "recent_rank": "WR32",
-       "to": 11
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
+       "to": 8
       }
      ],
      "gets": [
       {
-       "player_id": "3294",
-       "name": "Dak Prescott",
+       "player_id": "12545",
+       "name": "Tyler Shough",
        "position": "QB",
-       "nfl_team": "DAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
-       "season_rank": "QB4",
+       "nfl_team": "NO",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12545.jpg",
+       "season_rank": "QB13",
        "recent_rank": null,
-       "from": 11
+       "from": 8
+      },
+      {
+       "player_id": "9509",
+       "name": "Bijan Robinson",
+       "position": "RB",
+       "nfl_team": "ATL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+       "season_rank": "RB4",
+       "recent_rank": null,
+       "from": 8
       }
      ]
     },
     {
-     "roster_id": 11,
-     "team": "Unsolicited Dak Picks",
+     "roster_id": 8,
+     "team": "Return of T Mac",
      "gives": [
       {
-       "player_id": "3294",
-       "name": "Dak Prescott",
+       "player_id": "12545",
+       "name": "Tyler Shough",
        "position": "QB",
-       "nfl_team": "DAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
-       "season_rank": "QB4",
+       "nfl_team": "NO",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12545.jpg",
+       "season_rank": "QB13",
+       "recent_rank": null,
+       "to": 6
+      },
+      {
+       "player_id": "9509",
+       "name": "Bijan Robinson",
+       "position": "RB",
+       "nfl_team": "ATL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9509.jpg",
+       "season_rank": "RB4",
        "recent_rank": null,
        "to": 6
       }
      ],
      "gets": [
       {
-       "player_id": "9997",
-       "name": "Zay Flowers",
-       "position": "WR",
-       "nfl_team": "BAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
-       "season_rank": "WR12",
-       "recent_rank": "WR32",
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
        "from": 6
       }
      ]
     }
    ],
-   "lean": "Lean yes",
-   "case": "If you want a top QB now and believe Flowers keeps cooling off, this is worth it. You fix your empty QB slot with the best QB on the list. Dak Picks is out of the race and gets a WR it needs.",
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 62.5
+    },
+    {
+     "roster_id": 8,
+     "trade_value": 62.5
+    }
+   ],
+   "lean": "Send it",
+   "case": "As long as you trust Robinson as a back you can lean on, this swaps an injured star for a healthy one and fills your empty QB slot. The other manager gets a star back and a better lineup. You keep your RB depth intact.",
    "bullets": [
     {
-     "text": "Prescott is QB4 this season, and your QB slot is empty right now.",
+     "text": "Walker did not practice this week, so you swap a back with a real question mark for a healthy star.",
      "mark": "for",
-     "fact_id": "3294.ppg",
-     "fact_text": "Dak Prescott (QB, DAL) scored 20.8 points per game over 10 games before the trade. His Season rank is QB4, by total points this season."
+     "fact_id": "8151.injury",
+     "fact_text": "Kenneth Walker III did not take part in practice in week 11."
     },
     {
-     "text": "Flowers has slipped to WR32 over the last four weeks, so you sell him while the name still carries weight.",
+     "text": "Shough fills your weak QB slot, and the other manager can spare him.",
      "mark": "for",
-     "fact_id": "9997.ppg",
-     "fact_text": "Zay Flowers (WR, BAL) scored 12.7 points per game over 9 games before the trade. His Season rank is WR12, by total points this season. His Recent rank is WR32, by points per game over the last 4 weeks."
+     "fact_id": "12545.spare",
+     "fact_text": "For Bo Girds, Tyler Shough fills the weak slot QB, and Return of T Mac can spare him."
     },
     {
-     "text": "Dak Picks gets a WR for a QB spot it has covered twice, so the other manager should say yes.",
-     "mark": "even",
-     "fact_id": "11.measure.fit",
-     "fact_text": "The roster fit measure for Unsolicited Dak Picks: You go from 2 QBs in the top 24 to 1 and go from 3 WRs in the top 36 to 4, and you get the better player, but Brown is out with no return week on file."
-    },
-    {
-     "text": "Your WRs in the top 36 go from 3 to 2, so your flex spot gets thin.",
-     "mark": "against",
-     "fact_id": "6.depth.wr",
-     "fact_text": "For Bo Girds, the WRs in the top 36 go from 3 to 2."
+     "text": "Return of T Mac gets Walker, a superstar this week, so the other manager has a reason to say yes.",
+     "mark": "for",
+     "fact_id": "8.measure.superstar",
+     "fact_text": "The superstar measure for Return of T Mac: Kenneth Walker III is a superstar, a top 8 player this week."
     }
    ],
    "fact_lines": []
   },
   {
-   "offer_id": "6:9997-7:4046",
+   "offer_id": "6:8151+9997-3:11560+1466+4034",
    "sides": [
     {
      "roster_id": 6,
      "team": "Bo Girds",
      "gives": [
       {
-       "player_id": "9997",
-       "name": "Zay Flowers",
-       "position": "WR",
-       "nfl_team": "BAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
-       "season_rank": "WR12",
-       "recent_rank": "WR32",
-       "to": 7
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "4046",
-       "name": "Patrick Mahomes",
-       "position": "QB",
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
        "nfl_team": "KC",
-       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
-       "season_rank": "QB9",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
        "recent_rank": null,
-       "from": 7
-      }
-     ]
-    },
-    {
-     "roster_id": 7,
-     "team": "To Infinity and Bijan",
-     "gives": [
-      {
-       "player_id": "4046",
-       "name": "Patrick Mahomes",
-       "position": "QB",
-       "nfl_team": "KC",
-       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
-       "season_rank": "QB9",
-       "recent_rank": null,
-       "to": 6
-      }
-     ],
-     "gets": [
+       "to": 3
+      },
       {
        "player_id": "9997",
        "name": "Zay Flowers",
@@ -152,177 +146,7 @@
        "nfl_team": "BAL",
        "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
        "season_rank": "WR12",
-       "recent_rank": "WR32",
-       "from": 6
-      }
-     ]
-    }
-   ],
-   "lean": "Gut call",
-   "case": "If you trust Mahomes to stay a top QB on a strong offense, this is a fair swap. You fill your QB need and the other manager gets a WR for the stretch run. It costs you WR depth.",
-   "bullets": [
-    {
-     "text": "The Chiefs rank 5th of 32 on offense, which backs Mahomes as a QB you can start.",
-     "mark": "for",
-     "fact_id": "4046.nfl_team",
-     "fact_text": "Patrick Mahomes's NFL team, the Chiefs, ranks 5th of 32 on offense: 11.45 expected points added per 100 plays over 9 games before the trade."
-    },
-    {
-     "text": "To Infinity and Bijan is out of the race but still needs points, and Flowers adds WR help, so the other manager can say yes.",
-     "mark": "even",
-     "fact_id": "7.measure.standing",
-     "fact_text": "The standing measure for To Infinity and Bijan: Outside a playoff spot but still in the race, so you need points now, and this trade adds some."
-    },
-    {
-     "text": "Your WRs in the top 36 go from 3 to 2, leaving your flex spot short.",
-     "mark": "against",
-     "fact_id": "6.depth.wr",
-     "fact_text": "For Bo Girds, the WRs in the top 36 go from 3 to 2."
-    }
-   ],
-   "fact_lines": []
-  }
- ],
- "near": [
-  {
-   "offer_id": "6:8130-11:9758",
-   "sides": [
-    {
-     "roster_id": 6,
-     "team": "Bo Girds",
-     "gives": [
-      {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
-       "to": 11
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "9758",
-       "name": "C.J. Stroud",
-       "position": "QB",
-       "nfl_team": "HOU",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
-       "season_rank": "QB8",
-       "recent_rank": null,
-       "from": 11
-      }
-     ]
-    },
-    {
-     "roster_id": 11,
-     "team": "Unsolicited Dak Picks",
-     "gives": [
-      {
-       "player_id": "9758",
-       "name": "C.J. Stroud",
-       "position": "QB",
-       "nfl_team": "HOU",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
-       "season_rank": "QB8",
-       "recent_rank": null,
-       "to": 6
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
-       "from": 6
-      }
-     ]
-    }
-   ],
-   "reason": "You give up the top TE for a QB, and your TEs in the top 24 go from 2 to 1."
-  },
-  {
-   "offer_id": "6:8130-11:3294",
-   "sides": [
-    {
-     "roster_id": 6,
-     "team": "Bo Girds",
-     "gives": [
-      {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
-       "to": 11
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "3294",
-       "name": "Dak Prescott",
-       "position": "QB",
-       "nfl_team": "DAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
-       "season_rank": "QB4",
-       "recent_rank": null,
-       "from": 11
-      }
-     ]
-    },
-    {
-     "roster_id": 11,
-     "team": "Unsolicited Dak Picks",
-     "gives": [
-      {
-       "player_id": "3294",
-       "name": "Dak Prescott",
-       "position": "QB",
-       "nfl_team": "DAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/3294.jpg",
-       "season_rank": "QB4",
-       "recent_rank": null,
-       "to": 6
-      }
-     ],
-     "gets": [
-      {
-       "player_id": "8130",
-       "name": "Trey McBride",
-       "position": "TE",
-       "nfl_team": "ARI",
-       "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg",
-       "season_rank": "TE1",
-       "recent_rank": null,
-       "from": 6
-      }
-     ]
-    }
-   ],
-   "reason": "You give up the TE1 for Prescott, which costs you a top player at a scarce spot."
-  },
-  {
-   "offer_id": "6:9997-3:11560",
-   "sides": [
-    {
-     "roster_id": 6,
-     "team": "Bo Girds",
-     "gives": [
-      {
-       "player_id": "9997",
-       "name": "Zay Flowers",
-       "position": "WR",
-       "nfl_team": "BAL",
-       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
-       "season_rank": "WR12",
-       "recent_rank": "WR32",
+       "recent_rank": "WR33",
        "to": 3
       }
      ],
@@ -334,6 +158,26 @@
        "nfl_team": "CHI",
        "headshot": "https://sleepercdn.com/content/nfl/players/11560.jpg",
        "season_rank": "QB23",
+       "recent_rank": null,
+       "from": 3
+      },
+      {
+       "player_id": "1466",
+       "name": "Travis Kelce",
+       "position": "TE",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/1466.jpg",
+       "season_rank": "TE6",
+       "recent_rank": null,
+       "from": 3
+      },
+      {
+       "player_id": "4034",
+       "name": "Christian McCaffrey",
+       "position": "RB",
+       "nfl_team": "SF",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4034.jpg",
+       "season_rank": "RB2",
        "recent_rank": null,
        "from": 3
       }
@@ -352,6 +196,310 @@
        "season_rank": "QB23",
        "recent_rank": null,
        "to": 6
+      },
+      {
+       "player_id": "1466",
+       "name": "Travis Kelce",
+       "position": "TE",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/1466.jpg",
+       "season_rank": "TE6",
+       "recent_rank": null,
+       "to": 6
+      },
+      {
+       "player_id": "4034",
+       "name": "Christian McCaffrey",
+       "position": "RB",
+       "nfl_team": "SF",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4034.jpg",
+       "season_rank": "RB2",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
+       "from": 6
+      },
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR33",
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 85.5
+    },
+    {
+     "roster_id": 3,
+     "trade_value": 85.5
+    }
+   ],
+   "lean": "Lean yes",
+   "case": "If you are fine thinning out at WR, this lands you McCaffrey, a QB and a TE for a hurt back and a fading receiver. Lil Fridge is in a playoff spot, and Walker is the level of player it would move for. The cost is WR depth.",
+   "bullets": [
+    {
+     "text": "McCaffrey is a superstar this week, and he gives you a strong RB with your QB and TE slots filled too.",
+     "mark": "for",
+     "fact_id": "6.measure.superstar",
+     "fact_text": "The superstar measure for Bo Girds: Christian McCaffrey is a superstar, a top 8 player this week."
+    },
+    {
+     "text": "You drop a WR out of your top group, so your WR depth gets thinner.",
+     "mark": "against",
+     "fact_id": "6.measure.fit",
+     "fact_text": "The roster fit measure for Bo Girds: You go from 0 QBs in the top 24 to 1, keep 3 RBs in the top 36, go from 3 WRs in the top 36 to 2 and go from 1 TE in the top 24 to 2, and your lineup scores more."
+    },
+    {
+     "text": "Lil Fridge gets Walker, a superstar this week, which is the kind of big player a team in a playoff spot will move for.",
+     "mark": "for",
+     "fact_id": "3.measure.superstar",
+     "fact_text": "The superstar measure for Lil Fridge: Kenneth Walker III is a superstar, a top 8 player this week."
+    }
+   ],
+   "fact_lines": []
+  },
+  {
+   "offer_id": "6:8151-12:4983+5967+7523",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
+       "to": 12
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "4983",
+       "name": "DJ Moore",
+       "position": "WR",
+       "nfl_team": "BUF",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4983.jpg",
+       "season_rank": "WR40",
+       "recent_rank": "WR19",
+       "from": 12
+      },
+      {
+       "player_id": "5967",
+       "name": "Tony Pollard",
+       "position": "RB",
+       "nfl_team": "TEN",
+       "headshot": "https://sleepercdn.com/content/nfl/players/5967.jpg",
+       "season_rank": "RB15",
+       "recent_rank": "RB2",
+       "from": 12
+      },
+      {
+       "player_id": "7523",
+       "name": "Trevor Lawrence",
+       "position": "QB",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/7523.jpg",
+       "season_rank": "QB10",
+       "recent_rank": null,
+       "from": 12
+      }
+     ]
+    },
+    {
+     "roster_id": 12,
+     "team": "Teehee",
+     "gives": [
+      {
+       "player_id": "4983",
+       "name": "DJ Moore",
+       "position": "WR",
+       "nfl_team": "BUF",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4983.jpg",
+       "season_rank": "WR40",
+       "recent_rank": "WR19",
+       "to": 6
+      },
+      {
+       "player_id": "5967",
+       "name": "Tony Pollard",
+       "position": "RB",
+       "nfl_team": "TEN",
+       "headshot": "https://sleepercdn.com/content/nfl/players/5967.jpg",
+       "season_rank": "RB15",
+       "recent_rank": "RB2",
+       "to": 6
+      },
+      {
+       "player_id": "7523",
+       "name": "Trevor Lawrence",
+       "position": "QB",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/7523.jpg",
+       "season_rank": "QB10",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 62.5
+    },
+    {
+     "roster_id": 12,
+     "trade_value": 62.5
+    }
+   ],
+   "lean": "Lean yes",
+   "case": "If you want a QB and a hot back for one injured star, this does it and adds a WR too. Teehee is in the race and needs points now, so it has reason to say yes. You will have to find roster room.",
+   "bullets": [
+    {
+     "text": "Pollard has been one of the best backs in the last 4 weeks, ranked RB2.",
+     "mark": "for",
+     "fact_id": "5967.ppg",
+     "fact_text": "Tony Pollard (RB, TEN) scored 14.3 points per game over 9 games before the trade. His Season rank is RB15, by total points this season. His Recent rank is RB2, by points per game over the last 4 weeks."
+    },
+    {
+     "text": "Lawrence fills your weak QB slot, and Teehee can spare him.",
+     "mark": "for",
+     "fact_id": "7523.spare",
+     "fact_text": "For Bo Girds, Trevor Lawrence fills the weak slot QB, and Teehee can spare him."
+    },
+    {
+     "text": "Teehee is outside a playoff spot but still in the race, and Walker adds points for it.",
+     "mark": "for",
+     "fact_id": "12.measure.standing",
+     "fact_text": "The standing measure for Teehee: Outside a playoff spot but still in the race, so you need points now, and this trade adds some."
+    },
+    {
+     "text": "You get more players than you can start, so some of them will sit unused.",
+     "mark": "against",
+     "fact_id": "6.measure.fit",
+     "fact_text": "The roster fit measure for Bo Girds: You go from 0 QBs in the top 24 to 1, keep 3 RBs in the top 36 and go from 3 WRs in the top 36 to 4, but you get more players than you can start."
+    }
+   ],
+   "fact_lines": []
+  },
+  {
+   "offer_id": "6:9997-11:13296+9502+9758",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "9997",
+       "name": "Zay Flowers",
+       "position": "WR",
+       "nfl_team": "BAL",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
+       "season_rank": "WR12",
+       "recent_rank": "WR33",
+       "to": 11
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "13296",
+       "name": "Caleb Douglas",
+       "position": "WR",
+       "nfl_team": "MIA",
+       "headshot": "https://sleepercdn.com/content/nfl/players/13296.jpg",
+       "season_rank": "WR50",
+       "recent_rank": "WR22",
+       "from": 11
+      },
+      {
+       "player_id": "9502",
+       "name": "Tank Dell",
+       "position": "WR",
+       "nfl_team": "HOU",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9502.jpg",
+       "season_rank": "WR95",
+       "recent_rank": "WR36",
+       "from": 11
+      },
+      {
+       "player_id": "9758",
+       "name": "C.J. Stroud",
+       "position": "QB",
+       "nfl_team": "HOU",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
+       "season_rank": "QB3",
+       "recent_rank": null,
+       "from": 11
+      }
+     ]
+    },
+    {
+     "roster_id": 11,
+     "team": "Unsolicited Dak Picks",
+     "gives": [
+      {
+       "player_id": "13296",
+       "name": "Caleb Douglas",
+       "position": "WR",
+       "nfl_team": "MIA",
+       "headshot": "https://sleepercdn.com/content/nfl/players/13296.jpg",
+       "season_rank": "WR50",
+       "recent_rank": "WR22",
+       "to": 6
+      },
+      {
+       "player_id": "9502",
+       "name": "Tank Dell",
+       "position": "WR",
+       "nfl_team": "HOU",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9502.jpg",
+       "season_rank": "WR95",
+       "recent_rank": "WR36",
+       "to": 6
+      },
+      {
+       "player_id": "9758",
+       "name": "C.J. Stroud",
+       "position": "QB",
+       "nfl_team": "HOU",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
+       "season_rank": "QB3",
+       "recent_rank": null,
+       "to": 6
       }
      ],
      "gets": [
@@ -362,27 +510,511 @@
        "nfl_team": "BAL",
        "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg",
        "season_rank": "WR12",
-       "recent_rank": "WR32",
+       "recent_rank": "WR33",
        "from": 6
       }
      ]
     }
    ],
-   "reason": "Williams is only QB23, so he adds little over what you can find elsewhere."
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 23
+    },
+    {
+     "roster_id": 11,
+     "trade_value": 23
+    }
+   ],
+   "lean": "Gut call",
+   "case": "If you want a top QB and two WRs for one fading receiver, this works. Flowers has lost some role lately, and the other team is out of the race and gets the best player in the deal. It is a gut call on whether the depth is worth losing him.",
+   "bullets": [
+    {
+     "text": "Stroud fills your weak QB slot, and the other manager can spare him.",
+     "mark": "for",
+     "fact_id": "9758.spare",
+     "fact_text": "For Bo Girds, C.J. Stroud fills the weak slot QB, and Unsolicited Dak Picks can spare him."
+    },
+    {
+     "text": "Flowers has seen his target share drop lately, so you sell him while he is fading.",
+     "mark": "for",
+     "fact_id": "9997.targets",
+     "fact_text": "Zay Flowers's target share was 21 percent over the last 2 weeks before the trade, down from the 2 weeks before that."
+    },
+    {
+     "text": "Unsolicited Dak Picks is out of the race and wants the better player, and it gets him.",
+     "mark": "for",
+     "fact_id": "11.measure.standing",
+     "fact_text": "The standing measure for Unsolicited Dak Picks: Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+    }
+   ],
+   "fact_lines": []
+  },
+  {
+   "offer_id": "6:8151-12:10859+12490+7523",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
+       "to": 12
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "10859",
+       "name": "Sam LaPorta",
+       "position": "TE",
+       "nfl_team": "DET",
+       "headshot": "https://sleepercdn.com/content/nfl/players/10859.jpg",
+       "season_rank": "TE7",
+       "recent_rank": "TE41",
+       "from": 12
+      },
+      {
+       "player_id": "12490",
+       "name": "Bhayshul Tuten",
+       "position": "RB",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12490.jpg",
+       "season_rank": "RB13",
+       "recent_rank": null,
+       "from": 12
+      },
+      {
+       "player_id": "7523",
+       "name": "Trevor Lawrence",
+       "position": "QB",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/7523.jpg",
+       "season_rank": "QB10",
+       "recent_rank": null,
+       "from": 12
+      }
+     ]
+    },
+    {
+     "roster_id": 12,
+     "team": "Teehee",
+     "gives": [
+      {
+       "player_id": "10859",
+       "name": "Sam LaPorta",
+       "position": "TE",
+       "nfl_team": "DET",
+       "headshot": "https://sleepercdn.com/content/nfl/players/10859.jpg",
+       "season_rank": "TE7",
+       "recent_rank": "TE41",
+       "to": 6
+      },
+      {
+       "player_id": "12490",
+       "name": "Bhayshul Tuten",
+       "position": "RB",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12490.jpg",
+       "season_rank": "RB13",
+       "recent_rank": null,
+       "to": 6
+      },
+      {
+       "player_id": "7523",
+       "name": "Trevor Lawrence",
+       "position": "QB",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/7523.jpg",
+       "season_rank": "QB10",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "8151",
+       "name": "Kenneth Walker III",
+       "position": "RB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg",
+       "season_rank": "RB3",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 62.5
+    },
+    {
+     "roster_id": 12,
+     "trade_value": 62.5
+    }
+   ],
+   "lean": "Gut call",
+   "case": "As long as Tuten stays healthy, you get a QB, a back and a TE for an injured star. Teehee is on the bubble and gets a superstar, so it should listen. It is close, so go with your gut.",
+   "bullets": [
+    {
+     "text": "Lawrence fills your weak QB slot, and Teehee can spare him.",
+     "mark": "for",
+     "fact_id": "7523.spare",
+     "fact_text": "For Bo Girds, Trevor Lawrence fills the weak slot QB, and Teehee can spare him."
+    },
+    {
+     "text": "Tuten was limited in practice, so his health is a small risk.",
+     "mark": "against",
+     "fact_id": "12490.injury",
+     "fact_text": "Bhayshul Tuten was a limited participant in practice in week 11."
+    },
+    {
+     "text": "Teehee gets Walker, a superstar this week, which gives it a reason to say yes.",
+     "mark": "for",
+     "fact_id": "12.measure.superstar",
+     "fact_text": "The superstar measure for Teehee: Kenneth Walker III is a superstar, a top 8 player this week."
+    }
+   ],
+   "fact_lines": []
+  }
+ ],
+ "near": [
+  {
+   "offer_id": "6:11586-7:11635+4046",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "11586",
+       "name": "Blake Corum",
+       "position": "RB",
+       "nfl_team": "LAR",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11586.jpg",
+       "season_rank": "RB17",
+       "recent_rank": null,
+       "to": 7
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "11635",
+       "name": "Ladd McConkey",
+       "position": "WR",
+       "nfl_team": "LAC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11635.jpg",
+       "season_rank": "WR73",
+       "recent_rank": "WR27",
+       "from": 7
+      },
+      {
+       "player_id": "4046",
+       "name": "Patrick Mahomes",
+       "position": "QB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
+       "season_rank": "QB9",
+       "recent_rank": null,
+       "from": 7
+      }
+     ]
+    },
+    {
+     "roster_id": 7,
+     "team": "To Infinity and Bijan",
+     "gives": [
+      {
+       "player_id": "11635",
+       "name": "Ladd McConkey",
+       "position": "WR",
+       "nfl_team": "LAC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11635.jpg",
+       "season_rank": "WR73",
+       "recent_rank": "WR27",
+       "to": 6
+      },
+      {
+       "player_id": "4046",
+       "name": "Patrick Mahomes",
+       "position": "QB",
+       "nfl_team": "KC",
+       "headshot": "https://sleepercdn.com/content/nfl/players/4046.jpg",
+       "season_rank": "QB9",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "11586",
+       "name": "Blake Corum",
+       "position": "RB",
+       "nfl_team": "LAR",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11586.jpg",
+       "season_rank": "RB17",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 17
+    },
+    {
+     "roster_id": 7,
+     "trade_value": 17
+    }
+   ],
+   "reason": "You give up a back and your RB depth in the top group drops."
+  },
+  {
+   "offer_id": "6:12501+9487-7:11632+13298+3163",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "12501",
+       "name": "Matthew Golden",
+       "position": "WR",
+       "nfl_team": "GB",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12501.jpg",
+       "season_rank": "WR6",
+       "recent_rank": null,
+       "to": 7
+      },
+      {
+       "player_id": "9487",
+       "name": "Parker Washington",
+       "position": "WR",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
+       "season_rank": "WR10",
+       "recent_rank": null,
+       "to": 7
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "11632",
+       "name": "Malik Nabers",
+       "position": "WR",
+       "nfl_team": "NYG",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11632.jpg",
+       "season_rank": "WR16",
+       "recent_rank": "WR38",
+       "from": 7
+      },
+      {
+       "player_id": "13298",
+       "name": "KC Concepcion Jr.",
+       "position": "WR",
+       "nfl_team": "CLE",
+       "headshot": "https://sleepercdn.com/content/nfl/players/13298.jpg",
+       "season_rank": "WR28",
+       "recent_rank": "WR16",
+       "from": 7
+      },
+      {
+       "player_id": "3163",
+       "name": "Jared Goff",
+       "position": "QB",
+       "nfl_team": "DET",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3163.jpg",
+       "season_rank": "QB12",
+       "recent_rank": null,
+       "from": 7
+      }
+     ]
+    },
+    {
+     "roster_id": 7,
+     "team": "To Infinity and Bijan",
+     "gives": [
+      {
+       "player_id": "11632",
+       "name": "Malik Nabers",
+       "position": "WR",
+       "nfl_team": "NYG",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11632.jpg",
+       "season_rank": "WR16",
+       "recent_rank": "WR38",
+       "to": 6
+      },
+      {
+       "player_id": "13298",
+       "name": "KC Concepcion Jr.",
+       "position": "WR",
+       "nfl_team": "CLE",
+       "headshot": "https://sleepercdn.com/content/nfl/players/13298.jpg",
+       "season_rank": "WR28",
+       "recent_rank": "WR16",
+       "to": 6
+      },
+      {
+       "player_id": "3163",
+       "name": "Jared Goff",
+       "position": "QB",
+       "nfl_team": "DET",
+       "headshot": "https://sleepercdn.com/content/nfl/players/3163.jpg",
+       "season_rank": "QB12",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "12501",
+       "name": "Matthew Golden",
+       "position": "WR",
+       "nfl_team": "GB",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12501.jpg",
+       "season_rank": "WR6",
+       "recent_rank": null,
+       "from": 6
+      },
+      {
+       "player_id": "9487",
+       "name": "Parker Washington",
+       "position": "WR",
+       "nfl_team": "JAX",
+       "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg",
+       "season_rank": "WR10",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 69
+    },
+    {
+     "roster_id": 7,
+     "trade_value": 69
+    }
+   ],
+   "reason": "You give up two strong WRs and your WR depth drops."
+  },
+  {
+   "offer_id": "6:11586-8:12545+7526",
+   "sides": [
+    {
+     "roster_id": 6,
+     "team": "Bo Girds",
+     "gives": [
+      {
+       "player_id": "11586",
+       "name": "Blake Corum",
+       "position": "RB",
+       "nfl_team": "LAR",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11586.jpg",
+       "season_rank": "RB17",
+       "recent_rank": null,
+       "to": 8
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "12545",
+       "name": "Tyler Shough",
+       "position": "QB",
+       "nfl_team": "NO",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12545.jpg",
+       "season_rank": "QB13",
+       "recent_rank": null,
+       "from": 8
+      },
+      {
+       "player_id": "7526",
+       "name": "Jaylen Waddle",
+       "position": "WR",
+       "nfl_team": "DEN",
+       "headshot": "https://sleepercdn.com/content/nfl/players/7526.jpg",
+       "season_rank": "WR42",
+       "recent_rank": null,
+       "from": 8
+      }
+     ]
+    },
+    {
+     "roster_id": 8,
+     "team": "Return of T Mac",
+     "gives": [
+      {
+       "player_id": "12545",
+       "name": "Tyler Shough",
+       "position": "QB",
+       "nfl_team": "NO",
+       "headshot": "https://sleepercdn.com/content/nfl/players/12545.jpg",
+       "season_rank": "QB13",
+       "recent_rank": null,
+       "to": 6
+      },
+      {
+       "player_id": "7526",
+       "name": "Jaylen Waddle",
+       "position": "WR",
+       "nfl_team": "DEN",
+       "headshot": "https://sleepercdn.com/content/nfl/players/7526.jpg",
+       "season_rank": "WR42",
+       "recent_rank": null,
+       "to": 6
+      }
+     ],
+     "gets": [
+      {
+       "player_id": "11586",
+       "name": "Blake Corum",
+       "position": "RB",
+       "nfl_team": "LAR",
+       "headshot": "https://sleepercdn.com/content/nfl/players/11586.jpg",
+       "season_rank": "RB17",
+       "recent_rank": null,
+       "from": 6
+      }
+     ]
+    }
+   ],
+   "totals": [
+    {
+     "roster_id": 6,
+     "trade_value": 17
+    },
+    {
+     "roster_id": 8,
+     "trade_value": 17
+    }
+   ],
+   "reason": "Waddle's snaps are falling, so the receiver you get does little for your lineup."
   }
  ],
  "empty": null,
+ "short_line": null,
  "as_of": {
   "chart_week": 11,
   "stats_through": 11,
   "completed_through": 10,
-  "rosters_fetched": "2026-11-19T20:44:39.792539-05:00",
+  "rosters_fetched": "2026-11-20T16:44:33.749476-05:00",
   "known_games": {
    "week": 11,
    "games": 1,
-   "in_progress": 1,
+   "in_progress": 0,
    "pending": {
-    "snaps": 1,
     "usage": 1
    }
   },

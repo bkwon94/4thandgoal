@@ -1,0 +1,11 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_finder_search.py -k long_context_header   # in a detached worktree of 98d79f98, UV_PROJECT_ENVIRONMENT=<worktree>/.venv-tests, 2026-11-20 16:14
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-tests/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 50 items / 49 deselected / 1 selected
+
+tests/test_finder_search.py::test_no_jev_request_of_a_press_sends_the_long_context_header PASSED [100%]
+
+======================= 1 passed, 49 deselected in 1.53s =======================

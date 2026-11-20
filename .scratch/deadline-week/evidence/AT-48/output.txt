@@ -1,251 +1,124 @@
-$ cd apps/api && uv run --exact --package cpc-api pytest -v -o log_cli=true --log-cli-level=INFO tests/test_trade_topics.py -k test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_and_its_seconds
-Uninstalled 3 packages in 2ms
-Installed 8 packages in 20ms
+$ cd apps/api && uv run --exact --package cpc-api pytest -v -o log_cli=true --log-cli-level=INFO tests/test_trade_topics.py -k test_a_stream_that_the_client_cuts   # in a detached worktree of 98d79f98, UV_PROJECT_ENVIRONMENT=<worktree>/.venv-apitest, 2026-11-20 16:24
+Using CPython 3.11.10 interpreter at: /Users/brian.kwon/.pyenv/versions/3.11.10/bin/python3.11
+Creating virtual environment at: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-apitest
 ============================= test session starts ==============================
-platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/apps/api
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-apitest/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/apps/api
 configfile: pyproject.toml
 plugins: xdist-3.8.0, anyio-4.15.1
-collecting ... collected 57 items / 56 deselected / 1 selected
+collecting ... collected 62 items / 61 deselected / 1 selected
 
 tests/test_trade_topics.py::test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_and_its_seconds 
 -------------------------------- live log call ---------------------------------
-INFO     uvicorn.error:server.py:103 Started server process [31057]
-INFO     uvicorn.error:server.py:234 Uvicorn running on http://127.0.0.1:59612 (Press CTRL+C to quit)
-INFO     uvicorn.access:h11_impl.py:477 127.0.0.1:59614 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200
-INFO     analyzer.finder_search:finder_search.py:512 Spares tree of Bo Girds: skipped for one picked partner
-INFO     analyzer.jev_waves:jev_waves.py:99 Jev wave 1 (targets): 1 requests, about 2873 tokens
-INFO     analyzer.finder_search:finder_search.py:455 Finder target questions with Lil Fridge: Caleb Williams=0.90, Travis Kelce=0.90, Jameis Winston=0.90, Stefon Diggs=0.90, Derrick Henry=0.90, Christian McCaffrey=0.90, Jakobi Meyers=0.90, J.K. Dobbins=0.90, Khalil Shakir=0.90, Bryce Young=0.90, Dontayvion Wicks=0.90, Jaxon Smith-Njigba=0.90, Blake Corum=0.90, Malik Washington=0.90, Matthew Golden=0.90, Tyler Shough=0.90, Ja'Kobi Lane=0.90, Mike Washington=0.90, Pat Freiermuth=0.90, Trey McBride=0.90, Kyren Williams=0.90, Kenneth Walker=0.90, Parker Washington=0.90, Zay Flowers=0.90
-INFO     analyzer.finder_search:finder_search.py:562 Finder targets with Lil Fridge: the asker gives ['Blake Corum', 'Malik Washington', 'Matthew Golden', 'Tyler Shough']; the partner gives ['Caleb Williams', 'Travis Kelce', 'Jameis Winston', 'Stefon Diggs']
-INFO     analyzer.finder_search:finder_search.py:581 Finder offers of Bo Girds: 64
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:11560: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:1466: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:2306: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:2449: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:11560: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:1466: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:2306: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:2449: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:11560: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:1466: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:2306: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:2449: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:11560: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:1466: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:2306: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:2449: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+11610-3:11560: Bo Girds gives Blake Corum (RB, LAR) and Malik Washington (WR, MIA); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+11610-3:1466: Bo Girds gives Blake Corum (RB, LAR) and Malik Washington (WR, MIA); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+11610-3:2306: Bo Girds gives Blake Corum (RB, LAR) and Malik Washington (WR, MIA); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+11610-3:2449: Bo Girds gives Blake Corum (RB, LAR) and Malik Washington (WR, MIA); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12501-3:11560: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12501-3:1466: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12501-3:2306: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12501-3:2449: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12545-3:11560: Bo Girds gives Blake Corum (RB, LAR) and Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12545-3:1466: Bo Girds gives Blake Corum (RB, LAR) and Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12545-3:2306: Bo Girds gives Blake Corum (RB, LAR) and Tyler Shough (QB, NO); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586+12545-3:2449: Bo Girds gives Blake Corum (RB, LAR) and Tyler Shough (QB, NO); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12501-3:11560: Bo Girds gives Malik Washington (WR, MIA) and Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12501-3:1466: Bo Girds gives Malik Washington (WR, MIA) and Matthew Golden (WR, GB); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12501-3:2306: Bo Girds gives Malik Washington (WR, MIA) and Matthew Golden (WR, GB); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12501-3:2449: Bo Girds gives Malik Washington (WR, MIA) and Matthew Golden (WR, GB); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12545-3:11560: Bo Girds gives Malik Washington (WR, MIA) and Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12545-3:1466: Bo Girds gives Malik Washington (WR, MIA) and Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12545-3:2306: Bo Girds gives Malik Washington (WR, MIA) and Tyler Shough (QB, NO); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610+12545-3:2449: Bo Girds gives Malik Washington (WR, MIA) and Tyler Shough (QB, NO); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501+12545-3:11560: Bo Girds gives Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501+12545-3:1466: Bo Girds gives Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501+12545-3:2306: Bo Girds gives Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501+12545-3:2449: Bo Girds gives Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:11560+1466: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Caleb Williams (QB, CHI) and Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:11560+2306: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Caleb Williams (QB, CHI) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:11560+2449: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:1466+2306: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Travis Kelce (TE, KC) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:1466+2449: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11586-3:2306+2449: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Jameis Winston (QB, NYG) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:11560+1466: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Caleb Williams (QB, CHI) and Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:11560+2306: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Caleb Williams (QB, CHI) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:11560+2449: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:1466+2306: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Travis Kelce (TE, KC) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:1466+2449: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:11610-3:2306+2449: Bo Girds gives Malik Washington (WR, MIA); Lil Fridge gives Jameis Winston (QB, NYG) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:11560+1466: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:11560+2306: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:11560+2449: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:1466+2306: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Travis Kelce (TE, KC) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:1466+2449: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12501-3:2306+2449: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Jameis Winston (QB, NYG) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:11560+1466: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI) and Travis Kelce (TE, KC)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:11560+2306: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:11560+2449: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:1466+2306: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC) and Jameis Winston (QB, NYG)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:1466+2449: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS)
-INFO     analyzer.finder_search:finder_search.py:444 Finder offer 6:12545-3:2306+2449: Bo Girds gives Tyler Shough (QB, NO); Lil Fridge gives Jameis Winston (QB, NYG) and Stefon Diggs (WR, WAS)
-INFO     analyzer.jev_waves:jev_waves.py:99 Jev wave 2 (shortlist): 1 requests, about 39033 tokens
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+11610-3:11560: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:12501+12545-3:11560: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+11610-3:1466: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+11610-3:2306: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+11610-3:2449: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+12501-3:11560: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+12501-3:1466: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+12501-3:2306: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+12501-3:2449: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-INFO     analyzer.finder_search:finder_search.py:616 Finder shortlist 6:11586+12545-3:11560: score=0.729 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
-WARNING  cornerstone_api.trade_topics:trade_topics.py:340 Trade stream failed: topic=trade_ideas cause=client-cut stage="Made a shortlist of 10" seconds=4.8
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     uvicorn.error:server.py:103 Started server process [57967]
+INFO     uvicorn.error:server.py:234 Uvicorn running on http://127.0.0.1:53706 (Press CTRL+C to quit)
+INFO     uvicorn.access:h11_impl.py:477 127.0.0.1:53707 - "POST /clients/cpc/trade-ideas HTTP/1.1" 200
+INFO     analyzer.jev_waves:jev_waves.py:155 Jev wave 1 (spares tree): 1 requests, about 1673 tokens
+INFO     analyzer.finder_search:finder_search.py:738 Spares tree of Bo Girds with Lil Fridge: stopped on partner; partner gives no one; asker gives Blake Corum=0.90, Malik Washington=0.90, Matthew Golden=0.90, Ja'Kobi Lane=0.90, Mike Washington=0.90, Kyren Williams=0.90, Kenneth Walker=0.90, Parker Washington=0.90, Zay Flowers=0.90
+INFO     analyzer.finder_search:finder_search.py:651 Finder Value offers of Bo Girds: 463; 1-for-1=3, 2-for-1=20, 1-for-2=9, 3-for-1=20, 1-for-3=42, 3-for-2=178, 2-for-3=191
+INFO     analyzer.jev_waves:jev_waves.py:155 Jev wave 2 (fair): 3 requests, about 93952 tokens
+INFO     analyzer.jev_waves:jev_waves.py:155 Jev wave 3 (fair): 3 requests, about 78661 tokens
+INFO     analyzer.jev_waves:jev_waves.py:155 Jev wave 4 (fair): 3 requests, about 94196 tokens
+INFO     analyzer.jev_waves:jev_waves.py:155 Jev wave 5 (fair): 1 requests, about 16121 tokens
+INFO     analyzer.finder_search:finder_search.py:604 Finder fair answers of Bo Girds: 926 questions, 0 from the cache, 926 asked live
+INFO     analyzer.finder_search:finder_search.py:769 Finder fair step of Bo Girds: checked 463, dropped 0, no answer 0
+INFO     analyzer.finder_search:finder_search.py:780 Finder step 2 of Bo Girds: 21 offers, the 3 best of each partner and shape direction
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586-3:11560: Bo Girds gives Blake Corum (RB, LAR); Lil Fridge gives Caleb Williams (QB, CHI)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:12501-3:3198: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Derrick Henry (RB, BAL)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:8151-3:9488: Bo Girds gives Kenneth Walker (RB, KC); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12545-3:2449: Bo Girds gives Blake Corum (RB, LAR) and Tyler Shough (QB, NO); Lil Fridge gives Stefon Diggs (WR, WAS)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+8130-3:3198: Bo Girds gives Blake Corum (RB, LAR) and Trey McBride (TE, ARI); Lil Fridge gives Derrick Henry (RB, BAL)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+8150-3:4034: Bo Girds gives Blake Corum (RB, LAR) and Kyren Williams (RB, LAR); Lil Fridge gives Christian McCaffrey (RB, SF)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:8130-3:11560+2449: Bo Girds gives Trey McBride (TE, ARI); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:8150-3:2449+3198: Bo Girds gives Kyren Williams (RB, LAR); Lil Fridge gives Stefon Diggs (WR, WAS) and Derrick Henry (RB, BAL)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:8151-3:11560+4034: Bo Girds gives Kenneth Walker (RB, KC); Lil Fridge gives Caleb Williams (QB, CHI) and Christian McCaffrey (RB, SF)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501+8130-3:4034: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB) and Trey McBride (TE, ARI); Lil Fridge gives Christian McCaffrey (RB, SF)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501+8130-3:9488: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB) and Trey McBride (TE, ARI); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501+9487-3:9488: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB) and Parker Washington (WR, JAX); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:12501-3:11560+1466+2449: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:12501-3:11560+2449+5947: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS) and Jakobi Meyers (WR, JAX)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:12501-3:11560+2449+8134: Bo Girds gives Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Stefon Diggs (WR, WAS) and Khalil Shakir (WR, BUF)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501+12545-3:11560+3198: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Caleb Williams (QB, CHI) and Derrick Henry (RB, BAL)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501+12545-3:1466+3198: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Travis Kelce (TE, KC) and Derrick Henry (RB, BAL)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501+12545-3:3198+5947: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB) and Tyler Shough (QB, NO); Lil Fridge gives Derrick Henry (RB, BAL) and Jakobi Meyers (WR, JAX)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501-3:11560+1466+3198: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Travis Kelce (TE, KC) and Derrick Henry (RB, BAL)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501-3:11560+3198+5947: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Derrick Henry (RB, BAL) and Jakobi Meyers (WR, JAX)
+INFO     analyzer.finder_search:finder_search.py:633 Finder offer 6:11586+12501-3:11560+3198+8134: Bo Girds gives Blake Corum (RB, LAR) and Matthew Golden (WR, GB); Lil Fridge gives Caleb Williams (QB, CHI) and Derrick Henry (RB, BAL) and Khalil Shakir (WR, BUF)
+INFO     analyzer.jev_waves:jev_waves.py:155 Jev wave 6 (shortlist): 1 requests, about 16176 tokens
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586+12501+12545-3:11560+3198: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586+12501+8130-3:4034: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586+12501-3:11560+1466+3198: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586+12545-3:2449: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586-3:11560: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:12501-3:11560+1466+2449: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:8130-3:11560+2449: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586+12501+9487-3:9488: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:11586+8150-3:4034: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+INFO     analyzer.finder_search:finder_search.py:814 Finder shortlist 6:8151-3:11560+4034: score=0.900 fair=0.90 needs={6: 0.9, 3: 0.9} gains={6: 0.9, 3: 0.9}
+WARNING  cornerstone_api.trade_topics:trade_topics.py:340 Trade stream failed: topic=trade_ideas cause=client-cut stage="Made a shortlist of 10" seconds=4.7
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
 INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/11586/news "HTTP/1.1 200 OK"
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/12501/news "HTTP/1.1 200 OK"
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
-INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-19589/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
 INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 11586: 0 items
-INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 12501: 0 items
-INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/11610/news "HTTP/1.1 200 OK"
+INFO     analyzer.team_facts:team_facts.py:51 no playoff odds for week 5 in /private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json: [Errno 2] No such file or directory: '/private/var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/pytest-of-brian.kwon/pytest-20419/test_a_stream_that_the_client_0/published/2026/rankings.json'
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/12501/news "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/8130/news "HTTP/1.1 200 OK"
 INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/8151/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 12501: 0 items
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 8130: 0 items
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 8151: 0 items
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/11560/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 11560: 0 items
 INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/12545/news "HTTP/1.1 200 OK"
-INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 11610: 0 items
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 8130 from the cache
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/1466/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 1466: 0 items
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/4034/news "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/2449/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
 INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
 INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 12545: 0 items
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11610 from the cache
-INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/11560/news "HTTP/1.1 200 OK"
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11610 from the cache
-INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/1466/news "HTTP/1.1 200 OK"
-INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 11560: 0 items
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11610 from the cache
-INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/2306/news "HTTP/1.1 200 OK"
-INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 1466: 0 items
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 4034: 0 items
 INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
-INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/2449/news "HTTP/1.1 200 OK"
-INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 2306: 0 items
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
-INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 2449: 0 items
 INFO     analyzer.trade_news:trade_news.py:61 News of player 1466 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 2306 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
 INFO     analyzer.trade_news:trade_news.py:61 News of player 12545 from the cache
 INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 11560 from the cache
-INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 4034 from the cache
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/3198/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 2449: 0 items
 INFO     analyzer.trade_news:trade_news.py:61 News of player 2449 from the cache
-INFO     analyzer.routes:routes.py:234 Press of find for cpc: time=5.1s cost=$0.0000 claude_calls=0
-INFO     analyzer.read_jev_check:read_jev_check.py:86 Jev checks of the read, log only: model=jev-fake input_tokens=200 faithful.6.1=0.9 yes faithful.6.2=0.9 yes
-INFO     analyzer.read_jev_check:read_jev_check.py:86 Jev checks of the read, log only: model=jev-fake input_tokens=200 faithful.6.1=0.9 yes faithful.6.2=0.9 yes
-INFO     analyzer.read_jev_check:read_jev_check.py:86 Jev checks of the read, log only: model=jev-fake input_tokens=200 faithful.6.1=0.9 yes faithful.6.2=0.9 yes
+INFO     analyzer.trade_news:trade_news.py:61 News of player 12501 from the cache
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/9487/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 3198: 0 items
+INFO     analyzer.trade_news:trade_news.py:61 News of player 11586 from the cache
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/8150/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 9487: 0 items
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 8150: 0 items
+INFO     httpx:_client.py:1025 HTTP Request: GET https://api.sleeper.app/players/nfl/9488/news "HTTP/1.1 200 OK"
+INFO     analyzer.trade_news:trade_news.py:61 News of player 4034 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 3198 from the cache
+INFO     analyzer.trade_news:trade_news.py:61 News of player 2449 from the cache
+INFO     analyzer.trade_news:trade_news.py:69 News fetch of player 9488: 0 items
+INFO     analyzer.finder_pick:finder_pick.py:621 finder pick kept 3 of 5: no reason given
+INFO     analyzer.routes:routes.py:235 Press of find for cpc: time=5.1s cost=$0.0000 claude_calls=0
 INFO     uvicorn.error:server.py:282 Shutting down
-INFO     uvicorn.error:server.py:113 Finished server process [31057]
+INFO     uvicorn.error:server.py:113 Finished server process [57967]
 PASSED                                                                   [100%]
 
-======================= 1 passed, 56 deselected in 7.55s =======================
-
-# The source of the test (apps/api/tests/test_trade_topics.py):
-def _served(app):
-    """The app on a real uvicorn server on a free local port, so a client can cut a stream as a browser does."""
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
-    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_config=None, lifespan="off"))
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    while not server.started:
-        time.sleep(0.05)
-    try:
-        yield port
-    finally:
-        server.should_exit = True
-        thread.join(timeout=10)
-
-
-def _read_then_cut(port: int, path: str, body: dict, seconds: float) -> str:
-    """Post `body` to `path` on a raw socket, read what comes for `seconds`, then close the socket, as a browser that
-    drops the stream does. The text that came before the cut."""
-    payload = json.dumps(body).encode()
-    head = (f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
-            f"X-League-Passphrase: {HEADERS['X-League-Passphrase']}\r\nContent-Length: {len(payload)}\r\n\r\n")
-    received = b""
-    with socket.create_connection(("127.0.0.1", port)) as client:
-        client.sendall(head.encode() + payload)
-        end = time.monotonic() + seconds
-        while (left := end - time.monotonic()) > 0:
-            client.settimeout(left)
-            try:
-                chunk = client.recv(65536)
-            except TimeoutError:
-                break
-            if not chunk:
-                break
-            received += chunk
-    return received.decode(errors="replace")
-
-
-def _failed_lines(caplog) -> list[str]:
-    return [record.getMessage() for record in caplog.records if record.getMessage().startswith("Trade stream failed")]
-
-
-def _wait_for_line(caplog) -> list[str]:
-    end = time.monotonic() + LOG_WAIT_SECONDS
-    while not _failed_lines(caplog) and time.monotonic() < end:
-        time.sleep(0.05)
-    return _failed_lines(caplog)
-
-
-def test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev,
-                                                                                              caplog):
-    # AT-48: the client cuts the trade ideas stream after 5 s, while the pick stage works.
-    caplog.set_level(logging.INFO)
-    news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
-    held = HeldPick(functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair()))
-    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
-                     finder_search=functools.partial(search, jev=jev), finder_pick=held)
-    with _served(app) as port:
-        try:
-            received = _read_then_cut(port, IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, CUT_SECONDS)
-            _wait_for_line(caplog)
-        finally:
-            held.go.set()
-        # The press ends after the cut, and its end logs no second line.
-        time.sleep(1)
-        lines = _failed_lines(caplog)
-    steps = [json.loads(line.removeprefix("data: "))["data"]["line"] for line in received.split("\n")
-             if line.startswith('data: {"type": "data-step"')]
-    assert len(lines) == 1, lines
-    [line] = lines
-    assert "topic=trade_ideas" in line
-    assert "cause=client-cut" in line
-    assert f'stage="{steps[-1]}"' in line
-    seconds = float(re.search(r"seconds=([0-9.]+)", line).group(1))
-    # The stream starts after the team read of the route, a moment after the client sends, so its count runs a bit short.
-    assert CUT_SECONDS - 2 <= seconds <= CUT_SECONDS + 1
-
-
-def test_a_press_that_fails_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev, caplog):
-    # A press that raises ends the stream with the retry line, and the API logs why, at which stage, and when.
-    caplog.set_level(logging.INFO)
-
-    def broken_pick(*args, **kwargs):
-        raise TimeoutError("the pick call took too long")
-
-    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
-                     finder_search=functools.partial(search, jev=jev), finder_pick=broken_pick)
-    parts = _parts(TestClient(app).post(IDEAS, json={"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, headers=HEADERS))
-    [error] = _of(parts, "data-error")
-    assert error["status"] == 500
-    lines = _failed_lines(caplog)
-    assert len(lines) == 1, lines
-    [line] = lines
-    assert "topic=trade_ideas" in line
+====================== 1 passed, 61 deselected in 10.84s =======================

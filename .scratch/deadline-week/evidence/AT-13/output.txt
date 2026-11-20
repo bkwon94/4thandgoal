@@ -1,5 +1,5 @@
-$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:55756/clients/cpc/deadline/trades
-# API: uvicorn --factory --app-dir <scratch>/factory wire_leg9:app (the real app, Trade Wire read pinned to Sleeper leg 9; factory copied as evidence/AT-13/wire_leg9.py)
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:8393/clients/cpc/deadline/trades   # 2026-11-20 16:16:06
+# API: uvicorn --factory --app-dir <scratch>/factory wire_leg9:app, run from a detached worktree of 98d79f98 (the real app, Trade Wire read pinned to Sleeper leg 9; factory is evidence/AT-13/wire_leg9.py.txt). The API ran with no Jev key, so its fair warm-up asks no Jev.
 {
     "leg": 9,
     "trades": [

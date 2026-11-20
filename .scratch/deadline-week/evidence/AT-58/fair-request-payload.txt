@@ -1,0 +1,87 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone python fair_payload.py   # the script is evidence/AT-58/fair_payload.py.txt; 2026-11-20 16:15, live Sleeper
+live snapshot of cpc: season 2026, week 11, chart week 11
+Value offers of Bo Girds with Unsolicited Dak Picks: 396; the request below holds the first one
+--- side order asker ---
+{
+ "state": {
+  "teams": [
+   "Bo Girds",
+   "Unsolicited Dak Picks"
+  ],
+  "offers": {
+   "0": {
+    "sides": [
+     {
+      "team": "Bo Girds",
+      "gives": [
+       {
+        "name": "Blake Corum",
+        "chart_value": 17.0
+       }
+      ],
+      "chart_sum": 17.0
+     },
+     {
+      "team": "Unsolicited Dak Picks",
+      "gives": [
+       {
+        "name": "Ollie Gordon II",
+        "chart_value": 16.5
+       }
+      ],
+      "chart_sum": 16.5
+     }
+    ]
+   }
+  }
+ },
+ "questions": {
+  "0|fair": {
+   "instructions": "Is the trade in `offers.0` close to fair by chart value: Bo Girds gives Blake Corum and Unsolicited Dak Picks gives Ollie Gordon II?",
+   "yes": "Each team gives about as much chart value as it gets, by the sums in `offers.0.sides`.",
+   "no": "One team gives a clearly larger chart sum in `offers.0.sides` than it gets back."
+  }
+ }
+}
+--- side order partner ---
+{
+ "state": {
+  "teams": [
+   "Bo Girds",
+   "Unsolicited Dak Picks"
+  ],
+  "offers": {
+   "0": {
+    "sides": [
+     {
+      "team": "Unsolicited Dak Picks",
+      "gives": [
+       {
+        "name": "Ollie Gordon II",
+        "chart_value": 16.5
+       }
+      ],
+      "chart_sum": 16.5
+     },
+     {
+      "team": "Bo Girds",
+      "gives": [
+       {
+        "name": "Blake Corum",
+        "chart_value": 17.0
+       }
+      ],
+      "chart_sum": 17.0
+     }
+    ]
+   }
+  }
+ },
+ "questions": {
+  "0|fair": {
+   "instructions": "Is the trade in `offers.0` close to fair by chart value: Unsolicited Dak Picks gives Ollie Gordon II and Bo Girds gives Blake Corum?",
+   "yes": "Each team gives about as much chart value as it gets, by the sums in `offers.0.sides`.",
+   "no": "One team gives a clearly larger chart sum in `offers.0.sides` than it gets back."
+  }
+ }
+}

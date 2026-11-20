@@ -1,0 +1,29 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_finder_search.py -k need_answers_of_0_1_on_both_sides   # in a detached worktree of 98d79f98, UV_PROJECT_ENVIRONMENT=<worktree>/.venv-tests, 2026-11-20 16:14
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-tests/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 50 items / 49 deselected / 1 selected
+
+tests/test_finder_search.py::test_need_answers_of_0_1_on_both_sides_drop_no_offer PASSED [100%]
+
+======================= 1 passed, 49 deselected in 0.40s =======================
+
+# The source of each test that ran, at 98d79f98 (1 tests):
+
+# apps/pipeline/tests/test_finder_search.py
+def test_need_answers_of_0_1_on_both_sides_drop_no_offer(snap):
+    # AT-59: need is a reason, never a gate. A gain of 0.8 on both sides keeps the offer.
+    def answer(key, question, state):
+        _, _, kind = key.partition("|")
+        if kind.startswith("need."):
+            return 0.1
+        return 0.8 if kind.startswith("gain.") else _rising_fair(key, question, state)
+
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=answer))
+    assert found.dropped == []
+    assert len(found.shortlist) == min(SHORTLIST_KEEP, len(found.step_two))
+    for offer in found.shortlist:
+        assert list(offer.needs.values()) == pytest.approx([0.1, 0.1])
+        assert offer.score == offer.fair

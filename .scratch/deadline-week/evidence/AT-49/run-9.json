@@ -1,72 +1,78 @@
 {
  "run": "9",
  "combo": "390-light",
- "chip": "Trade ideas: Offers for your weak spots",
- "askedAt": "2026-11-19T23:53:36.678Z",
- "secondsToAnswer": 42.3,
+ "chip": "Trade ideas: Offers for your QB: J.J. McCarthy (QB37)",
+ "askedAt": "2026-11-20T22:13:00.435Z",
+ "secondsToAnswer": 52,
  "outcome": "trade ideas answer",
  "retryLineCount": 0,
- "articleText": "Trade ideas\n\n✔\nRead 11 teams\n✔\nFound 15 players who fit\n✔\nBuilt 81 offers\n✔\nMade a shortlist of 10\n✔\nPicked the best 3\nWITH UNSOLICITED DAK PICKS\nZay Flowers for Dak Prescott\nYOU GET\nDak Prescott\nQB · DAL\n57.0\nUNSOLICITED DAK PICKS GETS\nZay Flowers\nWR · BAL\n39.9\nREST OF SEASON\n57.0\n39.9\nWhy\n\n\nfor\n\n\nfor\n\n\nCheck this trade\n\nLean yes.\n\nWITH UNSOLICITED DAK PICKS\nZay Flowers for C.J. Stroud\n\n\nfor\n\n\nfor\n\n\n\nWITH TO INFINITY AND BIJAN\nZay Flowers for Patrick Mahomes\n\n\nfor\n\n\nfor\n\n\n\nALSO WEIGHED\nWITH UNSOLICITED DAK PICKS\n\nYou give Matthew Golden and get Dak Prescott.\n\nYou give up a much more valued WR for a QB who is worth less, when a cheaper WR can get the same QB.\n\nCheck this trade\nWITH TO INFINITY AND BIJAN\n\nYou give Kyren Williams and get Patrick Mahomes.\n\nYou give up a starting RB, which thins your RB group.\n\nCheck this trade\nWITH UNSOLICITED DAK PICKS\n\nYou give Trey McBride and get Dak Prescott.\n\nYou give up the top TE in the league and leave your TE group thinner.\n\nCheck this trade\nBuild a trade on the Trade page",
+ "articleText": "Trade ideas\n\n✔\nRead 11 teams\n✔\nMatched 5,571 trades by trade value\n✔\nChecked 5,571 trades for fairness\n✔\nMade a shortlist of 10\n✔\nPicked the best 5\nWITH LIL FRIDGE\nKenneth Walker III, Zay Flowers for Caleb Williams, Travis Kelce, Christian McCaffrey\nYOU GET\nCaleb Williams\nQB · CHI\n80.5\nTravis Kelce\nTE · KC\n42.3\nChristian McCaffrey\nRB · SF\n73.9\nLIL FRIDGE GETS\nKenneth Walker III\nRB · KC\n56.6\nZay Flowers\nWR · BAL\n39.9\nREST OF SEASON\n196.8\n96.5\nWhy\n\n\nfor\n\n\nfor\n\n\nCheck this trade\n\nLean yes.\n\nWITH UNSOLICITED DAK PICKS\nZay Flowers for Dak Prescott, Josh Downs\n\n\nfor\n\n\nfor\n\n\n\nWITH TEEHEE\nKenneth Walker III for DJ Moore, Tony Pollard, Trevor Lawrence\n\n\nfor\n\n\nfor\n\n\n\nWITH TO INFINITY AND BIJAN\nBlake Corum for Ladd McConkey, Patrick Mahomes\n\n\nfor\n\n\nagainst\n\n\n\nWITH RETURN OF T MAC\nKyren Williams for Rome Odunze, Jordan Love\n\n\nfor\n\n\nfor\n\n\n\nALSO WEIGHED\nWITH RETURN OF T MAC\n\nYou give Parker Washington and get Rome Odunze, Tyler Shough, T.J. Hockenson.\n\nYou give up Parker Washington, a WR10, for a QB and a TE on weak offenses, and you have no roster room.\n\nCheck this trade\nWITH TO INFINITY AND BIJAN\n\nYou give Zay Flowers and get KC Concepcion Jr., Patrick Mahomes.\n\nConcepcion is on a weak Browns offense and has a bye, so he adds little beside Mahomes.\n\nCheck this trade\nWITH TO INFINITY AND BIJAN\n\nYou give Matthew Golden, Parker Washington and get Malik Nabers, KC Concepcion Jr., Jared Goff.\n\nYou give up two top WRs, and your WR depth falls from 3 to 2.\n\nCheck this trade\nBuild a trade on the",
  "apiResponses": [
   {
-   "ms": 1795132415174,
+   "ms": 1795212778902,
    "status": 200,
    "method": "GET",
    "url": "https://gc.zgo.at/count.js"
   },
   {
-   "ms": 1795132420057,
+   "ms": 1795212779016,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:8391/clients/cpc/eggs/board"
+  },
+  {
+   "ms": 1795212779163,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:8391/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795212779930,
    "status": 200,
    "method": "POST",
-   "url": "http://127.0.0.1:57246/clients/cpc/trade-ideas"
+   "url": "http://127.0.0.1:8391/clients/cpc/suggestions"
   },
   {
-   "ms": 1795132420058,
-   "status": 200,
-   "method": "GET",
-   "url": "http://127.0.0.1:57246/clients/cpc/eggs/board"
-  },
-  {
-   "ms": 1795132420060,
-   "status": 200,
-   "method": "GET",
-   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
-  },
-  {
-   "ms": 1795132425523,
-   "status": 200,
-   "method": "GET",
-   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
-  },
-  {
-   "ms": 1795132426995,
+   "ms": 1795212780505,
    "status": 200,
    "method": "POST",
-   "url": "http://127.0.0.1:57246/clients/cpc/suggestions"
+   "url": "http://127.0.0.1:8391/clients/cpc/trade-ideas"
   },
   {
-   "ms": 1795132435372,
+   "ms": 1795212789128,
    "status": 200,
    "method": "GET",
-   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+   "url": "http://127.0.0.1:8391/clients/cpc/deadline/trades"
   },
   {
-   "ms": 1795132445398,
+   "ms": 1795212799167,
    "status": 200,
    "method": "GET",
-   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+   "url": "http://127.0.0.1:8391/clients/cpc/deadline/trades"
   },
   {
-   "ms": 1795132455503,
+   "ms": 1795212809183,
    "status": 200,
    "method": "GET",
-   "url": "http://127.0.0.1:57246/clients/cpc/deadline/trades"
+   "url": "http://127.0.0.1:8391/clients/cpc/deadline/trades"
   },
   {
-   "ms": 1795132458866,
+   "ms": 1795212819150,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:8391/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795212829163,
+   "status": 200,
+   "method": "GET",
+   "url": "http://127.0.0.1:8391/clients/cpc/deadline/trades"
+  },
+  {
+   "ms": 1795212834632,
    "status": 200,
    "method": "POST",
-   "url": "http://127.0.0.1:57246/clients/cpc/personal/current"
+   "url": "http://127.0.0.1:8391/clients/cpc/personal/current"
   }
  ]
 }

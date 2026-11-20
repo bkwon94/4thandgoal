@@ -8,13 +8,16 @@ new
 TRADE DEADLINE ~2d 14h 05m
 Trade Analyzer
 Who gets what?
+
+Loading the teams…
+
 1
 Your Team
 2
 Team Two
 2 of 4
 Your Team gets
-Bo Girds
+No team yet
 Add a player Your Team gets
 Team Two gets
 No team yet
@@ -32,8 +35,7 @@ Open the Trade Wire, 1 new trade
 Trade Analyzer
 Who gets what
 Teams in the trade
-Your Team: Bo Girds. Change the team
-
+Pick Your Team
 Pick Team Two
 Add a team
 Players Your Team gets

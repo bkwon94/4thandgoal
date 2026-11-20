@@ -1,8 +1,9 @@
-$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_spares_tree.py -k 'listed_player_fits or only_backup_is_out'
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_spares_tree.py -k listed_player_fits or only_backup_is_out   # in a detached worktree of 98d79f98, UV_PROJECT_ENVIRONMENT=<worktree>/.venv-tests, 2026-11-20 16:14
+Using CPython 3.11.10 interpreter at: /Users/brian.kwon/.pyenv/versions/3.11.10/bin/python3.11
+Creating virtual environment at: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-tests
 ============================= test session starts ==============================
-platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/.venv/bin/python
-cachedir: .pytest_cache
-rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week/apps/pipeline
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-tests/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/apps/pipeline
 configfile: pyproject.toml
 plugins: xdist-3.8.0, anyio-4.15.1
 collecting ... collected 8 items / 6 deselected / 2 selected
@@ -11,7 +12,3 @@ tests/test_spares_tree.py::test_each_listed_player_fits_a_weak_slot_and_has_a_ba
 tests/test_spares_tree.py::test_a_starter_whose_only_backup_is_out_is_not_listed PASSED [100%]
 
 ======================= 2 passed, 6 deselected in 0.51s ========================
-
-$ cd apps/pipeline && uv run --exact --package cornerstone python spares_week11.py   # the live week 11 of cpc (script copied as spares_week11.py.txt)
-live snapshot of cpc: season 2026, week 11
-pairs: 132, listed players over all pairs: 610, listed with no backup who can cover now: 0

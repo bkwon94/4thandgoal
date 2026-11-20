@@ -21,9 +21,6 @@ More
 Recap
 Result
 Ranks
-Holes
-Roster
-Waivers
 Not your team? Change it
 --- accessible names (aria-label, alt, title, placeholder) ---
 
@@ -37,9 +34,6 @@ Suggestions
 Week recap: You scored 93.32, 11th of 12
 Your last matchup: Lost 93.32 to 95.81
 Power rankings: 8th, down 4
-Weak spots: QB ranks 12th of 12
-How you stack up: Grade C, QB ranks 12th of 12
-Waiver targets: Free agents for the QB slot
 Ask
 Ask a question | Ask about your team or the league
 Send

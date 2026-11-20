@@ -1,11 +1,11 @@
 {
  "method": "Playwright route log of every GET of the Trade Wire route; the tab hides by document.visibilityState and a visibilitychange event",
- "hideAt": "2026-11-19T22:10:09.838Z",
- "showAt": "2026-11-19T22:10:39.861Z",
+ "hideAt": "2026-11-20T21:32:27.217Z",
+ "showAt": "2026-11-20T21:32:57.227Z",
  "calls": [
   {
-   "at": "2026-11-19T22:09:57.236Z",
-   "ms": 1795126197236,
+   "at": "2026-11-20T21:32:14.620Z",
+   "ms": 1795210334620,
    "status": 200,
    "trades": 1,
    "secondsFromHide": -12.6,
@@ -13,8 +13,8 @@
    "secondsAfterShow": null
   },
   {
-   "at": "2026-11-19T22:10:07.319Z",
-   "ms": 1795126207319,
+   "at": "2026-11-20T21:32:24.693Z",
+   "ms": 1795210344693,
    "status": 200,
    "trades": 1,
    "secondsFromHide": -2.52,
@@ -22,13 +22,13 @@
    "secondsAfterShow": null
   },
   {
-   "at": "2026-11-19T22:10:39.871Z",
-   "ms": 1795126239871,
+   "at": "2026-11-20T21:32:57.231Z",
+   "ms": 1795210377231,
    "status": 200,
    "trades": 1,
-   "secondsFromHide": 30.03,
+   "secondsFromHide": 30.01,
    "phase": "shown again",
-   "secondsAfterShow": 0.01
+   "secondsAfterShow": 0
   }
  ]
 }

@@ -1,12 +1,35 @@
-$ make -C apps/pipeline backtest CLIENT=cpc   (run 2026-11-19 17:10, head 19371052, live CPC week 11, live Jev)
+$ make -C apps/pipeline backtest CLIENT=cpc   (run 2026-11-20 16:15, head 98d79f98 in a detached worktree, live CPC week 11, live Jev)
 uv run --exact --package cornerstone cornerstone backtest --client cpc --season 2026 --marks ../../.scratch/deadline-week/backtest-marks.json
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 92ms (request req_01a1fad09c31760c87cfcfa0b7efdd4d)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 97ms (request req_01a1fad09ca678a1a45c4ca702852169)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 53ms (request req_01a1fad09d097b82b5723c9d7983440d)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 45ms (request req_01a1fad09d417403a491f68ec01f2b5d)
+INFO httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 102ms (request req_01a1fad09d927366ac63249688dfc0c0)
 Backtest of cpc, week 11 of 2026, marks backtest-marks.json.
-1. RIGHT: Bo Girds gives Kenneth Walker III for Patrick Mahomes. Expect drop, got drop. gain Bo Girds 0.04, To Infinity and Bijan 0.88; Bo Girds starts 114.8 points a week before this trade and 110.2 after, so its lineup loses 4.6 points a week. To Infinity and Bijan starts 96.9 points a week before this trade and 110.8 after, so its lineup gains 13.9 points a week.
-2. WRONG: Bo Girds gives Zay Flowers for Jared Goff. Expect drop, got keep. gain Bo Girds 0.97, To Infinity and Bijan 0.94; Bo Girds starts 114.8 points a week before this trade and 119.4 after, so its lineup gains 4.6 points a week. To Infinity and Bijan starts 96.9 points a week before this trade and 101.6 after, so its lineup gains 4.7 points a week.
-3. WRONG: To Infinity and Bijan spares a player for behold the lamb. Expect stop, got pass. Pass: To Infinity and Bijan can give behold the lamb a player. Jev says Kyle Pitts Sr. over Chig Okonkwo (TE) (0.82).
-4. WRONG: Return of T Mac spares a player for Maye d'force B with U. Expect stop, got pass. Pass: Return of T Mac can give Maye d'force B with U a player. Jev says Jaylen Waddle over Jalen Coker (WR2) (0.90).
+1. RIGHT: Bo Girds gives Kenneth Walker III for Patrick Mahomes. Expect drop, got drop. gain Bo Girds 0.03, To Infinity and Bijan 0.87; Bo Girds starts 117.3 points a week before this trade and 110.2 after, so its lineup loses 7.1 points a week. To Infinity and Bijan starts 96.9 points a week before this trade and 110.8 after, so its lineup gains 13.9 points a week.
+2. WRONG: Bo Girds gives Zay Flowers for Jared Goff. Expect drop, got keep. gain Bo Girds 0.97, To Infinity and Bijan 0.91; Bo Girds starts 117.3 points a week before this trade and 119.4 after, so its lineup gains 2.1 points a week. To Infinity and Bijan starts 96.9 points a week before this trade and 101.6 after, so its lineup gains 4.7 points a week.
+3. WRONG: To Infinity and Bijan spares a player for behold the lamb. Expect stop, got pass. Pass: To Infinity and Bijan can give behold the lamb a player. Jev says Kyle Pitts Sr. over Chig Okonkwo (TE) (0.84).
+4. WRONG: Return of T Mac spares a player for Maye d'force B with U. Expect stop, got pass. Pass: Return of T Mac can give Maye d'force B with U a player. Jev says CeeDee Lamb over Jalen Coker (WR2) (0.95).
 5. WRONG: Teehee spares a player for All You Need Is Love. Expect stop, got pass. Pass: Teehee can give All You Need Is Love a player. Jev says Sam LaPorta over Colston Loveland (TE) (0.93).
 Right marks: 1 of 5.
 Jev: 5 requests, $0.0004.
 make: *** [backtest] Error 1
-exit: 2 (make), the command exits 1 when a mark is wrong
+exit: 2
