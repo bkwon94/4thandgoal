@@ -3,15 +3,18 @@ The fair cache of the API process: the fair Noul answer of each Value offer in e
 The fair question reads only the players of each side, so one answer serves a press of either team and the warm-up.
 """
 import threading
+from typing import Literal
 
 from analyzer.trade import ProposedTrade
 from league.snapshot import Snapshot
 
 # The key of one fair answer: the client, the season, the chart week, and the player ids of each side in the side order.
 FairKey = tuple[str, int, int | None, tuple[str, ...], tuple[str, ...]]
+# The side order of a fair question: "asker" names the first side of the trade first, and "partner" the second side.
+SideOrder = Literal["asker", "partner"]
 
 
-def fair_key(snapshot: Snapshot, trade: ProposedTrade, order: str) -> FairKey:
+def fair_key(snapshot: Snapshot, trade: ProposedTrade, order: SideOrder) -> FairKey:
     """The key of the fair answer of the trade in the side order: "asker" names the first side of the trade first, and
     "partner" names the second side first.
 

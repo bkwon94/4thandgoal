@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from analyzer.fair_cache import FairCache, fair_key
+from analyzer.fair_cache import FairCache, SideOrder, fair_key
 from analyzer.jev_waves import SPLIT_TOKENS, JevWaves, WaveRequest, estimated_tokens
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
@@ -44,7 +44,7 @@ FAIR = {
     "no": "One team gives a clearly larger chart sum in `offers.{n}.sides` than it gets back."}
 # The two side orders of step 1. Jev reads an offer as more fair when the team named first gets the larger sum, so
 # step 1 asks once with the asker first and once with the partner first, and code takes the mean (decision 15).
-ORDERS = ("asker", "partner")
+ORDERS: tuple[SideOrder, SideOrder] = ("asker", "partner")
 SHORTLIST_KEEP = 10  # the offers that the Advisor reads, spread by `varied` (decision 16)
 # The offers of each partner and shape direction that go to step 2, by the fair mean. The gain check of step 2 drops
 # most offers, so the best one alone left the Shortlist with 3 to 6 offers, not 10. Brian chose 3 on 2026-11-20.
@@ -490,26 +490,26 @@ def _side_line(snapshot: Snapshot, side: TradeSide) -> dict:
             "chart_sum": sum(values.values())}
 
 
-def _ordered(trade: ProposedTrade, order: str) -> list[TradeSide]:
+def _ordered(trade: ProposedTrade, order: SideOrder) -> list[TradeSide]:
     """The sides of the trade in the side order: the asker first, or the partner first."""
     return list(trade.sides) if order == "asker" else list(reversed(trade.sides))
 
 
-def _fair_lines(snapshot: Snapshot, offers: list[ProposedTrade], start: int, order: str) -> dict:
+def _fair_lines(snapshot: Snapshot, offers: list[ProposedTrade], start: int, order: SideOrder) -> dict:
     """The sides of each offer in the side order, by offer number from `start`."""
     return {str(n): {"sides": [_side_line(snapshot, side) for side in _ordered(trade, order)]}
             for n, trade in enumerate(offers, start)}
 
 
 def _fair_questions(snapshot: Snapshot, offers: list[ProposedTrade], start: int,
-                    order: str) -> dict[str, NoulQuestion]:
+                    order: SideOrder) -> dict[str, NoulQuestion]:
     """The fair question of each offer, keyed "<offer n>|fair". The trade words name the teams in the side order."""
     return {f"{n}|fair": NoulQuestion(FAIR["text"].format(where=f" in `offers.{n}`", gives=_fair_gives(
                 snapshot, trade, order)), FAIR["yes"].format(n=n), FAIR["no"].format(n=n))
             for n, trade in enumerate(offers, start)}
 
 
-def _fair_gives(snapshot: Snapshot, trade: ProposedTrade, order: str) -> str:
+def _fair_gives(snapshot: Snapshot, trade: ProposedTrade, order: SideOrder) -> str:
     """The trade words of the fair question, with the teams in the side order, such as "A gives X and B gives Y"."""
     return " and ".join(f"{snapshot.teams[side.roster_id].name} gives {_listed(snapshot, side.player_ids)}"
                         for side in _ordered(trade, order))
@@ -533,7 +533,7 @@ def sheet_questions(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, NoulQ
 
 
 def fair_requests(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade],
-                  order: str) -> list[WaveRequest]:
+                  order: SideOrder) -> list[WaveRequest]:
     """The fair requests of step 1 for one partner and one side order, each under SPLIT_TOKENS by the estimate.
 
     The state is the fair state of the two teams, which names no asker, and the sides of each offer under
@@ -553,7 +553,7 @@ def ask_fair(snapshot: Snapshot, offers_by_pair: dict[tuple[int, int], list[Prop
     error and never a no, so the next press or warm-up asks it again.
     """
     groups: dict[str, list[WaveRequest]] = {}
-    asked: dict[str, tuple[str, list[ProposedTrade]]] = {}
+    asked: dict[str, tuple[SideOrder, list[ProposedTrade]]] = {}
     for (first, second), offers in offers_by_pair.items():
         for order in ORDERS:
             missing = [trade for trade in offers if fair_key(snapshot, trade, order) not in cache]
