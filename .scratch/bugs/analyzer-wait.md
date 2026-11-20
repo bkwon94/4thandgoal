@@ -54,7 +54,7 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: pending
+Smoke: none. `pnpm --dir apps/site pick --base origin/main` prints "No flow: no file of the diff matches a glob of the flow list.", because the run changes only `apps/site/e2e/analyzer-stage.spec.ts`.
 
 ## Comments
 
