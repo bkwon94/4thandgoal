@@ -29,9 +29,10 @@ in a certain direction of what they should do on a trade."
 
 ## What you give
 
-1. picks: up to 3 offers that you would send, best first, each once, from any team of the list.
+1. picks: up to 5 offers that you would send, best first, each once, from any team of the list.
    Pick only an offer you would advise: one that helps the asker and that the other manager would
-   take. Fewer good picks beat three weak ones.
+   take. Fewer good picks beat five weak ones. Spread the picks across teams and shapes when the
+   offers allow, so the asker gets varied ideas, not five forms of one trade.
    - label: the one letter of the offer, such as "B".
    - lean: the Lean you would give this trade for the asker if he graded it alone: Send it, Lean
      yes, Gut call, Lean no, or Pass. Pick only an offer that reads Send it, Lean yes, or Gut call.

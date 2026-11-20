@@ -18,7 +18,7 @@ from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
 from analyzer.finder_pick import Defer, FinderPicks
-from analyzer.finder_search import Anchor, Limit, Shortlist
+from analyzer.finder_search import Anchor, Limit, Shortlist, chart_value
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.sell_high import SellHigh, SellHighFailed
 from analyzer.stage import Stage
@@ -315,11 +315,22 @@ def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
     return {"roster_id": roster_id, "team": snapshot.teams[roster_id].name}
 
 
+def _totals(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
+    """The trade value total of each side, in the order of the sides: the sum of the week's chart values of the players
+    that the side gives, to one decimal. The Ledger card shows it under each column, so the site needs no second call
+    (decision 17). A player with no chart value counts as 0, and a week with no chart gives None."""
+    return [{"roster_id": side.roster_id,
+             "trade_value": None if snapshot.chart is None else round(
+                 sum(chart_value(snapshot, pid) or 0.0 for pid in side.player_ids), 1)}
+            for side in trade.sides]
+
+
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its offer id, its sides, and the read of the Advisor: the Lean, the Case, and the Bullets. Each
-    near idea holds its offer id, its sides, and the reason it fell short. A Bullet has the shape of
+    Each trade holds its offer id, its sides, the trade value total of each side, and the read of the Advisor: the
+    Lean, the Case, and the Bullets. Each near idea holds its offer id, its sides, the totals, and the reason it fell
+    short. Each player of a side carries his position, his NFL team, and his Season rank. A Bullet has the shape of
     the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
     Lean, no Case, and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the
     press, so the page needs no words of its own. No trade holds a score.
@@ -328,6 +339,7 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
         {
             "offer_id": pick.offer.offer_id,
             "sides": _echoed_sides(pick.offer.trade, snapshot),
+            "totals": _totals(pick.offer.trade, snapshot),
             "lean": pick.lean,
             "case": pick.case,
             "bullets": [bullet.model_dump() for bullet in pick.bullets],
@@ -337,7 +349,8 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
     ]
     # The offers that the pick weighed and would not send, each with the reason it fell short. An idea is an idea, so
     # a list with offers always shows one, even when no pick stands.
-    near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot), "reason": idea.reason}
+    near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot),
+             "totals": _totals(idea.offer.trade, snapshot), "reason": idea.reason}
             for idea in picks.near]
     return {
         # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
@@ -358,7 +371,7 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
 def find(request: Request, pair: FindRequest, served: ServedClient, background: BackgroundTasks) -> dict:
     """Search for trades of the asker on the live snapshot, with the picked partner or every other team.
 
-    The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a Lean, a Case, and
+    The Jev search makes the shortlist, and the Advisor picks up to 5 trades of it, each with a Lean, a Case, and
     Bullets. The log-only Jev checks run after the document goes out.
     """
     return find_trades(request, pair, served, defer=background.add_task)

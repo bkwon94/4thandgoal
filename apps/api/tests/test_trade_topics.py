@@ -340,7 +340,7 @@ def test_trade_ideas_run_in_a_client_with_the_finder_off_and_give_the_find_docum
     assert answer["kind"] == "ideas"
     document = answer["document"]
     assert document["trade_pair"]["asker"]["roster_id"] == LIL_FRIDGE
-    assert 1 <= len(document["trades"]) <= 3
+    assert 1 <= len(document["trades"]) <= 5
     assert all(trade["sides"][0]["roster_id"] == LIL_FRIDGE for trade in document["trades"])
 
 
@@ -583,7 +583,7 @@ def live_then_done(steps: list[dict]) -> list[str]:
 def test_each_stage_of_trade_ideas_sends_a_live_line_then_its_done_line(api):
     steps = _of(_ideas(api), "data-step")
     live = [step["line"] for step in steps if step["live"]]
-    assert live == ["Reading every team", "Matching trade value", live[2], "Making a shortlist", "Picking the best 3"]
+    assert live == ["Reading every team", "Matching trade value", live[2], "Making a shortlist", "Picking the best 5"]
     assert re.fullmatch(r"Checking [\d,]+ trades for fairness", live[2])
     done = live_then_done(steps)
     assert done[0] == "Read 11 teams" and done[-1] == "Picked the best 3"

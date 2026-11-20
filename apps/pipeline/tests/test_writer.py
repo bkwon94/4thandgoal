@@ -273,7 +273,7 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
-def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True, on_usage=None):
+def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True, on_usage=None, output_tokens=0):
     """A ClaudeWriter over a stub client, and the dict of the keyword arguments of its last request."""
     from facts.writer import ClaudeWriter
 
@@ -286,6 +286,7 @@ def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True,
                 "cache_creation_input_tokens": 0,
                 "cache_read_input_tokens": 0,
                 "input_tokens": 1,
+                "output_tokens": output_tokens,
             })
             return type("Response", (), {
                 "stop_reason": stop_reason,
@@ -390,18 +391,20 @@ def test_the_advisor_read_uses_the_analyzer_call_and_the_finder_pick_its_own_cal
     assert inspect.signature(pick_trades).parameters["repair_call"].default is finder_repair_call
 
 
-def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
+def test_parse_call_logs_the_kind_the_usage_counts_the_model_the_effort_and_the_time(caplog):
     import logging
+    import re
 
     from facts.writer import parse_call
 
-    writer, _ = _stub_writer()
+    writer, _ = _stub_writer(output_tokens=7)
     with caplog.at_level(logging.INFO, logger="facts.writer"):
-        parse_call("user text", WriterOut, "system text", writer=writer)
-    assert (
-        "WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0"
-        " input_tokens=1"
-    ) in caplog.messages
+        parse_call("user text", WriterOut, "system text", writer=writer, effort="medium", model="claude-sonnet-5-5")
+    # The output tokens and the time show where a slow call spends its time.
+    [line] = [message for message in caplog.messages if message.startswith("WriterOut call:")]
+    assert re.fullmatch(
+        r"WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=1 output_tokens=7"
+        r" model=claude-sonnet-5-5 effort=medium time=\d+\.\ds", line)
 
 
 def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(caplog):

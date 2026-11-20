@@ -36,9 +36,10 @@ GAIN = {
     "no": "`offers.{n}.lineup_points` says {team} loses or keeps its points a week, so its best lineup is no better."}
 # The fair question of step 1, wording B of decision 15: one Noul per offer, in each side order. Code puts the chart
 # value of each player and the chart sum of each side in `offers.<n>.sides`, so Jev judges fairness from those facts.
-# No question asks about the consolidation premium: the Value screen holds it in code.
+# No question asks about the consolidation premium: the Value screen holds it in code. `{where}` is " in `offers.<n>`"
+# in a step 1 request, and empty on the pick sheet, which quotes the question with no state path.
 FAIR = {
-    "text": "Is the trade in `offers.{n}` close to fair by chart value: {gives}?",
+    "text": "Is the trade{where} close to fair by chart value: {gives}?",
     "yes": "Each team gives about as much chart value as it gets, by the sums in `offers.{n}.sides`.",
     "no": "One team gives a clearly larger chart sum in `offers.{n}.sides` than it gets back."}
 # The two side orders of step 1. Jev reads an offer as more fair when the team named first gets the larger sum, so
@@ -503,12 +504,31 @@ def _fair_lines(snapshot: Snapshot, offers: list[ProposedTrade], start: int, ord
 def _fair_questions(snapshot: Snapshot, offers: list[ProposedTrade], start: int,
                     order: str) -> dict[str, NoulQuestion]:
     """The fair question of each offer, keyed "<offer n>|fair". The trade words name the teams in the side order."""
-    questions = {}
-    for n, trade in enumerate(offers, start):
-        gives = " and ".join(f"{snapshot.teams[side.roster_id].name} gives {_listed(snapshot, side.player_ids)}"
-                             for side in _ordered(trade, order))
-        questions[f"{n}|fair"] = NoulQuestion(FAIR["text"].format(n=n, gives=gives), FAIR["yes"].format(n=n),
-                                              FAIR["no"].format(n=n))
+    return {f"{n}|fair": NoulQuestion(FAIR["text"].format(where=f" in `offers.{n}`", gives=_fair_gives(
+                snapshot, trade, order)), FAIR["yes"].format(n=n), FAIR["no"].format(n=n))
+            for n, trade in enumerate(offers, start)}
+
+
+def _fair_gives(snapshot: Snapshot, trade: ProposedTrade, order: str) -> str:
+    """The trade words of the fair question, with the teams in the side order, such as "A gives X and B gives Y"."""
+    return " and ".join(f"{snapshot.teams[side.roster_id].name} gives {_listed(snapshot, side.player_ids)}"
+                        for side in _ordered(trade, order))
+
+
+def sheet_questions(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, NoulQuestion]:
+    """The questions of step 1 and step 2 as the pick sheet quotes them, keyed "fair" and "gain.<roster id>".
+
+    The JEV.fair fact holds the fair mean of step 1, so it quotes the fair question of step 1 with the asker first. The
+    gain answers are reasons for the Case (decision 16). Neither text holds a state path, because the sheet has no
+    state.
+    """
+    questions = {"fair": NoulQuestion(FAIR["text"].format(where="", gives=_fair_gives(snapshot, trade, "asker")),
+                                      FAIR["yes"], FAIR["no"])}
+    for side in trade.sides:
+        rid = side.roster_id
+        words = {"team": snapshot.teams[rid].name, "gives": _names(snapshot, side.player_ids),
+                 "gets": _names(snapshot, trade.gets(rid))}
+        questions[f"gain.{rid}"] = NoulQuestion(GAIN["text"].format(**words), GAIN["yes"], GAIN["no"])
     return questions
 
 
