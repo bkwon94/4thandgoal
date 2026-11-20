@@ -6,7 +6,7 @@ Map: `.scratch/design-checks-speed/MAP.md`.
 
 **Blocked by:** 02
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -28,4 +28,11 @@ Decide:
 
 ## Decision
 
-None yet.
+Brian decided on 2026-11-20 in a grill:
+
+1. The target stays: the whole CI run takes 360 s or less, from a median of 754 s.
+2. Playwright runs in shards, with `--shard=<i>/<n>` in a matrix. The projects `floor-timing` and `eggs` run one test at a time, so the spec measures the split and sets the shard count from the time.
+3. The pipeline job splits into two jobs: the parallel tests with `pytest -n auto`, and the serial tests. The spec first measures each half.
+4. The `node_modules` cache drops from the speed list. It saves 3 s at most and adds a cache key to maintain.
+
+The reason: the repo is public, so more standard runners cost no money, only about 25 s of setup per job.
