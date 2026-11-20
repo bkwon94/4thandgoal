@@ -1,6 +1,8 @@
 /**
  * The mesh: the live grid art of a hero, as a client leaf that holds the canvas, so `Hero` stays a server component.
  * The page passes it as the art of a hero, and it starts the runner of `mesh-canvas.ts` on a `2d` context.
+ * Use it when: a hero needs the live grid art as its `art`.
+ * Do not use it when: the hero shows a scene of a matchup. Use `HeroSceneCanvas`.
  */
 "use client";
 

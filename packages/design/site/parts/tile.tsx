@@ -1,6 +1,8 @@
 /**
  * The tile: a small card with one number, its label above it, and an optional note under it. The page tone sits on a card or the page, and the hero tone sits on the raised surface of the hero.
  * A Trend tile adds a small chart of the same number from week 1 to the page week, after the Lime Metrics method.
+ * Use it when: one number needs a label above it and an optional note.
+ * Do not use it when: the content is a row or prose. Use `Card`.
  */
 import { useId, type ReactNode } from "react";
 import { STABLE_ID } from "../lib/stable-id";

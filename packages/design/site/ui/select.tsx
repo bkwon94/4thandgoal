@@ -1,6 +1,8 @@
 /**
  * shadcn Select primitive built on the Base UI select.
  * It renders a trigger that opens a list of items in a popup, with one pick or many.
+ * Use it when: the reader picks one or many items from a list.
+ * Do not use it when: the choices are few and the reader sees all of them. Use `ToggleGroup`.
  */
 "use client";
 

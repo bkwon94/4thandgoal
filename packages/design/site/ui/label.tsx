@@ -1,6 +1,8 @@
 /**
  * shadcn Label primitive.
  * It renders a styled form label element.
+ * Use it when: a form field needs its label.
+ * Do not use it when: the label opens a chapter or a card. Use `Label` in `site/parts/label.tsx`.
  */
 "use client";
 

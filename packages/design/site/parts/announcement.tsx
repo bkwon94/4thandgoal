@@ -1,6 +1,8 @@
 /**
  * The Announcement: a bottom sheet on the shared Sheet that introduces a new feature once. From the top it holds the art
  * slot, the eyebrow, the title, one line, the link to the feature, and "Not now". The use fills the art and the copy.
+ * Use it when: one new feature needs a one-time introduction.
+ * Do not use it when: the sheet needs an answer from the reader. Use `Dialog`.
  */
 "use client";
 

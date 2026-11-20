@@ -34,7 +34,17 @@
   "overrides": [
     {
       "files": [
-        "packages/design/site/ui/**",
+        "packages/design/site/ui/**/*.tsx",
+        "packages/design/site/parts/**/*.tsx",
+        "packages/design/lint/fixtures/use-lines/**/*.tsx"
+      ],
+      "rules": {
+        "design/use-lines": "error"
+      }
+    },
+    {
+      "files": [
+        "packages/design/site/ui/**/*.tsx",
         "packages/design/lint/fixtures/ui/**"
       ],
       "rules": {

@@ -1,6 +1,8 @@
 /**
  * The hero: the one loud surface of a page, with the grid texture, the brand glow, and the four corner brackets.
  * It sits on the band color in both themes, so the hero stays dark in light. The page fills the six hero slots.
+ * Use it when: a page needs its one loud top surface.
+ * Do not use it when: the page has no hero. Use `WeekLine`.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";

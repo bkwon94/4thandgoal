@@ -1,6 +1,8 @@
 /**
  * The Open card: the one part that opens and closes a card in place, after the method of the Showcase Card item (ADR 0028).
  * The height grows on a spring, the details come into focus from a blur a beat behind it, and a chevron under the card turns.
+ * Use it when: a card opens and closes in place.
+ * Do not use it when: the card stays closed or open all the time. Use `Card`.
  */
 "use client";
 

@@ -1,6 +1,8 @@
 /**
  * Collapsible primitive built on the ui-sdk Collapsible: a trigger that shows and hides one panel, which fades with a small rise.
  * It renders the root, the trigger, and the panel, and sets only the motion of the panel.
+ * Use it when: one trigger shows and hides one panel.
+ * Do not use it when: a card opens in place. Use `OpenCard`.
  */
 "use client";
 

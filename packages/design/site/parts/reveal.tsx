@@ -1,6 +1,8 @@
 /**
  * The one reveal of the site: content fades and rises in once, when it enters the viewport or when it mounts.
  * It is the client leaf of the static pages, so the sections around it stay server components.
+ * Use it when: one block fades and rises in once.
+ * Do not use it when: the whole page enters in a stagger. Use `Rise`.
  */
 "use client";
 

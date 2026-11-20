@@ -1,6 +1,8 @@
 /**
  * The chapter rail: the list of the weekly report's chapters beside the page column from the rail tier.
  * It is the client island of the week page. It links each chapter by its id and marks the chapter in view.
+ * Use it when: a week page needs links to its chapters beside the column.
+ * Do not use it when: the page has no chapters to link.
  */
 "use client";
 

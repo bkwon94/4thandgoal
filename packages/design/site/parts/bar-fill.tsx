@@ -1,6 +1,8 @@
 /**
  * The one bar fill of the look: the fill of a bar at its percent, which grows once from 0 when it enters the viewport.
  * The growth is a scale only, so the fill keeps its exact width or height, and reduced motion or no script shows it at rest.
+ * Use it when: a bar needs a fill at its percent that grows once.
+ * Do not use it when: the bars show a week series. Use the Trend tile in `Tile`.
  */
 "use client";
 

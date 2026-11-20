@@ -1,6 +1,8 @@
 /**
  * shadcn Input primitive built on the Base UI input.
  * It renders a styled text field.
+ * Use it when: the reader types one line of text.
+ * Do not use it when: the reader picks from a list. Use `Select`.
  */
 import * as React from "react";
 import { Input as InputPrimitive } from "@base-ui/react/input";

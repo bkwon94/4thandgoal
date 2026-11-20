@@ -1,6 +1,8 @@
 /**
  * The round photo frame of a headshot or a team avatar: the photo on a ground of the brand glow, cropped at the shoulders.
  * With no image, the frame shows the initials of the name, so a missing photo leaves no hole.
+ * Use it when: a headshot or a team avatar needs a round frame.
+ * Do not use it when: the image is art and not a person or a team.
  */
 import { cn } from "../lib/utils";
 

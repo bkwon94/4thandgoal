@@ -1,6 +1,8 @@
 /**
  * Toggle group built on the ui-sdk Toggle. It is the one place the site imports the ui-sdk Toggle.
  * The group holds one shared value, one tab stop, and the arrow keys between its toggles.
+ * Use it when: the reader picks from a few choices that all show.
+ * Do not use it when: the list is long. Use `Select`.
  */
 "use client";
 

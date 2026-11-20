@@ -1,6 +1,8 @@
 /**
  * A chapter of a page: the section that holds one topic, on the brand black or on white.
  * It ports the .chap rule of the source stylesheet. It can fade in once as a unit when it enters the view.
+ * Use it when: one topic of a page needs its own section.
+ * Do not use it when: the group sits inside a chapter. Use `Card`.
  */
 import type { ReactNode } from "react";
 import { Reveal } from "./reveal";

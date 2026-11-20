@@ -1,6 +1,8 @@
 /**
  * The card: a plain surface of the page with a 20px radius and 16px of inner space.
  * The brand edge marks an open card, such as a game card with its recap open.
+ * Use it when: one item needs a plain surface on the page.
+ * Do not use it when: the card opens and closes in place. Use `OpenCard`.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
