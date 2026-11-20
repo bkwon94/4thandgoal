@@ -20,7 +20,9 @@ function playToEnd(avatars?: Record<string, string>) {
 describe("the avatar of the champion", () => {
   it("shows the avatar of the champion's team", () => {
     // Every roster id gets its own path, so the src names the champion.
-    const avatars = Object.fromEntries(Array.from({ length: 12 }, (_, i) => [String(i + 1), `/2026/week-08/avatars/${i + 1}.jpg`]));
+    const avatars = Object.fromEntries(
+      Array.from({ length: 12 }, (_, i) => [String(i + 1), `/2026/week-08/avatars/${i + 1}.jpg`]),
+    );
     const img = playToEnd(avatars).querySelector("img");
     expect(img).not.toBeNull();
     expect(img!.getAttribute("src")).toMatch(/^\/2026\/week-08\/avatars\/\d+\.jpg$/);

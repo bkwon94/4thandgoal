@@ -38,7 +38,13 @@ describe("the team sheet", () => {
     const closed: string[] = [];
     const picked: number[] = [];
     render(
-      <TeamSheet siteName="Test league" teams={TEAMS} current={1} onPick={(id) => picked.push(id)} onClose={() => closed.push("close")} />,
+      <TeamSheet
+        siteName="Test league"
+        teams={TEAMS}
+        current={1}
+        onPick={(id) => picked.push(id)}
+        onClose={() => closed.push("close")}
+      />,
     );
     await act(async () => dragDown(screen.getByRole("dialog", { name: "Which team is yours?" })));
     await waitFor(() => expect(closed).toEqual(["close"]));

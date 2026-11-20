@@ -36,24 +36,36 @@ export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProp
      must not close it. The sheet has no grip, because it does not drag. The Drawer owns the slide, the dim, the focus
      trap, and the fade under reduced motion. */
   return (
-    <Sheet side="bottom" open={open} dismissible={false} container={typeof document === "undefined" ? undefined : document.body}>
+    <Sheet
+      side="bottom"
+      open={open}
+      dismissible={false}
+      container={typeof document === "undefined" ? undefined : document.body}
+    >
       <SheetBackdrop />
       <SheetContent
         aria-describedby="passphrase-line"
         // The Drawer lifts its viewport by the --keyboard-inset that it reads from the visual viewport, so the field sits
         // right above the keyboard on iOS. The Drawer sets the top of the content inline, so a bottom offset here would
         // squash the content to its border and push the field off the screen.
-        className="mx-auto flex w-full max-w-sheet flex-col gap-sp-4 rounded-t-hero border border-b-0 border-rule bg-card p-gutter pb-[calc(var(--spacing-gutter)+env(safe-area-inset-bottom))] shadow-sheet"
+        className="max-w-sheet gap-sp-4 rounded-t-hero border-rule bg-card p-gutter shadow-sheet mx-auto flex w-full flex-col border border-b-0 pb-[calc(var(--spacing-gutter)+env(safe-area-inset-bottom))]"
       >
-        <div className="flex flex-col gap-sp-2">
-          <SheetTitle className="m-0 text-stat leading-stat font-black uppercase">League Passphrase</SheetTitle>
+        <div className="gap-sp-2 flex flex-col">
+          <SheetTitle className="text-stat leading-stat m-0 font-black uppercase">
+            League Passphrase
+          </SheetTitle>
           {/* One short line: axe reads the page under the sheet for each line of text, and two lines over different parts
               of the page leave the contrast as incomplete, which fails the readability floor. */}
-          <p id="passphrase-line" className="m-0 text-lead text-mute">Ask a league member for it.</p>
+          <p id="passphrase-line" className="text-lead text-mute m-0">
+            Ask a league member for it.
+          </p>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-sp-3">
+        <form onSubmit={handleSubmit} className="gap-sp-3 flex flex-col">
           {error && <ErrorLine>{error}</ErrorLine>}
-          <Label htmlFor="passphrase" className="min-h-touch text-meta font-bold tracking-wide uppercase">
+          <Label
+            htmlFor="passphrase"
+            className="min-h-touch text-meta font-bold tracking-wide uppercase"
+          >
             Passphrase
           </Label>
           <Input

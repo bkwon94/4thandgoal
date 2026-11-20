@@ -16,7 +16,10 @@ import { stableId, stableKey } from "@cpc/design/lib/stable-id";
    A phone fits two tiles per row, so the rank and the depth never wrap. */
 function SlotTiles({ grade, teams }: { grade: ManagerGrade; teams: number }) {
   return (
-    <ul aria-label="Slot Ranks" className="m-0 grid list-none grid-cols-2 gap-sp-2 p-0 tablet:grid-cols-4">
+    <ul
+      aria-label="Slot Ranks"
+      className="gap-sp-2 tablet:grid-cols-4 m-0 grid list-none grid-cols-2 p-0"
+    >
       {grade.slots.map((slot, i) => (
         <li key={slot.position}>
           <Reveal delay={stagger(i)} className="h-full">
@@ -38,17 +41,17 @@ function SlotTiles({ grade, teams }: { grade: ManagerGrade; teams: number }) {
    The managers file carries no weight of a part, so the line shows the rank only. */
 function GradeParts({ grade, teams }: { grade: ManagerGrade; teams: number }) {
   return (
-    <ol aria-label="Grade Parts" className="m-0 mt-sp-5 flex list-none flex-col p-0 tabular-nums">
+    <ol aria-label="Grade Parts" className="mt-sp-5 m-0 flex list-none flex-col p-0 tabular-nums">
       {grade.parts.map((part) => (
         <li
           key={part.key}
-          className="flex items-baseline justify-between gap-sp-3 border-t border-rule py-sp-2 first:border-t-0"
+          className="gap-sp-3 border-rule py-sp-2 flex items-baseline justify-between border-t first:border-t-0"
           {...stableId("roster-part", part.key)}
         >
           <span className="text-body text-ink-2">{PART_NAMES[part.key]}</span>
-          <span className="font-mono text-body font-bold text-ink">
+          <span className="text-body text-ink font-mono font-bold">
             {ordinal(part.rank)}
-            <span className="text-meta font-normal text-mute">{` of ${teams}`}</span>
+            <span className="text-meta text-mute font-normal">{` of ${teams}`}</span>
           </span>
         </li>
       ))}
@@ -63,14 +66,16 @@ export function Roster({ manager, teams }: { manager: Manager; teams: number }) 
     // because manager-chapters imports this file and the two must not form a loop.
     <Chapter reveal id="roster">
       {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
-      <Label heading className="text-meta">Roster</Label>
+      <Label heading className="text-meta">
+        Roster
+      </Label>
       {manager.grade ? (
         <>
           <SlotTiles grade={manager.grade} teams={teams} />
           <GradeParts grade={manager.grade} teams={teams} />
         </>
       ) : (
-        <div className="m-0 text-body text-mute">No grade yet.</div>
+        <div className="text-body text-mute m-0">No grade yet.</div>
       )}
     </Chapter>
   );

@@ -12,7 +12,14 @@ afterEach(() => {
 });
 
 function renderStandings(managersHref: string | null = "/2026/managers/", hasMedianGame = true) {
-  render(<Standings table={week8.table} avatars={week8.avatars} managersHref={managersHref} hasMedianGame={hasMedianGame} />);
+  render(
+    <Standings
+      table={week8.table}
+      avatars={week8.avatars}
+      managersHref={managersHref}
+      hasMedianGame={hasMedianGame}
+    />,
+  );
   return screen.getByRole("region", { name: "Standings" });
 }
 
@@ -32,10 +39,34 @@ describe("Standings", () => {
   it("ticks the six playoff spots and draws the brand line under the sixth", () => {
     const chapter = renderStandings();
     const ticked = rows(chapter).map((row) => row.textContent?.includes("playoff spot"));
-    expect(ticked).toEqual([true, true, true, true, true, true, false, false, false, false, false, false]);
-    expect(rows(chapter).map((row) => row.hasAttribute("data-cut"))).toEqual(
-      [false, false, false, false, false, true, false, false, false, false, false, false],
-    );
+    expect(ticked).toEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
+    expect(rows(chapter).map((row) => row.hasAttribute("data-cut"))).toEqual([
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
     expect(within(chapter).getByText("Playoff line after 6th")).toBeTruthy();
   });
 

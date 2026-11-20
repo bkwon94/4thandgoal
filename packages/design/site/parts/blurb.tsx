@@ -9,10 +9,25 @@ import { textId } from "../lib/stable-id";
 /* A blurb under a grid of cards passes mt-sp-3 for the space above it. The measure caps the line, so prose stays readable on a wide column.
    A blurb is prose, so it takes the lead size: 16px or more at each tier.
    A blurb of plain text carries a stable id from its text, so the egg hunt can name a word in it. */
-export function Blurb({ children, dark, className }: { children: ReactNode; dark?: boolean; className?: string }) {
+export function Blurb({
+  children,
+  dark,
+  className,
+}: {
+  children: ReactNode;
+  dark?: boolean;
+  className?: string;
+}) {
   const id = typeof children === "string" ? textId("blurb", children) : {};
   return (
-    <p className={cn("m-0 max-w-measure text-lead", dark ? "text-on-dark-2" : "text-ink-2", className)} {...id}>
+    <p
+      className={cn(
+        "max-w-measure text-lead m-0",
+        dark ? "text-on-dark-2" : "text-ink-2",
+        className,
+      )}
+      {...id}
+    >
       {children}
     </p>
   );

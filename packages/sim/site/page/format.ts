@@ -13,7 +13,8 @@ export const nameOf = (sim: WeekSim, id: number) => sim.names[id] ?? `Team ${id}
 export const recordText = ([wins, losses]: [number, number]) => `${wins}-${losses}`;
 
 /* The press of each control of the page: the press of the look, and a focus ring for the keyboard. */
-export const PRESS = "press outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+export const PRESS =
+  "press outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
 
 /* A card of the page. Its radius is the radius of a tile plus its padding, so the corners nest. */
 export const CARD = "flex min-w-0 flex-col gap-sp-2 rounded-card border border-rule bg-card p-sp-3";
@@ -39,7 +40,8 @@ export function resultName({ game, median }: Result): string {
 export const chanceText = (chance: number) => `${Math.round(chance)}% likely`;
 
 /* The wins a result adds: one for the game, one for the median. */
-export const winsText = (wins: number) => (wins === 0 ? "No wins" : wins === 1 ? "+1 win" : `+${wins} wins`);
+export const winsText = (wins: number) =>
+  wins === 0 ? "No wins" : wins === 1 ? "+1 win" : `+${wins} wins`;
 
 /* The name of a bracket round by its place from the end: "Final", "Semifinals", else "Round 1" and on. */
 export function roundName(index: number, count: number): string {

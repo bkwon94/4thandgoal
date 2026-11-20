@@ -24,5 +24,9 @@ export function midseasonSeasons(): string[] {
 
 /* A schema change must fail the build loud, the same rule as the week reader. A season with no file gives null. */
 export function loadMidseason(season: string): Midseason | null {
-  return readPublished(join(process.cwd(), "public", season, FILE), SCHEMA_VERSION, midseasonSchema);
+  return readPublished(
+    join(process.cwd(), "public", season, FILE),
+    SCHEMA_VERSION,
+    midseasonSchema,
+  );
 }

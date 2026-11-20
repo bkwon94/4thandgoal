@@ -14,5 +14,10 @@ if (!slug) {
 }
 // The round writes api.log and api.pid of its own API into a temp folder, and the spec prints the path of the log.
 const apiOut = mkdtempSync(join(tmpdir(), "evidence-api-"));
-const env = { ...process.env, EVIDENCE_SLUG: slug, EVIDENCE_TESTS: ids.join(" "), EVIDENCE_API_OUT: apiOut };
+const env = {
+  ...process.env,
+  EVIDENCE_SLUG: slug,
+  EVIDENCE_TESTS: ids.join(" "),
+  EVIDENCE_API_OUT: apiOut,
+};
 runProject("evidence", env, apiOut);

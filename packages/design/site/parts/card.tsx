@@ -17,7 +17,11 @@ type CardProps = {
 export function Card({ children, as: Element = "div", edge = false, className }: CardProps) {
   return (
     <Element
-      className={cn("rounded-card border bg-card p-sp-4 text-ink", edge ? "border-accent" : "border-rule", className)}
+      className={cn(
+        "rounded-card bg-card p-sp-4 text-ink border",
+        edge ? "border-accent" : "border-rule",
+        className,
+      )}
     >
       {children}
     </Element>

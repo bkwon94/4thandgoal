@@ -26,16 +26,24 @@ test.afterAll(async () => {
 
 test.use({ viewport: { width: 375, height: 812 }, reducedMotion: "no-preference" });
 
-test("the ask box glides to the bottom in one move on the first question (ticket 46)", async ({ page }) => {
+test("the ask box glides to the bottom in one move on the first question (ticket 46)", async ({
+  page,
+}) => {
   await openDoor(page, `${server.url}${DOOR}`);
   const box = page.getByRole("form", { name: "Ask" });
   // The entrance of the empty Thread settles first, so each sample is the move of the send.
-  await startSamples(page, () => Math.round(document.querySelector('form[aria-label="Ask"]')!.getBoundingClientRect().top));
+  await startSamples(page, () =>
+    Math.round(document.querySelector('form[aria-label="Ask"]')!.getBoundingClientRect().top),
+  );
   await samplesWhenStill(page);
-  await startSamples(page, () => Math.round(document.querySelector('form[aria-label="Ask"]')!.getBoundingClientRect().top));
+  await startSamples(page, () =>
+    Math.round(document.querySelector('form[aria-label="Ask"]')!.getBoundingClientRect().top),
+  );
   await askQuestion(page, "week 1 results");
   const tops = await samplesWhenStill<number>(page);
-  const rises = tops.flatMap((top, index) => (index > 0 && top < tops[index - 1] ? [`${tops[index - 1]} to ${top}`] : []));
+  const rises = tops.flatMap((top, index) =>
+    index > 0 && top < tops[index - 1] ? [`${tops[index - 1]} to ${top}`] : [],
+  );
   expect(rises, `the top of the ask box moves up: ${tops.join(", ")}`).toEqual([]);
   expect(tops.at(-1)!, "the ask box ends lower than it starts").toBeGreaterThan(tops[0]);
   await expect(box).toBeVisible();

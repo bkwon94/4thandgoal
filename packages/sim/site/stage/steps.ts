@@ -16,7 +16,16 @@ export type Screen = Step["screen"];
 
 /* The holds in ms. A week holds long enough to read the reorder. The first bracket step holds longer, so the seeds
    land before the first round plays. A result holds through the count-up, the winner bar, and the move to the next seat. */
-export const HOLD = { start: 900, week: 1500, cut: 1800, firstDraw: 1500, draw: 800, result: 2000, before: 700, games: 3400 };
+export const HOLD = {
+  start: 900,
+  week: 1500,
+  cut: 1800,
+  firstDraw: 1500,
+  draw: 800,
+  result: 2000,
+  before: 700,
+  games: 3400,
+};
 
 export function stepsOf(season: ReplaySeason, mode: "season" | "week"): Step[] {
   if (mode === "week") {
@@ -32,13 +41,23 @@ export function stepsOf(season: ReplaySeason, mode: "season" | "week"): Step[] {
       ? []
       : [
           { screen: "season", kind: "start", index: -1, ms: HOLD.start },
-          ...season.weeks.map((_, index) => ({ screen: "season" as const, kind: "week" as const, index, ms: HOLD.week })),
+          ...season.weeks.map((_, index) => ({
+            screen: "season" as const,
+            kind: "week" as const,
+            index,
+            ms: HOLD.week,
+          })),
           { screen: "season", kind: "cut", index: season.weeks.length - 1, ms: HOLD.cut },
         ];
   return [
     ...regular,
     ...season.rounds.flatMap((_, round) => [
-      { screen: "bracket" as const, round, decided: false, ms: round === 0 ? HOLD.firstDraw : HOLD.draw },
+      {
+        screen: "bracket" as const,
+        round,
+        decided: false,
+        ms: round === 0 ? HOLD.firstDraw : HOLD.draw,
+      },
       { screen: "bracket" as const, round, decided: true, ms: HOLD.result },
     ]),
     { screen: "champion", ms: 0 },
@@ -58,7 +77,13 @@ export function marksOf(week: ReplayWeek): Map<number, Mark> {
     ]) {
       const game = me.score === them.score ? "T" : me.score > them.score ? "W" : "L";
       const median =
-        week.median === null ? null : me.score > week.median ? "above" : me.score < week.median ? "below" : "even";
+        week.median === null
+          ? null
+          : me.score > week.median
+            ? "above"
+            : me.score < week.median
+              ? "below"
+              : "even";
       marks.set(me.roster_id, { game, median });
     }
   }

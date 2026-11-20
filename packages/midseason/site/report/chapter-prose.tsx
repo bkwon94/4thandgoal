@@ -6,7 +6,8 @@ import { Blurb as BlurbText } from "@cpc/design/parts/blurb";
 import type { Blurb } from "../schema/midseason-types";
 
 /* The sentences of a blurb as one paragraph. */
-export const blurbText = (blurb: Blurb) => blurb.sentences.map((sentence) => sentence.text).join(" ");
+export const blurbText = (blurb: Blurb) =>
+  blurb.sentences.map((sentence) => sentence.text).join(" ");
 
 export function ChapterProse({ blurb, dark }: { blurb: Blurb | null; dark?: boolean }) {
   if (blurb === null) return null;

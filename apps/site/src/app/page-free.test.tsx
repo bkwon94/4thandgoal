@@ -23,22 +23,35 @@ const routes: unknown[] = [];
 const streams: (() => Response)[] = [];
 
 // The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
-const recorded = (name: string) => readFileSync(join(__dirname, "..", "fixtures", "free-answer", `${name}.sse`), "utf8");
+const recorded = (name: string) =>
+  readFileSync(join(__dirname, "..", "fixtures", "free-answer", `${name}.sse`), "utf8");
 const freeCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/ask/free"));
 
 function sse(body: ReadableStream<Uint8Array> | string): Response {
-  return new Response(body, { headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" } });
+  return new Response(body, {
+    headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+  });
 }
 
 /* The route of the question, then the recorded stream of its free answer. */
 function freeWith(name: string, body: { team?: number | null; suggestion?: string | null } = {}) {
-  routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, ...body, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+  routes.push({
+    route: "free",
+    topic: null,
+    team: null,
+    closest: [],
+    suggestion: null,
+    ...body,
+    jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+  });
   streams.push(() => sse(recorded(name)));
 }
 
 async function ask(question: string) {
   const box = await screen.findByRole("form", { name: "Ask" });
-  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: question } });
+  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), {
+    target: { value: question },
+  });
   fireEvent.submit(box);
 }
 
@@ -75,14 +88,19 @@ function watchEarly(text: string) {
 }
 
 async function articleWith(question: string, text: string) {
-  await waitFor(() => expect(screen.getByRole("article", { name: question }).textContent).toContain(text), { timeout: 3000 });
+  await waitFor(
+    () => expect(screen.getByRole("article", { name: question }).textContent).toContain(text),
+    { timeout: 3000 },
+  );
   return screen.getByRole("article", { name: question });
 }
 
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string) => {
-    if (String(url).endsWith("/ask")) return new Response(JSON.stringify(routes.shift()), { status: 200 });
-    if (String(url).endsWith("/ask/free")) return streams.shift()?.() ?? new Response("", { status: 500 });
+    if (String(url).endsWith("/ask"))
+      return new Response(JSON.stringify(routes.shift()), { status: 200 });
+    if (String(url).endsWith("/ask/free"))
+      return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchStub);
@@ -108,17 +126,30 @@ describe("the free answer of Lil Fridge", () => {
     const [url, init] = freeCalls()[0];
     expect(url).toMatch(/\/clients\/cpc\/ask\/free$/);
     expect(new Headers(init.headers).get("X-League-Passphrase")).toBe(PASSPHRASE);
-    expect(JSON.parse(init.body)).toMatchObject({ question: "highest scoring team this season", roster_id: 3, week: 8 });
+    expect(JSON.parse(init.body)).toMatchObject({
+      question: "highest scoring team this season",
+      roster_id: 3,
+      week: 8,
+    });
   });
 
   it("waits on the one first line as a live step inside the card before the first tool call", async () => {
-    routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+    routes.push({
+      route: "free",
+      topic: null,
+      team: null,
+      closest: [],
+      suggestion: null,
+      jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+    });
     streams.push(() => sse(new ReadableStream<Uint8Array>({ start() {} })));
     render(<HomePage />);
     await ask("highest scoring team this season");
     await waitFor(() => expect(freeCalls()).toHaveLength(1));
     const answer = await articleWith("highest scoring team this season", "Reading the league…");
-    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole(
+      "listitem",
+    );
     expect(step.getAttribute("data-state")).toBe("live");
   });
 
@@ -128,8 +159,14 @@ describe("the free answer of Lil Fridge", () => {
     await ask("highest scoring team this season");
     const answer = await articleWith("highest scoring team this season", "Checked");
     // Bo Girds has 921.62 points for in weeks 1 to 8 of the standings data, the most of the 12 teams.
-    expect(answer.textContent).toContain("Bo Girds has scored the most points this season, with 921.62");
-    expect(within(within(answer).getByRole("list", { name: "Steps" })).getByText("Reading the standings")).toBeTruthy();
+    expect(answer.textContent).toContain(
+      "Bo Girds has scored the most points this season, with 921.62",
+    );
+    expect(
+      within(within(answer).getByRole("list", { name: "Steps" })).getByText(
+        "Reading the standings",
+      ),
+    ).toBeTruthy();
   });
 
   it("shows the top Topic of a half fit as one chip under the answer, and the chip opens it (AT-12)", async () => {
@@ -160,9 +197,13 @@ describe("the free answer of Lil Fridge", () => {
     render(<HomePage />);
     await ask("week 1 results");
     const answer = await articleWith("week 1 results", "Checked");
-    expect(within(within(answer).getByRole("list", { name: "Steps" })).getByText("Reading week 1")).toBeTruthy();
+    expect(
+      within(within(answer).getByRole("list", { name: "Steps" })).getByText("Reading week 1"),
+    ).toBeTruthy();
     expect(answer.textContent).toContain("you beat NFC Least 117.71 to 82.07");
-    expect(document.body.textContent).not.toMatch(/Jev|Advisor|Finder|rival|Brian|week_results|standings\(/);
+    expect(document.body.textContent).not.toMatch(
+      /Jev|Advisor|Finder|rival|Brian|week_results|standings\(/,
+    );
   });
 
   it("drops the first text after a failed check, and keeps the checked rewrite (AT-21)", async () => {
@@ -170,7 +211,9 @@ describe("the free answer of Lil Fridge", () => {
     render(<HomePage />);
     await ask("who spent the most FAAB on a waiver wire pickup");
     const answer = await articleWith("who spent the most FAAB on a waiver wire pickup", "Checked");
-    expect(answer.textContent).toContain("In weeks 2 through 5, the most FAAB spent on one waiver pickup was 41");
+    expect(answer.textContent).toContain(
+      "In weeks 2 through 5, the most FAAB spent on one waiver pickup was 41",
+    );
     expect(answer.textContent).not.toContain("Through the weeks I could check");
     expect(answer.textContent).not.toContain(FIXING_LINE);
   });
@@ -233,15 +276,28 @@ describe("the free answer of Lil Fridge", () => {
     await ask("highest scoring team this season");
     const miss = await articleWith("highest scoring team this season", MISS_LEAD);
     expect(miss.textContent).not.toContain("921.62");
-    const topics = within(within(miss).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
-    expect(topics.map((topic) => topic.textContent)).toEqual(["Your season", "Playoff race", "Power rankings"]);
+    const topics = within(within(miss).getByRole("group", { name: "Closest Topics" })).getAllByRole(
+      "button",
+    );
+    expect(topics.map((topic) => topic.textContent)).toEqual([
+      "Your season",
+      "Playoff race",
+      "Power rankings",
+    ]);
   });
 
   it("holds the words until Checked, then sharpens each word from a blur, with no stop control (H10, AT-44, AT-55)", async () => {
     const lines = recorded("week-1").split("\n\n");
     const cut = lines.findIndex((line) => line.includes('"state":"checked"'));
     let finish: () => void = () => {};
-    routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+    routes.push({
+      route: "free",
+      topic: null,
+      team: null,
+      closest: [],
+      suggestion: null,
+      jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+    });
     streams.push(() =>
       sse(
         new ReadableStream({
@@ -270,7 +326,9 @@ describe("the free answer of Lil Fridge", () => {
     expect(answer.querySelectorAll(".stream-word").length).toBeGreaterThan(10);
     // The whole text shows in one read, and its words sweep in one after another, so each word plays its own blur
     // and not one block. The sweep takes no more than --duration-very-slow.
-    const delays = [...answer.querySelectorAll<HTMLElement>(".stream-word")].map((word) => parseFloat(word.style.animationDelay || "0"));
+    const delays = [...answer.querySelectorAll<HTMLElement>(".stream-word")].map((word) =>
+      parseFloat(word.style.animationDelay || "0"),
+    );
     expect(delays.at(-1)!).toBeGreaterThan(delays[0]);
     expect([...delays].sort((a, b) => a - b)).toEqual(delays);
     expect(delays.at(-1)! - delays[0]).toBeLessThanOrEqual(500);
@@ -293,7 +351,14 @@ describe("the free answer of Lil Fridge", () => {
   });
 
   it("shows the retry line when the stream fails, never a pass", async () => {
-    routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+    routes.push({
+      route: "free",
+      topic: null,
+      team: null,
+      closest: [],
+      suggestion: null,
+      jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+    });
     streams.push(() => new Response("", { status: 503 }));
     render(<HomePage />);
     await ask("week 1 results");
@@ -321,7 +386,9 @@ describe("the block of a free answer (H27)", () => {
     // The block waits for the check with the text, so no row shows early (H10).
     expect(early.early).toBe(false);
     // The display tool never shows as a step.
-    expect(within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem")).toHaveLength(1);
+    expect(
+      within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem"),
+    ).toHaveLength(1);
   });
 
   it("shows a comparison of Bo Girds and Teehee as a table with its column names", async () => {
@@ -330,9 +397,17 @@ describe("the block of a free answer (H27)", () => {
     await ask("compare Bo Girds and Teehee");
     const answer = await articleWith("compare Bo Girds and Teehee", "Checked");
     const table = await within(answer).findByRole("table", { name: "Bo Girds vs Teehee" });
-    expect(within(table).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["Stat", "Bo Girds", "Teehee"]);
+    expect(
+      within(table)
+        .getAllByRole("columnheader")
+        .map((cell) => cell.textContent),
+    ).toEqual(["Stat", "Bo Girds", "Teehee"]);
     const [, first] = within(table).getAllByRole("row");
-    expect(within(first).getAllByRole("cell").map((cell) => cell.textContent)).toEqual(["Rank", "2", "8"]);
+    expect(
+      within(first)
+        .getAllByRole("cell")
+        .map((cell) => cell.textContent),
+    ).toEqual(["Rank", "2", "8"]);
   });
 
   it("shows a player card that says Lamar Jackson cannot play now, and only the block of the checked rewrite", async () => {
@@ -372,7 +447,6 @@ describe("the block of a free answer (H27)", () => {
   });
 });
 
-
 describe("the transaction feed of a free answer (AT-35)", () => {
   it("shows the moves of this week: a strip of the moves per day, one row per move with a dot for its kind", async () => {
     const early = watchEarly("Tutu Atwell");
@@ -380,7 +454,10 @@ describe("the transaction feed of a free answer (AT-35)", () => {
     render(<HomePage />);
     await ask("What moves happened this week?");
     const answer = await articleWith("What moves happened this week?", "Checked");
-    expect(within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem")[0].textContent).toContain("Reading the moves of this week");
+    expect(
+      within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem")[0]
+        .textContent,
+    ).toContain("Reading the moves of this week");
     expect(within(answer).getByRole("img", { name: "Moves per day. Wed Nov 11: 5." })).toBeTruthy();
     const feed = within(answer).getByRole("list", { name: "Week 10 moves" });
     const rows = within(feed).getAllByRole("listitem");
@@ -391,7 +468,9 @@ describe("the transaction feed of a free answer (AT-35)", () => {
     expect(rows[0].textContent).toContain("Tutu Atwell");
     expect(rows[0].textContent).toContain("Matthew Stafford");
     expect(rows[1].textContent).toContain("Bo Girds");
-    expect(within(answer).getByRole("list", { name: "Kinds of move" }).textContent).toBe("Free agent");
+    expect(within(answer).getByRole("list", { name: "Kinds of move" }).textContent).toBe(
+      "Free agent",
+    );
     expect(early.early).toBe(false);
   });
 
@@ -400,9 +479,13 @@ describe("the transaction feed of a free answer (AT-35)", () => {
     render(<HomePage />);
     await ask("What moves happened in week 6?");
     const answer = await articleWith("What moves happened in week 6?", "Checked");
-    const strip = within(answer).getByRole("img", { name: /^Moves per day\. Wed Oct 14: 17, Thu Oct 15: 2, / });
+    const strip = within(answer).getByRole("img", {
+      name: /^Moves per day\. Wed Oct 14: 17, Thu Oct 15: 2, /,
+    });
     expect(strip.getAttribute("aria-label")).toContain("Mon Oct 19: 0");
-    const rows = within(within(answer).getByRole("list", { name: "Week 6 moves" })).getAllByRole("listitem");
+    const rows = within(within(answer).getByRole("list", { name: "Week 6 moves" })).getAllByRole(
+      "listitem",
+    );
     expect(rows).toHaveLength(20);
     const trade = rows.find((row) => row.textContent?.startsWith("Trade"))!;
     expect(trade.textContent).toContain("To Infinity and Bijan got");
@@ -413,7 +496,9 @@ describe("the transaction feed of a free answer (AT-35)", () => {
     expect(rows[0].textContent).toContain("Terrance Ferguson");
     expect(rows[0].textContent).toContain("$0");
     expect(answer.textContent).toContain("36 more moves this week");
-    expect(within(answer).getByRole("list", { name: "Kinds of move" }).textContent).toBe("TradeWaiver claimFree agent");
+    expect(within(answer).getByRole("list", { name: "Kinds of move" }).textContent).toBe(
+      "TradeWaiver claimFree agent",
+    );
   });
 
   it("keeps the feed with the answer, so a reload shows it with no new stream", async () => {
@@ -430,11 +515,17 @@ describe("the transaction feed of a free answer (AT-35)", () => {
   });
 });
 
-
 /* A free answer whose checked text is `text`, in the parts that the API streams for a live run: one step, the text,
    then the check. */
 function textWith(text: string) {
-  routes.push({ route: "free", topic: null, team: null, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } });
+  routes.push({
+    route: "free",
+    topic: null,
+    team: null,
+    closest: [],
+    suggestion: null,
+    jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+  });
   const parts = [
     { type: "start" },
     { type: "start-step" },
@@ -446,7 +537,9 @@ function textWith(text: string) {
     { type: "data-check", id: "check", data: { state: "checked" } },
     { type: "finish", finishReason: "stop" },
   ];
-  streams.push(() => sse(`${parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("")}data: [DONE]\n\n`));
+  streams.push(() =>
+    sse(`${parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("")}data: [DONE]\n\n`),
+  );
 }
 
 /* The text block of the Answer: the one element that holds the text marks. */
@@ -475,8 +568,14 @@ describe("the text block of an Answer", () => {
       const block = textBlockOf(answer);
       expect(within(block).getByText("3rd").closest("strong")).not.toBeNull();
       expect(within(block).getByText("small").closest("em")).not.toBeNull();
-      expect([...block.querySelectorAll("ul li")].map((item) => item.textContent?.trim())).toEqual(["Bo Girds won by 14.2", "Teehee lost by 3.1"]);
-      expect([...block.querySelectorAll("ol li")].map((item) => item.textContent?.trim())).toEqual(["Start Kenneth Walker III", "Sit Blake Corum"]);
+      expect([...block.querySelectorAll("ul li")].map((item) => item.textContent?.trim())).toEqual([
+        "Bo Girds won by 14.2",
+        "Teehee lost by 3.1",
+      ]);
+      expect([...block.querySelectorAll("ol li")].map((item) => item.textContent?.trim())).toEqual([
+        "Start Kenneth Walker III",
+        "Sit Blake Corum",
+      ]);
       expect(block.textContent).not.toContain("*");
     };
     // The live card sweeps each word in, inside its marks.
@@ -484,7 +583,10 @@ describe("the text block of an Answer", () => {
     await waitFor(() => expectMarks(live));
     expect(textBlockOf(live).querySelector("strong .stream-word")?.textContent).toBe("3rd");
     // The kept card takes the place of the live card, and a reload shows the same marks with no stream.
-    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("Kenneth Walker III"), { timeout: 3000 });
+    await waitFor(
+      () => expect(localStorage.getItem("cpc.thread")).toContain("Kenneth Walker III"),
+      { timeout: 3000 },
+    );
     cleanup();
     render(<HomePage />);
     expectMarks(await articleWith("how is my team", "Sit Blake Corum"));
@@ -510,12 +612,26 @@ describe("the text block of an Answer", () => {
     await ask("what happened");
     const answer = await articleWith("what happened", "Checked");
     const block = await waitFor(() => textBlockOf(answer));
-    for (const line of ["## Week 9 recap", "Read [the recap](https://example.com/recap) first.", "![a chart](https://example.com/chart.png)", "<b>Bold</b>", '<a href="https://example.com">here</a>', "<script>alert(1)</script>", "| Bo Girds | 114.07 |"]) {
+    for (const line of [
+      "## Week 9 recap",
+      "Read [the recap](https://example.com/recap) first.",
+      "![a chart](https://example.com/chart.png)",
+      "<b>Bold</b>",
+      '<a href="https://example.com">here</a>',
+      "<script>alert(1)</script>",
+      "| Bo Girds | 114.07 |",
+    ]) {
       expect(block.textContent).toContain(line);
     }
-    expect(block.querySelectorAll("a, img, h1, h2, h3, h4, h5, h6, b, script, table")).toHaveLength(0);
+    expect(block.querySelectorAll("a, img, h1, h2, h3, h4, h5, h6, b, script, table")).toHaveLength(
+      0,
+    );
     // Only the elements of the allowlist reach the page.
-    const tags = new Set([...block.querySelectorAll("*")].map((element) => element.tagName.toLowerCase()));
-    expect([...tags].every((tag) => ["p", "ul", "ol", "li", "strong", "em", "span"].includes(tag))).toBe(true);
+    const tags = new Set(
+      [...block.querySelectorAll("*")].map((element) => element.tagName.toLowerCase()),
+    );
+    expect(
+      [...tags].every((tag) => ["p", "ul", "ol", "li", "strong", "em", "span"].includes(tag)),
+    ).toBe(true);
   });
 });

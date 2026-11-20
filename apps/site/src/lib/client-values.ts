@@ -8,7 +8,8 @@ import type { BrandSets } from "@cpc/design/lib/theme";
 import type { Destination } from "@cpc/design/shell/nav";
 
 /* A package that a client takes or omits. league, facts, and design are in every client, so the list never names them. */
-export type PackageName = "week" | "rankings" | "managers" | "waiver" | "analyzer" | "sim" | "midseason" | "eggs";
+export type PackageName =
+  "week" | "rankings" | "managers" | "waiver" | "analyzer" | "sim" | "midseason" | "eggs";
 
 /* The values of the client that the site reads. */
 export type ClientValues = {
@@ -59,7 +60,10 @@ export type HomeBanner = ComponentType;
 
 /* The tile of a package on a week page, such as the Sim tile, after Standings. It gives the rail link and the tile, or
    null for a week with no data for it, so the page and its rail never name a tile that is not there. */
-export type WeekTile = (season: string, week: string) => { chapter: { id: string; label: string }; tile: ReactNode } | null;
+export type WeekTile = (
+  season: string,
+  week: string,
+) => { chapter: { id: string; label: string }; tile: ReactNode } | null;
 
 /* The tile of a package in the Tools chapter of the home page. A package with no page to link yet renders null. */
 export type HomeTool = ComponentType;

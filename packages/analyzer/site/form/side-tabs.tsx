@@ -40,18 +40,21 @@ export function SideTabs({ label, tabs }: { label: string; tabs: SideTab[] }) {
   };
 
   return (
-    <div className="flex flex-col gap-sp-4">
+    <div className="gap-sp-4 flex flex-col">
       <div
         role="tablist"
         aria-label={label}
-        className="relative grid rounded-pill border border-rule bg-card p-sp-1"
+        className="rounded-pill border-rule bg-card p-sp-1 relative grid border"
         style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
       >
         {/* The pill is one column wide, inside the padding of the bar. It is decorative, because aria-selected names the open tab. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-sp-1 left-sp-1 rounded-pill bg-accent transition-transform duration-250 ease-out motion-reduce:transition-none"
-          style={{ width: `calc((100% - 2 * var(--spacing-sp-1)) / ${count})`, transform: `translateX(${open * 100}%)` }}
+          className="inset-y-sp-1 left-sp-1 rounded-pill bg-accent pointer-events-none absolute transition-transform duration-250 ease-out motion-reduce:transition-none"
+          style={{
+            width: `calc((100% - 2 * var(--spacing-sp-1)) / ${count})`,
+            transform: `translateX(${open * 100}%)`,
+          }}
         />
         {tabs.map((tab, index) => {
           const selected = index === open;
@@ -71,8 +74,8 @@ export function SideTabs({ label, tabs }: { label: string; tabs: SideTab[] }) {
               onKeyDown={onKeyDown}
               {...openId("side-tab", tab.key)}
               className={cn(
-                "relative min-h-touch min-w-0 cursor-pointer rounded-pill px-sp-2 py-sp-1 text-meta leading-tight font-bold break-words text-balance transition-colors duration-250 ease-out motion-reduce:transition-none",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+                "min-h-touch rounded-pill px-sp-2 py-sp-1 text-meta relative min-w-0 cursor-pointer leading-tight font-bold text-balance break-words transition-colors duration-250 ease-out motion-reduce:transition-none",
+                "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
                 selected ? "text-on-dark" : "text-ink hover:text-accent-ink",
               )}
             >
@@ -89,7 +92,7 @@ export function SideTabs({ label, tabs }: { label: string; tabs: SideTab[] }) {
           aria-labelledby={`${base}-tab-${index}`}
           hidden={index !== open}
           tabIndex={0}
-          className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          className="focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           {tab.panel}
         </div>

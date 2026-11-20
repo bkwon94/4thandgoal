@@ -15,12 +15,24 @@ import type { TeamNames, WaiverPlayer } from "./types";
 import { beatenLine, holderLine, STANCE, teamName, trendingLine, waiverMetaLine } from "./format";
 
 /* One box of the bid row: a small caps name, a big number, and the line that explains it. The hot box is the bid to win. */
-function BidBox({ name, value, hot, children }: { name: string; value: string; hot?: boolean; children: ReactNode }) {
+function BidBox({
+  name,
+  value,
+  hot,
+  children,
+}: {
+  name: string;
+  value: string;
+  hot?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <div className={cn("flex-1 rounded-card px-sp-3 py-sp-2", hot ? "bg-accent" : "bg-chip-dark")}>
-      <div className="text-label leading-tight tracking-caps text-on-dark-muted uppercase">{name}</div>
+    <div className={cn("rounded-card px-sp-3 py-sp-2 flex-1", hot ? "bg-accent" : "bg-chip-dark")}>
+      <div className="text-label tracking-caps text-on-dark-muted leading-tight uppercase">
+        {name}
+      </div>
       <div className="text-stat leading-stat font-extrabold tabular-nums">{value}</div>
-      <div className="mt-sp-0 text-meta leading-tight text-on-dark-2">{children}</div>
+      <div className="mt-sp-0 text-meta text-on-dark-2 leading-tight">{children}</div>
     </div>
   );
 }
@@ -50,7 +62,10 @@ export function PlayerSheet({
   const outbidOver = price && viewerBudget !== null ? Math.min(price.bid, viewerBudget) : null;
   // The sheet is a black card. The dark theme turns ink into a text color, so ink would paint it white.
   return (
-    <section aria-label="Player sheet" className="mt-sp-3 rounded-card border border-rule-dark bg-card-band px-sp-4 py-sp-3">
+    <section
+      aria-label="Player sheet"
+      className="mt-sp-3 rounded-card border-rule-dark bg-card-band px-sp-4 py-sp-3 border"
+    >
       {/* A screen reader reads this one short line after a tap, and not the whole sheet. */}
       <p aria-live="polite" className="sr-only">
         {player ? `Sheet: ${player.name}` : ""}
@@ -58,17 +73,25 @@ export function PlayerSheet({
       {player && (
         // The key changes with the player, so a new player rises in once. The old one leaves at once, so a fast tap never waits.
         <motion.div key={player.player_id} data-reveal {...rise(off, { duration: DURATION.page })}>
-          <h2 className="m-0 text-lead leading-tight font-extrabold tracking-snug">{player.name}</h2>
-          <div className="mt-sp-0 text-meta text-on-dark-muted tabular-nums">{waiverMetaLine(player)}</div>
+          <h2 className="text-lead tracking-snug m-0 leading-tight font-extrabold">
+            {player.name}
+          </h2>
+          <div className="mt-sp-0 text-meta text-on-dark-muted tabular-nums">
+            {waiverMetaLine(player)}
+          </div>
           {drop && (
             <>
-              <div className="mt-sp-1 text-meta font-bold text-accent-text">{holderLine(drop)}</div>
-              <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{beatenLine(drop)}</div>
+              <div className="mt-sp-1 text-meta text-accent-text font-bold">{holderLine(drop)}</div>
+              <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">
+                {beatenLine(drop)}
+              </div>
             </>
           )}
-          {trending && <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{trending}</div>}
+          {trending && (
+            <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{trending}</div>
+          )}
           {facts.length > 0 && (
-            <ul aria-label="Facts" className="m-0 mt-sp-2 list-none space-y-sp-1 p-0">
+            <ul aria-label="Facts" className="mt-sp-2 space-y-sp-1 m-0 list-none p-0">
               {facts.map((fact) => (
                 <li key={fact.id}>
                   <Blurb dark className="text-meta leading-body">
@@ -79,11 +102,19 @@ export function PlayerSheet({
             </ul>
           )}
           {research.length > 0 && (
-            <ul aria-label="Claims" className="m-0 mt-sp-3 list-none space-y-sp-2 border-t border-rule-dark p-0 pt-sp-2">
+            <ul
+              aria-label="Claims"
+              className="mt-sp-3 space-y-sp-2 border-rule-dark pt-sp-2 m-0 list-none border-t p-0"
+            >
               {research.map((claim) => (
                 <li key={claim.url} className="text-meta leading-body">
                   {/* A claim opens its source in a new tab, so the reader keeps the page and the open player. */}
-                  <a href={claim.url} target="_blank" rel="noopener noreferrer" className="text-on-dark underline decoration-mute underline-offset-2">
+                  <a
+                    href={claim.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-on-dark decoration-mute underline underline-offset-2"
+                  >
                     {claim.text}
                   </a>
                   <div className="text-label tracking-caps text-on-dark-muted uppercase">{`${claim.source} · ${STANCE[claim.stance]}`}</div>
@@ -92,7 +123,7 @@ export function PlayerSheet({
             </ul>
           )}
           {price && (
-            <div className="mt-sp-3 flex items-stretch gap-sp-2">
+            <div className="mt-sp-3 gap-sp-2 flex items-stretch">
               <BidBox name="Bid to win" value={`$${price.bid}`} hot>
                 {price.fact.text}
               </BidBox>
@@ -110,7 +141,11 @@ export function PlayerSheet({
           )}
         </motion.div>
       )}
-      {expertsMissing && <p className="m-0 mt-sp-3 text-meta text-on-dark-muted italic">The experts are out this week.</p>}
+      {expertsMissing && (
+        <p className="mt-sp-3 text-meta text-on-dark-muted m-0 italic">
+          The experts are out this week.
+        </p>
+      )}
     </section>
   );
 }

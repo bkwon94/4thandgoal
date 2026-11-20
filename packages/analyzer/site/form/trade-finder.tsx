@@ -51,24 +51,52 @@ function swapSides(trade: FinderTrade, asker: number): SwapSide[] {
 
 /* One finder trade: its place, the headline, the swap card, then the Bullet rows of the analyzer.
    After a fallback the trade has no headline and no Bullet, so the card lists its plain fact lines. */
-function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: FinderTrade; asker: number; index: number; count: number; onOpen: () => void; locked: boolean }) {
+function FinderCard({
+  trade,
+  asker,
+  index,
+  count,
+  onOpen,
+  locked,
+}: {
+  trade: FinderTrade;
+  asker: number;
+  index: number;
+  count: number;
+  onOpen: () => void;
+  locked: boolean;
+}) {
   const sides = swapSides(trade, asker);
   return (
-    <article aria-label={`Trade ${index + 1}`} className="flex flex-col gap-sp-4 border-t border-rule py-sp-5">
-      <h3 className="m-0 font-mono text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
+    <article
+      aria-label={`Trade ${index + 1}`}
+      className="gap-sp-4 border-rule py-sp-5 flex flex-col border-t"
+    >
+      <h3 className="text-meta text-accent-ink m-0 font-mono leading-tight font-bold tracking-wide uppercase">
         Trade {index + 1} of {count}
       </h3>
-      {trade.headline !== null && <p className="m-0 text-lead font-bold text-ink">{trade.headline}</p>}
+      {trade.headline !== null && (
+        <p className="text-lead text-ink m-0 font-bold">{trade.headline}</p>
+      )}
       <SwapCard sides={sides} />
-      {trade.bullets.length > 0 && <BulletRows bullets={trade.bullets} idBase={`pick-${index + 1}`} />}
+      {trade.bullets.length > 0 && (
+        <BulletRows bullets={trade.bullets} idBase={`pick-${index + 1}`} />
+      )}
       {trade.fact_lines.length > 0 && (
-        <ul aria-label="Facts" className="m-0 flex max-w-measure list-none flex-col gap-sp-2 p-0 text-meta text-ink-2">
+        <ul
+          aria-label="Facts"
+          className="max-w-measure gap-sp-2 text-meta text-ink-2 m-0 flex list-none flex-col p-0"
+        >
           {trade.fact_lines.map((line) => (
             <li key={line}>{line}</li>
           ))}
         </ul>
       )}
-      <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={locked} onClick={onOpen}>
+      <Button
+        className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+        disabled={locked}
+        onClick={onOpen}
+      >
         See the Full Result
       </Button>
     </article>
@@ -76,14 +104,24 @@ function FinderCard({ trade, asker, index, count, onOpen, locked }: { trade: Fin
 }
 
 /* The finder result: the cards, or the empty line, then the as-of line. */
-function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (trade: FinderTrade, season: number) => void; locked: boolean }) {
+function FinderResult({
+  doc,
+  onOpen,
+  locked,
+}: {
+  doc: FindResponse;
+  onOpen: (trade: FinderTrade, season: number) => void;
+  locked: boolean;
+}) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
     <div>
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
-      {doc.empty !== null && <p className="m-0 py-sp-5 text-lead font-bold">{doc.empty}</p>}
+      {doc.empty !== null && <p className="py-sp-5 text-lead m-0 font-bold">{doc.empty}</p>}
       {doc.fallback && doc.trades.length > 0 && (
-        <p className="m-0 pt-sp-5 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
+        <p className="pt-sp-5 text-lead text-ink-2 m-0">
+          The picks did not come through. These are the trades the search kept, with their facts.
+        </p>
       )}
       {doc.trades.map((trade, i) => (
         <FinderCard
@@ -104,7 +142,16 @@ function FinderResult({ doc, onOpen, locked }: { doc: FindResponse; onOpen: (tra
   );
 }
 
-export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, onRostersStale, onOpen, locked = false }: TradeFinderProps) {
+export function TradeFinder({
+  teams,
+  target,
+  asker,
+  passphrase,
+  onUnauthorized,
+  onRostersStale,
+  onOpen,
+  locked = false,
+}: TradeFinderProps) {
   const [partner, setPartner] = useState<number | null>(null);
   const [find, setFind] = useState<FindState>({ status: "idle" });
   // A late answer for an old partner must not overwrite the state of a new one.
@@ -132,14 +179,18 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
     setFind({ status: "finding" });
     try {
       // With no partner, the body has no partner key, so the search runs over every other team.
-      const body = partner === null ? { season: target.season, asker } : { season: target.season, asker, partner };
+      const body =
+        partner === null
+          ? { season: target.season, asker }
+          : { season: target.season, asker, partner };
       const doc = await postFind(target, passphrase, body, controller.signal);
       if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
       if (!run.isCurrent()) return;
       if (error instanceof ApiError && error.status === 401) onUnauthorized();
-      else setFind({ status: "error", ...toErrorLine(error, timedOut, "The search took too long.") });
+      else
+        setFind({ status: "error", ...toErrorLine(error, timedOut, "The search took too long.") });
       if (error instanceof ApiError && error.status === 422) onRostersStale?.();
     } finally {
       clearTimeout(timer);
@@ -148,18 +199,27 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
 
   return (
     <section aria-labelledby="find-trade">
-      <Card className="flex flex-col gap-sp-5">
-        <div className="flex flex-col gap-sp-2">
-          <h2 id="find-trade" className="m-0 text-stat leading-stat font-black uppercase">
+      <Card className="gap-sp-5 flex flex-col">
+        <div className="gap-sp-2 flex flex-col">
+          <h2 id="find-trade" className="text-stat leading-stat m-0 font-black uppercase">
             Find a Trade
           </h2>
-          <p className="m-0 text-lead text-ink-2">Pick a partner, or search every team. The search finds up to 3 trades.</p>
+          <p className="text-lead text-ink-2 m-0">
+            Pick a partner, or search every team. The search finds up to 3 trades.
+          </p>
         </div>
-        <TeamPicker label="Trade Partner" teams={partners} value={partner} disabledId={null} onChange={pickPartner} locked={locked || finding} />
+        <TeamPicker
+          label="Trade Partner"
+          teams={partners}
+          value={partner}
+          disabledId={null}
+          onChange={pickPartner}
+          locked={locked || finding}
+        />
         {partner !== null && (
           <Button
             variant="ghost"
-            className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold"
+            className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
             disabled={locked || finding}
             onClick={() => pickPartner(null)}
           >
@@ -167,7 +227,7 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
           </Button>
         )}
         <Button
-          className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold"
+          className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
           disabled={finding || locked}
           aria-busy={finding || undefined}
           onClick={submit}
@@ -175,18 +235,21 @@ export function TradeFinder({ teams, target, asker, passphrase, onUnauthorized, 
           {finding ? "Finding…" : "Find a Trade"}
         </Button>
         {finding && (
-          <div className="flex flex-col gap-sp-2">
+          <div className="gap-sp-2 flex flex-col">
             <Sweep />
-            <p role="status" className="m-0 text-lead text-mute">
+            <p role="status" className="text-lead text-mute m-0">
               The search tries every small swap. This can take up to a minute.
             </p>
           </div>
         )}
         {find.status === "error" && (
-          <div className="flex flex-col gap-sp-3">
+          <div className="gap-sp-3 flex flex-col">
             <ErrorLine>{find.message}</ErrorLine>
             {/* Every error shows Try Again, the same as the error box of the trade form. */}
-            <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={submit}>
+            <Button
+              className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+              onClick={submit}
+            >
               Try Again
             </Button>
           </div>

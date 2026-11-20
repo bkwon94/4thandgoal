@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 
 export function ErrorLine({ children }: { children: ReactNode }) {
   return (
-    <p role="alert" className="m-0 text-body font-bold text-accent-ink">
+    <p role="alert" className="text-body text-accent-ink m-0 font-bold">
       {children}
     </p>
   );

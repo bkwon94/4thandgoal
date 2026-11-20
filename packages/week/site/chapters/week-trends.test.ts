@@ -16,7 +16,9 @@ const values = (series: { value: number }[]) => series.map((point) => point.valu
 describe("weekTrends", () => {
   it("gives the top score of each week from week 1 to the page week", () => {
     const trends = weekTrends(cpcWeeks, 8);
-    expect(values(trends.top)).toEqual([156.92, 156.52, 140.6, 145.63, 158.96, 126.79, 148.13, 134.1]);
+    expect(values(trends.top)).toEqual([
+      156.92, 156.52, 140.6, 145.63, 158.96, 126.79, 148.13, 134.1,
+    ]);
     expect(trends.top.map((point) => point.week)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
@@ -28,7 +30,9 @@ describe("weekTrends", () => {
 
   it("takes the published median of each week when the league has a median game", () => {
     const trends = weekTrends(cpcWeeks, 8);
-    expect(values(trends.median)).toEqual([111.36, 96.34, 107.14, 104.58, 107.35, 106.83, 103.87, 99.6]);
+    expect(values(trends.median)).toEqual([
+      111.36, 96.34, 107.14, 104.58, 107.35, 106.83, 103.87, 99.6,
+    ]);
   });
 
   it("takes the median of the points of every team when the league has no median game", () => {

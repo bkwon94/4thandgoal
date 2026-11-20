@@ -20,7 +20,8 @@ const HEADINGS = ["## Knows", "## Ports", "## Does not do"];
 const MAX_LINES = 24;
 
 const RULE = `each package folder holds a README of under ${MAX_LINES + 1} lines with the headings Knows, Ports, and Does not do`;
-const RULES_FILE_RULE = "no CLAUDE.md or AGENTS.md sits below the repo root, except one of each at the top of each app";
+const RULES_FILE_RULE =
+  "no CLAUDE.md or AGENTS.md sits below the repo root, except one of each at the top of each app";
 /* Each app keeps its own commands in an AGENTS.md and a CLAUDE.md that imports it, so apps/<app>/ may hold both. See .scratch/one/PRD.md.
  * Both files carry the rules of a folder, so the rule treats them the same. */
 const RULES_FILES = ["CLAUDE.md", "AGENTS.md"];
@@ -42,13 +43,23 @@ function packageFolders(): string[] {
   const siteFolders = packages.flatMap((dir) => subfolders(join(dir, "site")));
   // The app holds no hook of its own, so src/hooks/ is a package folder only when it exists.
   const hooks = existsSync(join(SRC, "hooks")) ? [join(SRC, "hooks")] : [];
-  return [...subfolders(components), lib, ...subfolders(lib), ...hooks, ...packages, ...siteFolders];
+  return [
+    ...subfolders(components),
+    lib,
+    ...subfolders(lib),
+    ...hooks,
+    ...packages,
+    ...siteFolders,
+  ];
 }
 
 /* The source is null when the folder holds no README. */
 function readFolder(dir: string): { path: string; source: string | null } {
   const file = join(dir, "README.md");
-  return { path: relative(ROOT, file), source: existsSync(file) ? readFileSync(file, "utf8") : null };
+  return {
+    path: relative(ROOT, file),
+    source: existsSync(file) ? readFileSync(file, "utf8") : null,
+  };
 }
 
 /* The rule takes the path and the source apart from the disk, so a test can run it on one string. */
@@ -91,7 +102,12 @@ function offenses(path: string, source: string | null): Offense[] {
 /* The paths come from git ls-files, so a rules file in node_modules or in an ignored folder does not count. */
 function rulesFileOffenses(paths: string[]): Offense[] {
   return paths
-    .filter((path) => RULES_FILES.includes(basename(path)) && path !== basename(path) && !APP_RULES_FILE.test(path))
+    .filter(
+      (path) =>
+        RULES_FILES.includes(basename(path)) &&
+        path !== basename(path) &&
+        !APP_RULES_FILE.test(path),
+    )
     .map((path) => ({
       path,
       line: 1,
@@ -105,20 +121,27 @@ function rulesFileOffenses(paths: string[]): Offense[] {
 
 /* The pathspec ":/" and --full-name give every tracked file of the repo with its path from the repo root, from any folder. */
 function trackedFiles(): string[] {
-  return execFileSync("git", ["ls-files", "--full-name", "--", ":/"], { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
+  return execFileSync("git", ["ls-files", "--full-name", "--", ":/"], {
+    cwd: ROOT,
+    encoding: "utf8",
+  })
+    .split("\n")
+    .filter(Boolean);
 }
 
 describe("the readme rule", () => {
   it("finds the package folders", () => {
     // An empty list would pass with no folder read.
     const paths = packageFolders().map((dir) => relative(ROOT, dir));
-    expect(paths).toEqual(expect.arrayContaining([
+    expect(paths).toEqual(
+      expect.arrayContaining([
         "../../packages/rankings/site/chapters",
         "../../packages/week/site/chapters",
         "src/lib",
         "../../packages/design",
         "../../packages/design/site/shell",
-      ]),);
+      ]),
+    );
   });
 
   it("finds a README with the three headings and under 25 lines in each package folder", () => {
@@ -139,7 +162,9 @@ describe("the readme rule", () => {
   it("finds one offense in a README of 25 lines", () => {
     const source = ["# lib", ...HEADINGS, ...Array(21).fill("A line.")].join("\n") + "\n";
     const found = offenses("src/lib/README.md", source);
-    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "readme/length", line: 25 }]);
+    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+      { ruleId: "readme/length", line: 25 },
+    ]);
   });
 
   it("finds one offense in a CLAUDE.md below the root", () => {
@@ -149,7 +174,9 @@ describe("the readme rule", () => {
       "apps/site/src/lib/CLAUDE.md",
       ".scratch/notes-on-CLAUDE.md",
     ]);
-    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/CLAUDE.md", ruleId: "readme/no-nested-rules-file" }]);
+    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([
+      { path: "apps/site/src/lib/CLAUDE.md", ruleId: "readme/no-nested-rules-file" },
+    ]);
   });
 
   it("finds one offense in an AGENTS.md below the root", () => {
@@ -158,7 +185,9 @@ describe("the readme rule", () => {
       "apps/pipeline/AGENTS.md",
       "apps/site/src/lib/AGENTS.md",
     ]);
-    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([{ path: "apps/site/src/lib/AGENTS.md", ruleId: "readme/no-nested-rules-file" }]);
+    expect(found.map(({ path, ruleId }) => ({ path, ruleId }))).toEqual([
+      { path: "apps/site/src/lib/AGENTS.md", ruleId: "readme/no-nested-rules-file" },
+    ]);
   });
 
   it("finds one offense in a folder on disk with one source file and no README", () => {
@@ -176,7 +205,10 @@ describe("the readme rule", () => {
   it("finds one offense in a README on disk with the headings out of order", () => {
     const dir = mkdtempSync(join(tmpdir(), "readme-rule-"));
     try {
-      writeFileSync(join(dir, "README.md"), "# week\n\n## Ports\n\nNone.\n\n## Knows\n\n## Does not do\n");
+      writeFileSync(
+        join(dir, "README.md"),
+        "# week\n\n## Ports\n\nNone.\n\n## Knows\n\n## Does not do\n",
+      );
       const { path, source } = readFolder(dir);
       expect(offenses(path, source).map(({ ruleId }) => ruleId)).toEqual(["readme/headings"]);
     } finally {

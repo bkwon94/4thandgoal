@@ -25,7 +25,9 @@ describe("MedianGame", () => {
 
   it("shows a bar for each team with its avatar, its name, and its score, and marks the teams above the line", () => {
     const chapter = renderMedian();
-    const bars = within(within(chapter).getByRole("list", { name: "Scores against the median" })).getAllByRole("listitem");
+    const bars = within(
+      within(chapter).getByRole("list", { name: "Scores against the median" }),
+    ).getAllByRole("listitem");
     expect(bars).toHaveLength(12);
     expect(bars[0].textContent).toBe("Teehee134.1Above");
     expect(bars[11].textContent).toBe("Lil Fridge80.11Below");

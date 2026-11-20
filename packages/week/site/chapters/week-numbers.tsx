@@ -42,7 +42,10 @@ function numbersOf(
   const below = scores.filter((score) => score < line).length;
   // The JSON puts the winner first, so the margin of a game is the first score less the second.
   const margin = (matchup: Matchup) => matchup.sides[0].score - matchup.sides[1].score;
-  const closest = matchups.reduce((best, matchup) => (margin(matchup) < margin(best) ? matchup : best), matchups[0]);
+  const closest = matchups.reduce(
+    (best, matchup) => (margin(matchup) < margin(best) ? matchup : best),
+    matchups[0],
+  );
   const numbers: WeekNumber[] = [
     {
       label: "Top Score",
@@ -89,12 +92,18 @@ export function WeekNumbers({
   return (
     <section aria-label="The week in numbers">
       {/* Two tiles per row on a phone and four from the tablet tier, so the four numbers fill one row there. */}
-      <ul className="m-0 grid list-none grid-cols-2 gap-sp-2 p-0 tablet:grid-cols-4">
+      <ul className="gap-sp-2 tablet:grid-cols-4 m-0 grid list-none grid-cols-2 p-0">
         {numbersOf(matchups, median, gameChanger, trends).map((item, index) => (
           // The hero takes the first four steps of the stagger, so the tiles rise after it.
           <li key={item.label} className="min-w-0" {...stableId("number", item.label)}>
             <Rise step={index + 4} className="h-full">
-              <Tile label={item.label} value={item.value} note={item.note} trend={item.trend} className="h-full" />
+              <Tile
+                label={item.label}
+                value={item.value}
+                note={item.note}
+                trend={item.trend}
+                className="h-full"
+              />
             </Rise>
           </li>
         ))}

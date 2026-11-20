@@ -18,12 +18,19 @@ const OUT = join(process.cwd(), "out");
 const DOOR = existsSync(join(OUT, "ask", "index.html")) ? "/ask/" : "/";
 
 /* The stream of a kept Answer that the API recorded, the one that the tests of the personal Topics play. */
-const KEPT = readFileSync(join(process.cwd(), "src", "fixtures", "personal-answer", "weak-spots-kept.sse"), "utf8");
+const KEPT = readFileSync(
+  join(process.cwd(), "src", "fixtures", "personal-answer", "weak-spots-kept.sse"),
+  "utf8",
+);
 
 /* The time in ms that the API takes to send a kept Answer from its store. The run of AT-8 saw about 200 ms from the tap. */
 const STORE_MS = 150;
 
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "POST",
+};
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -36,7 +43,10 @@ test.afterAll(async () => {
 /* The Suggestions route of the API serves Weak spots as an urgent personal Topic, so it shows as a chip. The personal
    route sends the kept Answer after STORE_MS, or with `kept` false it stays open, as a fresh Answer that waits. */
 async function openDoorWithWeakSpots(page: Page, { kept }: { kept: boolean }) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.route("**/clients/**", () => {});
   await page.route("**/clients/*/suggestions", (route) =>
     route.fulfill({
@@ -47,12 +57,17 @@ async function openDoorWithWeakSpots(page: Page, { kept }: { kept: boolean }) {
     }),
   );
   await page.route("**/clients/*/personal", async (route) => {
-    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    if (route.request().method() === "OPTIONS")
+      return route.fulfill({ status: 204, headers: CORS });
     if (!kept) return;
     await new Promise((done) => setTimeout(done, STORE_MS));
     await route.fulfill({
       status: 200,
-      headers: { ...CORS, "access-control-expose-headers": "*", "x-vercel-ai-ui-message-stream": "v1" },
+      headers: {
+        ...CORS,
+        "access-control-expose-headers": "*",
+        "x-vercel-ai-ui-message-stream": "v1",
+      },
       contentType: "text/event-stream",
       body: KEPT,
     });
@@ -63,7 +78,8 @@ async function openDoorWithWeakSpots(page: Page, { kept }: { kept: boolean }) {
 }
 
 /* The chip of Weak spots in the row of Suggestions. */
-const weakSpotsChip = (page: Page) => page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: /^Weak spots:/ });
+const weakSpotsChip = (page: Page) =>
+  page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: /^Weak spots:/ });
 
 /* Opens Weak spots from its chip. The first tap shows its fact in the strip, and the second tap opens the Topic
    (decision 02). */
@@ -75,27 +91,43 @@ async function openWeakSpots(page: Page) {
 
 test.use({ viewport: { width: 375, height: 812 }, reducedMotion: "no-preference" });
 
-test("a tap on a personal Topic whose Answer is kept shows no step line on any frame (AT-8, ticket 49)", async ({ page }) => {
+test("a tap on a personal Topic whose Answer is kept shows no step line on any frame (AT-8, ticket 49)", async ({
+  page,
+}) => {
   await openDoorWithWeakSpots(page, { kept: true });
   await expect(weakSpotsChip(page)).toBeVisible();
   // Each frame reads the step lines and the text of the Answer in the Thread.
   await startSamples(page, () => {
-    const article = document.querySelector("section[aria-label='Thread'] article[aria-label='Weak spots']");
+    const article = document.querySelector(
+      "section[aria-label='Thread'] article[aria-label='Weak spots']",
+    );
     if (!article) return null;
-    const lines = [...article.querySelectorAll("ol[aria-label='Steps'] li")].map((item) => item.textContent ?? "");
+    const lines = [...article.querySelectorAll("ol[aria-label='Steps'] li")].map(
+      (item) => item.textContent ?? "",
+    );
     return { lines, checked: (article.textContent ?? "").includes("Checked") };
   });
   await openWeakSpots(page);
-  const frames = (await samplesWhenStill<{ lines: string[]; checked: boolean } | null>(page, 30)).filter((frame) => frame !== null);
+  const frames = (
+    await samplesWhenStill<{ lines: string[]; checked: boolean } | null>(page, 30)
+  ).filter((frame) => frame !== null);
   expect(frames.at(-1)?.checked, "the kept Answer ends checked").toBe(true);
   const withSteps = frames.filter((frame) => frame.lines.length > 0);
-  expect(withSteps, `frames with a step line: ${JSON.stringify(withSteps.slice(0, 3))}`).toEqual([]);
+  expect(withSteps, `frames with a step line: ${JSON.stringify(withSteps.slice(0, 3))}`).toEqual(
+    [],
+  );
 });
 
-test("a fresh Answer of a personal Topic still waits on the live first line with the braille spinner (AT-65)", async ({ page }) => {
+test("a fresh Answer of a personal Topic still waits on the live first line with the braille spinner (AT-65)", async ({
+  page,
+}) => {
   await openDoorWithWeakSpots(page, { kept: false });
   await openWeakSpots(page);
-  const step = page.getByRole("article", { name: "Weak spots" }).getByRole("list", { name: "Steps" }).getByRole("listitem").first();
+  const step = page
+    .getByRole("article", { name: "Weak spots" })
+    .getByRole("list", { name: "Steps" })
+    .getByRole("listitem")
+    .first();
   await expect(step).toHaveText(/Reading the league…/);
   await expect(step).toHaveAttribute("data-state", "live");
   // The live step turns a braille spinner, so its mark shows a braille frame.
@@ -105,14 +137,23 @@ test("a fresh Answer of a personal Topic still waits on the live first line with
 /* The mesh and the stage lines belong to the grade wait of the analyzer. The chat wait keeps its own motion, so it shows
    neither, at each width (AT-24). */
 for (const width of [375, 768, 1280]) {
-  test(`the chat wait shows no mesh and no stage line, ${width}px (AT-24)`, async ({ page }, info) => {
+  test(`the chat wait shows no mesh and no stage line, ${width}px (AT-24)`, async ({
+    page,
+  }, info) => {
     await page.setViewportSize({ width, height: 900 });
     await openDoorWithWeakSpots(page, { kept: false });
     await openWeakSpots(page);
-    const step = page.getByRole("article", { name: "Weak spots" }).getByRole("list", { name: "Steps" }).getByRole("listitem").first();
+    const step = page
+      .getByRole("article", { name: "Weak spots" })
+      .getByRole("list", { name: "Steps" })
+      .getByRole("listitem")
+      .first();
     await expect(step).toHaveAttribute("data-state", "live");
     await page.screenshot({ path: info.outputPath(`chat-wait-${width}.png`) });
-    expect(await page.locator("canvas[data-hero-mesh]").count(), "a mesh shows in the chat wait").toBe(0);
+    expect(
+      await page.locator("canvas[data-hero-mesh]").count(),
+      "a mesh shows in the chat wait",
+    ).toBe(0);
     expect(await page.locator(".t-think").count(), "a stage line shows in the chat wait").toBe(0);
   });
 }

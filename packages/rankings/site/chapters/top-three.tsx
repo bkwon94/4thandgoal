@@ -14,24 +14,32 @@ type AvatarMap = Readonly<Record<string, string>>;
 /* The rank in two digits, as the Ladder shows "01". */
 const twoDigits = (rank: number) => String(rank).padStart(2, "0");
 
-export function TopThree({ week, avatars, href }: { week: RankingsWeek; avatars: AvatarMap; href: string }) {
+export function TopThree({
+  week,
+  avatars,
+  href,
+}: {
+  week: RankingsWeek;
+  avatars: AvatarMap;
+  href: string;
+}) {
   return (
     <Card className="py-sp-2">
       <ol aria-label="Top three" className="m-0 list-none p-0">
         {week.rows.slice(0, 3).map((row) => (
           <li
             key={row.roster_id}
-            className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 py-sp-2"
+            className="gap-x-sp-3 py-sp-2 grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center"
           >
-            <span className="font-mono text-row font-bold tabular-nums">{twoDigits(row.rank)}</span>
+            <span className="text-row font-mono font-bold tabular-nums">{twoDigits(row.rank)}</span>
             <Avatar src={avatarSrc(avatars, row.roster_id)} />
             <span className="flex min-w-0 flex-col">
               <span className="text-row leading-tight font-bold">{row.name}</span>
-              <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums">
+              <span className="mt-sp-0 text-meta text-ink-2 font-mono leading-tight tabular-nums">
                 <RecordLine row={row} />
               </span>
             </span>
-            <span className="font-mono text-row font-bold tabular-nums">
+            <span className="text-row font-mono font-bold tabular-nums">
               <span className="sr-only">Playoff odds </span>
               <PlayoffOdds odds={row.odds} />
             </span>
@@ -41,7 +49,7 @@ export function TopThree({ week, avatars, href }: { week: RankingsWeek; avatars:
       {/* The link is a whole row, so it is 44px tall. The arrow is drawn, because axe cannot read the contrast of a glyph. */}
       <a
         href={href}
-        className="press flex min-h-touch items-center gap-sp-1 border-t border-rule font-mono text-meta font-bold tracking-caps text-accent-ink uppercase no-underline"
+        className="press min-h-touch gap-sp-1 border-rule text-meta tracking-caps text-accent-ink flex items-center border-t font-mono font-bold uppercase no-underline"
       >
         All {week.rows.length} teams
         <svg

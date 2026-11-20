@@ -25,14 +25,22 @@ export function EggButton({ left, href }: EggButtonProps) {
     <a
       href={href}
       aria-label={nameOf(left)}
-      className="press relative flex size-touch flex-none items-center justify-center text-ink no-underline hover-fine:text-accent-ink"
+      className="press size-touch text-ink hover-fine:text-accent-ink relative flex flex-none items-center justify-center no-underline"
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="size-sp-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className="size-sp-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      >
         <path d="M12 2.5c4 0 7 7.5 7 11.5a7 7 0 0 1-14 0c0-4 3-11.5 7-11.5z" />
         <path d="M7.2 13.2l2.2-1.5 2.6 1.8 2.6-1.8 2.2 1.5" strokeLinecap="round" />
       </svg>
       {left !== null && (
-        <span className="absolute top-sp-0 right-0 flex h-sp-5 min-w-sp-5 items-center justify-center rounded-pill border-2 border-page bg-accent px-sp-1 font-mono text-meta leading-none font-bold text-on-dark tabular-nums">
+        <span className="top-sp-0 h-sp-5 min-w-sp-5 rounded-pill border-page bg-accent px-sp-1 text-meta text-on-dark absolute right-0 flex items-center justify-center border-2 font-mono leading-none font-bold tabular-nums">
           {left}
         </span>
       )}

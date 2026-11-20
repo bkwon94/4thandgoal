@@ -16,19 +16,37 @@ const FIXTURES = join(process.cwd(), "..", "..", "packages", "analyzer", "site",
 const ANALYZE = readFileSync(join(FIXTURES, "analyze-response.json"), "utf8");
 // The find document of the analyzer tests, in the exact shape of the API. The swap card of each of its trades holds the chips.
 const FIND = readFileSync(join(FIXTURES, "find-response.json"), "utf8");
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "GET, POST",
+};
 
-type Player = { player_id: string; name: string; position: string; nfl_team: string; headshot: string };
+type Player = {
+  player_id: string;
+  name: string;
+  position: string;
+  nfl_team: string;
+  headshot: string;
+};
 
 /* The teams of the analyze fixture, each with the players it gives. */
 function teamsOfAnalyze() {
-  const teams = JSON.parse(ANALYZE).trade.sides.map((side: { roster_id: number; team: string; gives: Player[] }) => ({
-    roster_id: side.roster_id,
-    team: side.team,
-    manager: side.team,
-    avatar: null,
-    players: side.gives.map(({ player_id, name, position, nfl_team, headshot }) => ({ player_id, name, position, nfl_team, headshot })),
-  }));
+  const teams = JSON.parse(ANALYZE).trade.sides.map(
+    (side: { roster_id: number; team: string; gives: Player[] }) => ({
+      roster_id: side.roster_id,
+      team: side.team,
+      manager: side.team,
+      avatar: null,
+      players: side.gives.map(({ player_id, name, position, nfl_team, headshot }) => ({
+        player_id,
+        name,
+        position,
+        nfl_team,
+        headshot,
+      })),
+    }),
+  );
   return JSON.stringify({ teams });
 }
 
@@ -43,8 +61,13 @@ test.afterAll(async () => {
 test.use({ viewport: { width: 390, height: 900 }, reducedMotion: "reduce" });
 
 /* The result shows the players on its hero only, so the chips with a headshot frame are in the swap card of the Finder. */
-test("each headshot frame fills its player chip, centered, with no strip at the right (headshot-black-bar item 1)", async ({ page }) => {
-  await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
+test("each headshot frame fills its player chip, centered, with no strip at the right (headshot-black-bar item 1)", async ({
+  page,
+}) => {
+  await page.route(
+    (url) => !["127.0.0.1", "localhost"].includes(url.hostname),
+    (route) => route.abort(),
+  );
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
@@ -65,11 +88,22 @@ test("each headshot frame fills its player chip, centered, with no strip at the 
       .map((item) => {
         const chip = item.getBoundingClientRect();
         const frame = item.querySelector(":scope > img")!.getBoundingClientRect();
-        return { name: item.querySelector("b")?.textContent ?? "", left: frame.left - chip.left, right: chip.right - frame.right };
+        return {
+          name: item.querySelector("b")?.textContent ?? "",
+          left: frame.left - chip.left,
+          right: chip.right - frame.right,
+        };
       })
       .filter((chip) => chip.name !== ""),
   );
-  console.log(chips.map((chip) => `${chip.name}: ${chip.left.toFixed(1)}px left gap, ${chip.right.toFixed(1)}px right gap`).join("\n"));
+  console.log(
+    chips
+      .map(
+        (chip) =>
+          `${chip.name}: ${chip.left.toFixed(1)}px left gap, ${chip.right.toFixed(1)}px right gap`,
+      )
+      .join("\n"),
+  );
   expect(chips.length).toBeGreaterThan(0);
   for (const chip of chips) {
     expect(chip.left, `${chip.name}: the gap at the left of the frame`).toBeCloseTo(0, 0);

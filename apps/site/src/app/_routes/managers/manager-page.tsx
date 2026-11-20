@@ -22,7 +22,10 @@ type Props = { params: Promise<Params> };
 export function generateStaticParams(): Params[] {
   const managers = loadManagers();
   if (!managers) return [];
-  return managers.managers.map((manager) => ({ season: String(managers.season), roster: String(manager.roster_id) }));
+  return managers.managers.map((manager) => ({
+    season: String(managers.season),
+    roster: String(manager.roster_id),
+  }));
 }
 
 /* The entry of one roster, or none when the file or the roster is missing. */
@@ -49,7 +52,10 @@ export default async function ManagerPage({ params }: Props) {
       <PageColumn rail={<ChapterRail chapters={MANAGER_CHAPTERS} />}>
         {/* The back link comes first, so a reader moves to the next team in one tap. It is a full tap target. */}
         <div className="px-gutter pt-sp-4 tablet:px-0">
-          <a href={managersHref(season)} className="inline-flex min-h-touch items-center text-body font-bold text-accent-ink no-underline">
+          <a
+            href={managersHref(season)}
+            className="min-h-touch text-body text-accent-ink inline-flex items-center font-bold no-underline"
+          >
             ← All Managers
           </a>
         </div>
@@ -63,7 +69,11 @@ export default async function ManagerPage({ params }: Props) {
             scene={managerScene(manager)}
           />
         </div>
-        <ManagerChapters manager={manager} managers={managers.managers} managersHref={seasonManagersHref(season)} />
+        <ManagerChapters
+          manager={manager}
+          managers={managers.managers}
+          managersHref={seasonManagersHref(season)}
+        />
       </PageColumn>
     </>
   );

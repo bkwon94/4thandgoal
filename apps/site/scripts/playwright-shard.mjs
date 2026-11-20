@@ -11,7 +11,9 @@ export function shardOfEnv(value) {
   const current = match ? Number(match[1]) : 0;
   const total = match ? Number(match[2]) : 0;
   if (current < 1 || current > total) {
-    throw new Error(`PLAYWRIGHT_SHARD must be <current>/<total>, with 1 <= current <= total, not "${value}".`);
+    throw new Error(
+      `PLAYWRIGHT_SHARD must be <current>/<total>, with 1 <= current <= total, not "${value}".`,
+    );
   }
   return { current, total };
 }

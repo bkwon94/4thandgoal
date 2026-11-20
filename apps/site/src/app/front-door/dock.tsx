@@ -9,5 +9,7 @@ import type { ComponentProps } from "react";
 
 export function Dock(props: ComponentProps<typeof motion.div>) {
   const present = useIsPresent();
-  return <motion.div {...props} aria-hidden={present ? undefined : true} inert={!present || undefined} />;
+  return (
+    <motion.div {...props} aria-hidden={present ? undefined : true} inert={!present || undefined} />
+  );
 }

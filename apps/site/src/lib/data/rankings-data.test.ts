@@ -40,7 +40,12 @@ describe("loadRankings", () => {
     const last = rankings!.weeks.at(-1)!;
     expect(last.week).toBe(6);
     expect(last.rows.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    expect(last.rows[0].components).toEqual({ standing: 2, form: 1, schedule_played: 2, scoring: 1 });
+    expect(last.rows[0].components).toEqual({
+      standing: 2,
+      form: 1,
+      schedule_played: 2,
+      scoring: 1,
+    });
   });
 
   it("reads rows with odds and rows with no odds under schema version 1", async () => {

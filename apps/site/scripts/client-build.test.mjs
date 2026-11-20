@@ -4,11 +4,27 @@
  */
 // @vitest-environment node
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildClient, ClientBuildError, clientRoot, REPO_ROOT, SCHEMA_FILE, valuesSchemaFile } from "./client-build.mjs";
+import {
+  buildClient,
+  ClientBuildError,
+  clientRoot,
+  REPO_ROOT,
+  SCHEMA_FILE,
+  valuesSchemaFile,
+} from "./client-build.mjs";
 
 const SCRIPT = join(process.cwd(), "scripts", "client-build.mjs");
 // The repo client has the front door on. These fixtures turn it off on purpose, to cover the off path.
@@ -86,8 +102,12 @@ describe("the client build", () => {
   });
 
   it("fails on a [values] table of a package off the list and names the table", () => {
-    const repo = tempRepo(CPC_TOML.replace("[values.analyzer]", "[values.waiver]\n\n[values.analyzer]"));
-    expect(() => buildClient(repo)).toThrow("- values.waiver: names a package that is not in the package list");
+    const repo = tempRepo(
+      CPC_TOML.replace("[values.analyzer]", "[values.waiver]\n\n[values.analyzer]"),
+    );
+    expect(() => buildClient(repo)).toThrow(
+      "- values.waiver: names a package that is not in the package list",
+    );
   });
 
   it("checks a [values] table with the schema of its package", () => {
@@ -96,8 +116,13 @@ describe("the client build", () => {
   });
 
   it("fails on a menu item for an omitted package and names the item and the package", () => {
-    const toml = CPC_TOML.replace('{ package = "week" },', '{ package = "week" },\n  { package = "waiver" },');
-    expect(() => buildClient(tempRepo(toml))).toThrow(/menu item for waiver names a package that is not in the package list/);
+    const toml = CPC_TOML.replace(
+      '{ package = "week" },',
+      '{ package = "week" },\n  { package = "waiver" },',
+    );
+    expect(() => buildClient(tempRepo(toml))).toThrow(
+      /menu item for waiver names a package that is not in the package list/,
+    );
   });
 
   it("writes one route file per package of the list, and no route of an omitted package", () => {
@@ -124,7 +149,9 @@ describe("the client build", () => {
     buildClient(repo);
     expect(routeFiles(repo.site)).toContain("(client)/eggs/page.tsx");
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
-    expect(registry).toContain('import { PagePart as eggsPagePart } from "@/app/_routes/eggs/hunt";');
+    expect(registry).toContain(
+      'import { PagePart as eggsPagePart } from "@/app/_routes/eggs/hunt";',
+    );
     expect(registry).toContain("export const pageParts: PagePart[] = [eggsPagePart];");
   });
 
@@ -132,27 +159,54 @@ describe("the client build", () => {
     const repo = tempRepo();
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
-    expect(registry).toContain('import { BandPart as eggsBandPart } from "@/app/_routes/eggs/band";');
+    expect(registry).toContain(
+      'import { BandPart as eggsBandPart } from "@/app/_routes/eggs/band";',
+    );
     expect(registry).toContain("export const bandParts: BandPart[] = [eggsBandPart];");
-    expect(registry).toContain('import { HomeBanner as eggsHomeBanner } from "@/app/_routes/eggs/home-banner";');
-    expect(registry).toContain("export const homeBanners: HomeBanner[] = [eggsHomeBanner, simHomeBanner];");
+    expect(registry).toContain(
+      'import { HomeBanner as eggsHomeBanner } from "@/app/_routes/eggs/home-banner";',
+    );
+    expect(registry).toContain(
+      "export const homeBanners: HomeBanner[] = [eggsHomeBanner, simHomeBanner];",
+    );
   });
 
   it("gives a client of the sim package the Announcement of the season sim on the home page", () => {
-    const toml = ['packages = ["week", "sim"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = [
+      'packages = ["week", "sim"]',
+      'timezone = "America/New_York"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+    ].join("\n");
     const repo = tempRepo(toml, "sim-home");
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
-    expect(registry).toContain('import { HomeBanner as simHomeBanner } from "@/app/_routes/sim/home-banner";');
+    expect(registry).toContain(
+      'import { HomeBanner as simHomeBanner } from "@/app/_routes/sim/home-banner";',
+    );
     expect(registry).toContain("export const homeBanners: HomeBanner[] = [simHomeBanner];");
   });
 
   it("gives a client of the sim package the Sim tile on each week page, and a client without it none", () => {
-    const toml = (packages) => [`packages = ${packages}`, 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = (packages) =>
+      [
+        `packages = ${packages}`,
+        'timezone = "America/New_York"',
+        "",
+        "[seasons.2026]",
+        'provider = "sleeper"',
+        'league_id = "1"',
+        "",
+      ].join("\n");
     const withSim = tempRepo(toml('["week", "sim"]'), "sim-tile");
     buildClient(withSim);
     const registry = readFileSync(join(withSim.site, "src", "generated", "registry.ts"), "utf8");
-    expect(registry).toContain('import { weekTile as simWeekTile } from "@/app/_routes/sim/week-tile";');
+    expect(registry).toContain(
+      'import { weekTile as simWeekTile } from "@/app/_routes/sim/week-tile";',
+    );
     expect(registry).toContain("export const weekTiles: WeekTile[] = [simWeekTile];");
     const weekOnly = tempRepo(toml('["week"]'), "week-only");
     buildClient(weekOnly);
@@ -162,7 +216,12 @@ describe("the client build", () => {
   });
 
   it("gives a client without the eggs package no /eggs/ route and no egg hunt", () => {
-    const repo = tempRepo(CPC_TOML.replace(', "eggs"]', "]").replace(/\n# The roster of the commissioner[^\n]*\n\[values\.eggs\]\n[^\n]*\n/, "\n"));
+    const repo = tempRepo(
+      CPC_TOML.replace(', "eggs"]', "]").replace(
+        /\n# The roster of the commissioner[^\n]*\n\[values\.eggs\]\n[^\n]*\n/,
+        "\n",
+      ),
+    );
     buildClient(repo);
     expect(routeFiles(repo.site)).not.toContain("(client)/eggs/page.tsx");
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
@@ -187,7 +246,9 @@ describe("the client build", () => {
         "// GENERATED by apps/site/scripts/client-build.mjs from clients/cpc/client.toml. Do not edit.",
       );
     }
-    expect(readFileSync(join(repo.site, "src", "generated", "brand.css"), "utf8").split("\n")[0]).toBe(
+    expect(
+      readFileSync(join(repo.site, "src", "generated", "brand.css"), "utf8").split("\n")[0],
+    ).toBe(
       "/* GENERATED by apps/site/scripts/client-build.mjs from clients/cpc/brand.toml. Do not edit. */",
     );
   });
@@ -198,7 +259,9 @@ describe("the client build", () => {
     published(repo.root, "cpc", "2026/week-06/waiver.json");
     buildClient(repo);
     expect(routeFiles(repo.site)).toContain("(client)/[season]/[week]/waiver/page.tsx");
-    expect(readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8")).toContain("@/app/_routes/waiver/menu");
+    expect(readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8")).toContain(
+      "@/app/_routes/waiver/menu",
+    );
   });
 
   it("gives the registry no import line of an omitted package", () => {
@@ -206,7 +269,9 @@ describe("the client build", () => {
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     expect(registry).not.toContain("waiver");
-    expect(registry).toContain('import { menuLink as rankingsMenuLink } from "@/app/_routes/rankings/menu";');
+    expect(registry).toContain(
+      'import { menuLink as rankingsMenuLink } from "@/app/_routes/rankings/menu";',
+    );
     expect(registry).toContain("  rankings: rankingsMenuLink,");
     expect(registry).toContain("  week: weekMenuLink,");
   });
@@ -216,8 +281,12 @@ describe("the client build", () => {
     const taken = tempRepo();
     buildClient(taken);
     const withAnalyzer = readFileSync(join(taken.site, "src", "generated", "registry.ts"), "utf8");
-    expect(withAnalyzer).toContain('import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";');
-    expect(withAnalyzer).toContain("export const homeTools: HomeTool[] = [analyzerHomeTool, managersHomeTool];");
+    expect(withAnalyzer).toContain(
+      'import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";',
+    );
+    expect(withAnalyzer).toContain(
+      "export const homeTools: HomeTool[] = [analyzerHomeTool, managersHomeTool];",
+    );
 
     // A client that omits analyzer has no [values.analyzer] table, because a table of a package off the list fails.
     const omitted = tempRepo(
@@ -244,27 +313,53 @@ describe("the client build", () => {
       "  weekHomeSection,",
       "];",
     ]);
-    expect(registry).toContain('import { homeSection as rankingsHomeSection } from "@/app/_routes/rankings/home";');
+    expect(registry).toContain(
+      'import { homeSection as rankingsHomeSection } from "@/app/_routes/rankings/home";',
+    );
   });
 
   it("gives a test client with only week a week route, no rankings route, and no rankings line in the registry (AT-23)", () => {
-    const toml = ['packages = ["week"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = [
+      'packages = ["week"]',
+      'timezone = "America/New_York"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+    ].join("\n");
     const repo = tempRepo(toml, "week-only");
     published(repo.root, "week-only", "2026/week-06/page.json");
     published(repo.root, "week-only", "2026/rankings.json");
     buildClient(repo);
-    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx", "(client)/ask/page.tsx"]);
+    expect(routeFiles(repo.site)).toEqual([
+      "(client)/[season]/[week]/page.tsx",
+      "(client)/ask/page.tsx",
+    ]);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
     expect(registry).not.toContain("rankings");
-    expect(registry).toContain('import { homeSection as weekHomeSection } from "@/app/_routes/week/home";');
+    expect(registry).toContain(
+      'import { homeSection as weekHomeSection } from "@/app/_routes/week/home";',
+    );
   });
 
   it("gives a client with midseason and sim the report route only with a published midseason file, and no menu link", () => {
-    const toml = ['packages = ["week", "sim", "midseason"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = [
+      'packages = ["week", "sim", "midseason"]',
+      'timezone = "America/New_York"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+    ].join("\n");
     const repo = tempRepo(toml, "report");
     published(repo.root, "report", "2026/week-06/page.json");
     buildClient(repo);
-    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx", "(client)/ask/page.tsx"]);
+    expect(routeFiles(repo.site)).toEqual([
+      "(client)/[season]/[week]/page.tsx",
+      "(client)/ask/page.tsx",
+    ]);
     published(repo.root, "report", "2026/midseason.json");
     buildClient(repo);
     expect(routeFiles(repo.site)).toEqual([
@@ -272,23 +367,41 @@ describe("the client build", () => {
       "(client)/ask/page.tsx",
       "(client)/midseason/[season]/page.tsx",
     ]);
-    const route = readFileSync(join(repo.site, "src", "app", "(client)", "midseason", "[season]", "page.tsx"), "utf8");
-    expect(route).toContain('export { default, generateStaticParams, generateMetadata } from "@/app/_routes/midseason/page";');
+    const route = readFileSync(
+      join(repo.site, "src", "app", "(client)", "midseason", "[season]", "page.tsx"),
+      "utf8",
+    );
+    expect(route).toContain(
+      'export { default, generateStaticParams, generateMetadata } from "@/app/_routes/midseason/page";',
+    );
     expect(route).toContain("export const dynamicParams = false;");
     // The registry imports the menu link of each package. The shell leaves out the report item, and keeps the sim item.
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
-    expect(registry).toContain('import { menuLink as midseasonMenuLink } from "@/app/_routes/midseason/menu";');
+    expect(registry).toContain(
+      'import { menuLink as midseasonMenuLink } from "@/app/_routes/midseason/menu";',
+    );
     expect(registry).toContain('import { menuLink as simMenuLink } from "@/app/_routes/sim/menu";');
   });
 
   it("gives a client with sim the sim route only with a published week sim file", () => {
-    const toml = ['packages = ["week", "sim"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = [
+      'packages = ["week", "sim"]',
+      'timezone = "America/New_York"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+    ].join("\n");
     const repo = tempRepo(toml, "sim-page");
     published(repo.root, "sim-page", "2026/week-10/page.json");
     // The season file of the midseason replay is no week sim file, so it gives no sim route.
     published(repo.root, "sim-page", "2026/sim.json");
     buildClient(repo);
-    expect(routeFiles(repo.site)).toEqual(["(client)/[season]/[week]/page.tsx", "(client)/ask/page.tsx"]);
+    expect(routeFiles(repo.site)).toEqual([
+      "(client)/[season]/[week]/page.tsx",
+      "(client)/ask/page.tsx",
+    ]);
     published(repo.root, "sim-page", "2026/week-10/sim.json");
     buildClient(repo);
     expect(routeFiles(repo.site)).toEqual([
@@ -296,24 +409,51 @@ describe("the client build", () => {
       "(client)/ask/page.tsx",
       "(client)/sim/[season]/page.tsx",
     ]);
-    const route = readFileSync(join(repo.site, "src", "app", "(client)", "sim", "[season]", "page.tsx"), "utf8");
-    expect(route).toContain('export { default, generateStaticParams, generateMetadata } from "@/app/_routes/sim/page";');
+    const route = readFileSync(
+      join(repo.site, "src", "app", "(client)", "sim", "[season]", "page.tsx"),
+      "utf8",
+    );
+    expect(route).toContain(
+      'export { default, generateStaticParams, generateMetadata } from "@/app/_routes/sim/page";',
+    );
     expect(route).toContain("export const dynamicParams = false;");
   });
 
   it("lists the home part of midseason first, so its takeover and its tile reach the home page", () => {
-    const toml = ['packages = ["week", "rankings", "midseason"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = [
+      'packages = ["week", "rankings", "midseason"]',
+      'timezone = "America/New_York"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+    ].join("\n");
     const repo = tempRepo(toml, "report");
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
-    expect(registry).toContain('import { homeSection as midseasonHomeSection } from "@/app/_routes/midseason/home";');
+    expect(registry).toContain(
+      'import { homeSection as midseasonHomeSection } from "@/app/_routes/midseason/home";',
+    );
     // The tile sits in the middle place, so it comes before the Power Rankings chapter.
     const list = registry.slice(registry.indexOf("export const homeSections: HomeSections = ["));
-    expect(list.split("\n").slice(1, 4)).toEqual(["  midseasonHomeSection,", "  rankingsHomeSection,", "  weekHomeSection,"]);
+    expect(list.split("\n").slice(1, 4)).toEqual([
+      "  midseasonHomeSection,",
+      "  rankingsHomeSection,",
+      "  weekHomeSection,",
+    ]);
   });
 
   it("gives a client with no home section an empty list with its type", () => {
-    const toml = ['packages = ["waiver"]', 'timezone = "America/New_York"', "", "[seasons.2026]", 'provider = "sleeper"', 'league_id = "1"', ""].join("\n");
+    const toml = [
+      'packages = ["waiver"]',
+      'timezone = "America/New_York"',
+      "",
+      "[seasons.2026]",
+      'provider = "sleeper"',
+      'league_id = "1"',
+      "",
+    ].join("\n");
     const repo = tempRepo(toml, "waiver-only");
     buildClient(repo);
     const registry = readFileSync(join(repo.site, "src", "generated", "registry.ts"), "utf8");
@@ -326,7 +466,12 @@ describe("the client build", () => {
   });
 
   it("writes the finder value, the usage code, and the latest season into the client values", () => {
-    const repo = tempRepo(CPC_TOML.replace("[seasons.2026]", '[seasons.2025]\nprovider = "sleeper"\nleague_id = "1"\n\n[seasons.2026]'));
+    const repo = tempRepo(
+      CPC_TOML.replace(
+        "[seasons.2026]",
+        '[seasons.2025]\nprovider = "sleeper"\nleague_id = "1"\n\n[seasons.2026]',
+      ),
+    );
     buildClient(repo);
     const text = readFileSync(join(repo.site, "src", "generated", "client-values.ts"), "utf8");
     expect(text).toContain('"finder": false');
@@ -406,7 +551,10 @@ describe("the client build", () => {
       const repo = repoClient(slug, true);
       buildClient(repo);
       expect(clientValuesOf(repo.site).frontDoor, slug).toBe(true);
-      expect(routeFiles(repo.site).filter((path) => path.includes("ask")), slug).toEqual([]);
+      expect(
+        routeFiles(repo.site).filter((path) => path.includes("ask")),
+        slug,
+      ).toEqual([]);
     }
   });
 
@@ -450,10 +598,15 @@ describe("the client build", () => {
   });
 
   it("fails on a front door that is not true or false, and on a front door menu item off the package list", () => {
-    expect(() => buildClient(tempRepo(CPC_TOML.replace("front_door = false", 'front_door = "yes"')))).toThrow(
-      "- front_door: must be boolean",
+    expect(() =>
+      buildClient(tempRepo(CPC_TOML.replace("front_door = false", 'front_door = "yes"'))),
+    ).toThrow("- front_door: must be boolean");
+    const omitted = tempRepo(
+      CPC_TOML.replace(
+        "front_door_items = [\n",
+        'front_door_items = [\n  { package = "waiver" },\n',
+      ),
     );
-    const omitted = tempRepo(CPC_TOML.replace("front_door_items = [\n", 'front_door_items = [\n  { package = "waiver" },\n'));
     expect(() => buildClient(omitted)).toThrow(
       "- menu.front_door_items: The menu item for waiver names a package that is not in the package list.",
     );
@@ -475,7 +628,12 @@ describe("the client build", () => {
     buildClient(repo);
     const values = clientValuesOf(repo.site);
     expect(values.menu).toEqual({
-      items: [{ page: "home" }, { package: "week" }, { package: "waiver" }, { package: "rankings" }],
+      items: [
+        { page: "home" },
+        { package: "week" },
+        { package: "waiver" },
+        { package: "rankings" },
+      ],
     });
     expect(values.usageCode).toBeNull();
   });
@@ -521,7 +679,9 @@ describe("the client build", () => {
     mkdirSync(join(repo.site, "public", "images"), { recursive: true });
     writeFileSync(join(repo.site, "public", "images", "logo.png"), "png");
     buildClient(repo);
-    expect(readFileSync(join(repo.site, "public", "2026", "week-06", "page.json"), "utf8")).toBe('{"week":6}');
+    expect(readFileSync(join(repo.site, "public", "2026", "week-06", "page.json"), "utf8")).toBe(
+      '{"week":6}',
+    );
     expect(existsSync(join(repo.site, "public", "2026", "week-07"))).toBe(false);
     expect(existsSync(join(repo.site, "public", "2019"))).toBe(false);
     expect(existsSync(join(repo.site, "public", "images", "logo.png"))).toBe(true);
@@ -553,13 +713,17 @@ describe("the client build", () => {
   });
 
   it("fails on a brand with an unknown role and names the role", () => {
-    const brand = CPC_BRAND.replace('[light]\n', '[light]\nhighlight = "#ffff00"\n');
-    expect(() => buildClient(tempRepo(CPC_TOML, "cpc", { brand }))).toThrow(/- light\.highlight: is not a known key/);
+    const brand = CPC_BRAND.replace("[light]\n", '[light]\nhighlight = "#ffff00"\n');
+    expect(() => buildClient(tempRepo(CPC_TOML, "cpc", { brand }))).toThrow(
+      /- light\.highlight: is not a known key/,
+    );
   });
 
   it("fails on a brand with an unknown derived role and names the role", () => {
-    const brand = CPC_BRAND.replace('[light.derived]\n', '[light.derived]\nglow = "#ffff00"\n');
-    expect(() => buildClient(tempRepo(CPC_TOML, "cpc", { brand }))).toThrow(/- light\.derived\.glow: is not a known key/);
+    const brand = CPC_BRAND.replace("[light.derived]\n", '[light.derived]\nglow = "#ffff00"\n');
+    expect(() => buildClient(tempRepo(CPC_TOML, "cpc", { brand }))).toThrow(
+      /- light\.derived\.glow: is not a known key/,
+    );
   });
 
   it("fails on a client with no brand.toml and names the file", () => {
@@ -580,14 +744,19 @@ describe("the client build", () => {
     });
   });
 
-  it.each(["light", "dark"])("fails on a brand with no %s set and names the set and the file (AT-37)", (set) => {
-    const start = CPC_BRAND.indexOf(`[${set}]`);
-    const end = set === "light" ? CPC_BRAND.indexOf("[dark]") : CPC_BRAND.length;
-    const repo = tempRepo(CPC_TOML, "cpc", { brand: CPC_BRAND.slice(0, start) + CPC_BRAND.slice(end) });
-    expect(() => buildClient(repo)).toThrow(ClientBuildError);
-    expect(() => buildClient(repo)).toThrow(new RegExp(`- ${set}: is required`));
-    expect(() => buildClient(repo)).toThrow(join(repo.root, "clients", "cpc", "brand.toml"));
-  });
+  it.each(["light", "dark"])(
+    "fails on a brand with no %s set and names the set and the file (AT-37)",
+    (set) => {
+      const start = CPC_BRAND.indexOf(`[${set}]`);
+      const end = set === "light" ? CPC_BRAND.indexOf("[dark]") : CPC_BRAND.length;
+      const repo = tempRepo(CPC_TOML, "cpc", {
+        brand: CPC_BRAND.slice(0, start) + CPC_BRAND.slice(end),
+      });
+      expect(() => buildClient(repo)).toThrow(ClientBuildError);
+      expect(() => buildClient(repo)).toThrow(new RegExp(`- ${set}: is required`));
+      expect(() => buildClient(repo)).toThrow(join(repo.root, "clients", "cpc", "brand.toml"));
+    },
+  );
 
   it("copies the logo of assets/ into the site and names its src, and gives null with no logo", () => {
     const repo = tempRepo();
@@ -608,7 +777,9 @@ describe("the client build", () => {
     ["a card radius", 'radius_card = "8px"\n\n', "radius_card"],
     ["a small radius", 'radius_small = "3px"\n\n', "radius_small"],
   ])("fails on a brand with %s and names the key and the file (AT-37)", (_, stale, key) => {
-    const repo = tempRepo(CPC_TOML, "cpc", { brand: CPC_BRAND.replace("[light]\n", `${stale}[light]\n`) });
+    const repo = tempRepo(CPC_TOML, "cpc", {
+      brand: CPC_BRAND.replace("[light]\n", `${stale}[light]\n`),
+    });
     expect(() => buildClient(repo)).toThrow(ClientBuildError);
     expect(() => buildClient(repo)).toThrow(new RegExp(`- ${key}: is not a known key`));
     expect(() => buildClient(repo)).toThrow(join(repo.root, "clients", "cpc", "brand.toml"));
@@ -624,7 +795,9 @@ describe("the client build", () => {
     buildClient(repo);
     const text = readFileSync(join(repo.site, "wrangler.jsonc"), "utf8");
     const [first, ...rest] = text.split("\n");
-    expect(first).toBe("// GENERATED by apps/site/scripts/client-build.mjs from clients/cpc/client.toml. Do not edit.");
+    expect(first).toBe(
+      "// GENERATED by apps/site/scripts/client-build.mjs from clients/cpc/client.toml. Do not edit.",
+    );
     const config = JSON.parse(rest.join("\n"));
     expect(config.name).toBe("cpc");
     // The path is relative to the config file, so it names the out/ folder of the site build.

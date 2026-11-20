@@ -29,28 +29,45 @@ type TopBandProps = {
   menuFoot?: ReactNode;
 };
 
-export function TopBand({ title, brand, menu, pageHref, children, actions, menuFoot }: TopBandProps) {
+export function TopBand({
+  title,
+  brand,
+  menu,
+  pageHref,
+  children,
+  actions,
+  menuFoot,
+}: TopBandProps) {
   const current = currentHref(menu.items, menu.weeks, pageHref);
   return (
     <>
       {/* Sticky, so the band stays at the top at every scroll and takes its space in the flow, and the page never jumps.
           The band paints the page color in both themes. The hero is the one loud surface of a page. */}
-      <header className="sticky top-0 z-40 border-b border-rule bg-page text-ink">
+      <header className="border-rule bg-page text-ink sticky top-0 z-40 border-b">
         {/* One row at every tier, so the band keeps one height at every width. On a phone and a tablet it holds the brand
             mark and the theme button. From the desktop tier the pill bar sits between them, with full labels. */}
-        <div className="mx-auto flex max-w-band items-center gap-x-sp-3 px-gutter py-sp-2">
+        <div className="max-w-band gap-x-sp-3 px-gutter py-sp-2 mx-auto flex items-center">
           {/* A plain anchor, so the home link works with scripts off. The title names the link, so the logo is decorative.
               Under the rail tier the logo shows alone, so the pill bar has room for its full labels on one row. The title
               stays for a screen reader. A long title cuts at the end.
               The link is 44px or more on each side, so the logo alone is still a full tap target.
               Its high shrink lets the title cut before the pill bar loses width, so the bar keeps each full label with no scroll. */}
-          <a href={brand.home} className="flex min-h-touch min-w-touch shrink-999 items-center gap-sp-3 text-inherit no-underline">
+          <a
+            href={brand.home}
+            className="min-h-touch min-w-touch gap-sp-3 flex shrink-999 items-center text-inherit no-underline"
+          >
             {brand.logo !== null && (
-              <img src={brand.logo} alt="" width={30} height={30} className="size-logo flex-none rounded-full" />
+              <img
+                src={brand.logo}
+                alt=""
+                width={30}
+                height={30}
+                className="size-logo flex-none rounded-full"
+              />
             )}
             <span
               translate="no"
-              className={`truncate text-meta leading-tight font-bold tracking-wide uppercase ${brand.logo !== null ? "max-rail:sr-only" : ""}`}
+              className={`text-meta truncate leading-tight font-bold tracking-wide uppercase ${brand.logo !== null ? "max-rail:sr-only" : ""}`}
             >
               {title}
             </span>
@@ -62,15 +79,21 @@ export function TopBand({ title, brand, menu, pageHref, children, actions, menuF
             current={current}
             className="min-w-0 flex-auto justify-center"
           />
-          <div className="ml-auto flex flex-none items-center gap-sp-2">
+          <div className="gap-sp-2 ml-auto flex flex-none items-center">
             {actions}
             {/* The theme button needs the script, so it hides with scripts off. The negative margin lines the icon up with the edge. */}
             <ThemeButton className="[@media(scripting:none)]:hidden" />
-            <MenuSheet items={menu.items} weeks={menu.weeks} current={current} pageHref={pageHref} foot={menuFoot} />
+            <MenuSheet
+              items={menu.items}
+              weeks={menu.weeks}
+              current={current}
+              pageHref={pageHref}
+              foot={menuFoot}
+            />
           </div>
         </div>
       </header>
-      {children && <div className="mx-auto max-w-page px-gutter pt-sp-5">{children}</div>}
+      {children && <div className="max-w-page px-gutter pt-sp-5 mx-auto">{children}</div>}
     </>
   );
 }

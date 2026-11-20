@@ -22,10 +22,14 @@ afterEach(() => {
 
 /* The page at / of a build with the flag front_door set to `frontDoor`. */
 async function homeWithFlag(frontDoor: boolean) {
-  const values = await vi.importActual<typeof import("@/generated/client-values")>("@/generated/client-values");
+  const values = await vi.importActual<typeof import("@/generated/client-values")>(
+    "@/generated/client-values",
+  );
   vi.resetModules();
   readFixtureSite("cpc");
-  vi.doMock("@/generated/client-values", () => ({ clientValues: { ...values.clientValues, frontDoor } }));
+  vi.doMock("@/generated/client-values", () => ({
+    clientValues: { ...values.clientValues, frontDoor },
+  }));
   return (await import("./page")).default;
 }
 

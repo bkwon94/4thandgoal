@@ -18,10 +18,10 @@ type Side = TradeCard["sides"][number];
 /* The players a side got, each with his Points over the line for that side. */
 function Got({ side }: { side: Side }) {
   return (
-    <ul className="m-0 flex list-none flex-col gap-sp-1 p-0">
+    <ul className="gap-sp-1 m-0 flex list-none flex-col p-0">
       {side.got.map((player) => (
-        <li key={player.player_id} className="text-meta leading-tight text-ink-2">
-          <span className="font-semibold text-ink">{player.player}</span> {player.position}
+        <li key={player.player_id} className="text-meta text-ink-2 leading-tight">
+          <span className="text-ink font-semibold">{player.player}</span> {player.position}
           {player.points_over_line !== null && (
             <span className="font-mono tabular-nums"> {signedOne(player.points_over_line)}</span>
           )}
@@ -41,7 +41,7 @@ function Result({ trade }: { trade: TradeCard }) {
     <span
       data-result
       className={cn(
-        "font-mono text-meta font-bold tracking-caps uppercase",
+        "text-meta tracking-caps font-mono font-bold uppercase",
         trade.winner !== null ? "text-ink" : "text-mute",
       )}
     >
@@ -52,29 +52,38 @@ function Result({ trade }: { trade: TradeCard }) {
 
 function FullCard({ trade }: { trade: TradeCard }) {
   return (
-    <ReportCard as="article" className="flex flex-col gap-sp-3">
-      <div className="flex flex-wrap items-baseline justify-between gap-sp-2">
-        <span className="font-mono text-meta tracking-caps text-mute uppercase">Week {trade.week}</span>
+    <ReportCard as="article" className="gap-sp-3 flex flex-col">
+      <div className="gap-sp-2 flex flex-wrap items-baseline justify-between">
+        <span className="text-meta tracking-caps text-mute font-mono uppercase">
+          Week {trade.week}
+        </span>
         <Result trade={trade} />
       </div>
       {trade.winner !== null && (
-        <p className="m-0 text-lead leading-tight">
+        <p className="text-lead m-0 leading-tight">
           <span className="font-bold">{trade.winner}</span> leads by{" "}
-          <span className="font-mono font-bold tabular-nums">{oneDecimal(trade.gap)}</span> points over the line.
+          <span className="font-mono font-bold tabular-nums">{oneDecimal(trade.gap)}</span> points
+          over the line.
         </p>
       )}
-      <div className="grid gap-sp-3 tablet:grid-cols-2">
+      <div className="gap-sp-3 tablet:grid-cols-2 grid">
         {trade.sides.map((side) => (
-          <div key={side.roster_id} data-side className="flex flex-col gap-sp-1 border-t border-rule pt-sp-2">
-            <span className="flex flex-wrap items-baseline justify-between gap-x-sp-2">
+          <div
+            key={side.roster_id}
+            data-side
+            className="gap-sp-1 border-rule pt-sp-2 flex flex-col border-t"
+          >
+            <span className="gap-x-sp-2 flex flex-wrap items-baseline justify-between">
               <span data-team className="text-body leading-tight font-bold">
                 {side.team}
               </span>
-              <span className="font-mono text-meta text-ink-2 tabular-nums">
+              <span className="text-meta text-ink-2 font-mono tabular-nums">
                 {fullRecord(side.since.wins, side.since.losses, side.since.ties)} since
               </span>
             </span>
-            <span className="font-mono text-meta text-mute tabular-nums">Net {signedOne(side.net)}</span>
+            <span className="text-meta text-mute font-mono tabular-nums">
+              Net {signedOne(side.net)}
+            </span>
             <Got side={side} />
           </div>
         ))}
@@ -87,17 +96,20 @@ function FullCard({ trade }: { trade: TradeCard }) {
    that each side got, muted. */
 function ShortRow({ trade }: { trade: TradeCard }) {
   return (
-    <li className="flex flex-col gap-sp-1 border-b border-rule py-sp-2 last:border-b-0">
-      <span className="flex flex-wrap items-baseline justify-between gap-x-sp-2 text-meta leading-tight">
+    <li className="gap-sp-1 border-rule py-sp-2 flex flex-col border-b last:border-b-0">
+      <span className="gap-x-sp-2 text-meta flex flex-wrap items-baseline justify-between leading-tight">
         <span>
-          <span className="font-mono tracking-caps text-mute uppercase">Week {trade.week}</span>{" "}
+          <span className="tracking-caps text-mute font-mono uppercase">Week {trade.week}</span>{" "}
           <span className="font-semibold">{trade.sides.map((side) => side.team).join(" · ")}</span>
         </span>
         <Result trade={trade} />
       </span>
-      <span className="text-meta leading-tight text-mute">
+      <span className="text-meta text-mute leading-tight">
         {trade.sides
-          .map((side) => `${side.team} got ${side.got.map((player) => player.player).join(", ") || "no player"}`)
+          .map(
+            (side) =>
+              `${side.team} got ${side.got.map((player) => player.player).join(", ") || "no player"}`,
+          )
           .join("; ")}
       </span>
     </li>
@@ -108,8 +120,13 @@ export function Trades({ chapter }: { chapter: TradesChapter }) {
   const { trades } = chapter.facts;
   const rest = trades.slice(FULL_CARDS);
   return (
-    <ReportChapter id={chapter.key} title={chapter.title} note={`${trades.length} trades`} blurb={chapter.blurb}>
-      <div className="flex flex-col gap-sp-3">
+    <ReportChapter
+      id={chapter.key}
+      title={chapter.title}
+      note={`${trades.length} trades`}
+      blurb={chapter.blurb}
+    >
+      <div className="gap-sp-3 flex flex-col">
         {trades.slice(0, FULL_CARDS).map((trade) => (
           <FullCard key={trade.transaction_id} trade={trade} />
         ))}

@@ -39,8 +39,14 @@ describe("the sheet", () => {
     renderSheet();
     fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
     const dialog = screen.getByRole("dialog", { name: "Site menu" });
-    expect(within(dialog).getAllByRole("button").map((button) => button.textContent)).toEqual(["Close"]);
-    expect(dialog.querySelector('[data-slot="sheet-grip"]')?.getAttribute("aria-hidden")).toBe("true");
+    expect(
+      within(dialog)
+        .getAllByRole("button")
+        .map((button) => button.textContent),
+    ).toEqual(["Close"]);
+    expect(dialog.querySelector('[data-slot="sheet-grip"]')?.getAttribute("aria-hidden")).toBe(
+      "true",
+    );
   });
 
   it("closes the content on the close part", () => {

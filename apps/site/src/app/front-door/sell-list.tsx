@@ -36,7 +36,10 @@ type SellRow = SellList["rows"][number];
 
 /* The ranks of a player, the Season rank first, then the Recent rank when the document sends one. */
 function ranksOf(row: SellRow): string | null {
-  const ranks = [row.season_rank && `Season ${row.season_rank}`, row.recent_rank && `Recent ${row.recent_rank}`].filter(Boolean);
+  const ranks = [
+    row.season_rank && `Season ${row.season_rank}`,
+    row.recent_rank && `Recent ${row.recent_rank}`,
+  ].filter(Boolean);
   return ranks.length > 0 ? ranks.join(" · ") : null;
 }
 
@@ -48,18 +51,27 @@ export function sellListText(block: SellList): string {
 
 /* A bullet for the sell leads in red, a bullet against it in ink, and an even one in gray. The text says the same, so
    the mark never rests on color alone. */
-const MARK_DOT: Record<SellRow["bullets"][number]["mark"], string> = { for: "bg-accent", against: "bg-ink", even: "bg-mute" };
+const MARK_DOT: Record<SellRow["bullets"][number]["mark"], string> = {
+  for: "bg-accent",
+  against: "bg-ink",
+  even: "bg-mute",
+};
 
 /* The head of one player: who leads, then his ranks, then the headline of why under them. */
 function SellHead({ row }: { row: SellRow }) {
   const ranks = ranksOf(row);
   return (
-    <span className="flex min-w-0 flex-col gap-sp-2">
-      <span className="flex min-w-0 items-center gap-sp-3">
-        <Headshot src={row.headshot} size="avatar" lazy className="flex-none rounded-full bg-page object-cover object-top" />
-        <span className="flex min-w-0 flex-col gap-sp-0">
-          <span className="truncate text-row leading-tight font-semibold text-ink">{row.name}</span>
-          <span className="truncate font-mono text-meta leading-tight text-mute">
+    <span className="gap-sp-2 flex min-w-0 flex-col">
+      <span className="gap-sp-3 flex min-w-0 items-center">
+        <Headshot
+          src={row.headshot}
+          size="avatar"
+          lazy
+          className="bg-page flex-none rounded-full object-cover object-top"
+        />
+        <span className="gap-sp-0 flex min-w-0 flex-col">
+          <span className="text-row text-ink truncate leading-tight font-semibold">{row.name}</span>
+          <span className="text-meta text-mute truncate font-mono leading-tight">
             {row.position} · {row.nfl_team}
             {ranks && <span className="text-ink-2 tabular-nums">{` · ${ranks}`}</span>}
           </span>
@@ -73,16 +85,29 @@ function SellHead({ row }: { row: SellRow }) {
 export function SellListView({ block, live }: { block: SellList; live: boolean }) {
   const id = useId();
   return (
-    <div className="flex min-w-0 flex-col gap-sp-2" data-block="sell_list">
+    <div className="gap-sp-2 flex min-w-0 flex-col" data-block="sell_list">
       <LedgerLabel id={id}>{SELL_LIST_LABEL}</LedgerLabel>
       {block.rows.length > 0 ? (
-        <ul aria-labelledby={id} className="m-0 flex list-none flex-col border-t border-rule p-0">
+        <ul aria-labelledby={id} className="border-rule m-0 flex list-none flex-col border-t p-0">
           {block.rows.map((row, index) => (
-            <LedgerRow key={row.player_id} panelId={`${id}-row-${index}`} label={`Sell ${row.name}`} live={live} index={index} head={<SellHead row={row} />}>
-              <ul className="m-0 flex list-none flex-col gap-sp-2 p-0">
+            <LedgerRow
+              key={row.player_id}
+              panelId={`${id}-row-${index}`}
+              label={`Sell ${row.name}`}
+              live={live}
+              index={index}
+              head={<SellHead row={row} />}
+            >
+              <ul className="gap-sp-2 m-0 flex list-none flex-col p-0">
                 {row.bullets.map((bullet) => (
-                  <li key={bullet.text} className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-sp-2 text-body leading-body text-ink-2">
-                    <span aria-hidden className={`mt-[0.55em] size-sp-2 flex-none rounded-full ${MARK_DOT[bullet.mark]}`} />
+                  <li
+                    key={bullet.text}
+                    className="gap-x-sp-2 text-body leading-body text-ink-2 grid grid-cols-[auto_minmax(0,1fr)] items-start"
+                  >
+                    <span
+                      aria-hidden
+                      className={`size-sp-2 mt-[0.55em] flex-none rounded-full ${MARK_DOT[bullet.mark]}`}
+                    />
                     <span>{bullet.text}</span>
                   </li>
                 ))}
@@ -91,7 +116,7 @@ export function SellListView({ block, live }: { block: SellList; live: boolean }
           ))}
         </ul>
       ) : (
-        block.empty && <p className="m-0 text-body leading-body text-ink-2">{block.empty}</p>
+        block.empty && <p className="text-body leading-body text-ink-2 m-0">{block.empty}</p>
       )}
     </div>
   );

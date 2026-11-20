@@ -36,14 +36,19 @@ function summary(weeks: SeasonWeek[], medians: number[] | null): string {
 
 /* The path through the points. One path with a stable d, so the draw motion animates its length. */
 function pathOf(points: [number, number][]): string {
-  return points.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
+  return points
+    .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`)
+    .join(" ");
 }
 
 /* The team line draws from week 1 to now by its path length, over the reveal timing. With motion off it is whole at once. */
 function drawOf(off: boolean): Variants {
   return {
     start: { pathLength: 0 },
-    drawn: { pathLength: 1, transition: off ? INSTANT : { duration: DURATION.reveal, ease: EASE_OUT } },
+    drawn: {
+      pathLength: 1,
+      transition: off ? INSTANT : { duration: DURATION.reveal, ease: EASE_OUT },
+    },
   };
 }
 
@@ -52,7 +57,10 @@ function dotOf(off: boolean, i: number, total: number): Variants {
   const delay = total === 1 ? 0 : (i * DURATION.reveal) / (total - 1);
   return {
     start: { opacity: 0 },
-    drawn: { opacity: 1, transition: off ? INSTANT : { duration: DURATION.dot, ease: EASE_OUT, delay } },
+    drawn: {
+      opacity: 1,
+      transition: off ? INSTANT : { duration: DURATION.dot, ease: EASE_OUT, delay },
+    },
   };
 }
 
@@ -60,7 +68,7 @@ function dotOf(off: boolean, i: number, total: number): Variants {
    The samples are decorative, because the word next to each one names it. */
 function Sample({ children }: { children: ReactNode }) {
   return (
-    <svg aria-hidden viewBox="0 0 16 10" className="block h-sp-3 w-sp-5 flex-none overflow-visible">
+    <svg aria-hidden viewBox="0 0 16 10" className="h-sp-3 w-sp-5 block flex-none overflow-visible">
       {children}
     </svg>
   );
@@ -75,16 +83,35 @@ function Legend({ median }: { median: boolean }) {
     },
     {
       label: "League Median",
-      sample: <line x1={0} y1={5} x2={16} y2={5} strokeWidth={1} strokeDasharray="4 3" className="stroke-mute" />,
+      sample: (
+        <line
+          x1={0}
+          y1={5}
+          x2={16}
+          y2={5}
+          strokeWidth={1}
+          strokeDasharray="4 3"
+          className="stroke-mute"
+        />
+      ),
     },
-    { label: "Win", sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-ink stroke-ink" /> },
-    { label: "Loss", sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-page stroke-ink" /> },
+    {
+      label: "Win",
+      sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-ink stroke-ink" />,
+    },
+    {
+      label: "Loss",
+      sample: <circle cx={8} cy={5} r={4} strokeWidth={1.5} className="fill-page stroke-ink" />,
+    },
   ];
   const keys = median ? all : all.filter(({ label }) => label !== "League Median");
   return (
-    <ul aria-label="Legend" className="m-0 mt-sp-2 flex list-none flex-wrap gap-x-sp-4 gap-y-sp-1 p-0 text-meta text-mute">
+    <ul
+      aria-label="Legend"
+      className="mt-sp-2 gap-x-sp-4 gap-y-sp-1 text-meta text-mute m-0 flex list-none flex-wrap p-0"
+    >
       {keys.map(({ label, sample }) => (
-        <li key={label} className="flex items-center gap-sp-1">
+        <li key={label} className="gap-sp-1 flex items-center">
           <Sample>{sample}</Sample>
           {label}
         </li>
@@ -105,8 +132,10 @@ export function PointsLine({ weeks }: { weeks: SeasonWeek[] }) {
   const values = [...weeks.map((week) => week.points), ...(medians ?? [])];
   const low = Math.min(...values);
   const high = Math.max(...values);
-  const x = (i: number) => (weeks.length === 1 ? WIDTH / 2 : PAD_X + (i * (WIDTH - 2 * PAD_X)) / (weeks.length - 1));
-  const y = (v: number) => (high === low ? HEIGHT / 2 : PAD_Y + ((high - v) * (HEIGHT - 2 * PAD_Y)) / (high - low));
+  const x = (i: number) =>
+    weeks.length === 1 ? WIDTH / 2 : PAD_X + (i * (WIDTH - 2 * PAD_X)) / (weeks.length - 1);
+  const y = (v: number) =>
+    high === low ? HEIGHT / 2 : PAD_Y + ((high - v) * (HEIGHT - 2 * PAD_Y)) / (high - low);
   const team = weeks.map((week, i): [number, number] => [x(i), y(week.points)]);
   const median = medians?.map((value, i): [number, number] => [x(i), y(value)]) ?? null;
   const first = weeks[0].week;
@@ -115,7 +144,9 @@ export function PointsLine({ weeks }: { weeks: SeasonWeek[] }) {
   // The draw plays once when the chart enters the viewport, as the reveal of the chapter does.
   // With motion off, or with no IntersectionObserver, the line goes to its final state on mount and never waits.
   const watch = !off && typeof IntersectionObserver !== "undefined";
-  const play = watch ? { whileInView: "drawn", viewport: { once: true, margin: VIEW_MARGIN } } : { animate: "drawn" };
+  const play = watch
+    ? { whileInView: "drawn", viewport: { once: true, margin: VIEW_MARGIN } }
+    : { animate: "drawn" };
 
   return (
     <div>
@@ -130,7 +161,9 @@ export function PointsLine({ weeks }: { weeks: SeasonWeek[] }) {
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         className="block h-auto w-full overflow-visible"
       >
-        <title id={titleId}>{median ? "Points per week against the league median" : "Points per week"}</title>
+        <title id={titleId}>
+          {median ? "Points per week against the league median" : "Points per week"}
+        </title>
         <desc id={descId}>{summary(weeks, medians)}</desc>
         {/* The strokes keep their width at every tier, so both lines stay thin as the SVG scales. */}
         {median && (
@@ -148,7 +181,14 @@ export function PointsLine({ weeks }: { weeks: SeasonWeek[] }) {
             The mask path has no non-scaling stroke, because the browser scales the dash of a non-scaling stroke to the screen,
             and the draw then stops short of the last week on a wide column. data-draw lets globals.css show the line whole with no script. */}
         <mask id={maskId} maskUnits="userSpaceOnUse">
-          <motion.path data-draw variants={drawOf(off)} d={pathOf(team)} fill="none" stroke="white" strokeWidth={MASK_STROKE} />
+          <motion.path
+            data-draw
+            variants={drawOf(off)}
+            d={pathOf(team)}
+            fill="none"
+            stroke="white"
+            strokeWidth={MASK_STROKE}
+          />
         </mask>
         <path
           d={pathOf(team)}
@@ -184,7 +224,7 @@ export function PointsLine({ weeks }: { weeks: SeasonWeek[] }) {
         })}
       </motion.svg>
       {/* The first and the last week are the only axis labels. The desc already names them, so a screen reader skips them. */}
-      <div aria-hidden className="mt-sp-1 flex justify-between text-meta text-mute tabular-nums">
+      <div aria-hidden className="mt-sp-1 text-meta text-mute flex justify-between tabular-nums">
         <span>{`Week ${first}`}</span>
         {last !== first && <span>{`Week ${last}`}</span>}
       </div>

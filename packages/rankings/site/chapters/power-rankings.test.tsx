@@ -11,7 +11,9 @@ const lastWeek = rankings.weeks.at(-1)!;
 const firstWeek = rankings.weeks[0];
 
 /* One avatar per team of the fixture, in the shape of the avatars of a week page. */
-const avatars = Object.fromEntries(rankings.weeks[0].rows.map((row) => [String(row.roster_id), `avatars/${row.roster_id}.jpg`]));
+const avatars = Object.fromEntries(
+  rankings.weeks[0].rows.map((row) => [String(row.roster_id), `avatars/${row.roster_id}.jpg`]),
+);
 
 afterEach(() => {
   cleanup();
@@ -24,7 +26,9 @@ function hero() {
 }
 
 function chip(week: number) {
-  return within(screen.getByRole("group", { name: "Week" })).getByRole("button", { name: `Week ${week}` });
+  return within(screen.getByRole("group", { name: "Week" })).getByRole("button", {
+    name: `Week ${week}`,
+  });
 }
 
 /* The cards of the ladder, in their order on the page. */
@@ -44,7 +48,10 @@ function panelOf(button: HTMLElement) {
 /* The text of each hero slot, in the order of the markup. */
 function slots() {
   const region = screen.getByRole("region", { name: "Rank 1" });
-  return [...region.querySelectorAll("[data-hero-slot]")].map((slot) => [slot.getAttribute("data-hero-slot"), slot.textContent]);
+  return [...region.querySelectorAll("[data-hero-slot]")].map((slot) => [
+    slot.getAttribute("data-hero-slot"),
+    slot.textContent,
+  ]);
 }
 
 describe("The hero", () => {
@@ -114,7 +121,9 @@ describe("The ladder", () => {
     const card = cards()[1];
     const head = within(card.querySelector("button")!);
     expect(head.getByText("03").closest("[data-rank-panel]")).toBeTruthy();
-    expect(card.querySelector("img")?.getAttribute("src")).toBe(`avatars/${lastWeek.rows[2].roster_id}.jpg`);
+    expect(card.querySelector("img")?.getAttribute("src")).toBe(
+      `avatars/${lastWeek.rows[2].roster_id}.jpg`,
+    );
     expect(head.getByText("Bo Girds")).toBeTruthy();
     expect(head.getByText("8-4")).toBeTruthy();
     expect(head.getByText("No change")).toBeTruthy();
@@ -143,7 +152,9 @@ describe("The ladder", () => {
   it("puts the note on the four parts after the last card", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     const note = screen.getByText(/rank from 1 to 12 in four parts/);
-    expect(cards()[10].compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      cards()[10].compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(screen.getByText("Playoff odds from 5,000 simulated seasons.")).toBeTruthy();
   });
 
@@ -157,7 +168,9 @@ describe("The ladder", () => {
 
 describe("The manager link of rank 1", () => {
   it("puts a Manager page link to the rank-1 team in the action slot of the hero (AT-45)", () => {
-    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    render(
+      <PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />,
+    );
     const region = screen.getByRole("region", { name: "Rank 1" });
     const action = region.querySelector("[data-hero-slot='action']") as HTMLElement;
     const link = within(action).getByRole("link", { name: "Manager page" });
@@ -167,7 +180,9 @@ describe("The manager link of rank 1", () => {
   });
 
   it("follows the chosen week, so the link names the rank-1 team of that week", () => {
-    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    render(
+      <PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />,
+    );
     fireEvent.click(chip(firstWeek.week));
     expect(hero().getByRole("link", { name: "Manager page" }).getAttribute("href")).toBe(
       `/2026/managers/${firstWeek.rows[0].roster_id}/`,
@@ -177,13 +192,17 @@ describe("The manager link of rank 1", () => {
   it("shows no link and no action slot when the season has no managers file", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     expect(hero().queryByRole("link", { name: "Manager page" })).toBeNull();
-    expect(screen.getByRole("region", { name: "Rank 1" }).querySelector("[data-hero-slot='action']")).toBeNull();
+    expect(
+      screen.getByRole("region", { name: "Rank 1" }).querySelector("[data-hero-slot='action']"),
+    ).toBeNull();
   });
 });
 
 describe("An open card", () => {
   it("opens the chips, the blurb, and the manager link on a tap, then closes on a second tap", async () => {
-    render(<PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />);
+    render(
+      <PowerRankings weeks={rankings.weeks} avatars={avatars} managersHref="/2026/managers/" />,
+    );
     // Lil Fridge is second, and ranks 1, 3, 6, and 2 on standing, form, schedule played, and scoring.
     const button = cardButton("Lil Fridge");
     const panel = panelOf(button);
@@ -203,7 +222,9 @@ describe("An open card", () => {
       "Bye 88%",
       "Seed 1",
     ]);
-    expect(open.getByText(lastWeek.rows[1].blurb.map((sentence) => sentence.text).join(" "))).toBeTruthy();
+    expect(
+      open.getByText(lastWeek.rows[1].blurb.map((sentence) => sentence.text).join(" ")),
+    ).toBeTruthy();
     expect(panel.textContent).not.toMatch(/PR\./);
     expect(open.getByRole("link", { name: /Manager page/ }).getAttribute("href")).toBe(
       `/2026/managers/${lastWeek.rows[1].roster_id}/`,
@@ -226,7 +247,9 @@ describe("An open card", () => {
     fireEvent.click(button);
     const panel = panelOf(button);
     // The one line of text is the overview: the rank, the record, and the move.
-    expect([...panel.querySelectorAll("p")].map((line) => line.textContent)).toEqual(["Rank 3 · 8-4 · –No change"]);
+    expect([...panel.querySelectorAll("p")].map((line) => line.textContent)).toEqual([
+      "Rank 3 · 8-4 · –No change",
+    ]);
     expect(within(panel).getAllByRole("listitem")).toHaveLength(7);
   });
 
@@ -243,7 +266,9 @@ describe("The week chips", () => {
   it("shows one chip per week in the file, with the last week chosen on load", () => {
     render(<PowerRankings weeks={rankings.weeks} avatars={avatars} />);
     const chips = within(screen.getByRole("group", { name: "Week" })).getAllByRole("button");
-    expect(chips.map((button) => button.textContent)).toEqual(rankings.weeks.map((week) => String(week.week)));
+    expect(chips.map((button) => button.textContent)).toEqual(
+      rankings.weeks.map((week) => String(week.week)),
+    );
     expect(chip(lastWeek.week).getAttribute("aria-pressed")).toBe("true");
     expect(chip(firstWeek.week).getAttribute("aria-pressed")).toBe("false");
   });
@@ -253,7 +278,9 @@ describe("The week chips", () => {
     const group = screen.getByRole("group", { name: "Week" });
     const top = screen.getByRole("region", { name: "Rank 1" });
     expect(top.compareDocumentPosition(group) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(group.compareDocumentPosition(cards()[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      group.compareDocumentPosition(cards()[0]) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("shows the cards of a week on a chip click, marks the chip, and sets the hash", () => {

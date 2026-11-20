@@ -79,7 +79,8 @@ function scaleOf(scene: HeroScene, box: SceneBox): (point: ScenePoint) => SceneP
 export function sceneLines(lights: SceneLight[]): [number, number][] {
   const order = lights.map((light, index) => ({ x: light.x, index })).sort((a, b) => a.x - b.x);
   const pairs: [number, number][] = [];
-  for (let step = 0; step + 1 < order.length; step++) pairs.push([order[step].index, order[step + 1].index]);
+  for (let step = 0; step + 1 < order.length; step++)
+    pairs.push([order[step].index, order[step + 1].index]);
   return pairs;
 }
 
@@ -199,7 +200,11 @@ export function placeLightLabel(
   );
   for (const place of [...beside, ...around]) {
     const label = { ...place, width: size.width, height: size.height };
-    const inside = label.x >= 0 && label.y >= 0 && label.x + label.width <= box.width && label.y + label.height <= box.height;
+    const inside =
+      label.x >= 0 &&
+      label.y >= 0 &&
+      label.x + label.width <= box.width &&
+      label.y + label.height <= box.height;
     if (inside && !others.some((rect) => overlaps(label, rect))) return label;
   }
   return first;
@@ -257,7 +262,11 @@ export function placeMarginMark(
     ];
     for (const place of places) {
       const mark = { ...place, width: size.width, height: size.height };
-      const inside = mark.x >= 0 && mark.y >= 0 && mark.x + mark.width <= box.width && mark.y + mark.height <= box.height;
+      const inside =
+        mark.x >= 0 &&
+        mark.y >= 0 &&
+        mark.x + mark.width <= box.width &&
+        mark.y + mark.height <= box.height;
       if (inside && !blocked.some((rect) => overlaps(mark, rect))) return mark;
     }
   }
@@ -312,7 +321,11 @@ function placeGuideLabel(
 }
 
 /* The hint in the first corner that no light and no other text takes: top left, top right, bottom right, bottom left. */
-function placeHint(size: SceneSize, blocked: SceneRect[], box: Pick<SceneBox, "width" | "height">): SceneRect | null {
+function placeHint(
+  size: SceneSize,
+  blocked: SceneRect[],
+  box: Pick<SceneBox, "width" | "height">,
+): SceneRect | null {
   const left = HINT_INSET;
   const right = box.width - HINT_INSET - size.width;
   const top = HINT_INSET;
@@ -341,10 +354,16 @@ export function layoutScene(
 ): SceneLayout {
   const points = placeLights(scene, box);
   const guides = placeGuides(scene, box);
-  const labels = scene.lights.map((light, index) => placeLightLabel(points, index, measure(light.label), box));
+  const labels = scene.lights.map((light, index) =>
+    placeLightLabel(points, index, measure(light.label), box),
+  );
   const ends = scene.margin ? [scene.margin.from, scene.margin.to] : [];
-  const shown = [...new Set([...ends, ...(scene.restIndex === null ? [] : [scene.restIndex])])].map((index) => labels[index]);
-  const mark = scene.margin ? placeMarginMark(points, scene.margin, measure(scene.margin.text), shown, box) : null;
+  const shown = [...new Set([...ends, ...(scene.restIndex === null ? [] : [scene.restIndex])])].map(
+    (index) => labels[index],
+  );
+  const mark = scene.margin
+    ? placeMarginMark(points, scene.margin, measure(scene.margin.text), shown, box)
+    : null;
   // The label of each guide keeps clear of the lights, the labels that show most, the mark, and each guide label before it.
   const blocked = [...points.map(lightRect), ...shown, ...(mark ? [mark] : [])];
   const guideLabels: SceneRect[] = [];

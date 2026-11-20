@@ -7,7 +7,15 @@
 import { motion } from "framer-motion";
 import { PencilIcon } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import type { AnalyzeResponse, AsOf, ReadSide, Fairness, Lean, TradeSide, TradedPlayer } from "../lib/analyze-types";
+import type {
+  AnalyzeResponse,
+  AsOf,
+  ReadSide,
+  Fairness,
+  Lean,
+  TradeSide,
+  TradedPlayer,
+} from "../lib/analyze-types";
 import { favoredSide } from "../lib/favored-side";
 import { knownGamesSegments } from "../lib/known-games-segments";
 import { BulletRows } from "./bullet-rows";
@@ -43,7 +51,11 @@ function joinSides(doc: AnalyzeResponse): Side[] {
 
 /* The small caps style of the table and the swap card. A className adds a color or a layout class. */
 function Caps({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={cn("text-label font-bold tracking-caps text-mute uppercase", className)}>{children}</span>;
+  return (
+    <span className={cn("text-label tracking-caps text-mute font-bold uppercase", className)}>
+      {children}
+    </span>
+  );
 }
 
 /* The move of a player in the swap card with three or more sides: "To" or "From", and the team. */
@@ -53,15 +65,15 @@ type Move = { word: "To" | "From"; team: string };
    The chip shows no rank, because the swap card of the Finder is the one place it shows. */
 function PlayerChip({ player, move }: { player: TradedPlayer; move?: Move }) {
   return (
-    <li className="flex flex-col items-center overflow-hidden rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 text-center">
+    <li className="rounded-card bg-page px-sp-2 pt-sp-2 pb-sp-3 flex flex-col items-center overflow-hidden text-center">
       {/* The cutout fills the chip edge to edge, so the chip reads as a card for that player. The name names it, so the image is decorative.
           max-w-none lifts the max-width of 100% that the base styles set on each image, so the frame stretches into the side margins of the chip. */}
       <Headshot
         src={player.headshot}
         lazy
-        className="-mx-sp-2 -mt-sp-2 mb-sp-2 block h-headshot max-w-none self-stretch border-b-2 border-accent bg-linear-to-b from-card to-page object-contain object-bottom"
+        className="-mx-sp-2 -mt-sp-2 mb-sp-2 h-headshot border-accent from-card to-page block max-w-none self-stretch border-b-2 bg-linear-to-b object-contain object-bottom"
       />
-      <b className="text-row leading-tight font-extrabold tracking-snug">{player.name}</b>
+      <b className="text-row tracking-snug leading-tight font-extrabold">{player.name}</b>
       <span className="py-sp-1 text-meta text-mute">
         {player.position} · {player.nfl_team}
       </span>
@@ -70,7 +82,7 @@ function PlayerChip({ player, move }: { player: TradedPlayer; move?: Move }) {
           The space between the two spans keeps the text "To <Team>" for a screen reader. */}
       {move && (
         <span className="text-meta leading-tight break-words">
-          <Caps>{move.word}</Caps> <span className="font-bold text-ink">{move.team}</span>
+          <Caps>{move.word}</Caps> <span className="text-ink font-bold">{move.team}</span>
         </span>
       )}
     </li>
@@ -81,11 +93,13 @@ function PlayerChip({ player, move }: { player: TradedPlayer; move?: Move }) {
 function SwapColumn({ side }: { side: SwapSide }) {
   return (
     <div className="row-span-3 grid min-w-0 grid-rows-subgrid gap-y-0">
-      <div className="text-center text-meta leading-tight font-extrabold hyphens-auto">{side.team}</div>
-      <span className="mt-sp-2 mb-sp-1 justify-self-center text-label font-bold tracking-wide text-mute uppercase">
+      <div className="text-meta text-center leading-tight font-extrabold hyphens-auto">
+        {side.team}
+      </div>
+      <span className="mt-sp-2 mb-sp-1 text-label text-mute justify-self-center font-bold tracking-wide uppercase">
         {side.mine ? "You Get" : "Gets"}
       </span>
-      <ul className="m-0 flex list-none flex-col gap-sp-2 p-0">
+      <ul className="gap-sp-2 m-0 flex list-none flex-col p-0">
         {side.gets.map((player) => (
           <PlayerChip key={player.player_id} player={player} />
         ))}
@@ -103,8 +117,12 @@ function teamOf(sides: SwapSide[], rosterId: number | undefined): string | undef
 function ChipGroup({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="min-w-0">
-      <span className="mb-sp-1 block text-label font-bold tracking-wide text-mute uppercase">{label}</span>
-      <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-sp-2 p-0">{children}</ul>
+      <span className="mb-sp-1 text-label text-mute block font-bold tracking-wide uppercase">
+        {label}
+      </span>
+      <ul className="gap-sp-2 m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] p-0">
+        {children}
+      </ul>
     </div>
   );
 }
@@ -113,19 +131,35 @@ function ChipGroup({ label, children }: { label: string; children: ReactNode }) 
    A phone stacks the gives over the gets. From the tablet tier they sit side by side in two equal columns. */
 function SwapRow({ side, sides }: { side: SwapSide; sides: SwapSide[] }) {
   return (
-    <div role="group" aria-label={side.team} className="flex flex-col gap-sp-3 border-b border-divider pb-sp-4 last:border-b-0 last:pb-0">
+    <div
+      role="group"
+      aria-label={side.team}
+      className="gap-sp-3 border-divider pb-sp-4 flex flex-col border-b last:border-b-0 last:pb-0"
+    >
       <div className="text-meta leading-tight font-extrabold hyphens-auto">{side.team}</div>
-      <div className="flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:gap-x-sp-4">
+      <div className="gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:gap-x-sp-4 flex flex-col">
         <ChipGroup label={side.mine ? "You Give" : "Gives"}>
           {side.gives.map((player) => {
             const team = teamOf(sides, player.to);
-            return <PlayerChip key={player.player_id} player={player} move={team ? { word: "To", team } : undefined} />;
+            return (
+              <PlayerChip
+                key={player.player_id}
+                player={player}
+                move={team ? { word: "To", team } : undefined}
+              />
+            );
           })}
         </ChipGroup>
         <ChipGroup label={side.mine ? "You Get" : "Gets"}>
           {side.gets.map((player) => {
             const team = teamOf(sides, player.from);
-            return <PlayerChip key={player.player_id} player={player} move={team ? { word: "From", team } : undefined} />;
+            return (
+              <PlayerChip
+                key={player.player_id}
+                player={player}
+                move={team ? { word: "From", team } : undefined}
+              />
+            );
           })}
         </ChipGroup>
       </div>
@@ -137,7 +171,10 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   // An arrow fits two sides only, so three or more sides read as one row per side, in the order given.
   if (sides.length > 2) {
     return (
-      <div className="flex flex-col gap-sp-4 rounded-card bg-card p-sp-3" {...stableId("swap-card")}>
+      <div
+        className="gap-sp-4 rounded-card bg-card p-sp-3 flex flex-col"
+        {...stableId("swap-card")}
+      >
         {sides.map((side) => (
           <SwapRow key={side.roster_id} side={side} sides={sides} />
         ))}
@@ -147,11 +184,11 @@ export function SwapCard({ sides }: { sides: SwapSide[] }) {
   const [left, right] = sides;
   return (
     <div className="rounded-card bg-card p-sp-3" {...stableId("swap-card")}>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-x-sp-2 gap-y-sp-4">
+      <div className="gap-x-sp-2 gap-y-sp-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         <SwapColumn side={left} />
         {/* The divider runs the full card height. The tag sits on it, level with the team names. */}
-        <div className="relative row-span-3 flex flex-col items-center before:absolute before:inset-y-0 before:left-1/2 before:w-px before:bg-divider before:content-['']">
-          <span className="relative mt-sp-5 rounded-sm bg-accent p-sp-1 text-label font-extrabold tracking-caps text-on-dark uppercase">
+        <div className="before:bg-divider relative row-span-3 flex flex-col items-center before:absolute before:inset-y-0 before:left-1/2 before:w-px before:content-['']">
+          <span className="mt-sp-5 bg-accent p-sp-1 text-label tracking-caps text-on-dark relative rounded-sm font-extrabold uppercase">
             For
           </span>
         </div>
@@ -211,7 +248,7 @@ function LeanScale({ lean, off }: { lean: Lean; off: boolean }) {
   return (
     <motion.ol
       aria-label="The Lean scale"
-      className="m-0 grid max-w-measure list-none grid-cols-5 gap-x-sp-1"
+      className="max-w-measure gap-x-sp-1 m-0 grid list-none grid-cols-5"
       initial={off ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={off ? INSTANT : { duration: 0.2, ease: EASE_OUT, delay: REVEAL.scale / 1000 }}
@@ -219,21 +256,26 @@ function LeanScale({ lean, off }: { lean: Lean; off: boolean }) {
       {SCALE.map((step) => {
         const lit = step === lean;
         return (
-          <li key={step} aria-current={lit ? "step" : undefined} className="flex flex-col gap-sp-1">
-            <span aria-hidden="true" className="relative block h-sp-1 overflow-hidden rounded-pill bg-rule-dark">
+          <li key={step} aria-current={lit ? "step" : undefined} className="gap-sp-1 flex flex-col">
+            <span
+              aria-hidden="true"
+              className="h-sp-1 rounded-pill bg-rule-dark relative block overflow-hidden"
+            >
               {lit && (
                 <motion.span
                   data-reveal-part="scale"
-                  className="absolute inset-0 origin-left rounded-pill bg-accent"
+                  className="rounded-pill bg-accent absolute inset-0 origin-left"
                   initial={off ? false : { scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={off ? INSTANT : { duration: 0.3, ease: EASE_OUT, delay: REVEAL.fill / 1000 }}
+                  transition={
+                    off ? INSTANT : { duration: 0.3, ease: EASE_OUT, delay: REVEAL.fill / 1000 }
+                  }
                 />
               )}
             </span>
             <span
               className={cn(
-                "text-center text-label leading-tight font-bold tracking-caps uppercase",
+                "text-label tracking-caps text-center leading-tight font-bold uppercase",
                 lit ? "text-on-dark" : "text-on-dark-muted",
               )}
             >
@@ -253,11 +295,14 @@ function CaseText({ readCase }: { readCase: string }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (
-    <div className="flex flex-col items-start gap-sp-1">
+    <div className="gap-sp-1 flex flex-col items-start">
       <div className="max-w-measure">
         <p
           id={id}
-          className={cn("m-0 text-lead leading-body text-on-dark-2", !open && "max-tablet:line-clamp-3")}
+          className={cn(
+            "text-lead leading-body text-on-dark-2 m-0",
+            !open && "max-tablet:line-clamp-3",
+          )}
           {...textId("blurb", readCase)}
         >
           {readCase}
@@ -269,7 +314,7 @@ function CaseText({ readCase }: { readCase: string }) {
           aria-expanded={false}
           aria-controls={id}
           onClick={() => setOpen(true)}
-          className="press min-h-touch cursor-pointer text-meta font-bold text-accent-text underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-text tablet:hidden"
+          className="press min-h-touch text-meta text-accent-text focus-visible:outline-accent-text tablet:hidden cursor-pointer font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Read the full case
         </button>
@@ -331,17 +376,21 @@ function ReadHero({
       level={2}
       eyebrow={`The read for ${team ?? "Your Side"}`}
       title={
-        <motion.span className={cn("inline-block", LEAN_COLOR[lean])} {...stableId("lean-word")} {...rise(off, { duration: DURATION.decision })}>
+        <motion.span
+          className={cn("inline-block", LEAN_COLOR[lean])}
+          {...stableId("lean-word")}
+          {...rise(off, { duration: DURATION.decision })}
+        >
           {lean}
         </motion.span>
       }
       feature={
-        <div className="flex flex-col gap-sp-4">
+        <div className="gap-sp-4 flex flex-col">
           {/* The same rows as the wait, asker first, with the faces at rest. The mesh reads the center of each row as the
               place of that side, so the dip of the reveal sits under the row of the favored side. */}
           <TradeOnStage sides={stage} show="tokens" />
           <LeanScale lean={lean} off={off} />
-          <div className={cn("t-stagger flex flex-col gap-sp-4", caseShown && "is-shown")}>
+          <div className={cn("t-stagger gap-sp-4 flex flex-col", caseShown && "is-shown")}>
             <div className="t-stagger-line t-stagger-line--1">
               <CaseText readCase={readCase} />
             </div>
@@ -386,7 +435,12 @@ function ReasonFold({ reason }: { reason: string }) {
   }, [reason, open]);
   return (
     <div className="flex flex-col items-start">
-      <p ref={ref} id={id} className={cn("m-0 max-w-measure text-lead text-ink-2", !open && "line-clamp-3")} {...textId("blurb", reason)}>
+      <p
+        ref={ref}
+        id={id}
+        className={cn("max-w-measure text-lead text-ink-2 m-0", !open && "line-clamp-3")}
+        {...textId("blurb", reason)}
+      >
         {reason}
       </p>
       {long && !open && (
@@ -395,7 +449,7 @@ function ReasonFold({ reason }: { reason: string }) {
           aria-expanded={false}
           aria-controls={id}
           onClick={() => setOpen(true)}
-          className="press -my-sp-1 inline-flex min-h-touch min-w-touch cursor-pointer items-center text-meta font-bold text-accent-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="press -my-sp-1 min-h-touch min-w-touch text-meta text-accent-ink focus-visible:outline-accent inline-flex cursor-pointer items-center font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           More
         </button>
@@ -416,20 +470,29 @@ function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairn
   return (
     <div>
       {/* The line is a pill next to its label, so the finder cards and the read show the fairness at a glance. */}
-      <div className="mb-sp-2 flex flex-wrap items-center gap-sp-2">
-        <span className="font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">Fairness</span>
+      <div className="mb-sp-2 gap-sp-2 flex flex-wrap items-center">
+        <span className="text-meta text-mute font-mono leading-tight font-bold tracking-wide uppercase">
+          Fairness
+        </span>
         {/* The pill is a short label, not prose, so it is a span at the row size. */}
-        <span className={cn("m-0 rounded-pill border border-rule px-sp-3 py-sp-1 text-row leading-tight font-extrabold tracking-snug", state.color)}>
+        <span
+          className={cn(
+            "rounded-pill border-rule px-sp-3 py-sp-1 text-row tracking-snug m-0 border leading-tight font-extrabold",
+            state.color,
+          )}
+        >
           {line}
         </span>
       </div>
-      <p className="mt-0 mb-sp-3 text-lead text-mute">{state.meaning}</p>
-      <ul className="m-0 flex list-none flex-col gap-sp-2 p-0">
+      <p className="mb-sp-3 text-lead text-mute mt-0">{state.meaning}</p>
+      <ul className="gap-sp-2 m-0 flex list-none flex-col p-0">
         {/* joinSides puts the asker's side first, so the reasons take that order. A finder card sorts its sides the same way. */}
         {sides.map((side) => (
           <li key={side.roster_id}>
             <Caps className="mb-sp-1 block">{side.team}</Caps>
-            <ReasonFold reason={fairness.sides.find((f) => f.roster_id === side.roster_id)?.reason ?? ""} />
+            <ReasonFold
+              reason={fairness.sides.find((f) => f.roster_id === side.roster_id)?.reason ?? ""}
+            />
           </li>
         ))}
       </ul>
@@ -441,9 +504,13 @@ function FairnessBlock({ sides, fairness }: { sides: SwapSide[]; fairness: Fairn
 function WeekLines({ side }: { side: Side }) {
   return (
     // A region, not a section, because each section of the view is one chapter.
-    <div role="region" aria-label="This week and next" className="mt-sp-4 border border-rule px-sp-3 py-sp-2">
+    <div
+      role="region"
+      aria-label="This week and next"
+      className="mt-sp-4 border-rule px-sp-3 py-sp-2 border"
+    >
       <Caps className="text-ink">This week and next</Caps>
-      <ul className="mt-sp-2 mb-0 flex max-w-measure list-none flex-col gap-sp-1 p-0 text-meta text-ink-2">
+      <ul className="mt-sp-2 max-w-measure gap-sp-1 text-meta text-ink-2 mb-0 flex list-none flex-col p-0">
         {side.week_lines.map((line) => (
           <li key={line.week}>{line.text}</li>
         ))}
@@ -470,7 +537,7 @@ function SideRead({ side }: { side: Side }) {
 function SidesHeader({ onEdit }: { onEdit?: () => void }) {
   if (!onEdit) return <Label heading>The Sides</Label>;
   return (
-    <div className="-mt-sp-3 mb-sp-1 flex items-center justify-between gap-sp-3">
+    <div className="-mt-sp-3 mb-sp-1 gap-sp-3 flex items-center justify-between">
       <Label heading className="mb-0">
         The Sides
       </Label>
@@ -478,7 +545,7 @@ function SidesHeader({ onEdit }: { onEdit?: () => void }) {
         type="button"
         onClick={onEdit}
         aria-label="Edit the trade"
-        className="press -mr-sp-2 flex min-h-touch min-w-touch cursor-pointer items-center justify-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="press -mr-sp-2 min-h-touch min-w-touch gap-sp-1 rounded-pill px-sp-2 text-meta text-accent-ink focus-visible:outline-accent flex cursor-pointer items-center justify-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <PencilIcon aria-hidden="true" className="size-sp-4" />
         Edit
@@ -497,7 +564,7 @@ export function AsOfLine({ doc }: { doc: { as_of: AsOf; stale: string[] } }) {
   // The line names no chart week, because no page text names the source of the player values.
   // The line is a list of facts, not prose, so it is a div at the meta size.
   return (
-    <div className="m-0 text-meta text-mute tabular-nums">
+    <div className="text-meta text-mute m-0 tabular-nums">
       {[...knownGamesSegments(as_of), ...staleSegments].join(" · ")}
       {as_of.rosters_fetched !== null && <RostersFetched iso={as_of.rosters_fetched} />}
     </div>
@@ -526,7 +593,7 @@ function RostersFetched({ iso }: { iso: string }) {
 /* A week with no player values gets one line of prose that says so. A document without the flag shows nothing. */
 export function NoChartLine({ asOf }: { asOf: AsOf }) {
   if (!asOf.no_chart || !asOf.no_chart_note) return null;
-  return <p className="m-0 pt-sp-3 text-lead text-mute">{asOf.no_chart_note}</p>;
+  return <p className="pt-sp-3 text-lead text-mute m-0">{asOf.no_chart_note}</p>;
 }
 
 /* The key of a trade: each side by roster id, with the ids of the players it gives in order, as "3:4046,4881|12:6794".
@@ -534,7 +601,13 @@ export function NoChartLine({ asOf }: { asOf: AsOf }) {
 export function tradeKey(doc: AnalyzeResponse): string {
   return [...doc.trade.sides]
     .sort((a, b) => a.roster_id - b.roster_id)
-    .map((side) => `${side.roster_id}:${side.gives.map((player) => player.player_id).sort().join(",")}`)
+    .map(
+      (side) =>
+        `${side.roster_id}:${side.gives
+          .map((player) => player.player_id)
+          .sort()
+          .join(",")}`,
+    )
     .join("|");
 }
 
@@ -542,12 +615,15 @@ export function tradeKey(doc: AnalyzeResponse): string {
    real cards fade in over it on their beat, as recipe 14 of transitions.dev. A screen reader skips it. */
 function CardsSkeleton() {
   return (
-    <div aria-hidden="true" className="t-skel-skeleton is-pulsing flex flex-col gap-sp-3 tablet:gap-card-gap">
+    <div
+      aria-hidden="true"
+      className="t-skel-skeleton is-pulsing gap-sp-3 tablet:gap-card-gap flex flex-col"
+    >
       {/* The heights follow the side tabs and the counters, so the cards that fade in fill about the same space. */}
       {["14rem", "6rem"].map((height) => (
-        <div key={height} className="flex flex-col gap-sp-3 px-gutter py-sp-5 tablet:bg-page">
-          <span className="block h-sp-3 w-1/4 rounded-pill bg-rule" />
-          <span className="block rounded-card bg-raised" style={{ height }} />
+        <div key={height} className="gap-sp-3 px-gutter py-sp-5 tablet:bg-page flex flex-col">
+          <span className="h-sp-3 rounded-pill bg-rule block w-1/4" />
+          <span className="rounded-card bg-raised block" style={{ height }} />
         </div>
       ))}
     </div>
@@ -572,7 +648,8 @@ export default function AnalyzeResult({
   const askerTeam = sides.find((s) => s.roster_id === doc.trade.asker)?.team;
   // The favored roster comes from the Lean of the grade (see favored-side.ts). The hero takes its place in the order of the sides.
   const favoredRoster = favoredSide(doc);
-  const favored = favoredRoster === null ? null : sides.findIndex((s) => s.roster_id === favoredRoster);
+  const favored =
+    favoredRoster === null ? null : sides.findIndex((s) => s.roster_id === favoredRoster);
 
   /* From the tablet tier a chapter is a card, and a one-line card looks odd. So the short parts join the chapter they belong to, and the result has four chapters.
      The result sits in one wrapper inside the main, so it sets the card gap between its own chapters. */
@@ -598,28 +675,39 @@ export default function AnalyzeResult({
           id: side.roster_id,
           team: side.team,
           avatar: avatars.get(side.roster_id) ?? null,
-          players: side.gets.map((player) => ({ id: player.player_id, name: player.name, headshot: player.headshot })),
+          players: side.gets.map((player) => ({
+            id: player.player_id,
+            name: player.name,
+            headshot: player.headshot,
+          })),
         }))}
       />
 
       <div className={cn("t-skel", cardsShown && "is-revealed")}>
-      <CardsSkeleton />
-      <div className="t-skel-content tablet:flex tablet:flex-col tablet:gap-card-gap">
-      {/* One tab per team. joinSides puts the asker first, so the tab of the asker opens first. */}
-      <Chapter>
-        <SidesHeader onEdit={onEdit} />
-        <SideTabs label="The sides" tabs={sides.map((side) => ({ key: side.roster_id, label: side.team, panel: <SideRead side={side} /> }))} />
-      </Chapter>
+        <CardsSkeleton />
+        <div className="t-skel-content tablet:flex tablet:flex-col tablet:gap-card-gap">
+          {/* One tab per team. joinSides puts the asker first, so the tab of the asker opens first. */}
+          <Chapter>
+            <SidesHeader onEdit={onEdit} />
+            <SideTabs
+              label="The sides"
+              tabs={sides.map((side) => ({
+                key: side.roster_id,
+                label: side.team,
+                panel: <SideRead side={side} />,
+              }))}
+            />
+          </Chapter>
 
-      {/* The API returns no counters yet. The slot holds their place under the sides. */}
-      <Chapter>
-        <Label heading>Suggested Counters</Label>
-        <Blurb>No counters yet.</Blurb>
-        <div className="mt-sp-4">
-          <AsOfLine doc={doc} />
+          {/* The API returns no counters yet. The slot holds their place under the sides. */}
+          <Chapter>
+            <Label heading>Suggested Counters</Label>
+            <Blurb>No counters yet.</Blurb>
+            <div className="mt-sp-4">
+              <AsOfLine doc={doc} />
+            </div>
+          </Chapter>
         </div>
-      </Chapter>
-      </div>
       </div>
     </motion.div>
   );

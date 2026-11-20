@@ -46,12 +46,20 @@ describe("TopPerformers", () => {
   it("shows a headshot from the Sleeper CDN in a round photo frame for each performer", () => {
     render(<TopPerformers manager={manager} />);
     const images = within(screen.getByRole("list")).getAllByRole("presentation");
-    expect(images[0].getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/8183.jpg");
+    expect(images[0].getAttribute("src")).toBe(
+      "https://sleepercdn.com/content/nfl/players/8183.jpg",
+    );
     expect(images).toHaveLength(5);
   });
 
   it("reads one start in the singular and leaves out a null position", () => {
-    const performer = { ...manager.top_performers[0], position: null, games: 1, points: 21.3, per_game: 21.3 };
+    const performer = {
+      ...manager.top_performers[0],
+      position: null,
+      games: 1,
+      points: 21.3,
+      per_game: 21.3,
+    };
     render(<TopPerformers manager={{ ...manager, top_performers: [performer] }} />);
     expect(rowLines()).toEqual([["Brock Purdy", "1 start", "21.3", "21.3 a game"]]);
   });

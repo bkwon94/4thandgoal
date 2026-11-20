@@ -7,7 +7,12 @@ import { AskError, MISSING_PAGE, type AskAnswer, type SiteAnswerPage } from "./a
 import type { Turn } from "./chat-turns";
 import type { TradeAnswer, TradeRead, TradeRequest } from "./trade-api";
 import type { FreeResult } from "./free-stream";
-import { type PersonalBlock, type PersonalResult, type PersonalTopic, isPersonal } from "./personal-stream";
+import {
+  type PersonalBlock,
+  type PersonalResult,
+  type PersonalTopic,
+  isPersonal,
+} from "./personal-stream";
 import { topicName } from "./topics";
 
 /* One item of the Thread. A topic item shows the league Answer of `team`, with the typed question or the Topic name as
@@ -23,24 +28,55 @@ export type ThreadItem =
   | { kind: "pending"; question: string }
   | { kind: "miss"; question: string; closest: string[]; block?: PersonalBlock }
   | { kind: "cap"; question: string; line: string; closest: string[] }
-  | { kind: "note"; question: string; line: string; topic: string | null; team: number | null; retry: boolean }
-  | { kind: "trade"; mode: TradeMode; question: string; steps: string[]; answer: TradeAnswer | null; read?: TradeRead }
+  | {
+      kind: "note";
+      question: string;
+      line: string;
+      topic: string | null;
+      team: number | null;
+      retry: boolean;
+    }
+  | {
+      kind: "trade";
+      mode: TradeMode;
+      question: string;
+      steps: string[];
+      answer: TradeAnswer | null;
+      read?: TradeRead;
+    }
   | { kind: "free"; question: string; result: FreeResult | null }
   | { kind: "site"; question: string; page: SiteAnswerPage }
-  | { kind: "personal"; key: PersonalTopic; team: number; question: string | null; result: PersonalResult | null };
+  | {
+      kind: "personal";
+      key: PersonalTopic;
+      team: number;
+      question: string | null;
+      result: PersonalResult | null;
+    };
 
 /* The trade Topics, by the key of the Topic, and the route of the API that answers each one. */
 export type TradeMode = "check" | "ideas" | "sell";
-export const TRADE_TOPICS: Record<string, TradeMode> = { trade_check: "check", trade_ideas: "ideas", sell_high: "sell" };
+export const TRADE_TOPICS: Record<string, TradeMode> = {
+  trade_check: "check",
+  trade_ideas: "ideas",
+  sell_high: "sell",
+};
 /* The key of each trade Topic by its mode. */
-export const TRADE_TOPIC_OF: Record<TradeMode, string> = { check: "trade_check", ideas: "trade_ideas", sell: "sell_high" };
+export const TRADE_TOPIC_OF: Record<TradeMode, string> = {
+  check: "trade_check",
+  ideas: "trade_ideas",
+  sell: "sell_high",
+};
 
 /* The other team of a whole trade Answer: the partner of a trade check, the partner that trade ideas asked for, or
    null for trade ideas over every team, sell high, and the form. */
 export function tradePartner(answer: TradeAnswer): number | null {
   switch (answer.kind) {
     case "check":
-      return answer.document.trade.sides.find((side) => side.roster_id !== answer.document.trade.asker)?.roster_id ?? null;
+      return (
+        answer.document.trade.sides.find((side) => side.roster_id !== answer.document.trade.asker)
+          ?.roster_id ?? null
+      );
     case "ideas":
       return answer.document.trade_pair.partner?.roster_id ?? null;
     case "sell":
@@ -52,11 +88,16 @@ export function tradePartner(answer: TradeAnswer): number | null {
 /* The request that runs a trade Answer again for Refresh: the same question, the same partner, or Your team. Trade
    ideas send the typed question again, so ideas around one player stay around him. A tapped Topic holds its name as
    its question, and sends no question. */
-export function tradeRequestOf(entry: { mode: TradeMode; question: string; answer: TradeAnswer }, rosterId: number): TradeRequest {
-  if (entry.mode === "check") return { mode: "check", question: entry.question, roster_id: rosterId };
+export function tradeRequestOf(
+  entry: { mode: TradeMode; question: string; answer: TradeAnswer },
+  rosterId: number,
+): TradeRequest {
+  if (entry.mode === "check")
+    return { mode: "check", question: entry.question, roster_id: rosterId };
   if (entry.mode === "ideas") {
     const partner = tradePartner(entry.answer);
-    if (entry.question === topicName(TRADE_TOPIC_OF.ideas)) return { mode: "ideas", roster_id: rosterId, partner };
+    if (entry.question === topicName(TRADE_TOPIC_OF.ideas))
+      return { mode: "ideas", roster_id: rosterId, partner };
     return { mode: "ideas", roster_id: rosterId, partner, question: entry.question };
   }
   return { mode: "sell", roster_id: rosterId };
@@ -64,7 +105,12 @@ export function tradeRequestOf(entry: { mode: TradeMode; question: string; answe
 
 /* The request of a typed question that routes to trade ideas: the team that the question names as the partner, never
    Your team, with the typed question and the earlier turns of the Thread. */
-export function ideasRequestOf(route: { team: number | null }, question: string, rosterId: number, turns: Turn[]): TradeRequest {
+export function ideasRequestOf(
+  route: { team: number | null },
+  question: string,
+  rosterId: number,
+  turns: Turn[],
+): TradeRequest {
   const partner = route.team !== null && route.team !== rosterId ? route.team : null;
   return { mode: "ideas", roster_id: rosterId, partner, question, turns };
 }
@@ -96,7 +142,14 @@ export function itemOfRoute(
       const ready = (answers[team] ?? []).some((answer) => answer.topic === key);
       return ready
         ? { kind: "topic", key, team, question }
-        : { kind: "note", question, line: `${topicName(key)} opens here soon.`, topic: null, team: null, retry: false };
+        : {
+            kind: "note",
+            question,
+            line: `${topicName(key)} opens here soon.`,
+            topic: null,
+            team: null,
+            retry: false,
+          };
     }
     case "free":
       // The stream of the free answer brings its own Suggestion after the check, so the route adds none here.
@@ -118,8 +171,17 @@ export function itemOfRoute(
    retry. The front door takes a wrong passphrase to the passphrase modal before it calls this. */
 export function itemOfError(error: unknown, question: string): ThreadItem {
   if (error instanceof AskError && error.status === 429) {
-    const wait = error.retryAfter ? `Try again in ${error.retryAfter} seconds.` : "Try again in a minute.";
-    return { kind: "note", question, line: `That is a lot of questions at once. ${wait}`, topic: null, team: null, retry: false };
+    const wait = error.retryAfter
+      ? `Try again in ${error.retryAfter} seconds.`
+      : "Try again in a minute.";
+    return {
+      kind: "note",
+      question,
+      line: `That is a lot of questions at once. ${wait}`,
+      topic: null,
+      team: null,
+      retry: false,
+    };
   }
   return { kind: "note", question, line: RETRY_LINE, topic: null, team: null, retry: true };
 }

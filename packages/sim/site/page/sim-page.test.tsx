@@ -35,7 +35,8 @@ describe("the sim page header", () => {
 });
 
 /* The text of an odds number as the page writes it: "about 1%" when the file flags it, else "58%". */
-const odds = (value: number | null, about: boolean) => (value === null ? "–" : about ? `about ${value}%` : `${value}%`);
+const odds = (value: number | null, about: boolean) =>
+  value === null ? "–" : about ? `about ${value}%` : `${value}%`;
 
 describe("the sentence of more wins", () => {
   it("shows the sentence of the file and opens the ladder with each count, its odds, and its chance", () => {
@@ -63,7 +64,13 @@ describe("the week switch", () => {
   it("has Wk 11 to Wk 14, then Playoffs, and opens on Wk 11", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
     const items = within(weekSwitch()).getAllByRole("button");
-    expect(items.map((item) => item.textContent)).toEqual(["Wk 11", "Wk 12", "Wk 13", "Wk 14", "Playoffs"]);
+    expect(items.map((item) => item.textContent)).toEqual([
+      "Wk 11",
+      "Wk 12",
+      "Wk 13",
+      "Wk 14",
+      "Playoffs",
+    ]);
     expect(items[0].getAttribute("aria-current")).toBe("page");
     expect(weekCard().getAttribute("aria-label") ?? weekCard().textContent).toContain("Week 11");
   });
@@ -72,7 +79,9 @@ describe("the week switch", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
     for (const week of cpcPage.weeks) {
       fireEvent.click(within(weekSwitch()).getByRole("button", { name: `Wk ${week.week}` }));
-      expect(within(weekCard()).getByRole("heading").textContent).toBe(`Week ${week.week} vs ${weekSim.names[week.opponent]}`);
+      expect(within(weekCard()).getByRole("heading").textContent).toBe(
+        `Week ${week.week} vs ${weekSim.names[week.opponent]}`,
+      );
     }
     fireEvent.click(within(weekSwitch()).getByRole("button", { name: "Playoffs" }));
     expect(screen.queryByRole("article", { name: /^Week \d+ vs / })).toBeNull();
@@ -80,15 +89,24 @@ describe("the week switch", () => {
   });
 });
 
-const tiles = () => within(within(weekCard()).getByRole("group", { name: "Results" })).getAllByRole("button");
-const tileNames = () => tiles().map((tile) => tile.querySelector("[data-result-name]")?.textContent);
+const tiles = () =>
+  within(within(weekCard()).getByRole("group", { name: "Results" })).getAllByRole("button");
+const tileNames = () =>
+  tiles().map((tile) => tile.querySelector("[data-result-name]")?.textContent);
 
 describe("the week card", () => {
   it("shows four tiles in CPC, each with the odds after, the chance, and the wins it adds", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
-    expect(within(weekCard()).getByRole("heading").textContent).toBe("Week 11 vs Maye d'force B with U");
+    expect(within(weekCard()).getByRole("heading").textContent).toBe(
+      "Week 11 vs Maye d'force B with U",
+    );
     const week = cpcPage.weeks[0];
-    expect(tileNames()).toEqual(["Win, beat median", "Win, miss median", "Lose, beat median", "Lose, miss median"]);
+    expect(tileNames()).toEqual([
+      "Win, beat median",
+      "Win, miss median",
+      "Lose, beat median",
+      "Lose, miss median",
+    ]);
     tiles().forEach((tile, index) => {
       const result = week.results[index];
       expect(tile.textContent).toContain(odds(result.playoff, result.about));
@@ -109,8 +127,17 @@ describe("the week card", () => {
   it("reads a flagged number as about X%", () => {
     // The real file flags no result of week 11, so this copy sets the flag on the first tile.
     const week = cpcPage.weeks[0];
-    const flagged = { ...week, results: week.results.map((result, index) => ({ ...result, about: index === 0 })) };
-    const sim = { ...weekSim, pages: { ...weekSim.pages, [CPC_YOU]: { ...cpcPage, weeks: [flagged, ...cpcPage.weeks.slice(1)] } } };
+    const flagged = {
+      ...week,
+      results: week.results.map((result, index) => ({ ...result, about: index === 0 })),
+    };
+    const sim = {
+      ...weekSim,
+      pages: {
+        ...weekSim.pages,
+        [CPC_YOU]: { ...cpcPage, weeks: [flagged, ...cpcPage.weeks.slice(1)] },
+      },
+    };
     render(<SimPage sim={sim} you={CPC_YOU} />);
     expect(tiles()[0].textContent).toContain(`about ${week.results[0].playoff}%`);
     expect(tiles()[1].textContent).not.toContain("about");
@@ -130,13 +157,17 @@ describe("the root-for card", () => {
   it("says what a loss costs, then each result with its reason and the odds after it", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
     const week = cpcPage.weeks[0];
-    const card = screen.getByRole("article", { name: `If you lose, you drop to ${week.loss_playoff}%` });
+    const card = screen.getByRole("article", {
+      name: `If you lose, you drop to ${week.loss_playoff}%`,
+    });
     fireEvent.click(within(card).getByRole("button", { expanded: false }));
     const rows = within(card).getAllByRole("listitem");
     expect(rows).toHaveLength(week.root_for.length);
     rows.forEach((row, index) => {
       const root = week.root_for[index];
-      expect(row.textContent).toContain(`${weekSim.names[root.winner]} beats ${weekSim.names[root.loser]}`);
+      expect(row.textContent).toContain(
+        `${weekSim.names[root.winner]} beats ${weekSim.names[root.loser]}`,
+      );
       expect(row.textContent).toContain(root.reason);
       expect(row.textContent).toContain(`→ ${root.playoff}%`);
     });
@@ -154,7 +185,13 @@ describe("the root-for card", () => {
   it("shows in full from the tablet tier, with no toggle", () => {
     // The tablet tier matches, as at 1080x740.
     vi.spyOn(window, "matchMedia").mockImplementation(
-      (query: string) => ({ matches: true, media: query, addEventListener: () => {}, removeEventListener: () => {} }) as unknown as MediaQueryList,
+      (query: string) =>
+        ({
+          matches: true,
+          media: query,
+          addEventListener: () => {},
+          removeEventListener: () => {},
+        }) as unknown as MediaQueryList,
     );
     render(<SimPage sim={weekSim} you={CPC_YOU} />);
     const card = screen.getByRole("article", { name: /^If you lose/ });
@@ -166,7 +203,9 @@ describe("the root-for card", () => {
     // The Blue Tent roots for Maye d'force B with U in week 11.
     render(<SimPage sim={weekSim} you={1} />);
     const card = screen.getByRole("article", { name: /^If you lose/ });
-    const row = within(card).getAllByRole("listitem").find((item) => item.textContent?.includes("Maye"))!;
+    const row = within(card)
+      .getAllByRole("listitem")
+      .find((item) => item.textContent?.includes("Maye"))!;
     expect(row.textContent).toContain("Maye d'force B with U beats Bo Girds");
     expect(row.querySelector(".truncate")).toBeNull();
   });
@@ -191,9 +230,11 @@ const FILE_SENTENCE = "Win 5 of the 8 left and you're in.";
 const WIN_ABOVE = { week: 11, game: "win", median: "above" } as const;
 const LOSS_BELOW = { week: 11, game: "loss", median: "below" } as const;
 
-const tile = (name: string) => tiles().find((entry) => entry.querySelector("[data-result-name]")?.textContent === name)!;
+const tile = (name: string) =>
+  tiles().find((entry) => entry.querySelector("[data-result-name]")?.textContent === name)!;
 const setLine = () => screen.queryByRole("region", { name: "What-if" });
-const weekItem = (label: string) => within(weekSwitch()).getByRole("button", { name: new RegExp(`^${label}`) });
+const weekItem = (label: string) =>
+  within(weekSwitch()).getByRole("button", { name: new RegExp(`^${label}`) });
 
 describe("the What-if", () => {
   it("sets a result on a tap, shows the numbers of the API answer, and stays on its week", async () => {
@@ -211,7 +252,9 @@ describe("the What-if", () => {
     expect(weekItem("Wk 11").getAttribute("aria-current")).toBe("page");
     expect(weekItem("Wk 12").getAttribute("aria-current")).toBeNull();
     fireEvent.click(weekItem("Wk 12"));
-    expect(within(weekCard()).getByRole("heading").textContent).toBe(`Week 12 vs ${weekSim.names[5]}`);
+    expect(within(weekCard()).getByRole("heading").textContent).toBe(
+      `Week 12 vs ${weekSim.names[5]}`,
+    );
     // The root-for card of week 12 takes the numbers of the answer: 71% after a loss, and 75% if roster 10 wins.
     const card = screen.getByRole("article", { name: "If you lose, you drop to 71%" });
     fireEvent.click(within(card).getByRole("button", { expanded: false }));
@@ -281,7 +324,9 @@ describe("the What-if", () => {
     fireEvent.click(weekItem("Wk 11"));
     expect(cpcPage.weeks[0].results[3].playoff).toBe(41);
     expect(tile("Lose, miss median").textContent).toContain("42%");
-    expect(tile("Win, beat median").textContent).toContain(`${cpcPage.weeks[0].results[0].playoff}%`);
+    expect(tile("Win, beat median").textContent).toContain(
+      `${cpcPage.weeks[0].results[0].playoff}%`,
+    );
   });
 
   it("clears the result of a week on a second tap of its tile, with no call", async () => {
@@ -298,12 +343,20 @@ describe("the What-if", () => {
 
   it("keeps the numbers of the file and shows one line when the API is down", async () => {
     // A real call to port 9, which nothing serves, so the connection is refused as when the API is down.
-    render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" })} />);
+    render(
+      <SimPage
+        sim={weekSim}
+        you={CPC_YOU}
+        whatIf={whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" })}
+      />,
+    );
     fireEvent.click(tile("Win, beat median"));
     await screen.findByText("The What-if is not available now.");
     fireEvent.click(weekItem("Wk 11"));
     fireEvent.click(tile("Lose, miss median"));
-    await waitFor(() => expect(tile("Lose, miss median").getAttribute("aria-pressed")).toBe("false"));
+    await waitFor(() =>
+      expect(tile("Lose, miss median").getAttribute("aria-pressed")).toBe("false"),
+    );
     expect(screen.getAllByText("The What-if is not available now.")).toHaveLength(1);
     await waitFor(() => expect(setLine()).toBeNull());
     expect(yourTeam().textContent).toContain("58%");

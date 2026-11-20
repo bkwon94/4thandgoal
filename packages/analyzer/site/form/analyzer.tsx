@@ -119,7 +119,7 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
     <>
       <PassphraseDialog open={passphrase === null} error={authError} onSubmit={handleSubmit} />
       {teams.status === "loading" && (
-        <p role="status" className="mt-sp-4 mb-0 text-lead text-mute">
+        <p role="status" className="mt-sp-4 text-lead text-mute mb-0">
           Loading the teams…
         </p>
       )}
@@ -129,9 +129,12 @@ export function Analyzer({ target, finderOn }: { target: ApiTarget; finderOn: bo
         </div>
       )}
       {teams.status === "failed" && (
-        <div className="mt-sp-4 flex flex-col gap-sp-3">
+        <div className="mt-sp-4 gap-sp-3 flex flex-col">
           <ErrorLine>The API did not answer. Try again.</ErrorLine>
-          <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => setAttempt((n) => n + 1)}>
+          <Button
+            className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+            onClick={() => setAttempt((n) => n + 1)}
+          >
             Try Again
           </Button>
         </div>

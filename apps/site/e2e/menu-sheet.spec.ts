@@ -11,7 +11,11 @@ import { serveDir } from "./serve";
 const OUT = join(process.cwd(), "out");
 
 // The browser of a file is set at its top, because a group cannot pick the browser. iOS Safari runs on WebKit.
-test.use({ browserName: "webkit", viewport: { width: 390, height: 660 }, reducedMotion: "no-preference" });
+test.use({
+  browserName: "webkit",
+  viewport: { width: 390, height: 660 },
+  reducedMotion: "no-preference",
+});
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -23,7 +27,9 @@ test.afterAll(async () => {
 
 /* The top edge of the menu sheet and the height of the list of weeks, in px, as the page lays them out on this frame. */
 const readSheet = () => ({
-  top: document.querySelector("[data-menu-sheet]:not([data-slot='drawer-backdrop'])")!.getBoundingClientRect().top,
+  top: document
+    .querySelector("[data-menu-sheet]:not([data-slot='drawer-backdrop'])")!
+    .getBoundingClientRect().top,
   list: document.querySelector(".menu-past")!.getBoundingClientRect().height,
 });
 
@@ -58,7 +64,8 @@ async function holdPastTaps(page: Page, frames: number) {
    before a late motion out of the still check. */
 async function togglePast(page: Page, expanded: boolean) {
   const button = page.getByRole("button", { name: "Past weeks" });
-  const listHeight = () => page.evaluate(() => document.querySelector(".menu-past")!.getBoundingClientRect().height);
+  const listHeight = () =>
+    page.evaluate(() => document.querySelector(".menu-past")!.getBoundingClientRect().height);
   const before = await listHeight();
   await page.evaluate(() => {
     (window as unknown as { doorSamples: unknown[] }).doorSamples = [];
@@ -71,7 +78,10 @@ async function togglePast(page: Page, expanded: boolean) {
 
 /* Open the menu sheet, wait for its drop to end, then open and close "Past weeks". Each tap waits `hold` frames. */
 async function checkTopEdge(page: Page, hold: number) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.goto(`${server.url}/rankings/`);
   await page.getByRole("button", { name: "Open the menu" }).click();
   const sheet = page.locator("[data-menu-sheet]:not([data-slot='drawer-backdrop'])");
@@ -85,17 +95,27 @@ async function checkTopEdge(page: Page, hold: number) {
     const samples = await togglePast(page, step === "opens");
     const lists = samples.map((sample) => sample.list);
     // The list of weeks moves, so the samples hold the frames of the motion.
-    expect(Math.max(...lists) - Math.min(...lists), `the list of weeks grows or shrinks as Past weeks ${step}`).toBeGreaterThan(20);
+    expect(
+      Math.max(...lists) - Math.min(...lists),
+      `the list of weeks grows or shrinks as Past weeks ${step}`,
+    ).toBeGreaterThan(20);
     const drift = Math.max(...samples.map((sample) => Math.abs(sample.top - rest)));
-    expect(drift, `the top edge of the menu sheet moves ${drift}px as Past weeks ${step}`).toBeLessThanOrEqual(1);
+    expect(
+      drift,
+      `the top edge of the menu sheet moves ${drift}px as Past weeks ${step}`,
+    ).toBeLessThanOrEqual(1);
   }
 }
 
-test("the top edge of the menu sheet stays still while Past weeks opens and closes", async ({ page }) => {
+test("the top edge of the menu sheet stays still while Past weeks opens and closes", async ({
+  page,
+}) => {
   await checkTopEdge(page, 0);
 });
 
-test("the top edge of the menu sheet stays still when the motion of Past weeks starts late", async ({ page }) => {
+test("the top edge of the menu sheet stays still when the motion of Past weeks starts late", async ({
+  page,
+}) => {
   // 30 frames is about 0.5 s, more than the 20 still frames that samplesWhenStill waits for.
   await checkTopEdge(page, 30);
 });

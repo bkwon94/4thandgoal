@@ -41,7 +41,13 @@ export type TeamNames = Readonly<Record<string, { name: string; owner: string }>
 export type AvatarMap = Readonly<Record<string, string>>;
 
 /* One row of the team picker. The waiver page has no rosters to show, so each team has no players. */
-export type PickerTeam = { roster_id: number; team: string; manager: string; avatar: string; players: never[] };
+export type PickerTeam = {
+  roster_id: number;
+  team: string;
+  manager: string;
+  avatar: string;
+  players: never[];
+};
 
 /* The props of the team picker port. The route passes the picker, so the package imports no other core package. */
 export type TeamPickerProps = {

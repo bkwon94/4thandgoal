@@ -47,7 +47,7 @@ export function MidseasonScreen({
       <div className="bg-page">
         <ActRail acts={report.acts} />
         <PageColumn>
-          <div className="flex flex-col gap-sp-6 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
+          <div className="gap-sp-6 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
             <Opener
               opener={report.opener}
               season={report.season}

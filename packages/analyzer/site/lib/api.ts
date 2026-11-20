@@ -4,7 +4,13 @@
  */
 import type { z, ZodType } from "zod";
 import type { AnalyzeResponse, FindResponse } from "./analyze-types";
-import { analyzeResponseSchema, findResponseSchema, playerSchema, teamSchema, teamsResponseSchema } from "./schemas/api";
+import {
+  analyzeResponseSchema,
+  findResponseSchema,
+  playerSchema,
+  teamSchema,
+  teamsResponseSchema,
+} from "./schemas/api";
 
 /* The API that a call goes to: its base URL, the slug of the client, and the season the routes read.
    The page builds it from the config of the app, so the package reads no env. */
@@ -53,7 +59,9 @@ async function errorDetail(response: Response): Promise<string | undefined> {
 function parseBody<S extends ZodType>(schema: S, body: unknown, route: string): z.output<S> {
   const result = schema.safeParse(body);
   if (result.success) return result.data;
-  const issues = result.error.issues.map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`);
+  const issues = result.error.issues.map(
+    (issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`,
+  );
   throw new ApiError(502, `The API sent a wrong body for ${route}. ${issues.join("; ")}`);
 }
 
@@ -98,7 +106,9 @@ export function toErrorLine(error: unknown, timedOut: boolean, timeoutMessage: s
     if (error.status === 429) return { message: retryText(error.retryAfter) };
     // The API says why it is down in its detail, so the reader sees that reason when it exists.
     if (error.status === 503) {
-      return { message: error.detail ?? "The analyzer is down for the moment. Try again in a few minutes." };
+      return {
+        message: error.detail ?? "The analyzer is down for the moment. Try again in a few minutes.",
+      };
     }
   }
   return { message: "The API did not answer. Try again." };
@@ -160,6 +170,11 @@ export function postAnalyze(
 export type FindRequest = { season: number; asker: number; partner?: number };
 
 /* The finder grades every small swap of the pair, so a cold call can be slow. The caller owns the AbortSignal, as with postAnalyze. */
-export function postFind(target: ApiTarget, passphrase: string, body: FindRequest, signal: AbortSignal): Promise<FindResponse> {
+export function postFind(
+  target: ApiTarget,
+  passphrase: string,
+  body: FindRequest,
+  signal: AbortSignal,
+): Promise<FindResponse> {
   return postJson(target, "/find", findResponseSchema, passphrase, body, signal);
 }

@@ -119,9 +119,21 @@ describe("each change under reduced motion is a fade", () => {
     const at = all.findIndex((rows, i) => i > 0 && orderOf(rows) !== orderOf(all[i - 1]));
     expect(at).toBeGreaterThan(0);
     const [before, after] = [all[at - 1], all[at]];
-    const props = { marks: null, week: null, spots: season.seeds.length, byes: season.byes, yourTeam: YOU, avatars: {}, off: true, cut: false };
+    const props = {
+      marks: null,
+      week: null,
+      spots: season.seeds.length,
+      byes: season.byes,
+      yourTeam: YOU,
+      avatars: {},
+      off: true,
+      cut: false,
+    };
     const { container, rerender } = render(<Standings rows={before} {...props} />);
-    const orderShown = (list: Element) => [...list.querySelectorAll("li[data-roster]")].map((li) => li.getAttribute("data-roster")).join(",");
+    const orderShown = (list: Element) =>
+      [...list.querySelectorAll("li[data-roster]")]
+        .map((li) => li.getAttribute("data-roster"))
+        .join(",");
     const old = orderShown(container.querySelector('ol[aria-label="Standings"]')!);
     rerender(<Standings rows={after} {...props} />);
     // Each frame: the order of each list on the stage, with the opacity it shows.
@@ -144,7 +156,11 @@ describe("each change under reduced motion is a fade", () => {
     render(<SimPage sim={weekSim} you={YOU} random={() => 0} />);
     fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
     const skip = within(stage()).getByRole("button", { name: "Skip" });
-    for (let i = 0; i < 40 && within(stage()).queryByRole("button", { name: "Skip" }) !== null; i += 1) {
+    for (
+      let i = 0;
+      i < 40 && within(stage()).queryByRole("button", { name: "Skip" }) !== null;
+      i += 1
+    ) {
       await act(async () => {
         fireEvent.click(within(stage()).getByRole("button", { name: "Skip" }));
         vi.advanceTimersByTime(16);

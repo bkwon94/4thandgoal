@@ -10,8 +10,7 @@ import type { WhatIfTarget } from "@cpc/sim/lib/what-if-api";
 import type { AskTarget } from "../app/front-door/ask-api";
 import { clientValues } from "../generated/client-values";
 
-export const apiUrl =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://api.4thandgoal.app";
+export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://api.4thandgoal.app";
 
 // The league season the teams and analyze routes read: the latest season of the client.
 export const season = clientValues.season;

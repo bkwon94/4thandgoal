@@ -29,7 +29,11 @@ const LINKS: MenuLinks = {
 
 describe("menuPages", () => {
   it("gives one destination per item, in the order of the items", () => {
-    const pages = menuPages([{ package: "analyzer" }, { page: "home" }, { package: "week" }], LINKS, "/");
+    const pages = menuPages(
+      [{ package: "analyzer" }, { page: "home" }, { package: "week" }],
+      LINKS,
+      "/",
+    );
     expect(pages).toEqual([
       { kind: "analyzer", label: "Trade Analyzer", short: "Trade", href: "/analyze/" },
       { kind: "home", label: "Home", short: "Home", href: "/" },
@@ -52,8 +56,15 @@ describe("menuPages", () => {
   });
 
   it("lists no midseason item, because a sixth item overflows the pill bar of CPC at 1280px", () => {
-    const links = { ...LINKS, midseason: () => ({ label: "Midseason Report", href: "/midseason/2026/" }) };
-    const pages = menuPages([{ package: "rankings" }, { package: "midseason", label: "Midseason Report" }], links, "/");
+    const links = {
+      ...LINKS,
+      midseason: () => ({ label: "Midseason Report", href: "/midseason/2026/" }),
+    };
+    const pages = menuPages(
+      [{ package: "rankings" }, { package: "midseason", label: "Midseason Report" }],
+      links,
+      "/",
+    );
     expect(pages.map((page) => page.kind)).toEqual(["rankings"]);
   });
 
@@ -63,7 +74,14 @@ describe("menuPages", () => {
   });
 
   it("takes the label of an item in place of the label of the package, in the pill bar only", () => {
-    const pages = menuPages([{ page: "home", label: "Start" }, { package: "analyzer", label: "Trades" }], LINKS, "/");
+    const pages = menuPages(
+      [
+        { page: "home", label: "Start" },
+        { package: "analyzer", label: "Trades" },
+      ],
+      LINKS,
+      "/",
+    );
     expect(pages.map((page) => page.label)).toEqual(["Start", "Trades"]);
     // The dock keeps the short label of the look, so five items fit the width of a phone.
     expect(pages.map((page) => page.short)).toEqual(["Home", "Trade"]);
@@ -79,12 +97,20 @@ describe("menuPages", () => {
 
   it("lists no page of a package that the registry omits", () => {
     const { rankings: _rankings, analyzer: _analyzer, ...rest } = LINKS;
-    const pages = menuPages([{ package: "week" }, { package: "rankings" }, { package: "analyzer" }], rest, "/");
+    const pages = menuPages(
+      [{ package: "week" }, { package: "rankings" }, { package: "analyzer" }],
+      rest,
+      "/",
+    );
     expect(pages.map((page) => page.label)).toEqual(["Week 7"]);
   });
 
   it("lists no page of a package with no page to link yet, such as managers with no managers file", () => {
-    const pages = menuPages([{ package: "rankings" }, { package: "managers" }], { ...LINKS, managers: () => null }, "/");
+    const pages = menuPages(
+      [{ package: "rankings" }, { package: "managers" }],
+      { ...LINKS, managers: () => null },
+      "/",
+    );
     expect(pages.map((page) => page.label)).toEqual(["Power Rankings"]);
   });
 });
@@ -94,8 +120,20 @@ describe("shellProps of cpc", () => {
   it("keeps the items and the labels of the CPC menu, with the short labels of the menu (AT-9, AT-10)", () => {
     // The report item shows once the season publishes a report, so this test leaves it out.
     const items = shellProps().menu.items.filter((item) => item.kind !== "midseason");
-    expect(items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
-    expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
+    expect(items.map((item) => item.label)).toEqual([
+      "Home",
+      "Week 8",
+      "Power Rankings",
+      "Managers",
+      "Trade Analyzer",
+    ]);
+    expect(items.map((item) => item.short)).toEqual([
+      "Home",
+      "Week 8",
+      "Rankings",
+      "Managers",
+      "Trade",
+    ]);
   });
 
   it("lists every published week, newest first, for the menu sheet (AT-11)", () => {
@@ -117,8 +155,12 @@ describe("shellProps of cpc", () => {
     // The egg button renders only after the board of the API names a drop, so the test reads the part in the slot.
     expect((shell.actions as ReactElement[]).map((part) => part.type)).toEqual([BandPart]);
     render(createElement(TopBand, { ...shell, pageHref: "/" }));
-    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
-    expect(within(screen.getByRole("navigation", { name: "Pages" })).getAllByRole("link")).toHaveLength(5);
+    fireEvent.click(
+      within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }),
+    );
+    expect(
+      within(screen.getByRole("navigation", { name: "Pages" })).getAllByRole("link"),
+    ).toHaveLength(5);
     cleanup();
   });
 });

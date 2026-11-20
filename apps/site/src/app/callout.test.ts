@@ -24,11 +24,11 @@ describe("the callout rule of globals.css", () => {
   });
 
   it("keeps the callout on for each link and image, inside a target or not", () => {
-    expect(declarationsOf(
+    expect(
+      declarationsOf(
         "[data-eggs] [data-stable-id] a, [data-eggs] [data-stable-id] img, [data-eggs] a[data-stable-id], [data-eggs] img[data-stable-id]",
-      )).toMatch(
-      /-webkit-touch-callout:\s*default/,
-    );
+      ),
+    ).toMatch(/-webkit-touch-callout:\s*default/);
   });
 
   it("scopes the callout rule to a client that takes eggs, so another client keeps the callout", () => {

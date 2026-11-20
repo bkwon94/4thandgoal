@@ -24,30 +24,45 @@ const TEAMS = ["lil fridge", "bo girds"];
 const fetchStub = vi.fn();
 const replies: Record<string, Response[]> = { "/ask": [], "/ask/free": [], "/trade-ideas": [] };
 
-const callsTo = (path: string) => fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
+const callsTo = (path: string) =>
+  fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
 
 /* The answer of the ask route at a cap, as the API sends it: the cap route, its line, and the 3 closest Topics. */
 function capRoute(line: string) {
   replies["/ask"].push(
-    Response.json({ route: "cap", line, topic: null, team: null, closest: CLOSEST, suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } }),
+    Response.json({
+      route: "cap",
+      line,
+      topic: null,
+      team: null,
+      closest: CLOSEST,
+      suggestion: null,
+      jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+    }),
   );
 }
 
 async function ask(question: string) {
   const box = await screen.findByRole("form", { name: "Ask" });
-  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: question } });
+  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), {
+    target: { value: question },
+  });
   fireEvent.submit(box);
 }
 
 async function capCard(question: string, line: string) {
-  await waitFor(() => expect(screen.getByRole("article", { name: question }).textContent).toContain(line));
+  await waitFor(() =>
+    expect(screen.getByRole("article", { name: question }).textContent).toContain(line),
+  );
   return screen.getByRole("article", { name: question });
 }
 
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string) => {
     const path = Object.keys(replies).find((end) => String(url).endsWith(end));
-    return path ? (replies[path].shift() ?? new Response("", { status: 500 })) : new Response("", { status: 404 });
+    return path
+      ? (replies[path].shift() ?? new Response("", { status: 500 }))
+      : new Response("", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
@@ -69,8 +84,14 @@ describe("the caps of the front door", () => {
     await screen.findByRole("group", { name: "Suggestions" });
     await ask(QUESTION);
     const card = await capCard(QUESTION, TEAM_LINE);
-    const topics = within(within(card).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
-    expect(topics.map((topic) => topic.textContent)).toEqual(["Playoff race", "Your season", "Power rankings"]);
+    const topics = within(within(card).getByRole("group", { name: "Closest Topics" })).getAllByRole(
+      "button",
+    );
+    expect(topics.map((topic) => topic.textContent)).toEqual([
+      "Playoff race",
+      "Your season",
+      "Power rankings",
+    ]);
     // The 3 closest Topics show once, so the chips of the dock hide.
     expect(screen.queryByRole("group", { name: "Suggestions" })).toBeNull();
     expect(callsTo("/ask/free")).toHaveLength(0);
@@ -89,7 +110,9 @@ describe("the caps of the front door", () => {
     capRoute(TEAM_LINE);
     render(<HomePage />);
     await ask(QUESTION);
-    const text = (await capCard(QUESTION, TEAM_LINE)).textContent!.replace(QUESTION, "").toLowerCase();
+    const text = (await capCard(QUESTION, TEAM_LINE))
+      .textContent!.replace(QUESTION, "")
+      .toLowerCase();
     // Lil Fridge is Your team, and Bo Girds is another team of the league.
     expect([...TEAMS, ...INNER_NAMES].filter((word) => text.includes(word))).toEqual([]);
   });
@@ -110,7 +133,11 @@ describe("the caps of the front door", () => {
   it("shows the cap line for a tap on trade ideas, with the Suggestions of the day as the closest Topics", async () => {
     replies["/trade-ideas"].push(
       new Response(
-        [{ type: "start" }, { type: "data-cap", data: { cap: "team", line: TEAM_LINE } }, { type: "finish" }]
+        [
+          { type: "start" },
+          { type: "data-cap", data: { cap: "team", line: TEAM_LINE } },
+          { type: "finish" },
+        ]
           .map((part) => `data: ${JSON.stringify(part)}\n\n`)
           .join("") + "data: [DONE]\n\n",
         { headers: { "Content-Type": "text/event-stream" } },
@@ -120,9 +147,15 @@ describe("the caps of the front door", () => {
     const suggestions = await screen.findByRole("group", { name: "Suggestions" });
     const picks = within(suggestions).getAllByRole("button").length - 1;
     fireEvent.click(within(suggestions).getByRole("button", { name: "More" }));
-    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Trade ideas/ }));
+    fireEvent.click(
+      within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", {
+        name: /^Trade ideas/,
+      }),
+    );
     const card = await capCard("Trade ideas", TEAM_LINE);
-    const topics = within(within(card).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
+    const topics = within(within(card).getByRole("group", { name: "Closest Topics" })).getAllByRole(
+      "button",
+    );
     expect(topics).toHaveLength(Math.min(picks, 3));
     expect(topics.length).toBeGreaterThan(0);
     expect(within(card).queryByRole("region", { name: "Trade ideas" })).toBeNull();

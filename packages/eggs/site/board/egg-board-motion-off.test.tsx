@@ -30,7 +30,10 @@ afterAll(() => vi.unstubAllGlobals());
 const NOW = new Date("2026-10-19T13:00:00-04:00");
 
 /* The board of AT-22: Lil Fridge holds five letters of EAGLES and two of CORNERSTONE, and no manager holds a letter of LANSDALE. */
-const close = boardWith({ EAGLES: { 3: ["E", "A", "G", "L", "S"] }, CORNERSTONE: { 3: ["C", "O"] } });
+const close = boardWith({
+  EAGLES: { 3: ["E", "A", "G", "L", "S"] },
+  CORNERSTONE: { 3: ["C", "O"] },
+});
 
 describe("The egg word slider with reduced motion", () => {
   it("changes the slide at once on a tap of a tab, with no roll, no blur, and no letter swap", () => {

@@ -29,10 +29,22 @@ describe("the type check script", () => {
   });
 
   it("fails with the file and the line of a type error", () => {
-    writeFileSync(join(scratch, "tsconfig.json"), JSON.stringify({ compilerOptions: { strict: true, noEmit: true, types: [] }, include: ["bad.ts"] }));
-    writeFileSync(join(scratch, "bad.ts"), 'const ok = 1;\nconst name: string = 42;\nexport { ok, name };\n');
+    writeFileSync(
+      join(scratch, "tsconfig.json"),
+      JSON.stringify({
+        compilerOptions: { strict: true, noEmit: true, types: [] },
+        include: ["bad.ts"],
+      }),
+    );
+    writeFileSync(
+      join(scratch, "bad.ts"),
+      "const ok = 1;\nconst name: string = 42;\nexport { ok, name };\n",
+    );
     // pnpm adds the extra argument to the end of the script, so it reaches `bun check`.
-    const run = spawnSync("pnpm", ["run", "typecheck", "-p", scratch], { cwd: site, encoding: "utf8" });
+    const run = spawnSync("pnpm", ["run", "typecheck", "-p", scratch], {
+      cwd: site,
+      encoding: "utf8",
+    });
     expect(run.status).not.toBe(0);
     expect(run.stdout + run.stderr).toMatch(/file="[^"]*bad\.ts" line="2"/);
   }, 120_000);

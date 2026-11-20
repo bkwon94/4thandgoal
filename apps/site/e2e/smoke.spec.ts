@@ -28,7 +28,8 @@ test(`the smoke run of ${CLIENT}`, async () => {
   // Check the flow list, the names, and the added steps before the build, so a bad list stops the run in seconds.
   const all = readFlows(FLOWS);
   for (const name of NAMES) {
-    if (!all.some((flow) => flow.name === name)) throw new Error(`${FLOWS}: no flow is named "${name}"`);
+    if (!all.some((flow) => flow.name === name))
+      throw new Error(`${FLOWS}: no flow is named "${name}"`);
   }
   const picked = NAMES.length > 0 ? all.filter((flow) => NAMES.includes(flow.name)) : all;
   const flows = (STEPS ? addSteps(picked, STEPS) : picked).map((flow) => ({
@@ -38,22 +39,37 @@ test(`the smoke run of ${CLIENT}`, async () => {
   // The server reads each file per request, so it starts before the build, and its origin is known before the API starts.
   const server = await serveDir(join(process.cwd(), "out"), 0);
   // The API allows only the origin of this server, and the build bakes the URL of this API into the export.
-  const api = await (NO_API ? holdPort() : startApi({ origin: server.url, out: OUT })).catch(async (error) => {
-    await server.close();
-    throw error;
-  });
-  console.log(`site ${server.url}, API ${api.url}${NO_API ? " (no API)" : `, API log ${join(OUT, "api.log")}`}`);
+  const api = await (NO_API ? holdPort() : startApi({ origin: server.url, out: OUT })).catch(
+    async (error) => {
+      await server.close();
+      throw error;
+    },
+  );
+  console.log(
+    `site ${server.url}, API ${api.url}${NO_API ? " (no API)" : `, API log ${join(OUT, "api.log")}`}`,
+  );
   try {
     const start = Date.now();
     // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.
     try {
-      execFileSync("pnpm", ["build"], { env: buildEnv(CLIENT, api.url), encoding: "utf8", stdio: "pipe" });
+      execFileSync("pnpm", ["build"], {
+        env: buildEnv(CLIENT, api.url),
+        encoding: "utf8",
+        stdio: "pipe",
+      });
     } catch (error) {
       const { stdout, stderr } = error as { stdout?: string; stderr?: string };
       throw new Error(`build ${CLIENT} failed:\n${stdout ?? ""}${stderr ?? ""}`);
     }
     console.log(`build ${CLIENT}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
-    const { failures } = await runSmoke({ flows, client: CLIENT, url: server.url, api: api.url, out: OUT, log: (line) => console.log(line) });
+    const { failures } = await runSmoke({
+      flows,
+      client: CLIENT,
+      url: server.url,
+      api: api.url,
+      out: OUT,
+      log: (line) => console.log(line),
+    });
     if (failures.length > 0) throw new Error(`The smoke run is red:\n${failures.join("\n")}`);
   } finally {
     await api.stop();

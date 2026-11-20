@@ -19,8 +19,14 @@ const BO_GIRDS = "6";
 /* The copy of the Stops, word for word from the table of the PRD. The decision ticket 03 of the Tour, "The line of each
    Stop", sets it. */
 const COPY = [
-  { header: "Suggestions", line: "Picks for your team right now. Tap one to open it, or tap More for the full list." },
-  { header: "Ask", line: "Type any question about your team or your league, such as start or sit, a trade, or the playoff race." },
+  {
+    header: "Suggestions",
+    line: "Picks for your team right now. Tap one to open it, or tap More for the full list.",
+  },
+  {
+    header: "Ask",
+    line: "Type any question about your team or your league, such as start or sit, a trade, or the playoff race.",
+  },
   { header: "Your team", line: "Tap to see the league as another manager." },
   { header: "Menu", line: "Every page of the league lives here." },
 ];
@@ -50,9 +56,11 @@ afterEach(() => {
 });
 
 const findCard = (name: string) => screen.findByRole("dialog", { name }, { timeout: 2000 });
-const queryCard = () => screen.queryByRole("dialog", { name: /^(Suggestions|Ask|Your team|Menu)$/ });
+const queryCard = () =>
+  screen.queryByRole("dialog", { name: /^(Suggestions|Ask|Your team|Menu)$/ });
 const button = (card: HTMLElement, name: string) => within(card).getByRole("button", { name });
-const queryButton = (card: HTMLElement, name: string) => within(card).queryByRole("button", { name });
+const queryButton = (card: HTMLElement, name: string) =>
+  within(card).queryByRole("button", { name });
 
 describe("the Tour of the front door", () => {
   it("shows Stop 1 on load to a browser with Your team and no seen key, with no team sheet (AT-2)", async () => {
@@ -66,11 +74,13 @@ describe("the Tour of the front door", () => {
     render(<HomePage />);
     const card = await findCard("Suggestions");
     expect(card.getAttribute("aria-modal")).toBe("true");
-    const described = (card.getAttribute("aria-describedby") ?? "").split(" ").map((id) => document.getElementById(id)?.textContent);
+    const described = (card.getAttribute("aria-describedby") ?? "")
+      .split(" ")
+      .map((id) => document.getElementById(id)?.textContent);
     expect(described).toContain(COPY[0].line);
   });
 
-  it("writes \"1\" to the seen key when Stop 1 opens (AT-23)", async () => {
+  it('writes "1" to the seen key when Stop 1 opens (AT-23)', async () => {
     render(<HomePage />);
     await findCard("Suggestions");
     expect(localStorage.getItem("cpc.tour-seen")).toBe("1");
@@ -84,7 +94,9 @@ describe("the Tour of the front door", () => {
       expect(within(card).getByText(`${index + 1} of 4`)).toBeTruthy();
       const dots = card.querySelectorAll("[data-tour-dot]");
       expect(dots).toHaveLength(4);
-      expect([...dots].map((dot) => dot.hasAttribute("data-current"))).toEqual([0, 1, 2, 3].map((at) => at === index));
+      expect([...dots].map((dot) => dot.hasAttribute("data-current"))).toEqual(
+        [0, 1, 2, 3].map((at) => at === index),
+      );
       expect(button(card, "Skip")).toBeTruthy();
       const last = index === COPY.length - 1;
       expect(queryButton(card, "Next") === null).toBe(last);
@@ -142,7 +154,10 @@ describe("the Tour of the front door", () => {
 
   it("shows no Tour when the read of the seen key throws, and the Suggestions still render (AT-26)", async () => {
     const read = Storage.prototype.getItem;
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(function (this: Storage, key: string) {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(function (
+      this: Storage,
+      key: string,
+    ) {
       if (key === "cpc.tour-seen") throw new Error("SecurityError");
       return read.call(this, key);
     });
@@ -165,7 +180,9 @@ describe("the Tour of the front door", () => {
       }
       await findCard("Menu");
       expect((hidden === "nav" ? menuButton : pillBar).hasAttribute("data-tour-target")).toBe(true);
-      expect((hidden === "nav" ? pillBar : menuButton).hasAttribute("data-tour-target")).toBe(false);
+      expect((hidden === "nav" ? pillBar : menuButton).hasAttribute("data-tour-target")).toBe(
+        false,
+      );
       cleanup();
       localStorage.removeItem("cpc.tour-seen");
     }
@@ -290,7 +307,9 @@ describe("the start of the Tour", () => {
     const card = await findCard("Suggestions");
     expect(within(card).getByText("1 of 4")).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "Which team is yours?" })).toBeNull();
-    expect(screen.getByRole("group", { name: "Suggestions" }).hasAttribute("data-tour-target")).toBe(true);
+    expect(
+      screen.getByRole("group", { name: "Suggestions" }).hasAttribute("data-tour-target"),
+    ).toBe(true);
     expect(localStorage.getItem("cpc.your-team")).toBe(BO_GIRDS);
   });
 
@@ -298,7 +317,8 @@ describe("the start of the Tour", () => {
     // The focus at the moment the Stop card joins the page, before the card moves the focus into itself.
     let focusAtCard: Element | null | undefined;
     const observer = new MutationObserver(() => {
-      if (focusAtCard === undefined && document.querySelector("[data-tour-card]")) focusAtCard = document.activeElement;
+      if (focusAtCard === undefined && document.querySelector("[data-tour-card]"))
+        focusAtCard = document.activeElement;
     });
     observer.observe(document.body, { subtree: true, childList: true });
     render(<HomePage />);
@@ -307,7 +327,8 @@ describe("the start of the Tour", () => {
     expect(document.activeElement).toBe(field);
     await findCard("Suggestions");
     observer.disconnect();
-    const textField = (el: Element | null | undefined) => !!el && el.matches("input, textarea, [contenteditable]");
+    const textField = (el: Element | null | undefined) =>
+      !!el && el.matches("input, textarea, [contenteditable]");
     expect(textField(focusAtCard)).toBe(false);
     expect(textField(document.activeElement)).toBe(false);
   });

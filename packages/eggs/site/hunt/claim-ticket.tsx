@@ -24,7 +24,10 @@ export const STAMP_MS = 900;
 export type Send = "idle" | "sending" | "claimed" | "taken";
 
 /* What each send shows: the stamp on the ticket, whether the stub is gone, whether the sweep runs, and whether a new claim can start. */
-const SEND_VIEW: Record<Send, { stamp: "CLAIMED" | "TAKEN" | null; stubGone: boolean; sweeps: boolean; open: boolean }> = {
+const SEND_VIEW: Record<
+  Send,
+  { stamp: "CLAIMED" | "TAKEN" | null; stubGone: boolean; sweeps: boolean; open: boolean }
+> = {
   idle: { stamp: null, stubGone: false, sweeps: false, open: true },
   sending: { stamp: null, stubGone: true, sweeps: true, open: false },
   claimed: { stamp: "CLAIMED", stubGone: true, sweeps: false, open: false },
@@ -54,7 +57,17 @@ function poseOf(progress: number): string | undefined {
   return `rotate(${(progress * 16).toFixed(1)}deg) translate(${Math.round(progress * 20)}px, ${Math.round(progress * 6)}px)`;
 }
 
-export function ClaimTicket({ letter, word, block, team, label, locked, send, motion, onTear }: ClaimTicketProps) {
+export function ClaimTicket({
+  letter,
+  word,
+  block,
+  team,
+  label,
+  locked,
+  send,
+  motion,
+  onTear,
+}: ClaimTicketProps) {
   // The progress of the tear, from 0 to 1. A tap runs it to 1 by itself. A drag can set it from the pointer too.
   const [progress, setProgress] = useState(0);
   const [tearingByItself, setTearingByItself] = useState(false);
@@ -69,9 +82,12 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
   const { stamp, stubGone, sweeps, open } = SEND_VIEW[send];
   const canTear = !locked && open && !tearingByItself;
 
-  useEffect(() => () => {
-    if (timer.current !== null) clearTimeout(timer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (timer.current !== null) clearTimeout(timer.current);
+    },
+    [],
+  );
 
   /* The full tear: the stub leaves the ticket and the claim sends. */
   function tear() {
@@ -149,28 +165,43 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
 
   return (
     <div role="group" aria-label="Claim ticket" className="relative flex h-36 w-full">
-      <div className="relative flex min-w-0 flex-1 items-center gap-sp-3 overflow-hidden rounded-l-card border border-r-0 border-rule-dark bg-band px-sp-3 text-on-dark">
-        {motion && sweeps && <span aria-hidden="true" className="egg-ticket-sweep absolute inset-0" />}
+      <div className="gap-sp-3 rounded-l-card border-rule-dark bg-band px-sp-3 text-on-dark relative flex min-w-0 flex-1 items-center overflow-hidden border border-r-0">
+        {motion && sweeps && (
+          <span aria-hidden="true" className="egg-ticket-sweep absolute inset-0" />
+        )}
         <span className="relative flex-none">
           {/* The ground of the hero sits only behind the tile, so no line of text sits over the grid. */}
           <ArtGround inset="-inset-y-sp-6 -left-sp-3 right-0" />
           {/* The tile is taller than the glyph box of the letter, so axe can read its contrast. */}
-          <span className="relative flex size-12 items-center justify-center rounded-letter bg-accent font-mono text-score font-bold text-on-dark shadow-orb">
+          <span className="rounded-letter bg-accent text-score text-on-dark shadow-orb relative flex size-12 items-center justify-center font-mono font-bold">
             {letter}
           </span>
         </span>
-        <span className="relative flex min-w-0 flex-col gap-sp-1">
-          <span className="font-mono text-meta tracking-caps text-on-dark-muted uppercase">Claim ticket</span>
-          <span className={cn("font-mono text-body font-bold tracking-wide", word === null && !block ? "text-on-dark-muted" : "text-on-dark")}>
+        <span className="gap-sp-1 relative flex min-w-0 flex-col">
+          <span className="text-meta tracking-caps text-on-dark-muted font-mono uppercase">
+            Claim ticket
+          </span>
+          <span
+            className={cn(
+              "text-body font-mono font-bold tracking-wide",
+              word === null && !block ? "text-on-dark-muted" : "text-on-dark",
+            )}
+          >
             {block ? "BLOCK" : (word ?? "Egg word")}
           </span>
-          <span className={cn("text-body", team === null ? "text-on-dark-muted" : "text-on-dark-2")}>{team ?? "Your team"}</span>
+          <span
+            className={cn("text-body", team === null ? "text-on-dark-muted" : "text-on-dark-2")}
+          >
+            {team ?? "Your team"}
+          </span>
         </span>
         {stamp !== null && (
           <span
             className={cn(
-              "egg-ticket-stamp absolute top-1/2 right-sp-3 -mt-6 flex h-12 items-center rounded-letter border-3 bg-band px-sp-3 font-mono text-stat font-bold tracking-wide",
-              stamp === "CLAIMED" ? "border-accent-text text-accent-text" : "border-on-dark-2 text-on-dark-2",
+              "egg-ticket-stamp right-sp-3 rounded-letter bg-band px-sp-3 text-stat absolute top-1/2 -mt-6 flex h-12 items-center border-3 font-mono font-bold tracking-wide",
+              stamp === "CLAIMED"
+                ? "border-accent-text text-accent-text"
+                : "border-on-dark-2 text-on-dark-2",
               motion && "egg-ticket-stamp-in",
             )}
           >
@@ -178,19 +209,28 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
           </span>
         )}
         {/* The perforation at the right edge of the body. Each hole pops from the top down as the tear grows. */}
-        <span aria-hidden="true" className="absolute inset-y-sp-2 -right-px z-10 flex w-0.5 flex-col items-center justify-between">
+        <span
+          aria-hidden="true"
+          className="inset-y-sp-2 absolute -right-px z-10 flex w-0.5 flex-col items-center justify-between"
+        >
           {Array.from({ length: HOLES }, (_, index) => (
             <span
               key={index}
               data-popped={progress > (index + 0.5) / HOLES}
               style={tearingByItself ? { transitionDelay: `${index * 25}ms` } : undefined}
-              className="egg-hole size-1 flex-none rounded-pill bg-on-dark-muted"
+              className="egg-hole rounded-pill bg-on-dark-muted size-1 flex-none"
             />
           ))}
         </span>
         {/* The notches where the stub joins the body take the color of the sheet. */}
-        <span aria-hidden="true" className="absolute -top-2 -right-2 z-20 size-4 rounded-pill bg-page" />
-        <span aria-hidden="true" className="absolute -right-2 -bottom-2 z-20 size-4 rounded-pill bg-page" />
+        <span
+          aria-hidden="true"
+          className="rounded-pill bg-page absolute -top-2 -right-2 z-20 size-4"
+        />
+        <span
+          aria-hidden="true"
+          className="rounded-pill bg-page absolute -right-2 -bottom-2 z-20 size-4"
+        />
       </div>
       <button
         type="button"
@@ -206,19 +246,36 @@ export function ClaimTicket({ letter, word, block, team, label, locked, send, mo
         onPointerCancel={springBack}
         style={{ transform: stubGone ? undefined : poseOf(progress) }}
         className={cn(
-          "egg-stub relative flex touch-pan-y h-full w-24 flex-none origin-bottom-left flex-col items-center justify-center gap-sp-2 rounded-r-card px-sp-2",
-          locked ? "border border-l-0 border-rule-dark bg-chip-dark text-on-dark-muted" : "bg-accent text-on-dark",
+          "egg-stub gap-sp-2 rounded-r-card px-sp-2 relative flex h-full w-24 flex-none origin-bottom-left touch-pan-y flex-col items-center justify-center",
+          locked
+            ? "border-rule-dark bg-chip-dark text-on-dark-muted border border-l-0"
+            : "bg-accent text-on-dark",
           tearingByItself && "egg-stub-pull",
           // The stub follows the pointer in a drag, and springs back to the ticket on a release.
           !tearingByItself && !dragging && "egg-stub-spring",
-          stubGone ? (motion ? "egg-stub-flutter" : "invisible") : motion && tears > 0 && "egg-stub-heal",
+          stubGone
+            ? motion
+              ? "egg-stub-flutter"
+              : "invisible"
+            : motion && tears > 0 && "egg-stub-heal",
           !locked && !stubGone && motion && "egg-stub-ready",
         )}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="egg-stub-arrow">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="egg-stub-arrow"
+        >
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
-        <span className="text-center font-mono text-meta leading-tight font-bold tracking-wide uppercase">
+        <span className="text-meta text-center font-mono leading-tight font-bold tracking-wide uppercase">
           {locked ? label : "Tear to claim"}
         </span>
       </button>

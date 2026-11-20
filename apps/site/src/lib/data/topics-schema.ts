@@ -10,7 +10,15 @@ import { recapBlockSchema } from "./blocks/recap-schema";
 import { scheduleBlockSchema } from "./blocks/schedule-schema";
 
 /* The 7 Topics that the weekly build answers. The other 6 Topics of the front door are live from the API. */
-export const LEAGUE_TOPICS = ["week_recap", "last_matchup", "next_matchup", "power_rankings", "playoff_race", "your_season", "leaders_trades"] as const;
+export const LEAGUE_TOPICS = [
+  "week_recap",
+  "last_matchup",
+  "next_matchup",
+  "power_rankings",
+  "playoff_race",
+  "your_season",
+  "leaders_trades",
+] as const;
 
 export const leagueTopicSchema = z.enum(LEAGUE_TOPICS);
 

@@ -32,7 +32,11 @@ export type Crack = {
 
 /* The tap point of a pointer tap at (clientX, clientY) on an egg with this box on the screen, clamped inside the egg.
    A box with no size, as in a page with no layout, gives the middle of the egg. */
-export function tapPointOf(clientX: number, clientY: number, box: { left: number; top: number; width: number; height: number }): Point {
+export function tapPointOf(
+  clientX: number,
+  clientY: number,
+  box: { left: number; top: number; width: number; height: number },
+): Point {
   if (box.width === 0 || box.height === 0) return EGG_MIDDLE;
   const x = ((clientX - box.left) / box.width) * EGG_SIZE.width;
   const y = ((clientY - box.top) / box.height) * EGG_SIZE.height;
@@ -65,7 +69,10 @@ const LINE_ANGLES = [0, 180, 55, 125, 235, 305];
 /* The clip polygons of the two halves of the egg, split at the height y. They meet along a zigzag that runs across
    the egg at that height, from the right edge to the left. */
 export function halvesAt(y: number): { top: string; bottom: string } {
-  const zigzag = Array.from({ length: 11 }, (_, index) => `${190 - index * 20},${y + (index % 2 ? -8 : 8)}`).join(" ");
+  const zigzag = Array.from(
+    { length: 11 },
+    (_, index) => `${190 - index * 20},${y + (index % 2 ? -8 : 8)}`,
+  ).join(" ");
   return {
     top: `-40,-40 220,-40 220,${y} ${zigzag} -40,${y}`,
     bottom: `-40,260 220,260 220,${y} ${zigzag} -40,${y}`,
@@ -101,7 +108,8 @@ export function crackOf(point: Point, seed: number): Crack {
     const angle = index * 51 + random() * 20;
     const near = 12 + random() * 10;
     const far = 14 + random() * 12;
-    const at = (degrees: number, reach: number) => pair(tx + Math.cos(radians(degrees)) * reach, ty + Math.sin(radians(degrees)) * reach);
+    const at = (degrees: number, reach: number) =>
+      pair(tx + Math.cos(radians(degrees)) * reach, ty + Math.sin(radians(degrees)) * reach);
     const distance = 90 + random() * 60;
     return {
       points: `${pair(tx, ty)} ${at(angle - 20, near)} ${at(angle + 20, far)}`,

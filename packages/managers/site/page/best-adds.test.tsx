@@ -45,7 +45,9 @@ describe("BestAdds", () => {
     render(<BestAdds manager={manager} />);
     const rows = within(screen.getByRole("list")).getAllByRole("listitem");
     // The name sits next to the frame, so the frame is decorative.
-    expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/5022.jpg");
+    expect(rows[0].querySelector("img")?.getAttribute("src")).toBe(
+      "https://sleepercdn.com/content/nfl/players/5022.jpg",
+    );
     // The CDN has no headshot of a defense, so its frame shows the initials of the team.
     expect(rows[1].querySelector("img")).toBeNull();
     expect(rows[1].querySelector("[aria-hidden]")?.textContent).toBe("CB");

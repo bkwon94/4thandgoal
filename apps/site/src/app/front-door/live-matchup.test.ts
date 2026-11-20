@@ -21,10 +21,16 @@ describe("the live card of Your next matchup", () => {
   });
 
   it("reads no card from a stream with no block, so the card of the weekly build stays", () => {
-    expect(liveMatchupOf('data: {"type":"start"}\n\ndata: {"type":"finish","finishReason":"stop"}\n\ndata: [DONE]')).toBeNull();
+    expect(
+      liveMatchupOf(
+        'data: {"type":"start"}\n\ndata: {"type":"finish","finishReason":"stop"}\n\ndata: [DONE]',
+      ),
+    ).toBeNull();
   });
 
   it("says when the live projections were read, in the time zone of the browser", () => {
-    expect(readTimeLine("2026-11-12T07:53:00-05:00", "America/New_York")).toBe("Live projections as of 7:53 AM");
+    expect(readTimeLine("2026-11-12T07:53:00-05:00", "America/New_York")).toBe(
+      "Live projections as of 7:53 AM",
+    );
   });
 });

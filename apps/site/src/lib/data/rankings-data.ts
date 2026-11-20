@@ -24,7 +24,11 @@ export function latestSeason(): string | null {
 export function loadRankings(): Rankings | null {
   const season = latestSeason();
   if (season === null) return null;
-  return readPublished(join(process.cwd(), "public", season, "rankings.json"), SCHEMA_VERSION, rankingsSchema);
+  return readPublished(
+    join(process.cwd(), "public", season, "rankings.json"),
+    SCHEMA_VERSION,
+    rankingsSchema,
+  );
 }
 
 /* The avatars of the latest published week in a season, so the rankings rows show the same images as the week page.

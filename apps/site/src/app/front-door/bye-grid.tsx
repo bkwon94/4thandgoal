@@ -30,27 +30,44 @@ type ByePlayer = ByeGridBlock["players"][number];
 export const STARTER_BYE = "Starter on a bye";
 export const BENCH_BYE = "Bench on a bye";
 
-const weekSpan = (weeks: number[]) => (weeks.length > 1 ? `weeks ${weeks[0]} to ${weeks[weeks.length - 1]}` : `week ${weeks[0]}`);
+const weekSpan = (weeks: number[]) =>
+  weeks.length > 1 ? `weeks ${weeks[0]} to ${weeks[weeks.length - 1]}` : `week ${weeks[0]}`;
 
 export function byeGridText(block: ByeGridBlock): string {
-  const out = block.players.filter((player) => player.bye !== null && block.weeks.includes(player.bye));
-  const starters = out.filter((player) => player.starter).map((player) => `${player.name} week ${player.bye}`);
-  const bench = out.filter((player) => !player.starter).map((player) => `${player.name} week ${player.bye}`);
+  const out = block.players.filter(
+    (player) => player.bye !== null && block.weeks.includes(player.bye),
+  );
+  const starters = out
+    .filter((player) => player.starter)
+    .map((player) => `${player.name} week ${player.bye}`);
+  const bench = out
+    .filter((player) => !player.starter)
+    .map((player) => `${player.name} week ${player.bye}`);
   return `Byes, ${weekSpan(block.weeks)}. Starters: ${starters.join(", ") || "none"}. Bench: ${bench.join(", ") || "none"}.`;
 }
 
 /* One dot of the grid. A starter in his bye week gets the red dot, the bench in his bye week a gray ring, and every
    other week a faint dot, so each column still reads as a week. The red dot settles in from a small scale. */
-function Dot({ player, week, live, delay }: { player: ByePlayer; week: number; live: boolean; delay: number }) {
+function Dot({
+  player,
+  week,
+  live,
+  delay,
+}: {
+  player: ByePlayer;
+  week: number;
+  live: boolean;
+  delay: number;
+}) {
   const off = useMotionOff();
   const out = player.bye === week;
-  if (!out) return <span aria-hidden className="block size-sp-1 rounded-full bg-rule" />;
+  if (!out) return <span aria-hidden className="size-sp-1 bg-rule block rounded-full" />;
   const pop = live && !off && player.starter;
   return (
     <>
       <motion.span
         aria-hidden
-        className={`block rounded-full ${player.starter ? "size-sp-3 bg-accent" : "size-sp-3 border-2 border-mute"}`}
+        className={`block rounded-full ${player.starter ? "size-sp-3 bg-accent" : "size-sp-3 border-mute border-2"}`}
         initial={pop ? { opacity: 0, scale: 0.5 } : live ? { opacity: 0 } : false}
         animate={{ opacity: 1, scale: 1 }}
         transition={fadeIn(FAST, delay)}
@@ -63,24 +80,33 @@ function Dot({ player, week, live, delay }: { player: ByePlayer; week: number; l
 export function ByeGridView({ block, live }: { block: ByeGridBlock; live: boolean }) {
   const off = useMotionOff();
   const title = `Byes, ${weekSpan(block.weeks)}`;
-  const enter = (index: number) => (live ? riseIn(off, { delay: VERY_SLOW * 0.4 + staggerOf(index) }) : {});
+  const enter = (index: number) =>
+    live ? riseIn(off, { delay: VERY_SLOW * 0.4 + staggerOf(index) }) : {};
   const firstBench = block.players.findIndex((player) => !player.starter);
   return (
-    <div className="flex min-w-0 flex-col gap-sp-2" data-block="bye_grid">
-      <motion.div className="flex flex-wrap items-center justify-between gap-x-sp-4 gap-y-sp-1" {...enter(0)}>
-        <p className="m-0 font-mono text-meta leading-tight tracking-caps text-mute uppercase">{title}</p>
-        <p aria-hidden className="m-0 flex items-center gap-sp-3 font-mono text-meta leading-tight text-mute">
-          <span className="flex items-center gap-sp-1">
-            <span className="block size-sp-2 rounded-full bg-accent" />
+    <div className="gap-sp-2 flex min-w-0 flex-col" data-block="bye_grid">
+      <motion.div
+        className="gap-x-sp-4 gap-y-sp-1 flex flex-wrap items-center justify-between"
+        {...enter(0)}
+      >
+        <p className="text-meta tracking-caps text-mute m-0 font-mono leading-tight uppercase">
+          {title}
+        </p>
+        <p
+          aria-hidden
+          className="gap-sp-3 text-meta text-mute m-0 flex items-center font-mono leading-tight"
+        >
+          <span className="gap-sp-1 flex items-center">
+            <span className="size-sp-2 bg-accent block rounded-full" />
             Starter
           </span>
-          <span className="flex items-center gap-sp-1">
-            <span className="block size-sp-2 rounded-full border-2 border-mute" />
+          <span className="gap-sp-1 flex items-center">
+            <span className="size-sp-2 border-mute block rounded-full border-2" />
             Bench
           </span>
         </p>
       </motion.div>
-      <table aria-label={title} className="w-full table-fixed border-collapse border-t border-rule">
+      <table aria-label={title} className="border-rule w-full table-fixed border-collapse border-t">
         <colgroup>
           <col />
           {block.weeks.map((week) => (
@@ -88,12 +114,19 @@ export function ByeGridView({ block, live }: { block: ByeGridBlock; live: boolea
           ))}
         </colgroup>
         <thead>
-          <tr className="border-b border-rule">
-            <th scope="col" className="py-sp-2 text-left font-mono text-meta leading-tight font-normal tracking-caps text-mute uppercase">
+          <tr className="border-rule border-b">
+            <th
+              scope="col"
+              className="py-sp-2 text-meta tracking-caps text-mute text-left font-mono leading-tight font-normal uppercase"
+            >
               Player
             </th>
             {block.weeks.map((week) => (
-              <th key={week} scope="col" className="py-sp-2 text-center font-mono text-meta leading-tight font-normal text-mute tabular-nums">
+              <th
+                key={week}
+                scope="col"
+                className="py-sp-2 text-meta text-mute text-center font-mono leading-tight font-normal tabular-nums"
+              >
                 {week}
               </th>
             ))}
@@ -103,13 +136,22 @@ export function ByeGridView({ block, live }: { block: ByeGridBlock; live: boolea
           {block.players.map((player, index) => (
             <motion.tr
               key={`${player.name}-${index}`}
-              className={`border-b border-rule last:border-b-0 ${index === firstBench && index > 0 ? "border-t-2 border-t-rule" : ""}`}
+              className={`border-rule border-b last:border-b-0 ${index === firstBench && index > 0 ? "border-t-rule border-t-2" : ""}`}
               {...enter(index + 1)}
             >
-              <th scope="row" data-name={player.name} className="py-sp-2 pr-sp-2 text-left font-normal">
-                <span className="flex min-w-0 items-baseline gap-sp-2">
-                  <span className="w-[2.25rem] flex-none font-mono text-label leading-tight tracking-caps text-mute uppercase">{player.slot ?? "BN"}</span>
-                  <span title={player.name} className={`truncate text-row leading-tight ${player.starter ? "font-semibold text-ink" : "text-ink-2"}`}>
+              <th
+                scope="row"
+                data-name={player.name}
+                className="py-sp-2 pr-sp-2 text-left font-normal"
+              >
+                <span className="gap-sp-2 flex min-w-0 items-baseline">
+                  <span className="text-label tracking-caps text-mute w-[2.25rem] flex-none font-mono leading-tight uppercase">
+                    {player.slot ?? "BN"}
+                  </span>
+                  <span
+                    title={player.name}
+                    className={`text-row truncate leading-tight ${player.starter ? "text-ink font-semibold" : "text-ink-2"}`}
+                  >
                     {player.name}
                   </span>
                 </span>
@@ -117,7 +159,12 @@ export function ByeGridView({ block, live }: { block: ByeGridBlock; live: boolea
               {block.weeks.map((week) => (
                 <td key={week} className="py-sp-2">
                   <span className="flex items-center justify-center">
-                    <Dot player={player} week={week} live={live} delay={VERY_SLOW + staggerOf(index)} />
+                    <Dot
+                      player={player}
+                      week={week}
+                      live={live}
+                      delay={VERY_SLOW + staggerOf(index)}
+                    />
                   </span>
                 </td>
               ))}

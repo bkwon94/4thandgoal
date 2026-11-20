@@ -13,7 +13,17 @@ import { useKeyboardField } from "@cpc/design/shell/keyboard";
    trade analyzer, so a manager types it once per device. `wrong` is true after the API turned the last one down. The
    Drawer owns the slide, the drag, the dim, the stop of the page scroll, the focus trap, Escape, and the fade under
    reduced motion. */
-export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { siteName: string; wrong: boolean; onPassphrase: (value: string) => void; onClose: () => void }) {
+export function PassphraseSheet({
+  siteName,
+  wrong,
+  onPassphrase,
+  onClose,
+}: {
+  siteName: string;
+  wrong: boolean;
+  onPassphrase: (value: string) => void;
+  onClose: () => void;
+}) {
   const [value, setValue] = useState("");
   const typed = value.trim();
   // The field opens the keyboard as the ask box does, so the root marks the keyboard open and the pad of the home bar drops.
@@ -41,21 +51,27 @@ export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { si
         // The Drawer lifts its viewport by the --keyboard-inset that it reads from the visual viewport, so the field sits
         // right above the keyboard on iOS. The Drawer sets the top of the content inline, so a bottom offset here would
         // squash the content to its border and push the field off the screen.
-        className="mx-auto flex w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card p-0 shadow-sheet"
+        className="max-w-sheet rounded-t-hero border-rule bg-card shadow-sheet mx-auto flex w-full flex-col border border-b-0 p-0"
       >
         <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />
-        <div className="flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3">
-          <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{siteName}</span>
-          <SheetTitle className="m-0 text-score leading-tight font-bold tracking-tight">What is the league passphrase?</SheetTitle>
-          <p id="passphrase-line" className="m-0 text-lead leading-body text-ink-2">
-            {wrong ? "That passphrase did not match. Type the league passphrase again." : "Type it once. This device keeps it."}
+        <div className="gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3 flex flex-none flex-col">
+          <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+            {siteName}
+          </span>
+          <SheetTitle className="text-score m-0 leading-tight font-bold tracking-tight">
+            What is the league passphrase?
+          </SheetTitle>
+          <p id="passphrase-line" className="text-lead leading-body text-ink-2 m-0">
+            {wrong
+              ? "That passphrase did not match. Type the league passphrase again."
+              : "Type it once. This device keeps it."}
           </p>
         </div>
         {/* The end of the sheet keeps the home bar of an iPhone clear. The keyboard covers the home bar, so the pad drops then. */}
-        <div className="flex flex-col gap-sp-2 px-sp-5 pt-sp-1 pb-[calc(var(--spacing-sp-4)+var(--spacing-door-safe))] tablet:pb-sp-4">
+        <div className="gap-sp-2 px-sp-5 pt-sp-1 tablet:pb-sp-4 flex flex-col pb-[calc(var(--spacing-sp-4)+var(--spacing-door-safe))]">
           <form
             aria-label="League passphrase"
-            className="flex min-h-ask items-center gap-sp-2 rounded-pill border border-rule bg-page py-sp-1 pr-sp-1 pl-sp-5 transition-[border-color] duration-150 focus-within:border-ink"
+            className="min-h-ask gap-sp-2 rounded-pill border-rule bg-page py-sp-1 pr-sp-1 pl-sp-5 focus-within:border-ink flex items-center border transition-[border-color] duration-150"
             onSubmit={(event) => {
               event.preventDefault();
               if (typed) onPassphrase(typed);
@@ -73,13 +89,13 @@ export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { si
               enterKeyHint="done"
               onFocus={keyboard.onFocus}
               onBlur={keyboard.onBlur}
-              className="min-w-0 flex-1 bg-transparent text-lead leading-tight text-ink outline-none placeholder:text-mute focus-visible:outline-none"
+              className="text-lead text-ink placeholder:text-mute min-w-0 flex-1 bg-transparent leading-tight outline-none focus-visible:outline-none"
             />
             <button
               type="submit"
               aria-label="Use this passphrase"
               disabled={!typed}
-              className="press flex size-send flex-none items-center justify-center rounded-full bg-accent text-on-dark transition-colors duration-150 disabled:bg-raised disabled:text-mute"
+              className="press size-send bg-accent text-on-dark disabled:bg-raised disabled:text-mute flex flex-none items-center justify-center rounded-full transition-colors duration-150"
             >
               <ArrowUpIcon aria-hidden className="size-sp-5" strokeWidth={2.25} />
             </button>
@@ -87,7 +103,7 @@ export function PassphraseSheet({ siteName, wrong, onPassphrase, onClose }: { si
           <button
             type="button"
             onClick={close}
-            className="press flex min-h-touch items-center self-center rounded-pill px-sp-3 text-meta leading-tight font-semibold text-mute hover-fine:text-ink"
+            className="press min-h-touch rounded-pill px-sp-3 text-meta text-mute hover-fine:text-ink flex items-center self-center leading-tight font-semibold"
           >
             Not now
           </button>

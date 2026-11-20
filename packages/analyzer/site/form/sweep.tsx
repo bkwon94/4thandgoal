@@ -14,11 +14,11 @@ import { cn } from "@cpc/design/lib/utils";
 export function Sweep({ track = "bg-card" }: { track?: string }) {
   const off = useMotionOff();
   return (
-    <div aria-hidden="true" className={cn("relative h-sp-1 overflow-hidden rounded-pill", track)}>
+    <div aria-hidden="true" className={cn("h-sp-1 rounded-pill relative overflow-hidden", track)}>
       {!off && (
         <motion.div
           role="presentation"
-          className="absolute inset-y-0 left-0 w-1/3 rounded-pill bg-accent"
+          className="rounded-pill bg-accent absolute inset-y-0 left-0 w-1/3"
           initial={{ x: "-100%" }}
           animate={{ x: "300%" }}
           transition={{ duration: DURATION.sweep, ease: SWEEP_EASE, repeat: Infinity }}

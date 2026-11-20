@@ -51,7 +51,10 @@ export function Reveal({
   // A browser with no IntersectionObserver never reports the viewport, so the content plays on mount and never stays hidden.
   const watch = trigger === "view" && typeof IntersectionObserver !== "undefined";
   const shown = rise ? SHOWN : FADE_SHOWN;
-  const play = off || !watch ? { animate: shown } : { whileInView: shown, viewport: { once: true, margin: VIEW_MARGIN } };
+  const play =
+    off || !watch
+      ? { animate: shown }
+      : { whileInView: shown, viewport: { once: true, margin: VIEW_MARGIN } };
   return (
     <motion.div
       data-reveal

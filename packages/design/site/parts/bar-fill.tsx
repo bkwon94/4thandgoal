@@ -31,7 +31,11 @@ export function BarFill({ pct, axis = "x", className, ...rest }: BarFillProps) {
     fill.style.transform = `${scale}(0)`;
     let stop = () => {};
     const grow = () => {
-      const growth = animate(fill, { [scale]: [0, 1] }, { duration: DURATION.rise, ease: RISE_EASE });
+      const growth = animate(
+        fill,
+        { [scale]: [0, 1] },
+        { duration: DURATION.rise, ease: RISE_EASE },
+      );
       stop = () => growth.stop();
     };
     let unwatch = () => {};

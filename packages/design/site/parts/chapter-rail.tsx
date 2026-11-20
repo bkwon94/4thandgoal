@@ -61,7 +61,7 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
     // From the rail tier the top band is one row: a 44px row, 8px above and below, and its 1px rule at the bottom.
     <nav
       aria-label="Chapters"
-      className="sticky top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)] col-start-1 row-start-1 mr-rail-gap hidden w-rail self-start justify-self-end py-sp-5 rail:block"
+      className="mr-rail-gap w-rail py-sp-5 rail:block sticky top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)] col-start-1 row-start-1 hidden self-start justify-self-end"
     >
       <ul className="m-0 list-none p-0">
         {chapters.map(({ id, label }) => (
@@ -74,7 +74,7 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
               href={`#${id}`}
               aria-current={current === id ? "location" : undefined}
               className={cn(
-                "flex min-h-touch items-center py-sp-1 text-label leading-tight font-bold tracking-wide uppercase transition-colors",
+                "min-h-touch py-sp-1 text-label flex items-center leading-tight font-bold tracking-wide uppercase transition-colors",
                 current === id ? "text-accent-ink" : "text-mute hover-fine:text-ink",
               )}
             >

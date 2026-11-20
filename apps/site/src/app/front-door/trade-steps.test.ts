@@ -17,14 +17,21 @@ describe("the steps of a trade stream", () => {
   });
 
   it("adds a done line with no live line before it, such as a line of an older API", () => {
-    expect(addStep(addStep(noSteps, "Found Kenneth Walker III", false), "Checked 11 teams for a fit", false).lines).toEqual([
-      "Found Kenneth Walker III",
-      "Checked 11 teams for a fit",
-    ]);
+    expect(
+      addStep(
+        addStep(noSteps, "Found Kenneth Walker III", false),
+        "Checked 11 teams for a fit",
+        false,
+      ).lines,
+    ).toEqual(["Found Kenneth Walker III", "Checked 11 teams for a fit"]);
   });
 
   it("drops a live line that got no done line when the Answer comes", () => {
-    const steps = addStep(addStep(noSteps, "Weighed 41 offers", false), "Picking the best offers", true);
+    const steps = addStep(
+      addStep(noSteps, "Weighed 41 offers", false),
+      "Picking the best offers",
+      true,
+    );
     expect(endSteps(steps)).toEqual(["Weighed 41 offers"]);
     expect(endSteps(addStep(noSteps, "Weighed 41 offers", false))).toEqual(["Weighed 41 offers"]);
   });

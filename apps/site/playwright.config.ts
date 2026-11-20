@@ -6,7 +6,15 @@ import { defineConfig, devices } from "@playwright/test";
 import { shardOfEnv } from "./scripts/playwright-shard.mjs";
 
 // The specs of the floor. The projects "floor" and "floor-timing" split them by the tag @timing.
-const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts", "menu-sheet.spec.ts"];
+const FLOOR_SPECS = [
+  "floor.spec.ts",
+  "scene.spec.ts",
+  "manager-scene.spec.ts",
+  "page-scenes.spec.ts",
+  "front-door*.spec.ts",
+  "analyzer-stage.spec.ts",
+  "menu-sheet.spec.ts",
+];
 
 export default defineConfig({
   testDir: "e2e",
@@ -27,7 +35,15 @@ export default defineConfig({
   projects: [
     // The project "rules" proves each scan of the floor, and each rule of the evidence runner, the smoke run, and the start of
     // its local API, on small real pages.
-    { name: "rules", testMatch: ["floor-rules.spec.ts", "evidence-rules.spec.ts", "smoke-rules.spec.ts", "local-api-rules.spec.ts"] },
+    {
+      name: "rules",
+      testMatch: [
+        "floor-rules.spec.ts",
+        "evidence-rules.spec.ts",
+        "smoke-rules.spec.ts",
+        "local-api-rules.spec.ts",
+      ],
+    },
     // The project "floor" runs the floor on the static export in out/ of the current CLIENT, and checks the hero scene of
     // the latest week page, of a manager page, and of the home and 404 pages there, and the static heroes (ADR 0027). It also checks
     // the layout of the front door, and the idle mesh of the analyzer hero. It skips the tests tagged @timing, which the

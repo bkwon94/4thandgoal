@@ -36,6 +36,7 @@ describe("the hidden route /ask/", () => {
     const current = within(menu).getByRole("link", { current: "page" });
     expect(current.getAttribute("href")).toBe(homeHref());
     expect(current.querySelector("[data-check]")).toBeTruthy();
-    for (const link of screen.getAllByRole("link")) expect(link.getAttribute("href")).not.toContain("/ask");
+    for (const link of screen.getAllByRole("link"))
+      expect(link.getAttribute("href")).not.toContain("/ask");
   });
 });

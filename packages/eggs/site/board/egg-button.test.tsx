@@ -45,7 +45,9 @@ describe("EggButtonScreen", () => {
   });
 
   it("renders nothing while the board loads", () => {
-    const { container } = render(<EggButtonScreen api={fakeEggsApi({ match: false })} href="/eggs/" />);
+    const { container } = render(
+      <EggButtonScreen api={fakeEggsApi({ match: false })} href="/eggs/" />,
+    );
     expect(container.innerHTML).toBe("");
   });
 });

@@ -42,13 +42,20 @@ function expectNoMove(root: HTMLElement) {
 /* Every part ends at full view: no part stays at opacity 0. */
 async function expectShown(root: HTMLElement) {
   await waitFor(() => {
-    for (const part of [root, ...root.querySelectorAll<HTMLElement>("*")]) expect(part.style.opacity).not.toBe("0");
+    for (const part of [root, ...root.querySelectorAll<HTMLElement>("*")])
+      expect(part.style.opacity).not.toBe("0");
   });
 }
 
 describe("Reduced motion on the Site answer (AT-16)", () => {
   it("fades the page card and the rows of its open fold in, with no rise and no blur", async () => {
-    const { container } = render(<SiteAnswer question="where is the trade analyzer" page="analyzer" pages={clientSitePages()} />);
+    const { container } = render(
+      <SiteAnswer
+        question="where is the trade analyzer"
+        page="analyzer"
+        pages={clientSitePages()}
+      />,
+    );
     expectNoMove(container);
     fireEvent.click(within(container).getByRole("button", { name: "All pages · 5" }));
     const rows = within(container).getByRole("list", { name: "Pages" });
@@ -59,14 +66,20 @@ describe("Reduced motion on the Site answer (AT-16)", () => {
     expect(panel.split(/\s+/).filter((name) => name.includes("translate"))).toEqual(
       expect.arrayContaining([expect.stringMatching(/^motion-safe:/)]),
     );
-    expect(panel.split(/\s+/).filter((name) => name.includes("translate") && !name.startsWith("motion-safe:"))).toEqual([]);
+    expect(
+      panel
+        .split(/\s+/)
+        .filter((name) => name.includes("translate") && !name.startsWith("motion-safe:")),
+    ).toEqual([]);
     expectNoMove(container);
     await expectShown(container);
     expectNoMove(container);
   });
 
   it("fades the tiles of the launcher in, with no pop from 0.96 and no blur", async () => {
-    const { container } = render(<SiteAnswer question="what tools are there" page="all" pages={clientSitePages()} />);
+    const { container } = render(
+      <SiteAnswer question="what tools are there" page="all" pages={clientSitePages()} />,
+    );
     expect(within(container).getAllByRole("link")).toHaveLength(6);
     expectNoMove(container);
     await expectShown(container);
@@ -74,7 +87,9 @@ describe("Reduced motion on the Site answer (AT-16)", () => {
   });
 
   it("fades the none rows in, with no rise and no blur", async () => {
-    const { container } = render(<SiteAnswer question="is there a waiver page" page="missing" pages={clientSitePages()} />);
+    const { container } = render(
+      <SiteAnswer question="is there a waiver page" page="missing" pages={clientSitePages()} />,
+    );
     expectNoMove(container);
     await expectShown(container);
     expectNoMove(container);

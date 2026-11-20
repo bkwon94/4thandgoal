@@ -31,14 +31,18 @@ afterAll(() => new Promise<void>((done) => server.close(() => done())));
 
 describe("eggsApi", () => {
   it("gives the seconds of the Retry-After header on a 429 of the check", async () => {
-    const failure = await api.check({ page: "/", target: "luck-3", action: "tap2", conditions: {} }).catch((error) => error);
+    const failure = await api
+      .check({ page: "/", target: "luck-3", action: "tap2", conditions: {} })
+      .catch((error) => error);
     expect(failure).toBeInstanceOf(EggsError);
     expect(failure.status).toBe(429);
     expect(failure.retryAfter).toBe(690);
   });
 
   it("gives the reason of a 422 refusal of the claim, with no wait", async () => {
-    const failure = await api.claim("pass", { token: "t1", roster_id: 3, word: null }).catch((error) => error);
+    const failure = await api
+      .claim("pass", { token: "t1", roster_id: 3, word: null })
+      .catch((error) => error);
     expect(failure.status).toBe(422);
     expect(failure.message).toBe("EAGLES has a winner.");
     expect(failure.retryAfter).toBeUndefined();

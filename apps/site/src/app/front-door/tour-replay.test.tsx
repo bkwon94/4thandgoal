@@ -38,16 +38,19 @@ afterEach(() => {
 });
 
 const findCard = (name: string) => screen.findByRole("dialog", { name }, { timeout: 2000 });
-const queryCard = () => screen.queryByRole("dialog", { name: /^(Suggestions|Ask|Your team|Menu)$/ });
+const queryCard = () =>
+  screen.queryByRole("dialog", { name: /^(Suggestions|Ask|Your team|Menu)$/ });
 const band = () => screen.getByRole("banner");
 
 describe("the replay of the Tour", () => {
-  it("shows a \"Show the tour\" row in the menu sheet that closes the sheet, then shows Stop 1 (AT-27)", async () => {
+  it('shows a "Show the tour" row in the menu sheet that closes the sheet, then shows Stop 1 (AT-27)', async () => {
     render(<HomePage />);
     await screen.findByRole("group", { name: "Suggestions" });
     localStorage.removeItem("cpc.tour-seen");
     fireEvent.click(within(band()).getByRole("button", { name: "Open the menu" }));
-    const sheet = screen.getByRole("navigation", { name: "Pages" }).closest<HTMLElement>('[role="dialog"]')!;
+    const sheet = screen
+      .getByRole("navigation", { name: "Pages" })
+      .closest<HTMLElement>('[role="dialog"]')!;
     fireEvent.click(within(sheet).getByRole("button", { name: "Show the tour" }));
     const card = await findCard("Suggestions");
     expect(within(card).getByText("1 of 4")).toBeTruthy();
@@ -61,13 +64,18 @@ describe("the replay of the Tour", () => {
     let atCard: { focus: Element | null; sheet: boolean } | undefined;
     const observer = new MutationObserver(() => {
       if (atCard !== undefined || !document.querySelector("[data-tour-card]")) return;
-      atCard = { focus: document.activeElement, sheet: screen.queryByRole("navigation", { name: "Pages" }) !== null };
+      atCard = {
+        focus: document.activeElement,
+        sheet: screen.queryByRole("navigation", { name: "Pages" }) !== null,
+      };
     });
     observer.observe(document.body, { subtree: true, childList: true });
     render(<HomePage />);
     await screen.findByRole("group", { name: "Suggestions" });
     fireEvent.click(within(band()).getByRole("button", { name: "Open the menu" }));
-    const sheet = screen.getByRole("navigation", { name: "Pages" }).closest<HTMLElement>('[role="dialog"]')!;
+    const sheet = screen
+      .getByRole("navigation", { name: "Pages" })
+      .closest<HTMLElement>('[role="dialog"]')!;
     fireEvent.click(within(sheet).getByRole("button", { name: "Show the tour" }));
     // Once the sheet leaves, the reader taps the ask box before Stop 1 shows.
     const field = screen.getByRole("textbox", { name: "Ask a question" });
@@ -78,24 +86,27 @@ describe("the replay of the Tour", () => {
     });
     await findCard("Suggestions");
     observer.disconnect();
-    const textField = (el: Element | null | undefined) => !!el && el.matches("input, textarea, [contenteditable]");
+    const textField = (el: Element | null | undefined) =>
+      !!el && el.matches("input, textarea, [contenteditable]");
     expect(atCard?.sheet).toBe(false);
     expect(textField(atCard?.focus)).toBe(false);
     expect(textField(document.activeElement)).toBe(false);
   });
 
-  it("shows a \"?\" button named \"Show the tour\" right before the theme button, and it shows Stop 1 (AT-28)", async () => {
+  it('shows a "?" button named "Show the tour" right before the theme button, and it shows Stop 1 (AT-28)', async () => {
     render(<HomePage />);
     await screen.findByRole("group", { name: "Suggestions" });
     const replay = within(band()).getByRole("button", { name: "Show the tour" });
     // The "?" sits right before the theme button.
-    expect(replay.nextElementSibling?.getAttribute("aria-label")).toMatch(/^Switch to (light|dark) theme$/);
+    expect(replay.nextElementSibling?.getAttribute("aria-label")).toMatch(
+      /^Switch to (light|dark) theme$/,
+    );
     fireEvent.click(replay);
     const card = await findCard("Suggestions");
     expect(within(card).getByText("1 of 4")).toBeTruthy();
   });
 
-  it("puts focus back on the \"?\" button after Done (AT-31)", async () => {
+  it('puts focus back on the "?" button after Done (AT-31)', async () => {
     render(<HomePage />);
     await screen.findByRole("group", { name: "Suggestions" });
     const replay = within(band()).getByRole("button", { name: "Show the tour" });

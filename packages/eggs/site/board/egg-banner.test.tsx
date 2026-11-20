@@ -15,17 +15,24 @@ afterEach(() => {
 
 /* The fixture with the drop of six eggs on Tuesday 27 October, as the API gives it, and `left` eggs left to find. */
 function tuesdayDrop(left: number, droppedAt = "2026-10-27T09:30:00-04:00"): Board {
-  return { ...board, counts: { ...board.counts, left }, last_drop: { week: 10, count: 6, dropped_at: droppedAt } };
+  return {
+    ...board,
+    counts: { ...board.counts, left },
+    last_drop: { week: 10, count: 6, dropped_at: droppedAt },
+  };
 }
 
 const TUESDAY_NIGHT = new Date("2026-10-27T23:30:00-04:00");
 const WEDNESDAY = new Date("2026-10-28T10:00:00-04:00");
 
-const line = () => screen.getByRole("region", { name: "Egg drop" }).querySelector("[data-banner-line]")!.textContent;
+const line = () =>
+  screen.getByRole("region", { name: "Egg drop" }).querySelector("[data-banner-line]")!.textContent;
 
 describe("EggBanner", () => {
   it("names the drop of today on the day of the drop, then the weekday of the drop", () => {
-    const { unmount } = render(<EggBanner board={tuesdayDrop(6)} href="/eggs/" now={TUESDAY_NIGHT} />);
+    const { unmount } = render(
+      <EggBanner board={tuesdayDrop(6)} href="/eggs/" now={TUESDAY_NIGHT} />,
+    );
     expect(line()).toBe("6 eggs dropped today · 6 left");
     unmount();
     render(<EggBanner board={tuesdayDrop(5)} href="/eggs/" now={WEDNESDAY} />);
@@ -34,7 +41,9 @@ describe("EggBanner", () => {
 
   it("reads the day in the timezone of the drop, not of the browser", () => {
     // 01:30 UTC on Wednesday is still Tuesday night in New York.
-    render(<EggBanner board={tuesdayDrop(6)} href="/eggs/" now={new Date("2026-10-28T01:30:00Z")} />);
+    render(
+      <EggBanner board={tuesdayDrop(6)} href="/eggs/" now={new Date("2026-10-28T01:30:00Z")} />,
+    );
     expect(line()).toBe("6 eggs dropped today · 6 left");
   });
 
@@ -53,7 +62,13 @@ describe("EggBanner", () => {
     expect(screen.queryByRole("region", { name: "Egg drop" })).toBeNull();
     reload.unmount();
     // The next drop shows the banner again.
-    render(<EggBanner board={tuesdayDrop(12, "2026-11-03T09:30:00-05:00")} href="/eggs/" now={new Date("2026-11-03T12:00:00-05:00")} />);
+    render(
+      <EggBanner
+        board={tuesdayDrop(12, "2026-11-03T09:30:00-05:00")}
+        href="/eggs/"
+        now={new Date("2026-11-03T12:00:00-05:00")}
+      />,
+    );
     expect(line()).toBe("6 eggs dropped today · 12 left");
   });
 
@@ -65,12 +80,20 @@ describe("EggBanner", () => {
     expect(strip.classList.contains("min-h-banner")).toBe(true);
     expect(strip.classList.contains("h-banner")).toBe(false);
     // The line has no class that cuts or hides text past the end of its box.
-    const cuts = ["truncate", "text-ellipsis", "whitespace-nowrap", "overflow-hidden", "line-clamp-1"];
+    const cuts = [
+      "truncate",
+      "text-ellipsis",
+      "whitespace-nowrap",
+      "overflow-hidden",
+      "line-clamp-1",
+    ];
     expect([...lineBox.classList].filter((name) => cuts.includes(name))).toEqual([]);
   });
 
   it("shows nothing before the first drop", () => {
-    const { container } = render(<EggBanner board={{ ...board, last_drop: null }} href="/eggs/" now={WEDNESDAY} />);
+    const { container } = render(
+      <EggBanner board={{ ...board, last_drop: null }} href="/eggs/" now={WEDNESDAY} />,
+    );
     expect(container.textContent).toBe("");
   });
 });
@@ -82,12 +105,22 @@ describe("EggBannerScreen", () => {
   });
 
   it("renders nothing before the first drop, while the board loads, and when the call fails", async () => {
-    const before = render(<EggBannerScreen api={fakeEggsApi({ match: false }, {}, { ...board, last_drop: null })} href="/eggs/" />);
+    const before = render(
+      <EggBannerScreen
+        api={fakeEggsApi({ match: false }, {}, { ...board, last_drop: null })}
+        href="/eggs/"
+      />,
+    );
     expect(before.container.innerHTML).toBe("");
     await act(async () => {});
     expect(before.container.innerHTML).toBe("");
     before.unmount();
-    const failed = render(<EggBannerScreen api={fakeEggsApi({ match: false }, { board: new EggsError(500, "Server error") })} href="/eggs/" />);
+    const failed = render(
+      <EggBannerScreen
+        api={fakeEggsApi({ match: false }, { board: new EggsError(500, "Server error") })}
+        href="/eggs/"
+      />,
+    );
     await act(async () => {});
     expect(failed.container.innerHTML).toBe("");
   });

@@ -5,17 +5,27 @@
 import type { LucideIcon } from "lucide-react";
 
 /* A plain anchor, so the link skips the router. The whole card is the tap target, well over 44px on each side. */
-export function HomeTile({ href, icon: Icon, name, line }: { href: string; icon: LucideIcon; name: string; line: string }) {
+export function HomeTile({
+  href,
+  icon: Icon,
+  name,
+  line,
+}: {
+  href: string;
+  icon: LucideIcon;
+  name: string;
+  line: string;
+}) {
   return (
     <a
       href={href}
-      className="press group flex h-full min-w-0 flex-col gap-sp-3 rounded-card border border-rule bg-card p-sp-4 text-ink no-underline"
+      className="press group gap-sp-3 rounded-card border-rule bg-card p-sp-4 text-ink flex h-full min-w-0 flex-col border no-underline"
     >
       {/* The name of the tool sits beside the icon, so the icon is decorative. */}
-      <span className="inline-flex size-touch items-center justify-center rounded-tile border border-rule bg-raised text-accent-ink">
+      <span className="size-touch rounded-tile border-rule bg-raised text-accent-ink inline-flex items-center justify-center border">
         <Icon aria-hidden className="size-sp-5" />
       </span>
-      <b className="text-lead leading-tight group-hover:text-accent-ink">{name}</b>
+      <b className="text-lead group-hover:text-accent-ink leading-tight">{name}</b>
       <span className="text-meta leading-body text-mute">{line}</span>
     </a>
   );

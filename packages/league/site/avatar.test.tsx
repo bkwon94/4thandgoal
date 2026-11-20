@@ -31,7 +31,9 @@ describe("Avatar", () => {
   });
 
   it("sets no inline size for a named size", () => {
-    expect(renderAvatar(<Avatar src="avatars/1.png" size="headshot" />).getAttribute("style")).toBeNull();
+    expect(
+      renderAvatar(<Avatar src="avatars/1.png" size="headshot" />).getAttribute("style"),
+    ).toBeNull();
   });
 
   it("swaps to the default avatar once after an error", () => {

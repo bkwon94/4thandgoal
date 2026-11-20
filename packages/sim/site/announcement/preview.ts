@@ -27,10 +27,17 @@ export function previewOf(sim: WeekSim): PreviewData {
       const [winsB, , pointsB] = sim.records[b];
       return winsB - winsA || pointsB - pointsA || a - b;
     })
-    .map((id, index) => ({ id, name: nameOf(sim, id), place: index + 1, odds: sim.pages[id]?.playoff ?? sim.teams[id].playoff }));
+    .map((id, index) => ({
+      id,
+      name: nameOf(sim, id),
+      place: index + 1,
+      odds: sim.pages[id]?.playoff ?? sim.teams[id].playoff,
+    }));
   const whatIf = Object.fromEntries(
     Object.entries(sim.pages).map(([id, page]) => {
-      const win = page.weeks[0]?.results.find((result) => result.game === "win" && result.median !== "below");
+      const win = page.weeks[0]?.results.find(
+        (result) => result.game === "win" && result.median !== "below",
+      );
       return [Number(id), win?.playoff ?? null];
     }),
   );

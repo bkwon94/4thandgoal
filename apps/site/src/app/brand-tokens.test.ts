@@ -10,13 +10,16 @@ import { brandCss, colorsOf, type BrandFile } from "@cpc/design/brand/brand";
 import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
 
 const ROOT = join(process.cwd(), "..", "..");
-const BRAND = parse(readFileSync(join(ROOT, "clients", "cpc", "brand.toml"), "utf8")) as unknown as BrandFile;
+const BRAND = parse(
+  readFileSync(join(ROOT, "clients", "cpc", "brand.toml"), "utf8"),
+) as unknown as BrandFile;
 const GLOBALS = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
 const CSS = brandCss(BRAND, { source: "clients/cpc/brand.toml" }) + GLOBALS;
 
 function declarations(block: string): Map<string, string> {
   const map = new Map<string, string>();
-  for (const [, name, value] of block.matchAll(/(--[a-z0-9-]+):\s*([^;]+);/g)) map.set(name, value.trim());
+  for (const [, name, value] of block.matchAll(/(--[a-z0-9-]+):\s*([^;]+);/g))
+    map.set(name, value.trim());
   return map;
 }
 
@@ -38,12 +41,16 @@ function blocksAt(css: string, opener: RegExp): string[] {
 }
 
 function resolve(value: string, map: Map<string, string>): string {
-  return value.replace(/var\((--[a-z0-9-]+)\)/g, (_, name: string) => resolve(map.get(name) ?? `MISSING(${name})`, map));
+  return value.replace(/var\((--[a-z0-9-]+)\)/g, (_, name: string) =>
+    resolve(map.get(name) ?? `MISSING(${name})`, map),
+  );
 }
 
 /* A short hex such as #fff and its long form #ffffff are one color, so each hex compares in its long form. */
 function longHex(value: string): string {
-  return value.toLowerCase().replace(/#([0-9a-f])([0-9a-f])([0-9a-f])(?![0-9a-f])/g, "#$1$1$2$2$3$3");
+  return value
+    .toLowerCase()
+    .replace(/#([0-9a-f])([0-9a-f])([0-9a-f])(?![0-9a-f])/g, "#$1$1$2$2$3$3");
 }
 
 /* The resolved color tokens of one stylesheet, light and dark. The .dark blocks re-point the light set. */
@@ -51,8 +58,13 @@ function themesOf(css: string): (theme: "light" | "dark", token: string) => stri
   let stripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
   for (const block of blocksAt(stripped, /@theme inline/)) stripped = stripped.replace(block, "");
   const darkBlocks = blocksAt(stripped, /\.dark\s*\{/);
-  const lightMap = declarations(darkBlocks.reduce((rest, block) => rest.replace(block, ""), stripped));
-  const darkMap = new Map([...lightMap, ...darkBlocks.flatMap((block) => [...declarations(block)])]);
+  const lightMap = declarations(
+    darkBlocks.reduce((rest, block) => rest.replace(block, ""), stripped),
+  );
+  const darkMap = new Map([
+    ...lightMap,
+    ...darkBlocks.flatMap((block) => [...declarations(block)]),
+  ]);
   return (theme, token) => {
     const map = theme === "light" ? lightMap : darkMap;
     return longHex(resolve(map.get(`--color-${token}`) ?? `MISSING(${token})`, map));
@@ -63,22 +75,25 @@ const value = themesOf(CSS);
 
 /* The resolved value of each color token of CPC, light and dark. The key is the token name. */
 const CPC: Record<string, [string, string]> = {
-  "accent": ["#b8342a", "#b8342a"],
-  "band": ["#141414", "#141414"],
-  "card": ["#fff", "#1f1f1f"],
-  "page": ["#f4f4f4", "#141414"],
-  "raised": ["#ebebeb", "#262626"],
-  "grid": ["#1c1c1c", "#1c1c1c"],
+  accent: ["#b8342a", "#b8342a"],
+  band: ["#141414", "#141414"],
+  card: ["#fff", "#1f1f1f"],
+  page: ["#f4f4f4", "#141414"],
+  raised: ["#ebebeb", "#262626"],
+  grid: ["#1c1c1c", "#1c1c1c"],
   "accent-text": ["#f2a59e", "#f2a59e"],
   "accent-ink": ["#a52e25", "#f2a59e"],
-  "accent-glow": ["color-mix(in srgb, #b8342a 45%, transparent)", "color-mix(in srgb, #b8342a 45%, transparent)"],
+  "accent-glow": [
+    "color-mix(in srgb, #b8342a 45%, transparent)",
+    "color-mix(in srgb, #b8342a 45%, transparent)",
+  ],
   "card-band": ["#141414", "#262626"],
-  "ink": ["#141414", "#fff"],
+  ink: ["#141414", "#fff"],
   "ink-2": ["#3a3a3a", "#ccc"],
-  "mute": ["#666", "#999"],
-  "rule": ["#e0e0e0", "#333"],
+  mute: ["#666", "#999"],
+  rule: ["#e0e0e0", "#333"],
   "bar-off": ["#ddd", "#777"],
-  "divider": ["color-mix(in srgb, #141414 20%, #f4f4f4)", "#555"],
+  divider: ["color-mix(in srgb, #141414 20%, #f4f4f4)", "#555"],
   "on-dark": ["#fff", "#fff"],
   "on-dark-2": ["#ccc", "#ccc"],
   "on-dark-muted": ["#999", "#999"],
@@ -93,7 +108,6 @@ describe("the color tokens of the site", () => {
     expect(value("light", token)).toBe(longHex(light));
     expect(value("dark", token)).toBe(longHex(dark));
   });
-
 });
 
 /* Each client folder with a brand. The scene of the hero reads its colors once at mount, so a client that is added later is held too. */
@@ -113,30 +127,41 @@ describe("the three colors of the hero scene (decision 03)", () => {
   });
 
   // The canvas reads accent, on-dark, and on-dark-muted once at mount. Equal sets keep that read right after a theme switch.
-  it.each(BRAND_CLIENTS)("keeps accent, on-dark, and on-dark-muted equal in the light and the dark set of %s", (slug) => {
-    const brand = parse(readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8")) as unknown as BrandFile;
-    const light = colorsOf(brand, "light");
-    const dark = colorsOf(brand, "dark");
-    for (const role of ["accent", "on_dark", "on_dark_muted"] as const) expect(light[role], role).toEqual(dark[role]);
-  });
+  it.each(BRAND_CLIENTS)(
+    "keeps accent, on-dark, and on-dark-muted equal in the light and the dark set of %s",
+    (slug) => {
+      const brand = parse(
+        readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8"),
+      ) as unknown as BrandFile;
+      const light = colorsOf(brand, "light");
+      const dark = colorsOf(brand, "dark");
+      for (const role of ["accent", "on_dark", "on_dark_muted"] as const)
+        expect(light[role], role).toEqual(dark[role]);
+    },
+  );
 });
 
 /* The look of the front door: the "Night" look of decision 07 in dark, the brand look in light. Each value mixes the
    roles of the brand of the client, so each client keeps its own accent and surfaces in both themes (AT-45). */
 describe("the look of the front door in the brand of each client (AT-45 of front-door)", () => {
-  it.each(BRAND_CLIENTS)("derives the glass, the hairline, the halo, and the team name from the brand of %s", (slug) => {
-    const brand = parse(readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8")) as unknown as BrandFile;
-    const door = themesOf(brandCss(brand, { source: `clients/${slug}/brand.toml` }) + GLOBALS);
-    for (const theme of ["light", "dark"] as const) {
-      expect(door(theme, "door-glass"), `${theme} glass`).toContain(door(theme, "card"));
-      expect(door(theme, "door-halo"), `${theme} halo`).toContain(door(theme, "accent"));
-    }
-    // Light keeps the rule and the ink of the brand. Dark takes a hairline of the ink and the accent ink for the name.
-    expect(door("light", "door-hair")).toBe(door("light", "rule"));
-    expect(door("dark", "door-hair")).toContain(door("dark", "ink"));
-    expect(door("light", "door-name")).toBe(door("light", "ink"));
-    expect(door("dark", "door-name")).toBe(door("dark", "accent-ink"));
-  });
+  it.each(BRAND_CLIENTS)(
+    "derives the glass, the hairline, the halo, and the team name from the brand of %s",
+    (slug) => {
+      const brand = parse(
+        readFileSync(join(ROOT, "clients", slug, "brand.toml"), "utf8"),
+      ) as unknown as BrandFile;
+      const door = themesOf(brandCss(brand, { source: `clients/${slug}/brand.toml` }) + GLOBALS);
+      for (const theme of ["light", "dark"] as const) {
+        expect(door(theme, "door-glass"), `${theme} glass`).toContain(door(theme, "card"));
+        expect(door(theme, "door-halo"), `${theme} halo`).toContain(door(theme, "accent"));
+      }
+      // Light keeps the rule and the ink of the brand. Dark takes a hairline of the ink and the accent ink for the name.
+      expect(door("light", "door-hair")).toBe(door("light", "rule"));
+      expect(door("dark", "door-hair")).toContain(door("dark", "ink"));
+      expect(door("light", "door-name")).toBe(door("light", "ink"));
+      expect(door("dark", "door-name")).toBe(door("dark", "accent-ink"));
+    },
+  );
 
   it("sets no color and no font of its own in the components of the front door, so the brand and the look paint it", () => {
     const hits = sourceFiles(join(process.cwd(), "src/app/front-door"))
@@ -153,7 +178,9 @@ describe("the look of the front door in the brand of each client (AT-45 of front
 });
 
 /* The @theme static block of globals.css, where the look keeps its tokens beside the spacing and the type scale. */
-const LOOK = declarations(blocksAt(GLOBALS.replace(/\/\*[\s\S]*?\*\//g, ""), /@theme static/)[0] ?? "");
+const LOOK = declarations(
+  blocksAt(GLOBALS.replace(/\/\*[\s\S]*?\*\//g, ""), /@theme static/)[0] ?? "",
+);
 
 describe("the fonts and the radii of the look", () => {
   it("set Space Grotesk for text and headings and JetBrains Mono for numbers, from the font variables of the root layout", () => {
@@ -189,7 +216,9 @@ describe("the motion of the look (AT-7, AT-8)", () => {
   it("scales a tap to 0.98, and turns the tap scale off with reduced motion", () => {
     const press = blocksAt(RULES, /@utility press/)[0];
     expect(press).toMatch(/&:active\s*{\s*transform: scale\(0\.98\);/);
-    expect(blocksAt(press, /@media \(prefers-reduced-motion: reduce\)/)[0]).toMatch(/transform: none/);
+    expect(blocksAt(press, /@media \(prefers-reduced-motion: reduce\)/)[0]).toMatch(
+      /transform: none/,
+    );
   });
 
   it("holds no scan line of the hero: no scan rule and no scan keyframes (AT-39)", () => {
@@ -218,7 +247,8 @@ describe("the source of the site (AT-8)", () => {
 
 /* The site self-hosts its fonts with next/font/local. next/font/google fetches from Google at each build, so it is banned
    with the outside font hosts and any remote url of a stylesheet. */
-const OUTSIDE_FONT = /next\/font\/google|fonts\.googleapis|fonts\.gstatic|use\.typekit|url\(\s*["']?(https?:)?\/\//;
+const OUTSIDE_FONT =
+  /next\/font\/google|fonts\.googleapis|fonts\.gstatic|use\.typekit|url\(\s*["']?(https?:)?\/\//;
 
 describe("the fonts of the site", () => {
   it("ban next/font/google and the outside hosts, but not next/font/local", () => {

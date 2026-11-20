@@ -14,5 +14,12 @@ export function TopPerformers({ manager }: { manager: Manager }) {
     points: performer.points,
     under: `${oneDecimal(performer.per_game)} a game`,
   }));
-  return <PlayerChapter id="top-performers" title="Top Performers" empty="No starts yet." items={items} />;
+  return (
+    <PlayerChapter
+      id="top-performers"
+      title="Top Performers"
+      empty="No starts yet."
+      items={items}
+    />
+  );
 }

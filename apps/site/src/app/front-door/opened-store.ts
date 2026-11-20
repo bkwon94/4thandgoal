@@ -19,10 +19,17 @@ function readAll(): Opened {
 /* The opened Topics of one team in this week, each with the fact it had at the open. An older week reads as none. */
 export function getOpened(teamId: number, week: number): Record<string, string> {
   const entry = readAll()[String(teamId)];
-  return entry && entry.week === week && entry.topics && typeof entry.topics === "object" ? entry.topics : {};
+  return entry && entry.week === week && entry.topics && typeof entry.topics === "object"
+    ? entry.topics
+    : {};
 }
 
-export function markOpened(teamId: number, week: number, topic: string, fact: string): Record<string, string> {
+export function markOpened(
+  teamId: number,
+  week: number,
+  topic: string,
+  fact: string,
+): Record<string, string> {
   const all = readAll();
   const topics = { ...getOpened(teamId, week), [topic]: fact };
   all[String(teamId)] = { week, topics };

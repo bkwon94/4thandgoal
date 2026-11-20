@@ -23,13 +23,15 @@ export function HomeChapter({
   return (
     <section id={id} aria-labelledby={heading}>
       {/* The chapter rises in once as it enters the view, as a chapter of the week page does. */}
-      <Reveal duration={DURATION.rise} ease={RISE_EASE} className="flex flex-col gap-sp-3">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
-          <h2 id={heading} className="m-0 text-stat leading-tight font-bold">
+      <Reveal duration={DURATION.rise} ease={RISE_EASE} className="gap-sp-3 flex flex-col">
+        <div className="gap-x-sp-3 gap-y-sp-1 flex flex-wrap items-baseline justify-between">
+          <h2 id={heading} className="text-stat m-0 leading-tight font-bold">
             {title}
           </h2>
           {note !== undefined && (
-            <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{note}</span>
+            <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+              {note}
+            </span>
           )}
         </div>
         {children}

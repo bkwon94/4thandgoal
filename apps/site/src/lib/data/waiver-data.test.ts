@@ -43,7 +43,11 @@ describe("loadWaiver", () => {
     const board = loadWaiver("2026", "week-06")!;
     expect(board.week).toBe(6);
     expect(board.buckets.best_adds).toHaveLength(8);
-    expect(board.buckets.best_adds[0]).toMatchObject({ player_id: "7567", name: "Kenny Gainwell", position: "RB" });
+    expect(board.buckets.best_adds[0]).toMatchObject({
+      player_id: "7567",
+      name: "Kenny Gainwell",
+      position: "RB",
+    });
     expect(board.budgets).toHaveLength(12);
   });
 
@@ -53,7 +57,9 @@ describe("loadWaiver", () => {
   });
 
   it("throws when the schema version is not 1", async () => {
-    const { loadWaiver } = await readerOver(["week-06"], { "week-06": { ...fixture, schema_version: 2 } });
+    const { loadWaiver } = await readerOver(["week-06"], {
+      "week-06": { ...fixture, schema_version: 2 },
+    });
     expect(() => loadWaiver("2026", "week-06")).toThrow(/schema_version 2/);
   });
 });

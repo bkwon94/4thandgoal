@@ -50,7 +50,10 @@ export function ThemeButton({ className }: { className: string }) {
       type="button"
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={switchTheme}
-      className={cn("press flex size-touch flex-none items-center justify-center text-ink hover-fine:text-accent-ink", className)}
+      className={cn(
+        "press size-touch text-ink hover-fine:text-accent-ink flex flex-none items-center justify-center",
+        className,
+      )}
     >
       <Icon aria-hidden className="size-sp-5" />
     </button>

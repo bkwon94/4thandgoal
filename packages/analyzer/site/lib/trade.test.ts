@@ -42,7 +42,13 @@ describe("analyzeRequest", () => {
       season: 2026,
       asker: 4,
       sides: [
-        { roster_id: 4, gives: [{ player_id: "p1", to: 12 }, { player_id: "p2", to: 7 }] },
+        {
+          roster_id: 4,
+          gives: [
+            { player_id: "p1", to: 12 },
+            { player_id: "p2", to: 7 },
+          ],
+        },
         { roster_id: 12, gives: [{ player_id: "p4", to: 7 }] },
         { roster_id: 7, gives: [{ player_id: "p5", to: 4 }] },
       ],
@@ -65,7 +71,9 @@ describe("everySideTrades", () => {
       { id: 1, rosterId: 12, gets: [] },
     ];
     expect(everySideTrades(gets)).toBe(false);
-    expect(everySideTrades([gets[0], { ...gets[1], gets: [{ playerId: "p1", fromSide: 0 }] }])).toBe(true);
+    expect(
+      everySideTrades([gets[0], { ...gets[1], gets: [{ playerId: "p1", fromSide: 0 }] }]),
+    ).toBe(true);
   });
 });
 

@@ -53,7 +53,17 @@ beforeEach(() => {
   onOpen.mockReset();
   onRostersStale.mockReset();
   vi.stubGlobal("fetch", fetchStub);
-  render(<TradeFinder teams={TEAMS} target={apiTarget} asker={2} passphrase="localtest" onUnauthorized={onUnauthorized} onRostersStale={onRostersStale} onOpen={onOpen} />);
+  render(
+    <TradeFinder
+      teams={TEAMS}
+      target={apiTarget}
+      asker={2}
+      passphrase="localtest"
+      onUnauthorized={onUnauthorized}
+      onRostersStale={onRostersStale}
+      onOpen={onOpen}
+    />,
+  );
 });
 
 afterEach(() => {
@@ -65,7 +75,9 @@ describe("TradeFinder", () => {
   it("shows the wait text while the search runs, with no chart named", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     find();
-    expect(await screen.findByText("The search tries every small swap. This can take up to a minute.")).toBeTruthy();
+    expect(
+      await screen.findByText("The search tries every small swap. This can take up to a minute."),
+    ).toBeTruthy();
     expect(screen.queryByText(/chart/i)).toBeNull();
   });
 
@@ -105,7 +117,11 @@ describe("TradeFinder", () => {
     answer(200, fixture);
     findWithPartner();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({ season: 2026, asker: 2, partner: 3 });
+    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({
+      season: 2026,
+      asker: 2,
+      partner: 3,
+    });
     fireEvent.click(screen.getByRole("button", { name: "Search Every Team" }));
     expect(cards()).toHaveLength(0);
     answer(200, fixture);
@@ -121,7 +137,8 @@ describe("TradeFinder", () => {
     cards().forEach((card, i) => {
       const trade = fixture.trades[i];
       expect(within(card).getByText(trade.headline!)).toBeTruthy();
-      for (const side of trade.sides) for (const player of side.gives) expect(card.textContent).toContain(player.name);
+      for (const side of trade.sides)
+        for (const player of side.gives) expect(card.textContent).toContain(player.name);
       const rows = within(card).getAllByRole("button", { expanded: false });
       expect(rows).toHaveLength(trade.bullets.length);
       trade.bullets.forEach((bullet, n) => {
@@ -153,7 +170,11 @@ describe("TradeFinder", () => {
 
   it("shows the finder as one card with its title, the copy, the partner row, and the button", async () => {
     const finder = screen.getByRole("region", { name: "Find a Trade" });
-    expect(within(finder).getByText("Pick a partner, or search every team. The search finds up to 3 trades.")).toBeTruthy();
+    expect(
+      within(finder).getByText(
+        "Pick a partner, or search every team. The search finds up to 3 trades.",
+      ),
+    ).toBeTruthy();
     expect(within(finder).getByRole("group", { name: "Trade Partner" })).toBeTruthy();
     expect(within(finder).getByRole("button", { name: "Find a Trade" })).toBeTruthy();
     fireEvent.click(within(picker()).getByRole("radio", { name: /Lil Fridge/ }));
@@ -167,11 +188,9 @@ describe("TradeFinder", () => {
     answer(200, fixture);
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    expect(cards().map((card) => within(card).getByRole("heading", { level: 3 }).textContent)).toEqual([
-      "Trade 1 of 3",
-      "Trade 2 of 3",
-      "Trade 3 of 3",
-    ]);
+    expect(
+      cards().map((card) => within(card).getByRole("heading", { level: 3 }).textContent),
+    ).toEqual(["Trade 1 of 3", "Trade 2 of 3", "Trade 3 of 3"]);
     expect(within(cards()[0]).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
   });
 
@@ -186,17 +205,33 @@ describe("TradeFinder", () => {
   });
 
   it("shows the fact lines of each shortlist offer after a fallback, with no headline and no row", async () => {
-    const lines = ["Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade.", "Second line."];
-    const trades = fixture.trades.map((t) => ({ ...t, headline: null, bullets: [], fact_lines: lines }));
+    const lines = [
+      "Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade.",
+      "Second line.",
+    ];
+    const trades = fixture.trades.map((t) => ({
+      ...t,
+      headline: null,
+      bullets: [],
+      fact_lines: lines,
+    }));
     answer(200, { ...fixture, fallback: true, trades });
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    expect(screen.getByText("The picks did not come through. These are the trades the search kept, with their facts.")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "The picks did not come through. These are the trades the search kept, with their facts.",
+      ),
+    ).toBeTruthy();
     cards().forEach((card, i) => {
       expect(card.textContent).not.toContain(fixture.trades[i].headline);
       expect(within(card).queryAllByRole("button", { expanded: false })).toHaveLength(0);
       const facts = within(card).getByRole("list", { name: "Facts" });
-      expect(within(facts).getAllByRole("listitem").map((item) => item.textContent)).toEqual(lines);
+      expect(
+        within(facts)
+          .getAllByRole("listitem")
+          .map((item) => item.textContent),
+      ).toEqual(lines);
       expect(within(card).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
     });
   });
@@ -213,7 +248,9 @@ describe("TradeFinder", () => {
     find();
     // The fixture find ran with 14 known games of week 6, so the line names them as on the analyze result.
     const asOf = await screen.findByText(/^Stats through/);
-    expect(asOf.textContent).toMatch(/^Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · rosters fetched /);
+    expect(asOf.textContent).toMatch(
+      /^Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · rosters fetched /,
+    );
   });
 
   it("shows the wait line on a 429", async () => {
@@ -235,7 +272,9 @@ describe("TradeFinder", () => {
   it("shows the same down line as the trade form on a 503 with no detail", async () => {
     answer(503);
     find();
-    expect(await screen.findByText("The analyzer is down for the moment. Try again in a few minutes.")).toBeTruthy();
+    expect(
+      await screen.findByText("The analyzer is down for the moment. Try again in a few minutes."),
+    ).toBeTruthy();
     expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
     expect(onRostersStale).not.toHaveBeenCalled();
   });

@@ -26,47 +26,59 @@ const FACE = "relative grid size-touch flex-none place-items-center rounded-full
 
 export function TeamsRow({ slots, onPickSlot, onAdd, locked }: TeamsRowProps) {
   return (
-    <ul aria-label="Teams in the trade" className="m-0 flex list-none flex-wrap items-start gap-sp-4 p-0">
+    <ul
+      aria-label="Teams in the trade"
+      className="gap-sp-4 m-0 flex list-none flex-wrap items-start p-0"
+    >
       {slots.map((slot, index) => (
         <li key={slot.id}>
           <button
             type="button"
             disabled={locked}
             onClick={() => onPickSlot(index)}
-            aria-label={slot.team ? `${slot.title}: ${slot.team.team}. Change the team` : `Pick ${slot.title}`}
-            className="press flex cursor-pointer flex-col items-center gap-sp-1 rounded-card text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed"
+            aria-label={
+              slot.team ? `${slot.title}: ${slot.team.team}. Change the team` : `Pick ${slot.title}`
+            }
+            className="press gap-sp-1 rounded-card text-ink focus-visible:outline-accent flex cursor-pointer flex-col items-center focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed"
           >
-            <span className={`${FACE} ${slot.team ? "border-accent" : "border-dashed border-rule bg-card"}`}>
+            <span
+              className={`${FACE} ${slot.team ? "border-accent" : "border-rule bg-card border-dashed"}`}
+            >
               {slot.team ? (
                 <>
-                  <Avatar src={slot.team.avatar ?? AVATAR_FALLBACK} className="size-full rounded-full bg-card object-cover" />
+                  <Avatar
+                    src={slot.team.avatar ?? AVATAR_FALLBACK}
+                    className="bg-card size-full rounded-full object-cover"
+                  />
                   <span
                     aria-hidden="true"
-                    className="absolute -right-sp-1 -bottom-sp-1 grid size-sp-5 place-items-center rounded-full bg-band font-mono text-meta font-bold text-on-dark"
+                    className="-right-sp-1 -bottom-sp-1 size-sp-5 bg-band text-meta text-on-dark absolute grid place-items-center rounded-full font-mono font-bold"
                   >
                     {index + 1}
                   </span>
                 </>
               ) : (
-                <span className="font-mono text-meta font-bold text-mute">{index + 1}</span>
+                <span className="text-meta text-mute font-mono font-bold">{index + 1}</span>
               )}
             </span>
-            <span className="max-w-[6rem] truncate text-meta leading-tight font-bold">{slot.title}</span>
+            <span className="text-meta max-w-[6rem] truncate leading-tight font-bold">
+              {slot.title}
+            </span>
           </button>
         </li>
       ))}
       {slots.length < MAX_SIDES && (
-        <li className="flex flex-col items-center gap-sp-1">
+        <li className="gap-sp-1 flex flex-col items-center">
           <button
             type="button"
             disabled={locked}
             onClick={onAdd}
             aria-label="Add a team"
-            className={`press ${FACE} cursor-pointer border-dashed border-rule bg-card text-ink hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed`}
+            className={`press ${FACE} border-rule bg-card text-ink hover:border-accent focus-visible:outline-accent cursor-pointer border-dashed focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed`}
           >
             <PlusIcon aria-hidden="true" className="size-sp-5" />
           </button>
-          <span className="font-mono text-meta leading-tight font-bold text-mute">
+          <span className="text-meta text-mute font-mono leading-tight font-bold">
             {slots.length} of {MAX_SIDES}
           </span>
         </li>

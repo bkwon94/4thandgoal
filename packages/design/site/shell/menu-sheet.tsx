@@ -18,8 +18,23 @@ import {
   XIcon,
   type LucideIcon,
 } from "lucide-react";
-import { createContext, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle, SheetTrigger } from "../ui/sheet";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import {
+  Sheet,
+  SheetBackdrop,
+  SheetContent,
+  SheetGrip,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 import { weekChipLabel, type NavItem, type NavKind, type WeekLink } from "./nav";
 
 type SheetKind = Exclude<NavKind, "midseason">;
@@ -72,7 +87,9 @@ type MenuSheetProps = {
 /* The sheet drops from the top edge, rests at the height of its rows, and moves on the default iOS spring of the
    Drawer, with no tune (decision 08). Under reduced motion the Drawer fades it and does not slide it (ADR 0034). */
 export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSheetProps) {
-  const items = all.filter((item): item is NavItem & { kind: SheetKind } => item.kind !== "midseason");
+  const items = all.filter(
+    (item): item is NavItem & { kind: SheetKind } => item.kind !== "midseason",
+  );
   const [open, setOpen] = useState(false);
   const [pastOpen, setPastOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
@@ -154,7 +171,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
         ref={button}
         aria-expanded={open}
         aria-label={open ? "Close the menu" : "Open the menu"}
-        className="press -mr-sp-3 flex size-touch flex-none items-center justify-center text-ink hover-fine:text-accent-ink desktop:hidden [@media(scripting:none)]:hidden"
+        className="press -mr-sp-3 size-touch text-ink hover-fine:text-accent-ink desktop:hidden flex flex-none items-center justify-center [@media(scripting:none)]:hidden"
       >
         <span aria-hidden data-open={open || undefined} className="menu-icon">
           <MenuIcon className="size-sp-5" />
@@ -165,14 +182,10 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
       <SheetBackdrop data-testid="menu-scrim" data-menu-sheet="" className="desktop:hidden" />
       {/* data-menu-sheet lets globals.css move the top edge of the sheet and the dim to the bottom of the band, so the
           band stays on top. */}
-      <SheetContent
-        ref={sheet}
-        data-menu-sheet=""
-        className="flex w-full flex-col desktop:hidden"
-      >
+      <SheetContent ref={sheet} data-menu-sheet="" className="desktop:hidden flex w-full flex-col">
         <SheetTitle className="sr-only">Pages</SheetTitle>
         <nav aria-label="Pages">
-          <ul className="mx-auto m-0 flex max-w-band list-none flex-col gap-sp-1 px-gutter pt-sp-2 pb-sp-1">
+          <ul className="max-w-band gap-sp-1 px-gutter pt-sp-2 pb-sp-1 m-0 mx-auto flex list-none flex-col">
             {items.map((item) => {
               const Icon = ICONS[item.kind];
               const here = item.href === current;
@@ -181,19 +194,38 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
                   <a
                     href={item.href}
                     aria-current={here ? "page" : undefined}
-                    className="press flex min-h-dock items-center gap-sp-3 rounded-tile px-sp-2 text-ink no-underline hover-fine:bg-raised aria-[current=page]:bg-raised"
+                    className="press min-h-dock gap-sp-3 rounded-tile px-sp-2 text-ink hover-fine:bg-raised aria-[current=page]:bg-raised flex items-center no-underline"
                   >
-                    <span aria-hidden className="flex size-touch flex-none items-center justify-center rounded-tile bg-raised text-ink-2">
+                    <span
+                      aria-hidden
+                      className="size-touch rounded-tile bg-raised text-ink-2 flex flex-none items-center justify-center"
+                    >
                       <Icon className="size-sp-5" />
                     </span>
                     <span className="flex min-w-0 flex-auto flex-col">
-                      <span className="truncate text-body leading-tight font-semibold">{item.label}</span>
-                      <span className="truncate text-meta leading-tight text-mute">{NOTES[item.kind]}</span>
+                      <span className="text-body truncate leading-tight font-semibold">
+                        {item.label}
+                      </span>
+                      <span className="text-meta text-mute truncate leading-tight">
+                        {NOTES[item.kind]}
+                      </span>
                     </span>
-                    {here && <CheckIcon aria-hidden data-check="" className="size-sp-5 flex-none text-accent-ink" strokeWidth={2.5} />}
+                    {here && (
+                      <CheckIcon
+                        aria-hidden
+                        data-check=""
+                        className="size-sp-5 text-accent-ink flex-none"
+                        strokeWidth={2.5}
+                      />
+                    )}
                   </a>
                   {item === week && past.length > 0 && (
-                    <PastWeeks weeks={past} pageHref={pageHref} open={pastOpen} onToggle={() => setPastOpen((was) => !was)} />
+                    <PastWeeks
+                      weeks={past}
+                      pageHref={pageHref}
+                      open={pastOpen}
+                      onToggle={() => setPastOpen((was) => !was)}
+                    />
                   )}
                 </li>
               );
@@ -202,7 +234,7 @@ export function MenuSheet({ items: all, weeks, current, pageHref, foot }: MenuSh
         </nav>
         {foot && (
           <CloseMenuSheet.Provider value={closeThen}>
-            <div className="mx-auto w-full max-w-band px-gutter pb-sp-1">{foot}</div>
+            <div className="max-w-band px-gutter pb-sp-1 mx-auto w-full">{foot}</div>
           </CloseMenuSheet.Provider>
         )}
         {/* The grip at the bottom edge shows that the sheet drags. */}
@@ -225,26 +257,36 @@ function PastWeeks({ weeks, pageHref, open, onToggle }: PastWeeksProps) {
         aria-expanded={open}
         aria-controls={id}
         onClick={onToggle}
-        className="press flex min-h-touch items-center gap-sp-1 text-meta font-semibold text-ink-2 hover-fine:text-ink"
+        className="press min-h-touch gap-sp-1 text-meta text-ink-2 hover-fine:text-ink flex items-center font-semibold"
       >
         Past weeks
-        <ChevronDownIcon aria-hidden data-open={open || undefined} className="menu-chevron size-sp-4" />
+        <ChevronDownIcon
+          aria-hidden
+          data-open={open || undefined}
+          className="menu-chevron size-sp-4"
+        />
       </button>
       {/* The pad sits on the inner list, never on the grid track, so the closed track has no height left. */}
-      <div id={id} data-open={open || undefined} aria-hidden={!open || undefined} inert={!open} className="menu-past">
+      <div
+        id={id}
+        data-open={open || undefined}
+        aria-hidden={!open || undefined}
+        inert={!open}
+        className="menu-past"
+      >
         <div className="min-h-0 overflow-hidden">
-          <ul aria-label="Past weeks" className="m-0 flex list-none flex-wrap gap-sp-2 p-0 pb-sp-2">
-          {weeks.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                aria-current={link.href === pageHref ? "page" : undefined}
-                className="press flex min-h-touch min-w-touch items-center justify-center rounded-pill border border-rule bg-card px-sp-4 font-mono text-meta font-bold tracking-caps text-ink no-underline aria-[current=page]:border-accent"
-              >
-                {weekChipLabel(link.number)}
-              </a>
-            </li>
-          ))}
+          <ul aria-label="Past weeks" className="gap-sp-2 pb-sp-2 m-0 flex list-none flex-wrap p-0">
+            {weeks.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  aria-current={link.href === pageHref ? "page" : undefined}
+                  className="press min-h-touch min-w-touch rounded-pill border-rule bg-card px-sp-4 text-meta tracking-caps text-ink aria-[current=page]:border-accent flex items-center justify-center border font-mono font-bold no-underline"
+                >
+                  {weekChipLabel(link.number)}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

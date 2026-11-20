@@ -15,7 +15,10 @@ type League = keyof typeof BO_GIRDS;
 const roots: string[] = [];
 
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 404 })));
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response("", { status: 404 })),
+  );
 });
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
    action. */
@@ -34,7 +37,9 @@ async function doorOf(league: League) {
   const root = mkdtempSync(join(tmpdir(), "front-door-recap-"));
   roots.push(root);
   // The path comes from this file and not from the working folder, because the test points the working folder at root.
-  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), { recursive: true });
+  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), {
+    recursive: true,
+  });
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them.
   vi.resetModules();
@@ -74,7 +79,9 @@ describe("the recap card", () => {
     expect(card.textContent).toContain("Kenneth Walker III");
     expect(card.textContent).toContain("34.3");
     expect(card.textContent).toContain("Proj 20.07");
-    expect(card.textContent).toContain("Bo Girds held the lead over Teehee from Thursday all the way to Monday");
+    expect(card.textContent).toContain(
+      "Bo Girds held the lead over Teehee from Thursday all the way to Monday",
+    );
   });
 
   it("shows the score against kaiedmonds and no median tick in norcal (AT-23)", async () => {

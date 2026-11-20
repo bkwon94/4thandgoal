@@ -62,6 +62,10 @@ describe("boot script", () => {
 
 describe("the first paint of a brand", () => {
   it("paints every brand dark from the build, with the boot script and the theme button (AT-1, AT-4)", () => {
-    expect(paintOf()).toEqual({ rootClass: DARK_CLASS, bootScript: BOOT_SCRIPT, themeButton: true });
+    expect(paintOf()).toEqual({
+      rootClass: DARK_CLASS,
+      bootScript: BOOT_SCRIPT,
+      themeButton: true,
+    });
   });
 });

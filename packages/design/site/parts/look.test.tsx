@@ -68,7 +68,9 @@ describe("Hero", () => {
 
 /* The hero slots that a hero renders, in the order of the markup. */
 function slotsOf(container: HTMLElement): (string | null)[] {
-  return [...container.querySelectorAll("[data-hero-slot]")].map((element) => element.getAttribute("data-hero-slot"));
+  return [...container.querySelectorAll("[data-hero-slot]")].map((element) =>
+    element.getAttribute("data-hero-slot"),
+  );
 }
 
 describe("Hero slots", () => {
@@ -86,7 +88,9 @@ describe("Hero slots", () => {
     );
     expect(slotsOf(container)).toEqual(["eyebrow", "title", "meta", "feature", "stats", "action"]);
     const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
-    expect(hero.textContent).toBe("7-9 · 9th of 12To Infinity and Bijanbjpicard96Week chipsPlayoff 41%Week 8");
+    expect(hero.textContent).toBe(
+      "7-9 · 9th of 12To Infinity and Bijanbjpicard96Week chipsPlayoff 41%Week 8",
+    );
   });
 
   it("renders no element for an absent slot, and no hairline with no stats", () => {
@@ -96,7 +100,9 @@ describe("Hero slots", () => {
   });
 
   it("draws one hairline, hidden from a screen reader, directly before the stats", () => {
-    const { container } = render(<Hero label="Rank 1" title="Lil Fridge" stats={<span>Playoff 99%</span>} />);
+    const { container } = render(
+      <Hero label="Rank 1" title="Lil Fridge" stats={<span>Playoff 99%</span>} />,
+    );
     const rule = container.querySelector("[data-hero-rule]")!;
     expect(rule.getAttribute("aria-hidden")).toBe("true");
     expect(rule.nextElementSibling?.getAttribute("data-hero-slot")).toBe("stats");
@@ -119,18 +125,31 @@ describe("Hero slots", () => {
 
   it("draws one scene canvas, hidden from a screen reader, and keeps the text of the slots as it is", () => {
     const { container } = render(
-      <Hero label="Matchup of the Week" eyebrow="Week 08" title="The Blue Tent by 1.43" scene={SCENE} />,
+      <Hero
+        label="Matchup of the Week"
+        eyebrow="Week 08"
+        title="The Blue Tent by 1.43"
+        scene={SCENE}
+      />,
     );
     const canvases = container.querySelectorAll("canvas");
     expect(canvases).toHaveLength(1);
     expect(canvases[0].closest("[aria-hidden='true']")).not.toBeNull();
     expect(slotsOf(container)).toEqual(["eyebrow", "title"]);
-    expect(screen.getByRole("region", { name: "Matchup of the Week" }).textContent).toBe("Week 08The Blue Tent by 1.43");
+    expect(screen.getByRole("region", { name: "Matchup of the Week" }).textContent).toBe(
+      "Week 08The Blue Tent by 1.43",
+    );
   });
 
   it("puts the scene after the title and the meta and before the feature, in the markup and on a phone (AT-43)", () => {
     const { container } = render(
-      <Hero label="Matchup of the Week" title="The Blue Tent by 1.43" meta="Five points" feature="Rows" scene={SCENE} />,
+      <Hero
+        label="Matchup of the Week"
+        title="The Blue Tent by 1.43"
+        meta="Five points"
+        feature="Rows"
+        scene={SCENE}
+      />,
     );
     const band = container.querySelector("canvas")!.closest("[aria-hidden='true']")!.parentElement!;
     expect(band.previousElementSibling?.getAttribute("data-hero-slot")).toBe("meta");
@@ -167,7 +186,9 @@ describe("Tile", () => {
 describe("PhotoFrame", () => {
   it("shows the photo, named by the player", () => {
     render(<PhotoFrame src="/2026/week-08/headshots/4984.png" name="Josh Allen" />);
-    expect(screen.getByRole("img", { name: "Josh Allen" }).getAttribute("src")).toBe("/2026/week-08/headshots/4984.png");
+    expect(screen.getByRole("img", { name: "Josh Allen" }).getAttribute("src")).toBe(
+      "/2026/week-08/headshots/4984.png",
+    );
   });
 
   it("shows the initials when no image exists, and keeps the name for a screen reader (AT-33)", () => {

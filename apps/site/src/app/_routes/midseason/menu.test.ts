@@ -15,7 +15,10 @@ async function linkOver(report?: unknown) {
 
 describe("the menu link of the midseason package", () => {
   it("links the report of the season of the latest week", async () => {
-    expect(await linkOver(fixture)).toEqual({ label: "Midseason Report", href: "/midseason/2026/" });
+    expect(await linkOver(fixture)).toEqual({
+      label: "Midseason Report",
+      href: "/midseason/2026/",
+    });
   });
 
   it("gives no link when the season has no midseason file", async () => {

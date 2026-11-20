@@ -22,19 +22,37 @@ const SURE = "is Courtland Sutton for Kenneth Walker fair";
 const VAGUE = "is my RB for their WR fair";
 const fetchStub = vi.fn();
 /* The answer of each route of the API by the end of its path, in the order of the calls. */
-const replies: Record<string, Response[]> = { "/ask": [], "/trade-check": [], "/trade-ideas": [], "/sell-high": [] };
+const replies: Record<string, Response[]> = {
+  "/ask": [],
+  "/trade-check": [],
+  "/trade-ideas": [],
+  "/sell-high": [],
+};
 
-const callsTo = (path: string) => fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
+const callsTo = (path: string) =>
+  fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
 
 /* The route of the ask box to a trade Topic, as the API sends it. */
 function routeTo(topic: string, team: number | null = null) {
-  replies["/ask"].push(Response.json({ route: "topic", topic, team, closest: [], suggestion: null, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } }));
+  replies["/ask"].push(
+    Response.json({
+      route: "topic",
+      topic,
+      team,
+      closest: [],
+      suggestion: null,
+      jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+    }),
+  );
 }
 
-const sse = (parts: unknown[]) => parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+const sse = (parts: unknown[]) =>
+  parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
 
 function streamOf(path: string, parts: unknown[]) {
-  replies[path].push(new Response(sse(parts), { headers: { "Content-Type": "text/event-stream" } }));
+  replies[path].push(
+    new Response(sse(parts), { headers: { "Content-Type": "text/event-stream" } }),
+  );
 }
 
 /* A stream that the test feeds part by part, so it can read the Thread between two parts. */
@@ -44,27 +62,39 @@ function heldStream(path: string) {
   replies[path].push(new Response(body, { headers: { "Content-Type": "text/event-stream" } }));
   const encoder = new TextEncoder();
   return {
-    send: async (part: unknown) => act(async () => controller.enqueue(encoder.encode(`data: ${JSON.stringify(part)}\n\n`))),
+    send: async (part: unknown) =>
+      act(async () => controller.enqueue(encoder.encode(`data: ${JSON.stringify(part)}\n\n`))),
     end: async () => act(async () => controller.close()),
   };
 }
 
 async function ask(question: string) {
   const box = await screen.findByRole("form", { name: "Ask" });
-  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: question } });
+  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), {
+    target: { value: question },
+  });
   fireEvent.submit(box);
 }
 
 async function openTopic(name: string) {
-  const more = within(await screen.findByRole("group", { name: "Suggestions" })).getByRole("button", { name: "More" });
+  const more = within(await screen.findByRole("group", { name: "Suggestions" })).getByRole(
+    "button",
+    { name: "More" },
+  );
   fireEvent.click(more);
-  fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+  fireEvent.click(
+    within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", {
+      name: new RegExp(`^${name}`),
+    }),
+  );
 }
 
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string) => {
     const path = Object.keys(replies).find((end) => String(url).endsWith(end));
-    return path ? (replies[path].shift() ?? new Response("", { status: 500 })) : new Response("", { status: 404 });
+    return path
+      ? (replies[path].shift() ?? new Response("", { status: 500 }))
+      : new Response("", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
@@ -98,9 +128,15 @@ describe("the trade check of Lil Fridge", () => {
     render(<HomePage />);
     await ask(SURE);
     const check = await screen.findByRole("region", { name: "Trade check" });
-    expect(check.textContent).toContain("You give Courtland Sutton and get Kenneth Walker III from Bo Girds.");
+    expect(check.textContent).toContain(
+      "You give Courtland Sutton and get Kenneth Walker III from Bo Girds.",
+    );
     const scale = within(check).getByRole("list", { name: "The Lean scale" });
-    expect(within(scale).getAllByRole("listitem").find((step) => step.getAttribute("aria-current") === "step")?.textContent).toBe("Send it");
+    expect(
+      within(scale)
+        .getAllByRole("listitem")
+        .find((step) => step.getAttribute("aria-current") === "step")?.textContent,
+    ).toBe("Send it");
     expect(check.textContent).toContain("If Bo Girds will say yes, send this right away");
     const bullets = check.querySelectorAll("[data-bullet-text]");
     expect(bullets).toHaveLength(3);
@@ -116,7 +152,9 @@ describe("the trade check of Lil Fridge", () => {
     await ask(SURE);
     const check = await screen.findByRole("region", { name: "Trade check" });
     // Send it with "because you turn a slumping WR into the RB2", and Bo Girds gives more, so it helps Lil Fridge.
-    expect(check.textContent).toMatch(/send this right away, because you turn a slumping WR into the RB2 on the season\./);
+    expect(check.textContent).toMatch(
+      /send this right away, because you turn a slumping WR into the RB2 on the season\./,
+    );
     expect(check.textContent).toContain("It helps Lil Fridge more.");
   });
 
@@ -127,23 +165,35 @@ describe("the trade check of Lil Fridge", () => {
     await ask(VAGUE);
     const card = await screen.findByRole("region", { name: "Trade check" });
     expect(card.textContent).toContain("Name the players");
-    expect(within(card).getByRole("link", { name: "Open the Trade page" }).getAttribute("href")).toBe("/analyze/?team=3");
+    expect(
+      within(card).getByRole("link", { name: "Open the Trade page" }).getAttribute("href"),
+    ).toBe("/analyze/?team=3");
   });
 
   it("opens the Trade page with Your team for a tap on the trade check Topic, with no call", async () => {
     render(<HomePage />);
     await openTopic("Trade check");
     const card = await screen.findByRole("region", { name: "Trade check" });
-    expect(within(card).getByRole("link", { name: "Open the Trade page" }).getAttribute("href")).toBe("/analyze/?team=3");
+    expect(
+      within(card).getByRole("link", { name: "Open the Trade page" }).getAttribute("href"),
+    ).toBe("/analyze/?team=3");
     expect(callsTo("/trade-check")).toHaveLength(0);
   });
 
   it("shows the line of a failed press and no Answer", async () => {
     routeTo("trade_check");
-    streamOf("/trade-check", [{ type: "start" }, { type: "data-error", data: { status: 503, line: "The question did not go through. Ask again." } }]);
+    streamOf("/trade-check", [
+      { type: "start" },
+      {
+        type: "data-error",
+        data: { status: 503, line: "The question did not go through. Ask again." },
+      },
+    ]);
     render(<HomePage />);
     await ask(SURE);
-    await waitFor(() => expect(screen.getByRole("article", { name: SURE }).textContent).toContain("Ask again"));
+    await waitFor(() =>
+      expect(screen.getByRole("article", { name: SURE }).textContent).toContain("Ask again"),
+    );
     expect(screen.queryByRole("region", { name: "Trade check" })).toBeNull();
   });
 });
@@ -170,7 +220,12 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await ask("any trades with Bo Girds");
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
-    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: 6, question: "any trades with Bo Girds", turns: [] });
+    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({
+      roster_id: 3,
+      partner: 6,
+      question: "any trades with Bo Girds",
+      turns: [],
+    });
   });
 
   it("sends a typed question of trade ideas around one player, so the API can find him", async () => {
@@ -179,7 +234,12 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await ask("trade ideas for kenneth walker");
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
-    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({ roster_id: 3, partner: null, question: "trade ideas for kenneth walker", turns: [] });
+    expect(JSON.parse(callsTo("/trade-ideas")[0][1].body)).toEqual({
+      roster_id: 3,
+      partner: null,
+      question: "trade ideas for kenneth walker",
+      turns: [],
+    });
   });
 
   it("sends a follow-up of trade ideas with the trade turn before it, so the API reads its limit (H18)", async () => {
@@ -203,7 +263,10 @@ describe("the trade ideas of Lil Fridge", () => {
     render(<HomePage />);
     await openTopic("Trade ideas");
     const article = await screen.findByRole("article", { name: "Trade ideas" });
-    const steps = () => within(within(article).getByRole("list", { name: "Steps" })).getAllByRole("listitem").map((step) => step.querySelector("[data-line]")?.textContent);
+    const steps = () =>
+      within(within(article).getByRole("list", { name: "Steps" }))
+        .getAllByRole("listitem")
+        .map((step) => step.querySelector("[data-line]")?.textContent);
     // Every kind waits on the same first line, and the newest step is the live one, with one ellipsis.
     expect(steps()).toEqual(["Reading the league…"]);
     const lines = ideasStream.filter((part) => part.type === "data-step");
@@ -212,16 +275,32 @@ describe("the trade ideas of Lil Fridge", () => {
     await waitFor(() => expect(steps()).toEqual(["Checked 11 teams for a fit…"]));
     await stream.send(lines[1]);
     await stream.send(lines[2]);
-    await waitFor(() => expect(steps()).toEqual(["Checked 11 teams for a fit", "Built 56 offers", "Weighed 56 offers…"]));
+    await waitFor(() =>
+      expect(steps()).toEqual([
+        "Checked 11 teams for a fit",
+        "Built 56 offers",
+        "Weighed 56 offers…",
+      ]),
+    );
     expect(screen.queryByRole("region", { name: "Trade ideas" })).toBeNull();
-    for (const part of ideasStream.slice(ideasStream.indexOf(lines[2]) + 1)) await stream.send(part);
+    for (const part of ideasStream.slice(ideasStream.indexOf(lines[2]) + 1))
+      await stream.send(part);
     await stream.end();
     const region = await screen.findByRole("region", { name: "Trade ideas" });
     // The steps stay above the Answer, each one done.
-    expect(steps()).toEqual(["Checked 11 teams for a fit", "Built 56 offers", "Weighed 56 offers", "Picked the best 2"]);
+    expect(steps()).toEqual([
+      "Checked 11 teams for a fit",
+      "Built 56 offers",
+      "Weighed 56 offers",
+      "Picked the best 2",
+    ]);
     const list = within(article).getByRole("list", { name: "Steps" });
     expect(list.compareDocumentPosition(region) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(list).getAllByRole("listitem").map((step) => step.getAttribute("data-state"))).toEqual(["done", "done", "done", "done"]);
+    expect(
+      within(list)
+        .getAllByRole("listitem")
+        .map((step) => step.getAttribute("data-state")),
+    ).toEqual(["done", "done", "done", "done"]);
   });
 
   it("names no inner tool and no manager word in any step or Answer", async () => {
@@ -230,7 +309,8 @@ describe("the trade ideas of Lil Fridge", () => {
     await openTopic("Trade ideas");
     const ideas = await screen.findByRole("region", { name: "Trade ideas" });
     const text = (ideas.textContent ?? "").toLowerCase();
-    for (const word of ["jev", "advisor", "finder", "rival", "brian"]) expect(text).not.toContain(word);
+    for (const word of ["jev", "advisor", "finder", "rival", "brian"])
+      expect(text).not.toContain(word);
     for (const part of ideasStream.filter((each) => each.type === "data-step")) {
       expect(JSON.stringify(part).toLowerCase()).not.toMatch(/jev|advisor|finder|rival|brian/);
     }
@@ -239,9 +319,17 @@ describe("the trade ideas of Lil Fridge", () => {
   /* The ideas stream with the offers of the fixture moved to near ideas, each with a reason, so no offer is a pick. */
   function nearStream(picks: number) {
     const parts = structuredClone(ideasStream) as typeof ideasStream;
-    const answer = parts.find((part) => part.type === "data-answer") as unknown as { data: { document: Record<string, unknown> & { trades: { offer_id: string; sides: unknown[] }[] } } };
+    const answer = parts.find((part) => part.type === "data-answer") as unknown as {
+      data: {
+        document: Record<string, unknown> & { trades: { offer_id: string; sides: unknown[] }[] };
+      };
+    };
     const doc = answer.data.document;
-    doc.near = doc.trades.slice(picks).map((trade, i) => ({ offer_id: trade.offer_id, sides: trade.sides, reason: `Reason ${i + 1}: you give up your RB for a WR you do not need.` }));
+    doc.near = doc.trades.slice(picks).map((trade, i) => ({
+      offer_id: trade.offer_id,
+      sides: trade.sides,
+      reason: `Reason ${i + 1}: you give up your RB for a WR you do not need.`,
+    }));
     doc.trades = doc.trades.slice(0, picks);
     doc.empty = picks === 0 ? "No offer on the list helps your lineup enough to send." : null;
     return parts;
@@ -260,7 +348,8 @@ describe("the trade ideas of Lil Fridge", () => {
     // Each idea keeps the link to check it on the Trade page, as an offer does.
     expect(within(near).getAllByRole("link", { name: "Check this trade" })).toHaveLength(2);
     const text = (ideas.textContent ?? "").toLowerCase();
-    for (const word of ["jev", "advisor", "finder", "rival", "brian", "front door"]) expect(text).not.toContain(word);
+    for (const word of ["jev", "advisor", "finder", "rival", "brian", "front door"])
+      expect(text).not.toContain(word);
   });
 
   it("lists the near ideas after the picks under their own label (H21)", async () => {
@@ -300,11 +389,18 @@ describe("sell high or buy low for Lil Fridge", () => {
     expect(init.headers["X-League-Passphrase"]).toBe(PASSPHRASE);
     expect(JSON.parse(init.body)).toEqual({ roster_id: 3 });
     const picks = within(sell).getAllByRole("listitem", { name: /^Sell / });
-    expect(picks.map((pick) => pick.getAttribute("aria-label"))).toEqual(["Sell Romeo Doubs", "Sell Tyler Allgeier"]);
+    expect(picks.map((pick) => pick.getAttribute("aria-label"))).toEqual([
+      "Sell Romeo Doubs",
+      "Sell Tyler Allgeier",
+    ]);
     expect(picks[0].textContent).toContain("WR · NE");
-    expect(picks[0].textContent).toContain("his hot last four weeks still make him look good to another manager");
+    expect(picks[0].textContent).toContain(
+      "his hot last four weeks still make him look good to another manager",
+    );
     // The manager page of Your team is the full report.
-    expect(within(sell).getByRole("link", { name: "Open your manager page" }).getAttribute("href")).toBe("/2026/managers/3/");
+    expect(
+      within(sell).getByRole("link", { name: "Open your manager page" }).getAttribute("href"),
+    ).toBe("/2026/managers/3/");
   });
 
   it("shows the sell list: each row with the player, his ranks, and the headline, and a tap opens the bullets (AT-32)", async () => {
@@ -317,7 +413,9 @@ describe("sell high or buy low for Lil Fridge", () => {
     const toggle = within(first).getByRole("button", { name: /Romeo Doubs/ });
     expect(toggle.textContent).toContain("Season WR54");
     expect(toggle.textContent).toContain("Recent WR26");
-    expect(toggle.textContent).toContain("his hot last four weeks still make him look good to another manager");
+    expect(toggle.textContent).toContain(
+      "his hot last four weeks still make him look good to another manager",
+    );
     // The row starts closed, so the bullets wait in place under it.
     const panel = document.getElementById(toggle.getAttribute("aria-controls") ?? "")!;
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
@@ -328,7 +426,11 @@ describe("sell high or buy low for Lil Fridge", () => {
     const bullets = within(panel).getAllByRole("listitem");
     expect(bullets[0].textContent).toContain("He is out now and not due back until week 14");
     // The other row does not open with it.
-    expect(within(second).getByRole("button", { name: /Tyler Allgeier/ }).getAttribute("aria-expanded")).toBe("false");
+    expect(
+      within(second)
+        .getByRole("button", { name: /Tyler Allgeier/ })
+        .getAttribute("aria-expanded"),
+    ).toBe("false");
   });
 
   it("sends a typed sell high question for Your team", async () => {
@@ -345,7 +447,10 @@ describe("sell high or buy low for Lil Fridge", () => {
     render(<HomePage />);
     await openTopic("Sell high or buy low");
     const article = await screen.findByRole("article", { name: "Sell high or buy low" });
-    const steps = () => within(within(article).getByRole("list", { name: "Steps" })).getAllByRole("listitem").map((step) => step.querySelector("[data-line]")?.textContent);
+    const steps = () =>
+      within(within(article).getByRole("list", { name: "Steps" }))
+        .getAllByRole("listitem")
+        .map((step) => step.querySelector("[data-line]")?.textContent);
     expect(steps()).toEqual(["Reading the league…"]);
     const lines = sellStream.filter((part) => part.type === "data-step");
     await stream.send({ type: "start" });
@@ -361,7 +466,10 @@ describe("sell high or buy low for Lil Fridge", () => {
     const line = "No player on your roster is priced above what he gives you.";
     const answer = sellStream.find((part) => part.type === "data-answer")!;
     const block = sellStream.find((part) => part.type === "data-block")!;
-    const empty = { ...answer, data: { ...answer.data, document: { ...answer.data!.document, picks: [], empty: line } } };
+    const empty = {
+      ...answer,
+      data: { ...answer.data, document: { ...answer.data!.document, picks: [], empty: line } },
+    };
     const emptyBlock = { ...block, data: { ...block.data, rows: [], empty: line } };
     streamOf("/sell-high", [{ type: "start" }, emptyBlock, empty, { type: "finish" }]);
     render(<HomePage />);
@@ -375,8 +483,11 @@ describe("sell high or buy low for Lil Fridge", () => {
     streamOf("/sell-high", sellStream);
     render(<HomePage />);
     await openTopic("Sell high or buy low");
-    const text = ((await screen.findByRole("region", { name: "Sell high or buy low" })).textContent ?? "").toLowerCase();
-    for (const word of ["jev", "advisor", "finder", "rival", "brian"]) expect(text).not.toContain(word);
+    const text = (
+      (await screen.findByRole("region", { name: "Sell high or buy low" })).textContent ?? ""
+    ).toLowerCase();
+    for (const word of ["jev", "advisor", "finder", "rival", "brian"])
+      expect(text).not.toContain(word);
     expect(JSON.stringify(sellStream).toLowerCase()).not.toMatch(/jev|advisor|finder|rival|brian/);
   });
 });
@@ -391,7 +502,9 @@ describe("an older trade Answer in the Thread", () => {
     await openTopic("Week recap");
     const [trade] = await screen.findAllByRole("article", { name: SURE });
     await screen.findAllByRole("article", { name: "Week recap" });
-    expect(within(trade).getByRole("region", { name: "Trade check" }).textContent).toContain("Send it");
+    expect(within(trade).getByRole("region", { name: "Trade check" }).textContent).toContain(
+      "Send it",
+    );
     expect(within(trade).getByRole("link", { name: "Open it on the Trade page" })).toBeTruthy();
     expect(within(trade).queryByRole("button", { name: `${SURE}: Send it` })).toBeNull();
   });

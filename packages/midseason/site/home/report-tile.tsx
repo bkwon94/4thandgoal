@@ -10,15 +10,17 @@ export function ReportTile({ report, href }: { report: Midseason; href: string }
   return (
     <a
       href={href}
-      className="press group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-sp-3 rounded-card border border-rule bg-card p-sp-4 text-ink no-underline"
+      className="press group gap-x-sp-3 rounded-card border-rule bg-card p-sp-4 text-ink grid grid-cols-[minmax(0,1fr)_auto] items-center border no-underline"
     >
-      <span className="flex min-w-0 flex-col gap-sp-1">
-        <span className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">
+      <span className="gap-sp-1 flex min-w-0 flex-col">
+        <span className="text-meta tracking-caps text-accent-ink font-mono leading-tight font-bold uppercase">
           {`${report.season} Midseason Report`}
         </span>
-        <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{label}</span>
-        <b className="font-mono text-score leading-tight tabular-nums">{value}</b>
-        <span className="text-lead leading-tight group-hover:text-accent-ink">{note}</span>
+        <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+          {label}
+        </span>
+        <b className="text-score font-mono leading-tight tabular-nums">{value}</b>
+        <span className="text-lead group-hover:text-accent-ink leading-tight">{note}</span>
       </span>
       <svg
         aria-hidden="true"

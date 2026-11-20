@@ -99,7 +99,9 @@ function reportChapter(id: string, inView: boolean) {
 
 /* The rail link of the chapter with this label. */
 function railLink(label: string) {
-  return within(screen.getByRole("navigation", { name: "Chapters" })).getByRole("link", { name: label });
+  return within(screen.getByRole("navigation", { name: "Chapters" })).getByRole("link", {
+    name: label,
+  });
 }
 
 /* The labels of the rail links that carry the current state. */
@@ -149,7 +151,9 @@ describe("WeekPage chapters", () => {
     await renderWeek7();
     const headings = within(screen.getByRole("main")).getAllByRole("heading", { level: 2 });
     const chapters = CHAPTERS.slice(1);
-    expect(headings.map((heading) => heading.textContent)).toEqual(chapters.map(({ label }) => label));
+    expect(headings.map((heading) => heading.textContent)).toEqual(
+      chapters.map(({ label }) => label),
+    );
     headings.forEach((heading, index) => {
       expect(document.getElementById(chapters[index].id)?.contains(heading)).toBe(true);
     });
@@ -176,7 +180,10 @@ describe("WeekPage order of week 8 (AT-16)", () => {
     for (const part of parts) expect(main.contains(part)).toBe(true);
     for (let index = 1; index < parts.length; index++) {
       const order = parts[index - 1].compareDocumentPosition(parts[index]);
-      expect(order & Node.DOCUMENT_POSITION_FOLLOWING, `part ${index} follows part ${index - 1}`).toBeTruthy();
+      expect(
+        order & Node.DOCUMENT_POSITION_FOLLOWING,
+        `part ${index} follows part ${index - 1}`,
+      ).toBeTruthy();
     }
   });
 
@@ -184,7 +191,9 @@ describe("WeekPage order of week 8 (AT-16)", () => {
     await renderWeek8();
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings.map((heading) => heading.textContent)).toEqual(["The Blue Tent by 1.43"]);
-    expect(screen.getByRole("region", { name: "Matchup of the Week" }).contains(headings[0])).toBe(true);
+    expect(screen.getByRole("region", { name: "Matchup of the Week" }).contains(headings[0])).toBe(
+      true,
+    );
   });
 
   it("shows Joe Burrow at 42.48 in Game Changer", async () => {
@@ -218,7 +227,9 @@ function topScoreBars() {
     .getAllByRole("listitem")
     .find((item) => item.textContent?.startsWith("Top Score"))!;
   const chart = within(tile).getByRole("img");
-  const weeks = [...chart.querySelectorAll("[data-week]")].map((bar) => Number(bar.getAttribute("data-week")));
+  const weeks = [...chart.querySelectorAll("[data-week]")].map((bar) =>
+    Number(bar.getAttribute("data-week")),
+  );
   return { weeks, lit: Number(chart.querySelector("[data-lit]")?.getAttribute("data-week")) };
 }
 
@@ -240,7 +251,9 @@ describe("WeekPage Trend tiles", () => {
       .getAllByRole("listitem")
       .find((item) => item.textContent?.startsWith("Median"))!;
     expect(within(median).getByText("99.6")).toBeTruthy();
-    expect(within(median).getByRole("img").getAttribute("aria-label")).toBe("Down from 103.87 in week 7.");
+    expect(within(median).getByRole("img").getAttribute("aria-label")).toBe(
+      "Down from 103.87 in week 7.",
+    );
   });
 });
 
@@ -250,7 +263,9 @@ describe("WeekPage chapter rail", () => {
     const rail = screen.getByRole("navigation", { name: "Chapters" });
     const links = within(rail).getAllByRole("link");
     expect(links.map((link) => link.textContent)).toEqual(CHAPTERS.map(({ label }) => label));
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(CHAPTERS.map(({ id }) => `#${id}`));
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(
+      CHAPTERS.map(({ id }) => `#${id}`),
+    );
   });
 
   it("links only to ids that the page renders", async () => {
@@ -340,10 +355,17 @@ async function publicWithWeeks() {
   const root = mkdtempSync(join(tmpdir(), "week-page-"));
   roots.push(root);
   const season = join(root, "public", "2026");
-  for (const week of ["week-05", "week-06", "week-07"]) mkdirSync(join(season, week), { recursive: true });
-  writeFileSync(join(season, "week-05", "page.json"), weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }));
+  for (const week of ["week-05", "week-06", "week-07"])
+    mkdirSync(join(season, week), { recursive: true });
+  writeFileSync(
+    join(season, "week-05", "page.json"),
+    weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }),
+  );
   for (const week of ["week-06", "week-07"]) {
-    copyFileSync(fixturePublished("cpc", "2026", week, "page.json"), join(season, week, "page.json"));
+    copyFileSync(
+      fixturePublished("cpc", "2026", week, "page.json"),
+      join(season, week, "page.json"),
+    );
   }
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The readers read the working folder when they load, so reset them to pick up the temp folder.
@@ -385,7 +407,10 @@ describe("WeekPage week footer with a week on each side", () => {
   it("gives every footer link a path from the root", async () => {
     await renderWeek6();
     const links = within(screen.getByRole("navigation", { name: "Weeks" })).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-05/", "/2026/week-07/"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([
+      "/2026/week-05/",
+      "/2026/week-07/",
+    ]);
   });
 
   it("shows the footer at rest with motion off", async () => {
@@ -423,7 +448,10 @@ describe("WeekPage with no median game", () => {
     expect(rail.queryByRole("link", { name: "The median game" })).toBeNull();
     // The other chapters stay, so the rail still links the standings after the trades.
     const labels = rail.getAllByRole("link").map((link) => link.textContent);
-    expect(labels.slice(labels.indexOf("Trades"), labels.indexOf("Trades") + 2)).toEqual(["Trades", "Standings"]);
+    expect(labels.slice(labels.indexOf("Trades"), labels.indexOf("Trades") + 2)).toEqual([
+      "Trades",
+      "Standings",
+    ]);
   });
 });
 
@@ -475,13 +503,21 @@ describe("WeekPage Sim tile", () => {
     expect(link.textContent).toContain("58%");
     expect(link.textContent).toContain("Win 5 of the 8 left and you're in.");
     // The rail links the tile between the two chapters, with the words of its heading.
-    const labels = within(screen.getByRole("navigation", { name: "Chapters" })).getAllByRole("link").map((item) => item.textContent);
-    expect(labels.slice(labels.indexOf("Standings"), labels.indexOf("Standings") + 3)).toEqual(["Standings", "Season sim", "Next week"]);
+    const labels = within(screen.getByRole("navigation", { name: "Chapters" }))
+      .getAllByRole("link")
+      .map((item) => item.textContent);
+    expect(labels.slice(labels.indexOf("Standings"), labels.indexOf("Standings") + 3)).toEqual([
+      "Standings",
+      "Season sim",
+      "Next week",
+    ]);
   });
 
   it("shows the league fact of the file with no team set (AT-46)", async () => {
     await renderWeek10();
-    expect(within(document.getElementById("sim")!).getByRole("link").textContent).toContain("6 managers fight for the last 4 spots");
+    expect(within(document.getElementById("sim")!).getByRole("link").textContent).toContain(
+      "6 managers fight for the last 4 spots",
+    );
   });
 
   it("has no tile and no rail link on a week with no sim file", async () => {

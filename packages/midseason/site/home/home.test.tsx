@@ -14,7 +14,12 @@ describe("takeoverOn", () => {
   it("holds the takeover through the week of the report, then gives way to the tile", () => {
     // The report counts week 8, so the takeover ends after week 8 and week 9 has its own home top.
     expect(midseason.takeover_end_week).toBe(8);
-    expect([8, 9, 10, 11].map((week) => takeoverOn(midseason, week))).toEqual([true, false, false, false]);
+    expect([8, 9, 10, 11].map((week) => takeoverOn(midseason, week))).toEqual([
+      true,
+      false,
+      false,
+      false,
+    ]);
   });
 });
 
@@ -41,13 +46,20 @@ describe("The takeover slots", () => {
     render(<Takeover report={midseason} href="/midseason/2026/" />);
     const region = screen.getByRole("region", { name: "2026 Midseason Report" });
     const slots = [...region.querySelectorAll("[data-hero-slot]")];
-    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "stats", "action"]);
+    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual([
+      "eyebrow",
+      "title",
+      "stats",
+      "action",
+    ]);
     expect(slots[0].textContent).toBe("2026 Midseason Report // Week 8");
     expect(slots[1].tagName).toBe("H2");
     expect(slots[1].textContent).toBe("The Title Race");
     expect(within(slots[2] as HTMLElement).getAllByRole("listitem")).toHaveLength(3);
     expect(within(slots[2] as HTMLElement).getByText("Record leader")).toBeTruthy();
-    expect(within(slots[3] as HTMLElement).getByRole("link", { name: "Read the Midseason Report" })).toBeTruthy();
+    expect(
+      within(slots[3] as HTMLElement).getByRole("link", { name: "Read the Midseason Report" }),
+    ).toBeTruthy();
   });
 });
 

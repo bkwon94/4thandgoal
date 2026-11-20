@@ -35,12 +35,14 @@ export default function FrontPage() {
         <PageColumn>
           {/* One scroll in the order of decision 08: the intro, the hero and its four numbers, Power Rankings, Tools,
               and Weekly Reports. The intro and the hero rise in on load. Each chapter below rises in as it enters the view. */}
-          <div className="flex flex-col gap-sp-6 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
-            <Rise step={0} className="flex flex-col gap-sp-1">
-              <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">
+          <div className="gap-sp-6 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
+            <Rise step={0} className="gap-sp-1 flex flex-col">
+              <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
                 {`${season} // ${clientValues.copy.tagline}`}
               </span>
-              <h1 className="m-0 text-score leading-tight font-bold">{clientValues.copy.siteName}</h1>
+              <h1 className="text-score m-0 leading-tight font-bold">
+                {clientValues.copy.siteName}
+              </h1>
             </Rise>
             {/* A takeover part, such as the midseason report, shows in place of the usual top. */}
             {takeover.length > 0 ? takeover : partsAt("top")}
@@ -48,7 +50,7 @@ export default function FrontPage() {
             {homeTools.length > 0 && (
               <HomeChapter id="tools" title="Tools">
                 {/* Two tiles per row, so the analyzer and the managers sit side by side on a phone too. */}
-                <div className="grid grid-cols-2 gap-sp-2">
+                <div className="gap-sp-2 grid grid-cols-2">
                   {/* The registry gives the tool of each package of the client, so an omitted package leaves no code here. */}
                   {homeTools.map((Tool, index) => (
                     <Tool key={index} />

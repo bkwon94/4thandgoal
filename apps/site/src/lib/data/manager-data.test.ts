@@ -21,7 +21,10 @@ const rankingsWithWeek5 = (() => {
   const week5 = {
     ...last,
     week: 5,
-    rows: last.rows.map((row) => ({ ...row, odds: { ...row.odds, playoff: Math.max(row.odds!.playoff - 10, 0) } })),
+    rows: last.rows.map((row) => ({
+      ...row,
+      odds: { ...row.odds, playoff: Math.max(row.odds!.playoff - 10, 0) },
+    })),
   };
   return { ...rankingsFixture, weeks: [rankingsFixture.weeks[0], week5, last] };
 })();
@@ -30,9 +33,14 @@ const rankingsWithWeek5 = (() => {
 async function readerOver({ managers, rankings }: { managers?: unknown; rankings?: unknown }) {
   const root = mkdtempSync(join(tmpdir(), "manager-data-"));
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
-  writeFileSync(join(root, "public", "2026", "week-06", "page.json"), weekPageJson({ avatars: {} }));
-  if (managers !== undefined) writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
-  if (rankings !== undefined) writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
+  writeFileSync(
+    join(root, "public", "2026", "week-06", "page.json"),
+    weekPageJson({ avatars: {} }),
+  );
+  if (managers !== undefined)
+    writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
+  if (rankings !== undefined)
+    writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   vi.spyOn(process, "cwd").mockReturnValue(root);
   // The week reader reads the working folder when it loads, so reset it to pick up the temp folder.
   vi.resetModules();
@@ -58,8 +66,12 @@ describe("loadManagers", () => {
   it("lists the managers in standings order", async () => {
     const { loadManagers } = await readerOver({ managers: fixture, rankings: rankingsFixture });
     const managers = loadManagers()!.managers;
-    expect(managers.map((manager) => manager.roster_id)).toEqual([3, 5, 6, 9, 2, 1, 8, 10, 12, 11, 7, 4]);
-    expect(managers.map((manager) => manager.standing)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect(managers.map((manager) => manager.roster_id)).toEqual([
+      3, 5, 6, 9, 2, 1, 8, 10, 12, 11, 7, 4,
+    ]);
+    expect(managers.map((manager) => manager.standing)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
   });
 
   it("gives no odds change when the week before has no odds", async () => {
@@ -73,23 +85,39 @@ describe("loadManagers", () => {
   it("gives no odds when no week has odds", async () => {
     const noOdds = {
       ...rankingsFixture,
-      weeks: rankingsFixture.weeks.map((week) => ({ ...week, rows: week.rows.map(({ odds: _odds, ...row }) => row) })),
+      weeks: rankingsFixture.weeks.map((week) => ({
+        ...week,
+        rows: week.rows.map(({ odds: _odds, ...row }) => row),
+      })),
     };
     const { loadManagers } = await readerOver({ managers: fixture, rankings: noOdds });
     const managers = loadManagers()!.managers;
-    expect(managers.every((manager) => manager.odds === null && manager.odds_change === null)).toBe(true);
+    expect(managers.every((manager) => manager.odds === null && manager.odds_change === null)).toBe(
+      true,
+    );
     expect(managers[0].rank).toBe(2);
   });
 
   it("orders by wins, then points, with no rankings file", async () => {
     const { loadManagers } = await readerOver({ managers: fixture });
     const managers = loadManagers()!.managers;
-    expect(managers.map((manager) => manager.roster_id)).toEqual([3, 5, 6, 9, 2, 1, 8, 10, 12, 11, 7, 4]);
-    expect(managers[3]).toMatchObject({ standing: 4, rank: null, movement: null, odds: null, odds_change: null });
+    expect(managers.map((manager) => manager.roster_id)).toEqual([
+      3, 5, 6, 9, 2, 1, 8, 10, 12, 11, 7, 4,
+    ]);
+    expect(managers[3]).toMatchObject({
+      standing: 4,
+      rank: null,
+      movement: null,
+      odds: null,
+      odds_change: null,
+    });
   });
 
   it("throws when the schema version is not 1", async () => {
-    const { loadManagers } = await readerOver({ managers: { ...fixture, schema_version: 2 }, rankings: rankingsFixture });
+    const { loadManagers } = await readerOver({
+      managers: { ...fixture, schema_version: 2 },
+      rankings: rankingsFixture,
+    });
     expect(() => loadManagers()).toThrow(/schema_version 2/);
   });
 

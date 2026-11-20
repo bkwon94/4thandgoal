@@ -16,7 +16,13 @@ function team(avatar: string | null): Team {
 
 function renderPicker(avatar: string | null) {
   const { container } = render(
-    <TeamPicker label="My team" teams={[team(avatar)]} value={null} disabledId={null} onChange={() => {}} />,
+    <TeamPicker
+      label="My team"
+      teams={[team(avatar)]}
+      value={null}
+      disabledId={null}
+      onChange={() => {}}
+    />,
   );
   return container.querySelector("img") as HTMLImageElement;
 }
@@ -39,7 +45,15 @@ describe("TeamPicker avatar", () => {
 /* The parent owns the choice, so the test holds it in state like the trade form does. */
 function ControlledPicker() {
   const [value, setValue] = useState<number | null>(null);
-  return <TeamPicker label="My team" teams={[team(null)]} value={value} disabledId={null} onChange={setValue} />;
+  return (
+    <TeamPicker
+      label="My team"
+      teams={[team(null)]}
+      value={value}
+      disabledId={null}
+      onChange={setValue}
+    />
+  );
 }
 
 describe("TeamPicker focus", () => {

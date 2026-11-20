@@ -10,7 +10,7 @@ export function Tag({ children, className }: { children: ReactNode; className?: 
   return (
     <span
       className={cn(
-        "ml-sp-2 inline-block rounded-sm bg-accent px-sp-2 py-sp-0 align-middle text-label font-bold tracking-caps text-on-dark uppercase",
+        "ml-sp-2 bg-accent px-sp-2 py-sp-0 text-label tracking-caps text-on-dark inline-block rounded-sm align-middle font-bold uppercase",
         className,
       )}
     >

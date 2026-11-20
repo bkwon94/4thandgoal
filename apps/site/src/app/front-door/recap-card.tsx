@@ -25,7 +25,12 @@ function placeOf(score: number, low: number, high: number): number {
 /* The result of the game of Your team, in words, such as "Won vs Teehee". */
 function resultOf(block: RecapBlock): string | null {
   if (block.opponent === null || block.opponent_score === null) return null;
-  const word = block.score > block.opponent_score ? "Won" : block.score < block.opponent_score ? "Lost" : "Tied";
+  const word =
+    block.score > block.opponent_score
+      ? "Won"
+      : block.score < block.opponent_score
+        ? "Lost"
+        : "Tied";
   return `${word} vs ${block.opponent}`;
 }
 
@@ -40,24 +45,40 @@ function Strip({ block, live }: { block: RecapBlock; live: boolean }) {
   const you = placeOf(block.score, low, high);
   const label = `${block.teams} scores from ${num(low)} to ${num(high)}. Yours, ${num(block.score)}, is ${ordinal(block.place)}.${block.median === null ? "" : ` The median ${num(block.median)}.`}`;
   const grow = (index: number) =>
-    live ? { initial: off ? { opacity: 0 } : { opacity: 0, scaleY: 0 }, animate: off ? { opacity: 1 } : { opacity: 1, scaleY: 1 }, transition: fadeIn(SLOW, 0.15 + index * STAGGER) } : {};
+    live
+      ? {
+          initial: off ? { opacity: 0 } : { opacity: 0, scaleY: 0 },
+          animate: off ? { opacity: 1 } : { opacity: 1, scaleY: 1 },
+          transition: fadeIn(SLOW, 0.15 + index * STAGGER),
+        }
+      : {};
   // The marks grow low to high, so the strip reads left to right as the eye does.
   const lowFirst = [...block.strip].reverse();
   return (
-    <div className="flex flex-col gap-sp-1">
+    <div className="gap-sp-1 flex flex-col">
       <div role="img" aria-label={label} className="relative h-14">
         {/* The "You" label sits over the red mark, so the mark of Your team reads in words and not by color alone. */}
-        <span aria-hidden className="absolute top-0 -translate-x-1/2 font-mono text-meta leading-tight font-semibold tracking-caps text-accent-ink uppercase" style={{ left: `${clamp(you, LABEL_EDGE, 100 - LABEL_EDGE)}%` }}>
+        <span
+          aria-hidden
+          className="text-meta tracking-caps text-accent-ink absolute top-0 -translate-x-1/2 font-mono leading-tight font-semibold uppercase"
+          style={{ left: `${clamp(you, LABEL_EDGE, 100 - LABEL_EDGE)}%` }}
+        >
           You
         </span>
-        <span aria-hidden className="absolute inset-x-0 bottom-sp-2 h-px bg-rule" />
+        <span aria-hidden className="bottom-sp-2 bg-rule absolute inset-x-0 h-px" />
         {block.median !== null && (
           <motion.span
             aria-hidden
             data-median
-            className="absolute bottom-0 h-8 -translate-x-1/2 border-l border-dashed border-ink-2"
+            className="border-ink-2 absolute bottom-0 h-8 -translate-x-1/2 border-l border-dashed"
             style={{ left: `${placeOf(block.median, low, high)}%` }}
-            {...(live ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: fadeIn(SLOW, 0.15 + block.teams * STAGGER) } : {})}
+            {...(live
+              ? {
+                  initial: { opacity: 0 },
+                  animate: { opacity: 1 },
+                  transition: fadeIn(SLOW, 0.15 + block.teams * STAGGER),
+                }
+              : {})}
           />
         )}
         {lowFirst.map((mark, index) => (
@@ -66,17 +87,22 @@ function Strip({ block, live }: { block: RecapBlock; live: boolean }) {
             aria-hidden
             data-mark={mark.you ? "you" : "team"}
             title={`${mark.name} ${num(mark.score)}`}
-            className={`absolute bottom-sp-2 origin-bottom -translate-x-1/2 rounded-pill ${mark.you ? "z-10 h-7 w-1 bg-accent" : "h-4 w-0.5 bg-mute"}`}
+            className={`bottom-sp-2 rounded-pill absolute origin-bottom -translate-x-1/2 ${mark.you ? "bg-accent z-10 h-7 w-1" : "bg-mute h-4 w-0.5"}`}
             style={{ left: `${placeOf(mark.score, low, high)}%` }}
             {...grow(index)}
           />
         ))}
       </div>
       {/* The scale: the lowest and the highest score at the ends, and the median under its tick. */}
-      <div className="relative h-4 font-mono text-meta leading-tight text-mute tabular-nums">
+      <div className="text-meta text-mute relative h-4 font-mono leading-tight tabular-nums">
         <span className="absolute left-0">{num(low)}</span>
         {block.median !== null && (
-          <span className="absolute -translate-x-1/2 whitespace-nowrap text-ink-2" style={{ left: `${clamp(placeOf(block.median, low, high), LABEL_EDGE + 10, 90 - LABEL_EDGE)}%` }}>
+          <span
+            className="text-ink-2 absolute -translate-x-1/2 whitespace-nowrap"
+            style={{
+              left: `${clamp(placeOf(block.median, low, high), LABEL_EDGE + 10, 90 - LABEL_EDGE)}%`,
+            }}
+          >
             Median {num(block.median)}
           </span>
         )}
@@ -93,16 +119,28 @@ export function RecapCard({ block, live }: { block: RecapBlock; live: boolean })
   const top = block.top;
   const beat = top && top.projection !== null ? top.points - top.projection : null;
   return (
-    <div role="group" aria-label="Your week" className="flex min-w-0 flex-col gap-sp-4" data-block="recap">
-      <motion.div className="flex min-w-0 flex-wrap items-end justify-between gap-x-sp-4 gap-y-sp-1" {...rise(0)}>
-        <div className="flex min-w-0 flex-col gap-sp-1">
-          <p className="m-0 font-mono text-meta leading-tight tracking-caps text-mute uppercase">Your score</p>
-          <p className="m-0 text-stat leading-tight font-bold text-ink tabular-nums">{num(block.score)}</p>
+    <div
+      role="group"
+      aria-label="Your week"
+      className="gap-sp-4 flex min-w-0 flex-col"
+      data-block="recap"
+    >
+      <motion.div
+        className="gap-x-sp-4 gap-y-sp-1 flex min-w-0 flex-wrap items-end justify-between"
+        {...rise(0)}
+      >
+        <div className="gap-sp-1 flex min-w-0 flex-col">
+          <p className="text-meta tracking-caps text-mute m-0 font-mono leading-tight uppercase">
+            Your score
+          </p>
+          <p className="text-stat text-ink m-0 leading-tight font-bold tabular-nums">
+            {num(block.score)}
+          </p>
         </div>
-        <div className="flex min-w-0 flex-col items-end gap-sp-1 text-right">
-          <p className="m-0 text-row leading-tight font-semibold text-ink tabular-nums">{`${ordinal(block.place)} of ${block.teams}`}</p>
+        <div className="gap-sp-1 flex min-w-0 flex-col items-end text-right">
+          <p className="text-row text-ink m-0 leading-tight font-semibold tabular-nums">{`${ordinal(block.place)} of ${block.teams}`}</p>
           {result && (
-            <p className="m-0 max-w-full truncate font-mono text-meta leading-tight text-mute tabular-nums">
+            <p className="text-meta text-mute m-0 max-w-full truncate font-mono leading-tight tabular-nums">
               {result}, {num(block.opponent_score!)}
             </p>
           )}
@@ -110,27 +148,45 @@ export function RecapCard({ block, live }: { block: RecapBlock; live: boolean })
       </motion.div>
       <Strip block={block} live={live} />
       {top && (
-        <motion.div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-sp-3 border-y border-rule py-sp-2" {...rise(0.15 + block.teams * STAGGER)}>
+        <motion.div
+          className="gap-x-sp-3 border-rule py-sp-2 grid grid-cols-[minmax(0,1fr)_auto] items-center border-y"
+          {...rise(0.15 + block.teams * STAGGER)}
+        >
           <span className="flex min-w-0 flex-col">
-            <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">Top scorer</span>
-            <span className="flex min-w-0 items-baseline gap-sp-2">
-              <span className="truncate text-row leading-tight font-semibold text-ink">{top.name}</span>
-              <span className="flex-none font-mono text-meta leading-tight text-mute">{top.position}</span>
+            <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+              Top scorer
+            </span>
+            <span className="gap-sp-2 flex min-w-0 items-baseline">
+              <span className="text-row text-ink truncate leading-tight font-semibold">
+                {top.name}
+              </span>
+              <span className="text-meta text-mute flex-none font-mono leading-tight">
+                {top.position}
+              </span>
             </span>
           </span>
           <span className="flex flex-col items-end">
-            <span className="font-mono text-row leading-tight font-bold text-ink tabular-nums">{num(top.points)}</span>
+            <span className="text-row text-ink font-mono leading-tight font-bold tabular-nums">
+              {num(top.points)}
+            </span>
             {top.projection !== null && (
-              <span className="font-mono text-meta leading-tight text-mute tabular-nums">
+              <span className="text-meta text-mute font-mono leading-tight tabular-nums">
                 Proj {num(top.projection)}
-                {beat !== null && beat !== 0 && <span className={`ml-sp-1 ${beat > 0 ? "text-move-up" : "text-move-down"}`}>{gap(beat)}</span>}
+                {beat !== null && beat !== 0 && (
+                  <span className={`ml-sp-1 ${beat > 0 ? "text-move-up" : "text-move-down"}`}>
+                    {gap(beat)}
+                  </span>
+                )}
               </span>
             )}
           </span>
         </motion.div>
       )}
       {block.sentence && (
-        <motion.p className="m-0 text-body leading-body text-ink-2" {...rise(VERY_SLOW * 0.6 + block.teams * STAGGER, true)}>
+        <motion.p
+          className="text-body leading-body text-ink-2 m-0"
+          {...rise(VERY_SLOW * 0.6 + block.teams * STAGGER, true)}
+        >
           {block.sentence}
         </motion.p>
       )}

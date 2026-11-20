@@ -20,7 +20,7 @@ describe("the seen store of the Tour", () => {
     expect(tourSeen()).toBe(false);
   });
 
-  it("writes \"1\" and then reads as seen (AT-23)", () => {
+  it('writes "1" and then reads as seen (AT-23)', () => {
     localStorage.removeItem("cpc.tour-seen");
     markTourSeen();
     expect(localStorage.getItem("cpc.tour-seen")).toBe("1");

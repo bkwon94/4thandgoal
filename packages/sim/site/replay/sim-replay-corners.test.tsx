@@ -11,7 +11,11 @@ afterEach(cleanup);
 
 /* The radius classes of the elements in the container. rounded-report is the 8 px radius of the report. */
 const corners = (container: HTMLElement) =>
-  new Set([...container.querySelectorAll("[class*='rounded']")].flatMap((e) => e.className.match(/(?<=(?:^|\s))rounded-\S+/g) ?? []));
+  new Set(
+    [...container.querySelectorAll("[class*='rounded']")].flatMap(
+      (e) => e.className.match(/(?<=(?:^|\s))rounded-\S+/g) ?? [],
+    ),
+  );
 
 describe("the corners of the sim replay", () => {
   it("has no full pill and no corner above 8 px before the press", () => {
@@ -24,7 +28,9 @@ describe("the corners of the sim replay", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
     fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
     // The avatar of the champion and the rays are round shapes, not pills, so they are the only other radius.
-    const others = [...corners(container)].filter((name) => name !== "rounded-report" && name !== "rounded-full");
+    const others = [...corners(container)].filter(
+      (name) => name !== "rounded-report" && name !== "rounded-full",
+    );
     expect(others).toEqual([]);
     expect(corners(container).has("rounded-report")).toBe(true);
   });

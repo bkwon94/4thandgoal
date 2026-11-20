@@ -18,9 +18,11 @@ describe("the season of a stored run", () => {
   it("plays each stored bracket game and crowns the stored champion, for each of the 200 runs", () => {
     sim.sample.forEach((run, index) => {
       const season = replaySeason(sim, index);
-      expect(season.rounds.map((round) => round.games.map((game) => [game.high.roster_id, game.low.roster_id]))).toEqual(
-        run.bracket,
-      );
+      expect(
+        season.rounds.map((round) =>
+          round.games.map((game) => [game.high.roster_id, game.low.roster_id]),
+        ),
+      ).toEqual(run.bracket);
       expect(season.rounds.map((round) => round.week)).toEqual([15, 16, 17]);
       expect(season.champion.roster_id).toBe(run.champion);
     });
@@ -30,9 +32,13 @@ describe("the season of a stored run", () => {
     const season = replaySeason(sim, 0);
     const week9 = season.weeks[0];
     // Week 9 of run 0: The Blue Tent scores 112.9, and the median is the mean of the two middle scores of the week.
-    const blueTent = week9.games.flatMap((game) => game.teams).find((team) => team.roster_id === 1)!;
+    const blueTent = week9.games
+      .flatMap((game) => game.teams)
+      .find((team) => team.roster_id === 1)!;
     expect(blueTent.score).toBe(112.9);
-    const scores = week9.games.flatMap((game) => game.teams.map((team) => team.score)).sort((a, b) => b - a);
+    const scores = week9.games
+      .flatMap((game) => game.teams.map((team) => team.score))
+      .sort((a, b) => b - a);
     expect(week9.median).toBeCloseTo((scores[5] + scores[6]) / 2, 5);
     // The move is the change of place from the week before; the first week compares with the real standings of week 8.
     for (const row of season.weeks[1].standings) {
@@ -44,7 +50,10 @@ describe("the season of a stored run", () => {
   it("names the seeds, the byes, and the cut of the final standings", () => {
     const season = replaySeason(sim, 0);
     // Run 0 ends with Lil Fridge first and Return of T Mac second, so they take the two byes.
-    expect(season.seeds.slice(0, 2).map((team) => team.name)).toEqual(["Lil Fridge", "Return of T Mac"]);
+    expect(season.seeds.slice(0, 2).map((team) => team.name)).toEqual([
+      "Lil Fridge",
+      "Return of T Mac",
+    ]);
     expect(season.seeds).toHaveLength(6);
     expect(season.byes).toBe(2);
   });

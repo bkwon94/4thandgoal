@@ -39,7 +39,9 @@ describe("HomePage", () => {
     const hero = screen.getByRole("region", { name: "Matchup of the Week" });
     // CPC week 8: The Blue Tent over London Cooking, 100.31 to 98.88 (AT-10).
     expect(within(hero).getByText("Week 08 // Matchup of the Week")).toBeTruthy();
-    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("The Blue Tent by 1.43");
+    expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe(
+      "The Blue Tent by 1.43",
+    );
     expect(within(hero).getByText("Closest Finish")).toBeTruthy();
     expect(within(hero).getByText("The Blue Tent")).toBeTruthy();
     expect(within(hero).getByText("100.31")).toBeTruthy();
@@ -75,7 +77,9 @@ describe("HomePage", () => {
   it("names the season and the league in the intro", () => {
     render(<HomePage />);
     expect(screen.getByText(`${season} // League Weekly`)).toBeTruthy();
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Cornerstone Fantasy Football League");
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+      "Cornerstone Fantasy Football League",
+    );
   });
 
   it("shows the parts in the order of the Front page", async () => {
@@ -98,7 +102,9 @@ describe("HomePage", () => {
       "Weekly Reports",
     ]);
     for (let index = 1; index < order.length; index++) {
-      expect(order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(
+        order[index - 1].compareDocumentPosition(order[index]) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
     }
   });
 
@@ -133,7 +139,10 @@ describe("HomePage", () => {
     render(<HomePage />);
     const tools = screen.getByRole("region", { name: "Tools" });
     const links = within(tools).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/analyze/", "/2026/managers/"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([
+      "/analyze/",
+      "/2026/managers/",
+    ]);
     expect(links[0].textContent).toBe("Trade AnalyzerGrade a trade offer before you send it.");
     expect(links[0].querySelector("svg")).toBeTruthy();
   });
@@ -143,7 +152,11 @@ describe("HomePage", () => {
     const weeks = screen.getByRole("region", { name: "Weekly Reports" });
     expect(within(weeks).getByText("3 weeks")).toBeTruthy();
     const links = within(weeks).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-08/", "/2026/week-07/", "/2026/week-06/"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([
+      "/2026/week-08/",
+      "/2026/week-07/",
+      "/2026/week-06/",
+    ]);
     expect(links[2].textContent).toContain("Week 6");
     expect(links[2].textContent).toContain("Oct 15 – Oct 19, 2026");
     expect(links[0].textContent).toContain("The Blue Tent vs London Cooking");
@@ -156,7 +169,9 @@ describe("HomePage", () => {
 
   it("fetches the teams in the background and stores them when a passphrase is stored", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
-    const teams = [{ roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [] }];
+    const teams = [
+      { roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [] },
+    ];
     const fetchStub = vi.fn().mockResolvedValue(new Response(JSON.stringify({ teams })));
     vi.stubGlobal("fetch", fetchStub);
     render(<HomePage />);
@@ -165,7 +180,9 @@ describe("HomePage", () => {
     expect(screen.getByText("Week 6")).toBeTruthy();
     await waitFor(() => expect(sessionStorage.getItem("cpc.teams.2026")).not.toBeNull());
     expect(fetchStub.mock.calls[0][1].headers["X-League-Passphrase"]).toBe("localtest");
-    expect(JSON.parse(sessionStorage.getItem("cpc.teams.2026")!).teams[0].team).toBe("Gridiron Ghosts");
+    expect(JSON.parse(sessionStorage.getItem("cpc.teams.2026")!).teams[0].team).toBe(
+      "Gridiron Ghosts",
+    );
   });
 
   it("skips the fetch with no passphrase", () => {
@@ -182,14 +199,20 @@ async function homeOver(rankings?: unknown, managers = false) {
   for (const week of [5, 6]) {
     const folder = join(root, "public", "2026", `week-0${week}`);
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), weekPageJson({ week, dates: `Dates of week ${week}`, avatars: {} }));
+    writeFileSync(
+      join(folder, "page.json"),
+      weekPageJson({ week, dates: `Dates of week ${week}`, avatars: {} }),
+    );
   }
   if (rankings !== undefined) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   }
   if (managers) {
     // The tile only reads that the file exists, so an empty season is enough.
-    writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify({ schema_version: 1, season: 2026, through: 6, managers: [] }));
+    writeFileSync(
+      join(root, "public", "2026", "managers.json"),
+      JSON.stringify({ schema_version: 1, season: 2026, through: 6, managers: [] }),
+    );
   }
   return homeAt(root);
 }
@@ -205,7 +228,8 @@ async function homeOfClient(slug: FixtureClient, skip: string[] = []) {
 }
 
 /* The files of a client with no report, so the tests of the plain home page hold whether or not it has published one. */
-const homeWithoutReport = (slug: FixtureClient) => homeOfClient(slug, ["midseason.json", "sim.json"]);
+const homeWithoutReport = (slug: FixtureClient) =>
+  homeOfClient(slug, ["midseason.json", "sim.json"]);
 const homeOfCpcWithoutReport = () => homeWithoutReport("cpc");
 
 function tempRoot(): string {
@@ -232,9 +256,13 @@ describe("HomePage of the NorCal data", () => {
     expect(within(hero).getByText("The Mean Machine")).toBeTruthy();
     const rows = within(screen.getByRole("list", { name: "Top three" })).getAllByRole("listitem");
     expect(rows[0].textContent).toContain("Mitseeker5000");
-    const weeks = within(screen.getByRole("region", { name: "Weekly Reports" })).getAllByRole("link");
+    const weeks = within(screen.getByRole("region", { name: "Weekly Reports" })).getAllByRole(
+      "link",
+    );
     expect(weeks.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-08/"]);
-    expect(within(screen.getByRole("region", { name: "Weekly Reports" })).getByText("1 week")).toBeTruthy();
+    expect(
+      within(screen.getByRole("region", { name: "Weekly Reports" })).getByText("1 week"),
+    ).toBeTruthy();
   });
 });
 
@@ -260,14 +288,20 @@ describe("HomePage parts from the registry", () => {
       .map((heading) => heading.textContent);
     expect(headings).toEqual(["Week 6 in four numbers", "Tools", "Weekly Reports"]);
     expect(screen.queryByRole("list", { name: "Top three" })).toBeNull();
-    expect(within(screen.getByRole("region", { name: "Weekly Reports" })).getByRole("link", { name: /Week 6/ })).toBeTruthy();
+    expect(
+      within(screen.getByRole("region", { name: "Weekly Reports" })).getByRole("link", {
+        name: /Week 6/,
+      }),
+    ).toBeTruthy();
   });
 
   it("opens the hero on the latest week of the folder", async () => {
     const Home = await homeOver(fixture);
     render(<Home />);
     const hero = screen.getByRole("region", { name: "Matchup of the Week" });
-    expect(within(hero).getByRole("link", { name: "Read Week 6" }).getAttribute("href")).toBe("/2026/week-06/");
+    expect(within(hero).getByRole("link", { name: "Read Week 6" }).getAttribute("href")).toBe(
+      "/2026/week-06/",
+    );
   });
 
   it("links the managers index from the tools only when the managers file exists", async () => {

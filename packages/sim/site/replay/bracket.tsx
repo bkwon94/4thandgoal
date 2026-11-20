@@ -22,11 +22,15 @@ function Score({ value, live }: { value: number; live: boolean }) {
   useEffect(() => {
     if (!live || box.current === null) return;
     const node = box.current;
-    const controls = animate(0, value, { duration: COUNT, ease: "easeOut", onUpdate: (v) => (node.textContent = oneDecimal(v)) });
+    const controls = animate(0, value, {
+      duration: COUNT,
+      ease: "easeOut",
+      onUpdate: (v) => (node.textContent = oneDecimal(v)),
+    });
     return () => controls.stop();
   }, [live, value]);
   return (
-    <span ref={box} data-score className="font-mono text-meta font-bold tabular-nums">
+    <span ref={box} data-score className="text-meta font-mono font-bold tabular-nums">
       {oneDecimal(value)}
     </span>
   );
@@ -35,14 +39,24 @@ function Score({ value, live }: { value: number; live: boolean }) {
 /* The red seed chip of a team. The chip of a winner slides into its seat in the next round, so the chip of the seat
    and the chip of the winner share one layout id. The stable id names the round and the team, so a frame of the
    replay keeps it. */
-function Chip({ team, round, flight, pace }: { team: { roster_id: number; seed: number }; round: number; flight?: string; pace: Pace }) {
+function Chip({
+  team,
+  round,
+  flight,
+  pace,
+}: {
+  team: { roster_id: number; seed: number };
+  round: number;
+  flight?: string;
+  pace: Pace;
+}) {
   const moving = !pace.off && !pace.still;
   return (
     <motion.span
       {...stableId("bracket", round, team.roster_id)}
       layoutId={moving ? flight : undefined}
       transition={SPRING}
-      className="inline-flex size-sp-6 flex-none items-center justify-center rounded-report bg-accent font-mono text-meta font-bold text-white"
+      className="size-sp-6 rounded-report bg-accent text-meta inline-flex flex-none items-center justify-center font-mono font-bold text-white"
     >
       {team.seed}
     </motion.span>
@@ -68,19 +82,28 @@ function TeamRow({
   pace: Pace;
 }) {
   return (
-    <div className={cn("relative flex items-center gap-sp-2 py-sp-1", decided && !won ? "text-on-dark-muted" : "text-on-dark")}>
+    <div
+      className={cn(
+        "gap-sp-2 py-sp-1 relative flex items-center",
+        decided && !won ? "text-on-dark-muted" : "text-on-dark",
+      )}
+    >
       <Chip team={team} round={round} flight={flight} pace={pace} />
       {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
-      <span data-team-name className="min-w-0 flex-1 text-meta leading-tight font-semibold">
+      <span data-team-name className="text-meta min-w-0 flex-1 leading-tight font-semibold">
         {team.name}
       </span>
-      {decided ? <Score value={team.score} live={live} /> : <span className="font-mono text-meta text-on-dark-muted">–</span>}
+      {decided ? (
+        <Score value={team.score} live={live} />
+      ) : (
+        <span className="text-meta text-on-dark-muted font-mono">–</span>
+      )}
       {decided && won && (
         // The red bar sweeps under the winner after the count-up.
         <motion.span
           aria-hidden="true"
           {...enter(pace, { scaleX: 0 }, { duration: 0.5, delay: live ? COUNT : 0 })}
-          className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-accent"
+          className="bg-accent absolute inset-x-0 bottom-0 h-0.5 origin-left"
         />
       )}
     </div>
@@ -98,12 +121,18 @@ function Line({ lit, last, pace }: { lit: boolean; last: boolean; pace: Pace }) 
       <motion.span
         aria-hidden="true"
         {...enter(pace, { scaleX: 0 }, { duration: 0.4, delay: 0.3 })}
-        className={cn("absolute top-1/2 left-full hidden h-0.5 w-sp-6 origin-left transition-colors duration-300 @xl:block", color)}
+        className={cn(
+          "w-sp-6 absolute top-1/2 left-full hidden h-0.5 origin-left transition-colors duration-300 @xl:block",
+          color,
+        )}
       />
       <motion.span
         aria-hidden="true"
         {...enter(pace, { scaleY: 0 }, { duration: 0.4, delay: 0.3 })}
-        className={cn("absolute top-full left-1/2 h-sp-6 w-0.5 origin-top transition-colors duration-300 @xl:hidden", color)}
+        className={cn(
+          "h-sp-6 absolute top-full left-1/2 w-0.5 origin-top transition-colors duration-300 @xl:hidden",
+          color,
+        )}
       />
     </>
   );
@@ -137,7 +166,7 @@ function Game({
       role="group"
       aria-label={`Seed ${high.seed} ${high.name} against seed ${low.seed} ${low.name}`}
       data-winner={decided ? winner : undefined}
-      className="relative rounded-report border border-rule-dark bg-chip-dark px-sp-2 py-sp-1"
+      className="rounded-report border-rule-dark bg-chip-dark px-sp-2 py-sp-1 relative border"
     >
       {[high, low].map((team) => (
         <TeamRow
@@ -159,7 +188,12 @@ function Game({
           aria-hidden="true"
           className="absolute top-full left-1/2 -translate-x-1/2 @xl:top-1/2 @xl:left-full @xl:translate-x-0 @xl:-translate-y-1/2"
         >
-          <Chip team={winner === high.roster_id ? high : low} round={round + 1} flight={`seat-${round}-${winner}`} pace={pace} />
+          <Chip
+            team={winner === high.roster_id ? high : low}
+            round={round + 1}
+            flight={`seat-${round}-${winner}`}
+            pace={pace}
+          />
         </span>
       )}
       <Line lit={decided} last={last} pace={pace} />
@@ -187,7 +221,7 @@ export function Bracket({
   // winner, so the waiting chip covers no card.
   return (
     <div className="@container">
-      <ol aria-label="Bracket" className="m-0 grid list-none gap-sp-6 p-0 @xl:grid-cols-3">
+      <ol aria-label="Bracket" className="gap-sp-6 m-0 grid list-none p-0 @xl:grid-cols-3">
         {rounds.slice(0, shown).map((round, r) => {
           const last = r === rounds.length - 1;
           const arrived = new Set(r === 0 ? [] : rounds[r - 1].games.map((game) => game.winner));
@@ -196,14 +230,16 @@ export function Bracket({
               key={round.label}
               aria-label={`${round.label}, week ${round.week}`}
               {...enter(pace, { x: -24 }, { duration: 0.5 })}
-              className="flex flex-col gap-sp-3"
+              className="gap-sp-3 flex flex-col"
             >
-              <div className="flex items-baseline justify-between gap-sp-2">
-                <span className="font-mono text-meta font-bold tracking-caps text-on-dark uppercase">{round.label}</span>
-                <span className="font-mono text-meta text-on-dark-muted">{`Wk ${round.week}`}</span>
+              <div className="gap-sp-2 flex items-baseline justify-between">
+                <span className="text-meta tracking-caps text-on-dark font-mono font-bold uppercase">
+                  {round.label}
+                </span>
+                <span className="text-meta text-on-dark-muted font-mono">{`Wk ${round.week}`}</span>
               </div>
               {/* The cards of a later round sit between the cards of the round before, as in a printed bracket. */}
-              <div className="flex flex-1 flex-col justify-around gap-sp-6 @xl:gap-sp-3">
+              <div className="gap-sp-6 @xl:gap-sp-3 flex flex-1 flex-col justify-around">
                 {round.games.map((game) => (
                   <Game
                     key={`${game.high.roster_id}-${game.low.roster_id}`}
@@ -220,14 +256,19 @@ export function Bracket({
                 {round.byes.map((team) => (
                   <div
                     key={team.roster_id}
-                    className="flex items-center gap-sp-2 rounded-report border border-dashed border-rule-dark px-sp-2 py-sp-2 text-on-dark"
+                    className="gap-sp-2 rounded-report border-rule-dark px-sp-2 py-sp-2 text-on-dark flex items-center border border-dashed"
                   >
                     <Chip team={team} round={r} pace={pace} />
                     {/* A long name wraps between its words, so each name shows in full in the narrow columns of three rounds. */}
-      <span data-team-name className="min-w-0 flex-1 text-meta leading-tight font-semibold">
-        {team.name}
-      </span>
-                    <span className="font-mono text-meta font-bold tracking-caps text-on-dark-2">BYE</span>
+                    <span
+                      data-team-name
+                      className="text-meta min-w-0 flex-1 leading-tight font-semibold"
+                    >
+                      {team.name}
+                    </span>
+                    <span className="text-meta tracking-caps text-on-dark-2 font-mono font-bold">
+                      BYE
+                    </span>
                   </div>
                 ))}
               </div>

@@ -64,6 +64,13 @@ describe("the field scale", () => {
   });
 
   it("scales the place, the size, and the drift of a slot, but not its period", () => {
-    expect(scaleSlot(SLOTS[0], 0.5)).toEqual({ x: 89.5, y: 35, size: 44, dx: 4, dy: -5, period: 7 });
+    expect(scaleSlot(SLOTS[0], 0.5)).toEqual({
+      x: 89.5,
+      y: 35,
+      size: 44,
+      dx: 4,
+      dy: -5,
+      period: 7,
+    });
   });
 });

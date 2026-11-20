@@ -10,14 +10,30 @@ import { stableKey } from "@cpc/design/lib/stable-id";
 
 export type PlayerChapterItem = ComponentProps<typeof PlayerRow>;
 
-export function PlayerChapter({ id, title, empty, items }: { id: string; title: string; empty: string; items: PlayerChapterItem[] }) {
+export function PlayerChapter({
+  id,
+  title,
+  empty,
+  items,
+}: {
+  id: string;
+  title: string;
+  empty: string;
+  items: PlayerChapterItem[];
+}) {
   return (
     <Chapter reveal id={id}>
       {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
-      <Label heading className="text-meta">{title}</Label>
+      <Label heading className="text-meta">
+        {title}
+      </Label>
       <PlayerRows empty={empty}>
         {items.map((item) => (
-          <PlayerRow key={item.player.player_id} {...item} stable={stableKey(id, item.player.player_id)} />
+          <PlayerRow
+            key={item.player.player_id}
+            {...item}
+            stable={stableKey(id, item.player.player_id)}
+          />
         ))}
       </PlayerRows>
     </Chapter>

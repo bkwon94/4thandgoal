@@ -39,18 +39,25 @@ export function TeamRow({
 }) {
   const top = withTop ? topLine(side) : null;
   return (
-    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-sp-3">
+    <div className="gap-sp-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
       <Avatar src={avatarSrc(avatars, side.team.roster_id)} />
       <div className="min-w-0">
-        <div className={cn("w-fit text-lead leading-tight", lead ? "font-bold text-on-dark" : "text-on-dark-2")}>
+        <div
+          className={cn(
+            "text-lead w-fit leading-tight",
+            lead ? "text-on-dark font-bold" : "text-on-dark-2",
+          )}
+        >
           {side.team.name}
         </div>
-        {top !== null && <div className="mt-sp-1 w-fit text-meta leading-tight text-on-dark-muted">{top}</div>}
+        {top !== null && (
+          <div className="mt-sp-1 text-meta text-on-dark-muted w-fit leading-tight">{top}</div>
+        )}
       </div>
       <div
         className={cn(
-          "font-mono text-score leading-stat tabular-nums",
-          lead ? "font-bold text-on-dark" : "text-on-dark-muted",
+          "text-score leading-stat font-mono tabular-nums",
+          lead ? "text-on-dark font-bold" : "text-on-dark-muted",
         )}
       >
         {num(side.score)}
@@ -64,11 +71,14 @@ export function TeamRow({
 export function matchupTitle(pick: Pick): string {
   const [first, second] = pick.sides;
   const margin = first.score - second.score;
-  return margin === 0 ? `${first.team.name} and ${second.team.name} tie` : `${first.team.name} by ${num(margin)}`;
+  return margin === 0
+    ? `${first.team.name} and ${second.team.name} tie`
+    : `${first.team.name} by ${num(margin)}`;
 }
 
 /* The small caps line of the reason in the hero, such as "Closest Finish". It needs no plate, as no text line of a hero does. */
-const REASON = "w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase";
+const REASON =
+  "w-fit font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase";
 
 export function MatchupOfTheWeek({
   week,
@@ -95,7 +105,7 @@ export function MatchupOfTheWeek({
   return (
     // The rail links the hero by this id, and the scroll padding keeps it clear of the top band.
     // The blurb sits under the hero in the same chapter, so the hero stays as short as the others (decision 05).
-    <div id="motw" className="flex flex-col gap-sp-5">
+    <div id="motw" className="gap-sp-5 flex flex-col">
       <Hero
         label="Matchup of the Week"
         eyebrow={`Week ${twoDigits(week)} // Matchup of the Week`}
@@ -104,11 +114,15 @@ export function MatchupOfTheWeek({
         // One string, so React writes one text node and the browser kerns the line as one run.
         meta={`${dates} · Published ${publishDate}`}
         feature={
-          <Rise step={1} className="flex flex-col gap-sp-3">
-            <div className="flex items-center justify-between gap-sp-4">
+          <Rise step={1} className="gap-sp-3 flex flex-col">
+            <div className="gap-sp-4 flex items-center justify-between">
               <div className={REASON}>{pick.reason}</div>
               {first.top !== null && (
-                <PhotoFrame src={photoOf(headshots, first.top.player_id)} name={first.top.name} size="lg" />
+                <PhotoFrame
+                  src={photoOf(headshots, first.top.player_id)}
+                  name={first.top.name}
+                  size="lg"
+                />
               )}
             </div>
             <TeamRow side={first} avatars={avatars} lead />
@@ -123,7 +137,12 @@ export function MatchupOfTheWeek({
         }
       />
       <Rise step={3}>
-        <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>
+        <p
+          className="max-w-measure text-lead leading-body text-ink-2 m-0"
+          {...textId("blurb", blurb)}
+        >
+          {blurb}
+        </p>
       </Rise>
     </div>
   );

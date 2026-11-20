@@ -40,13 +40,19 @@ const SCHEMA_VERSION = 2;
 /* A schema change must fail the build loud, so a page never renders from keys it misreads. */
 export function loadWeek(season: string, week: string): WeekPage {
   // The version check runs first, so a layout change reads as a version error and not as a list of bad fields.
-  return parseVersioned(join(PUBLIC_DIR, season, week, "page.json"), SCHEMA_VERSION, weekPageSchema);
+  return parseVersioned(
+    join(PUBLIC_DIR, season, week, "page.json"),
+    SCHEMA_VERSION,
+    weekPageSchema,
+  );
 }
 
 /* Every published week, newest first. The sort reads the folder names as numbers, so week-10 follows week-09. */
 export function listWeekSummaries(): WeekSummary[] {
   return listWeeks()
-    .sort((a, b) => Number(b.season) - Number(a.season) || weekNumberOf(b.week) - weekNumberOf(a.week))
+    .sort(
+      (a, b) => Number(b.season) - Number(a.season) || weekNumberOf(b.week) - weekNumberOf(a.week),
+    )
     .map(({ season, week }) => {
       const page = loadWeek(season, week);
       return {

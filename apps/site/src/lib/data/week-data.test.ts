@@ -34,7 +34,10 @@ describe("loadWeek schema check", () => {
     // A temp public/ folder holds a page at the old version.
     const root = mkdtempSync(join(tmpdir(), "week-data-"));
     mkdirSync(join(root, "public", "2026", "week-01"), { recursive: true });
-    writeFileSync(join(root, "public", "2026", "week-01", "page.json"), JSON.stringify({ schema_version: 1 }));
+    writeFileSync(
+      join(root, "public", "2026", "week-01", "page.json"),
+      JSON.stringify({ schema_version: 1 }),
+    );
     vi.spyOn(process, "cwd").mockReturnValue(root);
     // The module reads the working folder when it loads, so reset it to pick up the temp folder.
     vi.resetModules();
@@ -75,6 +78,10 @@ describe("listWeekSummaries", () => {
     vi.spyOn(process, "cwd").mockReturnValue(root);
     vi.resetModules();
     const { listWeekSummaries: list } = await import("./week-data");
-    expect(list().map((summary) => summary.href)).toEqual(["/2027/week-01/", "/2026/week-10/", "/2026/week-02/"]);
+    expect(list().map((summary) => summary.href)).toEqual([
+      "/2027/week-01/",
+      "/2026/week-10/",
+      "/2026/week-02/",
+    ]);
   });
 });

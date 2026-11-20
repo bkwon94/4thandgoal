@@ -30,19 +30,22 @@ export function WeekSwitch({
   return (
     <nav aria-label="Weeks" className="w-full">
       <LayoutGroup id="sim-weeks">
-        <ul className="m-0 flex list-none gap-sp-1 rounded-tile bg-card p-sp-1">
+        <ul className="gap-sp-1 rounded-tile bg-card p-sp-1 m-0 flex list-none">
           {items.map((item) => {
             const on = item === open;
             const set = typeof item === "number" && setWeeks.includes(item);
             return (
-              <li key={String(item)} className={cn("min-w-0 flex-1", item === PLAYOFFS && "flex-[1.6]")}>
+              <li
+                key={String(item)}
+                className={cn("min-w-0 flex-1", item === PLAYOFFS && "flex-[1.6]")}
+              >
                 <button
                   type="button"
                   aria-current={on ? "page" : undefined}
                   onClick={() => onOpen(item)}
                   className={cn(
                     PRESS,
-                    "relative flex min-h-touch w-full items-center justify-center rounded-[14px] text-body font-bold",
+                    "min-h-touch text-body relative flex w-full items-center justify-center rounded-[14px] font-bold",
                     on ? "text-page" : "text-mute hover-fine:text-ink",
                   )}
                 >
@@ -50,14 +53,22 @@ export function WeekSwitch({
                     <motion.span
                       layoutId="sim-week-pill"
                       aria-hidden
-                      className="absolute inset-0 rounded-[14px] bg-ink"
+                      className="bg-ink absolute inset-0 rounded-[14px]"
                       transition={off ? { duration: 0 } : SLIDE}
                     />
                   )}
-                  <span className="relative tabular-nums">{item === PLAYOFFS ? "Playoffs" : `Wk ${item}`}</span>
+                  <span className="relative tabular-nums">
+                    {item === PLAYOFFS ? "Playoffs" : `Wk ${item}`}
+                  </span>
                   {set && (
                     <>
-                      <span aria-hidden className={cn("relative ml-sp-1 size-1.5 flex-none rounded-pill", on ? "bg-page" : "bg-accent")} />
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "ml-sp-1 rounded-pill relative size-1.5 flex-none",
+                          on ? "bg-page" : "bg-accent",
+                        )}
+                      />
                       <span className="sr-only">, set</span>
                     </>
                   )}

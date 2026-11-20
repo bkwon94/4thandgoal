@@ -33,14 +33,16 @@ describe("Awards", () => {
 
   it("shows each player in a round photo frame (AT-33)", () => {
     const chapter = renderAwards();
-    expect(within(tiles(chapter)[0]).getByRole("img", { name: "Joe Burrow" }).getAttribute("src")).toBe(
-      "headshots/6770.png",
-    );
+    expect(
+      within(tiles(chapter)[0]).getByRole("img", { name: "Joe Burrow" }).getAttribute("src"),
+    ).toBe("headshots/6770.png");
   });
 
   it("shows the initials of a player with no headshot (AT-33)", () => {
     const chapter = renderAwards({});
-    expect(within(tiles(chapter)[1]).getByRole("img", { name: "Tony Pollard" }).textContent).toBe("TP");
+    expect(within(tiles(chapter)[1]).getByRole("img", { name: "Tony Pollard" }).textContent).toBe(
+      "TP",
+    );
   });
 
   it("shows a note in place of the player when the award is missing", () => {

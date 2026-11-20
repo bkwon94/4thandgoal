@@ -27,7 +27,7 @@ export function Chapter({
     <section
       id={id}
       className={cn(
-        "border-b-(length:--chap-rule) border-card px-gutter py-sp-5 tablet:border-b-0",
+        "border-card px-gutter py-sp-5 tablet:border-b-0 border-b-(length:--chap-rule)",
         dark ? "bg-card-band text-on-dark" : "tablet:bg-page",
       )}
     >

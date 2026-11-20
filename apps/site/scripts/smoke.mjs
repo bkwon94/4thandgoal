@@ -5,7 +5,8 @@
 import { resolve } from "node:path";
 import { runProject } from "./run-with-api.mjs";
 
-const usage = "Usage: pnpm smoke --out <dir> [--steps <file>] [--client <slug>] [--no-api] [<flow name> ...]";
+const usage =
+  "Usage: pnpm smoke --out <dir> [--steps <file>] [--client <slug>] [--no-api] [<flow name> ...]";
 const args = process.argv.slice(2);
 const options = { out: "", steps: "", client: "cpc", noApi: false };
 const names = [];

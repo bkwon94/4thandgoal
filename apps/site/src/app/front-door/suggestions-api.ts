@@ -19,15 +19,28 @@ export type ServedSuggestions = z.infer<typeof suggestionsSchema>;
 
 /* One personal or trade Answer of the Thread, as the key check reads it. `team` is null for Your team. The team of a
    trade Answer is its partner, or null when it read no partner. */
-export type KeyItem = { topic: (typeof PERSONAL_TOPICS)[number] | "trade_check" | "trade_ideas" | "sell_high"; roster_id: number; team: number | null; key: string };
+export type KeyItem = {
+  topic: (typeof PERSONAL_TOPICS)[number] | "trade_check" | "trade_ideas" | "sell_high";
+  roster_id: number;
+  team: number | null;
+  key: string;
+};
 
 /* The answer of the key check for one Answer: whether its key is current, and when the API kept it. */
 export const currentSchema = z.object({
-  answers: z.array(z.object({ key: z.string(), current: z.boolean(), kept_at: z.string().nullable() })),
+  answers: z.array(
+    z.object({ key: z.string(), current: z.boolean(), kept_at: z.string().nullable() }),
+  ),
 });
 export type KeyState = z.infer<typeof currentSchema>["answers"][number];
 
-async function post<T>(target: AskTarget, passphrase: string, path: string, body: unknown, schema: z.ZodType<T>): Promise<T> {
+async function post<T>(
+  target: AskTarget,
+  passphrase: string,
+  path: string,
+  body: unknown,
+  schema: z.ZodType<T>,
+): Promise<T> {
   return readBody(await postClient(target, passphrase, path, body), schema);
 }
 
@@ -42,19 +55,33 @@ export function fetchSuggestions(
 }
 
 /* Whether the key of each Answer is still the key of its data now. The check costs nothing. */
-export async function checkCurrent(target: AskTarget, passphrase: string, answers: KeyItem[]): Promise<KeyState[]> {
+export async function checkCurrent(
+  target: AskTarget,
+  passphrase: string,
+  answers: KeyItem[],
+): Promise<KeyState[]> {
   return (await post(target, passphrase, "personal/current", { answers }, currentSchema)).answers;
 }
 
 /* The fact that a Suggestion shows: the kickoff fact in the time zone of the browser, such as "Next kickoff Sun 10:00
    AM" in Los Angeles. The API writes the time in the league zone, so the opened Topics keep the fact of the API. */
-export function shownFacts(facts: Record<string, string>, kickoffs: Record<string, number>): Record<string, string> {
-  return { ...facts, ...Object.fromEntries(Object.entries(kickoffs).map(([key, ms]) => [key, `Next kickoff ${kickoffText(ms)}`])) };
+export function shownFacts(
+  facts: Record<string, string>,
+  kickoffs: Record<string, number>,
+): Record<string, string> {
+  return {
+    ...facts,
+    ...Object.fromEntries(
+      Object.entries(kickoffs).map(([key, ms]) => [key, `Next kickoff ${kickoffText(ms)}`]),
+    ),
+  };
 }
 
 /* The stale line of an Answer, with the day that the API kept it. An Answer with no kept time still says the roster
    changed. */
 export function staleLine(keptAt: string | null): string {
   const day = keptAt ? new Date(keptAt).toLocaleDateString("en-US", { weekday: "long" }) : null;
-  return day && day !== "Invalid Date" ? `Your roster changed since ${day}.` : "Your roster changed.";
+  return day && day !== "Invalid Date"
+    ? `Your roster changed since ${day}.`
+    : "Your roster changed.";
 }

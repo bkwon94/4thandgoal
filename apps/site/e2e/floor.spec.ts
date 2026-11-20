@@ -7,7 +7,15 @@ import type { Theme } from "@cpc/design/lib/theme";
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
-import { openPage, scanContrast, scanContrastInSteps, scanScroll, scanTargets, scanText, scanWords } from "./floor";
+import {
+  openPage,
+  scanContrast,
+  scanContrastInSteps,
+  scanScroll,
+  scanTargets,
+  scanText,
+  scanWords,
+} from "./floor";
 import { serveDir } from "./serve";
 
 // check:floor runs in apps/site, as pnpm runs each script of the site there.
@@ -26,7 +34,10 @@ const NOT_FOUND_ROUTE = "/404-floor-check/";
 type OpenState = { route: string; tap: string; scope?: string };
 
 /* The route of the latest week: the last week page of the export, as the routes sort by season and then by week. */
-const LATEST_WEEK_ROUTE = builtRoutes().filter((route) => /^\/\d{4}\/week-\d{2}\/$/.test(route)).at(-1) ?? "/no-week/";
+const LATEST_WEEK_ROUTE =
+  builtRoutes()
+    .filter((route) => /^\/\d{4}\/week-\d{2}\/$/.test(route))
+    .at(-1) ?? "/no-week/";
 
 /* The season of the latest week, from its route. The managers index and the manager pages sit under it. */
 const SEASON = LATEST_WEEK_ROUTE.split("/")[1];
@@ -39,9 +50,13 @@ const SEASON = LATEST_WEEK_ROUTE.split("/")[1];
 function longestNameRoute(): string {
   const path = join(OUT, SEASON, "managers.json");
   if (!existsSync(path)) return "/no-managers-file/";
-  const { managers } = JSON.parse(readFileSync(path, "utf8")) as { managers: { roster_id: number; team: { name: string } }[] };
+  const { managers } = JSON.parse(readFileSync(path, "utf8")) as {
+    managers: { roster_id: number; team: { name: string } }[];
+  };
   const length = (name: string) => [...name].length;
-  const [longest] = [...managers].sort((a, b) => length(b.team.name) - length(a.team.name) || a.roster_id - b.roster_id);
+  const [longest] = [...managers].sort(
+    (a, b) => length(b.team.name) - length(a.team.name) || a.roster_id - b.roster_id,
+  );
   return `/${SEASON}/managers/${longest.roster_id}/`;
 }
 
@@ -59,7 +74,10 @@ const FULL_FLOOR_PAGES: readonly (string | OpenState)[] = [
   { route: "/rankings/", tap: "main ol > li:first-child button[aria-expanded]:not([aria-label])" },
   `/${SEASON}/managers/`,
   // The open first row of the Index list. The row name of each closed row is muted, so axe reads it beside the open row.
-  { route: `/${SEASON}/managers/`, tap: 'ul[aria-label="Index List"] > li:first-child > button[aria-expanded]' },
+  {
+    route: `/${SEASON}/managers/`,
+    tap: 'ul[aria-label="Index List"] > li:first-child > button[aria-expanded]',
+  },
   // The manager page of the longest team name of the client: To Infinity and Bijan of cpc, The Mean Machine of norcal.
   // In cpc, rosters 7, 9, and 11 tie at 21 characters, and roster 7 stands for the three.
   longestNameRoute(),
@@ -85,7 +103,8 @@ const DESKTOP = { width: 1280, height: 800 };
  * The route of 404.html is a path that does not exist, so the server gives the page with its real status, as the Worker does.
  */
 function builtRoutes(): string[] {
-  if (!existsSync(OUT)) throw new Error(`${OUT} does not exist. Run CLIENT=${CLIENT} pnpm build first.`);
+  if (!existsSync(OUT))
+    throw new Error(`${OUT} does not exist. Run CLIENT=${CLIENT} pnpm build first.`);
   const routes: string[] = [];
   const walk = (dir: string) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -115,7 +134,9 @@ test.afterAll(async () => {
 async function textFloor(page: Page, label: string, started: number): Promise<string[]> {
   const scan = await scanText(page);
   const scroll = await scanScroll(page);
-  console.log(`${label}: prose ${scan.prose}, other text ${scan.other}, in ${Date.now() - started} ms`);
+  console.log(
+    `${label}: prose ${scan.prose}, other text ${scan.other}, in ${Date.now() - started} ms`,
+  );
   return [...scan.failures, ...scroll];
 }
 
@@ -179,7 +200,9 @@ for (const entry of FULL_FLOOR_PAGES) {
           await expect
             .poll(() =>
               control.evaluate((el) =>
-                el.tagName === "SUMMARY" ? el.parentElement?.hasAttribute("open") === true : el.getAttribute("aria-expanded") === "true",
+                el.tagName === "SUMMARY"
+                  ? el.parentElement?.hasAttribute("open") === true
+                  : el.getAttribute("aria-expanded") === "true",
               ),
             )
             .toBe(true);
@@ -188,8 +211,12 @@ for (const entry of FULL_FLOOR_PAGES) {
         const targets = await scanTargets(page);
         // Each exempt link prints, so a reader of the log sees each link that the tap floor skips. A page with none says so.
         if (targets.exempt.length === 0) console.log(`${label}: exempt links inside prose: none`);
-        for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
-        failures.push(...targets.failures, ...(await scanContrastInSteps(page, typeof entry === "string" ? undefined : entry.scope)));
+        for (const link of targets.exempt)
+          console.log(`${label}: exempt link inside prose: ${link}`);
+        failures.push(
+          ...targets.failures,
+          ...(await scanContrastInSteps(page, typeof entry === "string" ? undefined : entry.scope)),
+        );
         expect(failures, `${label} breaks the readability floor`).toEqual([]);
       });
     }
@@ -203,7 +230,9 @@ const INDEX_ROW = 'ul[aria-label="Index List"] > li';
 /* The stage on desktop: the full floor after a hover on the second row swaps the stage, in both themes at 1280px.
    The run has reduced motion, so the new row is in the stage at once, with no layer under it. */
 for (const theme of THEMES) {
-  test(`stage floor: ${CLIENT} ${MANAGERS_ROUTE} hover on row 2 ${theme} 1280px`, async ({ page }) => {
+  test(`stage floor: ${CLIENT} ${MANAGERS_ROUTE} hover on row 2 ${theme} 1280px`, async ({
+    page,
+  }) => {
     const label = `${CLIENT} ${MANAGERS_ROUTE} stage ${theme} 1280px`;
     const started = Date.now();
     await page.setViewportSize(DESKTOP);
@@ -220,7 +249,9 @@ for (const theme of THEMES) {
 
 /* AT-25: a hover on row 5 and then a focus on row 6 each swap the stage beside the ledger. In cpc week 8 these are
    The Blue Tent and Lil Fridge. The stage holds the six hero slots. */
-test(`stage swap: ${CLIENT} ${MANAGERS_ROUTE} on a hover and a focus at 1280px`, async ({ page }) => {
+test(`stage swap: ${CLIENT} ${MANAGERS_ROUTE} on a hover and a focus at 1280px`, async ({
+  page,
+}) => {
   await page.setViewportSize(DESKTOP);
   await openPage(page, `${server.url}${MANAGERS_ROUTE}`, "dark");
   const stage = () => page.getByRole("region", { name: /^Stage: / });
@@ -235,18 +266,24 @@ test(`stage swap: ${CLIENT} ${MANAGERS_ROUTE} on a hover and a focus at 1280px`,
     await expect(stage()).toHaveAttribute("aria-label", `Stage: ${name}`);
     await expect(stage().locator('[data-hero-slot="title"]')).toHaveText(name);
   }
-  const slots = await stage().locator("[data-hero-slot]").evaluateAll((els) => els.map((el) => el.getAttribute("data-hero-slot")));
+  const slots = await stage()
+    .locator("[data-hero-slot]")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("data-hero-slot")));
   expect(slots).toEqual(["eyebrow", "title", "meta", "feature", "stats", "action"]);
   // The stage sits beside the ledger, to the right of it, and stays in view as the page scrolls.
   const ledger = (await page.locator('ul[aria-label="Index List"]').boundingBox())!;
   const box = (await page.locator("[data-ix-stage]").boundingBox())!;
   expect(box.x).toBeGreaterThanOrEqual(ledger.x + ledger.width);
-  expect(await page.locator("[data-ix-stage]").evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+  expect(
+    await page.locator("[data-ix-stage]").evaluate((el) => getComputedStyle(el).position),
+  ).toBe("sticky");
 });
 
 /* Under the desktop tier the Index list is the ledger alone, with no stage. */
 for (const width of [390, 768]) {
-  test(`no stage: ${CLIENT} ${MANAGERS_ROUTE} shows the ledger alone at ${width}px`, async ({ page }) => {
+  test(`no stage: ${CLIENT} ${MANAGERS_ROUTE} shows the ledger alone at ${width}px`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MANAGERS_ROUTE}`, "dark");
     await expect(page.getByRole("list", { name: "Index List" })).toBeVisible();
@@ -262,16 +299,22 @@ for (const width of WORD_WIDTHS) {
   test(`no split word: ${CLIENT} ${LATEST_WEEK_ROUTE} ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
-    expect(await scanWords(page), `${CLIENT} ${LATEST_WEEK_ROUTE} ${width}px splits a word`).toEqual([]);
+    expect(
+      await scanWords(page),
+      `${CLIENT} ${LATEST_WEEK_ROUTE} ${width}px splits a word`,
+    ).toEqual([]);
   });
 }
 
 /* The marked link of the chapter rail. The rail shows from the rail tier, so the checks run at the laptop width. */
-const railMark = (page: Page) => page.locator('nav[aria-label="Chapters"] a[aria-current="location"]');
+const railMark = (page: Page) =>
+  page.locator('nav[aria-label="Chapters"] a[aria-current="location"]');
 
 /* The rail marks the chapter that a reader reads, not the one whose tail still sits under the top band.
    The scroll puts the heading of Position leaders 80px under the top band, as after a scroll past Awards. */
-test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks Position leaders in view at 1280px`, async ({ page }) => {
+test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks Position leaders in view at 1280px`, async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
   await page.evaluate(() => {
@@ -283,7 +326,9 @@ test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks Position leaders in vie
 });
 
 /* A tap on each rail link jumps to its chapter and marks that link. */
-test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks each chapter after a jump at 1280px`, async ({ page }) => {
+test(`chapter rail: ${CLIENT} ${LATEST_WEEK_ROUTE} marks each chapter after a jump at 1280px`, async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await openPage(page, `${server.url}${LATEST_WEEK_ROUTE}`, "dark");
   const links = page.locator('nav[aria-label="Chapters"] a');
@@ -300,7 +345,9 @@ for (const route of routes.filter((route) => !fullFloorRoutes.includes(route))) 
     const started = Date.now();
     await page.setViewportSize(PHONE);
     await openPage(page, `${server.url}${route}`, "dark");
-    expect(await textFloor(page, label, started), `${label} breaks the readability floor`).toEqual([]);
+    expect(await textFloor(page, label, started), `${label} breaks the readability floor`).toEqual(
+      [],
+    );
   });
 }
 
@@ -318,12 +365,18 @@ const bandRow = async (page: Page) => {
   const boxes = await Promise.all(parts.map((part) => part.boundingBox()));
   const brand = boxes[0]!;
   // Each part shares the row of the brand mark: the middle of each part sits inside the box of the mark.
-  return boxes.map((box) => box !== null && Math.abs(box.y + box.height / 2 - (brand.y + brand.height / 2)) < brand.height / 2);
+  return boxes.map(
+    (box) =>
+      box !== null &&
+      Math.abs(box.y + box.height / 2 - (brand.y + brand.height / 2)) < brand.height / 2,
+  );
 };
 
 for (const width of [768, 1024, 1280]) {
   const pills = width >= 1024;
-  test(`the top band of ${CLIENT} is one row at ${width}px, with the ${pills ? "pill bar" : "menu button"}`, async ({ page }) => {
+  test(`the top band of ${CLIENT} is one row at ${width}px, with the ${pills ? "pill bar" : "menu button"}`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}/rankings/`, "dark");
     const bar = page.getByRole("navigation", { name: "Site menu" });
@@ -345,7 +398,9 @@ test(`the week chips of the Ladder of ${CLIENT} stay on one row at 375px`, async
   await page.setViewportSize({ width: 375, height: 900 });
   await openPage(page, `${server.url}/rankings/`, "dark");
   const group = page.getByRole("group", { name: "Week" });
-  const chips = await group.getByRole("button").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top));
+  const chips = await group
+    .getByRole("button")
+    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top));
   expect(chips.length).toBeGreaterThan(1);
   expect(new Set(chips).size).toBe(1);
   const chosen = await group.locator('button[aria-pressed="true"]').boundingBox();
@@ -371,12 +426,18 @@ for (const theme of THEMES) {
       await page.setViewportSize({ width, height: 900 });
       await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, theme);
       const failures = await textFloor(page, label, Date.now());
-      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      failures.push(
+        ...(await scanTargets(page)).failures,
+        ...(await scanWords(page)),
+        ...(await scanContrast(page)),
+      );
       expect(failures, `${label} breaks the readability floor`).toEqual([]);
     });
 
     /* AT-27: from Act II, a tap on "What Comes Next" in the rail moves the page to Act III, and the rail stays at the top. */
-    test(`midseason rail: ${CLIENT} ${MIDSEASON_ROUTE} jumps to Act III and stays at the top, ${theme} ${width}px`, async ({ page }) => {
+    test(`midseason rail: ${CLIENT} ${MIDSEASON_ROUTE} jumps to Act III and stays at the top, ${theme} ${width}px`, async ({
+      page,
+    }) => {
       test.skip(!hasReport, `${CLIENT} builds no midseason report`);
       await page.setViewportSize({ width, height: 900 });
       await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, theme);
@@ -385,7 +446,9 @@ for (const theme of THEMES) {
       await page.evaluate(() => document.getElementById("the-moves")!.scrollIntoView());
       await rail.getByRole("link", { name: "What Comes Next" }).click();
       const box = await rail.boundingBox();
-      const title = await page.getByRole("heading", { level: 2, name: "What Comes Next" }).boundingBox();
+      const title = await page
+        .getByRole("heading", { level: 2, name: "What Comes Next" })
+        .boundingBox();
       // The rail sits under the top band at every scroll, and the title of Act III sits just under the rail.
       expect(box!.y).toBe(railTop);
       expect(title!.y).toBeGreaterThanOrEqual(box!.y + box!.height);
@@ -406,7 +469,11 @@ for (const theme of THEMES) {
       const takeover = page.getByRole("region", { name: `${SEASON} Midseason Report` });
       test.skip((await takeover.count()) === 0, `${CLIENT} is past the takeover end week`);
       const failures = await textFloor(page, label, Date.now());
-      failures.push(...(await scanTargets(page)).failures, ...(await scanWords(page)), ...(await scanContrast(page)));
+      failures.push(
+        ...(await scanTargets(page)).failures,
+        ...(await scanWords(page)),
+        ...(await scanContrast(page)),
+      );
       expect(failures, `${label} breaks the readability floor`).toEqual([]);
     });
   }
@@ -415,7 +482,9 @@ for (const theme of THEMES) {
 /* AT-59 and AT-8: the schedule swap is one text row per team with no grid and no bar, and the page never says
    "All-play" (decision ticket 16). */
 for (const width of REPORT_WIDTHS) {
-  test(`midseason swap rows: ${CLIENT} ${MIDSEASON_ROUTE} text rows and no All-play, ${width}px`, async ({ page }) => {
+  test(`midseason swap rows: ${CLIENT} ${MIDSEASON_ROUTE} text rows and no All-play, ${width}px`, async ({
+    page,
+  }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -429,7 +498,9 @@ for (const width of REPORT_WIDTHS) {
 
 /* AT-28: on a phone, each shown table of the report fits its card, or its card scrolls it and the first cell of each
    row stays in place. The page itself never scrolls sideways. */
-test(`midseason tables: ${CLIENT} ${MIDSEASON_ROUTE} fit their cards or scroll with the team column fixed, 375px`, async ({ page }) => {
+test(`midseason tables: ${CLIENT} ${MIDSEASON_ROUTE} fit their cards or scroll with the team column fixed, 375px`, async ({
+  page,
+}) => {
   test.skip(!hasReport, `${CLIENT} builds no midseason report`);
   await page.setViewportSize({ width: 375, height: 900 });
   await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -440,7 +511,8 @@ test(`midseason tables: ${CLIENT} ${MIDSEASON_ROUTE} fit their cards or scroll w
         const name = table.getAttribute("aria-label") ?? table.closest("[id]")?.id ?? "a table";
         const card = table.parentElement!;
         if (table.getBoundingClientRect().width <= card.clientWidth + 1) return [];
-        if (!["auto", "scroll"].includes(getComputedStyle(card).overflowX)) return [`${name} runs past its card`];
+        if (!["auto", "scroll"].includes(getComputedStyle(card).overflowX))
+          return [`${name} runs past its card`];
         const first = table.querySelector("tbody tr > :first-child")!;
         const before = first.getBoundingClientRect().left;
         card.scrollLeft = card.scrollWidth;
@@ -468,7 +540,9 @@ test(`midseason top 10: ${CLIENT} ${MIDSEASON_ROUTE} opens on RB at 375px`, asyn
    Beside the odds on a laptop, the stage had room for one letter of each team name. A report with no sim file has no
    replay, so the check skips it too. */
 for (const width of REPORT_WIDTHS) {
-  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} below the replay at full width, ${width}px`, async ({ page }) => {
+  test(`sim odds: ${CLIENT} ${MIDSEASON_ROUTE} below the replay at full width, ${width}px`, async ({
+    page,
+  }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -483,12 +557,15 @@ for (const width of REPORT_WIDTHS) {
 }
 
 /* The text boxes of the bracket that a chip or a cut must never hide: each team name and each score. */
-const bracketText = (page: Page) => page.locator('ol[aria-label="Bracket"] [data-team-name], ol[aria-label="Bracket"] [data-score]');
+const bracketText = (page: Page) =>
+  page.locator('ol[aria-label="Bracket"] [data-team-name], ol[aria-label="Bracket"] [data-score]');
 
 /* Each team name of the bracket shows in full at each width of the report, and the seed chip that waits at the edge of
    a decided card covers no name or score. */
 for (const width of REPORT_WIDTHS) {
-  test(`sim bracket: ${CLIENT} ${MIDSEASON_ROUTE} shows full team names and no chip on a card, ${width}px`, async ({ page }) => {
+  test(`sim bracket: ${CLIENT} ${MIDSEASON_ROUTE} shows full team names and no chip on a card, ${width}px`, async ({
+    page,
+  }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -497,18 +574,30 @@ for (const width of REPORT_WIDTHS) {
     await page.getByRole("button", { name: "Sim the season" }).click();
     // Mid-run, after the results of round 1: the winner chips wait at the edge of their cards.
     await expect(stage.getByRole("status")).toHaveText("Round 1 results", { timeout: 30_000 });
-    const chips = await stage.locator("[data-departed]").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    const chips = await stage
+      .locator("[data-departed]")
+      .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
     expect(chips.length).toBeGreaterThan(0);
-    const texts = await bracketText(page).evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+    const texts = await bracketText(page).evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().toJSON()),
+    );
     const overlaps = chips.flatMap((chip) =>
-      texts.filter((text) => chip.left < text.right && text.left < chip.right && chip.top < text.bottom && text.top < chip.bottom),
+      texts.filter(
+        (text) =>
+          chip.left < text.right &&
+          text.left < chip.right &&
+          chip.top < text.bottom &&
+          text.top < chip.bottom,
+      ),
     );
     expect(overlaps, `a waiting chip covers a name or a score at ${width}px`).toEqual([]);
     // At rest, after a skip, every name of every round shows in full.
     await page.getByRole("button", { name: "Skip to the end" }).click();
     const cut = await stage
       .locator("[data-team-name]")
-      .evaluateAll((els) => els.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.textContent));
+      .evaluateAll((els) =>
+        els.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.textContent),
+      );
     expect(cut, `the bracket cuts a team name at ${width}px`).toEqual([]);
   });
 }
@@ -518,14 +607,19 @@ for (const width of REPORT_WIDTHS) {
 function firstReplayWeek(): string {
   const path = join(OUT, SEASON, "sim.json");
   if (!existsSync(path)) return "no sim file";
-  const { weeks, bracket_weeks } = JSON.parse(readFileSync(path, "utf8")) as { weeks: number[]; bracket_weeks: number[] };
+  const { weeks, bracket_weeks } = JSON.parse(readFileSync(path, "utf8")) as {
+    weeks: number[];
+    bracket_weeks: number[];
+  };
   return `Week ${weeks.find((week) => !bracket_weeks.includes(week))} final`;
 }
 
 /* AT-32 and AT-34: a press plays a run, and a skip shows the final state at once: the champion card with the title odds
    of all runs, and the complete bracket below it, with no part of the bracket under the card. */
 for (const width of [375, 1280]) {
-  test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the champion and the bracket at ${width}px`, async ({ page }) => {
+  test(`sim replay: ${CLIENT} ${MIDSEASON_ROUTE} plays a run and skips to the champion and the bracket at ${width}px`, async ({
+    page,
+  }) => {
     test.skip(!hasReport, `${CLIENT} builds no midseason report`);
     await page.setViewportSize({ width, height: 900 });
     await openPage(page, `${server.url}${MIDSEASON_ROUTE}`, "dark");
@@ -542,7 +636,10 @@ for (const width of [375, 1280]) {
     for (const round of await rounds.all()) await expect(round).toBeVisible();
     const cardBox = (await card.boundingBox())!;
     const bracketBox = (await stage.getByRole("list", { name: "Bracket" }).boundingBox())!;
-    expect(bracketBox.y, `the champion card covers the bracket at ${width}px`).toBeGreaterThanOrEqual(cardBox.y + cardBox.height);
+    expect(
+      bracketBox.y,
+      `the champion card covers the bracket at ${width}px`,
+    ).toBeGreaterThanOrEqual(cardBox.y + cardBox.height);
     // The stage clips its parts, so the whole bracket must sit inside the stage.
     const stageBox = (await stage.boundingBox())!;
     expect(bracketBox.y + bracketBox.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);

@@ -11,7 +11,9 @@ import { slotsOf } from "./slots";
 afterEach(cleanup);
 
 function row(tone: "page" | "hero") {
-  const { container } = render(<SlotRow slots={slotsOf("CORNERSTONE", [], "C")} tone={tone} landing={tone === "hero"} />);
+  const { container } = render(
+    <SlotRow slots={slotsOf("CORNERSTONE", [], "C")} tone={tone} landing={tone === "hero"} />,
+  );
   return container.firstElementChild as HTMLElement;
 }
 
@@ -50,6 +52,11 @@ describe("Egg", () => {
     const whole = container.querySelector('[data-egg-part="whole"]') as SVGElement;
     expect(whole.classList.contains("egg-whole-out")).toBe(true);
     const halves = [...container.querySelectorAll(".egg-half")];
-    expect(halves.map((half) => half.classList.contains("egg-split-top") || half.classList.contains("egg-split-bottom"))).toEqual([true, true]);
+    expect(
+      halves.map(
+        (half) =>
+          half.classList.contains("egg-split-top") || half.classList.contains("egg-split-bottom"),
+      ),
+    ).toEqual([true, true]);
   });
 });

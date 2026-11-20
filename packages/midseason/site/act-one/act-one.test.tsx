@@ -22,8 +22,12 @@ const renderReport = () =>
   render(<MidseasonScreen report={midseason} shell={SHELL} pageHref="/midseason/2026/" />);
 
 /* The chapter of the fixture with the key `key`. */
-function chapterOf<K extends MidseasonChapter["key"]>(key: K): Extract<MidseasonChapter, { key: K }> {
-  const found = midseason.acts.flatMap((act) => act.chapters).find((chapter) => chapter.key === key);
+function chapterOf<K extends MidseasonChapter["key"]>(
+  key: K,
+): Extract<MidseasonChapter, { key: K }> {
+  const found = midseason.acts
+    .flatMap((act) => act.chapters)
+    .find((chapter) => chapter.key === key);
   if (found === undefined) throw new Error(`The fixture has no ${key} chapter`);
   return found as Extract<MidseasonChapter, { key: K }>;
 }
@@ -38,7 +42,9 @@ describe("arcs", () => {
     expect(withArc.length).toBeGreaterThan(0);
     expect(withArc.length).toBeLessThan(teams.length);
     const rows = [...chapterEl("arcs").getByRole("list", { name: "Arcs" }).children];
-    expect(rows.map((row) => row.firstElementChild!.textContent)).toEqual(withArc.map((team) => team.name));
+    expect(rows.map((row) => row.firstElementChild!.textContent)).toEqual(
+      withArc.map((team) => team.name),
+    );
     expect(document.getElementById("arcs")!.textContent).not.toMatch(/no arc/i);
   });
 
@@ -59,7 +65,9 @@ describe("position top 10", () => {
   it("gives each row a small headshot of the player, with alt text, a fixed size, and lazy load", () => {
     renderReport();
     const rb = chapterOf("top10").facts.positions.find((board) => board.position === "RB")!;
-    const rows = [...chapterEl("top10").getByRole("list", { name: "RB top 10" }).children] as HTMLElement[];
+    const rows = [
+      ...chapterEl("top10").getByRole("list", { name: "RB top 10" }).children,
+    ] as HTMLElement[];
     expect(rows).toHaveLength(rb.players.length);
     for (const [index, row] of rows.entries()) {
       const player = rb.players[index];

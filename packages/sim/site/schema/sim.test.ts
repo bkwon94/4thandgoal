@@ -42,7 +42,9 @@ describe("the week sim schema", () => {
   });
 
   it("fails on a root-for row with a reason that is not one of the five", () => {
-    const bad = structuredClone(weekJson) as { pages: Record<string, { weeks: { root_for: { reason: string }[] }[] }> };
+    const bad = structuredClone(weekJson) as {
+      pages: Record<string, { weeks: { root_for: { reason: string }[] }[] }>;
+    };
     bad.pages["6"].weeks[0].root_for[0].reason = "Out of nowhere";
     expect(weekSimSchema.safeParse(bad).success).toBe(false);
   });

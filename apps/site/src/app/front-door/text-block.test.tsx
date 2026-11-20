@@ -18,7 +18,12 @@ type Case = {
 };
 
 // The path comes from this file and not from the working folder, because other tests point the working folder at a fixed copy.
-const CASES: Case[] = JSON.parse(readFileSync(join(__dirname, "..", "..", "..", "..", "api", "tests", "fixtures", "text-marks.json"), "utf8"));
+const CASES: Case[] = JSON.parse(
+  readFileSync(
+    join(__dirname, "..", "..", "..", "..", "api", "tests", "fixtures", "text-marks.json"),
+    "utf8",
+  ),
+);
 
 afterEach(cleanup);
 
@@ -26,8 +31,14 @@ describe("the text block over the shared text marks", () => {
   it.each(CASES)("$name", ({ text, blocks, strong, em, li }) => {
     const { container } = render(<TextBlock text={text} />);
     const root = container.querySelector("[data-text-block]")!;
-    const texts = (selector: string) => [...root.querySelectorAll(selector)].map((node) => node.textContent);
-    expect([...root.children].map((node) => ({ tag: node.tagName.toLowerCase(), text: node.textContent }))).toEqual(blocks);
+    const texts = (selector: string) =>
+      [...root.querySelectorAll(selector)].map((node) => node.textContent);
+    expect(
+      [...root.children].map((node) => ({
+        tag: node.tagName.toLowerCase(),
+        text: node.textContent,
+      })),
+    ).toEqual(blocks);
     expect(texts("strong")).toEqual(strong);
     expect(texts("em")).toEqual(em);
     expect(texts("li")).toEqual(li);

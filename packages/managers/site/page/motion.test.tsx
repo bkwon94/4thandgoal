@@ -25,10 +25,19 @@ function numbers(): HTMLElement[] {
 
 describe("Manager page motion", () => {
   it("counts the odds up once and ends at the final percent", async () => {
-    render(<ManagerHero manager={managerOf({ playoff: 63, bye: 20, seed: 3, status: "open" })} avatar="avatars/1.jpg" teams={12} through={9} />);
+    render(
+      <ManagerHero
+        manager={managerOf({ playoff: 63, bye: 20, seed: 3, status: "open" })}
+        avatar="avatars/1.jpg"
+        teams={12}
+        through={9}
+      />,
+    );
     const odds = numbers()[0];
     // The count starts from zero on the next frame, so the percent first reads under the final number.
-    await waitFor(() => expect(Number.parseInt(odds.textContent!)).toBeLessThan(63), { timeout: 1000 });
+    await waitFor(() => expect(Number.parseInt(odds.textContent!)).toBeLessThan(63), {
+      timeout: 1000,
+    });
     // The count runs over the next frames, so the wait passes once the count ends.
     await waitFor(() => expect(odds.textContent).toBe("63%"), { timeout: 1000 });
     // The count runs once, so the percent stays final after more frames.
@@ -45,7 +54,10 @@ describe("Manager page motion", () => {
     render(<ManagerHero manager={managerOf(null)} avatar="avatars/1.jpg" teams={12} through={9} />);
     const letter = screen.getByRole("button", { name: /^Grade D/ });
     await waitFor(() => expect(letter.closest("[data-reveal]")).not.toBeNull());
-    await waitFor(() => expect((letter.closest("[data-reveal]") as HTMLElement).style.opacity).toBe("1"), { timeout: 1000 });
+    await waitFor(
+      () => expect((letter.closest("[data-reveal]") as HTMLElement).style.opacity).toBe("1"),
+      { timeout: 1000 },
+    );
   });
 
   it("enters the four slot tiles, each in its own reveal", async () => {
@@ -54,7 +66,10 @@ describe("Manager page motion", () => {
     expect(lines).toHaveLength(4);
     for (const line of lines) expect(line.querySelector("[data-reveal]")).not.toBeNull();
     await waitFor(
-      () => lines.forEach((line) => expect((line.querySelector("[data-reveal]") as HTMLElement).style.opacity).toBe("1")),
+      () =>
+        lines.forEach((line) =>
+          expect((line.querySelector("[data-reveal]") as HTMLElement).style.opacity).toBe("1"),
+        ),
       { timeout: 1000 },
     );
   });

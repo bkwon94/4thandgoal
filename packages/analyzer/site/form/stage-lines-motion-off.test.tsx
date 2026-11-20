@@ -64,7 +64,9 @@ describe("StageLines with motion off", () => {
       },
     });
     try {
-      const { container } = render(<StageLines lines={["Checking Bhayshul Tuten's depth at running back", "Line two"]} />);
+      const { container } = render(
+        <StageLines lines={["Checking Bhayshul Tuten's depth at running back", "Line two"]} />,
+      );
       const line = container.querySelector<HTMLElement>(".t-think-text")!;
       expect(line.classList.contains("is-scroll")).toBe(false);
       expect(line.style.getPropertyValue("--think-scroll")).toBe("");

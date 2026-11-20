@@ -50,7 +50,12 @@ describe("the sim Announcement on the home page", () => {
     act(() => vi.advanceTimersByTime(1));
     const sheet = title()!;
     expect(sheet).toBeTruthy();
-    for (const copy of ["New: Season sim", "Pick this week's results and watch your playoff odds move.", "Open the sim", "Not now"]) {
+    for (const copy of [
+      "New: Season sim",
+      "Pick this week's results and watch your playoff odds move.",
+      "Open the sim",
+      "Not now",
+    ]) {
       expect(sheet.textContent).toContain(copy);
     }
     expect(sheet.textContent).toContain("The Blue Tent");

@@ -19,7 +19,8 @@ afterEach(() => {
 const BO_GIRDS_CPC = 6;
 const BO_GIRDS_NORCAL = 7;
 
-const rows = () => within(screen.getByRole("list", { name: "Standings near your team" })).getAllByRole("listitem");
+const rows = () =>
+  within(screen.getByRole("list", { name: "Standings near your team" })).getAllByRole("listitem");
 const rowNames = () => rows().map((row) => row.querySelector("[data-team]")?.textContent);
 const chip = () => screen.getByRole("button", { name: /^What-if:/ });
 // The live line names the odds that the count lands on, so the test reads the number, not a frame of the count.
@@ -71,7 +72,9 @@ describe("the art of the sim Announcement", () => {
   });
 
   it("turns the chip on by itself once, only after the sheet settles (AT-53)", () => {
-    const { rerender } = render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />);
+    const { rerender } = render(
+      <SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />,
+    );
     act(() => vi.advanceTimersByTime(5000));
     expect(chip().getAttribute("aria-pressed")).toBe("false");
 
@@ -89,7 +92,9 @@ describe("the art of the sim Announcement", () => {
   });
 
   it("leaves the chip alone when the manager taps it before the automatic turn", () => {
-    const { rerender } = render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);
+    const { rerender } = render(
+      <SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />,
+    );
     fireEvent.click(chip());
     fireEvent.click(chip());
     rerender(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);

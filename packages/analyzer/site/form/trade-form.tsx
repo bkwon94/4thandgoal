@@ -88,7 +88,8 @@ const stackParts = ({ hero, form, result }: FormParts) => (
 type TradeToGrade = { sides: Sides; season: number };
 
 /* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
-type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
+type OpenSheet =
+  { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
 /* The hero while the grade runs, in the hero slots: Live, the title, the line, and the wait as the feature.
    The read that replaces it opens with a level-two heading, so this title is level two too. The stage lines run under
@@ -112,7 +113,7 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
         // aria-busy marks the wait part as busy until the grade replaces it. It has no role, because the grade button
         // holds the one status of the wait.
         <div aria-busy="true">
-          <div aria-hidden="true" className="flex flex-col gap-sp-5">
+          <div aria-hidden="true" className="gap-sp-5 flex flex-col">
             <StageLines lines={lines} />
             {/* The headshots go up to the stage on the tap, so the trade on the scale is the one the reader built. */}
             <TradeOnStage sides={stage} show="tokens" rise />
@@ -141,7 +142,16 @@ function TitleHero({ stage }: { stage: StageSide[] }) {
   );
 }
 
-export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized, onRostersStale, prefill = null, children = stackParts }: TradeFormProps) {
+export function TradeForm({
+  teams,
+  target,
+  finderOn,
+  passphrase,
+  onUnauthorized,
+  onRostersStale,
+  prefill = null,
+  children = stackParts,
+}: TradeFormProps) {
   const [sides, setSides] = useState<Sides>(EMPTY_SIDES);
   // The id of the next added side. EMPTY_SIDES holds ids 0 and 1, and an id is never reused, so a key never repeats.
   const nextSideId = useRef(EMPTY_SIDES.length);
@@ -206,7 +216,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
   // The teams that another side holds. The team sheet of a slot leaves its own team on, so a tap on it changes nothing.
-  const taken = sides.flatMap((side, i) => (side.rosterId === null || teamSheet?.slot === i ? [] : [side.rosterId]));
+  const taken = sides.flatMap((side, i) =>
+    side.rosterId === null || teamSheet?.slot === i ? [] : [side.rosterId],
+  );
 
   /* A draft leaves the graded result in place until submit. A page edit clears it and drops a late answer. */
   function changeTrade(update: (current: Sides) => Sides) {
@@ -239,7 +251,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   function teamSheetOf(open: OpenSheet) {
     if (open?.kind === "team") {
       const index = open.slot;
-      return { title: `Pick ${SIDE_TITLES[index]}`, slot: index, pick: (rosterId: number) => pickTeam(index, rosterId) };
+      return {
+        title: `Pick ${SIDE_TITLES[index]}`,
+        slot: index,
+        pick: (rosterId: number) => pickTeam(index, rosterId),
+      };
     }
     if (open?.kind === "add") {
       return {
@@ -256,7 +272,9 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   /* A removed side takes its card out, and each player it gives leaves the other cards. */
   function removeSide(id: number) {
     changeTrade((current) =>
-      current.filter((side) => side.id !== id).map((side) => ({ ...side, gets: side.gets.filter((get) => get.fromSide !== id) })),
+      current
+        .filter((side) => side.id !== id)
+        .map((side) => ({ ...side, gets: side.gets.filter((get) => get.fromSide !== id) })),
     );
   }
 
@@ -265,15 +283,22 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     changeTrade((current) =>
       current.map((side, i) => {
         if (i !== index) return side;
-        const has = side.gets.some((g) => g.playerId === get.playerId && g.fromSide === get.fromSide);
-        return { ...side, gets: has ? side.gets.filter((g) => g.playerId !== get.playerId) : [...side.gets, get] };
+        const has = side.gets.some(
+          (g) => g.playerId === get.playerId && g.fromSide === get.fromSide,
+        );
+        return {
+          ...side,
+          gets: has ? side.gets.filter((g) => g.playerId !== get.playerId) : [...side.gets, get],
+        };
       }),
     );
   }
 
   function removeGet(index: number, playerId: string) {
     changeTrade((current) =>
-      current.map((side, i) => (i === index ? { ...side, gets: side.gets.filter((g) => g.playerId !== playerId) } : side)),
+      current.map((side, i) =>
+        i === index ? { ...side, gets: side.gets.filter((g) => g.playerId !== playerId) } : side,
+      ),
     );
   }
 
@@ -322,7 +347,8 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
       // An abort from unmount must not set state on a gone component.
       if (!run.isCurrent()) return;
       if (error instanceof ApiError && error.status === 401) onUnauthorized();
-      else setGrade({ status: "error", ...toErrorLine(error, timedOut, "The grade took too long.") });
+      else
+        setGrade({ status: "error", ...toErrorLine(error, timedOut, "The grade took too long.") });
       if (error instanceof ApiError && error.status === 422) onRostersStale?.();
     } finally {
       clearTimeout(timer);
@@ -349,23 +375,34 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   /* Each player that a side other than this one gets, with the name of that team. */
   function elsewhereOf(index: number): Map<string, string> {
     return new Map(
-      sides.flatMap((side, i) => (i === index ? [] : side.gets.map((get) => [get.playerId, teamOf(teams, side.rosterId)?.team ?? SIDE_TITLES[i]] as const))),
+      sides.flatMap((side, i) =>
+        i === index
+          ? []
+          : side.gets.map(
+              (get) =>
+                [get.playerId, teamOf(teams, side.rosterId)?.team ?? SIDE_TITLES[i]] as const,
+            ),
+      ),
     );
   }
 
   const playerSide = sheet?.kind === "players" ? sheet.side : null;
 
   const stack = (
-    <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
+    <section aria-label="Who gets what" className="mt-sp-5 gap-sp-4 flex flex-col">
       <TeamsRow
-        slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
+        slots={sides.map((side, index) => ({
+          id: side.id,
+          title: SIDE_TITLES[index],
+          team: teamOf(teams, side.rosterId),
+        }))}
         onPickSlot={(slot) => setSheet({ kind: "team", slot })}
         onAdd={() => setSheet({ kind: "add" })}
         locked={locked}
       />
       {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
           side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
-      <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
+      <div className="gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start relative flex flex-col">
         {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
         <AnimatePresence initial={false} mode="popLayout">
           {sides.map((side, index) => (
@@ -385,17 +422,23 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
           ))}
         </AnimatePresence>
       </div>
-      <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
+      <p className="text-lead text-mute m-0">Each team gives and gets at least one player.</p>
       {/* The error box is the last part of the form, so it sits right above the bar. */}
       {grade.status === "error" && (
         <div role="group" aria-label="The grade failed">
-          <Card edge className="flex flex-col gap-sp-3">
-            <div className="flex items-start gap-sp-2">
-              <CircleAlertIcon aria-hidden="true" className="mt-sp-0 size-sp-5 flex-none text-accent-ink" />
+          <Card edge className="gap-sp-3 flex flex-col">
+            <div className="gap-sp-2 flex items-start">
+              <CircleAlertIcon
+                aria-hidden="true"
+                className="mt-sp-0 size-sp-5 text-accent-ink flex-none"
+              />
               <ErrorLine>{grade.message}</ErrorLine>
             </div>
             {/* Every error shows Try Again, so the reader has one next step after a fix to the trade or a wait. */}
-            <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
+            <Button
+              className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+              onClick={() => submit()}
+            >
               Try Again
             </Button>
           </Card>
@@ -432,7 +475,15 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
     </>
   );
 
-  const gradeBar = <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} inEditSheet={editing} />;
+  const gradeBar = (
+    <GradeBar
+      ready={ready}
+      grading={grading}
+      level={haloLevel(sides)}
+      onGrade={() => submit()}
+      inEditSheet={editing}
+    />
+  );
   const form = (
     <>
       {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
@@ -468,11 +519,11 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
         title="Edit the trade"
         onClose={cancelEdit}
         footer={
-          <div className="flex items-center gap-sp-3">
+          <div className="gap-sp-3 flex items-center">
             <button
               type="button"
               onClick={cancelEdit}
-              className="press flex min-h-touch min-w-touch cursor-pointer items-center justify-center rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="press min-h-touch min-w-touch rounded-pill px-sp-2 text-meta text-accent-ink focus-visible:outline-accent flex cursor-pointer items-center justify-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               Cancel
             </button>
@@ -496,12 +547,21 @@ export function TradeForm({ teams, target, finderOn, passphrase, onUnauthorized,
   );
 
   // One pass over the sides gives the stage and the grading trade the same team and rows for each side.
-  const sideViews = sides.map((side, index) => ({ side, index, team: teamOf(teams, side.rosterId), rows: rowsOf(index) }));
+  const sideViews = sides.map((side, index) => ({
+    side,
+    index,
+    team: teamOf(teams, side.rosterId),
+    rows: rowsOf(index),
+  }));
 
   /* The trade on the stage: one row for each side with a team, and the players it gets with their headshots. */
   const stage: StageSide[] = sideViews.flatMap(({ side, team, rows }) => {
     if (!team) return [];
-    const players = rows.map(({ player }) => ({ id: player.player_id, name: player.name, headshot: player.headshot }));
+    const players = rows.map(({ player }) => ({
+      id: player.player_id,
+      name: player.name,
+      headshot: player.headshot,
+    }));
     return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
   });
 

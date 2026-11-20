@@ -9,7 +9,10 @@
 export function TeamName({ name, href }: { name: string; href: string | null }) {
   if (href === null) return name;
   return (
-    <a href={href} className="relative z-1 text-inherit no-underline underline-offset-2 hover-fine:underline">
+    <a
+      href={href}
+      className="hover-fine:underline relative z-1 text-inherit no-underline underline-offset-2"
+    >
       {name}
     </a>
   );

@@ -12,7 +12,11 @@ afterEach(() => {
   cleanup();
 });
 
-function renderHero(avatars = week8.avatars, headshots = week8.headshots, scene?: ReturnType<typeof matchupScene>) {
+function renderHero(
+  avatars = week8.avatars,
+  headshots = week8.headshots,
+  scene?: ReturnType<typeof matchupScene>,
+) {
   render(
     <MatchupOfTheWeek
       scene={scene}
@@ -55,10 +59,14 @@ describe("MatchupOfTheWeek", () => {
 
   it("shows the week as the eyebrow and the dates as the meta, before the title in the slot order", () => {
     const hero = renderHero();
-    const slots = [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
+    const slots = [...hero.querySelectorAll("[data-hero-slot]")].map((slot) =>
+      slot.getAttribute("data-hero-slot"),
+    );
     // The Matchup has no stats, so the stats slot renders no element (AT-6).
     expect(slots).toEqual(["eyebrow", "title", "meta", "feature", "action"]);
-    expect(hero.querySelector('[data-hero-slot="eyebrow"]')!.textContent).toBe("Week 08 // Matchup of the Week");
+    expect(hero.querySelector('[data-hero-slot="eyebrow"]')!.textContent).toBe(
+      "Week 08 // Matchup of the Week",
+    );
     expect(hero.querySelector('[data-hero-slot="meta"]')!.textContent).toBe(
       "Oct 29 – Nov 2, 2026 · Published Tue Nov 3, 2026",
     );
@@ -87,13 +95,17 @@ describe("MatchupOfTheWeek", () => {
     expect(bar.getAttribute("aria-valuenow")).toBe("50.4");
     expect(hero.querySelector('[data-hero-slot="action"]')!.contains(bar)).toBe(true);
     // No text or control of the hero follows the bar.
-    const parts = [...hero.querySelectorAll("[data-hero-slot] *")].filter((part) => part.children.length === 0);
+    const parts = [...hero.querySelectorAll("[data-hero-slot] *")].filter(
+      (part) => part.children.length === 0,
+    );
     expect(parts.at(-1)!.closest('[role="meter"]')).toBe(bar);
   });
 
   it("shows the headshot of the top player of the winner in a round frame", () => {
     const hero = renderHero();
-    expect(within(hero).getByRole("img", { name: "Brock Bowers" }).getAttribute("src")).toBe("headshots/11604.png");
+    expect(within(hero).getByRole("img", { name: "Brock Bowers" }).getAttribute("src")).toBe(
+      "headshots/11604.png",
+    );
   });
 
   it("shows the initials when the week has no headshot of the top player (AT-33)", () => {

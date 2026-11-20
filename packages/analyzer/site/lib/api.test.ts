@@ -2,7 +2,16 @@
  * Tests for the API client. fetch is a test stub that returns real Response objects.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ApiError, fetchTeams, postAnalyze, postFind, retryText, toApiError, toErrorLine, type ApiTarget } from "./api";
+import {
+  ApiError,
+  fetchTeams,
+  postAnalyze,
+  postFind,
+  retryText,
+  toApiError,
+  toErrorLine,
+  type ApiTarget,
+} from "./api";
 
 // The API of the test. The client slug is not cpc, so a path that drops the slug or fixes it to cpc fails.
 const TARGET: ApiTarget = { url: "https://api.example.test", client: "norcal", season: 2026 };
@@ -24,7 +33,11 @@ describe("fetchTeams", () => {
       headers: { "Retry-After": "12" },
     });
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
-    await expect(fetchTeams(TARGET, "pw")).rejects.toMatchObject({ status: 429, message: "slow down", retryAfter: 12 });
+    await expect(fetchTeams(TARGET, "pw")).rejects.toMatchObject({
+      status: 429,
+      message: "slow down",
+      retryAfter: 12,
+    });
     await expect(fetchTeams(TARGET, "pw")).rejects.toBeInstanceOf(ApiError);
   });
 });
@@ -36,8 +49,12 @@ describe("the client in the path", () => {
     vi.stubGlobal("fetch", stub);
     await fetchTeams(TARGET, "pw");
     const signal = new AbortController().signal;
-    await postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, signal).catch(() => undefined);
-    await postFind(TARGET, "pw", { season: 2026, asker: 1, partner: 2 }, signal).catch(() => undefined);
+    await postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, signal).catch(
+      () => undefined,
+    );
+    await postFind(TARGET, "pw", { season: 2026, asker: 1, partner: 2 }, signal).catch(
+      () => undefined,
+    );
     expect(stub.mock.calls.map(([url]) => url)).toEqual([
       "https://api.example.test/clients/norcal/teams?season=2026",
       "https://api.example.test/clients/norcal/analyze",
@@ -53,7 +70,9 @@ describe("toApiError", () => {
   });
 
   it("reads the message from a 422 object detail", async () => {
-    const response = new Response(JSON.stringify({ detail: { message: "bad trade" } }), { status: 422 });
+    const response = new Response(JSON.stringify({ detail: { message: "bad trade" } }), {
+      status: 422,
+    });
     const error = await toApiError(response);
     expect(error).toMatchObject({ status: 422, message: "bad trade" });
     expect(error.retryAfter).toBeUndefined();
@@ -87,7 +106,12 @@ describe("response parse", () => {
 
   it("throws the same error for a wrong analyze body", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}")));
-    const call = postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, new AbortController().signal);
+    const call = postAnalyze(
+      TARGET,
+      "pw",
+      { season: 2026, asker: 1, sides: [] },
+      new AbortController().signal,
+    );
     await expect(call).rejects.toBeInstanceOf(ApiError);
   });
 });

@@ -58,13 +58,16 @@ export function ManagersIndex({
   return (
     <div className="px-gutter py-sp-6 tablet:px-0">
       <Rise step={0}>
-        <h1 className="m-0 text-headline leading-tight font-bold">Managers</h1>
-        <div className="mt-sp-2 font-mono text-meta leading-tight font-bold tracking-wide text-mute uppercase">
+        <h1 className="text-headline m-0 leading-tight font-bold">Managers</h1>
+        <div className="mt-sp-2 text-meta text-mute font-mono leading-tight font-bold tracking-wide uppercase">
           {`${managers.managers.length} teams · through week ${managers.through}`}
         </div>
       </Rise>
       <div className="mt-sp-4">
-        <IndexList rows={indexRows(managers, avatars, managersHref)} teams={managers.managers.length} />
+        <IndexList
+          rows={indexRows(managers, avatars, managersHref)}
+          teams={managers.managers.length}
+        />
       </div>
     </div>
   );

@@ -20,12 +20,19 @@ export function HeroSceneCanvas({ scene }: { scene: HeroScene }) {
     // A browser with no canvas gets no context, and the hero keeps its static grid.
     const ctx = canvas.current.getContext("2d");
     if (!ctx) return;
-    return runScene({ canvas: canvas.current, ctx, holder: holder.current, probe: probe.current, scene, motionOff });
+    return runScene({
+      canvas: canvas.current,
+      ctx,
+      holder: holder.current,
+      probe: probe.current,
+      scene,
+      motionOff,
+    });
   }, [scene, motionOff]);
 
   return (
     // The scene is art. The hero text tells the same story, so a screen reader skips the canvas.
-    <div ref={holder} aria-hidden="true" className="relative h-hero-scene tablet:h-hero-scene-wide">
+    <div ref={holder} aria-hidden="true" className="h-hero-scene tablet:h-hero-scene-wide relative">
       {/* pan-y gives an up or down drag to the page scroll, so the scene never traps the scroll (story 32). */}
       <canvas ref={canvas} data-hero-scene className="absolute inset-0 size-full touch-pan-y" />
       {/* The probe: the canvas reads the three colors and the mono font from it once at mount (decision 03). */}

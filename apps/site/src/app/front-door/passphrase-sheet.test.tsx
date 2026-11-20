@@ -32,13 +32,21 @@ const noop = () => {};
 
 describe("the passphrase sheet of the front door", () => {
   it("shows the grip of the shared Sheet and keeps the focus in the field", async () => {
-    render(<PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={noop} />);
+    render(
+      <PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={noop} />,
+    );
     expect(document.querySelector('[data-slot="sheet-grip"]')).toBeTruthy();
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText("League passphrase", { selector: "input" })));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByLabelText("League passphrase", { selector: "input" }),
+      ),
+    );
   });
 
   it("leaves the lift above the keyboard to the Drawer, so the content keeps its height", () => {
-    render(<PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={noop} />);
+    render(
+      <PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={noop} />,
+    );
     const content = screen.getByRole("dialog", { name: "What is the league passphrase?" });
     // The Drawer sets the top of the content inline, so a bottom offset would squash the content and push the field off the screen.
     expect(content.style.bottom).toBe("");
@@ -47,23 +55,48 @@ describe("the passphrase sheet of the front door", () => {
 
   it("closes on Not now", () => {
     const closed: string[] = [];
-    render(<PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={() => closed.push("close")} />);
+    render(
+      <PassphraseSheet
+        siteName="Test league"
+        wrong={false}
+        onPassphrase={noop}
+        onClose={() => closed.push("close")}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "Not now" }));
     expect(closed).toEqual(["close"]);
   });
 
   it("closes on Escape", async () => {
     const closed: string[] = [];
-    render(<PassphraseSheet siteName="Test league" wrong={false} onPassphrase={noop} onClose={() => closed.push("close")} />);
-    fireEvent.keyDown(screen.getByLabelText("League passphrase", { selector: "input" }), { key: "Escape" });
+    render(
+      <PassphraseSheet
+        siteName="Test league"
+        wrong={false}
+        onPassphrase={noop}
+        onClose={() => closed.push("close")}
+      />,
+    );
+    fireEvent.keyDown(screen.getByLabelText("League passphrase", { selector: "input" }), {
+      key: "Escape",
+    });
     await waitFor(() => expect(closed).toEqual(["close"]));
   });
 
   it("says the passphrase did not match, and sends the typed passphrase", () => {
     const sent: string[] = [];
-    render(<PassphraseSheet siteName="Test league" wrong onPassphrase={(value) => sent.push(value)} onClose={noop} />);
+    render(
+      <PassphraseSheet
+        siteName="Test league"
+        wrong
+        onPassphrase={(value) => sent.push(value)}
+        onClose={noop}
+      />,
+    );
     expect(screen.getByText(/did not match/)).toBeTruthy();
-    fireEvent.change(screen.getByLabelText("League passphrase", { selector: "input" }), { target: { value: " abc " } });
+    fireEvent.change(screen.getByLabelText("League passphrase", { selector: "input" }), {
+      target: { value: " abc " },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Use this passphrase" }));
     expect(sent).toEqual(["abc"]);
   });

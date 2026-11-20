@@ -51,14 +51,20 @@ const SET = [{ week: 11, game: "win", median: "above" }] as const;
 describe("whatIfApi", () => {
   it("posts Your team and the set results to the What-if route of the client, and parses the page of the answer", async () => {
     const answer = await api({ you: 6, set: [...SET] }, new AbortController().signal);
-    expect(seen.at(-1)).toEqual({ url: "/clients/cpc/sim/what-if", method: "POST", body: { you: 6, set: [...SET] } });
+    expect(seen.at(-1)).toEqual({
+      url: "/clients/cpc/sim/what-if",
+      method: "POST",
+      body: { you: 6, set: [...SET] },
+    });
     expect(answer.page.playoff).toBe(86);
     expect(answer.page.sentence).toBe("Win 3 of the 6 left and you're in.");
     expect(answer.set).toEqual([...SET]);
   });
 
   it("gives the detail of a 422 refusal", async () => {
-    const failure = await api({ you: 99, set: [...SET] }, new AbortController().signal).catch((error) => error);
+    const failure = await api({ you: 99, set: [...SET] }, new AbortController().signal).catch(
+      (error) => error,
+    );
     expect(failure).toBeInstanceOf(WhatIfError);
     expect(failure.status).toBe(422);
     expect(failure.message).toBe("Roster 99 is not a team of the league.");
@@ -76,7 +82,9 @@ describe("whatIfApi", () => {
   it("gives a WhatIfError with no status when the API is down", async () => {
     // Port 9 is the discard port, which nothing on the machine serves, so the connection is refused.
     const down = whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" });
-    const failure = await down({ you: 6, set: [...SET] }, new AbortController().signal).catch((error) => error);
+    const failure = await down({ you: 6, set: [...SET] }, new AbortController().signal).catch(
+      (error) => error,
+    );
     expect(failure).toBeInstanceOf(WhatIfError);
     expect(failure.status).toBe(0);
   });

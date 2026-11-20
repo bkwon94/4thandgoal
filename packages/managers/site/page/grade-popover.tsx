@@ -6,7 +6,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from "@cpc/design/ui/popover";
+import {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@cpc/design/ui/popover";
 import { ordinal } from "@cpc/design/format/format";
 import type { ManagerGrade } from "../schema/manager-types";
 import { PART_NAMES } from "./part-names";
@@ -24,7 +30,7 @@ export function GradeMark() {
     <svg
       aria-hidden
       viewBox="0 0 16 16"
-      className="ml-sp-1 inline-block size-[1em] align-[-0.125em] text-mute"
+      className="ml-sp-1 text-mute inline-block size-[1em] align-[-0.125em]"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
@@ -42,7 +48,11 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
   // The popover leaves faster than it enters, along the same path. With motion off it leaves at once.
   const exit = off
     ? { opacity: 0, transition: INSTANT }
-    : { opacity: 0, scale: POPOVER_SCALE, transition: { duration: DURATION.popoverExit, ease: EASE_OUT } };
+    : {
+        opacity: 0,
+        scale: POPOVER_SCALE,
+        transition: { duration: DURATION.popoverExit, ease: EASE_OUT },
+      };
   return (
     // Focus stays inside the open popover, as it does in the Past Weeks one. The page still scrolls and takes a tap outside.
     <Popover open={open} onOpenChange={setOpen} modal="trap-focus">
@@ -51,7 +61,7 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
       <PopoverTrigger
         aria-label={`Grade ${grade.letter}, how the grade reads`}
         {...openId("popover-grade")}
-        className="press min-w-touch cursor-pointer border-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="press min-w-touch focus-visible:outline-accent cursor-pointer border-0 font-[inherit] leading-[inherit] text-inherit focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         {grade.letter}
       </PopoverTrigger>
@@ -65,7 +75,7 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
             align="start"
             sideOffset={8}
             collisionPadding={16}
-            className="w-[min(20rem,calc(100vw-2*var(--spacing-gutter)))] gap-sp-4 rounded-none p-sp-4 transition-none data-open:animate-none data-closed:animate-none"
+            className="gap-sp-4 p-sp-4 w-[min(20rem,calc(100vw-2*var(--spacing-gutter)))] rounded-none transition-none data-closed:animate-none data-open:animate-none"
             render={
               <motion.div
                 initial={off ? false : { opacity: 0, scale: POPOVER_SCALE }}
@@ -75,17 +85,19 @@ export function GradePopover({ grade, teams }: { grade: ManagerGrade; teams: num
               />
             }
           >
-            <PopoverTitle className="m-0 text-meta leading-tight font-semibold tracking-caps text-mute uppercase">
+            <PopoverTitle className="text-meta tracking-caps text-mute m-0 leading-tight font-semibold uppercase">
               How The Grade Reads
             </PopoverTitle>
             {/* The read comes first: the grade in words, from the pipeline, so a reader gets the gist before the ranks. */}
-            <p className="m-0 text-body text-ink" {...textId("blurb", grade.read)}>{grade.read}</p>
+            <p className="text-body text-ink m-0" {...textId("blurb", grade.read)}>
+              {grade.read}
+            </p>
             {/* One line per part. The rank is the one emphasis, so the part name and "of 12" stay quiet. */}
-            <ul className="m-0 flex list-none flex-col gap-sp-2 p-0 text-body text-ink-2 tabular-nums">
+            <ul className="gap-sp-2 text-body text-ink-2 m-0 flex list-none flex-col p-0 tabular-nums">
               {grade.parts.map((part) => (
                 <li key={part.key} {...stableId("grade-part", part.key)}>
                   {`${PART_NAMES[part.key]} · `}
-                  <span className="font-semibold text-ink">{ordinal(part.rank)}</span>
+                  <span className="text-ink font-semibold">{ordinal(part.rank)}</span>
                   <span className="text-mute">{` of ${teams}`}</span>
                 </li>
               ))}

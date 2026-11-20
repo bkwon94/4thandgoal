@@ -66,7 +66,11 @@ describe("WaiverPage", () => {
     const budgets = within(screen.getByRole("list", { name: "Budgets" })).getAllByRole("listitem");
     expect(budgets).toHaveLength(12);
     expect(within(budgets[0]).getByText("Pukancun on 3")).toBeTruthy();
-    expect(budgets[0].querySelector("img")?.getAttribute("src")).toBe("/2026/week-06/avatars/4.jpg");
-    expect(within(screen.getByRole("list", { name: "Also" })).getAllByRole("listitem")).toHaveLength(2);
+    expect(budgets[0].querySelector("img")?.getAttribute("src")).toBe(
+      "/2026/week-06/avatars/4.jpg",
+    );
+    expect(
+      within(screen.getByRole("list", { name: "Also" })).getAllByRole("listitem"),
+    ).toHaveLength(2);
   });
 });

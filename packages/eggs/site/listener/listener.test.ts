@@ -24,7 +24,10 @@ beforeEach(() => {
     <p data-stable-id="chapter-title">Lucky chapter title</p>
     <p id="plain-blurb">No stable id here, lucky or not.</p>`;
   document.documentElement.classList.remove("dark");
-  stop = listenForEggs(document, { page: () => "/midseason/2026/", send: (check) => sent.push(check) });
+  stop = listenForEggs(document, {
+    page: () => "/midseason/2026/",
+    send: (check) => sent.push(check),
+  });
 });
 
 afterEach(() => {
@@ -41,9 +44,13 @@ const cell = (id: string) => document.querySelector(`[data-stable-id="${id}"]`)!
 
 /* A press: the pointer goes down on the element, stays for `ms`, and comes up. */
 function press(element: Element, ms: number, pointerType = "mouse") {
-  element.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType }));
+  element.dispatchEvent(
+    new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType }),
+  );
   vi.advanceTimersByTime(ms);
-  element.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType }));
+  element.dispatchEvent(
+    new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType }),
+  );
   vi.advanceTimersByTime(TAP_GAP_MS + 1);
 }
 
@@ -60,7 +67,12 @@ describe("listenForEggs", () => {
     tap(target);
     tap(target, TAP_GAP_MS + 1);
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "tap2", conditions: { theme: "light" } },
+      {
+        page: "/midseason/2026/",
+        target: "luck-3",
+        action: "tap2",
+        conditions: { theme: "light" },
+      },
     ]);
   });
 
@@ -74,7 +86,12 @@ describe("listenForEggs", () => {
     blurb.append(" The ", word, " won.");
     tap(word);
     tap(word, TAP_GAP_MS + 1);
-    const check = { page: "/midseason/2026/", target: "blurb-luck", action: "tap2", conditions: { theme: "light" } };
+    const check = {
+      page: "/midseason/2026/",
+      target: "blurb-luck",
+      action: "tap2",
+      conditions: { theme: "light" },
+    };
     expect(sent).toEqual([check, check]);
   });
 
@@ -124,7 +141,11 @@ describe("listenForEggs", () => {
   });
 
   it("never blocks the default of a tap", () => {
-    const event = new PointerEvent("pointerup", { bubbles: true, cancelable: true, isPrimary: true });
+    const event = new PointerEvent("pointerup", {
+      bubbles: true,
+      cancelable: true,
+      isPrimary: true,
+    });
     document.getElementById("link")!.dispatchEvent(event);
     expect(event.defaultPrevented).toBe(false);
   });
@@ -139,7 +160,12 @@ describe("listenForEggs", () => {
   it("sends one check on release for a long press of 2 seconds", () => {
     press(cell("luck-3"), 2000);
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "hold", conditions: { theme: "light" } },
+      {
+        page: "/midseason/2026/",
+        target: "luck-3",
+        action: "hold",
+        conditions: { theme: "light" },
+      },
     ]);
   });
 
@@ -153,7 +179,9 @@ describe("listenForEggs", () => {
   });
 
   it("sends no check before the release, none for a press of 1 to 2 seconds, and none as a tap for it", () => {
-    cell("luck-3").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }));
+    cell("luck-3").dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }),
+    );
     vi.advanceTimersByTime(4000);
     expect(sent).toEqual([]);
     cell("luck-3").dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
@@ -164,15 +192,24 @@ describe("listenForEggs", () => {
 
   it("sends the hold of a touch press when Android Chrome fires its menu event during the hold", () => {
     const target = cell("luck-3");
-    target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }));
+    target.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }),
+    );
     vi.advanceTimersByTime(600);
     // The listener blocks the menu, so the browser fires no pointercancel and the release comes.
     expect(menu(target)).toBe(true);
     vi.advanceTimersByTime(1600);
-    target.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType: "touch" }));
+    target.dispatchEvent(
+      new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType: "touch" }),
+    );
     vi.advanceTimersByTime(TAP_GAP_MS + 1);
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "hold", conditions: { theme: "light" } },
+      {
+        page: "/midseason/2026/",
+        target: "luck-3",
+        action: "hold",
+        conditions: { theme: "light" },
+      },
     ]);
   });
 
@@ -182,8 +219,12 @@ describe("listenForEggs", () => {
       `<div data-stable-id="award-top"><a id="inner-link" href="#a">Go</a><img id="inner-img" alt=""></div>`,
     );
     const touchDown = (element: Element) =>
-      element.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }));
-    cell("luck-3").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "mouse" }));
+      element.dispatchEvent(
+        new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }),
+      );
+    cell("luck-3").dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "mouse" }),
+    );
     expect(menu(cell("luck-3"))).toBe(false);
     for (const element of [
       document.getElementById("inner-link")!,
@@ -201,9 +242,13 @@ describe("listenForEggs", () => {
   });
 
   it("sends no check for a press that the browser cancels, such as a scroll", () => {
-    cell("luck-3").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }));
+    cell("luck-3").dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }),
+    );
     vi.advanceTimersByTime(2000);
-    cell("luck-3").dispatchEvent(new PointerEvent("pointercancel", { bubbles: true, isPrimary: true }));
+    cell("luck-3").dispatchEvent(
+      new PointerEvent("pointercancel", { bubbles: true, isPrimary: true }),
+    );
     cell("luck-3").dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
     vi.advanceTimersByTime(TAP_GAP_MS + 1);
     expect(sent).toEqual([]);
@@ -230,7 +275,9 @@ describe("listenForEggs", () => {
     tap(cell("luck-12"), 2000);
     tap(cell("luck-7"));
     tap(cell("luck-7"), TAP_GAP_MS + 1);
-    expect(sent).toEqual([expect.objectContaining({ target: "luck-7", action: "tap2", trail: ["luck-12"] })]);
+    expect(sent).toEqual([
+      expect.objectContaining({ target: "luck-7", action: "tap2", trail: ["luck-12"] }),
+    ]);
   });
 
   it("starts each combo fresh after a multi-tap, so one trail never carries into the next", () => {
@@ -240,7 +287,12 @@ describe("listenForEggs", () => {
     tap(cell("luck-7"), TAP_GAP_MS + 1);
     tap(cell("luck-3"));
     tap(cell("luck-3"), TAP_GAP_MS + 1);
-    expect(sent[1]).toEqual({ page: "/midseason/2026/", target: "luck-3", action: "tap2", conditions: { theme: "light" } });
+    expect(sent[1]).toEqual({
+      page: "/midseason/2026/",
+      target: "luck-3",
+      action: "tap2",
+      conditions: { theme: "light" },
+    });
   });
 
   it("counts the taps of one stable id across a new node of the same data, as a frame of the sim makes", () => {
@@ -272,7 +324,13 @@ describe("listenForEggs", () => {
   it("sends one check with the word and the id of the blurb when the selection settles on one whole word", () => {
     select(blurb(), at("lucky"), at("lucky") + 5);
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "blurb-luck", action: "select", word: "lucky", conditions: { theme: "light" } },
+      {
+        page: "/midseason/2026/",
+        target: "blurb-luck",
+        action: "select",
+        word: "lucky",
+        conditions: { theme: "light" },
+      },
     ]);
   });
 
@@ -317,7 +375,12 @@ describe("listenForEggs", () => {
        <details data-open-id="fold-handcuff" open><summary>Fold</summary></details>
        <div data-open-id="popover-grade" data-state="open"></div>`,
     );
-    expect(conditionsNow().open).toEqual(["chip-def", "fold-handcuff", "popover-grade", "show-all-bench"]);
+    expect(conditionsNow().open).toEqual([
+      "chip-def",
+      "fold-handcuff",
+      "popover-grade",
+      "show-all-bench",
+    ]);
   });
 
   it("sends no open states when nothing is open, so the body stays short", () => {

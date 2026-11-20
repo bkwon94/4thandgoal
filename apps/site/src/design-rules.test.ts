@@ -11,7 +11,10 @@ const ROOT_DIR = join(process.cwd(), "..", "..");
 const OXLINT = join(process.cwd(), "node_modules", ".bin", "oxlint");
 
 function lint(fixture: string): { status: number | null; output: string } {
-  const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/${fixture}`], { cwd: ROOT_DIR, encoding: "utf8" });
+  const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/${fixture}`], {
+    cwd: ROOT_DIR,
+    encoding: "utf8",
+  });
   return { status: run.status, output: run.stdout + run.stderr };
 }
 

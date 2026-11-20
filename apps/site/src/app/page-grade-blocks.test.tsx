@@ -19,10 +19,13 @@ const fetchStub = vi.fn();
 const streams: (() => Response)[] = [];
 
 // The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
-const recorded = (name: string) => readFileSync(join(__dirname, "..", "fixtures", "personal-answer", `${name}.sse`), "utf8");
+const recorded = (name: string) =>
+  readFileSync(join(__dirname, "..", "fixtures", "personal-answer", `${name}.sse`), "utf8");
 
 function sse(body: string): Response {
-  return new Response(body, { headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" } });
+  return new Response(body, {
+    headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+  });
 }
 
 async function tapInMore(name: string) {
@@ -32,13 +35,17 @@ async function tapInMore(name: string) {
 }
 
 async function checkedArticle(name: string) {
-  await waitFor(() => expect(screen.getByRole("article", { name }).textContent).toContain("Checked"), { timeout: 3000 });
+  await waitFor(
+    () => expect(screen.getByRole("article", { name }).textContent).toContain("Checked"),
+    { timeout: 3000 },
+  );
   return screen.getByRole("article", { name });
 }
 
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string) => {
-    if (String(url).endsWith("/personal")) return streams.shift()?.() ?? new Response("", { status: 500 });
+    if (String(url).endsWith("/personal"))
+      return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchStub);
@@ -63,7 +70,12 @@ describe("the blocks of the roster grade of Bo Girds", () => {
     const answer = await checkedArticle("How you stack up");
     const bars = within(answer).getByRole("list", { name: "Slot ranks" });
     const rows = within(bars).getAllByRole("listitem");
-    expect(rows.map((row) => row.textContent)).toEqual(["QB10th of 12", "RB6th of 12", "WR4th of 12", "TE5th of 12"]);
+    expect(rows.map((row) => row.textContent)).toEqual([
+      "QB10th of 12",
+      "RB6th of 12",
+      "WR4th of 12",
+      "TE5th of 12",
+    ]);
     expect(answer.textContent).not.toMatch(/FLEX|DEF/);
     // The header holds the grade and its read.
     const head = within(answer).getByRole("group", { name: "Roster grade" });
@@ -82,7 +94,9 @@ describe("the blocks of the roster grade of Bo Girds", () => {
     await tapInMore("Weak spots");
     const answer = await checkedArticle("Weak spots");
     const grid = within(answer).getByRole("table", { name: "Byes, weeks 10 to 14" });
-    const weeks = within(grid).getAllByRole("columnheader").map((cell) => cell.textContent);
+    const weeks = within(grid)
+      .getAllByRole("columnheader")
+      .map((cell) => cell.textContent);
     expect(weeks).toEqual(["Player", "10", "11", "12", "13", "14"]);
     const marked = (label: string) =>
       within(grid)
@@ -90,12 +104,24 @@ describe("the blocks of the roster grade of Bo Girds", () => {
         .flatMap((row) => {
           const cells = within(row).queryAllByRole("cell");
           const name = within(row).queryByRole("rowheader")?.getAttribute("data-name");
-          return cells.flatMap((cell, index) => (cell.textContent === label ? [`${name} ${weeks[index + 1]}`] : []));
+          return cells.flatMap((cell, index) =>
+            cell.textContent === label ? [`${name} ${weeks[index + 1]}`] : [],
+          );
         });
     // The starters of Bo Girds whose NFL team has its bye in the weeks of the grid, from the NFL schedules.
-    expect(marked("Starter on a bye").sort()).toEqual(["Kyren Williams 11", "Matthew Golden 11", "Trey McBride 14", "Zay Flowers 13"]);
+    expect(marked("Starter on a bye").sort()).toEqual([
+      "Kyren Williams 11",
+      "Matthew Golden 11",
+      "Trey McBride 14",
+      "Zay Flowers 13",
+    ]);
     // The bench on a bye gets a quiet dot, never the red one.
-    expect(marked("Bench on a bye").sort()).toEqual(["Blake Corum 11", "Lamar Jackson 13", "Mike Washington Jr. 13", "Terrance Ferguson 11"]);
+    expect(marked("Bench on a bye").sort()).toEqual([
+      "Blake Corum 11",
+      "Lamar Jackson 13",
+      "Mike Washington Jr. 13",
+      "Terrance Ferguson 11",
+    ]);
     expect(within(grid).getAllByRole("rowheader")).toHaveLength(15);
   });
 });

@@ -9,7 +9,13 @@ import { motion } from "framer-motion";
 import { forwardRef, useId, useState, type ReactNode } from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { BulletRows } from "@cpc/analyzer/form/bullet-rows";
-import type { AnalyzeResponse, FindResponse, FinderTrade, Lean, NearIdea } from "@cpc/analyzer/lib/analyze-types";
+import type {
+  AnalyzeResponse,
+  FindResponse,
+  FinderTrade,
+  Lean,
+  NearIdea,
+} from "@cpc/analyzer/lib/analyze-types";
 import { prefillQuery, type Prefill } from "@cpc/analyzer/lib/prefill";
 import { Headshot } from "@cpc/league/headshot";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -55,7 +61,8 @@ function offerPrefill(offer: TradeOffer): Prefill {
 
 /* The steps of the trade judge as the one step pattern. Each line comes when its stage ends, so while the Answer is
    not in, the newest line is the live one. Once the Answer lands, each line shows done. */
-const tradeSteps = (steps: string[], live: boolean): Step[] => steps.map((line, index) => ({ line, done: !live || index < steps.length - 1 }));
+const tradeSteps = (steps: string[], live: boolean): Step[] =>
+  steps.map((line, index) => ({ line, done: !live || index < steps.length - 1 }));
 
 /* The card of a whole Answer. It settles from a soft blur at 0.98, as the data block of a league Answer does
    (decision 07). With motion off, it only fades in. */
@@ -64,7 +71,7 @@ function Settle({ children, label }: { children: ReactNode; label: string }) {
   return (
     <motion.section
       aria-label={label}
-      className="door-sheen flex flex-col gap-sp-4 rounded-card border border-door-hair bg-card p-sp-4"
+      className="door-sheen gap-sp-4 rounded-card border-door-hair bg-card p-sp-4 flex flex-col border"
       initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.04)}
@@ -75,7 +82,11 @@ function Settle({ children, label }: { children: ReactNode; label: string }) {
 }
 
 function Caps({ children }: { children: ReactNode }) {
-  return <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{children}</span>;
+  return (
+    <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+      {children}
+    </span>
+  );
 }
 
 /* The link to the Trade page, as "Read the full report" of a league Answer. */
@@ -83,13 +94,17 @@ function PageLink({ href, label, delay = 0.3 }: { href: string; label: string; d
   return (
     <motion.a
       href={href}
-      className="press group -mx-sp-2 flex min-h-touch items-center gap-sp-2 self-start rounded-pill px-sp-2 text-body leading-tight font-semibold text-accent-ink no-underline"
+      className="press group -mx-sp-2 min-h-touch gap-sp-2 rounded-pill px-sp-2 text-body text-accent-ink flex items-center self-start leading-tight font-semibold no-underline"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={fadeIn(VERY_SLOW, delay)}
     >
       <span>{label}</span>
-      <ArrowRightIcon aria-hidden className="size-sp-4 transition-transform duration-150 ease-out group-hover:translate-x-sp-0 motion-reduce:transition-none" strokeWidth={2.25} />
+      <ArrowRightIcon
+        aria-hidden
+        className="size-sp-4 group-hover:translate-x-sp-0 transition-transform duration-150 ease-out motion-reduce:transition-none"
+        strokeWidth={2.25}
+      />
     </motion.a>
   );
 }
@@ -111,24 +126,35 @@ export function fairnessLine(doc: AnalyzeResponse): string {
 function LeanBlock({ lean }: { lean: Lean }) {
   const off = useMotionOff();
   return (
-    <div className="flex flex-col gap-sp-2">
+    <div className="gap-sp-2 flex flex-col">
       <Caps>The read</Caps>
-      <motion.p className={`m-0 text-score leading-tight font-bold tracking-tight ${LEAN_COLOR[lean]}`} {...riseIn(off, { text: true, delay: 0.1 })}>
+      <motion.p
+        className={`text-score m-0 leading-tight font-bold tracking-tight ${LEAN_COLOR[lean]}`}
+        {...riseIn(off, { text: true, delay: 0.1 })}
+      >
         {lean}
       </motion.p>
-      <ol aria-label="The Lean scale" className="m-0 grid list-none grid-cols-5 gap-x-sp-1 p-0">
+      <ol aria-label="The Lean scale" className="gap-x-sp-1 m-0 grid list-none grid-cols-5 p-0">
         {SCALE.map((step, index) => {
           const lit = step === lean;
           return (
-            <li key={step} aria-current={lit ? "step" : undefined} className="flex flex-col gap-sp-1">
+            <li
+              key={step}
+              aria-current={lit ? "step" : undefined}
+              className="gap-sp-1 flex flex-col"
+            >
               <motion.span
                 aria-hidden
-                className={`block h-sp-1 origin-left rounded-pill ${lit ? "bg-accent" : "bg-rule"}`}
+                className={`h-sp-1 rounded-pill block origin-left ${lit ? "bg-accent" : "bg-rule"}`}
                 initial={off ? { opacity: 0 } : { opacity: 0, scaleX: 0.6 }}
                 animate={off ? { opacity: 1 } : { opacity: 1, scaleX: 1 }}
                 transition={fadeIn(FAST, 0.15 + index * STAGGER)}
               />
-              <span className={`text-center text-label leading-tight font-bold tracking-caps uppercase ${lit ? "text-ink" : "text-mute"}`}>{step}</span>
+              <span
+                className={`text-label tracking-caps text-center leading-tight font-bold uppercase ${lit ? "text-ink" : "text-mute"}`}
+              >
+                {step}
+              </span>
             </li>
           );
         })}
@@ -143,8 +169,11 @@ function CaseText({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (
-    <div className="flex flex-col items-start gap-sp-1">
-      <p id={id} className={`m-0 text-body leading-body text-ink-2 ${open ? "" : "max-tablet:line-clamp-4"}`}>
+    <div className="gap-sp-1 flex flex-col items-start">
+      <p
+        id={id}
+        className={`text-body leading-body text-ink-2 m-0 ${open ? "" : "max-tablet:line-clamp-4"}`}
+      >
         {text}
       </p>
       {!open && (
@@ -153,7 +182,7 @@ function CaseText({ text }: { text: string }) {
           aria-expanded={false}
           aria-controls={id}
           onClick={() => setOpen(true)}
-          className="press -mx-sp-2 min-h-touch rounded-pill px-sp-2 text-meta font-semibold text-accent-ink underline underline-offset-4 tablet:hidden"
+          className="press -mx-sp-2 min-h-touch rounded-pill px-sp-2 text-meta text-accent-ink tablet:hidden font-semibold underline underline-offset-4"
         >
           Read the full case
         </button>
@@ -167,7 +196,12 @@ function CheckCard({ block, analyze }: { block: TradeBlock; analyze: string }) {
   return (
     <Settle label="Trade check">
       <TradeBlockView block={block} live />
-      {block.offers[0] && <PageLink href={tradeHref(analyze, offerPrefill(block.offers[0]))} label="Open it on the Trade page" />}
+      {block.offers[0] && (
+        <PageLink
+          href={tradeHref(analyze, offerPrefill(block.offers[0]))}
+          label="Open it on the Trade page"
+        />
+      )}
     </Settle>
   );
 }
@@ -176,7 +210,8 @@ function CheckCard({ block, analyze }: { block: TradeBlock; analyze: string }) {
    An Answer kept from before the trade card shows this way. */
 function CheckBody({ doc, analyze }: { doc: AnalyzeResponse; analyze: string }) {
   const off = useMotionOff();
-  const mine = doc.trade.sides.find((side) => side.roster_id === doc.trade.asker) ?? doc.trade.sides[0];
+  const mine =
+    doc.trade.sides.find((side) => side.roster_id === doc.trade.asker) ?? doc.trade.sides[0];
   const partner = doc.trade.sides.find((side) => side.roster_id !== mine.roster_id);
   const bullets = doc.sides.find((side) => side.roster_id === mine.roster_id)?.bullets ?? [];
   const prefill: Prefill = {
@@ -187,15 +222,15 @@ function CheckBody({ doc, analyze }: { doc: AnalyzeResponse; analyze: string }) 
   };
   return (
     <Settle label="Trade check">
-      <p className="m-0 text-body leading-tight text-ink-2">
-        You give <span className="font-semibold text-ink">{names(mine.gives)}</span> and get{" "}
-        <span className="font-semibold text-ink">{names(mine.gets)}</span>
+      <p className="text-body text-ink-2 m-0 leading-tight">
+        You give <span className="text-ink font-semibold">{names(mine.gives)}</span> and get{" "}
+        <span className="text-ink font-semibold">{names(mine.gets)}</span>
         {partner ? ` from ${partner.team}` : ""}.
       </p>
       <LeanBlock lean={doc.lean} />
-      <motion.div className="flex flex-col gap-sp-2" {...riseIn(off, { text: true, delay: 0.2 })}>
+      <motion.div className="gap-sp-2 flex flex-col" {...riseIn(off, { text: true, delay: 0.2 })}>
         <CaseText text={doc.case} />
-        <p className="m-0 text-body leading-tight font-semibold text-ink">{fairnessLine(doc)}</p>
+        <p className="text-body text-ink m-0 leading-tight font-semibold">{fairnessLine(doc)}</p>
       </motion.div>
       {bullets.length > 0 && (
         // The bands of the rows say For and Against, and each Bullet speaks to Your team, so no label sits over them.
@@ -209,7 +244,17 @@ function CheckBody({ doc, analyze }: { doc: AnalyzeResponse; analyze: string }) 
 }
 
 /* One offer of the trade ideas: the headline, what Your team gives and gets, and its Bullets. */
-function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: number; analyze: string; index: number }) {
+function Offer({
+  trade,
+  asker,
+  analyze,
+  index,
+}: {
+  trade: FinderTrade;
+  asker: number;
+  analyze: string;
+  index: number;
+}) {
   const off = useMotionOff();
   const mine = trade.sides.find((side) => side.roster_id === asker) ?? trade.sides[0];
   const partner = trade.sides.find((side) => side.roster_id !== mine.roster_id);
@@ -220,31 +265,53 @@ function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: nu
     gets: mine.gets.map((player) => player.player_id),
   };
   return (
-    <motion.li className="flex flex-col gap-sp-2 border-t border-rule pt-sp-3 first:border-t-0 first:pt-0" {...riseIn(off, { delay: 0.12 + index * 0.08 })}>
+    <motion.li
+      className="gap-sp-2 border-rule pt-sp-3 flex flex-col border-t first:border-t-0 first:pt-0"
+      {...riseIn(off, { delay: 0.12 + index * 0.08 })}
+    >
       {partner && <Caps>With {partner.team}</Caps>}
       {/* The headline leads, because it is the reason to send the offer. The trade itself follows as a plain line. */}
-      {trade.headline && <p className="m-0 text-body leading-body font-semibold text-ink">{trade.headline}</p>}
-      <p className="m-0 text-body leading-tight text-ink-2">
-        You give <span className="font-semibold text-ink">{names(mine.gives)}</span> and get{" "}
-        <span className="font-semibold text-ink">{names(mine.gets)}</span>.
+      {trade.headline && (
+        <p className="text-body leading-body text-ink m-0 font-semibold">{trade.headline}</p>
+      )}
+      <p className="text-body text-ink-2 m-0 leading-tight">
+        You give <span className="text-ink font-semibold">{names(mine.gives)}</span> and get{" "}
+        <span className="text-ink font-semibold">{names(mine.gets)}</span>.
       </p>
       {trade.bullets.length > 0 ? (
-        <BulletRows bullets={trade.bullets.slice(0, TOP_OFFER_BULLETS)} idBase={`door-offer-${index}`} />
+        <BulletRows
+          bullets={trade.bullets.slice(0, TOP_OFFER_BULLETS)}
+          idBase={`door-offer-${index}`}
+        />
       ) : (
         trade.fact_lines.map((line) => (
-          <p key={line} className="m-0 text-body leading-body text-ink-2">
+          <p key={line} className="text-body leading-body text-ink-2 m-0">
             {line}
           </p>
         ))
       )}
-      <PageLink href={tradeHref(analyze, prefill)} label="Check this trade" delay={0.2 + index * 0.08} />
+      <PageLink
+        href={tradeHref(analyze, prefill)}
+        label="Check this trade"
+        delay={0.2 + index * 0.08}
+      />
     </motion.li>
   );
 }
 
 /* One near idea: an offer that the trade judge weighed and would not send. It keeps the rows of an offer, with no
    headline, in the quieter ink, and the reason it fell short sits under the trade, so the manager reads why not. */
-function Near({ idea, asker, analyze, index }: { idea: NearIdea; asker: number; analyze: string; index: number }) {
+function Near({
+  idea,
+  asker,
+  analyze,
+  index,
+}: {
+  idea: NearIdea;
+  asker: number;
+  analyze: string;
+  index: number;
+}) {
   const off = useMotionOff();
   const mine = idea.sides.find((side) => side.roster_id === asker) ?? idea.sides[0];
   const partner = idea.sides.find((side) => side.roster_id !== mine.roster_id);
@@ -255,30 +322,58 @@ function Near({ idea, asker, analyze, index }: { idea: NearIdea; asker: number; 
     gets: mine.gets.map((player) => player.player_id),
   };
   return (
-    <motion.li className="flex flex-col gap-sp-2 border-t border-rule pt-sp-3 first:border-t-0 first:pt-0" {...riseIn(off, { delay: 0.12 + index * 0.08 })}>
+    <motion.li
+      className="gap-sp-2 border-rule pt-sp-3 flex flex-col border-t first:border-t-0 first:pt-0"
+      {...riseIn(off, { delay: 0.12 + index * 0.08 })}
+    >
       {partner && <Caps>With {partner.team}</Caps>}
-      <p className="m-0 text-body leading-tight text-ink-2">
-        You give <span className="font-semibold">{names(mine.gives)}</span> and get <span className="font-semibold">{names(mine.gets)}</span>.
+      <p className="text-body text-ink-2 m-0 leading-tight">
+        You give <span className="font-semibold">{names(mine.gives)}</span> and get{" "}
+        <span className="font-semibold">{names(mine.gets)}</span>.
       </p>
       {/* The rule on the left marks the reason as a note on the trade above it, not a claim of its own. */}
-      <p className="m-0 border-l-2 border-rule pl-sp-3 text-body leading-body text-mute">{idea.reason}</p>
-      <PageLink href={tradeHref(analyze, prefill)} label="Check this trade" delay={0.2 + index * 0.08} />
+      <p className="border-rule pl-sp-3 text-body leading-body text-mute m-0 border-l-2">
+        {idea.reason}
+      </p>
+      <PageLink
+        href={tradeHref(analyze, prefill)}
+        label="Check this trade"
+        delay={0.2 + index * 0.08}
+      />
     </motion.li>
   );
 }
 
 /* The near ideas under one plain label. The label names the list, so a screen reader hears it with the list. */
-function NearList({ near, label, asker, analyze, from }: { near: NearIdea[]; label: string; asker: number; analyze: string; from: number }) {
+function NearList({
+  near,
+  label,
+  asker,
+  analyze,
+  from,
+}: {
+  near: NearIdea[];
+  label: string;
+  asker: number;
+  analyze: string;
+  from: number;
+}) {
   const id = useId();
   return (
     // After the picks, a rule closes the picks off, so the label reads as the head of a second list.
-    <div className={`flex flex-col gap-sp-3 ${from > 0 ? "border-t border-rule pt-sp-4" : ""}`}>
+    <div className={`gap-sp-3 flex flex-col ${from > 0 ? "border-rule pt-sp-4 border-t" : ""}`}>
       <span id={id}>
         <Caps>{label}</Caps>
       </span>
-      <ul aria-labelledby={id} className="m-0 flex list-none flex-col gap-sp-4 p-0">
+      <ul aria-labelledby={id} className="gap-sp-4 m-0 flex list-none flex-col p-0">
         {near.map((idea, index) => (
-          <Near key={idea.offer_id} idea={idea} asker={asker} analyze={analyze} index={from + index} />
+          <Near
+            key={idea.offer_id}
+            idea={idea}
+            asker={asker}
+            analyze={analyze}
+            index={from + index}
+          />
         ))}
       </ul>
     </div>
@@ -288,18 +383,38 @@ function NearList({ near, label, asker, analyze, from }: { near: NearIdea[]; lab
 /* The trade ideas: each offer of the trade judge, then the near ideas it weighed with why each fell short. With no
    offer to send, the near ideas lead, because an idea is an idea. Only a search that built no offer shows its plain
    line alone. */
-function IdeasBody({ doc, analyze, block }: { doc: FindResponse; analyze: string; block?: TradeBlock }) {
+function IdeasBody({
+  doc,
+  analyze,
+  block,
+}: {
+  doc: FindResponse;
+  analyze: string;
+  block?: TradeBlock;
+}) {
   const asker = doc.trade_pair.asker.roster_id;
   return (
     <Settle label="Trade ideas">
       {/* The trade card holds one row per offer. An Answer kept from before the card lists each offer in full. */}
       {block && block.offers.length > 0 && (
-        <TradeBlockView block={block} live action={(offer) => <PageLink href={tradeHref(analyze, offerPrefill(offer))} label="Check this trade" />} />
+        <TradeBlockView
+          block={block}
+          live
+          action={(offer) => (
+            <PageLink href={tradeHref(analyze, offerPrefill(offer))} label="Check this trade" />
+          )}
+        />
       )}
       {!block && doc.trades.length > 0 && (
-        <ul className="m-0 flex list-none flex-col gap-sp-4 p-0">
+        <ul className="gap-sp-4 m-0 flex list-none flex-col p-0">
           {doc.trades.map((trade, index) => (
-            <Offer key={trade.offer_id} trade={trade} asker={asker} analyze={analyze} index={index} />
+            <Offer
+              key={trade.offer_id}
+              trade={trade}
+              asker={asker}
+              analyze={analyze}
+              index={index}
+            />
           ))}
         </ul>
       )}
@@ -312,8 +427,18 @@ function IdeasBody({ doc, analyze, block }: { doc: FindResponse; analyze: string
           from={doc.trades.length}
         />
       )}
-      {doc.trades.length === 0 && doc.near.length === 0 && <p className="m-0 text-body leading-body text-ink-2">{doc.empty}</p>}
-      <PageLink href={tradeHref(analyze, { team: asker, partner: doc.trade_pair.partner?.roster_id ?? null, gives: [], gets: [] })} label="Build a trade on the Trade page" />
+      {doc.trades.length === 0 && doc.near.length === 0 && (
+        <p className="text-body leading-body text-ink-2 m-0">{doc.empty}</p>
+      )}
+      <PageLink
+        href={tradeHref(analyze, {
+          team: asker,
+          partner: doc.trade_pair.partner?.roster_id ?? null,
+          gives: [],
+          gets: [],
+        })}
+        label="Build a trade on the Trade page"
+      />
     </Settle>
   );
 }
@@ -322,7 +447,9 @@ function IdeasBody({ doc, analyze, block }: { doc: FindResponse; analyze: string
    rank only when the document sends one. */
 function rankLine(player: SellHigh["picks"][number]["player"]): string | null {
   if (!player.season_rank) return null;
-  return player.recent_rank ? `Season rank ${player.season_rank} · Recent rank ${player.recent_rank}` : `Season rank ${player.season_rank}`;
+  return player.recent_rank
+    ? `Season rank ${player.season_rank} · Recent rank ${player.recent_rank}`
+    : `Season rank ${player.season_rank}`;
 }
 
 /* One player to sell: his headshot, his name, his position and NFL team, his ranks, the headline of why, and its top
@@ -334,21 +461,31 @@ function SellPick({ pick, index }: { pick: SellHigh["picks"][number]; index: num
   return (
     <motion.li
       aria-label={`Sell ${player.name}`}
-      className="flex flex-col gap-sp-3 border-t border-rule pt-sp-3 first:border-t-0 first:pt-0"
+      className="gap-sp-3 border-rule pt-sp-3 flex flex-col border-t first:border-t-0 first:pt-0"
       {...riseIn(off, { delay: 0.12 + index * 0.08 })}
     >
-      <div className="flex items-center gap-sp-3">
-        <Headshot src={player.headshot} size="avatar" lazy className="flex-none rounded-full bg-page object-cover object-top" />
-        <div className="flex min-w-0 flex-col gap-sp-0">
-          <p className="m-0 text-body leading-tight font-bold text-ink">{player.name}</p>
-          <p className="m-0 text-meta leading-tight text-mute">
+      <div className="gap-sp-3 flex items-center">
+        <Headshot
+          src={player.headshot}
+          size="avatar"
+          lazy
+          className="bg-page flex-none rounded-full object-cover object-top"
+        />
+        <div className="gap-sp-0 flex min-w-0 flex-col">
+          <p className="text-body text-ink m-0 leading-tight font-bold">{player.name}</p>
+          <p className="text-meta text-mute m-0 leading-tight">
             {player.position} · {player.nfl_team}
           </p>
-          {ranks && <p className="m-0 text-meta leading-tight text-ink-2">{ranks}</p>}
+          {ranks && <p className="text-meta text-ink-2 m-0 leading-tight">{ranks}</p>}
         </div>
       </div>
-      <p className="m-0 text-body leading-body font-semibold text-ink">{pick.headline}</p>
-      {pick.bullets.length > 0 && <BulletRows bullets={pick.bullets.slice(0, TOP_OFFER_BULLETS)} idBase={`door-sell-${index}`} />}
+      <p className="text-body leading-body text-ink m-0 font-semibold">{pick.headline}</p>
+      {pick.bullets.length > 0 && (
+        <BulletRows
+          bullets={pick.bullets.slice(0, TOP_OFFER_BULLETS)}
+          idBase={`door-sell-${index}`}
+        />
+      )}
     </motion.li>
   );
 }
@@ -362,15 +499,18 @@ function SellBody({ doc, block }: { doc: SellHigh; block?: SellList }) {
         // The sell list of the stream: each row opens in place with its bullets.
         <SellListView block={block} live />
       ) : doc.picks.length > 0 ? (
-        <ul className="m-0 flex list-none flex-col gap-sp-4 p-0">
+        <ul className="gap-sp-4 m-0 flex list-none flex-col p-0">
           {doc.picks.map((pick, index) => (
             <SellPick key={pick.player.player_id} pick={pick} index={index} />
           ))}
         </ul>
       ) : (
-        <p className="m-0 text-body leading-body text-ink-2">{doc.empty}</p>
+        <p className="text-body leading-body text-ink-2 m-0">{doc.empty}</p>
       )}
-      <PageLink href={managerHref(String(doc.season), doc.team.roster_id)} label="Open your manager page" />
+      <PageLink
+        href={managerHref(String(doc.season), doc.team.roster_id)}
+        label="Open your manager page"
+      />
     </Settle>
   );
 }
@@ -380,14 +520,19 @@ function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
   const filled = form.gives.length + form.gets.length;
   return (
     <Settle label="Trade check">
-      <p className="m-0 text-body leading-body text-ink-2">
+      <p className="text-body leading-body text-ink-2 m-0">
         {filled > 0
           ? "Some players of that trade are not clear. The Trade page holds the ones that are, so pick the rest there."
           : "Name the players to check that trade. The Trade page lists each roster, so pick them there."}
       </p>
       <a
-        href={tradeHref(analyze, { team: form.asker, partner: form.partner, gives: form.gives, gets: form.gets })}
-        className="press flex min-h-touch items-center gap-sp-2 self-start rounded-pill bg-ink px-sp-4 text-body leading-tight font-semibold text-card no-underline"
+        href={tradeHref(analyze, {
+          team: form.asker,
+          partner: form.partner,
+          gives: form.gives,
+          gets: form.gets,
+        })}
+        className="press min-h-touch gap-sp-2 rounded-pill bg-ink px-sp-4 text-body text-card flex items-center self-start leading-tight font-semibold no-underline"
       >
         Open the Trade page
         <ArrowRightIcon aria-hidden className="size-sp-4" strokeWidth={2.25} />
@@ -402,23 +547,45 @@ function FormBody({ form, analyze }: { form: TradeForm; analyze: string }) {
    personal Answer. */
 export const TradeCard = forwardRef<
   HTMLElement,
-  { question: string; steps: string[]; answer: TradeAnswer | null; analyze: string; stale?: { line: string; onRefresh: () => void } | null; morph?: string }
+  {
+    question: string;
+    steps: string[];
+    answer: TradeAnswer | null;
+    analyze: string;
+    stale?: { line: string; onRefresh: () => void } | null;
+    morph?: string;
+  }
 >(function TradeCard({ question, steps, answer, analyze, stale = null, morph }, ref) {
   return (
-    <article ref={ref} aria-label={question} aria-busy={answer === null} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+    <article
+      ref={ref}
+      aria-label={question}
+      aria-busy={answer === null}
+      data-stale={stale ? "" : undefined}
+      className="scroll-mt-door-under-head gap-sp-3 flex flex-col"
+    >
       <QuestionBubble question={question} morph={morph} />
       {/* The stale line comes before the read it warns about, so the manager sees it first. */}
       {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
       {/* The dim is an opacity change only, so reduced motion keeps it as is. */}
-      <div className={`flex flex-col gap-sp-3 transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
+      <div
+        className={`gap-sp-3 flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}
+      >
         {/* A tapped trade check opens the Trade page at once, with no step, so it shows no card of steps. */}
         {(answer === null || steps.length > 0) && (
           <Surface>
             <Steps steps={tradeSteps(steps, answer === null)} live={answer === null} />
           </Surface>
         )}
-        {answer?.kind === "check" && (answer.block ? <CheckCard block={answer.block} analyze={analyze} /> : <CheckBody doc={answer.document} analyze={analyze} />)}
-        {answer?.kind === "ideas" && <IdeasBody doc={answer.document} analyze={analyze} block={answer.block} />}
+        {answer?.kind === "check" &&
+          (answer.block ? (
+            <CheckCard block={answer.block} analyze={analyze} />
+          ) : (
+            <CheckBody doc={answer.document} analyze={analyze} />
+          ))}
+        {answer?.kind === "ideas" && (
+          <IdeasBody doc={answer.document} analyze={analyze} block={answer.block} />
+        )}
         {answer?.kind === "form" && <FormBody form={answer.form} analyze={analyze} />}
         {answer?.kind === "sell" && <SellBody doc={answer.document} block={answer.block} />}
       </div>

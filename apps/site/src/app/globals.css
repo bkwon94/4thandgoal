@@ -27,388 +27,390 @@
 /* A hover style only for a device with a fine pointer that can hover. Some touch devices report hover,
    and the color then sticks on a tapped link, so the pointer check keeps the hover to a mouse or a trackpad. */
 @custom-variant hover-fine {
-    @media (hover: hover) and (pointer: fine) {
-        &:hover {
-            @slot;
-        }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
     }
+  }
 }
 /*---break---
  */
 /* The brand tokens, ported from the source stylesheet. Static keeps every token on :root,
    so the shadcn variables below can point at any token, even one without a utility. */
 @theme static {
-    /* The color roles come from the brand of the client. The client build writes them
+  /* The color roles come from the brand of the client. The client build writes them
        into src/generated/brand.css from clients/$CLIENT/brand.toml, and the import at the top adds them.
        The stylesheet calls the grey text "muted". The token is "mute", because shadcn owns "muted". */
 
-    /* The movement arrows of the power rankings: blue up, red down, a diverging pair that reads with red-green color blindness.
+  /* The movement arrows of the power rankings: blue up, red down, a diverging pair that reads with red-green color blindness.
        The arrows sit on two surfaces. On the black card #141414 blue is about 5.06 to 1 and red about 5.04 to 1.
        On the white home page #ffffff blue is about 3.64 to 1 and red about 3.66 to 1. Both pass the 3 to 1 rule for a graphic.
        The arrow shape and the screen reader text also carry the direction, so the color is never the only sign. */
-    --color-move-up: #3987e5;
-    --color-move-down: #e05a4f;
+  --color-move-up: #3987e5;
+  --color-move-down: #e05a4f;
 
-    /* The fonts of the look, the same for every client (ADR 0024). The root layout puts the two font variables on
+  /* The fonts of the look, the same for every client (ADR 0024). The root layout puts the two font variables on
        <html> from src/app/fonts/fonts.ts. Space Grotesk sets text and headings. JetBrains Mono sets numbers, scores,
        and small uppercase labels. Each variable already holds its fallback faces. */
-    --font-sans: var(--font-space-grotesk);
-    --font-heading: var(--font-sans);
-    --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-heading: var(--font-sans);
+  --font-mono: var(--font-jetbrains-mono);
 
-    /* The radii of the look: the hero, a card, a tile, and a full pill for a button and a bar.
+  /* The radii of the look: the hero, a card, a tile, and a full pill for a button and a bar.
        rounded-sm paints the tags and the bars, so it takes the pill. */
-    --radius-hero: 24px;
-    --radius-card: 20px;
-    --radius-tile: 18px;
-    --radius-pill: 9999px;
-    /* A letter tile of the egg hunt: a square with a soft corner, as the squares of the logo. */
-    --radius-letter: 4px;
-    --radius-sm: var(--radius-pill);
-    /* The midseason report keeps its corners small and draws no full pill (decision ticket 15): 8px on each card. */
-    --radius-report: 8px;
+  --radius-hero: 24px;
+  --radius-card: 20px;
+  --radius-tile: 18px;
+  --radius-pill: 9999px;
+  /* A letter tile of the egg hunt: a square with a soft corner, as the squares of the logo. */
+  --radius-letter: 4px;
+  --radius-sm: var(--radius-pill);
+  /* The midseason report keeps its corners small and draws no full pill (decision ticket 15): 8px on each card. */
+  --radius-report: 8px;
 
-    /* Spacing scale. Every padding, margin, and gap comes from this list. */
-    --spacing-sp-0: 2px;
-    --spacing-sp-1: 4px;
-    --spacing-sp-2: 8px;
-    --spacing-sp-3: 12px;
-    --spacing-sp-4: 16px;
-    --spacing-sp-5: 20px;
-    --spacing-sp-6: 24px;
-    --spacing-gutter: var(--spacing-sp-4);
+  /* Spacing scale. Every padding, margin, and gap comes from this list. */
+  --spacing-sp-0: 2px;
+  --spacing-sp-1: 4px;
+  --spacing-sp-2: 8px;
+  --spacing-sp-3: 12px;
+  --spacing-sp-4: 16px;
+  --spacing-sp-5: 20px;
+  --spacing-sp-6: 24px;
+  --spacing-gutter: var(--spacing-sp-4);
 
-    /* Fixed element sizes from the stylesheet rules. They live here, so no component holds a pixel size.
+  /* Fixed element sizes from the stylesheet rules. They live here, so no component holds a pixel size.
        44px is the smallest comfortable touch target. */
-    --spacing-logo: 30px;
-    --spacing-divider: 28px;
-    --spacing-avatar: 28px;
-    --spacing-touch: 44px;
-    /* An item of the menu sheet: the 20px icon, a 4px gap, and the 12px label, with room above and below for a thumb. */
-    --spacing-dock: 56px;
-    /* The height of the top band: one 44px row, 8px above and below, and its 1px rule. The name is not "band", because
+  --spacing-logo: 30px;
+  --spacing-divider: 28px;
+  --spacing-avatar: 28px;
+  --spacing-touch: 44px;
+  /* An item of the menu sheet: the 20px icon, a 4px gap, and the 12px label, with room above and below for a thumb. */
+  --spacing-dock: 56px;
+  /* The height of the top band: one 44px row, 8px above and below, and its 1px rule. The name is not "band", because
        max-w-band reads the container token of that name. */
-    --spacing-band-height: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2) + 1px);
-    /* The front door: the empty Thread fills the view under the top band, so the ask box sits at its center. The front
+  --spacing-band-height: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2) + 1px);
+  /* The front door: the empty Thread fills the view under the top band, so the ask box sits at its center. The front
        door holds the pages in the header sheet (decision 10). */
-    --spacing-door-fill: calc(100dvh - var(--spacing-band-height));
-    --spacing-door-fill-desktop: calc(100dvh - var(--spacing-band-height));
-    /* The empty Thread pads its foot three times its head, so the ask box sits at the optical center, a little high. */
-    --spacing-door-lift: calc(var(--spacing-sp-6) * 3);
-    /* The foot of a Thread with an Answer: the chips and the ask box sit on one surface that touches the bottom edge.
+  --spacing-door-fill: calc(100dvh - var(--spacing-band-height));
+  --spacing-door-fill-desktop: calc(100dvh - var(--spacing-band-height));
+  /* The empty Thread pads its foot three times its head, so the ask box sits at the optical center, a little high. */
+  --spacing-door-lift: calc(var(--spacing-sp-6) * 3);
+  /* The foot of a Thread with an Answer: the chips and the ask box sit on one surface that touches the bottom edge.
        The surface pads its foot by the home bar of an iPhone, so the ask box sits above the bar. */
-    --spacing-door-foot: 0px;
-    --spacing-door-safe: env(safe-area-inset-bottom);
-    /* The Thread header sticks under the top band: one 44px row and 4px above and below. A new question scrolls to
+  --spacing-door-foot: 0px;
+  --spacing-door-safe: env(safe-area-inset-bottom);
+  /* The Thread header sticks under the top band: one 44px row and 4px above and below. A new question scrolls to
        its top under both, so its bubble never hides behind them. */
-    --spacing-door-head: calc(var(--spacing-touch) + 2 * var(--spacing-sp-1));
-    /* The scroll-padding-top of html already keeps the top band clear, less its 1px rule. A scroll adds this margin to
+  --spacing-door-head: calc(var(--spacing-touch) + 2 * var(--spacing-sp-1));
+  /* The scroll-padding-top of html already keeps the top band clear, less its 1px rule. A scroll adds this margin to
        it, so the margin holds only the rule, the Thread header, and one step. */
-    --spacing-door-under-head: calc(1px + var(--spacing-door-head) + var(--spacing-sp-2));
-    /* The list of all 14 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */
-    --spacing-more: 50dvh;
-    /* The ask box: a 44px send button in a 4px inset, so the whole box is a full tap target. */
-    --spacing-send: var(--spacing-touch);
-    --spacing-ask: calc(var(--spacing-send) + 2 * var(--spacing-sp-1) + 2px);
-    /* A row of the sheet of Your team: taller than a touch target, so twelve rows read as a calm list. */
-    --spacing-row-touch: 52px;
-    /* The egg banner of the home page: one strip, edge to edge under the top band (ticket 07 of easter-eggs). */
-    --spacing-banner: 52px;
-    /* The letter tiles of the egg board. A long egg word, such as CORNERSTONE, takes the small tile, so its row fits a
+  --spacing-door-under-head: calc(1px + var(--spacing-door-head) + var(--spacing-sp-2));
+  /* The list of all 14 Topics under "More" scrolls inside half the view, so the ask box stays on screen. */
+  --spacing-more: 50dvh;
+  /* The ask box: a 44px send button in a 4px inset, so the whole box is a full tap target. */
+  --spacing-send: var(--spacing-touch);
+  --spacing-ask: calc(var(--spacing-send) + 2 * var(--spacing-sp-1) + 2px);
+  /* A row of the sheet of Your team: taller than a touch target, so twelve rows read as a calm list. */
+  --spacing-row-touch: 52px;
+  /* The egg banner of the home page: one strip, edge to edge under the top band (ticket 07 of easter-eggs). */
+  --spacing-banner: 52px;
+  /* The letter tiles of the egg board. A long egg word, such as CORNERSTONE, takes the small tile, so its row fits a
        phone. The feed tile leads a row of Latest claims, and the giant tile spells the egg word of a slide. Each giant
        tile shrinks on a narrow phone, so the 11 letters of CORNERSTONE fit at 390px. */
-    --spacing-letter: 24px;
-    --spacing-letter-sm: 20px;
-    --spacing-feed-tile: 32px;
-    --spacing-giant-tile: 48px;
-    /* The glow of an egg still out on the grid of the egg board. */
-    --drop-shadow-egg: 0 0 4px var(--color-accent-text);
-    /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
-    --spacing-hero-y: 28px;
-    --spacing-hero-x: var(--spacing-sp-6);
-    /* The height of the hero scene: a band of 130px under the title on a phone, so the words keep the first screen
+  --spacing-letter: 24px;
+  --spacing-letter-sm: 20px;
+  --spacing-feed-tile: 32px;
+  --spacing-giant-tile: 48px;
+  /* The glow of an egg still out on the grid of the egg board. */
+  --drop-shadow-egg: 0 0 4px var(--color-accent-text);
+  /* The inner space of the hero: 28px on top and bottom, and 24px on the sides (ADR 0024). */
+  --spacing-hero-y: 28px;
+  --spacing-hero-x: var(--spacing-sp-6);
+  /* The height of the hero scene: a band of 130px under the title on a phone, so the words keep the first screen
        (Brian, 2026-11-08), and 240px in the open middle of the two rows from the tablet tier up (decision 06). */
-    --spacing-hero-scene: 130px;
-    --spacing-hero-scene-wide: 240px;
-    /* The cell of the grid texture of the hero. */
-    --spacing-hero-grid: 24px;
-    /* The arm of a corner bracket of the hero. */
-    --spacing-bracket: 16px;
-    /* The round photo frame of an award tile (ADR 0024). The row frame takes the avatar token, and the hero frame the headshot token. */
-    --spacing-photo: 44px;
-    /* The smallest pointer target that WCAG 2.2 AA allows, for a link in a list that a mouse or a trackpad reaches. */
-    --spacing-target: 24px;
-    /* The player cutout on a trade chip. 64px keeps a column of chips short at 390. */
-    --spacing-headshot: 64px;
-    /* The headshot on an award tile: two steps of sp-5, as the stylesheet sets it. */
-    --spacing-award: calc(var(--spacing-sp-5) * 2);
-    /* The waiver budget ring: twelve team avatars with a bar each in one row. 24px avatars keep twelve columns inside 358px at 390.
+  --spacing-hero-scene: 130px;
+  --spacing-hero-scene-wide: 240px;
+  /* The cell of the grid texture of the hero. */
+  --spacing-hero-grid: 24px;
+  /* The arm of a corner bracket of the hero. */
+  --spacing-bracket: 16px;
+  /* The round photo frame of an award tile (ADR 0024). The row frame takes the avatar token, and the hero frame the headshot token. */
+  --spacing-photo: 44px;
+  /* The smallest pointer target that WCAG 2.2 AA allows, for a link in a list that a mouse or a trackpad reaches. */
+  --spacing-target: 24px;
+  /* The player cutout on a trade chip. 64px keeps a column of chips short at 390. */
+  --spacing-headshot: 64px;
+  /* The headshot on an award tile: two steps of sp-5, as the stylesheet sets it. */
+  --spacing-award: calc(var(--spacing-sp-5) * 2);
+  /* The waiver budget ring: twelve team avatars with a bar each in one row. 24px avatars keep twelve columns inside 358px at 390.
        The bar is a thin column, so twelve bars read as one chart and not as twelve buttons. */
-    --spacing-ring-avatar: 24px;
-    --spacing-ring-bar: 36px;
-    --spacing-ring-bar-w: 4px;
-    /* A headshot token on the stage of the analyzer hero. 32px keeps a face readable, and three overlapped tokens and a
+  --spacing-ring-avatar: 24px;
+  --spacing-ring-bar: 36px;
+  --spacing-ring-bar-w: 4px;
+  /* A headshot token on the stage of the analyzer hero. 32px keeps a face readable, and three overlapped tokens and a
        "+N" token still leave the full team name room in a row at 375. */
-    --spacing-stage-token: 32px;
-    /* The column of the tokens in a stage row: 3 faces and a "+N" token, each overlapped by sp-2. */
-    --spacing-stage-tokens: calc(4 * var(--spacing-stage-token) - 3 * var(--spacing-sp-2));
-    /* The team pick chip on the waiver page: a 44px touch row and 4px above and below. The empty slot takes the same height
+  --spacing-stage-token: 32px;
+  /* The column of the tokens in a stage row: 3 faces and a "+N" token, each overlapped by sp-2. */
+  --spacing-stage-tokens: calc(4 * var(--spacing-stage-token) - 3 * var(--spacing-sp-2));
+  /* The team pick chip on the waiver page: a 44px touch row and 4px above and below. The empty slot takes the same height
        before the page reads storage, so the ring does not move down when the chip shows. */
-    --spacing-pick-chip: 52px;
-    /* The chevron on a recap button: a small square turned 45 degrees, so it reads as an arrow. */
-    --spacing-chevron: 6px;
-    /* The rank column and the value column of a row of the waiver war chest. The value column fits 000.00 at the row size. */
-    --spacing-standings-rank: 24px;
-    --spacing-val-col: 52px;
-    /* The chapter rail on a desktop and the gap between it and the page column. 184px fits the longest chapter label,
+  --spacing-pick-chip: 52px;
+  /* The chevron on a recap button: a small square turned 45 degrees, so it reads as an arrow. */
+  --spacing-chevron: 6px;
+  /* The rank column and the value column of a row of the waiver war chest. The value column fits 000.00 at the row size. */
+  --spacing-standings-rank: 24px;
+  --spacing-val-col: 52px;
+  /* The chapter rail on a desktop and the gap between it and the page column. 184px fits the longest chapter label,
        Matchup of the Week at the desktop label size, on one line. */
-    --spacing-rail: 184px;
-    --spacing-rail-gap: var(--spacing-sp-6);
-    /* The power rankings columns for movement, the record, the playoff odds, and each component rank. 40px fits a five-letter column name in caps. */
-    --spacing-rankings-col: 40px;
+  --spacing-rail: 184px;
+  --spacing-rail-gap: var(--spacing-sp-6);
+  /* The power rankings columns for movement, the record, the playoff odds, and each component rank. 40px fits a five-letter column name in caps. */
+  --spacing-rankings-col: 40px;
 
-    /* The three tiers the site designs for, on Tailwind's default sm and lg values. A phone is any width under the tablet tier.
+  /* The three tiers the site designs for, on Tailwind's default sm and lg values. A phone is any width under the tablet tier.
        The phone token starts at zero, so the set names every tier; max-tablet: is the variant for a phone only. */
-    --breakpoint-phone: 0rem;
-    --breakpoint-tablet: 40rem;
-    --breakpoint-desktop: 64rem;
-    /* The chapter rail sits in the margin left of the page column, so the margin must hold the rail plus the gap on each side:
+  --breakpoint-phone: 0rem;
+  --breakpoint-tablet: 40rem;
+  --breakpoint-desktop: 64rem;
+  /* The chapter rail sits in the margin left of the page column, so the margin must hold the rail plus the gap on each side:
        720 + 2 × (184 + 24) = 1136px. 72rem is 1152px, the first round value past it. Under it the rail is hidden. */
-    --breakpoint-rail: 72rem;
+  --breakpoint-rail: 72rem;
 
-    /* The page column per tier. A phone column fills the viewport and the content keeps the gutter inside it.
+  /* The page column per tier. A phone column fills the viewport and the content keeps the gutter inside it.
        The desktop width is the content measure; a wider tier adds space beside the column, not inside it. */
-    --container-page-phone: 100%;
-    --container-page-tablet: 640px;
-    --container-page-desktop: 720px;
-    /* The top band: wider than the page column, so the brand mark, the pill bar, and the theme button share
+  --container-page-phone: 100%;
+  --container-page-tablet: 640px;
+  --container-page-desktop: 720px;
+  /* The top band: wider than the page column, so the brand mark, the pill bar, and the theme button share
        one row from the rail tier up. */
-    --container-band: 1200px;
-    /* The page column that max-w-page reads. A rule in the base layer switches it to the token of the tier. */
-    --container-page: var(--container-page-phone);
-    /* The viewport where a wide table has room for every column. Under it, a wide table folds part of each row under the row.
+  --container-band: 1200px;
+  /* The page column that max-w-page reads. A rule in the base layer switches it to the token of the tier. */
+  --container-page: var(--container-page-phone);
+  /* The viewport where a wide table has room for every column. Under it, a wide table folds part of each row under the row.
        480px is the narrowest width that fits every column of the unfolded tables. */
-    --breakpoint-page: 480px;
-    /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
-    --container-door: 560px;
-    --container-sheet: 440px;
-    /* The stage of the analyzer hero. From the tablet tier up, a row as wide as the hero puts the tokens far from their
+  --breakpoint-page: 480px;
+  /* The front door: the column of the empty Thread, and the sheet of Your team from the tablet tier up. */
+  --container-door: 560px;
+  --container-sheet: 440px;
+  /* The stage of the analyzer hero. From the tablet tier up, a row as wide as the hero puts the tokens far from their
        team, so the rows keep the width of the door column. */
-    --container-stage: 560px;
-    /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
+  --container-stage: 560px;
+  /* The measure: the widest line of prose. About 68 characters keeps the eye on the next line at every tier.
        It is in ch, so the cap grows with the body size of the tier. Tables, grids, and score rows take no cap. */
-    --container-measure: 68ch;
-    /* The gap between two chapter cards on the grey body, from the tablet tier up. */
-    --spacing-card-gap: var(--spacing-sp-4);
+  --container-measure: 68ch;
+  /* The gap between two chapter cards on the grey body, from the tablet tier up. */
+  --spacing-card-gap: var(--spacing-sp-4);
 
-    /* Type scale: label, meta, row, body, lead, stat, score, headline. Row is for dense lists,
+  /* Type scale: label, meta, row, body, lead, stat, score, headline. Row is for dense lists,
        so names and scores stay on one line. A size sets no line height, so text keeps the inherited body leading.
        These are the phone sizes, the print scale. A rule in the base layer steps each size up per tier. */
-    --text-label: 10px;
-    --text-meta: 12px;
-    --text-row: 13px;
-    --text-body: 14px;
-    --text-lead: 16px;
-    --text-stat: 20px;
-    --text-score: 24px;
-    --text-headline: 40px;
-    /* The game changer's points: the biggest number on the page, 1.8 times the headline. */
-    --text-hero: calc(var(--text-headline) * 1.8);
+  --text-label: 10px;
+  --text-meta: 12px;
+  --text-row: 13px;
+  --text-body: 14px;
+  --text-lead: 16px;
+  --text-stat: 20px;
+  --text-score: 24px;
+  --text-headline: 40px;
+  /* The game changer's points: the biggest number on the page, 1.8 times the headline. */
+  --text-hero: calc(var(--text-headline) * 1.8);
 
-    /* Line heights: body copy, tight labels and names, and big stat numbers.
+  /* Line heights: body copy, tight labels and names, and big stat numbers.
        They are ratios of the size, so they stay in step with the type scale at every tier. */
-    --leading-body: 1.4;
-    --leading-tight: 1.15;
-    --leading-stat: 1.1;
-    /* The hero points sit tighter than a stat, so the giant digits do not push the projection line down. */
-    --leading-hero: 0.9;
+  --leading-body: 1.4;
+  --leading-tight: 1.15;
+  --leading-stat: 1.1;
+  /* The hero points sit tighter than a stat, so the giant digits do not push the projection line down. */
+  --leading-hero: 0.9;
 
-    /* Letter spacing for uppercase labels. Wide is for titles, caps is for small subtitles and tags.
+  /* Letter spacing for uppercase labels. Wide is for titles, caps is for small subtitles and tags.
        Each token is in em and belongs to one size role: small caps open, big bold numbers tight. So the
        spacing scales with its size at every tier and stays specific to the size. */
-    --tracking-wide: 0.16em;
-    --tracking-caps: 0.1em;
-    /* Negative spacing for bold text: snug for a player name on a chip, tight for the big week number,
+  --tracking-wide: 0.16em;
+  --tracking-caps: 0.1em;
+  /* Negative spacing for bold text: snug for a player name on a chip, tight for the big week number,
        grade for a big grade letter and the game changer's points. */
-    --tracking-snug: -0.01em;
-    --tracking-tight: -0.02em;
-    --tracking-grade: -0.03em;
+  --tracking-snug: -0.01em;
+  --tracking-tight: -0.02em;
+  --tracking-grade: -0.03em;
 
-    /* The scrim under the sheet of Your team, and the lift of the sheet and of the ask box. The same in both themes,
+  /* The scrim under the sheet of Your team, and the lift of the sheet and of the ask box. The same in both themes,
        because a shadow of black reads on a dark page only as depth. */
-    --color-scrim: rgb(0 0 0 / 0.45);
-    --color-tour-scrim: rgb(0 0 0 / 0.65);
-    --shadow-sheet: 0 -8px 40px -12px rgb(0 0 0 / 0.35);
-    /* The header sheet of the front door drops from the band, so its shadow falls down onto the dimmed page. */
-    --shadow-drop: 0 16px 32px -16px rgb(0 0 0 / 0.4);
-    --shadow-ask: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.18);
+  --color-scrim: rgb(0 0 0 / 0.45);
+  --color-tour-scrim: rgb(0 0 0 / 0.65);
+  --shadow-sheet: 0 -8px 40px -12px rgb(0 0 0 / 0.35);
+  /* The header sheet of the front door drops from the band, so its shadow falls down onto the dimmed page. */
+  --shadow-drop: 0 16px 32px -16px rgb(0 0 0 / 0.4);
+  --shadow-ask: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.18);
 
-    /* The look of the front door. Light keeps the surfaces of the brand. The .dark block below gives the "Night" look of
+  /* The look of the front door. Light keeps the surfaces of the brand. The .dark block below gives the "Night" look of
        decision 07: a glass ask box over the page, hairlines of the ink, and the team name in the accent ink. Each value
        mixes the roles of the brand, so each client keeps its own surfaces and accent in both themes (AT-45). */
-    --color-door-glass: color-mix(in srgb, var(--color-card) 82%, transparent);
-    --color-door-hair: var(--color-rule);
-    --color-door-focus: var(--color-ink);
-    --color-door-name: var(--color-ink);
-    /* The halo of the send button, as the Send Halo of scrolltide: the accent, which grows with the question. */
-    --color-door-halo: color-mix(in srgb, var(--color-accent) 50%, transparent);
-    --color-door-halo-ring: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  --color-door-glass: color-mix(in srgb, var(--color-card) 82%, transparent);
+  --color-door-hair: var(--color-rule);
+  --color-door-focus: var(--color-ink);
+  --color-door-name: var(--color-ink);
+  /* The halo of the send button, as the Send Halo of scrolltide: the accent, which grows with the question. */
+  --color-door-halo: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  --color-door-halo-ring: color-mix(in srgb, var(--color-accent) 22%, transparent);
 
-    /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
-    --shadow-orb: 0 0 24px var(--color-accent-glow);
+  /* The red halo of a headshot in the waiver drift field. It sets each face apart from the black card, as the hero glow does. */
+  --shadow-orb: 0 0 24px var(--color-accent-glow);
 
-    /* The press easing. A strong ease-out gives instant feedback on a tap. packages/design/site/lib/motion.ts holds the same curve as numbers. */
-    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-    /* The curve of the rise of the look (ADR 0024). RISE_EASE in motion.ts holds the same curve. */
-    --ease-rise: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The press easing. A strong ease-out gives instant feedback on a tap. packages/design/site/lib/motion.ts holds the same curve as numbers. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* The curve of the rise of the look (ADR 0024). RISE_EASE in motion.ts holds the same curve. */
+  --ease-rise: cubic-bezier(0.16, 1, 0.3, 1);
 }
 /*---break---
  */
 @theme inline {
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 /*---break---
  */
 /* The shadcn variables point at the brand tokens, so a shadcn component wears the brand.
    The card is the brand grey, primary is the masthead black, and focus and danger are the brand red. */
 :root {
-    --background: var(--color-page);
-    --foreground: var(--color-ink);
-    --card: var(--color-card);
-    --card-foreground: var(--color-ink);
-    --popover: var(--color-page);
-    --popover-foreground: var(--color-ink);
-    --primary: var(--color-band);
-    --primary-foreground: var(--color-on-dark);
-    --secondary: var(--color-card);
-    --secondary-foreground: var(--color-ink);
-    --muted: var(--color-card);
-    --muted-foreground: var(--color-mute);
-    --accent: var(--color-accent);
-    --accent-foreground: var(--color-on-dark);
-    --destructive: var(--color-accent);
-    --border: var(--color-rule);
-    --input: var(--color-rule);
-    --ring: var(--color-accent);
-    --chart-1: var(--color-accent);
-    --chart-2: var(--color-bar-off);
-    --chart-3: var(--color-band);
-    --chart-4: var(--color-ink-2);
-    --chart-5: var(--color-mute);
-    --radius: var(--radius-card);
-    --sidebar: var(--color-card);
-    --sidebar-foreground: var(--color-ink);
-    --sidebar-primary: var(--color-band);
-    --sidebar-primary-foreground: var(--color-on-dark);
-    --sidebar-accent: var(--color-page);
-    --sidebar-accent-foreground: var(--color-ink);
-    --sidebar-border: var(--color-rule);
-    --sidebar-ring: var(--color-accent);
+  --background: var(--color-page);
+  --foreground: var(--color-ink);
+  --card: var(--color-card);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-page);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-band);
+  --primary-foreground: var(--color-on-dark);
+  --secondary: var(--color-card);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-card);
+  --muted-foreground: var(--color-mute);
+  --accent: var(--color-accent);
+  --accent-foreground: var(--color-on-dark);
+  --destructive: var(--color-accent);
+  --border: var(--color-rule);
+  --input: var(--color-rule);
+  --ring: var(--color-accent);
+  --chart-1: var(--color-accent);
+  --chart-2: var(--color-bar-off);
+  --chart-3: var(--color-band);
+  --chart-4: var(--color-ink-2);
+  --chart-5: var(--color-mute);
+  --radius: var(--radius-card);
+  --sidebar: var(--color-card);
+  --sidebar-foreground: var(--color-ink);
+  --sidebar-primary: var(--color-band);
+  --sidebar-primary-foreground: var(--color-on-dark);
+  --sidebar-accent: var(--color-page);
+  --sidebar-accent-foreground: var(--color-ink);
+  --sidebar-border: var(--color-rule);
+  --sidebar-ring: var(--color-accent);
 
-    /* The light set paints here. The .dark block below holds the dark theme, which is the default. See ADR 0007 and ADR 0024. */
-    color-scheme: light;
+  /* The light set paints here. The .dark block below holds the dark theme, which is the default. See ADR 0007 and ADR 0024. */
+  color-scheme: light;
 }
 /* The dark theme: the .dark class on <html> turns it on, and src/generated/brand.css re-points each color role in its own
    .dark block, so no component changes a class. See ADR 0007. The build puts the class on <html> for every client, so dark is
    the default, and the boot script removes it for a stored light choice (ADR 0024). */
 .dark {
-    /* The shadcn button paints in --primary, the masthead black, which equals the dark page and the dialog. The button then has no edge,
+  /* The shadcn button paints in --primary, the masthead black, which equals the dark page and the dialog. The button then has no edge,
        so the dark theme inverts it: a white button with page-black text, 18.4 to 1. */
-    --primary: var(--color-ink);
-    --primary-foreground: var(--color-page);
+  --primary: var(--color-ink);
+  --primary-foreground: var(--color-page);
 
-    /* The "Night" look of the front door (decision 07). The glass lets the Answers show through as they scroll under the
+  /* The "Night" look of the front door (decision 07). The glass lets the Answers show through as they scroll under the
        ask box, and a hairline of the ink gives each surface its edge without a grey line. */
-    --color-door-glass: color-mix(in srgb, var(--color-card) 72%, transparent);
-    --color-door-hair: color-mix(in srgb, var(--color-ink) 10%, transparent);
-    --color-door-focus: color-mix(in srgb, var(--color-accent) 55%, var(--color-door-hair));
-    --color-door-name: var(--color-accent-ink);
-    /* A top edge of light on the ask box and the cards, and a deep shadow under the ask box, so it floats over the page. */
-    --door-lift: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 6%, transparent), 0 24px 60px -24px rgb(0 0 0 / 0.9);
-    --door-sheen: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 4%, transparent);
+  --color-door-glass: color-mix(in srgb, var(--color-card) 72%, transparent);
+  --color-door-hair: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --color-door-focus: color-mix(in srgb, var(--color-accent) 55%, var(--color-door-hair));
+  --color-door-name: var(--color-accent-ink);
+  /* A top edge of light on the ask box and the cards, and a deep shadow under the ask box, so it floats over the page. */
+  --door-lift:
+    inset 0 1px 0 color-mix(in srgb, var(--color-ink) 6%, transparent),
+    0 24px 60px -24px rgb(0 0 0 / 0.9);
+  --door-sheen: inset 0 1px 0 color-mix(in srgb, var(--color-ink) 4%, transparent);
 
-    color-scheme: dark;
+  color-scheme: dark;
 }
 /* Component values: the chapter rule width and the press transition. */
 :root {
-    /* The lift of the ask box and the sheen of a card on the front door. The .dark block re-points both for the "Night" look. */
-    --door-lift: var(--shadow-ask);
-    --door-sheen: 0 0 #0000;
+  /* The lift of the ask box and the sheen of a card on the front door. The .dark block re-points both for the "Night" look. */
+  --door-lift: var(--shadow-ask);
+  --door-sheen: 0 0 #0000;
 
-    /* The chapter rule under each section, as a border width. */
-    --chap-rule: 6px;
+  /* The chapter rule under each section, as a border width. */
+  --chap-rule: 6px;
 
-    /* Press feedback for every pressable element. Only transform animates, so it stays on the GPU. */
-    --press: transform 140ms var(--ease-out);
+  /* Press feedback for every pressable element. Only transform animates, so it stays on the GPU. */
+  --press: transform 140ms var(--ease-out);
 
-    /* The motion timings of the analyzer live in packages/design/site/lib/motion.ts, because Framer Motion takes them as numbers. */
+  /* The motion timings of the analyzer live in packages/design/site/lib/motion.ts, because Framer Motion takes them as numbers. */
 
-    /* If the script never hydrates, the reveal content shows after this delay.
+  /* If the script never hydrates, the reveal content shows after this delay.
        After hydration, the data-hydrated attribute turns the safety rule off and Framer Motion owns the reveal. */
-    --delay-safety: 1.5s;
+  --delay-safety: 1.5s;
 }
 /*---break---
  */
 /* A pressable element scales down a little on tap, so the reader sees the page heard the tap.
    The scale is small because a wide control, such as a picker, moves each edge by its full width times the scale. */
 @utility press {
-    transition: var(--press);
+  transition: var(--press);
+  &:active {
+    transform: scale(0.98);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
     &:active {
-        transform: scale(0.98);
+      transform: none;
     }
-    @media (prefers-reduced-motion: reduce) {
-        transition: none;
-        &:active {
-            transform: none;
-        }
-    }
+  }
 }
 /*---break---
  */
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   /* From the tablet tier up the column is narrower than the viewport. The body takes the softest brand grey,
      so the white column reads as the report's page. On a phone the column fills the width, so the body stays white. */
   body {
     @apply bg-background tablet:bg-card text-foreground text-body leading-body antialiased;
     overflow-wrap: break-word;
-    }
+  }
   /* The page column widens per tier. A media query cannot read a variable, so the tier variants carry the widths. */
   :root {
     @variant tablet {
@@ -417,7 +419,7 @@
     @variant desktop {
       --container-page: var(--container-page-desktop);
     }
-    }
+  }
   /* The type scale steps up one size per tier. A tablet or a laptop sits farther from the eye than a phone,
      so the print sizes read small there. Body is 14px, 15px, and 16px. Each other size keeps its ratio to
      the body, rounded to a whole pixel, so the hierarchy of the print scale holds. The hero points follow the headline. */
@@ -442,231 +444,232 @@
       --text-score: 27px;
       --text-headline: 46px;
     }
-    }
+  }
   /* The top band is sticky over the top of the viewport: one 44px row and 8px above and below at every tier.
      The padding keeps a focused element or an anchor target clear of it. */
   html {
     @apply font-sans;
     scroll-padding-top: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2));
-    }
+  }
   /* The viewport covers the whole screen (viewport-fit=cover), so a phone on its side puts its notch over the page.
      The body keeps the side safe areas free, and each is 0 on a screen with no notch. */
   body {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-    }
+  }
   /* While the on-screen keyboard is open, the foot of a Thread sticks right above the keyboard.
      --keyboard-inset is the part of the layout viewport that the keyboard covers (site/shell/keyboard.ts). The keyboard
      covers the home bar too, so the foot needs no safe area. */
   html[data-keyboard] {
     --spacing-door-foot: var(--keyboard-inset, 0px);
     --spacing-door-safe: 0px;
-    }
+  }
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
-    }
+  }
 }
 
 /* The glow of the waiver page. A radial gradient cannot be a Tailwind class cleanly, so it lives here. */
 @layer components {
-    /* The red glow under the waiver drift field. It sits a little below the middle, behind the top add. */
-    .field-glow {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 50% 45%, var(--color-accent-glow), transparent 60%);
-    }
+  /* The red glow under the waiver drift field. It sits a little below the middle, behind the top add. */
+  .field-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, var(--color-accent-glow), transparent 60%);
+  }
 }
 
 @layer components {
-    /* The art of the hero: the brand glow in the lower right corner, over the 24px grid of the grid color.
+  /* The art of the hero: the brand glow in the lower right corner, over the 24px grid of the grid color.
        The glow is small and low, so its bright part stays off hero text and the text needs no plate (ADR 0036).
        Three layers of one background cannot be Tailwind classes cleanly, so they live here. */
-    .hero-texture {
-        background-image:
-            radial-gradient(ellipse 38% 46% at 100% 112%, var(--color-accent-glow), transparent 70%),
-            linear-gradient(var(--color-grid) 1px, transparent 1px),
-            linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-        background-size:
-            100% 100%,
-            var(--spacing-hero-grid) var(--spacing-hero-grid),
-            var(--spacing-hero-grid) var(--spacing-hero-grid);
-    }
-    /* The ground of a photo in its round frame: the brand glow over the raised surface. Initials never sit on it. */
-    .photo-ground {
-        background: radial-gradient(circle at 50% 65%, var(--color-accent-glow), transparent 70%) var(--color-raised);
-    }
+  .hero-texture {
+    background-image:
+      radial-gradient(ellipse 38% 46% at 100% 112%, var(--color-accent-glow), transparent 70%),
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      var(--spacing-hero-grid) var(--spacing-hero-grid),
+      var(--spacing-hero-grid) var(--spacing-hero-grid);
+  }
+  /* The ground of a photo in its round frame: the brand glow over the raised surface. Initials never sit on it. */
+  .photo-ground {
+    background: radial-gradient(circle at 50% 65%, var(--color-accent-glow), transparent 70%)
+      var(--color-raised);
+  }
 }
 /* The Open card, after the method of the Showcase Card item (ADR 0028). The part sets --oc-dur and --oc-spring, the
    curve from its spring sampler, and sets --oc-dur to 0s with reduced motion. A child selector of the open state and a
    long linear() curve cannot be Tailwind classes cleanly, so they live here. */
 @layer components {
-    /* The height grows from 0fr to 1fr, the one height method of the site. The inner box clips the panel while it grows. */
-    .oc-body {
-        display: grid;
-        grid-template-rows: 0fr;
-        transition: grid-template-rows var(--oc-dur) var(--oc-spring);
+  /* The height grows from 0fr to 1fr, the one height method of the site. The inner box clips the panel while it grows. */
+  .oc-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--oc-dur) var(--oc-spring);
+  }
+  .open-card[data-open="true"] .oc-body {
+    grid-template-rows: 1fr;
+  }
+  .oc-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+  /* The details come into focus from a 6px blur with a short rise, a beat behind the height, so no half-drawn text shows. */
+  .oc-panel {
+    opacity: 0;
+    filter: blur(6px);
+    translate: 0 calc(var(--spacing-sp-3) * -1);
+    transition:
+      opacity calc(var(--oc-dur) * 0.67) ease,
+      filter calc(var(--oc-dur) * 0.9) ease,
+      translate var(--oc-dur) var(--oc-spring);
+  }
+  .open-card[data-open="true"] .oc-panel {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 0;
+    transition-delay: calc(var(--oc-dur) * 0.22);
+  }
+  /* The chevron turns on the same spring as the height. */
+  .oc-chevron {
+    transition: rotate var(--oc-dur) var(--oc-spring);
+  }
+  .open-card[data-open="true"] .oc-chevron {
+    rotate: 180deg;
+  }
+  /* The label of the action pill rolls up to a copy of itself. A hover exists only on a fine pointer, so a tap never rolls it. */
+  .oc-roll {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    line-height: 1.25;
+  }
+  .oc-roll > span,
+  .oc-roll::after {
+    display: block;
+    transition: translate var(--oc-dur) cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .oc-roll::after {
+    content: attr(data-label);
+    position: absolute;
+    inset: 100% 0 auto;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a:hover > .oc-roll > span,
+    a:hover > .oc-roll::after {
+      translate: 0 -100%;
     }
-    .open-card[data-open="true"] .oc-body {
-        grid-template-rows: 1fr;
-    }
-    .oc-inner {
-        min-height: 0;
-        overflow: hidden;
-    }
-    /* The details come into focus from a 6px blur with a short rise, a beat behind the height, so no half-drawn text shows. */
-    .oc-panel {
-        opacity: 0;
-        filter: blur(6px);
-        translate: 0 calc(var(--spacing-sp-3) * -1);
-        transition:
-            opacity calc(var(--oc-dur) * 0.67) ease,
-            filter calc(var(--oc-dur) * 0.9) ease,
-            translate var(--oc-dur) var(--oc-spring);
-    }
-    .open-card[data-open="true"] .oc-panel {
-        opacity: 1;
-        filter: blur(0);
-        translate: 0 0;
-        transition-delay: calc(var(--oc-dur) * 0.22);
-    }
-    /* The chevron turns on the same spring as the height. */
-    .oc-chevron {
-        transition: rotate var(--oc-dur) var(--oc-spring);
-    }
-    .open-card[data-open="true"] .oc-chevron {
-        rotate: 180deg;
-    }
-    /* The label of the action pill rolls up to a copy of itself. A hover exists only on a fine pointer, so a tap never rolls it. */
-    .oc-roll {
-        position: relative;
-        display: block;
-        overflow: hidden;
-        line-height: 1.25;
-    }
-    .oc-roll > span,
-    .oc-roll::after {
-        display: block;
-        transition: translate var(--oc-dur) cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    .oc-roll::after {
-        content: attr(data-label);
-        position: absolute;
-        inset: 100% 0 auto;
-    }
-    @media (hover: hover) and (pointer: fine) {
-        a:hover > .oc-roll > span,
-        a:hover > .oc-roll::after {
-            translate: 0 -100%;
-        }
-    }
+  }
 }
 
 /* The Index list, after the method of the Team Roster item (ADR 0028). The rows use the Open card, so only the
    letter roll of the name and the entry of the rows live here. A child selector of the open state cannot be a Tailwind class cleanly. */
 @layer components {
-    .ix-name {
-        min-width: 0;
-        font-size: var(--text-lead);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.25;
-    }
-    /* A word never breaks inside, so a long name wraps only at a space. */
-    .ix-word {
-        display: inline-block;
-        white-space: nowrap;
-    }
-    /* Each letter is a one-line window. The muted letter sits in it, and an ink copy waits one line under it. */
-    .ix-letter {
-        display: inline-block;
-        overflow: hidden;
-        vertical-align: top;
-    }
-    .ix-glyph {
-        position: relative;
-        display: inline-block;
-        color: var(--color-ink-2);
-        transition: translate 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-        transition-delay: calc(var(--ix-i) * 18ms);
-    }
-    /* The empty alt text keeps the copy out of the name a reader hears, so the name reads once.
+  .ix-name {
+    min-width: 0;
+    font-size: var(--text-lead);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  /* A word never breaks inside, so a long name wraps only at a space. */
+  .ix-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  /* Each letter is a one-line window. The muted letter sits in it, and an ink copy waits one line under it. */
+  .ix-letter {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+  }
+  .ix-glyph {
+    position: relative;
+    display: inline-block;
+    color: var(--color-ink-2);
+    transition: translate 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    transition-delay: calc(var(--ix-i) * 18ms);
+  }
+  /* The empty alt text keeps the copy out of the name a reader hears, so the name reads once.
        The first value is for a browser with no alt text syntax. */
-    .ix-glyph::after {
-        content: attr(data-ch);
-        content: attr(data-ch) / "";
-        position: absolute;
-        top: 100%;
-        left: 0;
-        color: var(--color-ink);
+  .ix-glyph::after {
+    content: attr(data-ch);
+    content: attr(data-ch) / "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    color: var(--color-ink);
+  }
+  /* An open row slides each letter up one line, a letter after the one before, so the ink name rolls in from the left. */
+  .open-card[data-open="true"] .ix-glyph {
+    translate: 0 -100%;
+  }
+  /* The rows of a filter enter in a stagger with a short rise, 35ms apart. */
+  .ix-cells {
+    animation: ix-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--ix-k) * 35ms);
+  }
+  /* From the desktop tier the row in the stage rolls its name too, so the ledger shows which row the stage holds. */
+  @variant desktop {
+    .ix-cells[data-staged] .ix-glyph {
+      translate: 0 -100%;
     }
-    /* An open row slides each letter up one line, a letter after the one before, so the ink name rolls in from the left. */
-    .open-card[data-open="true"] .ix-glyph {
-        translate: 0 -100%;
-    }
-    /* The rows of a filter enter in a stagger with a short rise, 35ms apart. */
-    .ix-cells {
-        animation: ix-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-        animation-delay: calc(var(--ix-k) * 35ms);
-    }
-    /* From the desktop tier the row in the stage rolls its name too, so the ledger shows which row the stage holds. */
-    @variant desktop {
-        .ix-cells[data-staged] .ix-glyph {
-            translate: 0 -100%;
-        }
-    }
-    /* The stage swap of the item: the new layer wipes in from the top while its hero zooms down to size, and the layer
+  }
+  /* The stage swap of the item: the new layer wipes in from the top while its hero zooms down to size, and the layer
        under it sinks a little. Each layer clips its own hero, so the zoom stays inside the frame of the stage. */
-    .ix-layer {
-        overflow: hidden;
-        border-radius: var(--radius-hero);
+  .ix-layer {
+    overflow: hidden;
+    border-radius: var(--radius-hero);
+  }
+  .ix-layer[data-in] {
+    animation: ix-wipe 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .ix-layer[data-in] > * {
+    animation: ix-zoom 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .ix-layer[data-under] > * {
+    animation: ix-sink 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  /* Reduced motion drops the stagger delays too, so the roll and the rows reach the end state at once. */
+  @media (prefers-reduced-motion: reduce) {
+    .ix-glyph {
+      transition-delay: 0s;
     }
-    .ix-layer[data-in] {
-        animation: ix-wipe 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .ix-layer[data-in] > * {
-        animation: ix-zoom 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
+    .ix-cells,
+    .ix-layer[data-in],
+    .ix-layer[data-in] > *,
     .ix-layer[data-under] > * {
-        animation: ix-sink 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: none;
     }
-    /* Reduced motion drops the stagger delays too, so the roll and the rows reach the end state at once. */
-    @media (prefers-reduced-motion: reduce) {
-        .ix-glyph {
-            transition-delay: 0s;
-        }
-        .ix-cells,
-        .ix-layer[data-in],
-        .ix-layer[data-in] > *,
-        .ix-layer[data-under] > * {
-            animation: none;
-        }
-    }
+  }
 }
 @keyframes ix-wipe {
-    from {
-        clip-path: inset(0 0 100% 0);
-    }
-    to {
-        clip-path: inset(0);
-    }
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
 }
 @keyframes ix-zoom {
-    from {
-        scale: 1.22;
-    }
+  from {
+    scale: 1.22;
+  }
 }
 @keyframes ix-sink {
-    to {
-        scale: 0.96;
-        translate: 0 6%;
-    }
+  to {
+    scale: 0.96;
+    translate: 0 6%;
+  }
 }
 @keyframes ix-in {
-    from {
-        opacity: 0;
-        translate: 0 10px;
-    }
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
 }
 
 /* The stage lines of the analyzer wait (recipes 28 and 15 of transitions.dev). A line shimmers while it holds, then the
@@ -679,146 +682,154 @@
    With motion off the still line and the sizer share one grid cell and both wrap, so a long line wraps in full and the
    box keeps the height of the longest line. */
 @layer components {
-    .t-think {
-        --think-swap: 150ms;
-        --think-distance: 8px;
-        --think-blur: 2px;
-        --think-shimmer: 2000ms;
-        --think-ease: ease-in-out;
-        position: relative;
-        display: block;
-        overflow-x: clip;
-        contain: inline-size;
-    }
-    .t-think-sizer {
-        display: block;
-        visibility: hidden;
-        white-space: nowrap;
-    }
+  .t-think {
+    --think-swap: 150ms;
+    --think-distance: 8px;
+    --think-blur: 2px;
+    --think-shimmer: 2000ms;
+    --think-ease: ease-in-out;
+    position: relative;
+    display: block;
+    overflow-x: clip;
+    contain: inline-size;
+  }
+  .t-think-sizer {
+    display: block;
+    visibility: hidden;
+    white-space: nowrap;
+  }
+  .t-think-text {
+    position: absolute;
+    inset: 0 0 auto 0;
+    display: block;
+    color: var(--color-on-dark-2);
+    white-space: nowrap;
+    transition:
+      transform var(--think-swap) var(--think-ease),
+      filter var(--think-swap) var(--think-ease),
+      opacity var(--think-swap) var(--think-ease);
+    will-change: transform, filter, opacity;
+  }
+  .t-think-text::before {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 40%,
+      var(--color-on-dark) 50%,
+      transparent 60%,
+      transparent 100%
+    );
+    background-size: 400% 100%;
+    background-repeat: no-repeat;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: t-think-shimmer var(--think-shimmer) linear infinite;
+  }
+  .t-think-text.is-exit {
+    transform: translateY(calc(var(--think-distance) * -1));
+    filter: blur(var(--think-blur));
+    opacity: 0;
+  }
+  .t-think-text.is-enter-start {
+    transition: none;
+    transform: translateY(var(--think-distance));
+    filter: blur(var(--think-blur));
+    opacity: 0;
+  }
+  .t-think-text.is-still {
+    position: static;
+    white-space: normal;
+    transition: none;
+    will-change: auto;
+  }
+  .t-think.is-still {
+    display: grid;
+  }
+  .t-think.is-still > * {
+    grid-area: 1 / 1;
+  }
+  .t-think.is-still > .t-think-sizer {
+    white-space: normal;
+  }
+  .t-think-text.is-still::before {
+    display: none;
+  }
+  /* A long line takes the width of its text, so the shimmer sweeps the whole line and not the box only. */
+  .t-think-text.is-scroll {
+    right: auto;
+    width: max-content;
+    animation: t-think-scroll var(--think-scroll-time) cubic-bezier(0.65, 0, 0.35, 1)
+      var(--think-scroll-delay) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
     .t-think-text {
-        position: absolute;
-        inset: 0 0 auto 0;
-        display: block;
-        color: var(--color-on-dark-2);
-        white-space: nowrap;
-        transition:
-            transform var(--think-swap) var(--think-ease),
-            filter var(--think-swap) var(--think-ease),
-            opacity var(--think-swap) var(--think-ease);
-        will-change: transform, filter, opacity;
+      transition: none;
+      transform: none;
+      filter: none;
     }
     .t-think-text::before {
-        content: attr(data-text);
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background-image: linear-gradient(90deg, transparent 0%, transparent 40%, var(--color-on-dark) 50%, transparent 60%, transparent 100%);
-        background-size: 400% 100%;
-        background-repeat: no-repeat;
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        -webkit-text-fill-color: transparent;
-        animation: t-think-shimmer var(--think-shimmer) linear infinite;
+      display: none;
     }
-    .t-think-text.is-exit {
-        transform: translateY(calc(var(--think-distance) * -1));
-        filter: blur(var(--think-blur));
-        opacity: 0;
-    }
-    .t-think-text.is-enter-start {
-        transition: none;
-        transform: translateY(var(--think-distance));
-        filter: blur(var(--think-blur));
-        opacity: 0;
-    }
-    .t-think-text.is-still {
-        position: static;
-        white-space: normal;
-        transition: none;
-        will-change: auto;
-    }
-    .t-think.is-still {
-        display: grid;
-    }
-    .t-think.is-still > * {
-        grid-area: 1 / 1;
-    }
-    .t-think.is-still > .t-think-sizer {
-        white-space: normal;
-    }
-    .t-think-text.is-still::before {
-        display: none;
-    }
-    /* A long line takes the width of its text, so the shimmer sweeps the whole line and not the box only. */
     .t-think-text.is-scroll {
-        right: auto;
-        width: max-content;
-        animation: t-think-scroll var(--think-scroll-time) cubic-bezier(0.65, 0, 0.35, 1) var(--think-scroll-delay) both;
+      animation: none;
     }
-    @media (prefers-reduced-motion: reduce) {
-        .t-think-text {
-            transition: none;
-            transform: none;
-            filter: none;
-        }
-        .t-think-text::before {
-            display: none;
-        }
-        .t-think-text.is-scroll {
-            animation: none;
-        }
-    }
+  }
 }
 @keyframes t-think-scroll {
-    to {
-        translate: var(--think-scroll) 0;
-    }
+  to {
+    translate: var(--think-scroll) 0;
+  }
 }
 @keyframes t-think-shimmer {
-    0% {
-        background-position: 100% 0;
-    }
-    100% {
-        background-position: 0% 0;
-    }
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
 }
 
 /* The Case of the analyzer reveal (recipe 18 of transitions.dev, texts reveal): each line rises in through a small blur,
    the second line one stagger after the first, when the part adds is-shown. The reveal has no exit, so the recipe's
    is-hiding state is not here. Under reduced motion, the lines show at rest at once. */
 @layer components {
-    .t-stagger {
-        --stagger-dur: 500ms;
-        --stagger-distance: 12px;
-        --stagger-stagger: 40ms;
-        --stagger-blur: 3px;
-        --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
-    }
+  .t-stagger {
+    --stagger-dur: 500ms;
+    --stagger-distance: 12px;
+    --stagger-stagger: 40ms;
+    --stagger-blur: 3px;
+    --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .t-stagger-line {
+    display: block;
+    opacity: 0;
+    transform: translateY(var(--stagger-distance));
+    filter: blur(var(--stagger-blur));
+    transition:
+      opacity var(--stagger-dur) var(--stagger-ease),
+      transform var(--stagger-dur) var(--stagger-ease),
+      filter var(--stagger-dur) var(--stagger-ease);
+    will-change: transform, opacity, filter;
+  }
+  .t-stagger-line--2 {
+    transition-delay: var(--stagger-stagger);
+  }
+  .t-stagger.is-shown .t-stagger-line {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
     .t-stagger-line {
-        display: block;
-        opacity: 0;
-        transform: translateY(var(--stagger-distance));
-        filter: blur(var(--stagger-blur));
-        transition:
-            opacity var(--stagger-dur) var(--stagger-ease),
-            transform var(--stagger-dur) var(--stagger-ease),
-            filter var(--stagger-dur) var(--stagger-ease);
-        will-change: transform, opacity, filter;
+      transition: none !important;
     }
-    .t-stagger-line--2 {
-        transition-delay: var(--stagger-stagger);
-    }
-    .t-stagger.is-shown .t-stagger-line {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .t-stagger-line {
-            transition: none !important;
-        }
-    }
+  }
 }
 
 /* The result cards of the analyzer reveal (recipe 14 of transitions.dev, skeleton reveal): the skeleton of the cards
@@ -827,64 +838,64 @@
    top. The skeleton never takes a tap. The one pulse lasts as long as the beat of the cards, 500 ms, so the skeleton
    fades out at full strength and not from the dim middle of a pulse. Under reduced motion, the cards show at rest at once. */
 @layer components {
-    .t-skel {
-        --pulse-dur: 500ms;
-        --pulse-count: 1;
-        --pulse-min: 0.5;
-        --reveal-dur: 400ms;
-        --reveal-blur: 2px;
-        --reveal-ease: ease-in-out;
-        position: relative;
-    }
-    .t-skel-skeleton {
-        position: absolute;
-        inset: 0 0 auto 0;
-        z-index: 1;
-        pointer-events: none;
-        opacity: 1;
-        filter: blur(0);
-        transition:
-            opacity var(--reveal-dur) var(--reveal-ease),
-            filter var(--reveal-dur) var(--reveal-ease);
-    }
+  .t-skel {
+    --pulse-dur: 500ms;
+    --pulse-count: 1;
+    --pulse-min: 0.5;
+    --reveal-dur: 400ms;
+    --reveal-blur: 2px;
+    --reveal-ease: ease-in-out;
+    position: relative;
+  }
+  .t-skel-skeleton {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 1;
+    filter: blur(0);
+    transition:
+      opacity var(--reveal-dur) var(--reveal-ease),
+      filter var(--reveal-dur) var(--reveal-ease);
+  }
+  .t-skel-content {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    filter: blur(var(--reveal-blur));
+    transition:
+      opacity var(--reveal-dur) var(--reveal-ease),
+      filter var(--reveal-dur) var(--reveal-ease);
+  }
+  .t-skel.is-revealed .t-skel-skeleton {
+    opacity: 0;
+    filter: blur(var(--reveal-blur));
+  }
+  .t-skel.is-revealed .t-skel-content {
+    opacity: 1;
+    filter: blur(0);
+  }
+  .t-skel-skeleton.is-pulsing > * {
+    animation: t-skel-pulse var(--pulse-dur) ease-in-out var(--pulse-count);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .t-skel-skeleton,
     .t-skel-content {
-        position: relative;
-        z-index: 2;
-        opacity: 0;
-        filter: blur(var(--reveal-blur));
-        transition:
-            opacity var(--reveal-dur) var(--reveal-ease),
-            filter var(--reveal-dur) var(--reveal-ease);
-    }
-    .t-skel.is-revealed .t-skel-skeleton {
-        opacity: 0;
-        filter: blur(var(--reveal-blur));
-    }
-    .t-skel.is-revealed .t-skel-content {
-        opacity: 1;
-        filter: blur(0);
+      transition: none !important;
     }
     .t-skel-skeleton.is-pulsing > * {
-        animation: t-skel-pulse var(--pulse-dur) ease-in-out var(--pulse-count);
+      animation: none !important;
     }
-    @media (prefers-reduced-motion: reduce) {
-        .t-skel-skeleton,
-        .t-skel-content {
-            transition: none !important;
-        }
-        .t-skel-skeleton.is-pulsing > * {
-            animation: none !important;
-        }
-    }
+  }
 }
 @keyframes t-skel-pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: var(--pulse-min);
-    }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: var(--pulse-min);
+  }
 }
 
 /* The ground of the egg hunt: the grid and the glow sit only behind the art of an egg card, not behind its text.
@@ -895,647 +906,662 @@
    z-index would do the same, but axe then misreads the stack and cannot read the contrast of the art. Each use sets its
    inset, so the box of the ground never reaches a line of text. */
 @layer components {
-    .egg-hero [data-hero-art="texture"] {
-        display: none;
-    }
-    .egg-art-ground {
-        position: absolute;
-        pointer-events: none;
-        mask-image: radial-gradient(closest-side, #000 45%, transparent);
-    }
+  .egg-hero [data-hero-art="texture"] {
+    display: none;
+  }
+  .egg-art-ground {
+    position: absolute;
+    pointer-events: none;
+    mask-image: radial-gradient(closest-side, #000 45%, transparent);
+  }
 }
 
 /* The motion of the egg hunt (ADR 0024): the find, the crack, the claim sheet, and the hero card at the end of each path.
    Each part takes the rise curve of the look. Keyframes with many steps cannot be Tailwind classes cleanly, so they live here. */
 @layer components {
-    /* The blur of the page under a find. */
-    .egg-scrim {
-        backdrop-filter: blur(6px);
-        animation: egg-fade 0.35s ease-out both;
-    }
-    /* The red ring that ripples out from the spot of the find, twice. */
-    .egg-ripple {
-        position: fixed;
-        width: 28px;
-        height: 28px;
-        margin: -14px 0 0 -14px;
-        border-radius: var(--radius-pill);
-        border: 2px solid var(--color-accent-text);
-        pointer-events: none;
-        animation: egg-ripple 1s var(--ease-rise) both;
-    }
-    .egg-ripple-late {
-        animation-delay: 0.18s;
-    }
-    /* A hero card rises in, and its four brackets close in from the corners. */
-    .egg-hero-in {
-        animation: egg-hero-in 0.6s var(--ease-rise) both;
-        box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
-    }
-    .egg-hero-in-late {
-        animation-delay: 0.4s;
-    }
-    .egg-hero-in [data-hero-art="bracket"] {
-        animation: 0.6s var(--ease-rise) 0.3s both;
-    }
-    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(1) {
-        animation-name: egg-bracket-tl;
-    }
-    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(2) {
-        animation-name: egg-bracket-tr;
-    }
-    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(3) {
-        animation-name: egg-bracket-bl;
-    }
-    .egg-hero-in [data-hero-art="bracket"]:nth-of-type(4) {
-        animation-name: egg-bracket-br;
-    }
-    /* The egg bobs, and it wobbles once each bob. It turns on its base, as an egg on a table does. */
-    .egg-bob {
-        transform-origin: 50% 92%;
-        animation:
-            egg-bob 3.2s ease-in-out infinite,
-            egg-wobble 3.2s ease-in-out 1.2s infinite;
-    }
-    /* The red glow behind the egg breathes with the bob. */
-    .egg-halo {
-        position: absolute;
-        inset: -20px -30px;
-        border-radius: var(--radius-pill);
-        background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
-        animation: egg-halo 3.2s ease-in-out infinite;
-    }
-    /* The crack of the egg, from the tap to the letter at 1.3 s (CRACK_MS of find-card.tsx). The tap squashes the egg
+  /* The blur of the page under a find. */
+  .egg-scrim {
+    backdrop-filter: blur(6px);
+    animation: egg-fade 0.35s ease-out both;
+  }
+  /* The red ring that ripples out from the spot of the find, twice. */
+  .egg-ripple {
+    position: fixed;
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    border-radius: var(--radius-pill);
+    border: 2px solid var(--color-accent-text);
+    pointer-events: none;
+    animation: egg-ripple 1s var(--ease-rise) both;
+  }
+  .egg-ripple-late {
+    animation-delay: 0.18s;
+  }
+  /* A hero card rises in, and its four brackets close in from the corners. */
+  .egg-hero-in {
+    animation: egg-hero-in 0.6s var(--ease-rise) both;
+    box-shadow: 0 24px 80px rgb(0 0 0 / 0.6);
+  }
+  .egg-hero-in-late {
+    animation-delay: 0.4s;
+  }
+  .egg-hero-in [data-hero-art="bracket"] {
+    animation: 0.6s var(--ease-rise) 0.3s both;
+  }
+  .egg-hero-in [data-hero-art="bracket"]:nth-of-type(1) {
+    animation-name: egg-bracket-tl;
+  }
+  .egg-hero-in [data-hero-art="bracket"]:nth-of-type(2) {
+    animation-name: egg-bracket-tr;
+  }
+  .egg-hero-in [data-hero-art="bracket"]:nth-of-type(3) {
+    animation-name: egg-bracket-bl;
+  }
+  .egg-hero-in [data-hero-art="bracket"]:nth-of-type(4) {
+    animation-name: egg-bracket-br;
+  }
+  /* The egg bobs, and it wobbles once each bob. It turns on its base, as an egg on a table does. */
+  .egg-bob {
+    transform-origin: 50% 92%;
+    animation:
+      egg-bob 3.2s ease-in-out infinite,
+      egg-wobble 3.2s ease-in-out 1.2s infinite;
+  }
+  /* The red glow behind the egg breathes with the bob. */
+  .egg-halo {
+    position: absolute;
+    inset: -20px -30px;
+    border-radius: var(--radius-pill);
+    background: radial-gradient(closest-side, var(--color-accent-glow), transparent);
+    animation: egg-halo 3.2s ease-in-out infinite;
+  }
+  /* The crack of the egg, from the tap to the letter at 1.3 s (CRACK_MS of find-card.tsx). The tap squashes the egg
        for 0.15 s, then it shakes harder while the lines draw and the light grows. At 0.56 s the shell bursts. */
-    .egg-shake {
-        transform-origin: 50% 92%;
-        /* The shake fills only forwards, so it leaves the squash alone until its own start. */
-        animation:
-            egg-squash 0.15s cubic-bezier(0.3, 0, 0.2, 1) both,
-            egg-tremble 0.41s linear 0.15s forwards;
-    }
-    /* Each half of the egg turns on its own middle as it flies off. A half stays hidden until the burst, and the whole
+  .egg-shake {
+    transform-origin: 50% 92%;
+    /* The shake fills only forwards, so it leaves the squash alone until its own start. */
+    animation:
+      egg-squash 0.15s cubic-bezier(0.3, 0, 0.2, 1) both,
+      egg-tremble 0.41s linear 0.15s forwards;
+  }
+  /* Each half of the egg turns on its own middle as it flies off. A half stays hidden until the burst, and the whole
        art shows in its place, so no seam of the two clips shows before the crack lines. */
-    .egg-half {
-        transform-box: fill-box;
-        transform-origin: 50% 50%;
-        visibility: hidden;
-    }
-    .egg-split-top {
-        animation:
-            egg-split-top 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both,
-            egg-half-in 0s linear 0.56s forwards;
-    }
-    .egg-split-bottom {
-        animation:
-            egg-split-bottom 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both,
-            egg-half-in 0s linear 0.56s forwards;
-    }
-    /* The whole art hides at the burst, as the halves show, so the halves fly apart alone. */
-    .egg-whole-out {
-        animation: egg-whole-out 0s linear 0.56s forwards;
-    }
-    /* Each glowing crack line draws out from the tap point over its own length, then fades as the shell bursts.
+  .egg-half {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    visibility: hidden;
+  }
+  .egg-split-top {
+    animation:
+      egg-split-top 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both,
+      egg-half-in 0s linear 0.56s forwards;
+  }
+  .egg-split-bottom {
+    animation:
+      egg-split-bottom 0.6s cubic-bezier(0.2, 0.9, 0.25, 1) 0.56s both,
+      egg-half-in 0s linear 0.56s forwards;
+  }
+  /* The whole art hides at the burst, as the halves show, so the halves fly apart alone. */
+  .egg-whole-out {
+    animation: egg-whole-out 0s linear 0.56s forwards;
+  }
+  /* Each glowing crack line draws out from the tap point over its own length, then fades as the shell bursts.
        The part sets the length in --egg-line, the start after the squash in --egg-delay, and the time of the draw in --egg-draw. */
-    .egg-crack {
-        stroke-dasharray: var(--egg-line);
-        stroke-dashoffset: var(--egg-line);
-        filter: drop-shadow(0 0 2px var(--color-accent-text)) drop-shadow(0 0 7px var(--color-accent));
-        animation:
-            egg-draw var(--egg-draw) cubic-bezier(0.4, 0, 0.6, 1) var(--egg-delay) both,
-            egg-fade-out 0.15s ease-out 0.56s forwards;
-    }
-    /* The light inside the egg grows from the tap point while the lines draw, then fades as the shell bursts.
+  .egg-crack {
+    stroke-dasharray: var(--egg-line);
+    stroke-dashoffset: var(--egg-line);
+    filter: drop-shadow(0 0 2px var(--color-accent-text)) drop-shadow(0 0 7px var(--color-accent));
+    animation:
+      egg-draw var(--egg-draw) cubic-bezier(0.4, 0, 0.6, 1) var(--egg-delay) both,
+      egg-fade-out 0.15s ease-out 0.56s forwards;
+  }
+  /* The light inside the egg grows from the tap point while the lines draw, then fades as the shell bursts.
        The part sets the start after the squash in --egg-delay, and the light is full at the burst. */
-    .egg-glow {
-        transform-box: fill-box;
-        transform-origin: 50% 50%;
-        animation:
-            egg-glow calc(0.56s - var(--egg-delay)) ease-in var(--egg-delay) both,
-            egg-fade-out 0.3s ease-out 0.56s forwards;
-    }
-    /* Each shard flies out from the tap point and turns as the shell bursts. The part sets --egg-dx, --egg-dy, and --egg-turn.
+  .egg-glow {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation:
+      egg-glow calc(0.56s - var(--egg-delay)) ease-in var(--egg-delay) both,
+      egg-fade-out 0.3s ease-out 0.56s forwards;
+  }
+  /* Each shard flies out from the tap point and turns as the shell bursts. The part sets --egg-dx, --egg-dy, and --egg-turn.
        A shard stays hidden until the burst, so the squash and the lines show first. Its keyframes show it at the burst. */
-    .egg-shard {
-        transform-box: fill-box;
-        transform-origin: 50% 50%;
-        opacity: 0;
-        animation: egg-shard 0.7s cubic-bezier(0.15, 0.8, 0.3, 1) 0.56s forwards;
-    }
-    /* The flash that rings out from the tap point as the shell bursts. The part sets its left and top to the tap point. */
-    .egg-flash {
-        position: absolute;
-        width: 320px;
-        height: 320px;
-        margin: -160px 0 0 -160px;
-        border-radius: var(--radius-pill);
-        background: radial-gradient(closest-side, var(--color-on-dark), var(--color-accent-glow) 40%, transparent);
-        pointer-events: none;
-        animation: egg-flash 0.6s ease-out 0.56s both;
-    }
-    /* The letter tile grows out of the tap point from a blur. The part sets its transform-origin to the tap point.
+  .egg-shard {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    opacity: 0;
+    animation: egg-shard 0.7s cubic-bezier(0.15, 0.8, 0.3, 1) 0.56s forwards;
+  }
+  /* The flash that rings out from the tap point as the shell bursts. The part sets its left and top to the tap point. */
+  .egg-flash {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    margin: -160px 0 0 -160px;
+    border-radius: var(--radius-pill);
+    background: radial-gradient(
+      closest-side,
+      var(--color-on-dark),
+      var(--color-accent-glow) 40%,
+      transparent
+    );
+    pointer-events: none;
+    animation: egg-flash 0.6s ease-out 0.56s both;
+  }
+  /* The letter tile grows out of the tap point from a blur. The part sets its transform-origin to the tap point.
        The curve overshoots, so the tile lands with a bounce. */
-    .egg-tile-rise {
-        animation: egg-tile-rise 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) 0.64s both;
-    }
-    /* The red burst behind a tile as it lands. */
-    .egg-burst {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 120px;
-        height: 120px;
-        margin: -60px 0 0 -60px;
-        border-radius: var(--radius-pill);
-        background: radial-gradient(closest-side, var(--color-accent-text), var(--color-accent-glow) 45%, transparent);
-        pointer-events: none;
-        animation: egg-burst 0.9s var(--ease-rise) 0.5s both;
-    }
-    .egg-burst-land {
-        animation-delay: 0.6s;
-    }
-    /* The claim sheet rises from the bottom edge. */
-    .egg-sheet-rise {
-        animation: egg-sheet-rise 0.5s var(--ease-rise) both;
-    }
-    /* The steps of the claim sheet rise in a stagger. */
-    .egg-up {
-        animation: egg-up 0.5s var(--ease-rise) both;
-    }
-    .egg-up-1 {
-        animation-delay: 0.08s;
-    }
-    .egg-up-2 {
-        animation-delay: 0.16s;
-    }
-    .egg-up-3 {
-        animation-delay: 0.24s;
-    }
-    .egg-up-4 {
-        animation-delay: 0.32s;
-    }
-    /* The picked team and a tile pop in. The curve overshoots a little. */
-    .egg-pop {
-        animation: egg-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-    }
-    /* The ghost tile pulses where the letter lands. */
-    .egg-ghost {
-        animation: egg-ghost 1.6s ease-in-out infinite;
-    }
-    /* The red tile of the picked egg word beats. */
-    .egg-beat {
-        animation:
-            egg-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both,
-            egg-beat 1.6s ease-in-out 0.5s infinite;
-    }
-    /* The red tile drops into its slot on the hero card of a claim. */
-    .egg-land {
-        animation: egg-land 0.75s cubic-bezier(0.2, 1.4, 0.4, 1) 0.45s both;
-    }
-    /* The count of the egg word ticks up. */
-    .egg-tick {
-        animation: egg-tick 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) 0.7s both;
-    }
-    /* The BLOCKED stamp lands on the tile of a block. */
-    .egg-stamp {
-        transform: rotate(-12deg);
-        animation: egg-stamp 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 0.6s both;
-    }
-    .egg-fade-in {
-        animation: egg-fade 0.4s ease-out both;
-    }
-    .egg-fade-in-late {
-        animation-delay: 0.9s;
-    }
-    /* A hole of the perforation of the claim ticket. It pops as the tear passes it, from the top down. */
-    .egg-hole {
-        transition:
-            transform 0.12s ease-out,
-            background-color 0.12s ease-out;
-    }
-    .egg-hole[data-popped="true"] {
-        transform: scale(2.2);
-        background-color: var(--color-page);
-        box-shadow: 0 0 0 1px var(--color-accent-text);
-    }
-    /* The stub of a ready ticket. Its arrow nudges to the right, so the stub reads as a thing to pull. */
-    .egg-stub-ready .egg-stub-arrow {
-        animation: egg-nudge 1.6s ease-in-out infinite;
-    }
-    /* A stub that a drag lets go of before a full tear springs back onto the ticket. */
-    .egg-stub-spring {
-        transition: transform 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
-    }
-    /* A tap pulls the stub to its full tilt before it leaves. */
-    .egg-stub-pull {
-        transition: transform 0.35s ease-in;
-    }
-    /* The torn stub flutters off to the top right and fades. */
-    .egg-stub-flutter {
-        pointer-events: none;
-        animation: egg-flutter 0.9s cubic-bezier(0.3, 0.1, 0.6, 1) both;
-    }
-    /* A stub that comes back after a TAKEN or an error springs onto the ticket. */
-    .egg-stub-heal {
-        animation: egg-heal 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
-    }
-    /* The light sweep across the ticket while the API answers. */
-    .egg-ticket-sweep {
-        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-accent-text) 18%, transparent), transparent);
-        background-size: 200% 100%;
-        animation: egg-sweep 0.9s linear infinite;
-    }
-    /* The stamp of the claim ticket sits at a tilt, with motion or without. */
-    .egg-ticket-stamp {
-        transform: rotate(-12deg);
-    }
-    .egg-ticket-stamp-in {
-        animation: egg-stamp 0.4s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-    }
+  .egg-tile-rise {
+    animation: egg-tile-rise 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) 0.64s both;
+  }
+  /* The red burst behind a tile as it lands. */
+  .egg-burst {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0 -60px;
+    border-radius: var(--radius-pill);
+    background: radial-gradient(
+      closest-side,
+      var(--color-accent-text),
+      var(--color-accent-glow) 45%,
+      transparent
+    );
+    pointer-events: none;
+    animation: egg-burst 0.9s var(--ease-rise) 0.5s both;
+  }
+  .egg-burst-land {
+    animation-delay: 0.6s;
+  }
+  /* The claim sheet rises from the bottom edge. */
+  .egg-sheet-rise {
+    animation: egg-sheet-rise 0.5s var(--ease-rise) both;
+  }
+  /* The steps of the claim sheet rise in a stagger. */
+  .egg-up {
+    animation: egg-up 0.5s var(--ease-rise) both;
+  }
+  .egg-up-1 {
+    animation-delay: 0.08s;
+  }
+  .egg-up-2 {
+    animation-delay: 0.16s;
+  }
+  .egg-up-3 {
+    animation-delay: 0.24s;
+  }
+  .egg-up-4 {
+    animation-delay: 0.32s;
+  }
+  /* The picked team and a tile pop in. The curve overshoots a little. */
+  .egg-pop {
+    animation: egg-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  }
+  /* The ghost tile pulses where the letter lands. */
+  .egg-ghost {
+    animation: egg-ghost 1.6s ease-in-out infinite;
+  }
+  /* The red tile of the picked egg word beats. */
+  .egg-beat {
+    animation:
+      egg-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both,
+      egg-beat 1.6s ease-in-out 0.5s infinite;
+  }
+  /* The red tile drops into its slot on the hero card of a claim. */
+  .egg-land {
+    animation: egg-land 0.75s cubic-bezier(0.2, 1.4, 0.4, 1) 0.45s both;
+  }
+  /* The count of the egg word ticks up. */
+  .egg-tick {
+    animation: egg-tick 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) 0.7s both;
+  }
+  /* The BLOCKED stamp lands on the tile of a block. */
+  .egg-stamp {
+    transform: rotate(-12deg);
+    animation: egg-stamp 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 0.6s both;
+  }
+  .egg-fade-in {
+    animation: egg-fade 0.4s ease-out both;
+  }
+  .egg-fade-in-late {
+    animation-delay: 0.9s;
+  }
+  /* A hole of the perforation of the claim ticket. It pops as the tear passes it, from the top down. */
+  .egg-hole {
+    transition:
+      transform 0.12s ease-out,
+      background-color 0.12s ease-out;
+  }
+  .egg-hole[data-popped="true"] {
+    transform: scale(2.2);
+    background-color: var(--color-page);
+    box-shadow: 0 0 0 1px var(--color-accent-text);
+  }
+  /* The stub of a ready ticket. Its arrow nudges to the right, so the stub reads as a thing to pull. */
+  .egg-stub-ready .egg-stub-arrow {
+    animation: egg-nudge 1.6s ease-in-out infinite;
+  }
+  /* A stub that a drag lets go of before a full tear springs back onto the ticket. */
+  .egg-stub-spring {
+    transition: transform 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+  /* A tap pulls the stub to its full tilt before it leaves. */
+  .egg-stub-pull {
+    transition: transform 0.35s ease-in;
+  }
+  /* The torn stub flutters off to the top right and fades. */
+  .egg-stub-flutter {
+    pointer-events: none;
+    animation: egg-flutter 0.9s cubic-bezier(0.3, 0.1, 0.6, 1) both;
+  }
+  /* A stub that comes back after a TAKEN or an error springs onto the ticket. */
+  .egg-stub-heal {
+    animation: egg-heal 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+  /* The light sweep across the ticket while the API answers. */
+  .egg-ticket-sweep {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-accent-text) 18%, transparent),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: egg-sweep 0.9s linear infinite;
+  }
+  /* The stamp of the claim ticket sits at a tilt, with motion or without. */
+  .egg-ticket-stamp {
+    transform: rotate(-12deg);
+  }
+  .egg-ticket-stamp-in {
+    animation: egg-stamp 0.4s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  }
 }
 @keyframes egg-nudge {
-    0%,
-    60%,
-    100% {
-        transform: none;
-    }
-    30% {
-        transform: translateX(6px);
-    }
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateX(6px);
+  }
 }
 @keyframes egg-flutter {
-    0% {
-        transform: rotate(16deg) translate(20px, 6px);
-    }
-    30% {
-        transform: rotate(28deg) translate(70px, -30px);
-    }
-    100% {
-        transform: rotate(95deg) translate(380px, -80px);
-        opacity: 0;
-    }
+  0% {
+    transform: rotate(16deg) translate(20px, 6px);
+  }
+  30% {
+    transform: rotate(28deg) translate(70px, -30px);
+  }
+  100% {
+    transform: rotate(95deg) translate(380px, -80px);
+    opacity: 0;
+  }
 }
 @keyframes egg-heal {
-    0% {
-        transform: rotate(60deg) translate(160px, -40px);
-        opacity: 0;
-    }
-    60% {
-        opacity: 1;
-    }
-    100% {
-        transform: none;
-        opacity: 1;
-    }
+  0% {
+    transform: rotate(60deg) translate(160px, -40px);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes egg-sweep {
-    from {
-        background-position: 200% 0;
-    }
-    to {
-        background-position: -200% 0;
-    }
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
 }
 @keyframes egg-fade {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes egg-fade-out {
-    to {
-        opacity: 0;
-    }
+  to {
+    opacity: 0;
+  }
 }
 @keyframes egg-ripple {
-    from {
-        transform: scale(0.4);
-        opacity: 1;
-    }
-    to {
-        transform: scale(5);
-        opacity: 0;
-    }
+  from {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  to {
+    transform: scale(5);
+    opacity: 0;
+  }
 }
 @keyframes egg-hero-in {
-    from {
-        transform: translateY(24px) scale(0.92);
-        opacity: 0;
-    }
-    to {
-        transform: none;
-        opacity: 1;
-    }
+  from {
+    transform: translateY(24px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes egg-bracket-tl {
-    from {
-        transform: translate(-10px, -10px);
-        opacity: 0;
-    }
+  from {
+    transform: translate(-10px, -10px);
+    opacity: 0;
+  }
 }
 @keyframes egg-bracket-tr {
-    from {
-        transform: translate(10px, -10px);
-        opacity: 0;
-    }
+  from {
+    transform: translate(10px, -10px);
+    opacity: 0;
+  }
 }
 @keyframes egg-bracket-bl {
-    from {
-        transform: translate(-10px, 10px);
-        opacity: 0;
-    }
+  from {
+    transform: translate(-10px, 10px);
+    opacity: 0;
+  }
 }
 @keyframes egg-bracket-br {
-    from {
-        transform: translate(10px, 10px);
-        opacity: 0;
-    }
+  from {
+    transform: translate(10px, 10px);
+    opacity: 0;
+  }
 }
 @keyframes egg-bob {
-    0%,
-    100% {
-        translate: 0 0;
-    }
-    50% {
-        translate: 0 -6px;
-    }
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
 }
 @keyframes egg-wobble {
-    0%,
-    72%,
-    100% {
-        rotate: 0deg;
-    }
-    77% {
-        rotate: -6deg;
-    }
-    82% {
-        rotate: 5deg;
-    }
-    87% {
-        rotate: -3deg;
-    }
-    92% {
-        rotate: 1deg;
-    }
+  0%,
+  72%,
+  100% {
+    rotate: 0deg;
+  }
+  77% {
+    rotate: -6deg;
+  }
+  82% {
+    rotate: 5deg;
+  }
+  87% {
+    rotate: -3deg;
+  }
+  92% {
+    rotate: 1deg;
+  }
 }
 @keyframes egg-halo {
-    0%,
-    100% {
-        opacity: 0.45;
-        transform: scale(0.92);
-    }
-    50% {
-        opacity: 0.9;
-        transform: scale(1.06);
-    }
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.06);
+  }
 }
 /* The squash holds from 0.03 s to 0.11 s, so a frame at 0.05 s or 0.1 s shows it. A squash that only peaks passes
    back through scale 1 by 0.1 s, and the eye and a frame both miss it. It springs back in the last 0.04 s. */
 @keyframes egg-squash {
-    0%,
-    100% {
-        transform: none;
-    }
-    20%,
-    72% {
-        transform: scale(1.07, 0.89);
-    }
-    88% {
-        transform: scale(0.98, 1.03);
-    }
+  0%,
+  100% {
+    transform: none;
+  }
+  20%,
+  72% {
+    transform: scale(1.07, 0.89);
+  }
+  88% {
+    transform: scale(0.98, 1.03);
+  }
 }
 @keyframes egg-tremble {
-    0% {
-        transform: none;
-    }
-    15% {
-        transform: translate(-1px, 0) rotate(-1deg);
-    }
-    30% {
-        transform: translate(2px, 0) rotate(1.5deg);
-    }
-    45% {
-        transform: translate(-2px, 1px) rotate(-2deg);
-    }
-    60% {
-        transform: translate(3px, 0) rotate(2.5deg);
-    }
-    75% {
-        transform: translate(-3px, 0) rotate(-3deg);
-    }
-    90% {
-        transform: scale(1.04);
-    }
-    100% {
-        transform: scale(1.06);
-    }
+  0% {
+    transform: none;
+  }
+  15% {
+    transform: translate(-1px, 0) rotate(-1deg);
+  }
+  30% {
+    transform: translate(2px, 0) rotate(1.5deg);
+  }
+  45% {
+    transform: translate(-2px, 1px) rotate(-2deg);
+  }
+  60% {
+    transform: translate(3px, 0) rotate(2.5deg);
+  }
+  75% {
+    transform: translate(-3px, 0) rotate(-3deg);
+  }
+  90% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1.06);
+  }
 }
 @keyframes egg-split-top {
-    to {
-        transform: translate(-30px, -120px) rotate(-32deg);
-        opacity: 0;
-    }
+  to {
+    transform: translate(-30px, -120px) rotate(-32deg);
+    opacity: 0;
+  }
 }
 @keyframes egg-split-bottom {
-    to {
-        transform: translate(22px, 100px) rotate(18deg);
-        opacity: 0;
-    }
+  to {
+    transform: translate(22px, 100px) rotate(18deg);
+    opacity: 0;
+  }
 }
 @keyframes egg-whole-out {
-    to {
-        visibility: hidden;
-    }
+  to {
+    visibility: hidden;
+  }
 }
 @keyframes egg-half-in {
-    to {
-        visibility: visible;
-    }
+  to {
+    visibility: visible;
+  }
 }
 @keyframes egg-glow {
-    from {
-        opacity: 0;
-        transform: scale(0.2);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes egg-shard {
-    from {
-        opacity: 1;
-    }
-    to {
-        transform: translate(var(--egg-dx), var(--egg-dy)) rotate(var(--egg-turn));
-        opacity: 0;
-    }
+  from {
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--egg-dx), var(--egg-dy)) rotate(var(--egg-turn));
+    opacity: 0;
+  }
 }
 @keyframes egg-flash {
-    0% {
-        opacity: 0;
-        transform: scale(0.1);
-    }
-    25% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1.4);
-    }
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
 }
 @keyframes egg-draw {
-    to {
-        stroke-dashoffset: 0;
-    }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 @keyframes egg-tile-rise {
-    0% {
-        transform: scale(0.15);
-        opacity: 0;
-        filter: blur(12px);
-    }
-    50% {
-        opacity: 1;
-        filter: blur(0);
-    }
-    100% {
-        transform: none;
-        opacity: 1;
-        filter: none;
-    }
+  0% {
+    transform: scale(0.15);
+    opacity: 0;
+    filter: blur(12px);
+  }
+  50% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
 }
 @keyframes egg-burst {
-    from {
-        transform: scale(0.2);
-        opacity: 1;
-    }
-    to {
-        transform: scale(2.6);
-        opacity: 0;
-    }
+  from {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
 }
 @keyframes egg-sheet-rise {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: none;
-    }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
 }
 @keyframes egg-up {
-    from {
-        transform: translateY(8px);
-        opacity: 0;
-    }
-    to {
-        transform: none;
-        opacity: 1;
-    }
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes egg-pop {
-    from {
-        transform: scale(0.3) rotate(-14deg);
-        opacity: 0;
-    }
-    to {
-        transform: none;
-        opacity: 1;
-    }
+  from {
+    transform: scale(0.3) rotate(-14deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes egg-ghost {
-    0%,
-    100% {
-        opacity: 0.45;
-    }
-    50% {
-        opacity: 1;
-    }
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 @keyframes egg-beat {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 var(--color-accent-glow);
-    }
-    50% {
-        box-shadow: 0 0 0 6px transparent;
-    }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--color-accent-glow);
+  }
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
 }
 @keyframes egg-land {
-    from {
-        transform: translateY(-90px) scale(1.7) rotate(-10deg);
-        opacity: 0;
-    }
-    to {
-        transform: none;
-        opacity: 1;
-    }
+  from {
+    transform: translateY(-90px) scale(1.7) rotate(-10deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes egg-tick {
-    from {
-        transform: translateY(14px);
-        opacity: 0;
-    }
-    to {
-        transform: none;
-        opacity: 1;
-    }
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 @keyframes egg-stamp {
-    from {
-        transform: scale(2.4) rotate(-12deg);
-        opacity: 0;
-    }
-    to {
-        transform: rotate(-12deg);
-        opacity: 1;
-    }
+  from {
+    transform: scale(2.4) rotate(-12deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-12deg);
+    opacity: 1;
+  }
 }
 /* Reduced motion shows each part of the hunt at rest, with no ring, no burst, and no pulse. The hunt also skips the crack. */
 @media (prefers-reduced-motion: reduce) {
-    .egg-scrim,
-    .egg-hero-in,
-    .egg-hero-in [data-hero-art="bracket"],
-    .egg-bob,
-    .egg-shake,
-    .egg-halo,
-    .egg-tile-rise,
-    .egg-sheet-rise,
-    .egg-up,
-    .egg-pop,
-    .egg-ghost,
-    .egg-beat,
-    .egg-land,
-    .egg-tick,
-    .egg-stamp,
-    .egg-fade-in,
-    .egg-stub-ready .egg-stub-arrow,
-    .egg-stub-heal,
-    .egg-ticket-stamp-in {
-        animation: none !important;
-    }
-    .egg-hole,
-    .egg-stub-pull,
-    .egg-stub-spring {
-        transition: none;
-    }
-    .egg-ripple,
-    .egg-burst,
-    .egg-crack,
-    .egg-glow,
-    .egg-shard,
-    .egg-flash,
-    .egg-ticket-sweep {
-        display: none;
-    }
-    /* The torn stub leaves with no flutter. */
-    .egg-stub-flutter {
-        animation: none !important;
-        visibility: hidden;
-    }
+  .egg-scrim,
+  .egg-hero-in,
+  .egg-hero-in [data-hero-art="bracket"],
+  .egg-bob,
+  .egg-shake,
+  .egg-halo,
+  .egg-tile-rise,
+  .egg-sheet-rise,
+  .egg-up,
+  .egg-pop,
+  .egg-ghost,
+  .egg-beat,
+  .egg-land,
+  .egg-tick,
+  .egg-stamp,
+  .egg-fade-in,
+  .egg-stub-ready .egg-stub-arrow,
+  .egg-stub-heal,
+  .egg-ticket-stamp-in {
+    animation: none !important;
+  }
+  .egg-hole,
+  .egg-stub-pull,
+  .egg-stub-spring {
+    transition: none;
+  }
+  .egg-ripple,
+  .egg-burst,
+  .egg-crack,
+  .egg-glow,
+  .egg-shard,
+  .egg-flash,
+  .egg-ticket-sweep {
+    display: none;
+  }
+  /* The torn stub leaves with no flutter. */
+  .egg-stub-flutter {
+    animation: none !important;
+    visibility: hidden;
+  }
 }
 
 /* The egg word slider, after the method of the Stack Slider item (ADR 0028), turned to the side for a phone. The slider
@@ -1543,128 +1569,128 @@
    and every delay is 0, so each move is an instant change. The rest states of the slides and the letters live here,
    because a state per data attribute and a long linear() curve cannot be Tailwind classes cleanly. */
 @layer components {
-    /* A move washes the frame into the red accent of a won slide, and back to the dark ground of an open slide. */
-    .egg-wash {
-        transition:
-            background-color var(--es-dur) ease,
-            border-color var(--es-dur) ease;
-    }
-    /* A neighbor slide rests to its side, small, tilted, blurred, and faded out. Its visibility turns off only when its
+  /* A move washes the frame into the red accent of a won slide, and back to the dark ground of an open slide. */
+  .egg-wash {
+    transition:
+      background-color var(--es-dur) ease,
+      border-color var(--es-dur) ease;
+  }
+  /* A neighbor slide rests to its side, small, tilted, blurred, and faded out. Its visibility turns off only when its
        roll ends, so the roll stays in view, and a hidden slide never reaches axe or a tap. */
-    .egg-slide {
-        transition:
-            transform var(--es-dur) var(--es-spring),
-            filter calc(var(--es-dur) * 0.8) ease,
-            opacity calc(var(--es-dur) * 0.8) ease,
-            visibility 0s linear var(--es-dur);
-    }
-    .egg-slide[data-rel="-1"] {
-        transform: translateX(-70%) rotate(-4deg) scale(0.9);
-        filter: blur(6px);
-        opacity: 0;
-        visibility: hidden;
-    }
-    .egg-slide[data-rel="1"] {
-        transform: translateX(70%) rotate(4deg) scale(0.9);
-        filter: blur(6px);
-        opacity: 0;
-        visibility: hidden;
-    }
-    /* The shown slide turns visible at the start of its roll. */
-    .egg-slide[data-rel="0"] {
-        transform: none;
-        filter: none;
-        opacity: 1;
-        visibility: visible;
-        transition:
-            transform var(--es-dur) var(--es-spring),
-            filter calc(var(--es-dur) * 0.8) ease,
-            opacity calc(var(--es-dur) * 0.8) ease,
-            visibility 0s;
-    }
-    /* A slide that wraps from one side to the other moves behind the frame with no roll. */
-    .egg-slide[data-jump="true"] {
-        transition: none;
-    }
-    /* The giant word clips its letters, so a letter rolls in from under the word and out over it. The clip leaves room for
+  .egg-slide {
+    transition:
+      transform var(--es-dur) var(--es-spring),
+      filter calc(var(--es-dur) * 0.8) ease,
+      opacity calc(var(--es-dur) * 0.8) ease,
+      visibility 0s linear var(--es-dur);
+  }
+  .egg-slide[data-rel="-1"] {
+    transform: translateX(-70%) rotate(-4deg) scale(0.9);
+    filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+  }
+  .egg-slide[data-rel="1"] {
+    transform: translateX(70%) rotate(4deg) scale(0.9);
+    filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* The shown slide turns visible at the start of its roll. */
+  .egg-slide[data-rel="0"] {
+    transform: none;
+    filter: none;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      transform var(--es-dur) var(--es-spring),
+      filter calc(var(--es-dur) * 0.8) ease,
+      opacity calc(var(--es-dur) * 0.8) ease,
+      visibility 0s;
+  }
+  /* A slide that wraps from one side to the other moves behind the frame with no roll. */
+  .egg-slide[data-jump="true"] {
+    transition: none;
+  }
+  /* The giant word clips its letters, so a letter rolls in from under the word and out over it. The clip leaves room for
        the red glow of a won letter. */
-    .egg-word {
-        clip-path: inset(-1.5rem -2rem);
-    }
-    /* The letters of the shown word roll in one after another, a beat behind the roll of the slide. */
-    .egg-letter {
-        transition: transform var(--es-dur) var(--es-spring);
-    }
-    .egg-word[data-roll="in"] .egg-letter {
-        transform: none;
-        transition-delay: calc((var(--k) * 30ms + 80ms) * var(--es-on));
-    }
-    /* The letters of the word that leaves roll out fast on an ease-in, in the same order. */
-    .egg-word[data-roll="out-up"] .egg-letter,
-    .egg-word[data-roll="out-down"] .egg-letter {
-        transition-duration: calc(var(--es-dur) * 0.6);
-        transition-timing-function: cubic-bezier(0.55, 0, 0.75, 0.2);
-        transition-delay: calc(var(--k) * 20ms * var(--es-on));
-    }
-    .egg-word[data-roll="out-up"] .egg-letter,
-    .egg-word[data-roll="wait-up"] .egg-letter {
-        transform: translateY(-200%);
-    }
-    .egg-word[data-roll="out-down"] .egg-letter,
-    .egg-word[data-roll="wait-down"] .egg-letter {
-        transform: translateY(200%);
-    }
-    /* A waiting word moves to its side at once, out of sight. */
-    .egg-word[data-roll="wait-up"] .egg-letter,
-    .egg-word[data-roll="wait-down"] .egg-letter {
-        transition: none;
-    }
+  .egg-word {
+    clip-path: inset(-1.5rem -2rem);
+  }
+  /* The letters of the shown word roll in one after another, a beat behind the roll of the slide. */
+  .egg-letter {
+    transition: transform var(--es-dur) var(--es-spring);
+  }
+  .egg-word[data-roll="in"] .egg-letter {
+    transform: none;
+    transition-delay: calc((var(--k) * 30ms + 80ms) * var(--es-on));
+  }
+  /* The letters of the word that leaves roll out fast on an ease-in, in the same order. */
+  .egg-word[data-roll="out-up"] .egg-letter,
+  .egg-word[data-roll="out-down"] .egg-letter {
+    transition-duration: calc(var(--es-dur) * 0.6);
+    transition-timing-function: cubic-bezier(0.55, 0, 0.75, 0.2);
+    transition-delay: calc(var(--k) * 20ms * var(--es-on));
+  }
+  .egg-word[data-roll="out-up"] .egg-letter,
+  .egg-word[data-roll="wait-up"] .egg-letter {
+    transform: translateY(-200%);
+  }
+  .egg-word[data-roll="out-down"] .egg-letter,
+  .egg-word[data-roll="wait-down"] .egg-letter {
+    transform: translateY(200%);
+  }
+  /* A waiting word moves to its side at once, out of sight. */
+  .egg-word[data-roll="wait-up"] .egg-letter,
+  .egg-word[data-roll="wait-down"] .egg-letter {
+    transition: none;
+  }
 }
 /* Reduced motion makes each move of the slider instant from the first paint, before the slider reads the media query. */
 @media (prefers-reduced-motion: reduce) {
-    .egg-slider,
-    .egg-slider * {
-        transition-duration: 0s !important;
-        transition-delay: 0s !important;
-    }
+  .egg-slider,
+  .egg-slider * {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
 }
 
 /* The static HTML holds the start state of every reveal: no opacity and a small rise.
    With reduced motion or with no script, the content shows at rest from the first paint. */
 @media (prefers-reduced-motion: reduce), (scripting: none) {
-    [data-reveal] {
-        opacity: 1 !important;
-        transform: none !important;
-    }
-    /* A line that draws by its path length shows whole. The CSS value wins over the dash attributes of Framer Motion. */
-    [data-draw] {
-        stroke-dasharray: none !important;
-    }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* A line that draws by its path length shows whole. The CSS value wins over the dash attributes of Framer Motion. */
+  [data-draw] {
+    stroke-dasharray: none !important;
+  }
 }
 
 /* The safety net for a script that fails to load: the static HTML holds every reveal box at no opacity,
    so without this rule the page under the masthead stays blank. Reveal sets data-hydrated on mount. */
 html:not([data-hydrated]) [data-reveal] {
-    animation: reveal-safety 1ms var(--delay-safety) forwards;
+  animation: reveal-safety 1ms var(--delay-safety) forwards;
 }
 /* A line that draws shows whole until the script hydrates. Its chapter is a reveal, so the line stays hidden until the chapter shows. */
 html:not([data-hydrated]) [data-draw] {
-    stroke-dasharray: none;
+  stroke-dasharray: none;
 }
 @keyframes reveal-safety {
-    to {
-        opacity: 1;
-        transform: none;
-    }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Framer Motion reads the setting through useMotionOff. This rule covers every CSS transition, including shadcn's transition-all. */
 @media (prefers-reduced-motion: reduce) {
-    * {
-        transition-duration: 0ms !important;
-        animation-duration: 0ms !important;
-        scroll-behavior: auto !important;
-    }
+  * {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* The egg hunt reads a long press on each element with a stable id, so iOS opens no callout there. A link and an
@@ -1672,32 +1698,32 @@ html:not([data-hydrated]) [data-draw] {
    a manager can select a word of a blurb. The layout sets data-eggs on the root of a client that takes eggs, so
    another client keeps the callout everywhere. */
 [data-eggs] [data-stable-id] {
-    -webkit-touch-callout: none;
+  -webkit-touch-callout: none;
 }
 [data-eggs] [data-stable-id] a,
 [data-eggs] [data-stable-id] img,
 [data-eggs] a[data-stable-id],
 [data-eggs] img[data-stable-id] {
-    -webkit-touch-callout: default;
+  -webkit-touch-callout: default;
 }
 
 /* The lift of the ask box and the sheen of a card of the front door. They read a variable, so the .dark block can
    re-point them. A Tailwind shadow would inline its value and miss the dark theme. */
 @utility door-lift {
-    box-shadow: var(--door-lift);
+  box-shadow: var(--door-lift);
 }
 @utility door-sheen {
-    box-shadow: var(--door-sheen);
+  box-shadow: var(--door-sheen);
 }
 /* The glass of the ask box: the page blurs under it as the Answers scroll. A reader who asks for less transparency
    gets the solid card. */
 @utility door-glass {
-    background-color: var(--color-door-glass);
-    backdrop-filter: blur(20px) saturate(140%);
-    @media (prefers-reduced-transparency: reduce) {
-        background-color: var(--color-card);
-        backdrop-filter: none;
-    }
+  background-color: var(--color-door-glass);
+  backdrop-filter: blur(20px) saturate(140%);
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--color-card);
+    backdrop-filter: none;
+  }
 }
 /* The menu sheet of the front door runs on the ui-sdk Drawer, which puts its viewport and its dim in the top layer, over
    the band. These rules move the top edge of both to the bottom of the band, so the band and its X stay on top and the
@@ -1706,109 +1732,109 @@ html:not([data-hydrated]) [data-draw] {
    backdrop. The Drawer owns the slide, the spring, the dim, and the fade under reduced motion, so no rule here moves
    the sheet. */
 [data-slot="drawer-viewport"]:has(> [data-menu-sheet]) {
-    top: var(--spacing-band-height) !important;
-    overflow: clip !important;
+  top: var(--spacing-band-height) !important;
+  overflow: clip !important;
 }
 [data-slot="drawer-backdrop"][data-menu-sheet] {
-    top: var(--spacing-band-height);
+  top: var(--spacing-band-height);
 }
 /* The icon of the menu button turns into an X, as the icon swap of transitions-dev: the two icons share one cell and
    cross-fade with a blur of --blur-small and a scale from 0.5, on --duration-fast. Under reduced motion they only fade. */
 @utility menu-icon {
-    display: grid;
+  display: grid;
+  & > svg {
+    grid-area: 1 / 1;
+    transition:
+      opacity 250ms ease-in-out,
+      filter 250ms ease-in-out,
+      scale 250ms ease-in-out;
+  }
+  & > svg:last-child,
+  &[data-open] > svg:first-child {
+    opacity: 0;
+    filter: blur(2px);
+    scale: 0.5;
+  }
+  &[data-open] > svg:last-child {
+    opacity: 1;
+    filter: blur(0);
+    scale: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
     & > svg {
-        grid-area: 1 / 1;
-        transition:
-            opacity 250ms ease-in-out,
-            filter 250ms ease-in-out,
-            scale 250ms ease-in-out;
+      scale: 1 !important;
+      filter: none !important;
+      transition: opacity 150ms ease-out !important;
     }
-    & > svg:last-child,
-    &[data-open] > svg:first-child {
-        opacity: 0;
-        filter: blur(2px);
-        scale: 0.5;
-    }
-    &[data-open] > svg:last-child {
-        opacity: 1;
-        filter: blur(0);
-        scale: 1;
-    }
-    @media (prefers-reduced-motion: reduce) {
-        & > svg {
-            scale: 1 !important;
-            filter: none !important;
-            transition: opacity 150ms ease-out !important;
-        }
-    }
+  }
 }
 /* The weeks under "Past weeks" grow on the grid rows, as the accordion of transitions-dev, on --duration-fast and
    --ease-smooth-out. The chevron flips with them. Under reduced motion both step. */
 @utility menu-past {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 250ms cubic-bezier(0.22, 1, 0.36, 1);
-    &[data-open] {
-        grid-template-rows: 1fr;
-    }
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  &[data-open] {
+    grid-template-rows: 1fr;
+  }
 }
 @utility menu-chevron {
-    transition: scale 250ms cubic-bezier(0.22, 1, 0.36, 1);
-    &[data-open] {
-        scale: 1 -1;
-    }
+  transition: scale 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  &[data-open] {
+    scale: 1 -1;
+  }
 }
 /* The Send Halo: a ring and a glow of the accent that grow with --halo, from 0 for an empty field to 1 for a full one.
    It grows on --duration-fast and --ease-smooth-out. Under reduced motion it steps, with no grow. */
 @utility send-halo {
-    box-shadow:
-        0 0 0 calc(var(--halo, 0) * 5px) var(--color-door-halo-ring),
-        0 0 calc(var(--halo, 0) * 22px) var(--color-door-halo);
+  box-shadow:
+    0 0 0 calc(var(--halo, 0) * 5px) var(--color-door-halo-ring),
+    0 0 calc(var(--halo, 0) * 22px) var(--color-door-halo);
+  transition:
+    box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    var(--press);
+  /* The press of the look, here because this utility owns the transition of the button. */
+  &:active {
+    transform: scale(0.98);
+  }
+  @media (prefers-reduced-motion: reduce) {
     transition:
-        box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
-        background-color 150ms ease-out,
-        color 150ms ease-out,
-        var(--press);
-    /* The press of the look, here because this utility owns the transition of the button. */
+      background-color 150ms ease-out,
+      color 150ms ease-out;
     &:active {
-        transform: scale(0.98);
+      transform: none;
     }
-    @media (prefers-reduced-motion: reduce) {
-        transition:
-            background-color 150ms ease-out,
-            color 150ms ease-out;
-        &:active {
-            transform: none;
-        }
-    }
+  }
 }
 
 /* The free answer of the front door: each new word sharpens from a blur of 6 px as it streams (decision 07, AT-44),
    as the streaming text of transitions-dev on --duration-medium and --ease-smooth-out. Under reduced motion, a word
    only fades in (AT-46). */
 .stream-word {
-    animation: stream-word 350ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: stream-word 350ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes stream-word {
-    from {
-        opacity: 0;
-        filter: blur(6px);
-    }
-    to {
-        opacity: 1;
-        filter: blur(0);
-    }
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 @keyframes stream-word-fade {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-    .stream-word {
-        animation-name: stream-word-fade;
-    }
+  .stream-word {
+    animation-name: stream-word-fade;
+  }
 }

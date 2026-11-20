@@ -28,7 +28,9 @@ function layOut() {
   Object.defineProperty(Element.prototype, "scrollWidth", {
     configurable: true,
     get(this: HTMLElement) {
-      return this.classList.contains("t-think-text") ? (this.textContent ?? "").length * CHAR_PX : 0;
+      return this.classList.contains("t-think-text")
+        ? (this.textContent ?? "").length * CHAR_PX
+        : 0;
     },
   });
   return () => {
@@ -85,7 +87,14 @@ describe("StageLines", () => {
       act(() => void vi.advanceTimersByTime(2500));
       order.push(shown(container));
     }
-    expect(order).toEqual(["Line two", "Line three", "Line four", "Line two", "Line three", "Line four"]);
+    expect(order).toEqual([
+      "Line two",
+      "Line three",
+      "Line four",
+      "Line two",
+      "Line three",
+      "Line four",
+    ]);
   });
 
   it("hides every line from a screen reader", () => {

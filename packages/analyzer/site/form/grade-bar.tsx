@@ -29,7 +29,7 @@ export function GradeBar({ ready, grading, inEditSheet, level, onGrade }: GradeB
         data-halo=""
         data-level={level.toFixed(3)}
         style={{ opacity: level }}
-        className="pointer-events-none absolute -inset-sp-0 overflow-hidden rounded-pill bg-accent shadow-orb transition-opacity duration-300 ease-out"
+        className="-inset-sp-0 rounded-pill bg-accent shadow-orb pointer-events-none absolute overflow-hidden transition-opacity duration-300 ease-out"
       >
         {/* The sweep of the item: a light arc that orbits the ring. Only its transform moves. Reduced motion hides it,
             so the halo shows the level with no orbit. At level 0 the button is off, so the arc stays out and does not spin. */}
@@ -49,8 +49,10 @@ export function GradeBar({ ready, grading, inEditSheet, level, onGrade }: GradeB
         disabled={!ready}
         pendingAnnouncement="Grading the trade"
         onClick={() => (grading ? undefined : onGrade())}
-        className={`press relative min-h-touch w-full rounded-pill border px-sp-4 text-lead font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:border-rule disabled:bg-raised disabled:text-mute aria-disabled:cursor-progress ${
-          grading ? "cursor-progress border-rule bg-raised text-mute" : "cursor-pointer border-transparent bg-accent text-on-dark"
+        className={`press min-h-touch rounded-pill px-sp-4 text-lead focus-visible:outline-accent disabled:border-rule disabled:bg-raised disabled:text-mute relative w-full border font-bold focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed aria-disabled:cursor-progress ${
+          grading
+            ? "border-rule bg-raised text-mute cursor-progress"
+            : "bg-accent text-on-dark cursor-pointer border-transparent"
         }`}
       >
         {grading ? "Grading…" : inEditSheet ? "Regrade the Trade" : "Grade the Trade"}
@@ -61,7 +63,7 @@ export function GradeBar({ ready, grading, inEditSheet, level, onGrade }: GradeB
   if (inEditSheet) return button;
 
   return (
-    <div className="sticky bottom-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))] z-30 mx-auto mt-sp-4 max-w-page">
+    <div className="mt-sp-4 max-w-page sticky bottom-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))] z-30 mx-auto">
       {button}
     </div>
   );

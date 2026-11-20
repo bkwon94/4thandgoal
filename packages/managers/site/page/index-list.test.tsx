@@ -17,7 +17,11 @@ afterEach(() => {
 function cpcRows(): IndexRow[] {
   const { managers } = managersFileSchema.parse(managersJson);
   // The managers package holds no rankings type, so the test names the three fields it reads.
-  const last = rankingsJson.weeks.at(-1)!.rows as unknown as { roster_id: number; rank: number; odds: { playoff: number } }[];
+  const last = rankingsJson.weeks.at(-1)!.rows as unknown as {
+    roster_id: number;
+    rank: number;
+    odds: { playoff: number };
+  }[];
   return last.map((row) => {
     const entry = managers.find((each) => each.roster_id === row.roster_id)!;
     return {
@@ -44,7 +48,9 @@ describe("IndexList", () => {
     expect(out.hasAttribute("disabled")).toBe(true);
     fireEvent.click(out);
     expect(chips.getByRole("button", { name: /All/ }).getAttribute("aria-pressed")).toBe("true");
-    expect(within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem")).toHaveLength(12);
+    expect(
+      within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem"),
+    ).toHaveLength(12);
   });
 
   it("gives each letter of a name its own roll window, and keeps the name as one text for a reader", () => {

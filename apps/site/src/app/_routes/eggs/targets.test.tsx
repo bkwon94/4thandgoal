@@ -74,7 +74,10 @@ function listen(page: string) {
 }
 
 /* Each stable id on the page, in the order of the page. */
-const ids = () => [...document.querySelectorAll("[data-stable-id]")].map((element) => element.getAttribute("data-stable-id")!);
+const ids = () =>
+  [...document.querySelectorAll("[data-stable-id]")].map((element) =>
+    element.getAttribute("data-stable-id")!,
+  );
 const idsOf = (prefix: string) => ids().filter((id) => id.startsWith(`${prefix}-`));
 const target = (id: string) => document.querySelector(`[data-stable-id="${id}"]`)!;
 
@@ -93,7 +96,9 @@ function expectUnique(list: string[]) {
   expect(list.filter((id, index) => list.indexOf(id) !== index)).toEqual([]);
 }
 
-const WEEK_8 = JSON.parse(readFileSync(fixturePublished("cpc", "2026", "week-08", "page.json"), "utf8"));
+const WEEK_8 = JSON.parse(
+  readFileSync(fixturePublished("cpc", "2026", "week-08", "page.json"), "utf8"),
+);
 
 describe("the targets of the week page", () => {
   async function renderWeek8() {
@@ -109,7 +114,9 @@ describe("the targets of the week page", () => {
     expect(idsOf("median")).toHaveLength(WEEK_8.median.bars.length);
     expect(idsOf("next-game")).toHaveLength(WEEK_8.next.length);
     expect(idsOf("leader")).toHaveLength(WEEK_8.leaders[0].rows.length);
-    expect(idsOf("heading")).toEqual(expect.arrayContaining(["heading-awards", "heading-median", "heading-next-week"]));
+    expect(idsOf("heading")).toEqual(
+      expect.arrayContaining(["heading-awards", "heading-median", "heading-next-week"]),
+    );
     expect(idsOf("blurb").length).toBeGreaterThanOrEqual(4);
     // The median bar of a roster names the roster, so two renders of the week give one id.
     expect(idsOf("median")).toContain(`median-${WEEK_8.median.bars[0].team.roster_id}`);
@@ -138,7 +145,13 @@ describe("the targets of the week page", () => {
     tap(target(c));
     tap(target(c), TAP_GAP_MS + 1);
     expect(sent).toEqual([
-      { page: "/2026/week-08/", target: c, action: "tap2", trail: [a, b], conditions: { theme: "light", open: ["chip-qb"] } },
+      {
+        page: "/2026/week-08/",
+        target: c,
+        action: "tap2",
+        trail: [a, b],
+        conditions: { theme: "light", open: ["chip-qb"] },
+      },
     ]);
   });
 });
@@ -172,7 +185,9 @@ describe("the targets of the midseason report", () => {
     tap(target("luck-3"));
     tap(target("luck-3"), TAP_GAP_MS + 1);
     expect(sent).toHaveLength(1);
-    expect(sent[0].conditions.open).toEqual(expect.arrayContaining([showAll.getAttribute("data-open-id")]));
+    expect(sent[0].conditions.open).toEqual(
+      expect.arrayContaining([showAll.getAttribute("data-open-id")]),
+    );
   });
 
   it("sends one check with the hold for a hold of 3.5 seconds on the Luck cell of Lil Fridge (AT-27)", async () => {
@@ -186,7 +201,12 @@ describe("the targets of the midseason report", () => {
     fireEvent.pointerUp(target("luck-3"), { isPrimary: true });
     // The chosen chip of the Top 10 is an open state, so the check names it.
     expect(sent).toEqual([
-      { page: "/midseason/2026/", target: "luck-3", action: "hold", conditions: { theme: "light", open: ["chip-rb"] } },
+      {
+        page: "/midseason/2026/",
+        target: "luck-3",
+        action: "hold",
+        conditions: { theme: "light", open: ["chip-rb"] },
+      },
     ]);
   });
 
@@ -225,7 +245,8 @@ describe("the targets of the sim replay", () => {
     listen("/midseason/2026/");
     fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
     const first = beatsOf(replaySeason(simFixture, 0))[0];
-    const row = () => target(`sim-row-${replaySeason(simFixture, 0).weeks[0].standings[0].roster_id}`);
+    const row = () =>
+      target(`sim-row-${replaySeason(simFixture, 0).weeks[0].standings[0].roster_id}`);
     const frame = () => screen.getByRole("status").textContent;
     act(() => {
       vi.advanceTimersByTime(first.ms - 150);
@@ -235,7 +256,9 @@ describe("the targets of the sim replay", () => {
     // The beat ends inside the gap, so the second tap lands on the next frame.
     expect(frame()).not.toBe(before);
     tap(row(), TAP_GAP_MS + 1);
-    expect(sent.map((check) => [check.target, check.action])).toEqual([[row().getAttribute("data-stable-id"), "tap2"]]);
+    expect(sent.map((check) => [check.target, check.action])).toEqual([
+      [row().getAttribute("data-stable-id"), "tap2"],
+    ]);
   });
 });
 
@@ -282,7 +305,16 @@ describe("the targets of the analyzer result", () => {
     expect(idsOf("bullet")).toHaveLength(bullets);
     const root = container.firstElementChild!;
     const key = doc.trade.sides
-      .map((side) => [side.roster_id, side.gives.map((player) => player.player_id).sort().join(",")] as const)
+      .map(
+        (side) =>
+          [
+            side.roster_id,
+            side.gives
+              .map((player) => player.player_id)
+              .sort()
+              .join(","),
+          ] as const,
+      )
       .sort((a, b) => a[0] - b[0])
       .map(([roster, gives]) => `${roster}:${gives}`)
       .join("|");

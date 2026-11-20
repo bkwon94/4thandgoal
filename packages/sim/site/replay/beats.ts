@@ -14,7 +14,14 @@ export type Beat =
 
 /* The hold of each beat in ms. Six weeks, the split, three rounds, and the champion give a run of about 20 s.
    A beat runs longer than a control may, because the replay explains and the reader watches it (decision 13). */
-const HOLD = { week: 1500, split: 1800, final: 1400, draw: 1000, result: 1800, champion: 0 } as const;
+const HOLD = {
+  week: 1500,
+  split: 1800,
+  final: 1400,
+  draw: 1000,
+  result: 1800,
+  champion: 0,
+} as const;
 
 export function beatsOf(season: ReplaySeason): Beat[] {
   return [

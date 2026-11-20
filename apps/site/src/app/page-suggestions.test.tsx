@@ -23,7 +23,8 @@ const fetchStub = vi.fn();
 const streams: (() => Response)[] = [];
 
 // The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
-const fixture = (...parts: string[]) => readFileSync(join(__dirname, "..", "fixtures", ...parts), "utf8");
+const fixture = (...parts: string[]) =>
+  readFileSync(join(__dirname, "..", "fixtures", ...parts), "utf8");
 // The Suggestions of Lil Fridge on Wednesday of week 9 from a live run with the real Jev: power rankings and the week
 // recap lift above 0.7.
 const SUGGESTIONS = JSON.parse(fixture("suggestions", "lil-fridge-wednesday.json"));
@@ -31,15 +32,22 @@ const SUGGESTIONS = JSON.parse(fixture("suggestions", "lil-fridge-wednesday.json
 // slot of weak spots as its fact. The sell high pick of Jev was under 0.7, so sell high has no fact.
 const THURSDAY = JSON.parse(fixture("suggestions", "lil-fridge-thursday.json"));
 // The key check of a live run: the key of the kept weak spots Answer of ticket 06 is stale, and the fresh key is current.
-const CURRENT = JSON.parse(fixture("suggestions", "current-lil-fridge.json")) as { answers: { key: string; current: boolean; kept_at: string | null }[] };
+const CURRENT = JSON.parse(fixture("suggestions", "current-lil-fridge.json")) as {
+  answers: { key: string; current: boolean; kept_at: string | null }[];
+};
 // A live sell high stream of the API with the key of the rosters it read, and the key check of a live run: that key is
 // current, and an old key, sent as a sell high key, is stale.
-const SELL_KEYED = JSON.parse(fixture("..", "app", "front-door", "fixtures", "sell-high-keyed-stream.json")) as { type: string; data?: { key?: string; at?: string } }[];
+const SELL_KEYED = JSON.parse(
+  fixture("..", "app", "front-door", "fixtures", "sell-high-keyed-stream.json"),
+) as { type: string; data?: { key?: string; at?: string } }[];
 const SELL_CURRENT = JSON.parse(fixture("suggestions", "current-sell-high.json")) as typeof CURRENT;
-const callsTo = (path: string) => fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
+const callsTo = (path: string) =>
+  fetchStub.mock.calls.filter(([url]) => String(url).endsWith(path));
 
 function sse(body: string): Response {
-  return new Response(body, { headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" } });
+  return new Response(body, {
+    headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+  });
 }
 
 /* The kept weak spots Answer of Lil Fridge, from the recorded stream of a kept Answer: its block, its text, its key. */
@@ -51,12 +59,19 @@ function keptWeakSpots() {
     .map((line) => JSON.parse(line));
   const block = parts.find((part) => part.type === "data-block").data;
   const key = parts.find((part) => part.type === "data-key").data.key;
-  const text = parts.filter((part) => part.type === "text-delta").map((part) => part.delta).join("").trim();
+  const text = parts
+    .filter((part) => part.type === "text-delta")
+    .map((part) => part.delta)
+    .join("")
+    .trim();
   return { block, text, key };
 }
 
 function keepThread(entries: unknown[]) {
-  localStorage.setItem("cpc.thread", JSON.stringify({ [String(LIL_FRIDGE)]: { week: 8, entries } }));
+  localStorage.setItem(
+    "cpc.thread",
+    JSON.stringify({ [String(LIL_FRIDGE)]: { week: 8, entries } }),
+  );
 }
 
 /* The clock of a test: 2026-11-12 is a Thursday. */
@@ -89,11 +104,23 @@ beforeEach(() => {
     if (path.endsWith("/suggestions")) return Response.json(SUGGESTIONS);
     if (path.endsWith("/personal/current")) {
       // The API answers each key that the site sends, as the live run answered it.
-      const { answers } = JSON.parse(String(init?.body)) as { answers: { topic: string; key: string }[] };
+      const { answers } = JSON.parse(String(init?.body)) as {
+        answers: { topic: string; key: string }[];
+      };
       const known = (topic: string) => (topic === "sell_high" ? SELL_CURRENT : CURRENT).answers;
-      return Response.json({ answers: answers.map(({ topic, key }) => known(topic).find((answer) => answer.key === key) ?? { key, current: true, kept_at: null }) });
+      return Response.json({
+        answers: answers.map(
+          ({ topic, key }) =>
+            known(topic).find((answer) => answer.key === key) ?? {
+              key,
+              current: true,
+              kept_at: null,
+            },
+        ),
+      });
     }
-    if (path.endsWith("/personal") || path.endsWith("/sell-high")) return streams.shift()?.() ?? new Response("", { status: 500 });
+    if (path.endsWith("/personal") || path.endsWith("/sell-high"))
+      return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
   vi.stubGlobal("fetch", fetchStub);
@@ -138,17 +165,31 @@ describe("the Suggestions that the API serves", () => {
     render(<HomePage />);
     const [, ...chips] = await suggestionChips();
     expect(chips).toHaveLength(3);
-    expect(chips.map((chip) => chip.getAttribute("aria-label")).join(" ")).not.toContain("free agents");
+    expect(chips.map((chip) => chip.getAttribute("aria-label")).join(" ")).not.toContain(
+      "free agents",
+    );
   });
 
   it("drop an opened personal Topic until its fact changes", async () => {
     onWednesday();
     streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
     render(<HomePage />);
-    await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).toContain("Waiver targets: 19 free agents on the list"));
+    await waitFor(async () =>
+      expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).toContain(
+        "Waiver targets: 19 free agents on the list",
+      ),
+    );
     openChip("Waiver targets: 19 free agents on the list");
-    await waitFor(() => expect(localStorage.getItem("cpc.opened-topics") ?? "").toContain("19 free agents on the list"));
-    await waitFor(async () => expect((await suggestionChips()).map((chip) => chip.getAttribute("aria-label"))).not.toContain("Waiver targets: 19 free agents on the list"));
+    await waitFor(() =>
+      expect(localStorage.getItem("cpc.opened-topics") ?? "").toContain(
+        "19 free agents on the list",
+      ),
+    );
+    await waitFor(async () =>
+      expect(
+        (await suggestionChips()).map((chip) => chip.getAttribute("aria-label")),
+      ).not.toContain("Waiver targets: 19 free agents on the list"),
+    );
   });
 });
 
@@ -158,7 +199,11 @@ describe("the layout of the Suggestions row", () => {
     streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
     render(<HomePage />);
     const chip = "Waiver targets: 19 free agents on the list";
-    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(chip));
+    await waitFor(async () =>
+      expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(
+        chip,
+      ),
+    );
     const oneRow = async () => {
       const row = screen.getByRole("group", { name: "Suggestions" });
       expect(row.className).toContain("flex-nowrap");
@@ -167,7 +212,9 @@ describe("the layout of the Suggestions row", () => {
       expect(more.textContent).toBe("More");
       // Each chip shows only a short name of its Topic: no number of a fact shows on the row.
       for (const each of chips) {
-        const topic = TOPICS.find((one) => one.name === each.getAttribute("aria-label")!.split(":")[0])!;
+        const topic = TOPICS.find(
+          (one) => one.name === each.getAttribute("aria-label")!.split(":")[0],
+        )!;
         expect(each.textContent).toBe(topic.chip);
       }
     };
@@ -182,7 +229,11 @@ describe("the layout of the Suggestions row", () => {
     streams.push(() => sse(fixture("personal-answer", "waiver-targets.sse")));
     render(<HomePage />);
     const label = "Waiver targets: 19 free agents on the list";
-    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(label));
+    await waitFor(async () =>
+      expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(
+        label,
+      ),
+    );
     const chip = screen.getByRole("button", { name: label });
     fireEvent.click(chip);
     const strip = screen.getByRole("button", { name: "Open Waiver targets" });
@@ -198,7 +249,9 @@ describe("the layout of the Suggestions row", () => {
     onWednesday();
     render(<HomePage />);
     await waitFor(async () => expect(await suggestionChips()).toHaveLength(4));
-    fireEvent.click(screen.getByRole("button", { name: "Waiver targets: 19 free agents on the list" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Waiver targets: 19 free agents on the list" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Power rankings: 6th, down 5" }));
     const strip = screen.getByRole("button", { name: "Open Power rankings" });
     await waitFor(() => expect(strip.textContent).not.toContain("free agents"));
@@ -210,26 +263,40 @@ describe("the layout of the Suggestions row", () => {
 describe("the trade Topics as Suggestions", () => {
   it("show trade ideas with its fact, and a tap runs the Topic and drops the chip", async () => {
     onThursday();
-    const sse = ideasStream.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+    const sse =
+      ideasStream.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
     fetchStub.mockImplementation(async (url: string) => {
       const path = String(url);
       if (path.endsWith("/suggestions")) return Response.json(THURSDAY);
-      if (path.endsWith("/trade-ideas")) return new Response(sse, { headers: { "Content-Type": "text/event-stream" } });
+      if (path.endsWith("/trade-ideas"))
+        return new Response(sse, { headers: { "Content-Type": "text/event-stream" } });
       return new Response("", { status: 404 });
     });
     render(<HomePage />);
     const chip = "Trade ideas: Offers for your QB, 7th of 12";
-    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(chip));
+    await waitFor(async () =>
+      expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).toContain(
+        chip,
+      ),
+    );
     openChip(chip);
     // The tap runs the Topic as "More" does: the trade ideas route with Your team and no partner.
     await waitFor(() => expect(callsTo("/trade-ideas")).toHaveLength(1));
-    expect(JSON.parse(String(callsTo("/trade-ideas")[0][1]?.body))).toEqual({ roster_id: LIL_FRIDGE, partner: null });
+    expect(JSON.parse(String(callsTo("/trade-ideas")[0][1]?.body))).toEqual({
+      roster_id: LIL_FRIDGE,
+      partner: null,
+    });
     await screen.findByRole("region", { name: "Trade ideas" });
-    await waitFor(async () => expect((await suggestionChips()).map((each) => each.getAttribute("aria-label"))).not.toContain(chip));
+    await waitFor(async () =>
+      expect(
+        (await suggestionChips()).map((each) => each.getAttribute("aria-label")),
+      ).not.toContain(chip),
+    );
   });
 
   it("never lead a day with the trade check, which has no weekly fact", () => {
-    for (const day of [0, 1, 2, 3, 4, 5, 6]) expect(dayOrder(day).slice(0, 5)).not.toContain("trade_check");
+    for (const day of [0, 1, 2, 3, 4, 5, 6])
+      expect(dayOrder(day).slice(0, 5)).not.toContain("trade_check");
   });
 });
 
@@ -253,7 +320,12 @@ describe("Start or sit in the Suggestions", () => {
     expect(dayOrder(4)[1]).toBe("next_matchup");
     expect(dayOrder(3).slice(0, 3)).toEqual(["waiver_targets", "weak_spots", "start_sit"]);
     expect(dayOrder(1).slice(0, 3)).toEqual(["next_matchup", "playoff_race", "power_rankings"]);
-    expect(dayOrder(2).slice(0, 4)).toEqual(["week_recap", "last_matchup", "power_rankings", "playoff_race"]);
+    expect(dayOrder(2).slice(0, 4)).toEqual([
+      "week_recap",
+      "last_matchup",
+      "power_rankings",
+      "playoff_race",
+    ]);
   });
 
   it("shows the next kickoff in the time zone of the browser (AT-15)", async () => {
@@ -261,30 +333,54 @@ describe("Start or sit in the Suggestions", () => {
     process.env.TZ = "America/Los_Angeles";
     onThursday();
     fetchStub.mockImplementation(async (url: string) =>
-      String(url).endsWith("/suggestions") ? Response.json(WITH_START_SIT) : new Response("", { status: 404 }),
+      String(url).endsWith("/suggestions")
+        ? Response.json(WITH_START_SIT)
+        : new Response("", { status: 404 }),
     );
     render(<HomePage />);
     const chip = "Start or sit: Next kickoff Sun 10:00 AM";
-    await waitFor(async () => expect((await suggestionChips())[1].getAttribute("aria-label")).toBe(chip));
+    await waitFor(async () =>
+      expect((await suggestionChips())[1].getAttribute("aria-label")).toBe(chip),
+    );
     fireEvent.click(screen.getByRole("button", { name: chip }));
-    expect(screen.getByRole("button", { name: "Open Start or sit" }).textContent).toContain("Next kickoff Sun 10:00 AM");
+    expect(screen.getByRole("button", { name: "Open Start or sit" }).textContent).toContain(
+      "Next kickoff Sun 10:00 AM",
+    );
   });
 
   it("shows a count fact as the API serves it", async () => {
     onThursday();
-    const counts = { ...THURSDAY, facts: { ...THURSDAY.facts, start_sit: "1 can't play" }, kickoffs: {} };
+    const counts = {
+      ...THURSDAY,
+      facts: { ...THURSDAY.facts, start_sit: "1 can't play" },
+      kickoffs: {},
+    };
     fetchStub.mockImplementation(async (url: string) =>
-      String(url).endsWith("/suggestions") ? Response.json(counts) : new Response("", { status: 404 }),
+      String(url).endsWith("/suggestions")
+        ? Response.json(counts)
+        : new Response("", { status: 404 }),
     );
     render(<HomePage />);
-    await waitFor(async () => expect((await suggestionChips())[1].getAttribute("aria-label")).toBe("Start or sit: 1 can't play"));
+    await waitFor(async () =>
+      expect((await suggestionChips())[1].getAttribute("aria-label")).toBe(
+        "Start or sit: 1 can't play",
+      ),
+    );
   });
 });
 
 describe("a stale personal Answer of the Thread", () => {
   it("shows dimmed with the stale line, Refresh, and no checked mark (AT-34)", async () => {
     onWednesday();
-    keepThread([{ kind: "personal", key: "weak_spots", team: LIL_FRIDGE, question: null, result: keptWeakSpots() }]);
+    keepThread([
+      {
+        kind: "personal",
+        key: "weak_spots",
+        team: LIL_FRIDGE,
+        question: null,
+        result: keptWeakSpots(),
+      },
+    ]);
     render(<HomePage />);
     const answer = await screen.findByRole("article", { name: "Weak spots" });
     await waitFor(() => expect(answer.textContent).toContain("Your roster changed since Tuesday."));
@@ -293,14 +389,24 @@ describe("a stale personal Answer of the Thread", () => {
     expect(within(answer).getByRole("button", { name: "Refresh" })).toBeTruthy();
     // The key check sends the key of the kept Answer, and it costs no stream.
     const [, init] = callsTo("/personal/current")[0];
-    expect(JSON.parse(String(init?.body)).answers).toEqual([{ topic: "weak_spots", roster_id: LIL_FRIDGE, team: null, key: keptWeakSpots().key }]);
+    expect(JSON.parse(String(init?.body)).answers).toEqual([
+      { topic: "weak_spots", roster_id: LIL_FRIDGE, team: null, key: keptWeakSpots().key },
+    ]);
     expect(callsTo("/personal")).toHaveLength(0);
   });
 
   it("shows a current Answer as checked, with no stale line", async () => {
     onWednesday();
     const fresh = CURRENT.answers.find((answer) => answer.current)!;
-    keepThread([{ kind: "personal", key: "weak_spots", team: LIL_FRIDGE, question: null, result: { ...keptWeakSpots(), key: fresh.key } }]);
+    keepThread([
+      {
+        kind: "personal",
+        key: "weak_spots",
+        team: LIL_FRIDGE,
+        question: null,
+        result: { ...keptWeakSpots(), key: fresh.key },
+      },
+    ]);
     render(<HomePage />);
     const answer = await screen.findByRole("article", { name: "Weak spots" });
     await waitFor(() => expect(callsTo("/personal/current")).toHaveLength(1));
@@ -310,19 +416,41 @@ describe("a stale personal Answer of the Thread", () => {
 
   it("streams a fresh checked Answer in its place on Refresh (AT-35)", async () => {
     onWednesday();
-    keepThread([{ kind: "personal", key: "weak_spots", team: LIL_FRIDGE, question: null, result: keptWeakSpots() }]);
+    keepThread([
+      {
+        kind: "personal",
+        key: "weak_spots",
+        team: LIL_FRIDGE,
+        question: null,
+        result: keptWeakSpots(),
+      },
+    ]);
     streams.push(() => sse(fixture("personal-answer", "weak-spots-fresh.sse")));
     render(<HomePage />);
     const stale = await screen.findByRole("article", { name: "Weak spots" });
     fireEvent.click(await within(stale).findByRole("button", { name: "Refresh" }));
-    await waitFor(() => expect(screen.getByRole("article", { name: "Weak spots" }).textContent).toContain("Checked"), { timeout: 3000 });
+    await waitFor(
+      () =>
+        expect(screen.getByRole("article", { name: "Weak spots" }).textContent).toContain(
+          "Checked",
+        ),
+      { timeout: 3000 },
+    );
     const fresh = screen.getByRole("article", { name: "Weak spots" });
     expect(fresh.hasAttribute("data-stale")).toBe(false);
     expect(fresh.textContent).not.toContain("Your roster changed");
     expect(fresh.textContent).toContain("Bryce Young");
-    expect(JSON.parse(String(callsTo("/personal")[0][1]?.body))).toMatchObject({ topic: "weak_spots", roster_id: LIL_FRIDGE, team: null });
+    expect(JSON.parse(String(callsTo("/personal")[0][1]?.body))).toMatchObject({
+      topic: "weak_spots",
+      roster_id: LIL_FRIDGE,
+      team: null,
+    });
     // Only one Answer of weak spots stays in the Thread, with the fresh key.
-    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain(CURRENT.answers.find((answer) => answer.current)!.key));
+    await waitFor(() =>
+      expect(localStorage.getItem("cpc.thread")).toContain(
+        CURRENT.answers.find((answer) => answer.current)!.key,
+      ),
+    );
     expect(screen.getAllByRole("article", { name: "Weak spots" })).toHaveLength(1);
   });
 });
@@ -330,10 +458,18 @@ describe("a stale personal Answer of the Thread", () => {
 /* The kept sell high Answer of Lil Fridge, from the live stream: its document, and the key and the time of its read. */
 function keptSell(read: { key: string; at: string } | undefined) {
   const answer = SELL_KEYED.find((part) => part.type === "data-answer")!.data;
-  return { kind: "trade", mode: "sell", question: "Sell high or buy low", steps: [], answer, ...(read ? { read } : {}) };
+  return {
+    kind: "trade",
+    mode: "sell",
+    question: "Sell high or buy low",
+    steps: [],
+    answer,
+    ...(read ? { read } : {}),
+  };
 }
 
-const sellSse = () => SELL_KEYED.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+const sellSse = () =>
+  SELL_KEYED.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
 const STALE_SELL = SELL_CURRENT.answers.find((answer) => !answer.current)!.key;
 const FRESH_SELL = SELL_CURRENT.answers.find((answer) => answer.current)!.key;
 
@@ -348,7 +484,9 @@ describe("a stale trade Answer of the Thread", () => {
     expect(within(answer).getByRole("button", { name: "Refresh" })).toBeTruthy();
     // The key check sends the key of the trade Answer with its Topic, and it costs no stream.
     const [, init] = callsTo("/personal/current")[0];
-    expect(JSON.parse(String(init?.body)).answers).toEqual([{ topic: "sell_high", roster_id: LIL_FRIDGE, team: null, key: STALE_SELL }]);
+    expect(JSON.parse(String(init?.body)).answers).toEqual([
+      { topic: "sell_high", roster_id: LIL_FRIDGE, team: null, key: STALE_SELL },
+    ]);
     expect(callsTo("/sell-high")).toHaveLength(0);
   });
 
@@ -371,7 +509,9 @@ describe("a stale trade Answer of the Thread", () => {
     const stale = await screen.findByRole("article", { name: "Sell high or buy low" });
     fireEvent.click(await within(stale).findByRole("button", { name: "Refresh" }));
     await waitFor(() => expect(callsTo("/sell-high")).toHaveLength(1));
-    expect(JSON.parse(String(callsTo("/sell-high")[0][1]?.body))).toEqual({ roster_id: LIL_FRIDGE });
+    expect(JSON.parse(String(callsTo("/sell-high")[0][1]?.body))).toEqual({
+      roster_id: LIL_FRIDGE,
+    });
     await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain(FRESH_SELL));
     const fresh = screen.getByRole("article", { name: "Sell high or buy low" });
     await waitFor(() => expect(fresh.hasAttribute("data-stale")).toBe(false));

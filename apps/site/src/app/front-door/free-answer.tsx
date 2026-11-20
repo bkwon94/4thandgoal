@@ -13,7 +13,16 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { BlockView } from "./answer-block";
 import type { AskTarget } from "./ask-api";
 import type { Turn } from "./chat-turns";
-import { type CheckState, type FreeResult, type FreeView, isKept, newPace, pacedView, shownText, viewOf } from "./free-stream";
+import {
+  type CheckState,
+  type FreeResult,
+  type FreeView,
+  isKept,
+  newPace,
+  pacedView,
+  shownText,
+  viewOf,
+} from "./free-stream";
 import { QuestionBubble, Surface, TopicChip } from "./miss-card";
 import { QUICK, SLOW, SMOOTH, STAGGER, VERY_SLOW, fadeIn } from "./motion";
 import { Steps } from "./steps";
@@ -79,7 +88,9 @@ export function useAnswerStream<V extends FreeView>({
   const checkedAt = useRef<number | null>(null);
   const [, wakeUp] = useState(0);
   const now = performance.now();
-  const { view, wake } = kept ? { view: raw, wake: null } : pacedView(raw, pace.current, now, HOLD_MS);
+  const { view, wake } = kept
+    ? { view: raw, wake: null }
+    : pacedView(raw, pace.current, now, HOLD_MS);
   if (view.check === "checked") checkedAt.current ??= now;
   // The time that the hand-off may run: at once for an end with no mark, else SETTLE_MS after "Checked" shows.
   const settleAt = wake ?? (view.check === "checked" ? checkedAt.current! + SETTLE_MS : null);
@@ -131,7 +142,10 @@ function StreamText({ text, live }: { text: string; live: boolean }) {
     sweepEnd.current = at - step;
   }
   const word = (token: string, index: number) => (
-    <span className="stream-word" style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}>
+    <span
+      className="stream-word"
+      style={{ animationDelay: `${Math.round(delays.current[index] ?? 0)}ms` }}
+    >
       {token}
     </span>
   );
@@ -145,7 +159,7 @@ function Shimmer({ children }: { children: string }) {
   if (off) return <span className="text-mute">{children}</span>;
   return (
     <motion.span
-      className="bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%]"
+      className="[background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%] bg-clip-text text-transparent"
       initial={{ backgroundPosition: "100% 0%" }}
       animate={{ backgroundPosition: "0% 0%" }}
       transition={{ duration: 2, ease: "linear", repeat: Infinity }}
@@ -161,18 +175,25 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
   const off = useMotionOff();
   const checked = state === "checked";
   return (
-    <p role="status" className="m-0 flex min-h-sp-5 items-center text-meta leading-tight font-semibold">
+    <p
+      role="status"
+      className="min-h-sp-5 text-meta m-0 flex items-center leading-tight font-semibold"
+    >
       {/* A live mark fades in as it first shows. A kept answer shows its mark at once. */}
       <AnimatePresence mode="popLayout" initial={live}>
         <motion.span
           key={checked ? "checked" : "checking"}
-          className={`inline-flex items-center gap-sp-1 ${checked ? "text-ink" : "text-mute"}`}
+          className={`gap-sp-1 inline-flex items-center ${checked ? "text-ink" : "text-mute"}`}
           initial={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
           animate={off ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
           exit={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
         >
-          {checked ? <CheckIcon aria-hidden className="size-sp-4" strokeWidth={2.5} /> : <span aria-hidden className="size-sp-4 rounded-full border-2 border-rule" />}
+          {checked ? (
+            <CheckIcon aria-hidden className="size-sp-4" strokeWidth={2.5} />
+          ) : (
+            <span aria-hidden className="size-sp-4 border-rule rounded-full border-2" />
+          )}
           {checked ? "Checked" : "Checking"}
         </motion.span>
       </AnimatePresence>
@@ -183,7 +204,17 @@ function CheckMark({ state, live }: { state: CheckState; live: boolean }) {
 /* The body of a free answer: the steps, the text with its block, and the check. The steps wait until the check or the text comes,
    with `first` as the stand-in line before the first step. The text shows only with "Checked", and its words sweep in
    from a blur. A failed check shows the fixing line, and the checked rewrite takes its place. */
-export function FreeBody({ view, live, first, you }: { view: FreeView; live: boolean; first?: string; you?: string }) {
+export function FreeBody({
+  view,
+  live,
+  first,
+  you,
+}: {
+  view: FreeView;
+  live: boolean;
+  first?: string;
+  you?: string;
+}) {
   const off = useMotionOff();
   const fixing = view.second !== null;
   // The steps of the tool calls are done once the check or the text comes, so the wait ends there.
@@ -193,14 +224,21 @@ export function FreeBody({ view, live, first, you }: { view: FreeView; live: boo
       <Steps steps={view.steps} live={waiting} first={first} />
       <AnimatePresence mode="wait" initial={false}>
         {fixing ? (
-          <motion.div key="second" className="flex flex-col gap-sp-4" {...(off ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 } })} transition={fadeIn(QUICK)}>
+          <motion.div
+            key="second"
+            className="gap-sp-4 flex flex-col"
+            {...(off ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 } })}
+            transition={fadeIn(QUICK)}
+          >
             {view.second === "" && (
-              <p className="m-0 text-body leading-tight font-semibold">
+              <p className="text-body m-0 leading-tight font-semibold">
                 <Shimmer>{FIXING_LINE}</Shimmer>
               </p>
             )}
             {view.second && <StreamText text={view.second} live={live} />}
-            {view.second && view.answerBlock && <BlockView block={view.answerBlock} live={live} you={you} />}
+            {view.second && view.answerBlock && (
+              <BlockView block={view.answerBlock} live={live} you={you} />
+            )}
           </motion.div>
         ) : (
           view.first && (
@@ -208,7 +246,7 @@ export function FreeBody({ view, live, first, you }: { view: FreeView; live: boo
               key="first"
               exit={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
               transition={{ duration: QUICK, ease: SMOOTH }}
-              className="flex flex-col gap-sp-4"
+              className="gap-sp-4 flex flex-col"
             >
               <StreamText text={view.first} live={live} />
               {view.answerBlock && <BlockView block={view.answerBlock} live={live} you={you} />}
@@ -216,7 +254,9 @@ export function FreeBody({ view, live, first, you }: { view: FreeView; live: boo
           )
         )}
       </AnimatePresence>
-      {view.check && view.check !== "fixing" && view.check !== "failed" && <CheckMark state={view.check} live={live} />}
+      {view.check && view.check !== "fixing" && view.check !== "failed" && (
+        <CheckMark state={view.check} live={live} />
+      )}
     </>
   );
 }
@@ -230,34 +270,55 @@ type Shared = {
 };
 
 /* The chip of the top Topic of a half fit, under a checked answer (AT-12). */
-function SuggestionChip({ suggestion, teamName, onPick }: { suggestion: FreeResult["suggestion"] } & Omit<Shared, "question">) {
+function SuggestionChip({
+  suggestion,
+  teamName,
+  onPick,
+}: { suggestion: FreeResult["suggestion"] } & Omit<Shared, "question">) {
   if (!suggestion) return null;
   return (
-    <div className="flex flex-wrap gap-sp-2">
-      <TopicChip topic={suggestion.topic} team={teamName(suggestion.team)} index={0} onPick={(key) => onPick(key, suggestion.team)} />
+    <div className="gap-sp-2 flex flex-wrap">
+      <TopicChip
+        topic={suggestion.topic}
+        team={teamName(suggestion.team)}
+        index={0}
+        onPick={(key) => onPick(key, suggestion.team)}
+      />
     </div>
   );
 }
 
 /* A free answer that the browser kept. It shows as it ended, with no stream and no API call. It takes the place of
    the live card when the stream ends, so its parts show at once with no fade, and the card never goes blank (AT-20). */
-export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeResult }>(function FreeAnswerCard(
-  { question, result, teamName, you, onPick },
-  ref,
-) {
-  const view: FreeView = { steps: result.steps.map((line) => ({ line, done: true })), first: result.text, second: null, answerBlock: result.block ?? null, check: "checked", suggestion: result.suggestion, closest: null };
-  return (
-    <AnimatePresence initial={false}>
-      <article key="kept" ref={ref} aria-label={question} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-        <QuestionBubble question={question} />
-        <Surface>
-          <FreeBody view={view} live={false} you={you} />
-          <SuggestionChip suggestion={result.suggestion} teamName={teamName} onPick={onPick} />
-        </Surface>
-      </article>
-    </AnimatePresence>
-  );
-});
+export const FreeAnswerCard = forwardRef<HTMLElement, Shared & { result: FreeResult }>(
+  function FreeAnswerCard({ question, result, teamName, you, onPick }, ref) {
+    const view: FreeView = {
+      steps: result.steps.map((line) => ({ line, done: true })),
+      first: result.text,
+      second: null,
+      answerBlock: result.block ?? null,
+      check: "checked",
+      suggestion: result.suggestion,
+      closest: null,
+    };
+    return (
+      <AnimatePresence initial={false}>
+        <article
+          key="kept"
+          ref={ref}
+          aria-label={question}
+          className="scroll-mt-door-under-head gap-sp-3 flex flex-col"
+        >
+          <QuestionBubble question={question} />
+          <Surface>
+            <FreeBody view={view} live={false} you={you} />
+            <SuggestionChip suggestion={result.suggestion} teamName={teamName} onPick={onPick} />
+          </Surface>
+        </article>
+      </AnimatePresence>
+    );
+  },
+);
 
 /* A free answer as it streams. On the end it hands the Thread a checked result, the closest Topics of an honest miss,
    or an error, so the Thread keeps only what ended. It shows no stop control (AT-55). */
@@ -271,7 +332,10 @@ export const FreeAnswerLive = forwardRef<
     onMiss: (closest: string[]) => void;
     onError: () => void;
   }
->(function FreeAnswerLive({ question, target, passphrase, body, teamName, you, onPick, onDone, onMiss, onError }, ref) {
+>(function FreeAnswerLive(
+  { question, target, passphrase, body, teamName, you, onPick, onDone, onMiss, onError },
+  ref,
+) {
   // The question goes in the body, so the prompt of Claude is the question.
   const fields = useMemo(() => ({ question, ...body }), [question, body]);
   const { view, busy, kept } = useAnswerStream({
@@ -283,7 +347,12 @@ export const FreeAnswerLive = forwardRef<
     read: viewOf,
     settle: (ended) => {
       if (ended.check === "checked") {
-        onDone({ steps: ended.steps.map((step) => step.line), text: shownText(ended), suggestion: ended.suggestion, block: ended.answerBlock });
+        onDone({
+          steps: ended.steps.map((step) => step.line),
+          text: shownText(ended),
+          suggestion: ended.suggestion,
+          block: ended.answerBlock,
+        });
         return true;
       }
       if (ended.closest) {
@@ -295,12 +364,19 @@ export const FreeAnswerLive = forwardRef<
     onError,
   });
   return (
-    <article ref={ref} aria-label={question} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+    <article
+      ref={ref}
+      aria-label={question}
+      aria-busy={busy}
+      className="scroll-mt-door-under-head gap-sp-3 flex flex-col"
+    >
       <QuestionBubble question={question} />
       <Surface>
         {/* A kept Answer of the API shows whole at once, with no stream of its words. */}
         <FreeBody view={view} live={!kept} you={you} />
-        {view.check === "checked" && <SuggestionChip suggestion={view.suggestion} teamName={teamName} onPick={onPick} />}
+        {view.check === "checked" && (
+          <SuggestionChip suggestion={view.suggestion} teamName={teamName} onPick={onPick} />
+        )}
       </Surface>
     </article>
   );

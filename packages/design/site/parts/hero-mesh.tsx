@@ -20,7 +20,8 @@ export function HeroMesh({ drive }: { drive?: MeshDrive }) {
     // The runner pauses out of view with an IntersectionObserver. A browser with none, such as jsdom, draws no mesh,
     // so the mesh never runs where it cannot pause. A browser with no canvas gets no context. Either way the hero shows
     // its band color with the brackets.
-    if (!canvas.current || !probe.current || !hero || typeof IntersectionObserver === "undefined") return;
+    if (!canvas.current || !probe.current || !hero || typeof IntersectionObserver === "undefined")
+      return;
     const ctx = canvas.current.getContext("2d");
     if (!ctx) return;
     return runMesh({ canvas: canvas.current, ctx, hero, probe: probe.current, motionOff, drive });

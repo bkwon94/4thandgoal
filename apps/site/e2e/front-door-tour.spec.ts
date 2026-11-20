@@ -29,7 +29,10 @@ async function openTour(page: Page, width: number, height = 900) {
   page.on("request", (request) => {
     if (request.url().includes("/eggs/check")) eggChecks.push(request.url());
   });
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript((team) => {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", team);
@@ -53,7 +56,10 @@ async function rectOf(page: Page, selector: string): Promise<Rect> {
 
 const center = (rect: Rect) => ({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
 const inside = (point: { x: number; y: number }, rect: Rect) =>
-  point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+  point.x >= rect.x &&
+  point.x <= rect.x + rect.width &&
+  point.y >= rect.y &&
+  point.y <= rect.y + rect.height;
 
 /* A point on the dim, away from the card and the hole: the first corner of the screen, 4 px in, that is in neither. */
 async function dimPoint(page: Page) {
@@ -70,20 +76,27 @@ async function dimPoint(page: Page) {
 }
 
 async function nextTo(page: Page, headers: string[]) {
-  for (const header of headers) await card(page, header).getByRole("button", { name: "Next" }).click();
+  for (const header of headers)
+    await card(page, header).getByRole("button", { name: "Next" }).click();
 }
 
-test("a browser with Your team and no seen key sees Stop 1 on load, as a modal card, and Stop 1 writes the seen key (AT-2, AT-23, AT-29, AT-39)", async ({ page }) => {
+test("a browser with Your team and no seen key sees Stop 1 on load, as a modal card, and Stop 1 writes the seen key (AT-2, AT-23, AT-29, AT-39)", async ({
+  page,
+}) => {
   await openTour(page, 390, 660);
   const stop = card(page, "Suggestions");
   await expect(stop).toBeVisible();
   await expect(page.getByRole("dialog", { name: "Which team is yours?" })).toHaveCount(0);
   await expect(stop).toHaveAttribute("aria-modal", "true");
-  await expect(stop).toHaveAccessibleDescription("Picks for your team right now. Tap one to open it, or tap More for the full list.");
+  await expect(stop).toHaveAccessibleDescription(
+    "Picks for your team right now. Tap one to open it, or tap More for the full list.",
+  );
   await expect(stop).toContainText("1 of 4");
   // The evidence of AT-23, AT-29, and AT-39 shows the read values, so the log prints them.
   console.log(`AT-29, AT-39 accessibility snapshot of the card:\n${await stop.ariaSnapshot()}`);
-  console.log(`AT-39 role: ${await stop.getAttribute("role")}, aria-modal: ${await stop.getAttribute("aria-modal")}`);
+  console.log(
+    `AT-39 role: ${await stop.getAttribute("role")}, aria-modal: ${await stop.getAttribute("aria-modal")}`,
+  );
   const seen = await page.evaluate(() => localStorage.getItem("cpc.tour-seen"));
   console.log(`AT-23 localStorage cpc.tour-seen: ${JSON.stringify(seen)}`);
   expect(seen).toBe("1");
@@ -106,7 +119,9 @@ for (const [width, target] of [
   });
 }
 
-test("Next goes to Stop 2 on the ask box, a tap on the dim goes on, and a tap on the dim at Stop 4 ends the Tour (AT-7, AT-8)", async ({ page }) => {
+test("Next goes to Stop 2 on the ask box, a tap on the dim goes on, and a tap on the dim at Stop 4 ends the Tour (AT-7, AT-8)", async ({
+  page,
+}) => {
   await openTour(page, 390, 660);
   await card(page, "Suggestions").getByRole("button", { name: "Next" }).click();
   await expect(card(page, "Ask")).toContainText("2 of 4");
@@ -128,7 +143,9 @@ test("Skip ends the Tour, and the front door responds to taps again (AT-9)", asy
   await card(page, "Ask").getByRole("button", { name: "Skip" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(hole(page)).toHaveCount(0);
-  const more = page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: "More" });
+  const more = page
+    .getByRole("group", { name: "Suggestions" })
+    .getByRole("button", { name: "More" });
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
 });
@@ -142,15 +159,23 @@ test("the Escape key counts as Skip at 1280 px (AT-10)", async ({ page }) => {
   await expect(hole(page)).toHaveCount(0);
 });
 
-test("a close request of the browser, as Android Back sends, counts as Skip at Stop 2 (AT-11)", async ({ page }) => {
+test("a close request of the browser, as Android Back sends, counts as Skip at Stop 2 (AT-11)", async ({
+  page,
+}) => {
   await openTour(page, 390, 660);
   await card(page, "Suggestions").getByRole("button", { name: "Next" }).click();
   await expect(card(page, "Ask")).toBeVisible();
   // Chromium has CloseWatcher and sends a close request on Escape, as Android sends one on Back. The page then hears no
   // Escape keydown, so only the CloseWatcher of the Stop card, with the reason "back", can end the Tour.
-  expect(await page.evaluate(() => typeof (globalThis as { CloseWatcher?: unknown }).CloseWatcher)).toBe("function");
+  expect(
+    await page.evaluate(() => typeof (globalThis as { CloseWatcher?: unknown }).CloseWatcher),
+  ).toBe("function");
   await page.evaluate(() =>
-    window.addEventListener("keydown", (event) => event.key === "Escape" && event.stopImmediatePropagation(), { capture: true }),
+    window.addEventListener(
+      "keydown",
+      (event) => event.key === "Escape" && event.stopImmediatePropagation(),
+      { capture: true },
+    ),
   );
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -167,12 +192,21 @@ test("Stop 4 shows Done and no Next, and Done ends the Tour (AT-12)", async ({ p
   await expect(hole(page)).toHaveCount(0);
 });
 
-test("a tap on a Topic in the hole opens no Answer and no passphrase sheet, and goes to Stop 2 (AT-13)", async ({ page }) => {
+test("a tap on a Topic in the hole opens no Answer and no passphrase sheet, and goes to Stop 2 (AT-13)", async ({
+  page,
+}) => {
   await openTour(page, 390, 660);
   await expect(card(page, "Suggestions")).toBeVisible();
-  const chip = page.getByRole("group", { name: "Suggestions" }).getByRole("button").filter({ hasNotText: /^More$/ }).first();
+  const chip = page
+    .getByRole("group", { name: "Suggestions" })
+    .getByRole("button")
+    .filter({ hasNotText: /^More$/ })
+    .first();
   const chipCenter = center((await chip.boundingBox())!);
-  expect(inside(chipCenter, await rectOf(page, "[data-tour-hole]")), "the Topic sits in the hole").toBe(true);
+  expect(
+    inside(chipCenter, await rectOf(page, "[data-tour-hole]")),
+    "the Topic sits in the hole",
+  ).toBe(true);
   const answersBefore = await page.getByRole("article").count();
   const sheetsBefore = await page.getByRole("dialog", { name: /passphrase/i }).count();
   await page.mouse.click(chipCenter.x, chipCenter.y);
@@ -180,13 +214,17 @@ test("a tap on a Topic in the hole opens no Answer and no passphrase sheet, and 
   // The evidence of AT-13 shows the counts before and after the tap, so the log prints them.
   const answersAfter = await page.getByRole("article").count();
   const sheetsAfter = await page.getByRole("dialog", { name: /passphrase/i }).count();
-  console.log(`AT-13 Answers before: ${answersBefore}, after: ${answersAfter}. Passphrase sheets before: ${sheetsBefore}, after: ${sheetsAfter}.`);
+  console.log(
+    `AT-13 Answers before: ${answersBefore}, after: ${answersAfter}. Passphrase sheets before: ${sheetsBefore}, after: ${sheetsAfter}.`,
+  );
   expect(answersAfter).toBe(answersBefore);
   await expect(chip).toHaveAttribute("aria-expanded", "false");
   await expect(page.getByRole("dialog", { name: /passphrase/i })).toHaveCount(0);
 });
 
-test("a tap on the menu button in the hole at Stop 4 opens no menu sheet (AT-35)", async ({ page }) => {
+test("a tap on the menu button in the hole at Stop 4 opens no menu sheet (AT-35)", async ({
+  page,
+}) => {
   await openTour(page, 375);
   await nextTo(page, ["Suggestions", "Ask", "Your team"]);
   await expect(card(page, "Menu")).toBeVisible();
@@ -231,7 +269,9 @@ test("Tab moves only between Skip and Next at Stop 2 at 1280 px (AT-30)", async 
     focused.push(
       await page.evaluate(() => {
         const active = document.activeElement as HTMLElement | null;
-        return active?.closest('[role="dialog"]') ? (active.textContent ?? "").trim() : `outside: ${active?.tagName}`;
+        return active?.closest('[role="dialog"]')
+          ? (active.textContent ?? "").trim()
+          : `outside: ${active?.tagName}`;
       }),
     );
   }
@@ -264,15 +304,24 @@ test("a 2 s hold on the dim and on the card sends no egg check (AT-33)", async (
 
 /* The copy of the Stops, word for word from the table of the PRD. Each client shows the same copy. */
 const COPY = [
-  ["Suggestions", "Picks for your team right now. Tap one to open it, or tap More for the full list."],
-  ["Ask", "Type any question about your team or your league, such as start or sit, a trade, or the playoff race."],
+  [
+    "Suggestions",
+    "Picks for your team right now. Tap one to open it, or tap More for the full list.",
+  ],
+  [
+    "Ask",
+    "Type any question about your team or your league, such as start or sit, a trade, or the playoff race.",
+  ],
   ["Your team", "Tap to see the league as another manager."],
   ["Menu", "Every page of the league lives here."],
 ] as const;
 
 /* A browser with a kept passphrase and no Your team, so the team sheet opens first. Bo Girds plays in each client. */
 async function openNew(page: Page) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
   await page.setViewportSize({ width: 390, height: 660 });
   await page.goto(`${server.url}${DOOR}`);
@@ -292,7 +341,9 @@ async function holdWithLayer(page: Page) {
   });
 }
 
-test("a new browser shows no Tour over the team sheet, then Stop 1 on the Suggestions of Bo Girds and the same four Stops (AT-1, AT-5, AT-6)", async ({ page }) => {
+test("a new browser shows no Tour over the team sheet, then Stop 1 on the Suggestions of Bo Girds and the same four Stops (AT-1, AT-5, AT-6)", async ({
+  page,
+}) => {
   await openNew(page);
   const sheet = page.getByRole("dialog", { name: "Which team is yours?" });
   await expect(sheet).toBeVisible();
@@ -307,12 +358,16 @@ test("a new browser shows no Tour over the team sheet, then Stop 1 on the Sugges
   await expect(stop).toContainText("1 of 4");
   const suggestions = page.getByRole("group", { name: "Suggestions" });
   await expect(suggestions).toHaveAttribute("data-tour-target", "");
-  expect(inside(center((await suggestions.boundingBox())!), await rectOf(page, "[data-tour-hole]"))).toBe(true);
+  expect(
+    inside(center((await suggestions.boundingBox())!), await rectOf(page, "[data-tour-hole]")),
+  ).toBe(true);
   for (const [index, [header, line]] of COPY.entries()) {
     const current = card(page, header);
     await expect(current).toContainText(line);
     await expect(current).toContainText(`${index + 1} of 4`);
-    await current.getByRole("button", { name: index === COPY.length - 1 ? "Done" : "Next" }).click();
+    await current
+      .getByRole("button", { name: index === COPY.length - 1 ? "Done" : "Next" })
+      .click();
   }
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
 });
@@ -320,7 +375,10 @@ test("a new browser shows no Tour over the team sheet, then Stop 1 on the Sugges
 /* A browser with Your team set to Bo Girds, a kept passphrase, and no seen key of the Tour or of the Announcement. From
    the load, each frame counts whether the Announcement and a Stop card show at the same time. */
 async function openWithAnnouncement(page: Page) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript((team) => {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", team);
@@ -328,7 +386,11 @@ async function openWithAnnouncement(page: Page) {
     (window as unknown as { __both: typeof both }).__both = both;
     const frame = () => {
       both.frames += 1;
-      if (document.getElementById("announcement-line") && document.querySelector("[data-tour-card]")) both.together += 1;
+      if (
+        document.getElementById("announcement-line") &&
+        document.querySelector("[data-tour-card]")
+      )
+        both.together += 1;
       requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
@@ -337,15 +399,26 @@ async function openWithAnnouncement(page: Page) {
   await page.goto(`${server.url}${DOOR}`);
 }
 
-test("on a fresh load the season-sim Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38)", async ({ page }) => {
+test("on a fresh load the season-sim Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38)", async ({
+  page,
+}) => {
   await openWithAnnouncement(page);
   const announcement = page.getByRole("dialog", { name: "See your path to the playoffs" });
   await expect(announcement).toBeVisible();
-  const layer = await page.locator('[aria-modal="true"]').evaluateAll((els) =>
-    els.map((el) => `${el.getAttribute("role")} "${document.getElementById(el.getAttribute("aria-labelledby") ?? "")?.textContent ?? el.getAttribute("aria-label")}"`),
-  );
+  const layer = await page
+    .locator('[aria-modal="true"]')
+    .evaluateAll((els) =>
+      els.map(
+        (el) =>
+          `${el.getAttribute("role")} "${document.getElementById(el.getAttribute("aria-labelledby") ?? "")?.textContent ?? el.getAttribute("aria-label")}"`,
+      ),
+    );
   console.log(`AT-38 open modal layers: ${JSON.stringify(layer)}`);
-  const open = await announcement.evaluate((el) => ({ tag: el.tagName.toLowerCase(), role: el.getAttribute("role"), ariaModal: el.getAttribute("aria-modal") }));
+  const open = await announcement.evaluate((el) => ({
+    tag: el.tagName.toLowerCase(),
+    role: el.getAttribute("role"),
+    ariaModal: el.getAttribute("aria-modal"),
+  }));
   console.log(`AT-38 open layer: tag ${open.tag}, role ${open.role}, aria-modal ${open.ariaModal}`);
   await page.waitForTimeout(1200);
   await expect(page.locator("[data-tour-card]")).toHaveCount(0);
@@ -354,8 +427,18 @@ test("on a fresh load the season-sim Announcement opens first, the Tour waits, a
   // on the page with aria-modal. The Announcement slides down, so each line prints its opacity and its transform.
   const sampled = page.evaluate(
     () =>
-      new Promise<{ tapAt: number; exitEnd: number; stop1At: number; framesInExit: number; cardFrames: number; modalFrames: number; lines: string[] }>((resolve) => {
-        const layer = document.getElementById("announcement-line")!.closest('[aria-modal="true"]') as HTMLElement;
+      new Promise<{
+        tapAt: number;
+        exitEnd: number;
+        stop1At: number;
+        framesInExit: number;
+        cardFrames: number;
+        modalFrames: number;
+        lines: string[];
+      }>((resolve) => {
+        const layer = document
+          .getElementById("announcement-line")!
+          .closest('[aria-modal="true"]') as HTMLElement;
         const hasCard = () => !!document.querySelector("[data-tour-card]");
         let tapAt = 0;
         let exitEnd = 0;
@@ -369,7 +452,10 @@ test("on a fresh load the season-sim Announcement opens first, the Tour waits, a
           const style = layer.isConnected ? getComputedStyle(layer) : null;
           return `${label} t=${performance.now().toFixed(1)} ms; opacity ${style ? style.opacity : "n/a"}; transform ${style ? style.transform : "n/a"}; aria-modal ${layer.getAttribute("aria-modal")}; on page ${layer.isConnected}; card ${hasCard()}`;
         };
-        document.addEventListener("click", () => (tapAt = performance.now()), { capture: true, once: true });
+        document.addEventListener("click", () => (tapAt = performance.now()), {
+          capture: true,
+          once: true,
+        });
         const frame = () => {
           if (tapAt && !exitEnd && modal()) {
             framesInExit += 1;
@@ -384,7 +470,15 @@ test("on a fresh load the season-sim Announcement opens first, the Tour waits, a
             }
             if (hasCard()) {
               lines.push(describe("AT-38 Stop 1 frame:"));
-              resolve({ tapAt, exitEnd, stop1At: performance.now(), framesInExit, cardFrames, modalFrames, lines });
+              resolve({
+                tapAt,
+                exitEnd,
+                stop1At: performance.now(),
+                framesInExit,
+                cardFrames,
+                modalFrames,
+                lines,
+              });
               return;
             }
           }
@@ -397,12 +491,19 @@ test("on a fresh load the season-sim Announcement opens first, the Tour waits, a
   await announcement.getByRole("button", { name: "Not now" }).click();
   const run = await sampled;
   for (const line of run.lines) console.log(line);
-  const both = await page.evaluate(() => (window as unknown as { __both: { frames: number; together: number } }).__both);
-  const seen = await page.evaluate(() => ({ tour: localStorage.getItem("cpc.tour-seen"), announcement: localStorage.getItem("cpc.announcement.season-sim-2026") }));
+  const both = await page.evaluate(
+    () => (window as unknown as { __both: { frames: number; together: number } }).__both,
+  );
+  const seen = await page.evaluate(() => ({
+    tour: localStorage.getItem("cpc.tour-seen"),
+    announcement: localStorage.getItem("cpc.announcement.season-sim-2026"),
+  }));
   console.log(
     `AT-38 layer: ${layer[0]}; tap on Not now: ${run.tapAt.toFixed(1)} ms; exit end: ${run.exitEnd.toFixed(1)} ms; exit duration: ${(run.exitEnd - run.tapAt).toFixed(1)} ms; Stop 1 shows: ${run.stop1At.toFixed(1)} ms; gap: ${(run.stop1At - run.exitEnd).toFixed(1)} ms; frames in exit with no card: ${run.framesInExit - run.cardFrames} of ${run.framesInExit}`,
   );
-  console.log(`AT-38 frames since load with the Announcement and a Stop card together: ${both.together} of ${both.frames}`);
+  console.log(
+    `AT-38 frames since load with the Announcement and a Stop card together: ${both.together} of ${both.frames}`,
+  );
   console.log(`AT-38 seen keys: ${JSON.stringify(seen)}`);
   expect(run.framesInExit).toBeGreaterThan(5);
   expect(run.cardFrames).toBe(0);
@@ -412,7 +513,9 @@ test("on a fresh load the season-sim Announcement opens first, the Tour waits, a
   await expect(card(page, "Suggestions")).toContainText("1 of 4");
 });
 
-test("the Tour blurs the focused ask box before Stop 1, so no text field has focus (AT-32)", async ({ page }) => {
+test("the Tour blurs the focused ask box before Stop 1, so no text field has focus (AT-32)", async ({
+  page,
+}) => {
   await holdWithLayer(page);
   await openTour(page, 390, 660);
   const field = page.getByRole("textbox", { name: "Ask a question" });

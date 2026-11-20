@@ -18,7 +18,7 @@ export default function EggsPage() {
     <>
       <TopBand {...shellProps()} pageHref={eggsHref()} />
       {/* The hero of the egg board, or of the 404 page, holds the h1 of the page. */}
-      <main className="mx-auto w-full max-w-page px-gutter pt-sp-5 pb-sp-6">
+      <main className="max-w-page px-gutter pt-sp-5 pb-sp-6 mx-auto w-full">
         <EggBoardPart closed={<NotFoundHero />} title={pageTitle(undefined, "Egg Board")} />
       </main>
     </>

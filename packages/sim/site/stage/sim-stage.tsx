@@ -39,8 +39,8 @@ const PARTS = [
 
 /* Each control is the touch size. The press scales a little, so the stage shows it heard the tap. */
 const CONTROL = cn(
-  "press flex h-touch min-w-touch flex-none items-center justify-center gap-sp-2 rounded-report px-sp-4 text-body font-semibold",
-  "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark",
+  "press h-touch min-w-touch gap-sp-2 rounded-report px-sp-4 text-body flex flex-none items-center justify-center font-semibold",
+  "focus-visible:outline-on-dark outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
   "[&_svg]:size-sp-5 [&_svg]:flex-none",
 );
 const QUIET = "border border-rule-dark text-on-dark hover-fine:bg-chip-dark";
@@ -65,7 +65,7 @@ function Tabs({
   onGo: (index: number) => void;
 }) {
   return (
-    <ol aria-label={label} className="m-0 flex min-w-0 list-none items-center gap-sp-1 p-0">
+    <ol aria-label={label} className="gap-sp-1 m-0 flex min-w-0 list-none items-center p-0">
       {items.map((s, i) => (
         <li key={s.id}>
           {/* The reduced-motion rule of the site stops the CSS transition of the opacity, so under reduced motion the
@@ -80,8 +80,12 @@ function Tabs({
             onClick={() => onGo(i)}
             className={cn(
               EYEBROW,
-              "relative flex h-touch items-center px-sp-2 transition-[color,opacity] duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-on-dark disabled:cursor-default disabled:opacity-40",
-              i === at ? "text-on-dark" : open[i] ? "text-on-dark-2 hover-fine:text-on-dark" : "text-on-dark-muted",
+              "h-touch px-sp-2 focus-visible:outline-on-dark relative flex items-center transition-[color,opacity] duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] disabled:cursor-default disabled:opacity-40",
+              i === at
+                ? "text-on-dark"
+                : open[i]
+                  ? "text-on-dark-2 hover-fine:text-on-dark"
+                  : "text-on-dark-muted",
             )}
           >
             {s.label}
@@ -91,7 +95,7 @@ function Tabs({
                 initial={off ? { opacity: 0 } : undefined}
                 animate={off ? { opacity: 1 } : undefined}
                 transition={off ? FADE_IN : { type: "spring", bounce: 0, duration: 0.35 }}
-                className="absolute inset-x-sp-2 bottom-sp-2 h-0.5 rounded-report bg-accent"
+                className="inset-x-sp-2 bottom-sp-2 rounded-report bg-accent absolute h-0.5"
               />
             )}
           </motion.button>
@@ -108,13 +112,15 @@ function sayAt(season: ReplaySeason, step: Step, week: number): string {
     if (step.kind === "cut") return "The playoff field is set";
     return `Week ${season.weeks[step.index].week} final`;
   }
-  if (step.screen === "bracket") return `${season.rounds[step.round].label}${step.decided ? " results" : ""}`;
+  if (step.screen === "bracket")
+    return `${season.rounds[step.round].label}${step.decided ? " results" : ""}`;
   if (step.screen === "champion") return `${season.champion.name} wins the title in this run`;
   return step.kind === "after" ? `Standings after week ${week}` : `Week ${week} games`;
 }
 
 /* The part of the week, or the screen, that a step shows, so a tab knows the steps it covers. */
-const partOf = (s: Step): string => (s.screen === "week" ? (s.kind === "after" ? "standings" : "games") : s.screen);
+const partOf = (s: Step): string =>
+  s.screen === "week" ? (s.kind === "after" ? "standings" : "games") : s.screen;
 
 /* One take of the replay. A take starts at the first step; "Sim again" starts a fresh take. */
 function Player({
@@ -202,10 +208,19 @@ function Player({
     const shown = step.index;
     const rows = shown < 0 ? season.start : season.weeks[shown].standings;
     const current = shown < 0 ? null : season.weeks[shown];
-    const title = step.kind === "cut" ? "Playoff field set" : current === null ? `After week ${startWeek}` : `Week ${current.week}`;
+    const title =
+      step.kind === "cut"
+        ? "Playoff field set"
+        : current === null
+          ? `After week ${startWeek}`
+          : `Week ${current.week}`;
     body = (
-      <div className="flex h-full min-h-0 flex-col gap-sp-2">
-        <SwapText text={title} off={off} className="text-stat leading-tight font-bold text-on-dark" />
+      <div className="gap-sp-2 flex h-full min-h-0 flex-col">
+        <SwapText
+          text={title}
+          off={off}
+          className="text-stat text-on-dark leading-tight font-bold"
+        />
         <ZoneKey byes={season.byes} spots={spots} />
         <Standings
           rows={rows}
@@ -227,8 +242,8 @@ function Player({
     // The standings open in the order before the week, then the rows move to their new places.
     const moved = step.kind === "after" && settled;
     body = (
-      <div className="flex h-full min-h-0 flex-col gap-sp-2">
-        <span className="text-stat leading-tight font-bold text-on-dark">{`Week ${week.week}`}</span>
+      <div className="gap-sp-2 flex h-full min-h-0 flex-col">
+        <span className="text-stat text-on-dark leading-tight font-bold">{`Week ${week.week}`}</span>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={part}
@@ -236,7 +251,7 @@ function Player({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.15, ease: EASE_OUT } }}
             transition={{ duration: 0.3, ease: EASE_OUT }}
-            className="flex min-h-0 flex-1 flex-col gap-sp-2"
+            className="gap-sp-2 flex min-h-0 flex-1 flex-col"
           >
             {part === "games" ? (
               <WeekGames week={week} played={played} live={live} yourTeam={yourTeam} />
@@ -273,16 +288,33 @@ function Player({
       />
     );
   } else {
-    body = <ChampionScreen season={season} avatars={avatars} yourTeam={yourTeam} off={off} jumped={jumped} />;
+    body = (
+      <ChampionScreen
+        season={season}
+        avatars={avatars}
+        yourTeam={yourTeam}
+        off={off}
+        jumped={jumped}
+      />
+    );
   }
 
   // The screen enters from a little below, and the old screen leaves fast in place. The shared teams fly between them.
   // The bracket and the champion show at once, because their teams fly in from the screen before and own their fades.
   // Under reduced motion each screen only fades.
   const enterScreen = off
-    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.3 } }
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.3 },
+      }
     : screen !== "season" && !jumped
-      ? { initial: false as const, animate: { opacity: 1 }, exit: { opacity: 0, transition: { duration: 0.2, ease: EASE_OUT } } }
+      ? {
+          initial: false as const,
+          animate: { opacity: 1 },
+          exit: { opacity: 0, transition: { duration: 0.2, ease: EASE_OUT } },
+        }
       : {
           initial: { opacity: 0, y: 8 },
           animate: { opacity: 1, y: 0 },
@@ -293,7 +325,11 @@ function Player({
   // The controls of the end, or of the replay while it plays.
   const controls = ended ? (
     <>
-      <button type="button" onClick={onAgain} className={cn(CONTROL, "bg-accent text-on-dark hover-fine:opacity-90")}>
+      <button
+        type="button"
+        onClick={onAgain}
+        className={cn(CONTROL, "bg-accent text-on-dark hover-fine:opacity-90")}
+      >
         <RotateCcw aria-hidden />
         Sim again
       </button>
@@ -303,7 +339,12 @@ function Player({
     </>
   ) : (
     <>
-      <button type="button" aria-label={playing ? "Pause" : "Play"} onClick={() => setPlaying((now) => !now)} className={cn(CONTROL, QUIET, "px-0")}>
+      <button
+        type="button"
+        aria-label={playing ? "Pause" : "Play"}
+        onClick={() => setPlaying((now) => !now)}
+        className={cn(CONTROL, QUIET, "px-0")}
+      >
         {playing ? <Pause aria-hidden /> : <Play aria-hidden />}
       </button>
       <button type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
@@ -323,9 +364,21 @@ function Player({
       <p role="status" className="sr-only">
         {sayAt(season, step, week?.week ?? 0)}
       </p>
-      <header className="flex h-[calc(var(--spacing-touch)+var(--spacing-sp-2))] flex-none items-center justify-between gap-sp-3">
-        <Tabs items={tabs} at={tabAt} label={mode === "season" ? "Screens" : "Parts of the week"} off={off} open={tabOpen} onGo={goTab} />
-        <button type="button" aria-label="Close the replay" onClick={onClose} className={cn(CONTROL, "px-0 text-on-dark hover-fine:bg-chip-dark")}>
+      <header className="gap-sp-3 flex h-[calc(var(--spacing-touch)+var(--spacing-sp-2))] flex-none items-center justify-between">
+        <Tabs
+          items={tabs}
+          at={tabAt}
+          label={mode === "season" ? "Screens" : "Parts of the week"}
+          off={off}
+          open={tabOpen}
+          onGo={goTab}
+        />
+        <button
+          type="button"
+          aria-label="Close the replay"
+          onClick={onClose}
+          className={cn(CONTROL, "text-on-dark hover-fine:bg-chip-dark px-0")}
+        >
           <X aria-hidden />
         </button>
       </header>
@@ -341,7 +394,7 @@ function Player({
       <div
         role="group"
         aria-label="Replay controls"
-        className="flex flex-none items-center gap-sp-2 pt-sp-3 pb-[max(var(--spacing-sp-3),var(--spacing-door-safe))]"
+        className="gap-sp-2 pt-sp-3 flex flex-none items-center pb-[max(var(--spacing-sp-3),var(--spacing-door-safe))]"
       >
         {off ? (
           // Under reduced motion, the end swaps the controls through a fade: the old set fades out before the new set
@@ -353,7 +406,7 @@ function Player({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: FADE_OUT }}
               transition={FADE_IN}
-              className="flex min-w-0 flex-1 items-center gap-sp-2"
+              className="gap-sp-2 flex min-w-0 flex-1 items-center"
             >
               {controls}
             </motion.div>
@@ -434,9 +487,9 @@ export function SimStage({
       initial={off ? { opacity: 0 } : { opacity: 0, y: 8 }}
       animate={closing ? (off ? { opacity: 0 } : { opacity: 0, y: 8 }) : { opacity: 1, y: 0 }}
       transition={{ duration: closing ? 0.15 : 0.25, ease: EASE_OUT }}
-      className="fixed inset-x-0 top-band-height z-30 flex h-door-fill flex-col overflow-hidden bg-band px-gutter text-on-dark outline-none"
+      className="top-band-height h-door-fill bg-band px-gutter text-on-dark fixed inset-x-0 z-30 flex flex-col overflow-hidden outline-none"
     >
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-stage flex-col">
+      <div className="max-w-stage mx-auto flex h-full min-h-0 w-full flex-col">
         <Player
           key={take.count}
           startWeek={sim.week}

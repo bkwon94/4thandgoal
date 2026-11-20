@@ -12,7 +12,13 @@ import { pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
 const TEAMS = {
   teams: [
     { roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [] },
-    { roster_id: 2, team: "Blitz Bakers", manager: "Ben", avatar: "https://cdn.test/b.png", players: [] },
+    {
+      roster_id: 2,
+      team: "Blitz Bakers",
+      manager: "Ben",
+      avatar: "https://cdn.test/b.png",
+      players: [],
+    },
     { roster_id: 3, team: "Punt Punks", manager: "Cy", players: [] },
   ],
 };
@@ -40,14 +46,34 @@ function storeEntry(teams: unknown[], ageMs: number) {
   sessionStorage.setItem(STORE_KEY, JSON.stringify({ storedAt: Date.now() - ageMs, teams }));
 }
 
-const STORED = [{ roster_id: 9, team: "Stored Sliders", manager: "Dee", avatar: null, players: [] }];
+const STORED = [
+  { roster_id: 9, team: "Stored Sliders", manager: "Dee", avatar: null, players: [] },
+];
 
-const player = (id: string, name: string) => ({ player_id: id, name, position: "WR", nfl_team: "NYJ", headshot: "" });
+const player = (id: string, name: string) => ({
+  player_id: id,
+  name,
+  position: "WR",
+  nfl_team: "NYJ",
+  headshot: "",
+});
 
 /* Two teams with players, for the tests that pick a trade. */
 const ROSTERS = [
-  { roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [player("p2", "Ana Two")] },
-  { roster_id: 2, team: "Blitz Bakers", manager: "Ben", avatar: null, players: [player("p3", "Ben One")] },
+  {
+    roster_id: 1,
+    team: "Gridiron Ghosts",
+    manager: "Ana",
+    avatar: null,
+    players: [player("p2", "Ana Two")],
+  },
+  {
+    roster_id: 2,
+    team: "Blitz Bakers",
+    manager: "Ben",
+    avatar: null,
+    players: [player("p3", "Ben One")],
+  },
 ];
 
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
@@ -68,7 +94,12 @@ async function teamNames(side: SideTitle) {
 }
 
 /* Both teams of ROSTERS, with Ben One for my side and Ana Two for the other side. */
-const TRADE = { mine: "Gridiron Ghosts", other: "Blitz Bakers", mineGets: "Ben One", otherGets: "Ana Two" };
+const TRADE = {
+  mine: "Gridiron Ghosts",
+  other: "Blitz Bakers",
+  mineGets: "Ben One",
+  otherGets: "Ana Two",
+};
 
 beforeEach(() => {
   localStorage.clear();
@@ -92,10 +123,18 @@ describe("Analyzer", () => {
     render(<Analyzer target={apiTarget} finderOn={false} />);
     expect(await screen.findByRole("dialog")).toBeTruthy();
     // The modal dialog hides the page from the accessibility tree, so these queries take hidden elements too.
-    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer", hidden: true })).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Trade Analyzer", hidden: true }),
+    ).toBeTruthy();
     expect(screen.getByText("2 of 4")).toBeTruthy();
-    expect((screen.getByRole("button", { name: "Pick Your Team", hidden: true }) as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByRole("button", { name: "Grade the Trade", hidden: true }) as HTMLButtonElement).disabled).toBe(true);
+    expect(
+      (screen.getByRole("button", { name: "Pick Your Team", hidden: true }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByRole("button", { name: "Grade the Trade", hidden: true }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
     expect(fetchStub).not.toHaveBeenCalled();
   });
 
@@ -111,7 +150,11 @@ describe("Analyzer", () => {
     expect(localStorage.getItem("cpc.passphrase")).toBe("localtest");
     expect(slot("Your Team").getAttribute("aria-label")).toBe("Pick Your Team");
     expect(slot("Team Two").getAttribute("aria-label")).toBe("Pick Team Two");
-    expect(await teamNames("Your Team")).toEqual(["Gridiron GhostsAna", "Blitz BakersBen", "Punt PunksCy"]);
+    expect(await teamNames("Your Team")).toEqual([
+      "Gridiron GhostsAna",
+      "Blitz BakersBen",
+      "Punt PunksCy",
+    ]);
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
@@ -181,8 +224,14 @@ describe("Analyzer", () => {
     expect(fetchStub).toHaveBeenCalledTimes(1);
 
     release();
-    await waitFor(() => expect(JSON.parse(sessionStorage.getItem(STORE_KEY)!).teams).toHaveLength(3));
-    expect(await teamNames("Your Team")).toEqual(["Gridiron GhostsAna", "Blitz BakersBen", "Punt PunksCy"]);
+    await waitFor(() =>
+      expect(JSON.parse(sessionStorage.getItem(STORE_KEY)!).teams).toHaveLength(3),
+    );
+    expect(await teamNames("Your Team")).toEqual([
+      "Gridiron GhostsAna",
+      "Blitz BakersBen",
+      "Punt PunksCy",
+    ]);
     expect(JSON.parse(sessionStorage.getItem(STORE_KEY)!).teams[0].team).toBe("Gridiron Ghosts");
   });
 
@@ -229,10 +278,7 @@ describe("Analyzer", () => {
   it("drops a stored pick when the fresh roster no longer has the player", async () => {
     localStorage.setItem("cpc.passphrase", "localtest");
     storeEntry(
-      [
-        { ...ROSTERS[0], players: [player("p1", "Ana One"), player("p2", "Ana Two")] },
-        ROSTERS[1],
-      ],
+      [{ ...ROSTERS[0], players: [player("p1", "Ana One"), player("p2", "Ana Two")] }, ROSTERS[1]],
       60_000,
     );
     const release = answerLater({ teams: ROSTERS });
@@ -246,7 +292,9 @@ describe("Analyzer", () => {
 
     // The fresh roster lost Ana One in a trade.
     release();
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ana One" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Remove Ana One" })).toBeNull(),
+    );
     expect(screen.queryByRole("button", { name: "Remove Ana Two" })).toBeNull();
     expect(screen.getByRole("button", { name: "Remove Ben One" })).toBeTruthy();
     // My side gives nobody now, so the form cannot submit.
@@ -305,7 +353,9 @@ describe("Analyzer", () => {
       submit(),
     ];
     for (let i = 1; i < parts.length; i++) {
-      expect(parts[i - 1].compareDocumentPosition(parts[i]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(
+        parts[i - 1].compareDocumentPosition(parts[i]) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
     }
   });
 

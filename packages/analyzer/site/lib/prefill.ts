@@ -37,7 +37,15 @@ export function readPrefill(search: string): Prefill | null {
 export function prefillSides({ team, partner, gives, gets }: Prefill): Sides {
   const [mine, theirs] = EMPTY_SIDES;
   return [
-    { id: mine.id, rosterId: team, gets: gets.map((playerId) => ({ playerId, fromSide: theirs.id })) },
-    { id: theirs.id, rosterId: partner, gets: gives.map((playerId) => ({ playerId, fromSide: mine.id })) },
+    {
+      id: mine.id,
+      rosterId: team,
+      gets: gets.map((playerId) => ({ playerId, fromSide: theirs.id })),
+    },
+    {
+      id: theirs.id,
+      rosterId: partner,
+      gets: gives.map((playerId) => ({ playerId, fromSide: mine.id })),
+    },
   ];
 }

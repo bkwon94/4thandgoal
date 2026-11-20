@@ -59,10 +59,13 @@ describe("the contrast of each text pair of each brand (AT-17)", () => {
     "accent_text on band",
   ];
 
-  it.each(slugs)("holds the pairs of the look and the hero pairs of %s in the light and the dark set", (slug) => {
-    const lines = pairLines(REPO_ROOT, slug).map(({ line }) => line.replace(/ [0-9.]+$/, ""));
-    for (const set of ["light", "dark"]) {
-      for (const pair of LOOK_PAIRS) expect(lines).toContain(`${slug} ${set}: ${pair}`);
-    }
-  });
+  it.each(slugs)(
+    "holds the pairs of the look and the hero pairs of %s in the light and the dark set",
+    (slug) => {
+      const lines = pairLines(REPO_ROOT, slug).map(({ line }) => line.replace(/ [0-9.]+$/, ""));
+      for (const set of ["light", "dark"]) {
+        for (const pair of LOOK_PAIRS) expect(lines).toContain(`${slug} ${set}: ${pair}`);
+      }
+    },
+  );
 });

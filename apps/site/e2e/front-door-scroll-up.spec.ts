@@ -17,7 +17,11 @@ const OUT = join(process.cwd(), "out");
 const DOOR = existsSync(join(OUT, "ask", "index.html")) ? "/ask/" : "/";
 
 // The browser of a file is set at its top, because a group cannot pick the browser. Safari runs on WebKit.
-test.use({ browserName: "webkit", viewport: { width: 375, height: 812 }, reducedMotion: "no-preference" });
+test.use({
+  browserName: "webkit",
+  viewport: { width: 375, height: 812 },
+  reducedMotion: "no-preference",
+});
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -43,21 +47,33 @@ async function scrollUp(page: Page) {
 /* Read the gap in px from the bottom of the Thread header to the top of the bubble of the newest question `name`. */
 async function gapUnderHeader(page: Page, name: string): Promise<number> {
   const header = (await page.locator('header[aria-label="Thread header"]').boundingBox())!;
-  const bubble = (await page.getByRole("article", { name }).last().locator("p").first().boundingBox())!;
+  const bubble = (await page
+    .getByRole("article", { name })
+    .last()
+    .locator("p")
+    .first()
+    .boundingBox())!;
   return bubble.y - (header.y + header.height);
 }
 
 /* Wait for the smooth scroll to end with the bubble of `name` right under the Thread header. The scroll of WebKit can
    start some frames after the question lands, so the check reads the gap again until it holds or 5 s pass. */
 async function expectUnderHeader(page: Page, name: string) {
-  await expect.poll(() => gapUnderHeader(page, name), { message: `the bubble top of ${name} sits under the header`, timeout: 5000 }).toBeLessThanOrEqual(16);
+  await expect
+    .poll(() => gapUnderHeader(page, name), {
+      message: `the bubble top of ${name} sits under the header`,
+      timeout: 5000,
+    })
+    .toBeLessThanOrEqual(16);
   await samplesWhenStill(page);
   const gap = await gapUnderHeader(page, name);
   expect(gap, `the bubble top of ${name} sits ${gap}px under the header`).toBeGreaterThanOrEqual(0);
   expect(gap, `the bubble top of ${name} sits ${gap}px under the header`).toBeLessThanOrEqual(16);
 }
 
-test("a Suggestion chip tapped in a scrolled-up Thread scrolls its question to the top under the Thread header", async ({ page }) => {
+test("a Suggestion chip tapped in a scrolled-up Thread scrolls its question to the top under the Thread header", async ({
+  page,
+}) => {
   // The Suggestions follow the day, so a fixed Friday keeps the same chips on each run. The timers still run.
   await page.clock.setFixedTime(new Date("2026-11-13T12:00:00"));
   await openDoor(page, `${server.url}${DOOR}`);
@@ -71,7 +87,9 @@ test("a Suggestion chip tapped in a scrolled-up Thread scrolls its question to t
   await expectUnderHeader(page, name);
 });
 
-test("a question typed in a scrolled-up Thread scrolls to the top under the Thread header", async ({ page }) => {
+test("a question typed in a scrolled-up Thread scrolls to the top under the Thread header", async ({
+  page,
+}) => {
   // The same fixed Friday as the chip test, so both tests get the same Suggestions on each run. The timers still run.
   await page.clock.setFixedTime(new Date("2026-11-13T12:00:00"));
   await openDoor(page, `${server.url}${DOOR}`);

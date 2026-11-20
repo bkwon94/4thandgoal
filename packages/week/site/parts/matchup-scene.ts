@@ -3,14 +3,23 @@
  * the two teams of the Matchup of the Week as the flare with the margin mark between them (decision 07).
  */
 import { gap } from "@cpc/design/format/format";
-import { sceneGuideScore, sceneScore, type HeroScene, type SceneLight } from "@cpc/design/parts/scene-math";
+import {
+  sceneGuideScore,
+  sceneScore,
+  type HeroScene,
+  type SceneLight,
+} from "@cpc/design/parts/scene-math";
 import type { Matchup, Median, Pick } from "../schema/week-types";
 
 /*
  * The scene of the week from the parts of the week page that the hero already loads. The lights run from the low
  * score to the high score. The winner of the Matchup shows its label at rest, and the margin runs from it to the loser.
  */
-export function matchupScene(week: { matchups: Matchup[]; median: Median | null; pick: Pick }): HeroScene {
+export function matchupScene(week: {
+  matchups: Matchup[];
+  median: Median | null;
+  pick: Pick;
+}): HeroScene {
   const [first, second] = week.pick.sides;
   // A tie has no winner, so the first side of the pick stands in as the winner.
   const [winner, loser] = second.winner ? [second, first] : [first, second];
@@ -44,7 +53,11 @@ export function matchupScene(week: { matchups: Matchup[]; median: Median | null;
   return {
     lights,
     guides,
-    margin: { from: winnerIndex, to: indexOf(loser.team.roster_id), text: gap(winner.score - loser.score) },
+    margin: {
+      from: winnerIndex,
+      to: indexOf(loser.team.roster_id),
+      text: gap(winner.score - loser.score),
+    },
     restIndex: winnerIndex,
     mode: "settle",
   };

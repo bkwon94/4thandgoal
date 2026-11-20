@@ -15,7 +15,13 @@ type RiseProps = {
 
 export function Rise({ children, step = 0, className }: RiseProps) {
   return (
-    <Reveal trigger="mount" delay={stagger(step)} duration={DURATION.rise} ease={RISE_EASE} className={className}>
+    <Reveal
+      trigger="mount"
+      delay={stagger(step)}
+      duration={DURATION.rise}
+      ease={RISE_EASE}
+      className={className}
+    >
       {children}
     </Reveal>
   );

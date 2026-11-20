@@ -29,10 +29,15 @@ export function publicOver({
   for (let week = 6; week <= latest; week++) {
     const folder = join(root, "public", "2026", `week-${String(week).padStart(2, "0")}`);
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), weekPageJson({ week, avatars: week === latest ? avatars : {} }));
+    writeFileSync(
+      join(folder, "page.json"),
+      weekPageJson({ week, avatars: week === latest ? avatars : {} }),
+    );
   }
-  if (report !== undefined) writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
-  if (sim !== undefined) writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));
+  if (report !== undefined)
+    writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
+  if (sim !== undefined)
+    writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));
   vi.spyOn(process, "cwd").mockReturnValue(root);
   vi.resetModules();
 }

@@ -31,7 +31,11 @@ export default async function ManagersPage({ params }: Props) {
       <TopBand {...shellProps()} pageHref={managersHref(season)} />
       {/* The page is wide from the desktop tier, so the stage of the Index list sits beside the ledger. */}
       <PageColumn wide>
-        <ManagersIndex managers={managers} avatars={latestAvatars(managers.season)} managersHref={managersHref(season)} />
+        <ManagersIndex
+          managers={managers}
+          avatars={latestAvatars(managers.season)}
+          managersHref={managersHref(season)}
+        />
       </PageColumn>
     </>
   );

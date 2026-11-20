@@ -7,7 +7,10 @@ import { type Page, expect } from "@playwright/test";
 /* Open the door at `href` and pick the first team, with a kept passphrase. The API calls fail, because the run uses no
    real API, so a typed question ends as a note, and its bubble still shows in the Thread. */
 export async function openDoor(page: Page, href: string) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
   await page.goto(href);
   await page.getByRole("dialog").getByRole("button").first().click();
@@ -21,7 +24,10 @@ export async function openDoor(page: Page, href: string) {
 export async function openTopic(page: Page, name: string) {
   await expect(page.getByRole("list", { name: "All Topics" })).toHaveCount(0);
   await page.getByRole("button", { name: "More" }).click({ delay: 100 });
-  await page.getByRole("list", { name: "All Topics" }).getByRole("button", { name: new RegExp(`^${name}:`) }).click();
+  await page
+    .getByRole("list", { name: "All Topics" })
+    .getByRole("button", { name: new RegExp(`^${name}:`) })
+    .click();
   await expect(page.getByRole("article", { name })).toBeVisible();
 }
 

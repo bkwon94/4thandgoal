@@ -39,7 +39,10 @@ export function Opener({
         stats={
           <Rise step={1} className="w-full">
             {/* The leaders by title odds, best first. Each tile names the team under its odds. */}
-            <ol aria-label="Title odds" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-3">
+            <ol
+              aria-label="Title odds"
+              className="gap-sp-2 tablet:grid-cols-3 m-0 grid list-none grid-cols-1 p-0"
+            >
               {leaders.map((leader) => (
                 <li key={leader.roster_id}>
                   <Tile
@@ -68,11 +71,18 @@ export function Opener({
               {/* A plain fragment link, so a tap jumps to the sim with scripts off too. */}
               <a
                 href={finaleHref}
-                className="inline-flex min-h-touch w-fit items-center gap-sp-1 font-mono text-meta leading-tight font-bold tracking-caps text-accent-text uppercase no-underline hover-fine:underline"
+                className="min-h-touch gap-sp-1 text-meta tracking-caps text-accent-text hover-fine:underline inline-flex w-fit items-center font-mono leading-tight font-bold uppercase no-underline"
               >
                 See the sim
                 {/* An svg, not a glyph: axe gives no contrast verdict on a lone arrow character, and the floor fails that. */}
-                <svg aria-hidden="true" viewBox="0 0 16 16" className="size-[1em]" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 16 16"
+                  className="size-[1em]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M8 2v11M3 8l5 5 5-5" />
                 </svg>
               </a>
@@ -81,7 +91,9 @@ export function Opener({
         }
       />
       {rest.length > 0 && (
-        <p className="m-0 max-w-measure text-lead leading-body text-ink-2">{rest.map((sentence) => sentence.text).join(" ")}</p>
+        <p className="max-w-measure text-lead leading-body text-ink-2 m-0">
+          {rest.map((sentence) => sentence.text).join(" ")}
+        </p>
       )}
     </>
   );

@@ -7,7 +7,14 @@
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import { useRef, useState } from "react";
-import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
+import {
+  Sheet,
+  SheetBackdrop,
+  SheetClose,
+  SheetContent,
+  SheetGrip,
+  SheetTitle,
+} from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import type { DoorTeam } from "@/lib/data/front-door-data";
 import { FAST, SMOOTH, fadeIn, staggerOf } from "./motion";
@@ -70,29 +77,35 @@ export function TeamSheet({
       <SheetBackdrop />
       <SheetContent
         aria-describedby="your-team-line"
-        className="mx-auto flex max-h-[88dvh] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card shadow-sheet tablet:max-h-[80dvh]"
+        className="max-w-sheet rounded-t-hero border-rule bg-card shadow-sheet tablet:max-h-[80dvh] mx-auto flex max-h-[88dvh] w-full flex-col border border-b-0"
       >
         {/* The grip says "sheet" to a thumb. On a change of team the sheet drags down to close. On the first visit it has no
             close, so a drag springs back. */}
         <SheetGrip className="mt-sp-2 w-sp-6 h-sp-1" />
         {/* With a close, the right pad of the header clears the X, so a long title never runs under it. */}
-        <div className={`relative flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3 ${onClose ? "pr-[calc(var(--spacing-touch)+var(--spacing-sp-2))]" : ""}`}>
+        <div
+          className={`gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3 relative flex flex-none flex-col ${onClose ? "pr-[calc(var(--spacing-touch)+var(--spacing-sp-2))]" : ""}`}
+        >
           {onClose && (
             <SheetClose
               aria-label="Close"
-              className="press absolute top-sp-2 right-sp-2 flex size-touch items-center justify-center rounded-pill text-mute hover-fine:text-ink"
+              className="press top-sp-2 right-sp-2 size-touch rounded-pill text-mute hover-fine:text-ink absolute flex items-center justify-center"
             >
               <XIcon aria-hidden className="size-sp-5" />
             </SheetClose>
           )}
-          <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{siteName}</span>
-          <SheetTitle className="m-0 text-score leading-tight font-bold tracking-tight">Which team is yours?</SheetTitle>
-          <p id="your-team-line" className="m-0 text-lead leading-body text-ink-2">
+          <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+            {siteName}
+          </span>
+          <SheetTitle className="text-score m-0 leading-tight font-bold tracking-tight">
+            Which team is yours?
+          </SheetTitle>
+          <p id="your-team-line" className="text-lead leading-body text-ink-2 m-0">
             Pick once. This page then answers for your team.
           </p>
         </div>
         {/* The list scrolls inside the sheet. Its end keeps the home bar of an iPhone clear. */}
-        <ul className="m-0 flex min-h-0 list-none flex-col gap-sp-1 overflow-y-auto overscroll-contain px-sp-3 pt-sp-1 pb-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))] tablet:pb-sp-4">
+        <ul className="gap-sp-1 px-sp-3 pt-sp-1 tablet:pb-sp-4 m-0 flex min-h-0 list-none flex-col overflow-y-auto overscroll-contain pb-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))]">
           {teams.map((team, index) => {
             const picked = chosen === team.id;
             return (
@@ -107,15 +120,23 @@ export function TeamSheet({
                   type="button"
                   aria-pressed={picked}
                   onClick={() => choose(team.id)}
-                  className="press flex min-h-row-touch w-full items-center gap-sp-3 rounded-tile border border-transparent px-sp-3 text-left transition-colors duration-150 hover-fine:bg-raised aria-pressed:border-ink aria-pressed:bg-raised"
+                  className="press min-h-row-touch gap-sp-3 rounded-tile px-sp-3 hover-fine:bg-raised aria-pressed:border-ink aria-pressed:bg-raised flex w-full items-center border border-transparent text-left transition-colors duration-150"
                 >
                   {team.avatar ? (
-                    <img src={team.avatar} alt="" width={28} height={28} className="size-avatar flex-none rounded-full bg-raised object-cover" />
+                    <img
+                      src={team.avatar}
+                      alt=""
+                      width={28}
+                      height={28}
+                      className="size-avatar bg-raised flex-none rounded-full object-cover"
+                    />
                   ) : (
-                    <span aria-hidden className="size-avatar flex-none rounded-full bg-raised" />
+                    <span aria-hidden className="size-avatar bg-raised flex-none rounded-full" />
                   )}
-                  <span className="min-w-0 flex-1 truncate text-body leading-tight font-semibold">{team.name}</span>
-                  <span className="flex-none font-mono text-meta leading-tight text-mute tabular-nums">
+                  <span className="text-body min-w-0 flex-1 truncate leading-tight font-semibold">
+                    {team.name}
+                  </span>
+                  <span className="text-meta text-mute flex-none font-mono leading-tight tabular-nums">
                     {team.wins}-{team.losses} · {ordinal(team.rank)}
                   </span>
                   <PickMark on={picked} off={off} />
@@ -135,7 +156,7 @@ function PickMark({ on, off }: { on: boolean; off: boolean }) {
   return (
     <span
       aria-hidden
-      className={`flex size-sp-5 flex-none items-center justify-center rounded-full border transition-colors duration-150 ${on ? "border-ink bg-ink text-card" : "border-rule"}`}
+      className={`size-sp-5 flex flex-none items-center justify-center rounded-full border transition-colors duration-150 ${on ? "border-ink bg-ink text-card" : "border-rule"}`}
     >
       <svg viewBox="0 0 16 16" className="size-sp-3" fill="none">
         <motion.path
@@ -146,7 +167,14 @@ function PickMark({ on, off }: { on: boolean; off: boolean }) {
           strokeLinejoin="round"
           initial={false}
           animate={{ pathLength: on ? 1 : 0, opacity: on ? 1 : 0 }}
-          transition={off ? { duration: 0 } : { pathLength: { duration: FAST, ease: SMOOTH, delay: 0.08 }, opacity: { duration: 0.05, delay: 0.08 } }}
+          transition={
+            off
+              ? { duration: 0 }
+              : {
+                  pathLength: { duration: FAST, ease: SMOOTH, delay: 0.08 },
+                  opacity: { duration: 0.05, delay: 0.08 },
+                }
+          }
         />
       </svg>
     </span>

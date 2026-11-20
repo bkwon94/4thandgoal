@@ -15,7 +15,15 @@ afterEach(() => {
 /* A fixture entry with the joined fields of the loader. The chapter reads none of them. */
 function managerOf(index: number, change: Partial<Manager> = {}): Manager {
   const entry = fixture.managers[index] as Manager;
-  return { ...entry, standing: 1, rank: null, movement: null, odds: null, odds_change: null, ...change };
+  return {
+    ...entry,
+    standing: 1,
+    rank: null,
+    movement: null,
+    odds: null,
+    odds_change: null,
+    ...change,
+  };
 }
 
 /* The dots of the points line by the result each one names. */
@@ -62,7 +70,9 @@ describe("SeasonSoFar", () => {
   it("names each mark of the chart in one legend under it", () => {
     render(<SeasonSoFar teams={12} manager={managerOf(0)} />);
     const legend = screen.getByRole("list", { name: "Legend" });
-    const keys = within(legend).getAllByRole("listitem").map((item) => item.textContent);
+    const keys = within(legend)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
     expect(keys).toEqual(["Points", "League Median", "Win", "Loss"]);
     expect(screen.queryByText("Points per week against the league median.")).toBeNull();
   });
@@ -120,13 +130,22 @@ describe("SeasonSoFar", () => {
 
   it("draws no median line, no median key, and no median tile for a league with no median game", () => {
     const manager = managerOf(0);
-    render(<SeasonSoFar teams={12} manager={{ ...manager, weeks: manager.weeks.map((week) => ({ ...week, median: null })) }} />);
+    render(
+      <SeasonSoFar
+        teams={12}
+        manager={{ ...manager, weeks: manager.weeks.map((week) => ({ ...week, median: null })) }}
+      />,
+    );
     const line = screen.getByRole("img", { name: "Points per week" });
     expect(line.querySelectorAll("[data-median]")).toHaveLength(0);
     expect(line.textContent).toContain("Weeks 1 to 6: 2 wins, 4 losses.");
     expect(line.textContent).not.toContain("median");
     const legend = screen.getByRole("list", { name: "Legend" });
-    expect(within(legend).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["Points", "Win", "Loss"]);
+    expect(
+      within(legend)
+        .getAllByRole("listitem")
+        .map((item) => item.textContent),
+    ).toEqual(["Points", "Win", "Loss"]);
     expect(stats().map(([label]) => label)).toEqual(["Points For", "High Week"]);
   });
 
@@ -136,8 +155,12 @@ describe("SeasonSoFar", () => {
     const entry = fixture.managers[0];
     expect(within(grade).getByText(entry.grade!.letter)).toBeTruthy();
     expect(within(grade).getByText(entry.grade!.read)).toBeTruthy();
-    const arcs = within(within(grade).getByRole("list", { name: "Grade Dial" })).getAllByRole("img");
-    expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([12, 9, 6, 3]);
+    const arcs = within(within(grade).getByRole("list", { name: "Grade Dial" })).getAllByRole(
+      "img",
+    );
+    expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([
+      12, 9, 6, 3,
+    ]);
   });
 
   it("shows no grade with no grade in the entry", () => {

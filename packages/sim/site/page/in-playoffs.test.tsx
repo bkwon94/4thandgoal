@@ -15,15 +15,18 @@ afterEach(cleanup);
 
 /* The playoff part of a page. Each team of a fixture has one, and each holds the same bracket. */
 const playoffsOf = (sim: WeekSim, you: number) => sim.pages[you].playoffs!;
-const seed = (sim: WeekSim, n: number) => playoffsOf(sim, sim.sample[0].table[0]).teams[n - 1].roster_id;
+const seed = (sim: WeekSim, n: number) =>
+  playoffsOf(sim, sim.sample[0].table[0]).teams[n - 1].roster_id;
 // The 12th team of the table of stored run 1, the last place of the regular season.
 const last = (sim: WeekSim) => sim.sample[0].table[11];
 const header = () => screen.getByRole("region", { name: "Your team" });
 const gameCard = () => screen.getByRole("article", { name: /^Week \d+ vs / });
 const bracket = () => screen.getByRole("region", { name: "Bracket" });
 // The result tiles of the game card, each a toggle button in the group "Results", as in the regular weeks.
-const tiles = () => within(within(gameCard()).getByRole("group", { name: "Results" })).getAllByRole("button");
-const tile = (name: string) => tiles().find((entry) => entry.querySelector("[data-result-name]")?.textContent === name)!;
+const tiles = () =>
+  within(within(gameCard()).getByRole("group", { name: "Results" })).getAllByRole("button");
+const tile = (name: string) =>
+  tiles().find((entry) => entry.querySelector("[data-result-name]")?.textContent === name)!;
 const noTiles = () => expect(screen.queryAllByRole("group", { name: "Results" })).toHaveLength(0);
 const setLine = () => screen.queryByRole("region", { name: "What-if" });
 
@@ -35,13 +38,20 @@ describe("a team still in the playoffs", () => {
     render(<SimPage sim={roundTwoWeekSim} you={you} />);
     expect(header().textContent).toContain(`${playoffs.title}%`);
     expect(header().textContent).toContain("Title odds");
-    expect(within(gameCard()).getByRole("heading").textContent).toBe(`Week ${game.week} vs ${roundTwoWeekSim.names[game.opponent]}`);
-    expect(tiles().map((entry) => entry.querySelector("[data-result-name]")?.textContent)).toEqual(["Win", "Lose"]);
+    expect(within(gameCard()).getByRole("heading").textContent).toBe(
+      `Week ${game.week} vs ${roundTwoWeekSim.names[game.opponent]}`,
+    );
+    expect(tiles().map((entry) => entry.querySelector("[data-result-name]")?.textContent)).toEqual([
+      "Win",
+      "Lose",
+    ]);
     const [win, loss] = game.results;
     expect(tiles()[0].textContent).toContain(`${win.title}%`);
     expect(tiles()[0].textContent).toContain(`${Math.round(win.chance)}% likely`);
     expect(tiles()[1].textContent).toContain(`${loss.title}%`);
-    expect(gameCard().textContent).toContain(`Win and you reach the final. ${win.title}% to win it all.`);
+    expect(gameCard().textContent).toContain(
+      `Win and you reach the final. ${win.title}% to win it all.`,
+    );
   });
 
   it("has no week switch and no sentence of more wins in the playoffs", () => {
@@ -53,14 +63,19 @@ describe("a team still in the playoffs", () => {
   it("sees a bye with no tile while its next opponent is not set", () => {
     const you = seed(playoffsWeekSim, 1);
     render(<SimPage sim={playoffsWeekSim} you={you} />);
-    expect(screen.getByRole("article", { name: "Bye in week 15" }).textContent).toContain("week 16");
+    expect(screen.getByRole("article", { name: "Bye in week 15" }).textContent).toContain(
+      "week 16",
+    );
     noTiles();
     expect(screen.queryAllByRole("button", { pressed: false })).toHaveLength(0);
     expect(header().textContent).toContain(`${playoffsOf(playoffsWeekSim, you).title}%`);
   });
 
   it("offers tiles only for the game of the current round, never a later round (AT-66)", () => {
-    for (const [sim, n] of [[playoffsWeekSim, 3], [roundTwoWeekSim, 1]] as const) {
+    for (const [sim, n] of [
+      [playoffsWeekSim, 3],
+      [roundTwoWeekSim, 1],
+    ] as const) {
       render(<SimPage sim={sim} you={seed(sim, n)} whatIf={fakeWhatIfApi()} />);
       expect(tiles()).toHaveLength(2);
       expect(screen.getAllByRole("button", { pressed: false })).toHaveLength(2);
@@ -80,7 +95,9 @@ describe("a team out of the playoffs", () => {
     noTiles();
     const rows = within(bracket()).getAllByRole("listitem");
     for (const team of playoffs.teams.filter((entry) => entry.alive)) {
-      const row = rows.find((item) => item.textContent?.includes(playoffsWeekSim.names[team.roster_id]));
+      const row = rows.find((item) =>
+        item.textContent?.includes(playoffsWeekSim.names[team.roster_id]),
+      );
       expect(row?.textContent).toContain(`${team.title}%`);
     }
   });
@@ -89,10 +106,14 @@ describe("a team out of the playoffs", () => {
     const you = last(roundTwoWeekSim);
     render(<SimPage sim={roundTwoWeekSim} you={you} />);
     const odds = screen.getByRole("region", { name: "Title odds" });
-    const left = playoffsOf(roundTwoWeekSim, you).teams.filter((team) => team.alive).sort((a, b) => b.title - a.title);
-    expect(within(odds).getAllByRole("listitem").map((row) => row.textContent)).toEqual(
-      left.map((team) => expect.stringContaining(roundTwoWeekSim.names[team.roster_id])),
-    );
+    const left = playoffsOf(roundTwoWeekSim, you)
+      .teams.filter((team) => team.alive)
+      .sort((a, b) => b.title - a.title);
+    expect(
+      within(odds)
+        .getAllByRole("listitem")
+        .map((row) => row.textContent),
+    ).toEqual(left.map((team) => expect.stringContaining(roundTwoWeekSim.names[team.roster_id])));
     expect(left).toHaveLength(4);
   });
 });
@@ -143,7 +164,9 @@ describe("the What-if of a bracket game", () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={playoffsWeekSim} you={you()} whatIf={api} />);
     fireEvent.click(tile("Win"));
-    expect(api.calls.map((call) => call.ask)).toEqual([{ you: you(), set: [{ week: game().week, game: "win", median: null }] }]);
+    expect(api.calls.map((call) => call.ask)).toEqual([
+      { you: you(), set: [{ week: game().week, game: "win", median: null }] },
+    ]);
     expect(tile("Win").getAttribute("aria-pressed")).toBe("true");
     expect(setLine()!.textContent).toContain(`What-if: Wk ${game().week} win`);
     expect(header().getAttribute("aria-busy")).toBe("true");
@@ -187,7 +210,13 @@ describe("the What-if of a bracket game", () => {
 
   it("shows the line when the API is down", async () => {
     // A real call to port 9, which nothing serves, so the connection is refused as when the API is down.
-    render(<SimPage sim={playoffsWeekSim} you={you()} whatIf={whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" })} />);
+    render(
+      <SimPage
+        sim={playoffsWeekSim}
+        you={you()}
+        whatIf={whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" })}
+      />,
+    );
     fireEvent.click(tile("Lose"));
     await screen.findByText("The What-if is not available now.");
     expect(tile("Lose").getAttribute("aria-pressed")).toBe("false");
@@ -199,7 +228,9 @@ describe("Sim the season in the playoffs", () => {
   it("shows only Sim the season before the final, for a team in and a team out", () => {
     for (const you of [seed(playoffsWeekSim, 3), seed(playoffsWeekSim, 1), last(playoffsWeekSim)]) {
       render(<SimPage sim={playoffsWeekSim} you={you} />);
-      expect(screen.getAllByRole("button", { name: /^Sim / }).map((button) => button.textContent)).toEqual(["Sim the season"]);
+      expect(
+        screen.getAllByRole("button", { name: /^Sim / }).map((button) => button.textContent),
+      ).toEqual(["Sim the season"]);
       cleanup();
     }
   });
@@ -209,7 +240,13 @@ describe("Sim the season in the playoffs", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
     const stage = screen.getByRole("region", { name: "Sim replay" });
     const screens = within(stage).getByRole("list", { name: "Screens" });
-    expect(within(screens).getAllByRole("button").map((button) => button.textContent)).toEqual(["Playoffs", "Champion"]);
-    expect(within(screens).getByRole("button", { name: "Playoffs" }).getAttribute("aria-current")).toBe("step");
+    expect(
+      within(screens)
+        .getAllByRole("button")
+        .map((button) => button.textContent),
+    ).toEqual(["Playoffs", "Champion"]);
+    expect(
+      within(screens).getByRole("button", { name: "Playoffs" }).getAttribute("aria-current"),
+    ).toBe("step");
   });
 });

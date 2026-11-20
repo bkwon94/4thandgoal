@@ -12,7 +12,12 @@ export type TrendPoint = { week: number; value: number };
 /* The trend of a Trend tile. Bars light the bar of the page week. A step is a stepped area with the page week marked.
    Dots mark each week with a count above zero, for a rare count such as trades.
    The text is one sentence of the trend, so the chart is not the only source for a screen reader. */
-export type TileTrend = { points: TrendPoint[]; week: number; kind: "bars" | "step" | "dots"; text: string };
+export type TileTrend = {
+  points: TrendPoint[];
+  week: number;
+  kind: "bars" | "step" | "dots";
+  text: string;
+};
 
 type TileProps = {
   label: string;
@@ -73,10 +78,14 @@ function Step({ points, week }: { points: TrendPoint[]; week: number }) {
   const low = Math.min(...values);
   const high = Math.max(...values);
   // A pad of 2 units keeps the line off the top and the bottom edge.
-  const y = (value: number) => (high === low ? CHART_H / 2 : 2 + ((high - value) * (CHART_H - 4)) / (high - low));
+  const y = (value: number) =>
+    high === low ? CHART_H / 2 : 2 + ((high - value) * (CHART_H - 4)) / (high - low);
   const step = CHART_W / points.length;
   const line = points
-    .map((point, index) => `${index === 0 ? `M0 ${y(point.value)}` : `V${y(point.value)}`} H${(index + 1) * step}`)
+    .map(
+      (point, index) =>
+        `${index === 0 ? `M0 ${y(point.value)}` : `V${y(point.value)}`} H${(index + 1) * step}`,
+    )
     .join(" ");
   const markIndex = points.findIndex((point) => point.week === week);
   return (
@@ -88,7 +97,14 @@ function Step({ points, week }: { points: TrendPoint[]; week: number }) {
         </linearGradient>
       </defs>
       <path data-step d={`${line} V${CHART_H} H0 Z`} fill={`url(#${fadeId})`} />
-      <path d={line} fill="none" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" className="stroke-ink" />
+      <path
+        d={line}
+        fill="none"
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        className="stroke-ink"
+      />
       {markIndex >= 0 && (
         <line
           x1={markIndex * step}
@@ -112,7 +128,15 @@ function Dots({ points, week }: { points: TrendPoint[]; week: number }) {
   const slot = CHART_W / points.length;
   return (
     <>
-      <line x1={0} x2={CHART_W} y1={CHART_H / 2} y2={CHART_H / 2} strokeWidth={1} vectorEffect="non-scaling-stroke" className="stroke-current opacity-35" />
+      <line
+        x1={0}
+        x2={CHART_W}
+        y1={CHART_H / 2}
+        y2={CHART_H / 2}
+        strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
+        className="stroke-current opacity-35"
+      />
       {points
         .map((point, index) => ({ point, x: (index + 0.5) * slot }))
         .filter(({ point }) => point.value > 0)
@@ -149,7 +173,7 @@ function TrendChart({ trend }: { trend: TileTrend }) {
       aria-label={trend.text}
       viewBox={`0 0 ${CHART_W} ${CHART_H}`}
       preserveAspectRatio="none"
-      className="mt-sp-2 block h-8 w-full overflow-visible text-mute"
+      className="mt-sp-2 text-mute block h-8 w-full overflow-visible"
     >
       {trend.kind === "bars" && <Bars points={trend.points} week={trend.week} />}
       {trend.kind === "step" && <Step points={trend.points} week={trend.week} />}
@@ -161,11 +185,23 @@ function TrendChart({ trend }: { trend: TileTrend }) {
 export function Tile({ label, value, note, trend, tone = "page", stable, className }: TileProps) {
   const colors = TONES[tone];
   return (
-    <div className={cn("rounded-tile p-sp-4", colors.box, className)} {...(stable ? { [STABLE_ID]: stable } : {})}>
+    <div
+      className={cn("rounded-tile p-sp-4", colors.box, className)}
+      {...(stable ? { [STABLE_ID]: stable } : {})}
+    >
       {/* The label and the number are mono, so the numbers of a row of tiles line up. */}
-      <div className={cn("font-mono text-meta leading-tight font-bold tracking-caps uppercase", colors.label)}>{label}</div>
-      <div className="mt-sp-1 font-mono text-stat leading-stat font-bold tabular-nums">{value}</div>
-      {note !== undefined && <div className={cn("mt-sp-1 text-meta leading-tight", colors.note)}>{note}</div>}
+      <div
+        className={cn(
+          "text-meta tracking-caps font-mono leading-tight font-bold uppercase",
+          colors.label,
+        )}
+      >
+        {label}
+      </div>
+      <div className="mt-sp-1 text-stat leading-stat font-mono font-bold tabular-nums">{value}</div>
+      {note !== undefined && (
+        <div className={cn("mt-sp-1 text-meta leading-tight", colors.note)}>{note}</div>
+      )}
       {trend && <TrendChart trend={trend} />}
     </div>
   );

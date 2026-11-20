@@ -80,9 +80,9 @@ describe("the sim replay with reduced motion", () => {
       "Final results",
       "Lil Fridge wins the title in this run",
     ]);
-    expect(within(stage).getByRole("group", { name: "Champion of This Run" }).textContent).toContain(
-      "Wins the title in 14.4% of all 10,000 runs",
-    );
+    expect(
+      within(stage).getByRole("group", { name: "Champion of This Run" }).textContent,
+    ).toContain("Wins the title in 14.4% of all 10,000 runs");
   });
 
   it("shows the scores of a week as a still list, with no crawl", () => {

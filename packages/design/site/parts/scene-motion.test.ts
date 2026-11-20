@@ -4,11 +4,26 @@
  */
 import { describe, expect, it } from "vitest";
 import { type HeroScene, placeLights } from "./scene-math";
-import { REST_MS, SETTLE_MS, driftAt, dustAt, dustOf, linesAt, phaseAt, scatterOf, settleAt } from "./scene-motion";
+import {
+  REST_MS,
+  SETTLE_MS,
+  driftAt,
+  dustAt,
+  dustOf,
+  linesAt,
+  phaseAt,
+  scatterOf,
+  settleAt,
+} from "./scene-motion";
 
 /* A scene of twelve lights on a rising line, as the twelve scores of a week sorted low to high. */
 const twelve: HeroScene = {
-  lights: Array.from({ length: 12 }, (_, x) => ({ x, y: 80 + 4 * x, label: `Team ${x}`, tone: "bright" })),
+  lights: Array.from({ length: 12 }, (_, x) => ({
+    x,
+    y: 80 + 4 * x,
+    label: `Team ${x}`,
+    tone: "bright",
+  })),
   guides: [],
   margin: null,
   restIndex: 11,
@@ -21,7 +36,12 @@ const start = scatterOf(chart.length, box, 1);
 
 /* The mean distance in pixels from each place to its place in the chart. */
 function offChart(points: { x: number; y: number }[]): number {
-  return points.reduce((sum, point, index) => sum + Math.hypot(point.x - chart[index].x, point.y - chart[index].y), 0) / points.length;
+  return (
+    points.reduce(
+      (sum, point, index) => sum + Math.hypot(point.x - chart[index].x, point.y - chart[index].y),
+      0,
+    ) / points.length
+  );
 }
 
 const insideBox = (point: { x: number; y: number }) =>

@@ -32,14 +32,19 @@ export function PlayoffsPage({
     { label: "Win the title", value: Math.round(team.title) },
   ];
   return (
-    <div className="grid w-full grid-cols-1 items-start gap-sp-3 desktop:grid-cols-2">
+    <div className="gap-sp-3 desktop:grid-cols-2 grid w-full grid-cols-1 items-start">
       <article className={CARD} aria-labelledby={odds}>
-        <h2 id={odds} className="m-0 text-lead leading-tight font-bold">Your playoff odds</h2>
-        <dl className="m-0 grid grid-cols-3 gap-sp-2">
+        <h2 id={odds} className="text-lead m-0 leading-tight font-bold">
+          Your playoff odds
+        </h2>
+        <dl className="gap-sp-2 m-0 grid grid-cols-3">
           {stats.map((stat) => (
-            <div key={stat.label} className="flex min-w-0 flex-col-reverse justify-end gap-sp-1 rounded-report bg-page p-sp-3">
-              <dt className="text-meta leading-tight text-pretty text-mute">{stat.label}</dt>
-              <dd className="m-0 font-mono text-stat leading-none font-bold tabular-nums">
+            <div
+              key={stat.label}
+              className="gap-sp-1 rounded-report bg-page p-sp-3 flex min-w-0 flex-col-reverse justify-end"
+            >
+              <dt className="text-meta text-mute leading-tight text-pretty">{stat.label}</dt>
+              <dd className="text-stat m-0 font-mono leading-none font-bold tabular-nums">
                 <SoftText text={oddsText(stat.value)} />
               </dd>
             </div>
@@ -47,18 +52,23 @@ export function PlayoffsPage({
         </dl>
       </article>
       <article className={CARD} aria-labelledby={weeks}>
-        <h2 id={weeks} className="m-0 text-lead leading-tight font-bold">Your weeks left</h2>
+        <h2 id={weeks} className="text-lead m-0 leading-tight font-bold">
+          Your weeks left
+        </h2>
         <ul className="m-0 list-none p-0">
           {page.weeks.map((week) => (
-            <li key={week.week} className="border-t border-rule first:border-t-0">
+            <li key={week.week} className="border-rule border-t first:border-t-0">
               <button
                 type="button"
                 onClick={() => onOpen(week.week)}
-                className={cn(PRESS, "flex min-h-touch w-full items-center gap-sp-2 py-sp-1 text-left hover-fine:text-accent-ink")}
+                className={cn(
+                  PRESS,
+                  "min-h-touch gap-sp-2 py-sp-1 hover-fine:text-accent-ink flex w-full items-center text-left",
+                )}
               >
-                <span className="flex-none text-body font-bold tabular-nums">{`Week ${week.week}`}</span>
-                <span className="min-w-0 flex-1 text-meta text-pretty text-mute">{`vs ${nameOf(sim, week.opponent)}`}</span>
-                <ChevronRight aria-hidden className="size-4 flex-none text-mute" />
+                <span className="text-body flex-none font-bold tabular-nums">{`Week ${week.week}`}</span>
+                <span className="text-meta text-mute min-w-0 flex-1 text-pretty">{`vs ${nameOf(sim, week.opponent)}`}</span>
+                <ChevronRight aria-hidden className="text-mute size-4 flex-none" />
               </button>
             </li>
           ))}

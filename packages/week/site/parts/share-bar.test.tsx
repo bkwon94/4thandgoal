@@ -50,7 +50,9 @@ describe("ShareBar", () => {
       await new Promise((done) => setTimeout(done, 50));
     }
     expect(samples[0]).toBeLessThan(0.1);
-    samples.slice(1).forEach((scale, index) => expect(scale).toBeGreaterThanOrEqual(samples[index]));
+    samples
+      .slice(1)
+      .forEach((scale, index) => expect(scale).toBeGreaterThanOrEqual(samples[index]));
     expect(samples.at(-1)).toBe(1);
   });
 });

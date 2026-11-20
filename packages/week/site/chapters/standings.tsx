@@ -23,18 +23,23 @@ function Row({ row, avatars, href }: { row: TableRow; avatars: AvatarMap; href: 
   const content = (
     <>
       {/* The tick is a graphic. The words after the name say it for a screen reader. */}
-      <span aria-hidden="true" className={cn("h-sp-5 w-sp-1 rounded-pill", playoff ? "bg-accent" : "bg-raised")} />
-      <span className="font-mono text-meta text-mute tabular-nums">{String(row.standing.rank).padStart(2, "0")}</span>
+      <span
+        aria-hidden="true"
+        className={cn("h-sp-5 w-sp-1 rounded-pill", playoff ? "bg-accent" : "bg-raised")}
+      />
+      <span className="text-meta text-mute font-mono tabular-nums">
+        {String(row.standing.rank).padStart(2, "0")}
+      </span>
       <Avatar src={avatarSrc(avatars, row.team.roster_id)} />
-      <span className="truncate text-body leading-tight font-semibold">
+      <span className="text-body truncate leading-tight font-semibold">
         {row.team.name}
         {playoff && <span className="sr-only">, playoff spot</span>}
       </span>
-      <span className="text-right font-mono text-body font-bold tabular-nums">
+      <span className="text-body text-right font-mono font-bold tabular-nums">
         {record(row.standing.wins, row.standing.losses)}
       </span>
       {/* num would drop the trailing zero of 698.30, so the column keeps toFixed to line up the decimals. */}
-      <span className="min-w-[7ch] text-right font-mono text-meta text-mute tabular-nums">
+      <span className="text-meta text-mute min-w-[7ch] text-right font-mono tabular-nums">
         {row.standing.points_for.toFixed(2)}
       </span>
     </>
@@ -71,9 +76,16 @@ export function Standings({
               <li
                 key={row.team.roster_id}
                 data-cut={cut ? "" : undefined}
-                className={cn("border-b last:border-b-0", cut ? "border-b-2 border-accent" : "border-rule")}
+                className={cn(
+                  "border-b last:border-b-0",
+                  cut ? "border-accent border-b-2" : "border-rule",
+                )}
               >
-                <Row row={row} avatars={avatars} href={managerHrefOrNull(managersHref, row.team.roster_id)} />
+                <Row
+                  row={row}
+                  avatars={avatars}
+                  href={managerHrefOrNull(managersHref, row.team.roster_id)}
+                />
               </li>
             );
           })}
@@ -81,7 +93,8 @@ export function Standings({
       </Card>
       {hasMedianGame && (
         <div className="text-meta leading-body text-mute">
-          Records include the weekly median game: every team plays its opponent and the league median each week.
+          Records include the weekly median game: every team plays its opponent and the league
+          median each week.
         </div>
       )}
     </WeekChapter>

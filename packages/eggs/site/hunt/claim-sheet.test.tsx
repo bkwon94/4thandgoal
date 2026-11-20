@@ -2,14 +2,7 @@
  * Tests for the claim sheet of the egg hunt. It is the shared Sheet, so it shows the grip and drags closed with a mouse pointer.
  * A drag down calls onClose, as the team sheet of the front door does.
  */
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import "@cpc/design/ui/sheet-jsdom";
@@ -53,9 +46,7 @@ describe("the claim sheet of the egg hunt", () => {
       />,
     );
     expect(document.querySelector('[data-slot="sheet-grip"]')).toBeTruthy();
-    expect(
-      await screen.findByRole("button", { name: "Lil Fridge" }),
-    ).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Lil Fridge" })).toBeTruthy();
   });
 
   it("closes on a drag down and calls onClose once", async () => {

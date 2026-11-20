@@ -37,10 +37,16 @@ describe("the front door of cpc", () => {
     render(<HomePage />);
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
     expect(screen.queryByText(/^WK /, { selector: "summary" })).toBeNull();
-    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
+    fireEvent.click(
+      within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }),
+    );
     const sheet = screen.getByRole("navigation", { name: "Pages" });
     expect(within(sheet).getByRole("link", { name: /Ask about your team/ })).toBeTruthy();
-    expect(within(sheet).getByRole("link", { name: /Scores and recaps/ }).getAttribute("href")).toMatch(/^\/2026\/week-\d\d\/$/);
+    expect(
+      within(sheet)
+        .getByRole("link", { name: /Scores and recaps/ })
+        .getAttribute("href"),
+    ).toMatch(/^\/2026\/week-\d\d\/$/);
     expect(within(sheet).getByRole("button", { name: "Past weeks" })).toBeTruthy();
   });
 
@@ -51,7 +57,9 @@ describe("the front door of cpc", () => {
     expect(teams).toHaveLength(12);
     expect(teams[0].textContent).toContain("All You Need Is Love");
     expect(within(sheet).getByRole("button", { name: /Lil Fridge/ })).toBeTruthy();
-    expect(within(sheet).queryByRole("button", { name: /skip|close|later|log ?in|sign ?in/i })).toBeNull();
+    expect(
+      within(sheet).queryByRole("button", { name: /skip|close|later|log ?in|sign ?in/i }),
+    ).toBeNull();
     expect(within(sheet).queryByRole("textbox")).toBeNull();
     expect(sheet.querySelector("input[type=password]")).toBeNull();
   });
@@ -88,9 +96,12 @@ describe("the front door of cpc", () => {
   it("grows the halo of the send button as the field fills, full at 24 letters (decision 07)", async () => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
-    const box = within(await screen.findByRole("region", { name: "Thread" })).getByRole("form", { name: "Ask" });
+    const box = within(await screen.findByRole("region", { name: "Thread" })).getByRole("form", {
+      name: "Ask",
+    });
     const field = within(box).getByRole("textbox", { name: "Ask a question" });
-    const halo = () => within(box).getByRole("button", { name: "Send" }).style.getPropertyValue("--halo");
+    const halo = () =>
+      within(box).getByRole("button", { name: "Send" }).style.getPropertyValue("--halo");
     expect(halo()).toBe("0");
     fireEvent.change(field, { target: { value: "who is first" } });
     expect(halo()).toBe("0.5");
@@ -104,9 +115,15 @@ describe("the front door of cpc", () => {
   it("opens the sheet again from the Thread, so a manager can change Your team", async () => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
-    fireEvent.click(await screen.findByRole("button", { name: "Your team: Lil Fridge. Change the team" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Your team: Lil Fridge. Change the team" }),
+    );
     const sheet = await screen.findByRole("dialog", { name: "Which team is yours?" });
-    expect(within(sheet).getByRole("button", { name: /Lil Fridge/ }).getAttribute("aria-pressed")).toBe("true");
+    expect(
+      within(sheet)
+        .getByRole("button", { name: /Lil Fridge/ })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
     fireEvent.click(within(sheet).getByRole("button", { name: /Bo Girds/ }));
     await screen.findByRole("heading", { level: 1, name: "Ask about Bo Girds" }, { timeout: 3000 });
     expect(localStorage.getItem("cpc.your-team")).toBe("6");
@@ -123,18 +140,26 @@ describe("the front door of cpc", () => {
   };
 
   it.each([
-    ["the close button", (sheet: HTMLElement) => fireEvent.click(within(sheet).getByRole("button", { name: "Close" }))],
+    [
+      "the close button",
+      (sheet: HTMLElement) => fireEvent.click(within(sheet).getByRole("button", { name: "Close" })),
+    ],
     ["Escape", (sheet: HTMLElement) => fireEvent.keyDown(sheet, { key: "Escape" })],
     ["a tap on the dim", () => tapDim()],
-  ])("closes the team sheet of a change of team with %s and keeps the old team", async (_, close) => {
-    localStorage.setItem("cpc.your-team", "3");
-    render(<HomePage />);
-    fireEvent.click(await screen.findByRole("button", { name: "Your team: Lil Fridge. Change the team" }));
-    close(await screen.findByRole("dialog", { name: "Which team is yours?" }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Lil Fridge");
-    expect(localStorage.getItem("cpc.your-team")).toBe("3");
-  });
+  ])(
+    "closes the team sheet of a change of team with %s and keeps the old team",
+    async (_, close) => {
+      localStorage.setItem("cpc.your-team", "3");
+      render(<HomePage />);
+      fireEvent.click(
+        await screen.findByRole("button", { name: "Your team: Lil Fridge. Change the team" }),
+      );
+      close(await screen.findByRole("dialog", { name: "Which team is yours?" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
+      expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Lil Fridge");
+      expect(localStorage.getItem("cpc.your-team")).toBe("3");
+    },
+  );
 
   it("keeps the team sheet of the first visit open on Escape and on a tap on the dim, with no close button", async () => {
     // A refused dismissal springs the sheet back, and the spring needs an animation.
@@ -190,10 +215,13 @@ describe("the Suggestions of Lil Fridge", () => {
     const [more, ...chips] = await suggestionChips();
     expect(more.textContent).toBe("More");
     expect(chips).toHaveLength(3);
-    for (const chip of chips) expect(chip.getAttribute("aria-label")).toMatch(/^[A-Z][a-z ]+: .*\d/);
+    for (const chip of chips)
+      expect(chip.getAttribute("aria-label")).toMatch(/^[A-Z][a-z ]+: .*\d/);
     fireEvent.click(more);
     expect(more.getAttribute("aria-expanded")).toBe("true");
-    const topics = within(await screen.findByRole("list", { name: "All Topics" })).getAllByRole("listitem");
+    const topics = within(await screen.findByRole("list", { name: "All Topics" })).getAllByRole(
+      "listitem",
+    );
     expect(topics.map((topic) => topic.querySelector("[data-topic-name]")?.textContent)).toEqual([
       "Week recap",
       "Your last matchup",
@@ -224,7 +252,9 @@ describe("the Suggestions of Lil Fridge", () => {
     onDay("2026-11-11T12:00:00");
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
-    const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"));
+    const rankings = (await suggestionChips()).find((chip) =>
+      chip.getAttribute("aria-label")?.startsWith("Power rankings"),
+    );
     expect(rankings).toBeTruthy();
     // The first tap shows the fact, and the second tap opens the Topic.
     fireEvent.click(rankings!);
@@ -235,7 +265,9 @@ describe("the Suggestions of Lil Fridge", () => {
     render(<HomePage />);
     const [more, ...chips] = await suggestionChips();
     expect(chips).toHaveLength(3);
-    expect(chips.map((chip) => chip.getAttribute("aria-label"))).not.toContainEqual(expect.stringMatching(/^Power rankings/));
+    expect(chips.map((chip) => chip.getAttribute("aria-label"))).not.toContainEqual(
+      expect.stringMatching(/^Power rankings/),
+    );
     fireEvent.click(more);
     const all = await screen.findByRole("list", { name: "All Topics" });
     expect(within(all).getByRole("button", { name: /^Power rankings/ })).toBeTruthy();
@@ -245,7 +277,10 @@ describe("the Suggestions of Lil Fridge", () => {
     onDay("2026-11-11T12:00:00");
     localStorage.setItem("cpc.your-team", "3");
     // An open of week 7 no longer counts in week 8.
-    localStorage.setItem("cpc.opened-topics", JSON.stringify({ "3": { week: 7, topics: { power_rankings: "6th, down 5" } } }));
+    localStorage.setItem(
+      "cpc.opened-topics",
+      JSON.stringify({ "3": { week: 7, topics: { power_rankings: "6th, down 5" } } }),
+    );
     render(<HomePage />);
     const labels = (await suggestionChips()).map((chip) => chip.getAttribute("aria-label"));
     expect(labels).toContainEqual(expect.stringMatching(/^Power rankings/));
@@ -256,11 +291,17 @@ describe("the Suggestions of Lil Fridge", () => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
     fireEvent.click((await suggestionChips())[0]);
-    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Power rankings/ }));
+    fireEvent.click(
+      within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", {
+        name: /^Power rankings/,
+      }),
+    );
     const answer = await screen.findByRole("article", { name: "Power rankings" });
     // The text is the blurb of the rankings row of Lil Fridge, as the rankings page shows it.
     expect(answer.textContent).toContain("Lil Fridge tumbles 5 places after getting run by 41.");
-    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/rankings/");
+    expect(
+      within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href"),
+    ).toBe("/rankings/");
   });
 
   it.each([
@@ -274,9 +315,15 @@ describe("the Suggestions of Lil Fridge", () => {
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
     fireEvent.click((await suggestionChips())[0]);
-    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+    fireEvent.click(
+      within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", {
+        name: new RegExp(`^${name}`),
+      }),
+    );
     const answer = await screen.findByRole("article", { name });
-    expect(within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe(href);
+    expect(
+      within(answer).getByRole("link", { name: "Read the full report" }).getAttribute("href"),
+    ).toBe(href);
   });
 });
 
@@ -292,7 +339,10 @@ describe("the front door of NorCal", () => {
 
 /* A temp public/ folder with the fixed copy of the published files of one client, as its client build copies them. With
    nextWeek, it also holds a later latest week. */
-async function homeOfClient(slug: FixtureClient, { nextWeek = false }: { nextWeek?: boolean } = {}) {
+async function homeOfClient(
+  slug: FixtureClient,
+  { nextWeek = false }: { nextWeek?: boolean } = {},
+) {
   const root = mkdtempSync(join(tmpdir(), "home-page-"));
   roots.push(root);
   cpSync(fixturePublished(slug), join(root, "public"), { recursive: true });
@@ -315,7 +365,11 @@ async function homeOfClient(slug: FixtureClient, { nextWeek = false }: { nextWee
 async function openTopic(name: string) {
   const [more] = await suggestionChips();
   if (more.getAttribute("aria-expanded") !== "true") fireEvent.click(more);
-  fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: new RegExp(`^${name}`) }));
+  fireEvent.click(
+    within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", {
+      name: new RegExp(`^${name}`),
+    }),
+  );
   return screen.findAllByRole("article", { name });
 }
 
@@ -326,13 +380,20 @@ describe("the Thread of Lil Fridge", () => {
     await openTopic("Week recap");
     const pickTeam = async (from: string, to: string) => {
       fireEvent.click(screen.getByRole("button", { name: `Your team: ${from}. Change the team` }));
-      fireEvent.click(within(await screen.findByRole("dialog", { name: "Which team is yours?" })).getByRole("button", { name: new RegExp(to) }));
+      fireEvent.click(
+        within(await screen.findByRole("dialog", { name: "Which team is yours?" })).getByRole(
+          "button",
+          { name: new RegExp(to) },
+        ),
+      );
       await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull(), { timeout: 3000 });
     };
 
     await pickTeam("Lil Fridge", "Bo Girds");
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Ask about Bo Girds");
-    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+    expect(
+      within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article"),
+    ).toHaveLength(0);
 
     await pickTeam("Bo Girds", "Lil Fridge");
     const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
@@ -347,10 +408,16 @@ describe("the Thread of Lil Fridge", () => {
     await openTopic("Power rankings");
     await openTopic("Playoff race");
     const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
-    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings", "Playoff race"]);
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual([
+      "Week recap",
+      "Power rankings",
+      "Playoff race",
+    ]);
     for (const article of articles) {
       // Each Answer keeps its question bubble, its card, and its link, and nothing in it opens or closes.
-      expect(within(article).getByText(article.getAttribute("aria-label")!, { selector: "p" })).toBeTruthy();
+      expect(
+        within(article).getByText(article.getAttribute("aria-label")!, { selector: "p" }),
+      ).toBeTruthy();
       expect(article.querySelector(".door-sheen")).not.toBeNull();
       expect(within(article).getByRole("link", { name: "Read the full report" })).toBeTruthy();
       expect(article.querySelector("[aria-expanded]")).toBeNull();
@@ -375,11 +442,16 @@ describe("the Thread of Lil Fridge", () => {
     scrolled.length = 0;
 
     const [rankings] = await openTopic("Power rankings");
-    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toEqual([recap, rankings]);
+    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toEqual([
+      recap,
+      rankings,
+    ]);
     await waitFor(() => expect(scrolled.at(-1)).toBe(rankings));
     expect(scrolled).not.toContain(recap);
     expect(rankings.className).toContain("scroll-mt-door-under-head");
-    expect(within(recap).getByRole("link", { name: "Read the full report" }).getAttribute("href")).toBe("/2026/week-08/");
+    expect(
+      within(recap).getByRole("link", { name: "Read the full report" }).getAttribute("href"),
+    ).toBe("/2026/week-08/");
   });
 
   it("keeps the Thread after a closed tab on the same day (AT-32)", async () => {
@@ -395,7 +467,10 @@ describe("the Thread of Lil Fridge", () => {
     render(<HomePage />);
     await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
     const articles = within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article");
-    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual(["Week recap", "Power rankings"]);
+    expect(articles.map((article) => article.getAttribute("aria-label"))).toEqual([
+      "Week recap",
+      "Power rankings",
+    ]);
     // A kept Answer shows whole after the reload, as it rendered before.
     expect(within(articles[0]).getByRole("link", { name: "Read the full report" })).toBeTruthy();
     expect(articles[0].querySelector("[aria-expanded]")).toBeNull();
@@ -407,7 +482,9 @@ describe("the Thread of Lil Fridge", () => {
     render(<WeekEight />);
     await openTopic("Week recap");
     await openTopic("Power rankings");
-    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
+    expect(
+      within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article"),
+    ).toHaveLength(2);
 
     // The Tuesday build publishes week 9.
     cleanup();
@@ -416,7 +493,9 @@ describe("the Thread of Lil Fridge", () => {
     render(<WeekNine />);
     await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
     expect(within(screen.getByRole("region", { name: "Thread" })).getByText(/Week 9/)).toBeTruthy();
-    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+    expect(
+      within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article"),
+    ).toHaveLength(0);
   });
 
   it("empties the Thread at once on Clear, with no confirm, and keeps the opened Topics off the Suggestions (AT-36)", async () => {
@@ -424,15 +503,25 @@ describe("the Thread of Lil Fridge", () => {
     localStorage.setItem("cpc.your-team", "3");
     const confirm = vi.spyOn(window, "confirm");
     render(<HomePage />);
-    const rankings = (await suggestionChips()).find((chip) => chip.getAttribute("aria-label")?.startsWith("Power rankings"))!;
+    const rankings = (await suggestionChips()).find((chip) =>
+      chip.getAttribute("aria-label")?.startsWith("Power rankings"),
+    )!;
     // The first tap shows the fact, and the second tap opens the Topic.
     fireEvent.click(rankings);
     fireEvent.click(rankings);
     await openTopic("Week recap");
-    expect(within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article")).toHaveLength(2);
+    expect(
+      within(screen.getByRole("region", { name: "Thread" })).getAllByRole("article"),
+    ).toHaveLength(2);
 
-    fireEvent.click(within(screen.getByRole("banner", { name: "Thread header" })).getByRole("button", { name: "Clear" }));
-    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+    fireEvent.click(
+      within(screen.getByRole("banner", { name: "Thread header" })).getByRole("button", {
+        name: "Clear",
+      }),
+    );
+    expect(
+      within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article"),
+    ).toHaveLength(0);
     expect(confirm).not.toHaveBeenCalled();
     expect(screen.queryByRole("dialog")).toBeNull();
     // A chip that left the row fades out first, so the check waits for the row to settle.
@@ -449,25 +538,53 @@ describe("the Thread of Lil Fridge", () => {
     cleanup();
     render(<HomePage />);
     await screen.findByRole("heading", { level: 1, name: "Ask about Lil Fridge" });
-    expect(within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article")).toHaveLength(0);
+    expect(
+      within(screen.getByRole("region", { name: "Thread" })).queryAllByRole("article"),
+    ).toHaveLength(0);
   });
 });
 
 describe("a version 1 topics.json", () => {
   it("renders each league Topic Answer as before, with its stats, rows, and text, and no block (AT-41)", async () => {
     // The fixed copy of week 8 of cpc is a file of version 1, written before any Topic had a block.
-    const file = JSON.parse(readFileSync(join(__dirname, "..", "fixtures", "sites", "cpc", "public", "2026", "week-08", "topics.json"), "utf8"));
+    const file = JSON.parse(
+      readFileSync(
+        join(
+          __dirname,
+          "..",
+          "fixtures",
+          "sites",
+          "cpc",
+          "public",
+          "2026",
+          "week-08",
+          "topics.json",
+        ),
+        "utf8",
+      ),
+    );
     expect(file.schema_version).toBe(1);
-    const answers: { topic: string; stats: unknown[]; rows: { label: string; value: string }[]; text: string[] }[] = file.teams["3"];
+    const answers: {
+      topic: string;
+      stats: unknown[];
+      rows: { label: string; value: string }[];
+      text: string[];
+    }[] = file.teams["3"];
     expect(answers.some((answer) => "block" in answer)).toBe(false);
     localStorage.setItem("cpc.your-team", "3");
     render(<HomePage />);
     fireEvent.click((await suggestionChips())[0]);
-    fireEvent.click(within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", { name: /^Your last matchup/ }));
+    fireEvent.click(
+      within(await screen.findByRole("list", { name: "All Topics" })).getByRole("button", {
+        name: /^Your last matchup/,
+      }),
+    );
     const answer = await screen.findByRole("article", { name: "Your last matchup" });
     const want = answers.find((item) => item.topic === "last_matchup")!;
     const rows = within(answer).getAllByRole("listitem");
-    expect(rows.map((row) => row.textContent)).toEqual(want.rows.map((row) => expect.stringContaining(row.label)));
+    expect(rows.map((row) => row.textContent)).toEqual(
+      want.rows.map((row) => expect.stringContaining(row.label)),
+    );
     expect(rows[1].textContent).toContain(want.rows[1].value);
     expect(answer.textContent).toContain(want.text[0]);
     expect(answer.querySelector("[data-block]")).toBeNull();

@@ -22,7 +22,9 @@ const noop = () => {};
 describe("the passphrase dialog of the analyzer", () => {
   it("renders the shared Sheet from the bottom, with no grip because it does not drag", () => {
     render(<PassphraseDialog open onSubmit={noop} />);
-    expect(screen.getByRole("dialog", { name: "League Passphrase" }).getAttribute("data-side")).toBe("bottom");
+    expect(
+      screen.getByRole("dialog", { name: "League Passphrase" }).getAttribute("data-side"),
+    ).toBe("bottom");
     expect(document.querySelector('[data-slot="sheet-grip"]')).toBeNull();
   });
 
@@ -36,7 +38,13 @@ describe("the passphrase dialog of the analyzer", () => {
 
   it("shows the error line and sends the trimmed passphrase", () => {
     const sent: string[] = [];
-    render(<PassphraseDialog open error="That passphrase is wrong." onSubmit={(value) => sent.push(value)} />);
+    render(
+      <PassphraseDialog
+        open
+        error="That passphrase is wrong."
+        onSubmit={(value) => sent.push(value)}
+      />,
+    );
     expect(screen.getByText("That passphrase is wrong.")).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Passphrase"), { target: { value: " abc " } });
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));

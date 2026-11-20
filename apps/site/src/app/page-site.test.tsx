@@ -20,7 +20,16 @@ const askCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWi
 
 /* One site route of the ask route, as the API sends it. */
 function siteRoute(page: string) {
-  return { route: "site", line: null, topic: null, team: null, closest: [], suggestion: null, page, jev: { model: "jev-1.14.0", nouls: {}, choices: {} } };
+  return {
+    route: "site",
+    line: null,
+    topic: null,
+    team: null,
+    closest: [],
+    suggestion: null,
+    page,
+    jev: { model: "jev-1.14.0", nouls: {}, choices: {} },
+  };
 }
 
 function answerWith(body: unknown) {
@@ -29,18 +38,24 @@ function answerWith(body: unknown) {
 
 async function ask(question: string) {
   const box = await screen.findByRole("form", { name: "Ask" });
-  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: question } });
+  fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), {
+    target: { value: question },
+  });
   fireEvent.submit(box);
 }
 
 async function articleWith(question: string, text: string) {
-  await waitFor(() => expect(screen.getByRole("article", { name: question }).textContent).toContain(text));
+  await waitFor(() =>
+    expect(screen.getByRole("article", { name: question }).textContent).toContain(text),
+  );
   return screen.getByRole("article", { name: question });
 }
 
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string) =>
-    String(url).endsWith("/ask") ? (replies.shift() ?? new Response("", { status: 500 })) : new Response("", { status: 404 }),
+    String(url).endsWith("/ask")
+      ? (replies.shift() ?? new Response("", { status: 500 }))
+      : new Response("", { status: 404 }),
   );
   vi.stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
@@ -61,7 +76,11 @@ const CPC_PAGES = [
   { key: "rankings", label: "Power Rankings", blurb: "Every team ranked, with the weekly moves." },
   { key: "managers", label: "Managers", blurb: "Each manager, with the grades of the season." },
   { key: "analyzer", label: "Trade Analyzer", blurb: "Grades a trade between two or more teams." },
-  { key: "midseason", label: "Midseason Report", blurb: "The midseason awards, grades, and roasts." },
+  {
+    key: "midseason",
+    label: "Midseason Report",
+    blurb: "The midseason awards, grades, and roasts.",
+  },
   { key: "sim", label: "Playoff Sim", blurb: "Plays out the rest of the season, game by game." },
 ];
 
@@ -80,32 +99,82 @@ describe("the page card of a site question", () => {
     answerWith(siteRoute("analyzer"));
     render(<HomePage />);
     await ask("where is the trade analyzer");
-    const card = await articleWith("where is the trade analyzer", "The Trade Analyzer has its own page.");
+    const card = await articleWith(
+      "where is the trade analyzer",
+      "The Trade Analyzer has its own page.",
+    );
     expect(card.textContent).toContain("Grades a trade between two or more teams.");
-    expect(within(card).getByRole("link", { name: "Open the Trade Analyzer" }).getAttribute("href")).toBe("/analyze/");
+    expect(
+      within(card).getByRole("link", { name: "Open the Trade Analyzer" }).getAttribute("href"),
+    ).toBe("/analyze/");
   });
 
   it.each([
-    { question: "how do I use the sim", page: "sim", label: "Playoff Sim", blurb: "Plays out the rest of the season, game by game.", href: "/midseason/2026/#sim", the: "the ", at: "AT-4" },
-    { question: "take me to the weekly reports", page: "week", label: "Week 8", blurb: "The recap, scores, and awards of the week.", href: "/2026/week-08/", at: "AT-5", the: "" },
-    { question: "midseason report?", page: "midseason", label: "Midseason Report", blurb: "The midseason awards, grades, and roasts.", href: "/midseason/2026/", the: "the ", at: "AT-6" },
-    { question: "wheres the trade thing", page: "analyzer", label: "Trade Analyzer", blurb: "Grades a trade between two or more teams.", href: "/analyze/", the: "the ", at: "AT-7" },
-  ])("shows the card of the $label for '$question' ($at)", async ({ question, page, label, blurb, href, the }) => {
-    answerWith(siteRoute(page));
-    render(<HomePage />);
-    await ask(question);
-    const card = await articleWith(question, the ? `The ${label} has its own page.` : `${label} has its own page.`);
-    expect(card.textContent).toContain(blurb);
-    expect(within(card).getByRole("link", { name: `Open ${the}${label}` }).getAttribute("href")).toBe(href);
-    // The card holds no tutorial and no Menu line under the name.
-    expect(card.textContent).not.toMatch(/Menu ·|Step 1/);
-  });
+    {
+      question: "how do I use the sim",
+      page: "sim",
+      label: "Playoff Sim",
+      blurb: "Plays out the rest of the season, game by game.",
+      href: "/midseason/2026/#sim",
+      the: "the ",
+      at: "AT-4",
+    },
+    {
+      question: "take me to the weekly reports",
+      page: "week",
+      label: "Week 8",
+      blurb: "The recap, scores, and awards of the week.",
+      href: "/2026/week-08/",
+      at: "AT-5",
+      the: "",
+    },
+    {
+      question: "midseason report?",
+      page: "midseason",
+      label: "Midseason Report",
+      blurb: "The midseason awards, grades, and roasts.",
+      href: "/midseason/2026/",
+      the: "the ",
+      at: "AT-6",
+    },
+    {
+      question: "wheres the trade thing",
+      page: "analyzer",
+      label: "Trade Analyzer",
+      blurb: "Grades a trade between two or more teams.",
+      href: "/analyze/",
+      the: "the ",
+      at: "AT-7",
+    },
+  ])(
+    "shows the card of the $label for '$question' ($at)",
+    async ({ question, page, label, blurb, href, the }) => {
+      answerWith(siteRoute(page));
+      render(<HomePage />);
+      await ask(question);
+      const card = await articleWith(
+        question,
+        the ? `The ${label} has its own page.` : `${label} has its own page.`,
+      );
+      expect(card.textContent).toContain(blurb);
+      expect(
+        within(card)
+          .getByRole("link", { name: `Open ${the}${label}` })
+          .getAttribute("href"),
+      ).toBe(href);
+      // The card holds no tutorial and no Menu line under the name.
+      expect(card.textContent).not.toMatch(/Menu ·|Step 1/);
+    },
+  );
 
   it("stays on / with the card in view, and only the Open link leads to the page (AT-10)", async () => {
     answerWith(siteRoute("analyzer"));
     render(<HomePage />);
     await ask("where is the trade analyzer");
-    const card = await articleWith("where is the trade analyzer", "The Trade Analyzer has its own page.");
+    const card = await articleWith(
+      "where is the trade analyzer",
+      "The Trade Analyzer has its own page.",
+    );
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(window.location.pathname).toBe("/");
     const open = within(card).getByRole("link", { name: "Open the Trade Analyzer" });
@@ -116,7 +185,10 @@ describe("the page card of a site question", () => {
     answerWith(siteRoute("analyzer"));
     render(<HomePage />);
     await ask("where is the trade analyzer");
-    const card = await articleWith("where is the trade analyzer", "The Trade Analyzer has its own page.");
+    const card = await articleWith(
+      "where is the trade analyzer",
+      "The Trade Analyzer has its own page.",
+    );
     const fold = within(card).getByRole("button", { name: "All pages · 5" });
     expect(fold.getAttribute("aria-expanded")).toBe("false");
     expect(within(card).queryByRole("list", { name: "Pages" })).toBeNull();
@@ -136,7 +208,10 @@ describe("the page card of a site question", () => {
     answerWith(siteRoute("analyzer"));
     render(<HomePage />);
     await ask("where is the trade analyzer");
-    const card = await articleWith("where is the trade analyzer", "The Trade Analyzer has its own page.");
+    const card = await articleWith(
+      "where is the trade analyzer",
+      "The Trade Analyzer has its own page.",
+    );
     fireEvent.click(within(card).getByRole("button", { name: "All pages · 5" }));
     expect(card.textContent).not.toMatch(/jev|advisor|finder|front door|rival/i);
   });
@@ -148,15 +223,25 @@ describe("the page card of a site question", () => {
     await articleWith("where is the trade analyzer", "The Trade Analyzer has its own page.");
     first.unmount();
     render(<HomePage />);
-    const card = await articleWith("where is the trade analyzer", "The Trade Analyzer has its own page.");
-    expect(within(card).getByRole("link", { name: "Open the Trade Analyzer" }).getAttribute("href")).toBe("/analyze/");
+    const card = await articleWith(
+      "where is the trade analyzer",
+      "The Trade Analyzer has its own page.",
+    );
+    expect(
+      within(card).getByRole("link", { name: "Open the Trade Analyzer" }).getAttribute("href"),
+    ).toBe("/analyze/");
     expect(askCalls()).toHaveLength(1);
   });
 });
 
 describe("the honest miss next to the Site answer", () => {
   it("gives 'what's the weather' the honest miss with no page link and no Site answer (AT-22, site half)", async () => {
-    answerWith({ ...siteRoute("all"), route: "miss", page: null, closest: ["next_matchup", "week_recap", "waiver_targets"] });
+    answerWith({
+      ...siteRoute("all"),
+      route: "miss",
+      page: null,
+      closest: ["next_matchup", "week_recap", "waiver_targets"],
+    });
     render(<HomePage />);
     await ask("what's the weather");
     const miss = await articleWith("what's the weather", "I can't answer that.");
@@ -175,8 +260,10 @@ describe("the list view of a site question", () => {
     render(<HomePage />);
     await ask(question);
     const view = await articleWith(question, "The site has 2 tools and 4 pages to read.");
-    const tiles = (group: string) => within(within(view).getByRole("list", { name: group })).getAllByRole("link");
-    const shown = (group: string) => tiles(group).map((tile) => [tile.textContent, tile.getAttribute("href")]);
+    const tiles = (group: string) =>
+      within(within(view).getByRole("list", { name: group })).getAllByRole("link");
+    const shown = (group: string) =>
+      tiles(group).map((tile) => [tile.textContent, tile.getAttribute("href")]);
     expect(shown("Tools")).toEqual([
       ["Trade AnalyzerGrades a trade between two or more teams.", "/analyze/"],
       ["Playoff SimPlays out the rest of the season, game by game.", "/midseason/2026/#sim"],
@@ -195,11 +282,29 @@ describe("the list view of a site question", () => {
 
 describe("the none case of a site question", () => {
   it("shows the none rows of every cpc page for a kept key that the client lacks (AT-21)", async () => {
-    localStorage.setItem("cpc.thread", JSON.stringify({ "3": { week: 8, entries: [{ kind: "site", question: "where are the waivers", page: "waiver" }] } }));
+    localStorage.setItem(
+      "cpc.thread",
+      JSON.stringify({
+        "3": {
+          week: 8,
+          entries: [{ kind: "site", question: "where are the waivers", page: "waiver" }],
+        },
+      }),
+    );
     render(<HomePage />);
-    const card = await articleWith("where are the waivers", "The site has no page for that. Here is what it has.");
+    const card = await articleWith(
+      "where are the waivers",
+      "The site has no page for that. Here is what it has.",
+    );
     const rows = within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link");
-    expect(rows.map((row) => row.getAttribute("href"))).toEqual(["/2026/week-08/", "/rankings/", "/2026/managers/", "/analyze/", "/midseason/2026/", "/midseason/2026/#sim"]);
+    expect(rows.map((row) => row.getAttribute("href"))).toEqual([
+      "/2026/week-08/",
+      "/rankings/",
+      "/2026/managers/",
+      "/analyze/",
+      "/midseason/2026/",
+      "/midseason/2026/#sim",
+    ]);
     expect(within(card).queryByRole("link", { name: /^Open the/ })).toBeNull();
     expect(askCalls()).toHaveLength(0);
   });
@@ -208,14 +313,27 @@ describe("the none case of a site question", () => {
     answerWith(siteRoute("missing"));
     render(<HomePage />);
     await ask("is there a waiver page");
-    const card = await articleWith("is there a waiver page", "The site has no page for that. Here is what it has.");
+    const card = await articleWith(
+      "is there a waiver page",
+      "The site has no page for that. Here is what it has.",
+    );
     // The rows show open, with no fold to tap, no launcher, and no Open button.
     expect(within(card).queryByRole("button", { name: /^All pages/ })).toBeNull();
     expect(within(card).queryByRole("list", { name: "Tools" })).toBeNull();
     expect(within(card).queryByRole("link", { name: /^Open the/ })).toBeNull();
     const rows = within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link");
     expect(rows.map((row) => [row.textContent, row.getAttribute("href")])).toEqual(
-      CPC_PAGES.map(({ label, blurb }, index) => [`${label}${blurb}`, ["/2026/week-08/", "/rankings/", "/2026/managers/", "/analyze/", "/midseason/2026/", "/midseason/2026/#sim"][index]]),
+      CPC_PAGES.map(({ label, blurb }, index) => [
+        `${label}${blurb}`,
+        [
+          "/2026/week-08/",
+          "/rankings/",
+          "/2026/managers/",
+          "/analyze/",
+          "/midseason/2026/",
+          "/midseason/2026/#sim",
+        ][index],
+      ]),
     );
   });
 
@@ -223,8 +341,13 @@ describe("the none case of a site question", () => {
     answerWith(siteRoute("casino"));
     render(<HomePage />);
     await ask("where is the casino");
-    const card = await articleWith("where is the casino", "The site has no page for that. Here is what it has.");
-    expect(within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link")).toHaveLength(CPC_PAGES.length);
+    const card = await articleWith(
+      "where is the casino",
+      "The site has no page for that. Here is what it has.",
+    );
+    expect(
+      within(within(card).getByRole("list", { name: "Pages" })).getAllByRole("link"),
+    ).toHaveLength(CPC_PAGES.length);
   });
 
   it("names no internal part in the list view or the none case (AT-17, list half)", async () => {
@@ -232,19 +355,34 @@ describe("the none case of a site question", () => {
     answerWith(siteRoute("missing"));
     render(<HomePage />);
     await ask("what tools are there");
-    const view = await articleWith("what tools are there", "The site has 2 tools and 4 pages to read.");
+    const view = await articleWith(
+      "what tools are there",
+      "The site has 2 tools and 4 pages to read.",
+    );
     await ask("is there a waiver page");
-    const none = await articleWith("is there a waiver page", "The site has no page for that. Here is what it has.");
-    for (const answer of [view, none]) expect(answer.textContent).not.toMatch(/jev|advisor|finder|front door|rival/i);
+    const none = await articleWith(
+      "is there a waiver page",
+      "The site has no page for that. Here is what it has.",
+    );
+    for (const answer of [view, none])
+      expect(answer.textContent).not.toMatch(/jev|advisor|finder|front door|rival/i);
   });
 
   it("keeps the list view after a reload, with the same links and no new ask request (AT-12)", async () => {
     answerWith(siteRoute("all"));
     const first = render(<HomePage />);
     await ask("what tools are there");
-    const before = await articleWith("what tools are there", "The site has 2 tools and 4 pages to read.");
-    const links = () => within(screen.getByRole("article", { name: "what tools are there" })).getAllByRole("link").map((link) => link.getAttribute("href"));
-    const kept = within(before).getAllByRole("link").map((link) => link.getAttribute("href"));
+    const before = await articleWith(
+      "what tools are there",
+      "The site has 2 tools and 4 pages to read.",
+    );
+    const links = () =>
+      within(screen.getByRole("article", { name: "what tools are there" }))
+        .getAllByRole("link")
+        .map((link) => link.getAttribute("href"));
+    const kept = within(before)
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
     first.unmount();
     render(<HomePage />);
     await articleWith("what tools are there", "The site has 2 tools and 4 pages to read.");

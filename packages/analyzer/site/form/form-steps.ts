@@ -9,7 +9,9 @@ export type SideTitle = "Your Team" | "Team Two" | "Team Three" | "Team Four";
 
 /* The slot of a side in the teams row. Its name says the team once picked. */
 export const slot = (side: SideTitle) =>
-  screen.getByRole("button", { name: new RegExp(`^(Pick ${side}|${side}: )`) }) as HTMLButtonElement;
+  screen.getByRole("button", {
+    name: new RegExp(`^(Pick ${side}|${side}: )`),
+  }) as HTMLButtonElement;
 
 /* The button that opens the picker of a side. */
 export const addPlayer = (side: SideTitle) =>
@@ -32,7 +34,8 @@ export async function pickPlayers(side: SideTitle, from: string, ...names: strin
   fireEvent.click(addPlayer(side));
   const open = await screen.findByRole("dialog", { name: `${side} gets` });
   fireEvent.click(within(open).getByRole("tab", { name: from }));
-  for (const name of names) fireEvent.click(within(open).getByRole("checkbox", { name: new RegExp(name) }));
+  for (const name of names)
+    fireEvent.click(within(open).getByRole("checkbox", { name: new RegExp(name) }));
   fireEvent.click(within(open).getByRole("button", { name: /^Done/ }));
   await waitFor(() => expect(open.isConnected).toBe(false));
 }

@@ -11,7 +11,17 @@ import { type ComponentProps, useId, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { closeKeyboard, keepFocus } from "./keyboard-tap";
-import { FAST, GLIDE, MORE_SPRING, QUICK, SMOOTH, STAGGER, fadeIn, morphId, staggerOf } from "./motion";
+import {
+  FAST,
+  GLIDE,
+  MORE_SPRING,
+  QUICK,
+  SMOOTH,
+  STAGGER,
+  fadeIn,
+  morphId,
+  staggerOf,
+} from "./motion";
 import { TOPICS, type Topic } from "./topics";
 
 /* A chip keeps its place when the row changes: a chip that leaves fades out, and the others glide to their new place. */
@@ -21,7 +31,13 @@ const CHIP_GLIDE = { type: "spring", bounce: 0, duration: 0.4 } as const;
    reader and takes no second tap, so a quick double tap never opens its Topic twice. */
 function SuggestionChip(props: ComponentProps<typeof motion.button>) {
   const present = useIsPresent();
-  return <motion.button {...props} aria-hidden={present ? undefined : true} disabled={!present || undefined} />;
+  return (
+    <motion.button
+      {...props}
+      aria-hidden={present ? undefined : true}
+      disabled={!present || undefined}
+    />
+  );
 }
 
 export function Suggestions({
@@ -65,7 +81,9 @@ export function Suggestions({
     if (askFirst?.(() => reveal(key))) return;
     reveal(key);
   };
-  const topics = (picks ?? []).map((key) => TOPICS.find((topic) => topic.key === key)).filter((topic): topic is Topic => !!topic);
+  const topics = (picks ?? [])
+    .map((key) => TOPICS.find((topic) => topic.key === key))
+    .filter((topic): topic is Topic => !!topic);
   // The strip shows only while its chip is in the row and the "More" panel is shut.
   const strip = moreOpen ? undefined : topics.find((topic) => topic.key === shown);
   return (
@@ -81,7 +99,7 @@ export function Suggestions({
         role="group"
         aria-label="Suggestions"
         aria-busy={picks === null || undefined}
-        className="-mx-gutter -my-sp-1 flex snap-x scroll-px-gutter flex-nowrap gap-sp-2 overflow-x-auto overscroll-x-contain px-gutter py-sp-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-gutter -my-sp-1 scroll-px-gutter gap-sp-2 px-gutter py-sp-1 flex snap-x [scrollbar-width:none] flex-nowrap overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden"
       >
         <button
           type="button"
@@ -92,12 +110,12 @@ export function Suggestions({
             setShown(null);
             onMore(!moreOpen);
           }}
-          className="press door-sheen flex min-h-touch flex-none snap-start items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-4 text-body leading-tight font-semibold text-ink transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+          className="press door-sheen min-h-touch gap-sp-1 rounded-pill border-door-hair bg-card px-sp-4 text-body text-ink hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised flex flex-none snap-start items-center border leading-tight font-semibold transition-colors duration-150"
         >
           <span>More</span>
           <ChevronDownIcon
             aria-hidden
-            className={`size-sp-4 flex-none text-mute transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${moreOpen ? "-scale-y-100" : ""}`}
+            className={`size-sp-4 text-mute flex-none transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${moreOpen ? "-scale-y-100" : ""}`}
             strokeWidth={2.25}
           />
         </button>
@@ -109,9 +127,9 @@ export function Suggestions({
               <div
                 key={index}
                 data-placeholder=""
-                className="flex min-h-touch w-28 min-w-0 flex-initial items-center rounded-pill border border-door-hair bg-card px-sp-4 opacity-60"
+                className="min-h-touch rounded-pill border-door-hair bg-card px-sp-4 flex w-28 min-w-0 flex-initial items-center border opacity-60"
               >
-                <span className="h-sp-3 w-full rounded-pill bg-raised" />
+                <span className="h-sp-3 rounded-pill bg-raised w-full" />
               </div>
             ))}
           </div>
@@ -132,11 +150,22 @@ export function Suggestions({
               onClick={() => tap(topic.key)}
               initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
               animate={off ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-              exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }}
-              transition={off ? fadeIn(FAST, index * STAGGER) : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }}
-              className="press door-sheen flex min-h-touch flex-none snap-start items-center rounded-pill border border-door-hair bg-card px-sp-4 text-left transition-colors duration-150 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised"
+              exit={
+                off
+                  ? { opacity: 0, transition: fadeIn(QUICK) }
+                  : { opacity: 0, scale: 0.97, transition: fadeIn(QUICK) }
+              }
+              transition={
+                off
+                  ? fadeIn(FAST, index * STAGGER)
+                  : { ...CHIP_GLIDE, layout: GLIDE, opacity: fadeIn(FAST, index * STAGGER) }
+              }
+              className="press door-sheen min-h-touch rounded-pill border-door-hair bg-card px-sp-4 hover-fine:bg-raised aria-expanded:border-ink aria-expanded:bg-raised flex flex-none snap-start items-center border text-left transition-colors duration-150"
             >
-              <span aria-hidden className="whitespace-nowrap text-body leading-tight font-semibold text-ink">
+              <span
+                aria-hidden
+                className="text-body text-ink leading-tight font-semibold whitespace-nowrap"
+              >
                 {topic.chip}
               </span>
             </SuggestionChip>
@@ -152,8 +181,16 @@ export function Suggestions({
               key="strip"
               className="overflow-hidden"
               initial={off ? { opacity: 0 } : { opacity: 0, height: 0 }}
-              animate={off ? { opacity: 1, transition: fadeIn(FAST) } : { opacity: 1, height: "auto", transition: fadeIn(FAST) }}
-              exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, height: 0, transition: fadeIn(QUICK) }}
+              animate={
+                off
+                  ? { opacity: 1, transition: fadeIn(FAST) }
+                  : { opacity: 1, height: "auto", transition: fadeIn(FAST) }
+              }
+              exit={
+                off
+                  ? { opacity: 0, transition: fadeIn(QUICK) }
+                  : { opacity: 0, height: 0, transition: fadeIn(QUICK) }
+              }
             >
               <div className="pt-sp-2">
                 <motion.button
@@ -164,9 +201,11 @@ export function Suggestions({
                   // The strip drops from the row on --distance-micro with --blur-small, so it reads as the chip opening,
                   // and it leaves faster than it came. With motion off, only the opacity moves.
                   initial={off ? false : { y: -4, filter: "blur(2px)" }}
-                  animate={off ? undefined : { y: 0, filter: "blur(0px)", transition: fadeIn(FAST) }}
+                  animate={
+                    off ? undefined : { y: 0, filter: "blur(0px)", transition: fadeIn(FAST) }
+                  }
                   exit={off ? undefined : { y: -4, filter: "blur(2px)", transition: fadeIn(QUICK) }}
-                  className="press door-sheen relative flex min-h-touch w-full items-center gap-sp-3 rounded-tile border border-door-hair bg-card px-sp-4 py-sp-2 text-left transition-colors duration-150 hover-fine:bg-raised"
+                  className="press door-sheen min-h-touch gap-sp-3 rounded-tile border-door-hair bg-card px-sp-4 py-sp-2 hover-fine:bg-raised relative flex w-full items-center border text-left transition-colors duration-150"
                 >
                   {/* A tap on another chip cross-fades the fact in place with a soft blur, both at once and with no move
                       (Text swap soft). The old fact leaves the flow, so the strip never grows for the overlap. */}
@@ -179,14 +218,17 @@ export function Suggestions({
                         animate={off ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
                         exit={off ? { opacity: 0 } : { opacity: 0, filter: "blur(2px)" }}
                         transition={{ duration: QUICK, ease: "easeInOut" }}
-                        className="block text-meta leading-tight text-ink"
+                        className="text-meta text-ink block leading-tight"
                       >
                         <span className="font-semibold">{strip.name}</span>{" "}
                         <span className="font-mono tabular-nums">{facts[strip.key]}</span>
                       </motion.span>
                     </AnimatePresence>
                   </span>
-                  <span aria-hidden className="flex-none text-meta leading-tight font-semibold text-ink">
+                  <span
+                    aria-hidden
+                    className="text-meta text-ink flex-none leading-tight font-semibold"
+                  >
                     Open →
                   </span>
                 </motion.button>
@@ -208,12 +250,30 @@ export function Suggestions({
             animate={
               off
                 ? { opacity: 1, transition: fadeIn(FAST) }
-                : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", transition: { ...MORE_SPRING, opacity: fadeIn(FAST), filter: fadeIn(FAST) } }
+                : {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    filter: "blur(0px)",
+                    transition: { ...MORE_SPRING, opacity: fadeIn(FAST), filter: fadeIn(FAST) },
+                  }
             }
-            exit={off ? { opacity: 0, transition: fadeIn(QUICK) } : { opacity: 0, scale: 0.99, filter: "blur(2px)", transition: { duration: QUICK, ease: SMOOTH } }}
-            className="door-lift mt-sp-2 overflow-hidden rounded-card border border-door-hair bg-card"
+            exit={
+              off
+                ? { opacity: 0, transition: fadeIn(QUICK) }
+                : {
+                    opacity: 0,
+                    scale: 0.99,
+                    filter: "blur(2px)",
+                    transition: { duration: QUICK, ease: SMOOTH },
+                  }
+            }
+            className="door-lift mt-sp-2 rounded-card border-door-hair bg-card overflow-hidden border"
           >
-            <ul aria-label="All Topics" className="m-0 flex max-h-more list-none flex-col overflow-y-auto overscroll-contain p-sp-1">
+            <ul
+              aria-label="All Topics"
+              className="max-h-more p-sp-1 m-0 flex list-none flex-col overflow-y-auto overscroll-contain"
+            >
               {TOPICS.map((topic, index) => {
                 const fact = facts[topic.key];
                 // A live Topic opens with the API. Until then its row shows, so no Topic is missing, but it takes no tap.
@@ -231,13 +291,18 @@ export function Suggestions({
                       aria-label={ready ? `${topic.name}: ${fact}` : `${topic.name}: opens soon`}
                       onMouseDown={keepFocus}
                       onClick={() => pick(topic.key)}
-                      className="press flex min-h-touch w-full flex-col items-start justify-center gap-sp-0 rounded-tile px-sp-3 py-sp-2 text-left transition-colors duration-150 hover-fine:enabled:bg-raised disabled:cursor-default"
+                      className="press min-h-touch gap-sp-0 rounded-tile px-sp-3 py-sp-2 hover-fine:enabled:bg-raised flex w-full flex-col items-start justify-center text-left transition-colors duration-150 disabled:cursor-default"
                     >
                       {/* The name over its fact, as on a chip, so a long fact never cuts its number. */}
-                      <span data-topic-name="" className={`text-body leading-tight font-semibold ${ready ? "text-ink" : "text-mute"}`}>
+                      <span
+                        data-topic-name=""
+                        className={`text-body leading-tight font-semibold ${ready ? "text-ink" : "text-mute"}`}
+                      >
                         {topic.name}
                       </span>
-                      <span className="max-w-full truncate font-mono text-meta leading-tight text-mute tabular-nums">{ready ? fact : "Opens soon"}</span>
+                      <span className="text-meta text-mute max-w-full truncate font-mono leading-tight tabular-nums">
+                        {ready ? fact : "Opens soon"}
+                      </span>
                     </button>
                   </motion.li>
                 );

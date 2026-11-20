@@ -18,7 +18,10 @@ const { personalViewOf, shownBlock } = await import("./personal-stream");
 
 /* The `data-block` parts of the recorded stream: the block from code first, then the block after the check. */
 function recordedParts() {
-  return readFileSync(join(__dirname, "..", "..", "fixtures", "personal-answer", "start-sit-compare.sse"), "utf8")
+  return readFileSync(
+    join(__dirname, "..", "..", "fixtures", "personal-answer", "start-sit-compare.sse"),
+    "utf8",
+  )
     .split("\n")
     .filter((line) => line.startsWith("data: {"))
     .map((line) => JSON.parse(line.slice("data: ".length)))
@@ -28,13 +31,16 @@ function recordedParts() {
 
 function checked() {
   const block = answerBlockOf(recordedParts().at(-1));
-  if (block?.kind !== "comparison") throw new Error("the recorded stream holds no comparison block");
+  if (block?.kind !== "comparison")
+    throw new Error("the recorded stream holds no comparison block");
   return block;
 }
 
 /* The style of each box of the block that moves, blurs, or scales as it enters. */
 function moved(root: HTMLElement) {
-  return [root, ...root.querySelectorAll<HTMLElement>("*")].filter((box) => /blur\((?!0)|translate|scale/.test(`${box.style.filter} ${box.style.transform}`));
+  return [root, ...root.querySelectorAll<HTMLElement>("*")].filter((box) =>
+    /blur\((?!0)|translate|scale/.test(`${box.style.filter} ${box.style.transform}`),
+  );
 }
 
 beforeEach(() => {
@@ -47,12 +53,20 @@ describe("the comparison block", () => {
   it("joins the block union and reads as one line of text that ends on the pick (AT-16)", () => {
     const block = checked();
     expect(blockText(block)).toBe(comparisonText(block));
-    expect(comparisonText(block)).toMatch(/^M\. Golden or K\. Mumpfield, week 10: Projection 12\.9 to 6\.8;/);
+    expect(comparisonText(block)).toMatch(
+      /^M\. Golden or K\. Mumpfield, week 10: Projection 12\.9 to 6\.8;/,
+    );
     expect(comparisonText(block)).toMatch(/Start K\. Mumpfield\.$/);
   });
 
   it("shows the personal part of the stream as the block of the card", () => {
-    const message: UIMessage = { id: "a", role: "assistant", parts: recordedParts().map((data) => ({ type: "data-block", data }) as UIMessage["parts"][number]) };
+    const message: UIMessage = {
+      id: "a",
+      role: "assistant",
+      parts: recordedParts().map(
+        (data) => ({ type: "data-block", data }) as UIMessage["parts"][number],
+      ),
+    };
     const view = personalViewOf(message);
     expect(view.block?.kind).toBe("comparison");
     expect(view.block && shownBlock(view.block).answerBlock?.kind).toBe("comparison");
@@ -63,7 +77,9 @@ describe("the comparison block", () => {
     render(<ComparisonView block={block} live={false} />);
     const rows = [...document.querySelectorAll<HTMLElement>("[data-fact]")];
     expect(rows.map((row) => row.dataset.fact)).toEqual(block.facts.map((fact) => fact.key));
-    const projection = screen.getByRole("img", { name: "Projection: M. Golden 12.9, K. Mumpfield 6.8. M. Golden wins it." });
+    const projection = screen.getByRole("img", {
+      name: "Projection: M. Golden 12.9, K. Mumpfield 6.8. M. Golden wins it.",
+    });
     const bars = [...projection.querySelectorAll<HTMLElement>("[data-side]")];
     expect(bars.map((bar) => bar.dataset.side)).toEqual(["0", "1"]);
     expect(bars[0].className).toContain("bg-accent");
@@ -72,14 +88,22 @@ describe("the comparison block", () => {
     expect(bars[1].className).toContain("origin-left");
     // Each fact reds only the side that wins it.
     for (const fact of block.facts) {
-      const red = [...document.querySelectorAll<HTMLElement>(`[data-fact="${fact.key}"] [data-side]`)].filter((bar) => bar.className.includes("bg-accent"));
-      expect(red.map((bar) => Number(bar.dataset.side))).toEqual(fact.winner === null ? [] : [fact.winner]);
+      const red = [
+        ...document.querySelectorAll<HTMLElement>(`[data-fact="${fact.key}"] [data-side]`),
+      ].filter((bar) => bar.className.includes("bg-accent"));
+      expect(red.map((bar) => Number(bar.dataset.side))).toEqual(
+        fact.winner === null ? [] : [fact.winner],
+      );
     }
   });
 
   it("puts a dot on each fact that the checked text cites, and none before the check", () => {
     render(<ComparisonView block={checked()} live={false} />);
-    expect([...document.querySelectorAll<HTMLElement>("[data-cited]")].map((dot) => dot.closest<HTMLElement>("[data-fact]")?.dataset.fact)).toEqual(["projection", "defense", "team_points"]);
+    expect(
+      [...document.querySelectorAll<HTMLElement>("[data-cited]")].map(
+        (dot) => dot.closest<HTMLElement>("[data-fact]")?.dataset.fact,
+      ),
+    ).toEqual(["projection", "defense", "team_points"]);
     cleanup();
     const first = answerBlockOf(recordedParts()[0]);
     if (first?.kind !== "comparison") throw new Error("no comparison block");
