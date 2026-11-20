@@ -1,7 +1,7 @@
 /**
  * Tests for the cn helper. They check that the custom scale names, colors, and breakpoint sort into the right groups.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { cn } from "./utils";
 
 describe("cn", () => {

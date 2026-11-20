@@ -3,7 +3,7 @@
  * They read the chart by its role and its text, and each bar by the week it holds.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { Tile } from "./tile";
 
 afterEach(() => cleanup());

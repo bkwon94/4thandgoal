@@ -2,7 +2,7 @@
  * Tests for the pure math of the hero scene: the place of each light, the nearest light, the side of a label, and
  * the place of the margin mark. They need no canvas, so they check the numbers that the canvas draws.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   type HeroScene,
   nearestLight,

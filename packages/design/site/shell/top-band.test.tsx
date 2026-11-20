@@ -4,7 +4,7 @@
  * They read what a reader sees by role and name, not the class names.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import type { Brand, SiteMenu } from "./nav";
 import { TopBand } from "./top-band";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
@@ -51,24 +51,25 @@ function current(element: HTMLElement) {
 
 const pillBar = () => screen.getByRole("navigation", { name: "Site menu" });
 
-/* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
+/* Framer Motion reads matchMedia. The stub matches no query, so each test sees a phone with motion on. The preload
+   restores each spy after each test, so each test sets the stub again. */
+const noMatch = (query: string) =>
+  ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as unknown as MediaQueryList;
+
+beforeEach(() => {
+  spyOn(window, "matchMedia").mockImplementation(noMatch);
+});
 
 afterEach(() => cleanup());
-afterAll(() => vi.unstubAllGlobals());
 
 describe("TopBand", () => {
   it("shows the brand mark as the home link, named by the title", () => {
@@ -414,10 +415,9 @@ describe("The menu sheet closes at the desktop tier", () => {
       addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
       removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
     };
-    const fallback = window.matchMedia;
     // The same breakpoint as the desktop variant, --breakpoint-desktop in globals.css.
-    vi.stubGlobal("matchMedia", (query: string) =>
-      query === "(min-width: 64rem)" ? desktop : fallback(query),
+    spyOn(window, "matchMedia").mockImplementation((query: string) =>
+      query === "(min-width: 64rem)" ? (desktop as unknown as MediaQueryList) : noMatch(query),
     );
     try {
       renderDoorBand();
@@ -430,7 +430,7 @@ describe("The menu sheet closes at the desktop tier", () => {
       await waitFor(() => expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull());
       expect(menuButton().getAttribute("aria-expanded")).toBe("false");
     } finally {
-      vi.stubGlobal("matchMedia", fallback);
+      spyOn(window, "matchMedia").mockImplementation(noMatch);
     }
   });
 });

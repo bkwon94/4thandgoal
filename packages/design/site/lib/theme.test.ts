@@ -2,7 +2,7 @@
  * Tests for the boot script. They run the same string the root layout inlines, against jsdom.
  * The export ships the dark class on the root, so each test starts dark and reads the class after the script runs.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { BOOT_SCRIPT, DARK_CLASS, paintOf, THEME_KEY } from "./theme";
 
 const root = document.documentElement;
@@ -19,7 +19,7 @@ beforeEach(() => {
 afterEach(() => {
   root.classList.remove(DARK_CLASS);
   localStorage.clear();
-  vi.restoreAllMocks();
+  mock.restore();
 });
 
 describe("boot script", () => {
@@ -47,7 +47,7 @@ describe("boot script", () => {
   });
 
   it("keeps the dark class and throws nothing when storage is blocked", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
     expect(runBootScript).not.toThrow();

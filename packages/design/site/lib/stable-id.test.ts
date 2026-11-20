@@ -2,7 +2,7 @@
  * Tests for the stable id of an element: it derives from the data that the element renders, and two renders of the
  * same data give the same id.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { stableId, textId } from "./stable-id";
 
 describe("stableId", () => {

@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useState } from "react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "../ui/sheet-jsdom";
 import { standInForAnimate } from "../ui/sheet-drag-jsdom";
 import { Announcement } from "./announcement";
