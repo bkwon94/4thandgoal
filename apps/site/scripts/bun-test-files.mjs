@@ -4,4 +4,8 @@
  */
 
 /* Each move ticket adds the folders of its tests here, after each file in them uses only `bun:test`. */
-export const BUN_TEST_DIRS = ["apps/site/test", "packages/design/site"];
+export const BUN_TEST_DIRS = [
+  // One folder per line, so that the move tickets merge with no conflict.
+  "apps/site/test",
+  "packages/design/site",
+];
