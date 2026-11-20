@@ -59,9 +59,10 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
     // The rail renders at every tier, so the static HTML is the same for each. The rail variant shows it once the margin holds it.
     // It sits at the end of the left margin track with the gap before the column. The rail is sticky under the top band, so it stays in view as the reader scrolls.
     // From the rail tier the top band is one row: a 44px row, 8px above and below, and its 1px rule at the bottom.
+    // The band height token holds that height and grows by the Deadline banner, so the rail never sits under the banner.
     <nav
       aria-label="Chapters"
-      className="sticky top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)] col-start-1 row-start-1 mr-rail-gap hidden w-rail self-start justify-self-end py-sp-5 rail:block"
+      className="sticky top-band-height col-start-1 row-start-1 mr-rail-gap hidden w-rail self-start justify-self-end py-sp-5 rail:block"
     >
       <ul className="m-0 list-none p-0">
         {chapters.map(({ id, label }) => (
