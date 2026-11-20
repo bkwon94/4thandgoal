@@ -10,8 +10,12 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-36, AT-38, AT-65, AT-
 
 **Status:** in-review
 
-- [ ] A real press for Bo Girds on the local API shows Ledger cards for a 1-for-1, a 2-for-1, and a 3-for-2, at 375, 768, and 1280 px, in both themes.
+- [ ] A real press for Bo Girds on the local API shows Ledger cards of three different shapes, at 375, 768, and 1280 px, in both themes.
 - [x] A card with totals of 68.0 and 62.5 shows "You get 9% more trade value".
 - [x] Up to 5 cards show, then the "Close, but not sent" fold with up to 3 near ideas.
 - [x] The wait shows each new line with the real counts, one at a time, and no count of seconds or minutes.
 - [x] Playwright WebKit at 390x660 finds no text overlap and no fixed bar over content.
+
+## Comments
+
+- 2026-11-20: Brian changed AT-65 to three different shapes, because the gain check drops every 1-for-1, 2-for-1, and 3-for-1 offer of Bo Girds. The evidence stage proves box 1.
