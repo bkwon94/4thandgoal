@@ -39,7 +39,9 @@ export function DeadlineBanner({ lock, api, gradeHref, findHref }: { lock: numbe
     const el = ref.current;
     if (!el) return;
     const root = document.documentElement;
-    const measure = () => root.style.setProperty("--deadline-banner-h", `${el.offsetHeight}px`);
+    // The box height keeps the fraction of a pixel. offsetHeight rounds it, so the band token would end a fraction short
+    // of the real bottom of the band.
+    const measure = () => root.style.setProperty("--deadline-banner-h", `${el.getBoundingClientRect().height}px`);
     measure();
     // A browser with no ResizeObserver, such as jsdom, keeps the first height.
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);

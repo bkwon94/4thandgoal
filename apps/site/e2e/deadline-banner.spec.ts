@@ -108,33 +108,42 @@ const overlap = (a: Rect, b: Rect) => a.x < b.x + b.width && b.x < a.x + a.width
 
 /* No horizontal scroll, the banner inside the band and under its row, and the band height token equal to the band. */
 async function expectFits(page: Page) {
-  const fit = await page.evaluate(() => {
-    const header = document.querySelector("header")!;
-    const row = header.firstElementChild!.getBoundingClientRect();
-    const strip = document.querySelector("[data-deadline-banner]")!.getBoundingClientRect();
-    const probe = document.createElement("div");
-    probe.style.height = "var(--spacing-band-height)";
-    document.body.append(probe);
-    const token = probe.getBoundingClientRect().height;
-    probe.remove();
-    return {
-      scroll: document.documentElement.scrollWidth - window.innerWidth,
-      rowBottom: row.bottom,
-      stripTop: strip.top,
-      stripBottom: strip.bottom,
-      stripWidth: strip.width,
-      headerBottom: header.getBoundingClientRect().bottom,
-      headerHeight: header.getBoundingClientRect().height,
-      token,
-      width: window.innerWidth,
-    };
-  });
-  console.log(`fit: ${JSON.stringify(fit)}`);
-  expect(fit.scroll, "the page scrolls sideways").toBeLessThanOrEqual(0);
-  expect(fit.stripTop, "the banner overlaps the row of the band").toBeGreaterThanOrEqual(fit.rowBottom - 0.5);
-  expect(fit.stripBottom).toBeLessThanOrEqual(fit.headerBottom + 0.5);
-  expect(fit.stripWidth).toBeLessThanOrEqual(fit.width);
-  expect(Math.abs(fit.token - fit.headerHeight), "the band height token does not hold the banner").toBeLessThanOrEqual(1);
+  // The banner measures itself with a ResizeObserver, which reports after a layout. A change of phase swaps the
+  // placeholder for a banner of another height, so the check tries again until the observer has reported.
+  await expect(async () => {
+    const fit = await page.evaluate(() => {
+      const header = document.querySelector("header")!;
+      const row = header.firstElementChild!.getBoundingClientRect();
+      const strip = document.querySelector("[data-deadline-banner]")!.getBoundingClientRect();
+      const probe = document.createElement("div");
+      probe.style.height = "var(--spacing-band-height)";
+      document.body.append(probe);
+      const token = probe.getBoundingClientRect().height;
+      probe.remove();
+      const bannerToken = parseFloat(document.documentElement.style.getPropertyValue("--deadline-banner-h"));
+      return {
+        scroll: document.documentElement.scrollWidth - window.innerWidth,
+        rowBottom: row.bottom,
+        stripTop: strip.top,
+        stripBottom: strip.bottom,
+        stripWidth: strip.width,
+        stripHeight: strip.height,
+        bannerToken,
+        headerBottom: header.getBoundingClientRect().bottom,
+        headerHeight: header.getBoundingClientRect().height,
+        token,
+        width: window.innerWidth,
+      };
+    });
+    console.log(`fit: ${JSON.stringify(fit)}`);
+    expect(fit.scroll, "the page scrolls sideways").toBeLessThanOrEqual(0);
+    expect(fit.stripTop, "the banner overlaps the row of the band").toBeGreaterThanOrEqual(fit.rowBottom - 0.5);
+    expect(fit.stripBottom).toBeLessThanOrEqual(fit.headerBottom + 0.5);
+    expect(fit.stripWidth).toBeLessThanOrEqual(fit.width);
+    expect(Math.abs(fit.token - fit.headerHeight), "the band height token does not hold the banner").toBeLessThanOrEqual(0.01);
+    // The banner token keeps the fraction of a pixel, so a part that sticks at the band height sits flush with the band.
+    expect(Math.abs(fit.bannerToken - fit.stripHeight), "the banner token rounds the height of the banner").toBeLessThanOrEqual(0.01);
+  }).toPass({ timeout: 2000 });
 }
 
 for (const viewport of VIEWPORTS) {
