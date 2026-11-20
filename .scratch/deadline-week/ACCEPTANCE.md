@@ -299,7 +299,7 @@ App: site
 Stories: 53, 54, 55, 109
 Given: The analyzer of `cpc` in Find mode, with Bo Girds as the asker and every team, against the local API.
 When: The reader taps "Find".
-Then: One line at a time shows each real step with the counts of the press, such as "3 of 5 · Checking 9,412 trades for fairness", and each line holds until the next step ends.
+Then: One line at a time shows each real step with the counts of the press, such as "3 of 5 · Checking 9,412 trades for fairness". Each step line stays on screen at least about 1.5 s and holds until the next step starts, and step 5 changes its line as AT-73 says.
 Evidence: the step events of the stream with times, the line text with times, the `StageLines` part in the DOM, and screenshots of two lines at 375, 768, and 1280 px, each in the light theme and the dark theme.
 
 AT-37: The team avatars light up in turn
@@ -530,7 +530,7 @@ Evidence: the test command and its output.
 AT-65: The trade card is the Ledger
 App: site
 Stories: 104, 105, 106, 108
-Given: The Finder result of AT-36, with a 1-for-1, a 2-for-1, and a 3-for-2 among the cards.
+Given: The Finder result of AT-36, with cards of three different shapes, such as a 1-for-2, a 1-for-3, and a 3-for-2.
 When: The result lands.
 Then: Each card shows "You get · N" and "You give · N" columns, each player row shows the position, the NFL team, and the rank with no trade value, and a total shows under each column.
 Evidence: the find answer, and screenshots of the three cards at 375, 768, and 1280 px, each in the light theme and the dark theme.
@@ -582,6 +582,22 @@ Given: The press of AT-55.
 When: The evidence agent reads the Jev requests of the press.
 Then: No request sends the header `TypeSafe-Danger-Zone-Long-Context`.
 Evidence: the command, and the headers of the Jev requests from the log or a search of the code.
+
+AT-72: Each trade card shows as soon as it is ready
+App: both
+Stories: 113
+Given: The analyzer of `cpc` in Find mode, with Bo Girds as the asker and every team, against the local API.
+When: The reader taps "Find".
+Then: The first trade card shows before the last one, each card shows one at a time as the stream sends it, and a line under the cards counts the trades still to come until the last card shows.
+Evidence: the trade events of the stream with times, the time each card shows in the DOM, and screenshots after the first card and after the last card at 375, 768, and 1280 px, each in the light theme and the dark theme.
+
+AT-73: Step 5 names the trades it weighs
+App: site
+Stories: 114
+Given: The press of AT-72.
+When: The wait reaches step 5.
+Then: Step 5 shows at least 3 lines one after the other, each names a real trade of the Shortlist of the press by its players, and each line stays on screen about 3 s.
+Evidence: the Shortlist of the press, the line text with times, and screenshots of two step 5 lines at 375 px in the light theme and the dark theme.
 
 ## Trace
 
@@ -697,6 +713,8 @@ Story 109: AT-36
 Story 110: AT-68
 Story 111: AT-69
 Story 112: AT-63, AT-64
+Story 113: AT-72
+Story 114: AT-73
 Out of scope "The long-context header of TypeSafe": AT-71
 Out of scope "A trade value on each player row of a card": AT-65
 Out of scope "A cap on the count of trades after the Value screen": AT-60
@@ -706,8 +724,9 @@ Out of scope "A Finder for three-team trades": AT-53
 Out of scope "The upgrade of Next.js": AT-54
 Out of scope "A season history in the Trade Wire": AT-14
 Out of scope "The Trade Wire on the front door": no test. Reason: AT-1 and AT-5 show the Trade Wire only in the sheet.
-Out of scope "A push alert", "Norcal", "A theme for the whole site", "A stream of Finder results per partner", "A prewarm of the Finder cache", "The Accept tree", "A change to YES_AT or NO_AT": no test. Reason: no ticket builds near them, and AT-11 and AT-47 cover Norcal and the thresholds.
+Out of scope "A push alert", "Norcal", "A theme for the whole site", "A stream of Finder results per partner", "The Accept tree", "A change to YES_AT or NO_AT": no test. Reason: no ticket builds near them, and AT-11 and AT-47 cover Norcal and the thresholds.
 
 ## Revisions
 
 - 2026-11-19: Brian approved the tests of the fair-first Finder (decisions 13 to 17). AT-36, AT-38, AT-41, AT-43, AT-45, and AT-46 changed. AT-42 is retired. AT-55 to AT-71 are new. AT-41 lost its 30 s limit, because it is a time claim.
+- 2026-11-20: Brian approved four changes. AT-60 counts the 3 best offers of each group, up to 231. AT-65 needs three different shapes, not a 1-for-1 and a 2-for-1, because the gain check drops every 1-for-1, 2-for-1, and 3-for-1 offer of Bo Girds. AT-36 holds each step line at least about 1.5 s. AT-72 and AT-73 are new (decision 20). The prewarm left Out of scope (decision 19).

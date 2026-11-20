@@ -156,6 +156,8 @@ Stories 89 to 112 replace stories 57, 58, 67, 69, 70, 71, 72, and 73. Stories 75
 110. As a manager, I want the wait to make no promise of how long it takes, so that the site never states a time it cannot keep.
 111. As a manager, I want a search around one player, and my keep and aim choices, to hold on every fair trade, so that those tools still work.
 112. As a manager, I want two managers who press at the same time both to get full answers, so that deadline night does not break the Finder.
+113. As a manager, I want each trade card to show as soon as it is ready, so that I read the first trade while the others still come.
+114. As a manager, I want the last step of the wait to name the trades it weighs and to change its line, so that the wait never looks stuck.
 
 ### The commissioner
 
@@ -226,7 +228,7 @@ Stories 89 to 112 replace stories 57, 58, 67, 69, 70, 71, 72, and 73. Stories 75
 - The log-only Jev checks run after the answer goes out.
 - One pick call stays. It picks the best 3 across all partners and writes the Lean and the Case for each.
 - The progress streams, one step line as each step ends. The analyzer page reads the same stream as the front door.
-- No prewarm of the result cache.
+- No prewarm of the result cache. The fair answers do warm before a press (decision 19).
 
 ### The Finder steps (decisions 01, 05, 09, and 12)
 
@@ -335,7 +337,7 @@ No test calls a paid API in `make check-fast`. The Jev answers in seams 3 and 4 
 - A push alert. Brian said it is not necessary.
 - Norcal. The dinner is a CPC event.
 - A theme for the whole site. The deadline look stays in the Deadline banner, the sheet, and the analyzer eyebrow.
-- A stream of Finder results per partner, and a prewarm of the Finder cache (decision 02).
+- A stream of Finder results per partner (decision 02). Decision 19 brings in a warm-up of the fair answers, and decision 20 streams each trade card.
 - The Accept tree, the split of the target question, and a Jev tree for fair (decision 05). The Value screen is the one math cut, by ADR 0038.
 - A cap on the count of trades after the Value screen (decision 14). A later cap needs a new decision under ADR 0038.
 - The long-context header of TypeSafe (decision 14). The split of a request covers the 64k limit.
