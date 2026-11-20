@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-3.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fixture with a hex color in a style object and `rgb(0 0 0)` in a class string fails once for each line.
 - [x] The lint of all site code exits 0.
