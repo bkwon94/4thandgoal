@@ -1,5 +1,5 @@
 """
-The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 3 offers, each with a Lean, a
+The Finder pick: one sheet per shortlist offer, then one Advisor call that picks up to 5 offers, each with a Lean, a
 Case of at most 3 sentences, and 2 to 4 Bullets, and up to 3 near ideas, each with the reason it fell short. A failed
 pick gets one repair call on its own sheet. With no pick and no near idea left, the shortlist stands with fact lines.
 """
@@ -26,7 +26,7 @@ from analyzer.advisor import (
     side_lines,
     system_prompt,
 )
-from analyzer.finder_search import Shortlist, ShortlistOffer
+from analyzer.finder_search import Shortlist, ShortlistOffer, sheet_questions
 from analyzer.read_jev_check import log_read_jev_checks
 from analyzer.stage import Stage, quiet
 from analyzer.team_facts import lineup_now_fact
@@ -50,7 +50,8 @@ log = logging.getLogger(__name__)
 
 PROMPT_FILE = "finder_pick.md"
 REPAIR_PROMPT_FILE = "finder_pick_repair.md"
-MAX_PICKS = 3
+# The most picks of one press. The Finder sparks varied ideas, so 5 picks show with up to 3 near ideas (decision 17).
+MAX_PICKS = 5
 # The most near ideas of one press. An idea is an idea, so a list with offers always shows at least one.
 MAX_NEAR = 3
 MIN_BULLETS, MAX_BULLETS = 2, 4
@@ -105,7 +106,7 @@ class NearOut(BaseModel):
 
 
 class FinderPickOut(BaseModel):
-    """The structured output of the pick call: up to 3 picks, up to 3 near ideas, and with no pick a plain line that
+    """The structured output of the pick call: up to 5 picks, up to 3 near ideas, and with no pick a plain line that
     says why."""
 
     # The count is a description only, as with the Bullets: the guard checks it.
@@ -173,13 +174,15 @@ def spare_facts(offer: ShortlistOffer, snapshot: Snapshot) -> dict[str, Fact]:
 def offer_sheet(offer: ShortlistOffer, snapshot: Snapshot, news: NewsFeed) -> dict[str, Fact]:
     """The facts of one shortlist offer by id: the measured facts of its trade, with the news of its players only,
     the lineup now of the asker, the Spares tree facts, then the Jev answers of the shortlist as JEV facts, so the
-    pick makes no new Jev call. After a failed request the offer holds no Jev answer of that step, so the sheet states
-    none, never "unsure"."""
+    pick makes no new Jev call: the fair mean of step 1, and the need and the gain of each side of step 2. After a
+    failed request the offer holds no Jev answer of that step, so the sheet states none, never "unsure"."""
     trade = offer.trade
-    nouls = {} if offer.failed else {f"need.{rid}": p for rid, p in offer.needs.items()}
+    nouls = {} if offer.failed else {**{f"need.{rid}": p for rid, p in offer.needs.items()},
+                                     **{f"gain.{rid}": p for rid, p in offer.gains.items()}}
     if not offer.fair_failed:
         nouls["fair"] = offer.fair
-    questions = trade_jev_questions(trade, snapshot)
+    # The need questions are those of one trade, and the fair and gain questions are those that the search asked.
+    questions = {**trade_jev_questions(trade, snapshot), **sheet_questions(trade, snapshot)}
     now = lineup_now_fact(snapshot, trade.asker)
     return {**measured_sheet(trade, snapshot, news), **({} if now is None else {now.id: now}),
             **spare_facts(offer, snapshot),
@@ -419,7 +422,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
     NO_PARTNER line when no team passed the partner filter, else the NO_OFFER line.
 
-    One call picks the best 3 across every partner. Each offer has a label, A to J, in the prompt, and code maps the
+    One call picks the best 5 across every partner. Each offer has a label, A to J, in the prompt, and code maps the
     label back to its offer. A failure of the whole response retries the pick call once with the failures as feedback.
     A pick that fails its own guards gets one repair call on its own sheet, and a pick that fails again drops. So only a
     pick that reads Send it, Lean yes, or Gut call stands. A near idea that fails its guards drops with no repair. When

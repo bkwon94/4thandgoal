@@ -5,6 +5,7 @@ The template blurb is the safe fallback when the writer fails twice.
 import logging
 import re
 import threading
+import time
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -211,6 +212,7 @@ class ClaudeWriter:
         if tools is not None:
             extra["tools"] = tools
         model = MODEL if model is None else model
+        start = time.monotonic()
         response = self._client.messages.parse(
             model=model,
             max_tokens=16000,
@@ -223,13 +225,18 @@ class ClaudeWriter:
         usage = response.usage
         # A response with no usage skips the log line. The parsed output still counts.
         if usage is not None:
+            # The output tokens, the model, the effort, and the time show where a slow call spends its time.
             log.info(
                 "%s call: cache_creation_input_tokens=%s cache_read_input_tokens=%s"
-                " input_tokens=%s",
+                " input_tokens=%s output_tokens=%s model=%s effort=%s time=%.1fs",
                 output_model.__name__,
                 usage.cache_creation_input_tokens,
                 usage.cache_read_input_tokens,
                 usage.input_tokens,
+                getattr(usage, "output_tokens", None),
+                model,
+                effort,
+                time.monotonic() - start,
             )
             if self._on_usage is not None:
                 self._on_usage(usage)

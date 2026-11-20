@@ -10,6 +10,6 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-41 and AT-70.
 
 **Status:** ready-for-agent
 
-- [ ] Three real presses for Bo Girds and every team each run one pick call, and no id retry line shows in the log.
-- [ ] The picks of a real press for Bo Girds hold at least 2 shapes and at least 3 partners.
-- [ ] The find answer of each trade holds the trade value total of each side and the position, NFL team, and rank of each player.
+- [x] Three real presses for Bo Girds and every team each run one pick call, and no id retry line shows in the log.
+- [x] The picks of a real press for Bo Girds hold at least 2 shapes and at least 3 partners.
+- [x] The find answer of each trade holds the trade value total of each side and the position, NFL team, and rank of each player.

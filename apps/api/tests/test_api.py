@@ -36,7 +36,7 @@ from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
 from facts.writer import FINDER_PICK_MODEL, ClaudeWriter
-from league.chart import match_chart
+from league.chart import match_chart, name_key
 from league.client import ClientError
 from league.jev_port import JevError
 from league.live import RefreshResult
@@ -1321,7 +1321,7 @@ def test_a_good_request_returns_the_document_in_the_fixture_shape(settings, sour
 # The keys whose numbers are ids, weeks, the season, or the stamp. No other number may appear in the document.
 # The fairness block's gives_more is a roster id, and so are the to and from of each traded player.
 NUMBER_KEYS = {"roster_id", "asker", "for_roster", "gives_more", "chart_week", "stats_through", "completed_through",
-               "season", "week", "games", "in_progress", "snaps", "usage", "to", "from"}
+               "season", "week", "games", "in_progress", "snaps", "usage", "to", "from", "trade_value"}
 # The strings that may hold digits: ids, URLs, the stamp, and the names that managers and Sleeper set.
 # A Season rank and a Recent rank, such as WR60, hold the rank as digits. The offer id of a Finder trade holds ids.
 DIGIT_STRING_KEYS = {"player_id", "headshot", "rosters_fetched", "team", "name", "season_rank", "recent_rank",
@@ -1468,11 +1468,15 @@ def passing_pick(user: str, **changes) -> dict:
     """A pick that passes every guard: the labels of the first offers of the shortlist, up to 3, each Bullet on the
     week fact."""
     offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[:3]
+    out = {"picks": [_passing_pick_of(offer) for offer in offers], "near": [], "none_line": None}
+    return out | changes
+
+
+def _passing_pick_of(label: str) -> dict:
+    """One pick of the offer with the label that passes every guard, each Bullet on the week fact."""
     bullets = [{"text": "The trade lands in the middle of the season.", "mark": "for", "fact_id": "trade.week"},
                {"text": "The other manager gets help where he needs it.", "mark": "for", "fact_id": "trade.week"}]
-    out = {"picks": [{"label": offer, "lean": "Lean yes", "case": PICK_CASE, "bullets": bullets}
-                     for offer in offers], "near": [], "none_line": None}
-    return out | changes
+    return {"label": label, "lean": "Lean yes", "case": PICK_CASE, "bullets": bullets}
 
 
 class StubPicker:
@@ -1627,7 +1631,7 @@ def test_a_failed_jev_check_of_a_pick_never_blocks_the_picks(settings, sources, 
     assert "The Jev checks of the read failed" in caplog.text
 
 
-def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_lean_a_case_and_bullets(settings, sources):
+def test_find_with_no_partner_gives_up_to_five_picks_each_with_a_lean_a_case_and_bullets(settings, sources):
     picker = StubPicker()
     response = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
                                                             headers=HEADERS)
@@ -1636,7 +1640,7 @@ def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_lean_a_case_an
     assert len(picker.calls) == 1
     assert doc["fallback"] is False
     assert doc["empty"] is None
-    assert 1 <= len(doc["trades"]) <= 3
+    assert 1 <= len(doc["trades"]) <= 5
     for item in doc["trades"]:
         assert item["lean"] == "Lean yes" and item["case"] == PICK_CASE
         assert 2 <= len(item["bullets"]) <= 3
@@ -1649,6 +1653,60 @@ def test_find_with_no_partner_gives_up_to_three_picks_each_with_a_lean_a_case_an
         assert item["sides"][0]["roster_id"] == 2
     # The find client reads the week 9 chart, so the Value screen has values to sum.
     assert doc["as_of"]["chart_week"] == 9
+
+
+def test_a_pick_of_five_offers_and_three_near_ideas_stands_from_one_pick_call(settings, sources):
+    # AT-41 and decision 17: the pick call picks up to 5 trades and up to 3 near ideas, across every partner.
+    def five_and_three(user):
+        labels = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)
+        near = [{"label": label, "reason": "The trade lands in the middle of the season.", "fact_id": "trade.week"}
+                for label in labels[5:8]]
+        return {"picks": [_passing_pick_of(label) for label in labels[:5]], "near": near, "none_line": None}
+
+    picker = StubPicker(five_and_three)
+    doc = _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2},
+                                                       headers=HEADERS).json()
+    labels = re.findall(r"^Offer (\S+)$", picker.calls[0][1], re.MULTILINE)
+    assert len(labels) >= 8
+    assert len(picker.calls) == 1
+    assert [item["offer_id"] for item in doc["trades"]] == picker.offer_ids(labels[:5])
+    assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(labels[5:8])
+
+
+def test_each_trade_and_near_idea_holds_the_trade_value_total_of_each_side_and_each_player_line(settings, sources):
+    # Decision 17: the Ledger card shows a trade value total under each column, and a row per player with the
+    # position, the NFL team, and the rank, so the site needs no second call.
+    def picks_and_near(user):
+        labels = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)
+        near = [{"label": label, "reason": "The trade lands in the middle of the season.", "fact_id": "trade.week"}
+                for label in labels[5:8]]
+        return {"picks": [_passing_pick_of(label) for label in labels[:5]], "near": near, "none_line": None}
+
+    doc = _find_client(settings, sources, StubPicker(picks_and_near)).post(
+        "/find", json={"season": 2026, "asker": 2}, headers=HEADERS).json()
+    chart = json.loads(WEEK_9_READ.read_text(encoding="utf-8"))
+    items = doc["trades"] + doc["near"]
+    assert doc["trades"] and doc["near"]
+    for item in items:
+        assert [total["roster_id"] for total in item["totals"]] == [side["roster_id"] for side in item["sides"]]
+        for total, side in zip(item["totals"], item["sides"], strict=True):
+            players = side["gives"]
+            # Each player row carries what the Ledger shows: the position, the NFL team, and the Season rank.
+            for player in players:
+                assert player["position"] in {"QB", "RB", "WR", "TE"} and player["nfl_team"]
+                assert re.fullmatch(rf"{player['position']}\d+", player["season_rank"] or player["position"] + "0")
+            assert total["trade_value"] == round(sum(_week_9_value(chart, p) for p in players), 1)
+        # The Value screen keeps each side within 125% of the other, so the two totals sit close together.
+        low, high = sorted(total["trade_value"] for total in item["totals"])
+        assert 0 < low <= high <= 1.25 * low
+    assert _digits_outside_ids(doc) == []
+
+
+def _week_9_value(chart: dict, player: dict) -> float:
+    """The trade value of the player in the week 9 chart read, by his name and position, as the chart match reads it."""
+    key = name_key(player["name"], player["position"])
+    [value] = [row["value"] for row in chart["rows"] if name_key(row["name"], row["position"]) == key]
+    return value
 
 
 def test_find_with_no_partner_runs_the_spares_tree_on_every_other_team(settings, sources, caplog):
@@ -1894,7 +1952,7 @@ def test_a_pick_that_fails_a_guard_gets_one_repair_call_and_the_repaired_pick_st
     (lambda user: passing_pick(user) | {"picks": [passing_pick(user)["picks"][0] | {"label": "Z"}]},
      "offer Z is not on the shortlist"),
     (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 2}, "is picked twice"),
-    (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 4}, "the response has 4 picks"),
+    (lambda user: passing_pick(user) | {"picks": passing_pick(user)["picks"][:1] * 6}, "the response has 6 picks"),
     (lambda user: {"picks": [], "near": near_ideas(user), "none_line": None},
      "a response with no pick needs a none_line"),
     # An idea is an idea: a list with offers always shows at least one, so no pick and no near idea retries.
@@ -2053,7 +2111,7 @@ def test_the_picks_come_with_up_to_three_near_ideas_each_with_its_reason(setting
     assert [item["offer_id"] for item in doc["trades"]] == picker.offer_ids(offers[:3])
     assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(offers[3:6])
     for item in doc["near"]:
-        assert set(item) == {"offer_id", "sides", "reason"}
+        assert set(item) == {"offer_id", "sides", "totals", "reason"}
         assert item["reason"] == NEAR_REASON
         # The asker's side comes first, as in each trade.
         assert item["sides"][0]["roster_id"] == 2
@@ -2192,6 +2250,24 @@ def test_the_pick_reads_news_only_of_the_shortlist_players_and_asks_jev_no_new_q
     assert not any(key.startswith("accept.") for request in jev.requests for key in request.questions)
 
 
+def test_the_pick_sheet_quotes_the_fair_question_of_step_one_and_holds_the_gain_answer_of_each_side(settings, sources):
+    # The fair fact holds the step 1 mean, so it quotes the step 1 question by chart value, not the old trade question.
+    # The gain answers of step 2 are reasons for the Case (decision 16), so each side has one on the sheet.
+    picker = StubPicker()
+    _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
+    user = picker.calls[0][1]
+    offers = _offers_in(user)
+    for label, offer in zip(offers, picker.offer_ids(list(offers)), strict=True):
+        rosters = [side.partition(":")[0] for side in offer.split("-")]
+        assert [f"JEV.gain.{rid}" for rid in rosters] == [fid for fid in offers[label] if fid.startswith("JEV.gain.")]
+    fair = [line for line in user.splitlines() if line.startswith("- JEV.fair: ")]
+    assert fair and all("close to fair by chart value" in line and "offers." not in line for line in fair)
+    assert not any("by points, rank, and trade value" in line for line in user.splitlines())
+    gain = next(line for line in user.splitlines() if line.startswith("- JEV.gain.2: "))
+    assert "Does All You Need Is Love start a better lineup after this trade" in gain and "offers." not in gain
+    assert gain.endswith(": yes.")
+
+
 def test_the_pick_message_gives_each_fact_text_once(settings, sources):
     picker = StubPicker()
     _find_client(settings, sources, picker).post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS)
@@ -2208,7 +2284,7 @@ def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources
     picker = StubPicker()
     _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS)
     system = " ".join(picker.calls[0][0].split())
-    for line in ("picks: up to 3 offers that you would send, best first, each once, from any team of the list.",
+    for line in ("picks: up to 5 offers that you would send, best first, each once, from any team of the list.",
                  "label: the one letter of the offer, such as",
                  "case: at most 3 short sentences to the asker,",
                  "near: up to 3 other offers of the list that came close, best first, each once.",
