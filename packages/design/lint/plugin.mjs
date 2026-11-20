@@ -4,10 +4,12 @@
  */
 
 import noRawColor from "./rules/no-raw-color.mjs";
+import useLines from "./rules/use-lines.mjs";
 
 export default {
   meta: { name: "design" },
   rules: {
     "no-raw-color": noRawColor,
+    "use-lines": useLines,
   },
 };

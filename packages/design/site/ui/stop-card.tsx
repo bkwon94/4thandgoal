@@ -1,6 +1,8 @@
 /**
  * The Stop card of the Tour, built on the ui-sdk Popover: modal, with no trigger, always a popover and never a sheet.
  * It renders the root, the content, the title, and the line. The caller places the card itself.
+ * Use it when: a step of the Tour points at one element.
+ * Do not use it when: a popup opens from a trigger. Use `Popover`.
  */
 "use client";
 

@@ -10,7 +10,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-10, AT-11, and 
 
 **Status:** ready-for-agent
 
-- [ ] A fixture part with no `Use it when:` line fails with the doc rule and the file.
-- [ ] Each component file of `ui` and `parts` has both lines.
-- [ ] Each README keeps its "Knows" list.
-- [ ] The lint of all site code exits 0.
+- [x] A fixture part with no `Use it when:` line fails with the doc rule and the file.
+- [x] Each component file of `ui` and `parts` has both lines.
+- [x] Each README keeps its "Knows" list.
+- [x] The lint of all site code exits 0.

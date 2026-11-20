@@ -1,6 +1,8 @@
 /**
  * shadcn Button built on the Base UI button primitive.
  * It exports the component and its cva variants.
+ * Use it when: you need a pressable action in the site style.
+ * Do not use it when: the action runs async and must show it waits. Use `PendingButton`.
  */
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";

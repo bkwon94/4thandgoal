@@ -1,6 +1,8 @@
 /**
  * The page column: the shared shell that centers every page's content and spaces its chapters.
  * It renders the three-track grid from the tablet tier, an optional rail in the left track, and the main.
+ * Use it when: a page needs the shared shell that centers its content.
+ * Do not use it when: the block sits inside a chapter. The page column holds the chapters.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";

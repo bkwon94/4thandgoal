@@ -1,6 +1,8 @@
 /**
  * The hero scene: the client leaf that holds the canvas of the first hero of a page, so `Hero` stays a server component.
  * It takes the plain data of one scene (ADR 0012) and starts the runner of `scene-canvas.ts` on a `2d` context (ADR 0027).
+ * Use it when: the first hero of a page shows a scene.
+ * Do not use it when: the hero shows the grid art. Use `HeroMesh`.
  */
 "use client";
 

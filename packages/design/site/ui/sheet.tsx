@@ -1,6 +1,8 @@
 /**
  * Sheet primitive built on the ui-sdk Drawer. It is the one place the site imports ui-sdk.
  * It renders the root, trigger, backdrop, content, grip, title, and close parts of an edge sheet.
+ * Use it when: a panel comes in from an edge and the reader drags it closed.
+ * Do not use it when: the panel is a centered modal. Use `Dialog`.
  */
 "use client";
 

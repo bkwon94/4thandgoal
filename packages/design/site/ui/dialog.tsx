@@ -1,6 +1,8 @@
 /**
  * shadcn Dialog primitive built on the Base UI dialog.
  * It renders the modal overlay and its content, header, and footer parts.
+ * Use it when: a centered modal needs an answer from the reader.
+ * Do not use it when: the panel comes from an edge and drags closed. Use `Sheet`.
  */
 "use client";
 

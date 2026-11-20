@@ -1,6 +1,8 @@
 /**
  * The blurb: a short paragraph of prose under a chapter label or a grid of cards. It ports the .blurb rule of the source stylesheet.
  * Its measure caps the line, so prose stays readable on a wide column.
+ * Use it when: a short paragraph sits under a chapter label or a grid of cards.
+ * Do not use it when: the text needs a surface of its own. Use `Card`.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";

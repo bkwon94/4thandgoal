@@ -1,6 +1,8 @@
 /**
  * shadcn Popover primitive built on the Base UI popover.
  * It renders a popup that a trigger opens, placed next to the trigger.
+ * Use it when: a popup opens from a trigger and sits next to it.
+ * Do not use it when: the popup is a stop of the Tour. Use `StopCard`.
  */
 "use client";
 
