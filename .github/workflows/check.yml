@@ -69,9 +69,20 @@ jobs:
       - name: Run the unit half of the site check
         run: make check-site-unit
 
+  # Playwright runs in a matrix of shards. Each job runs the whole browser check, and each Playwright run in it takes only the
+  # tests of its shard, so each job builds each client again. The measured split of ticket 16 of design-checks-speed sets the
+  # count: 4 shards put the slowest job near 360 s, and 5 keep it near 300 s. The serial projects keep one worker in each shard.
   site-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5]
+    env:
+      # The Playwright config reads it, such as "2/5". The total comes from the matrix, so the list above is the one count.
+      PLAYWRIGHT_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
