@@ -29,7 +29,9 @@ in a certain direction of what they should do on a trade."
 
 ## What you give
 
-1. picks: up to 5 offers that you would send, best first, each once, from any team of the list.
+1. count: the number of picks you give, 0 to 5. Write it first, before the picks, and give exactly
+   that many picks. Decide which offers you keep before you write the first pick.
+2. picks: up to 5 offers that you would send, best first, each once, from any team of the list.
    Keep 5 picks unless an offer is clearly bad for the asker. The asker asked for ideas, so an offer
    that helps him a little and that the other manager would take is a pick, with a Gut call when it
    is close. A partner is the other team of an offer. A shape is how many players the asker gives and
@@ -44,7 +46,7 @@ in a certain direction of what they should do on a trade."
    - bullets: 2 to 4 Bullets, one claim each, in plain words. Aim for 3 Bullets, and never write more
      than 4. Say why the asker sends it and why the other manager says yes. The mark is for, against,
      or even for the asker. fact_id is the one ID on the sheet of that offer that the claim rests on.
-2. near: up to 3 other offers of the list that came close, best first, each once. A near idea is
+3. near: up to 3 other offers of the list that came close, best first, each once. A near idea is
    an offer you would not send, so it is never one of your picks. The asker asked for ideas, and an
    idea is an idea: show him what you weighed and why it fell short. With no pick, give at least one
    near idea.
@@ -53,9 +55,9 @@ in a certain direction of what they should do on a trade."
      words, such as "You give up your RB1 for a quarterback who sits until your starter is back."
      The rules of a Bullet hold for it.
    - fact_id: the one ID on the sheet of that offer that the reason rests on.
-3. short_line: null when you give 5 picks. When you give 1 to 4 picks, say in one plain sentence why
+4. short_line: null when you give 5 picks. When you give 1 to 4 picks, say in one plain sentence why
    you kept fewer, with no number, such as "The other offers give up your only reliable RB."
-4. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
+5. none_line: null when you give a pick. With no offer worth sending, give no pick, and say why in
    one plain sentence with no number and no name, such as "No offer on the list helps your lineup
    enough to send."
 

@@ -98,6 +98,8 @@ const step = (text: string, live: boolean) => ({ type: "data-step", data: { line
 const team = (rosterId: number) => ({ type: "data-team", data: { roster_id: rosterId } });
 const done = (doc: unknown) => ({ type: "data-answer", data: { kind: "find", document: doc } });
 const trade = (index: number, most: number, item: unknown) => ({ type: "data-trade", data: { index, most, trade: item } });
+/* The part that says how many trades the pick keeps. */
+const tradesCount = (count: number) => ({ type: "data-trades-count", data: { count } });
 /* The part that says the pick has no more trades. */
 const tradesDone = { type: "data-trades-done", data: {} };
 /* The Shortlist part: each trade by its players, the full name and the short name of each, from the side of the asker. */
@@ -290,15 +292,16 @@ describe("TradeFinder", () => {
     expect(stageLine()).toBe("5 of 5 · Picking the best 5");
   });
 
-  it("names one Shortlist trade at a time on step 5, each held about 3 s, and loops", async () => {
+  it("names one Shortlist trade at a time on step 5, the first 1.5 s after the step line, then each held about 3 s, and loops", async () => {
     // AT-73 and decision 20: the line changes about every 3 s, and each line names a Shortlist trade by its players.
+    // V2: the step line holds 1.5 s, as each step line does, so the first trade line comes sooner.
     fixedClock();
     const stream = heldStream();
     find();
     await firstFourSteps(stream);
     await stream.send(shortlist(SHORT_A, LONG, SHORT_B), step("Picking the best 5", true));
     expect(stageLine()).toBe("5 of 5 · Picking the best 5");
-    await tick(2999);
+    await tick(1499);
     expect(stageLine()).toBe("5 of 5 · Picking the best 5");
     await tick(1);
     // A line that fits one phone line keeps the full names.
@@ -320,13 +323,63 @@ describe("TradeFinder", () => {
     expect(hero.textContent).not.toMatch(/\b(?:seconds?|minutes?)\b/i);
   });
 
+  it("shows at least 3 trade lines before the first card of a pick of 15 s, with the step times of a real press", async () => {
+    // V2, AT-36, and AT-73: a real press sent the live lines of steps 1 to 5 at 0, 2.9, 3.0, 3.2, and 5.0 s. Each step
+    // line holds at least 1.5 s, and the first card comes 15 s after step 5 starts.
+    fixedClock();
+    const stream = heldStream();
+    find();
+    const shown: [number, string][] = [];
+    let now = 0;
+    const record = () => {
+      const text = stageLine();
+      if (shown.at(-1)?.[1] !== text) shown.push([now, text]);
+    };
+    const until = async (ms: number) => {
+      while (now < ms) {
+        await tick(100);
+        now += 100;
+        record();
+      }
+    };
+    await stream.send(step("Reading 11 teams", true));
+    record();
+    await until(2900);
+    await stream.send(step("Read 11 teams", false), step("Matching trade value", true));
+    record();
+    await until(3000);
+    await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true));
+    await until(3200);
+    await stream.send(step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+    await until(5000);
+    await stream.send(step("Made a shortlist of 9", false), shortlist(SHORT_A, LONG, SHORT_B), step("Picking the best 5", true));
+    await until(20_000);
+    await stream.send(trade(0, 3, FIVE.trades[0]));
+    record();
+    // Each step shows in turn, as soon as the line before it has held 1.5 s.
+    expect(shown.slice(0, 5)).toEqual([
+      [0, "1 of 5 · Reading 11 teams"],
+      [2900, "2 of 5 · Matching trade value"],
+      [4400, "3 of 5 · Checking 4,667 trades for fairness"],
+      [5900, "4 of 5 · Checking 77 against both lineups"],
+      [7400, "5 of 5 · Picking the best 5"],
+    ]);
+    const weighed = shown.filter(([at, text]) => at < 20_000 && text.startsWith("Weighing "));
+    expect(weighed.length).toBeGreaterThanOrEqual(3);
+    // The first trade line comes 1.5 s after the step 5 line, and each next line 3 s after the one before.
+    expect(weighed.map(([at]) => at)).toEqual([8900, 11_900, 14_900, 17_900]);
+    // The card never waits for a line: it shows at once, and the wait goes back to the step line.
+    expect(cards()).toHaveLength(1);
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
+  });
+
   it("stops the step 5 lines when the first card shows", async () => {
     fixedClock();
     const stream = heldStream();
     find();
     await firstFourSteps(stream);
     await stream.send(shortlist(SHORT_A, SHORT_B), step("Picking the best 5", true));
-    await tick(3000);
+    await tick(1500);
     expect(stageLine()).toBe("Weighing Tre Tucker for Emeka Egbuka");
     await stream.send(trade(0, 5, FIVE.trades[0]));
     // The card is the answer now, so the wait line goes back to the step and holds there.
@@ -532,6 +585,27 @@ describe("TradeFinder", () => {
     await screen.findByRole("button", { name: /^Close, but not sent/ });
     expect(cards()).toHaveLength(5);
     expect((within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("counts the trades still to come from the count of the pick, from the first card, and down when a trade drops", async () => {
+    // V1 and AT-72: the pick states it keeps 3 before it writes them, so the line never counts a trade that never comes.
+    const stream = heldStream();
+    find();
+    await stream.send(step("Picking the best 5", true), tradesCount(3));
+    expect(screen.queryByText(/^Writing \d+ more trade/)).toBeNull();
+    await stream.send(trade(0, 3, FIVE.trades[0]));
+    expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 3"]);
+    // A trade fails its guard and drops, so the count goes down with it.
+    await stream.send(tradesCount(2));
+    expect(screen.getByText("Writing 1 more trade")).toBeTruthy();
+    await stream.send(trade(1, 2, FIVE.trades[1]));
+    expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 2", "Trade 2 of 2"]);
+    await stream.send(tradesDone, done({ ...FIVE, trades: FIVE.trades.slice(0, 2) }));
+    stream.end();
+    await screen.findByRole("button", { name: /^Close, but not sent/ });
+    expect(cards()).toHaveLength(2);
   });
 
   it("shows the cards of the answer when it keeps fewer trades than the stream counted", async () => {

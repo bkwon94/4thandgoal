@@ -322,7 +322,7 @@ class StubPick:
         fact_ids = re.findall(r"^- (\S+): ", first, re.MULTILINE)
         bullets = [{"text": "This trade helps the asker.", "mark": "for", "fact_id": fact_ids[0]},
                    {"text": "The other side gets depth.", "mark": "even", "fact_id": fact_ids[1]}]
-        return FinderPickOut.model_validate({"picks": [{"label": label, "lean": "Gut call",
+        return FinderPickOut.model_validate({"count": 1, "picks": [{"label": label, "lean": "Gut call",
                                                         "case": "If you want depth, this swap fits both teams.",
                                                         "bullets": bullets}], "near": [], "none_line": None})
 
