@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-24.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] One commit holds only the format change of the whole code.
 - [x] A staged file with an unsorted class list and a wrong indent fails the hook on the format check, and the commit does not land.
