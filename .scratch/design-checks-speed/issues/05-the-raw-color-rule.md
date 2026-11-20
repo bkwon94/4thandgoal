@@ -10,5 +10,5 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-3.
 
 **Status:** ready-for-agent
 
-- [ ] A fixture with a hex color in a style object and `rgb(0 0 0)` in a class string fails once for each line.
-- [ ] The lint of all site code exits 0.
+- [x] A fixture with a hex color in a style object and `rgb(0 0 0)` in a class string fails once for each line.
+- [x] The lint of all site code exits 0.
