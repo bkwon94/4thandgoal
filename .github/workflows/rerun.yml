@@ -93,10 +93,49 @@ jobs:
         if: steps.needs.outputs.site == 'true'
         run: pnpm install --frozen-lockfile
 
+      # The apt packages of the browsers come from a cache, as in the site-browser job of Check, so a slow mirror cannot stall the job.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.needs.outputs.site == 'true'
+        run: |
+          version=$(sed -n -E 's/^  playwright@([^:]+):.*/\1/p' pnpm-lock.yaml | head -n 1)
+          if [ -z "$version" ]; then
+            echo "pnpm-lock.yaml has no playwright entry."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # The env context of an expression does not hold the variables of the runner, so the image goes out as an output.
+          echo "image=$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the apt packages of Chromium and WebKit
+        id: apt-cache
+        if: steps.needs.outputs.site == 'true'
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.cache/apt-archives
+          key: ${{ runner.os }}-${{ steps.playwright.outputs.image }}-apt-playwright-${{ steps.playwright.outputs.version }}
+
       # A site loop may be a Playwright test, so the job installs the browsers of the site job of Check.
+      # apt reads the cached .deb files from its archives folder and downloads only what is missing. The copy back lets a miss save them.
       - name: Install Chromium and WebKit
         if: steps.needs.outputs.site == 'true'
-        run: pnpm --dir apps/site exec playwright install --with-deps chromium webkit
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.cache/apt-archives
+          # A clean hook of apt would delete the .deb files after the install, so the step keeps them.
+          sudo rm -f /etc/apt/apt.conf.d/docker-clean
+          echo 'APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/99keep-downloaded-packages
+          find ~/.cache/apt-archives -name '*.deb' -exec sudo cp -t /var/cache/apt/archives/ {} +
+          pnpm --dir apps/site exec playwright install --with-deps chromium webkit
+          find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp -t ~/.cache/apt-archives/ {} +
+
+      # The save runs on a red job too, so a failed test does not keep the cache empty.
+      - name: Save the apt packages of Chromium and WebKit
+        if: steps.needs.outputs.site == 'true' && always() && steps.apt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/apt-archives
+          key: ${{ runner.os }}-${{ steps.playwright.outputs.image }}-apt-playwright-${{ steps.playwright.outputs.version }}
 
       - name: Set up uv
         if: steps.needs.outputs.python == 'true'
