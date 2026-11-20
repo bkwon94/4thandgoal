@@ -21,7 +21,10 @@ Run these in `apps/site/`.
 - Type check: `pnpm typecheck`. It runs `next typegen`, then `bun check --no-script`. The flag stops `bun check` from running the script `check` of this app. It needs Bun 1.4.5 or later.
 - Run one shard of each Playwright run: set `PLAYWRIGHT_SHARD=<i>/<n>`, such as `PLAYWRIGHT_SHARD=2/5 CLIENT=cpc pnpm check:floor`. CI runs the browser check in a matrix of 5 shards. The projects `floor-timing` and `eggs` keep one worker.
 - Lint: `pnpm lint`. Oxlint runs the config `.oxlintrc.json` of the repo root on all site code. Set `LINT_FILES` to paths from the repo root to lint only those files.
-- Fast check: `pnpm check:fast`. It runs the lint, the client build of `cpc`, typecheck, and test. The hook runs it and lints only the staged site files.
+- Format: `pnpm fmt`. `bun fmt` rewrites all site code and package code. The config is `bunfig.toml` at the repo root. It sorts the Tailwind classes. Set `FMT_FILES` to paths from the repo root to format only those files.
+- Format check: `pnpm fmt:check`. It exits 1 and names each file that is out of format. It takes `FMT_FILES` as well. The hook and CI run it.
+- Bun version: `.bun-version` at the repo root pins it, and CI installs that version. `bun check` and `bun fmt` need 1.4.5 or later. If `bun --version` is older, Brian runs `bun upgrade` once.
+- Fast check: `pnpm check:fast`. It runs the lint, the format check, the client build of `cpc`, typecheck, and test. The hook runs it and lints only the staged site files.
 
 ## Rules
 

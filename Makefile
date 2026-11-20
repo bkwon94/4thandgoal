@@ -11,7 +11,7 @@ site-check = pnpm --dir apps/site check
 # A git hook sets GIT_DIR and GIT_INDEX_FILE and no GIT_WORK_TREE, so git takes the folder of the command as the top of the
 # work tree. Vitest runs git from apps/site, would see every file as changed, and would select all of them. The env -u
 # calls make git find the work tree from the folder, as it does outside a hook.
-site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" LINT_FILES="$(LINT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
+site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" LINT_FILES="$(LINT_FILES)" FMT_FILES="$(FMT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 pipeline-check-parallel = make -C apps/pipeline check-parallel
@@ -47,6 +47,9 @@ APPS = $(if $(SELECTION),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
 # lint script of the site then lints all site code. The paths leave out packages/design/lint/fixtures/, which break the
 # rules on purpose for the rule test.
 LINT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' packages/design/lint/plugin.mjs))
+# The hook checks the format of the same staged files, plus the CSS files. FMT_FILES is empty without STAGED=1, and the
+# fmt scripts of the site then take all site code and package code.
+FMT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'apps/site/*.mts' 'apps/site/*.css' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' 'packages/*/site/*.css' packages/design/lint/plugin.mjs))
 VITEST_CHANGED = $(if $(filter 1,$(STAGED)),--changed,$(if $(BASE),--changed $(BASE)))
 PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 

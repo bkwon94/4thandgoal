@@ -62,6 +62,12 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      # The Bun version comes from .bun-version at the root, the one place that pins it. bun check and bun fmt need 1.4.5.
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
       # One install at the root fills the whole pnpm workspace from the root lock file.
       - name: Install the site dependencies
         run: pnpm install --frozen-lockfile
