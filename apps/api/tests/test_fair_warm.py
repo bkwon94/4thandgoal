@@ -108,3 +108,20 @@ def test_a_trade_wire_answer_of_a_client_outside_the_warm_slugs_never_wakes_the_
     warmer = FairWarmer(app.state.served, app.state.fair_cache, jev)
     warmer.trades_seen("norcal", ["1"])
     assert not warmer.wake.is_set()
+
+
+def test_an_api_start_after_a_warm_up_loads_the_file_and_asks_no_question_for_a_loaded_key(settings, sources, caplog):
+    first_jev = FakeJev()
+    first = _app(settings, sources, first_jev)
+    FairWarmer(first.state.served, first.state.fair_cache, first_jev).warm(first.state.served[SLUG])
+    held = len(first.state.fair_cache)
+    assert held > 1000 and (settings.result_cache_dir.parent / "fair" / f"{SLUG}.json").is_file()
+    # A second app on the same data folder is an API start after a deploy.
+    jev = FakeJev()
+    second = _app(settings, sources, jev)
+    assert len(second.state.fair_cache) == held
+    with caplog.at_level(logging.INFO, logger="cornerstone_api.fair_warm"):
+        FairWarmer(second.state.served, second.state.fair_cache, jev).warm(second.state.served[SLUG])
+    lines = [record.getMessage() for record in caplog.records if record.name == "cornerstone_api.fair_warm"]
+    assert lines[0].endswith(f"12 teams, {held} answers loaded from the file")
+    assert jev.requests == []

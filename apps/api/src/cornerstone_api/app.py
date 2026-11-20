@@ -294,7 +294,8 @@ def create_app(
     # stub Advisor, FakeJev, and a recorded feed, so no test needs the network.
     app.state.analyzer = analyzer or functools.partial(read_trade, jev=JEV, news=NEWS)
     # The fair answers of the Finder, shared by each press and the warm-up of every client. The key holds the client.
-    app.state.fair_cache = FairCache()
+    # Its files sit next to the result cache, so on Fly they are on the volume and a deploy keeps them.
+    app.state.fair_cache = FairCache(settings.result_cache_dir.parent / "fair")
     # The worker of the fair cache. A press and the Trade Wire wake it, and it runs only with `warm_on_start`.
     app.state.fair_warmer = FairWarmer(app.state.served, app.state.fair_cache, jev or JEV)
     # The Finder search asks the real Jev by default, so a test injects a search with FakeJev. It reads the fair cache.

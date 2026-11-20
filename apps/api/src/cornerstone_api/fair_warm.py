@@ -76,8 +76,8 @@ class FairWarmer:
         mark = signature(snapshot)
         if mark == self._signatures.get(slug):
             return
-        log.info("Fair warm-up of %s started: chart week %s, %d teams", slug, snapshot.as_of.chart_week,
-                 len(snapshot.rosters))
+        log.info("Fair warm-up of %s started: chart week %s, %d teams, %d answers loaded from the file", slug,
+                 snapshot.as_of.chart_week, len(snapshot.rosters), self.cache.loaded(slug))
         start = time.monotonic()
         waves = JevWaves(self.jev, self.pacer, background=True)
         total, asked = warm_fair(snapshot, self.cache, waves)

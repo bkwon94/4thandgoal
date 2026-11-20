@@ -2,6 +2,7 @@
 Tests for the fair cache of decision 19: the fair state names no asker, a press reads the answers that another press or
 the warm-up stored, a moved player gives new keys only for his offers, and the warm-up waits while a press is live.
 """
+import logging
 import shutil
 import threading
 import time
@@ -12,7 +13,7 @@ import pytest
 from cpc import cpc_client
 from fakes import FakeJev
 
-from analyzer.fair_cache import FairCache
+from analyzer.fair_cache import FairCache, fair_key
 from analyzer.finder_search import fair_requests, offer_id, search, value_offers, warm_fair
 from analyzer.jev_waves import WAVE_SECONDS, JevWaves, Pacer
 from league.slow_sources import load_slow_sources
@@ -206,3 +207,85 @@ def test_a_background_wave_waits_while_a_search_asks_jev(snap):
     started[0].join(timeout=5)
     assert went.is_set()
     assert WAVE_SECONDS in waits
+
+
+def test_the_cache_saves_the_answers_of_a_client_to_its_file_and_a_new_cache_loads_them(snap, tmp_path):
+    folder = tmp_path / "fair"
+    cache = FairCache(folder)
+    keys, asked = warm_fair(snap, cache, JevWaves(FakeJev(yes=0.7)))
+    assert asked == keys > 1000
+    assert (folder / "cpc.json").is_file()
+    # A new process reads the file, so its warm-up asks nothing.
+    reloaded = FairCache(folder)
+    assert len(reloaded) == keys and reloaded.loaded("cpc") == keys
+    again = FakeJev()
+    assert warm_fair(snap, reloaded, JevWaves(again)) == (keys, 0) and again.requests == []
+    key = fair_key(snap, value_offers(TEAM_A, TEAM_B, snap)[0], "asker")
+    assert reloaded.get(key) == pytest.approx(0.7)
+
+
+@pytest.mark.parametrize("content", [None, "", "{not json", '{"answers": "no"}', '[[1, 2]]'])
+def test_a_missing_empty_or_broken_file_starts_the_cache_empty(tmp_path, caplog, content):
+    folder = tmp_path / "fair"
+    folder.mkdir()
+    if content is not None:
+        (folder / "cpc.json").write_text(content)
+    with caplog.at_level(logging.INFO, logger="analyzer.fair_cache"):
+        cache = FairCache(folder)
+    assert len(cache) == 0 and cache.loaded("cpc") == 0
+    # A broken file is no error, and a later save replaces it.
+    key = ("cpc", 2026, 9, ("1",), ("2",))
+    cache.put(key, 0.25)
+    cache.save("cpc")
+    assert FairCache(folder).get(key) == 0.25
+
+
+def test_a_warm_up_after_a_load_asks_only_the_keys_the_file_did_not_hold(snap, tmp_path):
+    folder = tmp_path / "fair"
+    warm_fair(snap, FairCache(folder), JevWaves(FakeJev()))
+    # A moved player gives new keys only for his offers, so the loaded cache asks only those.
+    moved = next(pid for pid in snap.rosters[TEAM_A]
+                 if snap.players[pid].position == "WR" and snap.chart.values.get(pid, 0) >= 5)
+    rosters = {rid: list(roster) for rid, roster in snap.rosters.items()}
+    rosters[TEAM_A].remove(moved)
+    rosters[TEAM_B].append(moved)
+    jev = FakeJev()
+    reloaded = FairCache(folder)
+    _, asked = warm_fair(snap.model_copy(update={"rosters": rosters}), reloaded, JevWaves(jev))
+    assert asked == len(_asked_offers(jev)) > 0
+    assert all(snap.players[moved].name in players for players in _asked_offers(jev))
+    # The press saved its new answers, so the next start holds them too.
+    assert len(FairCache(folder)) == len(reloaded)
+
+
+def test_a_save_drops_the_old_weeks_of_the_client_from_the_file_and_keeps_another_client(tmp_path):
+    folder = tmp_path / "fair"
+    cache = FairCache(folder)
+    old, new = ("cpc", 2026, 8, ("1",), ("2",)), ("cpc", 2026, 9, ("1",), ("3",))
+    other = ("norcal", 2026, 8, ("1",), ("2",))
+    for key in (old, new, other):
+        cache.put(key, 0.5)
+    cache.save("norcal")
+    cache.keep_week("cpc", 2026, 9)
+    cache.save("cpc")
+    reloaded = FairCache(folder)
+    assert old not in reloaded and new in reloaded and other in reloaded
+
+
+def test_a_failed_write_leaves_the_old_file_whole_and_no_partial_file(tmp_path, monkeypatch):
+    folder = tmp_path / "fair"
+    cache = FairCache(folder)
+    first, second = ("cpc", 2026, 9, ("1",), ("2",)), ("cpc", 2026, 9, ("3",), ("4",))
+    cache.put(first, 0.5)
+    cache.save("cpc")
+    cache.put(second, 0.6)
+    # A crash after the temp file is full and before the rename.
+    def crash(*args, **kwargs):
+        raise OSError("disk crash")
+    monkeypatch.setattr("os.replace", crash)
+    cache.save("cpc")
+    monkeypatch.undo()
+    assert [path.name for path in folder.iterdir()] == ["cpc.json"]
+    assert len(FairCache(folder)) == 1 and FairCache(folder).get(first) == 0.5
+    cache.save("cpc")
+    assert len(FairCache(folder)) == 2

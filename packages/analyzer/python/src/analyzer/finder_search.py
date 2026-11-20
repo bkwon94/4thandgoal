@@ -565,6 +565,8 @@ def ask_fair(snapshot: Snapshot, offers_by_pair: dict[tuple[int, int], list[Prop
         for trade, nouls in zip(missing, answers[group], strict=True):
             if nouls is not None:
                 cache.put(fair_key(snapshot, trade, order), nouls["fair"])
+    # The file keeps the new answers, and drops the old weeks that `keep_week` removed, for the next API start.
+    cache.save(snapshot.client.slug)
     return sum(len(missing) for _, missing in asked.values())
 
 
