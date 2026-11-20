@@ -6,7 +6,7 @@
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type Offense, report } from "./rule-report";
 
 const COMPONENTS_DIR = join(process.cwd(), "src", "components");

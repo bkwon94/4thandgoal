@@ -2,10 +2,9 @@
  * The contrast test of the brands (AT-17). It reads each brand.toml under clients/ and lists each text pair of each set.
  * Each pair must reach 4.5 to 1 (WCAG AA). Each brand gives both sets, so each pair runs in the light and the dark set.
  */
-// @vitest-environment node
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { setsOf, TEXT_PAIRS, textPairsOf } from "@cpc/design/brand/brand.ts";
 import { readBrand, REPO_ROOT } from "./client-build.mjs";
 

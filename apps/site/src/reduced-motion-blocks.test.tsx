@@ -4,8 +4,9 @@
  */
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { stubGlobal } from "../test/stubs";
 import {
   type AnswerBlock,
   BlockView,
@@ -14,23 +15,23 @@ import {
 } from "@/app/front-door/answer-block";
 
 /* matchMedia is a stub that matches the reduced-motion query. Framer Motion reads it when the first part mounts. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
+beforeEach(() =>
+  stubGlobal(
+    "matchMedia",
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList,
+  ),
 );
-
-afterEach(() => cleanup());
 
 const FIXTURES = join(__dirname, "fixtures");
 const STREAMS = join(__dirname, "app", "front-door", "fixtures");
@@ -94,12 +95,16 @@ function expectNoMove(root: HTMLElement) {
   }
 }
 
-/* Every part ends at full view: no part stays at opacity 0. */
+/* Every part ends at full view: no part stays at opacity 0. The plain fade of a block starts after a delay and ends in
+   about one second. The happy-dom animation runs in real time, so the wait is longer than the default of one second. */
 async function expectShown(root: HTMLElement) {
-  await waitFor(() => {
-    for (const part of [root, ...root.querySelectorAll<HTMLElement>("*")])
-      expect(part.style.opacity).not.toBe("0");
-  });
+  await waitFor(
+    () => {
+      for (const part of [root, ...root.querySelectorAll<HTMLElement>("*")])
+        expect(part.style.opacity).not.toBe("0");
+    },
+    { timeout: 3000 },
+  );
 }
 
 describe("Reduced motion on the blocks of an Answer (AT-39)", () => {

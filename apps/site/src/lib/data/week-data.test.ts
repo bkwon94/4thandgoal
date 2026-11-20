@@ -5,7 +5,8 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, spyOn } from "bun:test";
+import { resetModules } from "../../../test/reset-modules";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { listWeeks, listWeekSummaries, loadWeek } from "./week-data";
 
@@ -26,10 +27,6 @@ describe("loadWeek", () => {
 });
 
 describe("loadWeek schema check", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it("throws when the schema version is not 2", async () => {
     // A temp public/ folder holds a page at the old version.
     const root = mkdtempSync(join(tmpdir(), "week-data-"));
@@ -38,9 +35,9 @@ describe("loadWeek schema check", () => {
       join(root, "public", "2026", "week-01", "page.json"),
       JSON.stringify({ schema_version: 1 }),
     );
-    vi.spyOn(process, "cwd").mockReturnValue(root);
+    spyOn(process, "cwd").mockReturnValue(root);
     // The module reads the working folder when it loads, so reset it to pick up the temp folder.
-    vi.resetModules();
+    resetModules();
     const { loadWeek: load } = await import("./week-data");
     expect(() => load("2026", "week-01")).toThrow(/schema_version 1/);
   });
@@ -75,8 +72,8 @@ describe("listWeekSummaries", () => {
         weekPageJson({ week: number, dates: "d" }),
       );
     }
-    vi.spyOn(process, "cwd").mockReturnValue(root);
-    vi.resetModules();
+    spyOn(process, "cwd").mockReturnValue(root);
+    resetModules();
     const { listWeekSummaries: list } = await import("./week-data");
     expect(list().map((summary) => summary.href)).toEqual([
       "/2027/week-01/",
