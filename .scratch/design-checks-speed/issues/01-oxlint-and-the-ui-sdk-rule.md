@@ -10,9 +10,9 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-8, AT-9, and AT
 
 **Status:** ready-for-agent
 
-- [ ] A fixture file outside `ui` that imports `@ui-sdk/react` fails the lint with `no-restricted-imports` and its line.
-- [ ] A fixture file inside the fixture copy of `ui` that imports `@ui-sdk/react` passes.
-- [ ] The lint of all site code exits 0.
-- [ ] The config ignores only build output, test fixtures, and generated files.
-- [ ] The hook runs the lint on the staged site files, and CI runs it on all site code.
-- [ ] The `@ui-sdk` rule test no longer exists, and ADR 0035 names ADR 0038.
+- [x] A fixture file outside `ui` that imports `@ui-sdk/react` fails the lint with `no-restricted-imports` and its line.
+- [x] A fixture file inside the fixture copy of `ui` that imports `@ui-sdk/react` passes.
+- [x] The lint of all site code exits 0.
+- [x] The config ignores only build output, test fixtures, and generated files.
+- [x] The hook runs the lint on the staged site files, and CI runs it on all site code.
+- [x] The `@ui-sdk` rule test no longer exists, and ADR 0035 names ADR 0038.

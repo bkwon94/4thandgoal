@@ -13,6 +13,7 @@
     "build": "next build",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "lint": "cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs}",
     "check:export": "node scripts/check-export.mjs",
     "check:floor": "node scripts/check-floor.mjs",
     "test:floor": "playwright test --project=rules",
@@ -25,7 +26,7 @@
     "check:open-card": "playwright test --project=open-card",
     "check": "pnpm check:fast && pnpm check:browser",
     "check:browser": "pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
-    "check:fast": "CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED",
+    "check:fast": "pnpm lint && CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED",
     "hook:install": "prek install"
   },
   "dependencies": {
@@ -65,6 +66,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "ajv": "^8.20.0",
     "jsdom": "^30.1.3",
+    "oxlint": "^1.94.0",
     "postcss": "^8.5.31",
     "shadcn": "^4.22.1",
     "smol-toml": "^1.9.1",
