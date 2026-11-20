@@ -6,7 +6,7 @@ Map: `.scratch/design-checks-speed/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -22,4 +22,11 @@ If an item does not exist, say so and name the fallback that the map sets.
 
 ## Decision
 
-None yet.
+A research agent answered each item on 2026-11-20 against Bun v1.4.5, released 2026-11-19. The notes are `01-research-bun-latest.notes.md`, with a source URL for each claim.
+
+1. `bun check` exists. It is a port of TypeScript 7. It took 0.22 s on the site, against 1.16 s for `tsc` with no incremental cache. The `check` script of the site hides it, so the spec renames the script or runs `bun check --no-script`. `next typegen` still runs before it.
+2. `bun fmt` exists. It gives Prettier output and sorts the Tailwind classes.
+3. `bun lint` is on canary only, in 1.4.6-canary.1. The map's fallback holds: Oxlint runs the lint now. Oxlint `jsPlugins` and canary `bun lint` both run one ESLint-style plugin, so the design rules move to `bun lint` with no rewrite when it ships.
+4. `bun install` runs the workspace and writes `bun.lock` in place of `pnpm-lock.yaml`. The repo has no root `package.json`, so it fails as it is. The lock migration also fails, so Bun resolves fresh versions. New ticket 05 decides the path.
+5. `bun test` has `--shard`, `--parallel`, and `--changed`, which follows the import graph. It cannot run the suite as it is. It lacks `vi.stubGlobal`, `vi.resetModules`, `vi.hoisted`, `vi.stubEnv`, and 7 more, with about 155 uses. Nine of 20 sample files fail, 7 of them on a missing `vi` call and 1 on a happy-dom difference. New ticket 06 decides the path.
+6. The time on the 11 sample files that pass: Vitest 3.25 s with the local cap of 2 workers, Vitest 1.85 s with `CI=1`, `bun test` 0.60 s, and `bun test --parallel` 0.49 s.
