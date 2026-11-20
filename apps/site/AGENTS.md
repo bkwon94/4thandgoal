@@ -45,6 +45,20 @@ The tests move to `bun test` one folder at a time (ADR 0038). Until the last mov
 
 The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. A test that depends on jsdom gets a fix for happy-dom. If it needs a real jsdom feature, the ticket names it for Brian.
 
+The preload makes happy-dom act as a browser in four more ways. `test/dom.test.ts` proves each one.
+
+- A failed expect prints a node as its markup. Bun prints each own property of an object, and a happy-dom node reaches the whole window. With no fix, each failed check of a `waitFor` on a node prints megabytes, and one test stalls for minutes.
+- `requestAnimationFrame` runs about 60 frames each second. Each callback of one frame gets the same time.
+- The page URL is `http://localhost:3000/`, so a relative `img` src resolves and fires no `error`.
+- A `spyOn(Storage.prototype, "getItem")` acts on `localStorage` and `sessionStorage`, also after the first call. Never spy on the storage object itself, because its Proxy keeps the spy as data.
+
+happy-dom differs from jsdom in these ways too. The preload does not change them, so a move ticket fixes each test that depends on them.
+
+- The window is 1024 pixels wide, and `matchMedia` answers each width query. jsdom has no `matchMedia`, so a test there saw the phone tier. For the phone tier, spy on `matchMedia` in `beforeEach` with a stub that matches no query.
+- `IntersectionObserver` exists, but it never reports an entry. A part that waits on `inView` of Framer Motion never starts. jsdom has none, so the part ran its fallback.
+- `Element.prototype.animate` exists, so Framer Motion runs `opacity`, `transform`, `filter`, `clipPath`, and `backgroundColor` as a Web Animation. The inline style then holds no middle value. In jsdom, Framer Motion wrote each frame to the inline style.
+- `bun test` runs each file in one process, with one module registry and one window. Framer Motion reads `(prefers-reduced-motion)` once per run, and it decides once per run if it uses `Element.prototype.animate`. A spy on `matchMedia` in a later file does not change reduced motion. A file can pass alone and fail in the full run, so run `pnpm test:bun` in full before the merge.
+
 ## Rules
 
 - The hook does not run `pnpm install`. In a new worktree with no `node_modules`, run `pnpm install` first.
