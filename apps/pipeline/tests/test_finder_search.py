@@ -30,6 +30,7 @@ from analyzer.finder_search import (
     search,
     shortlist_answers,
     step_two_answers,
+    value_offers,
     varied,
 )
 from analyzer.jev_waves import (
@@ -284,20 +285,44 @@ def test_with_no_partner_the_spares_tree_reads_every_other_team_on_both_sides(sn
     assert sum(read.passed for read in found.partners) >= 6
 
 
-def test_a_picked_partner_skips_the_partner_filter_and_keeps_every_offer_to_that_partner(snap, caplog):
+def test_a_picked_partner_runs_the_spares_tree_once_and_keeps_every_offer_to_that_partner(snap):
     # Each Spares tree answer is a clear no, so a filter would stop the partner.
     def answer(key, question, state):
         return 0.1 if key.startswith("spare:") else 0.9
 
+    partner = _partner_with_spares(snap)
     jev = FakeJev(answer=answer)
-    with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
-        found = search(ASKER, PARTNER, snap, jev)
-    assert _filter_requests(jev) == []
-    assert not any("Partner filter" in r.getMessage() for r in caplog.records)
-    assert [read.roster_id for read in found.partners if read.passed] == [PARTNER]
-    assert len(found.shortlist) >= 2
+    found = search(ASKER, partner, snap, jev)
+    # The Spares tree runs once for the pair and builds no offer (decision 15).
+    [request] = _filter_requests(jev)
+    assert request.state["teams"]["partner"]["roster_id"] == partner
+    assert [read.roster_id for read in found.partners] == [partner]
+    assert found.offers and len(found.shortlist) >= 2
     for trade in found.offers + [offer.trade for offer in found.shortlist]:
-        assert [side.roster_id for side in trade.sides] == [ASKER, PARTNER]
+        assert [side.roster_id for side in trade.sides] == [ASKER, partner]
+
+
+def test_a_spares_tree_yes_is_a_pick_sheet_fact_of_a_press_with_one_picked_partner(snap):
+    def listed_of(rid):
+        return {spare.player_id: spare.slot for spare in pair_spares(snap, ASKER, rid)["partner"]}
+
+    # A partner with a listed player in a Value offer, so a Spares tree "yes" can show on the pick sheet.
+    partner = next(rid for rid in sorted(snap.rosters) if rid != ASKER
+                   and any(set(trade.sides[1].player_ids) & set(listed_of(rid)) for trade in value_offers(ASKER, rid, snap)))
+    listed = listed_of(partner)
+
+    def answer(key, question, state):
+        n, _, kind = key.partition("|")
+        if kind == "fair":
+            gets = next(side for side in state["offers"][n]["sides"] if side["team"] != snap.teams[ASKER].name)
+            return 0.95 if {player["name"] for player in gets["gives"]} & {snap.players[p].name for p in listed} else 0.5
+        return 0.9
+
+    found = search(ASKER, partner, snap, FakeJev(answer=answer))
+    with_spares = [offer for offer in found.shortlist if offer.spares]
+    assert with_spares
+    for offer in with_spares:
+        assert all(pid in offer.trade.sides[1].player_ids and slot == listed[pid] for pid, slot in offer.spares.items())
 
 
 def _both_sides(snap):
@@ -735,8 +760,8 @@ def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_o
 
 
 
-def test_an_anchored_search_skips_the_partner_filter_and_the_plain_search_keeps_it(snap):
-    # Each filter question reads no here, so a filter would stop every partner.
+def test_an_anchored_search_runs_the_spares_tree_on_each_pair_and_stops_no_partner(snap):
+    # Each Spares tree answer is a clear no, so a filter would stop every partner.
     def answer(key, question, state):
         return 0.1 if key.startswith("spare:") else 0.9
 
@@ -744,14 +769,10 @@ def test_an_anchored_search_skips_the_partner_filter_and_the_plain_search_keeps_
     anchor = _last_pool_player(snap, ASKER)
     jev = FakeJev(answer=answer)
     found = search(ASKER, None, snap, jev, anchor=Anchor(player_id=anchor, side="gives"))
-    # The filter reads the weakest slots, and the anchor names the player the trade turns on, so no filter asks.
-    assert _filter_requests(jev) == []
-    assert [read.roster_id for read in found.partners if read.passed] == others
-    jev = FakeJev(answer=answer)
-    found = search(ASKER, None, snap, jev)
+    # The Spares tree runs once per pair with a listed player, and the Value screen still builds the offers.
     assert len(_filter_requests(jev)) == sum(any(pair_spares(snap, ASKER, rid).values()) for rid in others)
-    # No partner passed, and the Value screen still builds the offers that the pick weighs.
-    assert not any(read.passed for read in found.partners) and found.offers
+    assert sorted(read.roster_id for read in found.partners) == others
+    assert found.offers and all(anchor in trade.sides[0].player_ids for trade in found.offers)
 
 
 def test_an_aim_and_a_keep_of_the_limit_hold_on_every_value_offer(snap):

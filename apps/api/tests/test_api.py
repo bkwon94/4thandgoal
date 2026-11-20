@@ -1882,11 +1882,13 @@ def test_find_with_no_partner_runs_the_spares_tree_on_every_other_team(settings,
     assert sum("Spares tree of" in record.getMessage() for record in caplog.records) == 11
 
 
-def test_find_with_a_partner_skips_the_partner_filter_and_keeps_every_pick_to_that_partner(settings, sources):
+def test_find_with_a_partner_asks_one_spares_tree_request_and_keeps_every_pick_to_that_partner(settings, sources):
     jev = FakeJev(answer=_no_partner)
     doc = _find_client(settings, sources, jev=jev).post("/find", json=FIND, headers=HEADERS).json()
-    # A clear no for each listed player would stop the partner, but one picked partner asks no Spares tree question.
-    assert not any(key.startswith("spare:") for r in jev.requests for key in r.questions)
+    # The Spares tree runs once for the pair. A clear no for each listed player is a reason, never a gate, so every
+    # pick to the partner stays (decision 16).
+    spares = [r for r in jev.requests if r.questions and all(key.startswith("spare:") for key in r.questions)]
+    assert [r.state["teams"]["partner"]["roster_id"] for r in spares] == [3]
     assert doc["trade_pair"]["partner"]["roster_id"] == 3
     assert doc["trades"]
     assert all([side["roster_id"] for side in item["sides"]] == [2, 3] for item in doc["trades"])

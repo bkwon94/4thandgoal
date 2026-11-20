@@ -668,8 +668,8 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
 
     1. The partner reads: the Spares tree of `spares_tree.py` on both sides of each pair. It stops no partner and
        builds no offer, because the Value screen is the one source of offers (decision 15). A "yes" for a player that
-       the asker gets becomes a pick sheet fact of each offer that brings him (decision 16). A search with one picked
-       partner or with an anchor skips it.
+       the asker gets becomes a pick sheet fact of each offer that brings him (decision 16). It runs once per pair, with
+       one picked partner and with an anchor too.
     2. The Value offers: `value_offers` builds every trade of the SHAPES with each partner that passes the Value screen
        and the hard rules (decision 14, ADR 0038). No cap follows the screen.
     3. Step 1, the fair check: Jev asks the fair Noul of each Value offer once in each side order, and code takes the
@@ -711,44 +711,36 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
     # The players of each partner with a Spares tree "yes", by player id, each with the weak slot of the asker that he
     # fills. They become pick sheet facts and never stop an offer (decision 16).
     spare_yes: dict[int, dict[str, str]] = {}
-    if anchor is not None or partner is not None:
-        # The Spares tree asks about the weakest slots of each team. The anchor names the player the trade turns on, and
-        # a manager who picks one partner wants ideas with him (decision 01). So neither asks it.
-        reads = [PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True, failed=False)
-                 for rid in partners]
-        for rid in partners:
-            read(rid)
-        log.info("Spares tree of %s: skipped for %s", snapshot.teams[asker].name,
-                 "the anchor" if anchor is not None else "one picked partner")
-    else:
-        spares = {rid: pair_spares(snapshot, asker, rid) for rid in partners}
-        requests = {str(rid): pair_request(snapshot, asker, rid, spares[rid]) for rid in partners}
-        # A partner with no request needs no Jev answer, so the stream reports it as read at once.
-        for key, request in requests.items():
-            if request is None:
-                read(int(key))
-        filtered = waves.ask({key: request for key, request in requests.items() if request is not None},
-                             "spares tree", answered=lambda key: read(int(key)))
-        for rid in partners:
-            response = filtered.get(str(rid))
-            if requests[str(rid)] is not None and response is None:
-                # A failed call is an error, never a stop, so the read says failed and the partner goes on.
-                reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True,
-                                         failed=True))
-                log.info("Spares tree of %s with %s: failed request", snapshot.teams[asker].name,
-                         snapshot.teams[rid].name)
-                continue
-            tree = read_pair(asker, rid, spares[rid], {} if response is None else response.nouls)
-            spare_yes[rid] = {spare.player_id: spare.slot for spare in tree.spares["partner"]
-                              if tree.answers.get(spare.key, 0.0) > YES_AT}
-            reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers=tree.answers,
-                                     passed=tree.passed, failed=False))
-            log.info("Spares tree of %s with %s: %s; %s", snapshot.teams[asker].name, snapshot.teams[rid].name,
-                     "passed" if tree.passed else f"stopped on {', '.join(tree.stopped)}",
-                     "; ".join(f"{side} gives " + (", ".join(
-                         f"{snapshot.players[spare.player_id].name}={tree.answers[spare.key]:.2f}"
-                         if spare.key in tree.answers else snapshot.players[spare.player_id].name
-                         for spare in tree.spares[side]) or "no one") for side in ("partner", "asker")))
+    # The Spares tree runs once per pair, with one picked partner and with an anchor too. It builds no offer and stops
+    # no partner, so its "yes" answers are only pick sheet facts (decision 15).
+    spares = {rid: pair_spares(snapshot, asker, rid) for rid in partners}
+    requests = {str(rid): pair_request(snapshot, asker, rid, spares[rid]) for rid in partners}
+    # A partner with no request needs no Jev answer, so the stream reports it as read at once.
+    for key, request in requests.items():
+        if request is None:
+            read(int(key))
+    filtered = waves.ask({key: request for key, request in requests.items() if request is not None},
+                         "spares tree", answered=lambda key: read(int(key)))
+    for rid in partners:
+        response = filtered.get(str(rid))
+        if requests[str(rid)] is not None and response is None:
+            # A failed call is an error, never a stop, so the read says failed and the partner goes on.
+            reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers={}, passed=True,
+                                     failed=True))
+            log.info("Spares tree of %s with %s: failed request", snapshot.teams[asker].name,
+                     snapshot.teams[rid].name)
+            continue
+        tree = read_pair(asker, rid, spares[rid], {} if response is None else response.nouls)
+        spare_yes[rid] = {spare.player_id: spare.slot for spare in tree.spares["partner"]
+                          if tree.answers.get(spare.key, 0.0) > YES_AT}
+        reads.append(PartnerRead(roster_id=rid, team=snapshot.teams[rid].name, answers=tree.answers,
+                                 passed=tree.passed, failed=False))
+        log.info("Spares tree of %s with %s: %s; %s", snapshot.teams[asker].name, snapshot.teams[rid].name,
+                 "passed" if tree.passed else f"stopped on {', '.join(tree.stopped)}",
+                 "; ".join(f"{side} gives " + (", ".join(
+                     f"{snapshot.players[spare.player_id].name}={tree.answers[spare.key]:.2f}"
+                     if spare.key in tree.answers else snapshot.players[spare.player_id].name
+                     for spare in tree.spares[side]) or "no one") for side in ("partner", "asker")))
     stage(f"Read {len(partners)} teams" if len(partners) > 1 else f"Read {snapshot.teams[partners[0]].name}")
     stage("Matching trade value", live=True)
 
