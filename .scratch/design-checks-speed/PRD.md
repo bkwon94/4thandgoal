@@ -5,7 +5,7 @@ Date: 2026-11-20
 Apps: site. The site gets the design rules, the part docs, the role tokens, and the move to Bun. The pipeline changes only in CI, where its job splits into two jobs. The API does not change.
 Spec branch: `design-checks-speed`.
 Source: the map `.scratch/design-checks-speed/MAP.md` and decision tickets 01 to 07. The handoff `.handoff/design-system-and-speed.md`. ADR 0024, ADR 0035, and ADR 0038.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 18, in `issues/`.
 
 ## Problem Statement
 
