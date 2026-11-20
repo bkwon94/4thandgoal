@@ -152,7 +152,7 @@ Stories 89 to 112 replace stories 57, 58, 67, 69, 70, 71, 72, and 73. Stories 75
 106. As a manager, I want a trade value total under each column, so that I can compare the two sides.
 107. As a manager, I want one plain line for the gap, such as "You get 9% more trade value", so that I see if the trade is even without math.
 108. As a manager, I want no trade value on each player row, so that the card stays calm. The full result shows each value.
-109. As a manager, I want the wait lines "Reading 11 teams", "Matching trade value", "Checking 4,667 trades for fairness", "Checking 77 against both lineups", and "Picking the best 5", with the real counts of my press, so that I see what the search does.
+109. As a manager, I want the wait lines "Reading 11 teams", "Matching trade value", "Checking 4,667 trades for fairness", "Checking 210 against both lineups", and "Picking the best 5", with the real counts of my press, so that I see what the search does.
 110. As a manager, I want the wait to make no promise of how long it takes, so that the site never states a time it cannot keep.
 111. As a manager, I want a search around one player, and my keep and aim choices, to hold on every fair trade, so that those tools still work.
 112. As a manager, I want two managers who press at the same time both to get full answers, so that deadline night does not break the Finder.
@@ -267,7 +267,7 @@ These decisions replace the gate of "The Finder steps" above. The Spares tree li
 
 **The spread (decision 16).**
 
-- The offers that pass step 1 group by partner and by shape direction, up to 77 groups. The best of each group, by the fair answer, goes to step 2.
+- The offers that pass step 1 group by partner and by shape direction, up to 77 groups. The 3 best of each group, by the fair answer, go to step 2, up to 231 offers. Brian chose 3 on 2026-11-20, because one per group left the Shortlist at 3 to 6 offers.
 - The score is the fair answer alone, the mean of the two side orders.
 - `varied()` puts first the best offer for each shape direction, then for each partner, then for each player the asker gives. The rest follow by score. The Shortlist stays at 10, labelled `A` to `J`.
 
@@ -281,7 +281,7 @@ These decisions replace the gate of "The Finder steps" above. The Spares tree li
 - The pick call picks up to 5 trades and up to 3 near ideas.
 - Each card is the Ledger of prototype 17: "You get · N" and "You give · N" columns, a row per player with the position, the NFL team, and the rank, a trade value total per side, and one plain gap line, such as "You get 9% more trade value". No row shows a trade value. The Lean, the Case, the folded Bullets, and "See the Full Result" stay.
 - The near ideas fold under the picks as "Close, but not sent · N".
-- The live wait lines, each with the "n of 5 ·" prefix, carry the real counts of the press: "Reading 11 teams", "Matching trade value", "Checking 4,667 trades for fairness", "Checking 77 against both lineups", "Picking the best 5".
+- The live wait lines, each with the "n of 5 ·" prefix, carry the real counts of the press: "Reading 11 teams", "Matching trade value", "Checking 4,667 trades for fairness", "Checking 210 against both lineups", "Picking the best 5".
 - The meta line "This can take about 25 seconds." goes. No copy states a time (memory `no-time-claims`).
 
 **The glossary.** `GLOSSARY.md` has Shape, Value screen, and Value offer. When the build lands, the entries Target, Offer, and Spares tree change: no targets step, an Offer comes from the Value screen only, and the Spares tree gives reasons, not a gate.

@@ -487,12 +487,12 @@ When: The evidence agent runs the step 2 tests with need answers of 0.1 on both 
 Then: The offer stays on the Shortlist.
 Evidence: the test command and its output.
 
-AT-60: Step 2 gets the best offer of each group
+AT-60: Step 2 gets the best 3 offers of each group
 App: api
 Stories: 101, 102
 Given: The press of AT-55.
 When: The evidence agent reads the offers that reach step 2.
-Then: Step 2 holds at most one offer per partner and shape direction, no more than 77 offers, and each is the highest fair mean of its group.
+Then: Step 2 holds at most 3 offers per partner and shape direction, no more than 231 offers, and each has one of the 3 highest fair means of its group.
 Evidence: the command, and the step 2 offers with their group and fair mean.
 
 AT-61: A Spares tree yes is a fact, not a gate
