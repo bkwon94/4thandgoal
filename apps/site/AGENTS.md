@@ -48,7 +48,7 @@ The preload unmounts each React Testing Library render after each test, so a fil
 The preload makes happy-dom act as a browser in four more ways. `test/dom.test.ts` proves each one.
 
 - A failed expect prints a node as its markup. Bun prints each own property of an object, and a happy-dom node reaches the whole window. With no fix, each failed check of a `waitFor` on a node prints megabytes, and one test stalls for minutes.
-- `requestAnimationFrame` runs about 60 frames each second. Each callback of one frame gets the same time.
+- `requestAnimationFrame` runs about 60 frames each second. Each callback of one frame gets the same time. The frame timer keeps the real `setTimeout`. A test that fakes `setTimeout` leaves the frames running. Never use `jest.useFakeTimers` in a test that renders Framer Motion, because it drops each timer that is pending when it ends.
 - The page URL is `http://localhost:3000/`, so a relative `img` src resolves and fires no `error`.
 - A `spyOn(Storage.prototype, "getItem")` acts on `localStorage` and `sessionStorage`, also after the first call. Never spy on the storage object itself, because its Proxy keeps the spy as data.
 

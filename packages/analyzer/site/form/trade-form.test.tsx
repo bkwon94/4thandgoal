@@ -3,7 +3,7 @@
  * fetch is a test stub, and each test reads the screen. A test opens a sheet with a click on its button.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
@@ -54,8 +54,41 @@ const TEAMS: Team[] = [
   },
 ];
 
-const fetchStub = vi.fn();
-const onUnauthorized = vi.fn();
+/* A clock for `setTimeout` and `clearTimeout` only. The fake timers of `bun:test` drop a timer that is still pending when
+   they end, and a frame would then wait for ever. The preload keeps its frame timer on the real `setTimeout`. The spies end
+   with the test. */
+function fakeTimeouts() {
+  let now = 0;
+  let lastId = 0;
+  const pending = new Map<number, { at: number; run: () => void }>();
+  spyOn(globalThis, "setTimeout").mockImplementation(((run: () => void, delay = 0) => {
+    lastId += 1;
+    pending.set(lastId, { at: now + delay, run });
+    return lastId;
+  }) as unknown as typeof setTimeout);
+  spyOn(globalThis, "clearTimeout").mockImplementation(((id: number) => {
+    pending.delete(id);
+  }) as unknown as typeof clearTimeout);
+  return {
+    // Runs each timer that falls due within `ms`, in order, as the timers that they set may fall due too.
+    advance(ms: number) {
+      const end = now + ms;
+      for (;;) {
+        const due = [...pending]
+          .filter(([, timer]) => timer.at <= end)
+          .sort((a, b) => a[1].at - b[1].at)[0];
+        if (!due) break;
+        pending.delete(due[0]);
+        now = due[1].at;
+        due[1].run();
+      }
+      now = end;
+    },
+  };
+}
+
+const fetchStub = mock();
+const onUnauthorized = mock();
 
 function answer(status: number, body: unknown = {}, headers: Record<string, string> = {}) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
@@ -120,7 +153,7 @@ beforeEach(() => {
   };
   fetchStub.mockReset();
   onUnauthorized.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
   render(
     <TradeForm
       teams={TEAMS}
@@ -134,8 +167,6 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
 });
 
 describe("TradeForm", () => {
@@ -489,7 +520,7 @@ describe("TradeForm", () => {
   });
 
   it("counts a grade event on submit", async () => {
-    const count = vi.fn();
+    const count = mock();
     window.goatcounter = { count };
     answer(200, fixtureJson);
     await pickTrade(TRADE);
@@ -656,21 +687,17 @@ describe("TradeForm", () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     // The clock starts after the picks, so the picks keep the real timers. The hero mounts in the click.
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    try {
-      fireEvent.click(submit());
-      const hero = screen.getByRole("region", { name: "Grading the Trade" });
-      const seen: string[] = [];
-      for (let i = 0; i < 12; i++) {
-        seen.push(hero.querySelector(".t-think-text:last-child")?.textContent ?? "");
-        await act(async () => void vi.advanceTimersByTime(2500));
-      }
-      expect(
-        seen.some((text) => /Ben Two|Ana One|Pukancun on 3|Blitz Bakers|Ana|Ben/.test(text)),
-      ).toBe(true);
-    } finally {
-      vi.useRealTimers();
+    const clock = fakeTimeouts();
+    fireEvent.click(submit());
+    const hero = screen.getByRole("region", { name: "Grading the Trade" });
+    const seen: string[] = [];
+    for (let i = 0; i < 12; i++) {
+      seen.push(hero.querySelector(".t-think-text:last-child")?.textContent ?? "");
+      await act(async () => void clock.advance(2500));
     }
+    expect(
+      seen.some((text) => /Ben Two|Ana One|Pukancun on 3|Blitz Bakers|Ana|Ben/.test(text)),
+    ).toBe(true);
   });
 
   it("sends one POST to the analyze route with a JSON body and takes a JSON response (AT-26)", async () => {
@@ -933,7 +960,7 @@ describe("TradeForm", () => {
   it("aborts after 60 seconds, shows the timeout line, and the retry posts again", async () => {
     await pickTrade(TRADE);
     // Only the timeout is fake. A fake clock for frames would leave Framer Motion on a stale time, so a later exit would stall.
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const clock = fakeTimeouts();
     fetchStub.mockImplementationOnce(
       (_url: string, init: RequestInit) =>
         new Promise((_resolve, reject) => {
@@ -943,7 +970,7 @@ describe("TradeForm", () => {
         }),
     );
     fireEvent.click(submit());
-    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    await act(async () => void clock.advance(60_000));
 
     expect(screen.getByText("The grade took too long.")).toBeTruthy();
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
@@ -953,7 +980,7 @@ describe("TradeForm", () => {
   });
 
   it("aborts a pending grade on unmount without an error or a state update", async () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
     let signal: AbortSignal | undefined;
     fetchStub.mockImplementationOnce(
       (_url: string, init: RequestInit) =>
@@ -1271,7 +1298,7 @@ describe("TradeForm with the finder", () => {
 
   it("scrolls the result into view after a card opens its full result", async () => {
     // jsdom has no scrollIntoView, so the test supplies one.
-    const scrollIntoView = vi.fn();
+    const scrollIntoView = mock();
     Element.prototype.scrollIntoView = scrollIntoView;
     await openCard(findJson, 1);
     await waitFor(() => expect(scrollIntoView).toHaveBeenCalledTimes(1));
@@ -1279,13 +1306,13 @@ describe("TradeForm with the finder", () => {
   });
 
   it("grades the trade of a card with the season of the finder document", async () => {
-    Element.prototype.scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = mock();
     await openCard({ ...findJson, season: 2025 }, 1);
     expect(JSON.parse(fetchStub.mock.calls[1][1].body).season).toBe(2025);
   });
 
   it("grades the trade of a card through the analyze route and shows the full result", async () => {
-    Element.prototype.scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = mock();
     await pickTeam("Your Team", "All You Need Is Love");
     answer(200, findJson);
     fireEvent.click(

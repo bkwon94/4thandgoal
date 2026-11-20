@@ -13,6 +13,9 @@ GlobalRegistrator.register({ url: "http://localhost:3000/" });
 // frames each second and holds the CPU. A browser runs about 60. This queue runs the callbacks of each frame together,
 // each with the same time, once each 1000 / 60 ms. A callback that a frame adds runs in the next frame, as in a browser.
 const FRAME_MS = 1000 / 60;
+// The frame timer uses the `setTimeout` of this moment. A test that replaces the global `setTimeout` with a fake clock
+// must not hold the frame timer, because a fake clock that ends leaves a timer that never fires, and each later frame stalls.
+const frameSetTimeout = globalThis.setTimeout;
 let frameQueue = new Map<number, FrameRequestCallback>();
 let lastFrameId = 0;
 let frameTimer: ReturnType<typeof setTimeout> | null = null;
@@ -35,7 +38,7 @@ const runFrame = () => {
 globalThis.requestAnimationFrame = (callback: FrameRequestCallback) => {
   lastFrameId += 1;
   frameQueue.set(lastFrameId, callback);
-  frameTimer ??= setTimeout(runFrame, FRAME_MS);
+  frameTimer ??= frameSetTimeout(runFrame, FRAME_MS);
   return lastFrameId;
 };
 globalThis.cancelAnimationFrame = (id: number) => {
