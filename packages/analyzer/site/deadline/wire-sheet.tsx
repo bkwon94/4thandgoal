@@ -44,7 +44,8 @@ export function WireSheet({
         {/* After the trade deadline Sleeper blocks a trade, so the links leave. */}
         {!closed && <Links links={links} />}
         <div className="flex flex-col gap-sp-1">
-          <span className="font-mono text-label leading-tight font-bold tracking-caps text-mute uppercase">
+          {/* The meta size, as the eyebrow of the banner: the label size is 10px on a phone, under the floor of 11px. */}
+          <span className="font-mono text-meta leading-tight font-bold tracking-caps text-mute uppercase">
             {closed ? "Final" : `Trade deadline ${countdown}`}
           </span>
           <div className="flex items-center gap-sp-2">

@@ -122,6 +122,14 @@ describe("the Deadline banner", () => {
     expect(within(sheet).getByText("No trades yet this week.")).toBeTruthy();
   });
 
+  it("sets the sheet eyebrow in the meta size, over the floor of 11px for other text", async () => {
+    await bannerAt("2026-11-21T09:55:00-05:00");
+    fireEvent.click(trigger());
+    const eyebrow = within(sheet()).getByText("Trade deadline ~2d 14h 05m");
+    expect(eyebrow.classList.contains("text-meta")).toBe(true);
+    expect(eyebrow.classList.contains("text-label")).toBe(false);
+  });
+
   it("shows the closed empty line in the sheet after the Lock", async () => {
     await bannerAt("2026-11-24T00:00:01-05:00");
     fireEvent.click(trigger());
