@@ -1,6 +1,6 @@
 /**
  * The place of the "Grade the Trade" bar on the analyzer page of a client with the finder on, at the width of a phone.
- * The bar stays pinned at the bottom of the screen over the trade form, and it rests at the end of the form over the finder.
+ * The bar stays pinned at the bottom of the screen over the trade form in Grade mode, and Find mode shows the finder with no bar.
  */
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -40,8 +40,8 @@ test.afterAll(async () => {
 
 test.use({ viewport: { width: 390, height: 600 }, reducedMotion: "reduce" });
 
-/* Opens the analyzer with Your Team picked and the finder showing its three cards. The API answers from the fixtures. */
-async function openFinder(page: Page) {
+/* Opens the analyzer in its first mode, Grade, with Your Team picked. The API answers from the fixtures. */
+async function openAnalyzer(page: Page) {
   await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
@@ -56,34 +56,33 @@ async function openFinder(page: Page) {
     localStorage.setItem("cpc.your-team", "2");
   });
   await page.goto(`${server.url}/analyze/`);
+}
+
+/* Opens the analyzer in Find mode with Your Team picked and the finder showing its three cards. */
+async function openFinder(page: Page) {
+  await openAnalyzer(page);
+  // The analyzer opens in Grade mode. A reader taps "Find a trade" on the switch of the hero to show the finder.
+  await page.getByRole("radiogroup", { name: "Mode" }).getByRole("radio", { name: "Find a trade" }).click();
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();
   await expect(page.getByRole("article", { name: "Trade 3" })).toBeAttached();
 }
 
-test("the bar rests at the end of the form and covers no part of the finder (grade-bar-finder item 1)", async ({ page }) => {
+test("the bar covers no part of the finder (grade-bar-finder item 1)", async ({ page }) => {
   await openFinder(page);
-  // The finder fills the screen: its first part sits at the top of the screen.
-  await page.getByRole("button", { name: "Find a Trade" }).evaluate((button) => {
-    const top = button.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo(0, top);
-  });
-  const bar = await page.getByRole("button", { name: "Grade the Trade" }).boundingBox();
-  expect(bar).not.toBeNull();
-  const parts = [page.getByRole("button", { name: "Find a Trade" }), page.getByRole("article", { name: "Trade 1" })];
-  for (const part of parts) {
-    const box = await part.boundingBox();
-    expect(box).not.toBeNull();
-    const overlap = Math.min(bar!.y + bar!.height, box!.y + box!.height) - Math.max(bar!.y, box!.y);
-    expect(overlap, `the bar overlaps the part by ${overlap}px`).toBeLessThanOrEqual(0);
-  }
+  // Find mode takes the place of the form and its bar, so no bar sits over the finder.
+  await expect(page.getByRole("button", { name: "Grade the Trade" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Find a Trade" })).toBeVisible();
+  await expect(page.getByRole("article", { name: "Trade 1" })).toBeVisible();
 });
 
 test("the bar stays pinned at the bottom of the screen over the top of the form", async ({ page }) => {
-  await openFinder(page);
+  await openAnalyzer(page);
+  const grade = page.getByRole("button", { name: "Grade the Trade" });
+  await expect(grade).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 0));
-  const bar = await page.getByRole("button", { name: "Grade the Trade" }).boundingBox();
+  const bar = await grade.boundingBox();
   expect(bar).not.toBeNull();
   // The bar sits within 40px of the bottom edge of the screen.
   expect(600 - (bar!.y + bar!.height)).toBeLessThan(40);
