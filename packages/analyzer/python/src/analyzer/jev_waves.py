@@ -29,8 +29,9 @@ REQUEST_TOKENS = 54_000
 # budget stays unused.
 SPLIT_TOKENS = 32_000
 # TypeSafe counted about 2.35 characters of a Finder request per token: names, numbers, and keys, not plain prose. The
-# count uses 2, so the estimate stays over the real count, and a request split under REQUEST_TOKENS fits the context.
-CHARS_PER_TOKEN = 2
+# count uses 2.3, so the estimate stays at or a little over the real count, and a split request fits the context. A
+# lower count makes the estimate too high, so a press splits into more requests than it needs.
+CHARS_PER_TOKEN = 2.3
 WAVE_SECONDS = 1.0
 
 

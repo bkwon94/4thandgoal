@@ -776,6 +776,8 @@ def test_the_estimate_of_a_request_is_at_least_the_count_of_typesafe():
         # The state "{}" and the quotes of the instructions are 4 characters.
         request = WaveRequest({}, {"q": NoulQuestion("x" * (chars - 4), "", "")})
         assert estimated_tokens(request) >= counted, (chars, estimated_tokens(request), counted)
+        # A guess far over the count splits the requests smaller than they need to be, so each step sends more of them.
+        assert estimated_tokens(request) <= counted * 1.05, (chars, estimated_tokens(request), counted)
 
 
 def test_a_request_under_the_split_limit_is_one_that_typesafe_takes():
@@ -795,8 +797,8 @@ def test_the_waves_keep_each_second_under_80_requests():
 
 
 def test_the_waves_keep_each_second_under_100000_tokens():
-    # About 26,000 characters of state is about 13,000 tokens by the high guess, so 7 fit in one second.
-    big = {str(i): WaveRequest({"text": "x" * 26_000}, {}) for i in range(20)}
+    # About 30,000 characters of state is about 13,000 tokens by the high guess, so 7 fit in one second.
+    big = {str(i): WaveRequest({"text": "x" * 30_000}, {}) for i in range(20)}
     waves = plan_waves(big)
     assert len(waves) == 3
     assert all(len(wave) <= 7 for wave in waves)
@@ -893,8 +895,8 @@ def test_two_presses_at_once_share_one_pacer_and_hold_100000_tokens_or_fewer_in_
     # The process has one pacer. The test gives the two presses one pacer of its own, so a fixed clock runs it.
     shared = Pacer(clock=clock, sleep=clock.sleep)
     jev = _TimedJev(clock)
-    # About 20,000 characters of state is about 10,000 tokens by the high guess, so 30 requests are about 300,000.
-    press = {str(i): WaveRequest({"text": "x" * 20_000}, {}) for i in range(30)}
+    # About 23,000 characters of state is about 10,000 tokens by the high guess, so 30 requests are about 300,000.
+    press = {str(i): WaveRequest({"text": "x" * 23_000}, {}) for i in range(30)}
     assert 299_000 < sum(estimated_tokens(request) for request in press.values()) < 301_000
     # Each press makes its own JevWaves, as the API does for each Finder press.
     def run(label):
