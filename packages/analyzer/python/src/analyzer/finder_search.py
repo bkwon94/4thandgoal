@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from analyzer.jev_waves import REQUEST_TOKENS, JevWaves, WaveRequest, estimated_tokens
+from analyzer.jev_waves import SPLIT_TOKENS, JevWaves, WaveRequest, estimated_tokens
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
 from analyzer.stage import Stage, quiet
@@ -404,7 +404,7 @@ def gain_dropped(gains: dict[int, float]) -> bool:
 
 def shortlist_requests(snapshot: Snapshot, asker: int, partner: int,
                        offers: list[ProposedTrade]) -> list[WaveRequest]:
-    """The shortlist requests of a partner, each under REQUEST_TOKENS by the estimate, with the offers in order.
+    """The shortlist requests of a partner, each under SPLIT_TOKENS by the estimate, with the offers in order.
 
     Each request holds the pair state and a run of the offers, and each offer keeps its number in the whole list, so
     the answers of every request merge by key. One request for a long list fails above the context of the model, and
@@ -417,7 +417,7 @@ def shortlist_requests(snapshot: Snapshot, asker: int, partner: int,
 
 def _split(base: dict, offers: list[ProposedTrade], lines: Callable[[list[ProposedTrade], int], dict],
            questions: Callable[[list[ProposedTrade], int], dict[str, NoulQuestion]]) -> list[WaveRequest]:
-    """The requests of one list of offers, each under REQUEST_TOKENS by the estimate, with the offers in order.
+    """The requests of one list of offers, each under SPLIT_TOKENS by the estimate, with the offers in order.
 
     Each request holds the `base` state with the lines of a run of the offers under `offers`, and the questions of
     that run. `lines` and `questions` take a run and the number of its first offer, so each offer keeps its number in
@@ -429,7 +429,7 @@ def _split(base: dict, offers: list[ProposedTrade], lines: Callable[[list[Propos
     for n, trade in enumerate(offers):
         # The sum of the parts is a little over the estimate of the whole request, so each request stays under.
         cost = estimated_tokens(WaveRequest({"offers": lines([trade], n)}, questions([trade], n)))
-        if n > start and tokens + cost >= REQUEST_TOKENS:
+        if n > start and tokens + cost >= SPLIT_TOKENS:
             requests.append(WaveRequest({**base, "offers": lines(offers[start:n], start)},
                                         questions(offers[start:n], start)))
             start, tokens = n, cost_of_base
@@ -502,7 +502,7 @@ def _fair_questions(snapshot: Snapshot, offers: list[ProposedTrade], start: int,
 
 def fair_requests(snapshot: Snapshot, asker: int, partner: int, offers: list[ProposedTrade],
                   order: str) -> list[WaveRequest]:
-    """The fair requests of step 1 for one partner and one side order, each under REQUEST_TOKENS by the estimate.
+    """The fair requests of step 1 for one partner and one side order, each under SPLIT_TOKENS by the estimate.
 
     The state is the pair state with the `chart_value` of each player, and the sides of each offer under
     `offers.<n>.sides`, each with its players and its `chart_sum`.

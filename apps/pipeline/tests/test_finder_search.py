@@ -36,6 +36,7 @@ from analyzer.jev_waves import (
     PACER,
     REQUEST_TOKENS,
     REQUESTS_PER_SECOND,
+    TOKENS_PER_SECOND,
     JevWaves,
     Pacer,
     WaveRequest,
@@ -681,6 +682,16 @@ def test_the_fair_requests_of_a_press_split_under_64k_and_each_value_offer_gets_
     assert all(estimated_tokens(WaveRequest(r.state, dict(r.questions))) < 64_000 for r in fair)
     assert set(found.fair_means) == {offer_id(trade) for trade in found.offers}
     assert all(mean == pytest.approx(0.8) for mean in found.fair_means.values())
+
+
+def test_three_fair_requests_of_a_press_fit_in_one_second_of_the_token_budget(snap):
+    jev = FakeJev(yes=0.8)
+    search(ASKER, None, snap, jev)
+    fair = _fair_requests(jev)
+    assert all(3 * estimated_tokens(WaveRequest(r.state, dict(r.questions))) <= TOKENS_PER_SECOND for r in fair)
+    # So each wave of step 1 holds three requests or more, not one, and the step takes a third of the seconds.
+    waves = plan_waves({str(n): WaveRequest(r.state, dict(r.questions)) for n, r in enumerate(fair)})
+    assert all(len(wave) >= 3 for wave in waves[:-1])
 
 
 def _last_pool_player(snap, roster_id):

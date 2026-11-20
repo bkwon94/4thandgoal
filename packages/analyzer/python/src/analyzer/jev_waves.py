@@ -20,10 +20,14 @@ log = logging.getLogger(__name__)
 REQUESTS_PER_SECOND = 80
 TOKENS_PER_SECOND = 100_000
 # The most input tokens of one Jev request. The context is 64k, and the prompt of TypeSafe fills part of it: TypeSafe
-# took a request of 54,100 input tokens and refused one of about 54,600 with max_tokens_exceeded. A caller splits its
-# questions into requests under it. The long-context header of TypeSafe lifts the limit, and Brian chose the split over
-# it (decision 14).
+# took a request of 54,100 input tokens and refused one of about 54,600 with max_tokens_exceeded. Each request stays
+# under it, because a caller splits its questions under SPLIT_TOKENS. The long-context header of TypeSafe lifts the
+# limit, and Brian chose the split over it (decision 14).
 REQUEST_TOKENS = 54_000
+# The most input tokens of one request that a caller splits. Three requests of it fill the budget of one second, so a
+# wave holds three requests. A split at REQUEST_TOKENS fits only one request of about 53k in a second, and half of the
+# budget stays unused.
+SPLIT_TOKENS = 32_000
 # TypeSafe counted about 2.35 characters of a Finder request per token: names, numbers, and keys, not plain prose. The
 # count uses 2, so the estimate stays over the real count, and a request split under REQUEST_TOKENS fits the context.
 CHARS_PER_TOKEN = 2
