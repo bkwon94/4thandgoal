@@ -32,6 +32,8 @@ class Spare(BaseModel):
     # The weak starter as the question names him, such as "Joe Back (RB2)", or "the empty RB2 slot".
     starter: str
     starter_id: str | None
+    # The weak starting slot of the receiver that the listed player would fill, such as "QB" or "RB2".
+    slot: str = ""
 
     @property
     def key(self) -> str:
@@ -63,13 +65,14 @@ def can_cover(snapshot: Snapshot, player_id: str) -> bool:
             and snapshot.players[player_id].injury_status not in OUT_STATUSES)
 
 
-def _weak_starters(snapshot: Snapshot, roster_id: int) -> dict[str, tuple[str, str | None]]:
-    """The weakest starter at each trade position of the weak slots: the words of the question and his player id.
+def _weak_starters(snapshot: Snapshot, roster_id: int) -> dict[str, tuple[str, str | None, str]]:
+    """The weakest starter at each trade position of the weak slots: the words of the question, his player id, and
+    the slot.
 
     An empty slot comes first, then the starter with the worst projected rank. An empty flex slot names no position.
     """
     names = {snapshot.players[pid].name: pid for pid in snapshot.rosters[roster_id]}
-    worst: dict[str, tuple[tuple, str, str | None]] = {}
+    worst: dict[str, tuple[tuple, str, str | None, str]] = {}
     for row in weak_slot_rows(snapshot, roster_id):
         position = row["position"] or row["slot"].rstrip("0123456789")
         if position not in TRADE_POSITIONS:
@@ -82,8 +85,8 @@ def _weak_starters(snapshot: Snapshot, roster_id: int) -> dict[str, tuple[str, s
             order = (1, -(rank if rank is not None else 10_000))
             words, pid = f"{row['player']} ({row['slot']})", names.get(row["player"])
         if position not in worst or order < worst[position][0]:
-            worst[position] = (order, words, pid)
-    return {position: (words, pid) for position, (_, words, pid) in worst.items()}
+            worst[position] = (order, words, pid, row["slot"])
+    return {position: (words, pid, slot) for position, (_, words, pid, slot) in worst.items()}
 
 
 def spare_list(snapshot: Snapshot, giver: int, receiver: int) -> list[Spare]:
@@ -105,8 +108,9 @@ def spare_list(snapshot: Snapshot, giver: int, receiver: int) -> list[Spare]:
         if not any(other != pid and snapshot.players[other].position == position and can_cover(snapshot, other)
                    for other in roster):
             continue
-        words, starter_id = starters[position]
-        spares.append(Spare(player_id=pid, giver=giver, receiver=receiver, starter=words, starter_id=starter_id))
+        words, starter_id, slot = starters[position]
+        spares.append(Spare(player_id=pid, giver=giver, receiver=receiver, starter=words, starter_id=starter_id,
+                            slot=slot))
     return spares
 
 

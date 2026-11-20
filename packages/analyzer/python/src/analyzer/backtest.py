@@ -9,11 +9,10 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from analyzer.finder_search import shortlist_request
+from analyzer.finder_search import gain_dropped, lineup_line, step_two_answers
 from analyzer.jev_waves import JevWaves
 from analyzer.spares_tree import Spare, pair_request, pair_spares, stopped_sides
 from analyzer.trade import GivenPlayer, ProposedTrade, TradeSide
-from analyzer.trade_jev import NO_AT
 from league.jev_port import Jev, JevError
 from league.snapshot import Snapshot
 
@@ -153,15 +152,14 @@ def _check_trade(mark: Mark, snapshot: Snapshot, jev: Jev) -> MarkResult:
                                           for name in mark.asker_gives]),
         TradeSide(roster_id=partner, gives=[GivenPlayer(player_id=_player_of(snapshot, partner, name), to=asker)
                                             for name in mark.asker_gets])))
-    request = shortlist_request(snapshot, asker, partner, [trade])
     try:
-        nouls = jev.ask(request.state, request.questions).nouls
+        answers = step_two_answers(snapshot, trade, jev)
     except JevError as error:
         return MarkResult(mark=mark, got="error", right=False, why=f"the Jev request failed: {error}")
-    gains = {rid: nouls[f"0|gain.{rid}"] for rid in (asker, partner)}
-    got: Literal["drop", "keep"] = "drop" if any(p < NO_AT for p in gains.values()) else "keep"
+    gains = {rid: answers[f"gain.{rid}"] for rid in (asker, partner)}
+    got: Literal["drop", "keep"] = "drop" if gain_dropped(gains) else "keep"
     why = "gain " + ", ".join(f"{snapshot.teams[rid].name} {p:.2f}" for rid, p in gains.items())
-    why += "; " + " ".join(request.state["offers"]["0"]["lineup_points"])
+    why += "; " + " ".join(lineup_line(snapshot, trade, rid) for rid in (asker, partner))
     return MarkResult(mark=mark, got=got, right=got == mark.expect, why=why)
 
 
@@ -181,7 +179,7 @@ def _check_side(mark: Mark, snapshot: Snapshot, jev: Jev) -> MarkResult:
 
 
 def check_marks(marks: list[Mark], snapshot: Snapshot, jev: Jev) -> list[MarkResult]:
-    """The check of each mark against the tree now: a trade mark asks the shortlist request of that one offer, and a
+    """The check of each mark against the tree now: a trade mark asks the step 2 request of that one offer, and a
     spares mark asks the Spares tree of its pair. A failed call is an error, and an error is never a right mark."""
     return [(_check_trade if mark.kind == "trade" else _check_side)(mark, snapshot, jev) for mark in marks]
 

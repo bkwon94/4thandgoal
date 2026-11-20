@@ -32,6 +32,7 @@ from analyzer.stage import Stage, quiet
 from analyzer.team_facts import lineup_now_fact
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
 from analyzer.trade_news import NewsFeed
+from facts.tokens import Nums, fact
 from facts.writer import (
     ANY_NUMBER,
     CHECK_ERRORS,
@@ -150,15 +151,38 @@ class FinderPicks(BaseModel):
     fallback: bool
 
 
+def spare_facts(offer: ShortlistOffer, snapshot: Snapshot) -> dict[str, Fact]:
+    """One fact by id for each player that the asker gets with a Spares tree "yes", such as "For Bo Girds, Patrick
+    Mahomes fills the weak slot QB, and To Infinity and Bijan can spare him." It is a reason for the Case, never a gate
+    (decision 16)."""
+    asker = snapshot.teams[offer.trade.asker].name
+    facts = {}
+    for side in offer.trade.sides[1:]:
+        partner = snapshot.teams[side.roster_id].name
+        for pid in side.player_ids:
+            if pid not in offer.spares:
+                continue
+            n = Nums()
+            name = snapshot.players[pid].name
+            # The slot goes through Nums, so the checker accepts a slot name with a digit, such as "RB2".
+            text = f"For {asker}, {name} fills the weak slot {n.text(offer.spares[pid])}, and {partner} can spare him."
+            facts[f"{pid}.spare"] = fact(f"{pid}.spare", text, n, [asker, partner], [name])
+    return facts
+
+
 def offer_sheet(offer: ShortlistOffer, snapshot: Snapshot, news: NewsFeed) -> dict[str, Fact]:
     """The facts of one shortlist offer by id: the measured facts of its trade, with the news of its players only,
-    the lineup now of the asker, then the Jev answers of the shortlist as JEV facts, so the pick makes no new Jev
-    call. After a failed shortlist request the offer holds no Jev answer, so the sheet states none, never "unsure"."""
+    the lineup now of the asker, the Spares tree facts, then the Jev answers of the shortlist as JEV facts, so the
+    pick makes no new Jev call. After a failed request the offer holds no Jev answer of that step, so the sheet states
+    none, never "unsure"."""
     trade = offer.trade
-    nouls = {} if offer.failed else {"fair": offer.fair, **{f"need.{rid}": p for rid, p in offer.needs.items()}}
+    nouls = {} if offer.failed else {f"need.{rid}": p for rid, p in offer.needs.items()}
+    if not offer.fair_failed:
+        nouls["fair"] = offer.fair
     questions = trade_jev_questions(trade, snapshot)
     now = lineup_now_fact(snapshot, trade.asker)
     return {**measured_sheet(trade, snapshot, news), **({} if now is None else {now.id: now}),
+            **spare_facts(offer, snapshot),
             **jev_answer_facts(trade, snapshot, questions, {key: p for key, p in nouls.items() if key in questions})}
 
 

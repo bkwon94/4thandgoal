@@ -23,11 +23,13 @@ from analyzer.finder_search import (
     Limit,
     ShortlistOffer,
     _out_with_no_return,
+    gain_dropped,
     in_band,
     in_pool,
     offer_id,
     search,
     shortlist_answers,
+    step_two_answers,
     varied,
 )
 from analyzer.jev_waves import (
@@ -160,10 +162,52 @@ def test_the_fair_step_drops_a_clear_no_on_the_mean_of_both_side_orders(snap):
     dropped, kept = offer_id(found.offers[0]), offer_id(found.offers[1])
     assert found.fair_means[dropped] == pytest.approx(0.25) and found.fair_means[kept] == pytest.approx(0.35)
     assert found.unfair == [dropped]
-    _, lines = _shortlist_merged(jev)
-    # The shortlist reads every Value offer but the one that dropped.
-    assert len(lines) == len(found.offers) - 1
-    assert {offer.offer_id for offer in found.shortlist + found.dropped} <= {offer_id(t) for t in found.offers[1:]}
+    # Step 2 never reads the offer that dropped, and it reads the one that stayed only as the best of its group.
+    assert dropped not in found.step_two and set(found.step_two) <= {offer_id(t) for t in found.offers[1:]}
+    assert {offer.offer_id for offer in found.shortlist + found.dropped} <= set(found.step_two)
+
+
+def _scattered_fair(key, question, state):
+    """A fair answer that differs from offer to offer in no order, so the best of a group is not its first offer. Every
+    answer is above NO_AT, so step 1 drops nothing. Each other question gets a clear yes."""
+    n, _, kind = key.partition("|")
+    return 0.31 + (int(n) * 7919 % 61) / 100 if kind == "fair" else 0.9
+
+
+def test_step_two_gets_the_best_offer_of_each_partner_and_shape_direction(snap):
+    jev = FakeJev(answer=_scattered_fair)
+    found = search(ASKER, None, snap, jev)
+    groups: dict[tuple[int, str], list[str]] = {}
+    for trade in found.offers:
+        groups.setdefault((trade.sides[1].roster_id, _shape(trade)), []).append(offer_id(trade))
+    assert len(groups) > 11
+    # One offer per partner and shape direction, at most 11 partners times 7 shape directions.
+    assert len(found.step_two) == len(groups) <= 77
+    by_id = {offer_id(trade): trade for trade in found.offers}
+    for oid in found.step_two:
+        trade = by_id[oid]
+        group = groups[(trade.sides[1].roster_id, _shape(trade))]
+        # The highest fair mean of the group. A tie goes to the lower offer id.
+        assert all(found.fair_means[oid] >= found.fair_means[other] for other in group)
+        assert len(group) == 1 or any(found.fair_means[oid] > found.fair_means[other] for other in group)
+    # Step 2 asks about these offers and no other.
+    # Each partner numbers its own offers from 0, so the count sums the offers of each request.
+    assert sum(len(r.state["offers"]) for r in _shortlist_requests(jev)) == len(found.step_two)
+
+
+def test_step_two_asks_the_need_and_the_gain_of_each_side_and_no_fair_question(snap):
+    jev = FakeJev()
+    found = search(ASKER, PARTNER, snap, jev)
+    questions, _ = _shortlist_merged(jev)
+    assert len(found.step_two) == len({_shape(t) for t in found.offers})
+    assert set(questions) == {f"{n}|{kind}.{rid}" for n in range(len(found.step_two))
+                              for kind in ("need", "gain") for rid in (ASKER, PARTNER)}
+
+
+def test_the_score_of_an_offer_is_its_fair_mean(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair))
+    for offer in found.shortlist:
+        assert offer.score == offer.fair == found.fair_means[offer.offer_id]
 
 
 def test_each_fair_request_holds_the_chart_value_of_each_player_and_the_chart_sum_of_each_side(snap):
@@ -295,88 +339,128 @@ def _rising_fair(key, question, state):
     return 0.99 - 0.001 * int(number) if kind == "fair" else 0.9
 
 
-def _best_ids(shortlist):
-    """The ids of the best offers: for each player of the asker and for each partner, the offer with the highest score.
-    A tie goes to the lower offer id."""
-    best: dict[tuple[str, object], ShortlistOffer] = {}
-    for offer in sorted(shortlist, key=lambda offer: (-offer.score, offer.offer_id)):
-        keys = [("player", pid) for pid in offer.trade.sides[0].player_ids]
-        keys += [("partner", side.roster_id) for side in offer.trade.sides[1:]]
-        for key in keys:
-            best.setdefault(key, offer)
-    return {offer.offer_id for offer in best.values()}
+def _tiers(offers):
+    """The ids of the best offers of the three tiers of AT-43, by score: of each shape direction, of each partner not
+    in an earlier tier, and of each player of the asker not in an earlier tier. A tie goes to the lower offer id."""
+    ranked = sorted(offers, key=lambda offer: (-offer.score, offer.offer_id))
+    keys = (lambda o: [_shape(o.trade)],
+            lambda o: [side.roster_id for side in o.trade.sides[1:]],
+            lambda o: list(o.trade.sides[0].player_ids))
+    tiers, seen = [], set()
+    for key_of in keys:
+        best = {}
+        for offer in ranked:
+            for key in key_of(offer):
+                best.setdefault(key, offer.offer_id)
+        tier = {oid for oid in best.values() if oid not in seen}
+        tiers.append(tier)
+        seen |= tier
+    return tiers
 
 
 def _assert_varied(found):
-    """AT-43: the best offer of each player of the asker and the best offer of each partner come before a second form
-    of any trade. The best offers come by score, and so do the other offers.
-
-    The best offers lead the list, so a list with any other offer holds every best offer, and the best of the list is
-    the best of the search."""
-    best = _best_ids(found.shortlist)
-    flags = [offer.offer_id in best for offer in found.shortlist]
-    assert flags == sorted(flags, reverse=True), [offer.offer_id for offer in found.shortlist]
-    for group in (found.shortlist[:sum(flags)], found.shortlist[sum(flags):]):
-        scores = [offer.score for offer in group]
+    """AT-43: the best offer of each shape direction comes first, then the best of each partner, then the best of each
+    player of the asker, before a second form of any trade. Each tier and the rest go by score, highest first."""
+    tiers = _tiers(found.shortlist)
+    place = [next((n for n, tier in enumerate(tiers) if offer.offer_id in tier), 3) for offer in found.shortlist]
+    assert place == sorted(place), [offer.offer_id for offer in found.shortlist]
+    for tier in range(4):
+        scores = [offer.score for offer, at in zip(found.shortlist, place, strict=True) if at == tier]
         assert scores == sorted(scores, reverse=True)
 
 
-def _offer(gives: str, partner: int, gets: str, score: float) -> ShortlistOffer:
+def _offer(gives: list[str], partner: int, gets: list[str], score: float) -> ShortlistOffer:
     trade = ProposedTrade(season=2026, asker=6, sides=[
-        TradeSide(roster_id=6, gives=[GivenPlayer(player_id=gives, to=partner)]),
-        TradeSide(roster_id=partner, gives=[GivenPlayer(player_id=gets, to=6)])])
+        TradeSide(roster_id=6, gives=[GivenPlayer(player_id=pid, to=partner) for pid in gives]),
+        TradeSide(roster_id=partner, gives=[GivenPlayer(player_id=pid, to=6) for pid in gets])])
     return ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=score, needs={6: 1.0, partner: 1.0},
                           score=score)
 
 
-def test_the_best_offer_of_each_player_and_each_partner_comes_before_a_second_form():
-    # The rated offers of press 3 of AT-41 (evidence/AT-43/shortlist.txt). Bo Girds is roster 6. McBride is 8130,
-    # Flowers 9997, and Golden 12501. Partner 11 gives Prescott 3294 or Stroud 9758, partner 7 gives Mahomes 4046 or
-    # Goff 3163, and partner 3 gives Williams 11560.
-    offers = [_offer("8130", 11, "3294", 0.442), _offer("9997", 7, "4046", 0.256), _offer("12501", 11, "3294", 0.343),
-              _offer("8130", 3, "11560", 0.130), _offer("12501", 11, "9758", 0.281), _offer("9997", 11, "3294", 0.265),
-              _offer("8130", 11, "9758", 0.252), _offer("9997", 11, "9758", 0.208), _offer("9997", 7, "3163", 0.204),
-              _offer("12501", 7, "4046", 0.181)]
+def test_varied_puts_the_best_of_each_shape_then_partner_then_player_first_and_the_rest_by_fair_mean():
+    offers = [_offer(["p1"], 11, ["a"], 0.9), _offer(["p2"], 7, ["b"], 0.8),
+              _offer(["p1", "p3"], 11, ["c"], 0.7), _offer(["p2"], 3, ["d", "e"], 0.6),
+              _offer(["p4"], 3, ["f"], 0.5), _offer(["p2", "p3"], 7, ["g"], 0.4),
+              _offer(["p1"], 9, ["h"], 0.3), _offer(["p5"], 11, ["i"], 0.2), _offer(["p4"], 11, ["j"], 0.1)]
     shortlist = varied(offers, SHORTLIST_KEEP)
-    # The best of McBride, of Golden, and of partner 11, then the best of Flowers (0.265), of partner 7, and of
-    # partner 3. Then the other forms by score.
-    assert [offer.score for offer in shortlist] == [0.442, 0.343, 0.265, 0.256, 0.130,
-                                                    0.281, 0.252, 0.208, 0.204, 0.181]
+    # The best of 1-for-1 (0.9), of 2-for-1 (0.7), and of 1-for-2 (0.6). Then the best of partner 7 (0.8) and of
+    # partner 9 (0.3), because partners 11 and 3 are on the list. Then the best of p4 (0.5) and of p5 (0.2). Then the
+    # rest by the fair mean: 0.4, then 0.1.
+    assert [offer.score for offer in shortlist] == [0.9, 0.7, 0.6, 0.8, 0.3, 0.5, 0.2, 0.4, 0.1]
+    assert [offer.score for offer in varied(offers, 4)] == [0.9, 0.7, 0.6, 0.8]
 
 
 def test_a_list_with_more_best_offers_than_it_keeps_holds_only_best_offers_by_score():
-    offers = [_offer(f"p{n}", 20 + n, f"g{n}", 0.1 + 0.01 * n) for n in range(12)]
-    offers += [_offer("p11", 20, "g99", 0.9)]
+    offers = [_offer([f"p{n}"], 20 + n, [f"g{n}"], 0.1 + 0.01 * n) for n in range(12)]
+    offers += [_offer(["p11"], 20, ["g99"], 0.9)]
     shortlist = varied(offers, SHORTLIST_KEEP)
-    # 0.9 is the best of p11 and of partner 20, so it leads. The other 11 best offers fill the list by score.
+    # 0.9 is the best 1-for-1, so it leads. The other 11 partners are best offers, and they fill the list by score.
     assert [offer.score for offer in shortlist] == pytest.approx([0.9] + [0.1 + 0.01 * n for n in range(11, 2, -1)])
 
 
-def test_the_shortlist_holds_the_best_offer_for_each_player_of_the_asker_before_more_forms(snap):
-    found = search(ASKER, PARTNER, snap, FakeJev(answer=_rising_fair))
-    assert len(found.offers) > SHORTLIST_KEEP
+def test_the_shortlist_of_one_partner_holds_the_best_offer_of_each_shape_direction_first(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=_scattered_fair))
+    assert len(found.shortlist) == min(SHORTLIST_KEEP, len(found.step_two))
+    _assert_varied(found)
+    shapes = {_shape(trade) for trade in found.offers}
+    assert {_shape(offer.trade) for offer in found.shortlist[:len(shapes)]} == shapes
+
+
+def test_the_shortlist_of_every_partner_holds_each_shape_then_more_partners_before_more_forms(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair))
     assert len(found.shortlist) == SHORTLIST_KEEP
     _assert_varied(found)
-    givers = {pid for trade in found.offers for pid in trade.sides[0].player_ids}
-    # The top offer by the product still leads, and each player the asker gives has an offer on the list.
-    assert found.shortlist[0].offer_id == offer_id(found.offers[0])
-    assert givers <= {pid for offer in found.shortlist for pid in offer.trade.sides[0].player_ids}
-    top = found.shortlist[0]
-    assert top.score == pytest.approx(top.fair * top.needs[ASKER] * top.needs[PARTNER])
-    assert set(top.needs) == {ASKER, PARTNER}
+    shapes = {_shape(trade) for trade in found.offers}
+    assert len(shapes) == 7
+    assert {_shape(offer.trade) for offer in found.shortlist[:7]} == shapes
+    # The three places after the shapes go to the best offers of three more partners, by the fair mean of step 2.
+    by_id = {offer_id(trade): trade for trade in found.offers}
+    top: dict[int, str] = {}
+    for oid in sorted(found.step_two, key=lambda oid: (-found.fair_means[oid], oid)):
+        top.setdefault(by_id[oid].sides[1].roster_id, oid)
+    later = found.shortlist[7:]
+    assert all(offer.offer_id == top[offer.trade.sides[1].roster_id] for offer in later)
+    assert len({offer.trade.sides[1].roster_id for offer in later}) == 3
 
 
-def test_the_shortlist_holds_an_offer_for_each_partner_before_more_forms(snap):
-    found = search(ASKER, None, snap, FakeJev(answer=_rising_fair))
-    _assert_varied(found)
-    partners = {trade.sides[1].roster_id for trade in found.offers}
-    assert len(partners) >= 2
-    # The search has more best offers than the list keeps, so the list holds only best offers, one per partner at most
-    # unless an offer is also the best of a player.
-    best = _best_ids([ShortlistOffer(offer_id=offer_id(trade), trade=trade, fair=0.0, needs={}, score=0.0)
-                      for trade in found.offers])
-    assert len(best) > SHORTLIST_KEEP
-    assert len({offer.trade.sides[1].roster_id for offer in found.shortlist}) >= 5
+def _spares_press(snap, spare_answer: float):
+    """A press of every partner where each listed player of a partner gets `spare_answer`. An offer that brings the
+    asker a listed player reads 0.95 on fair, and every other offer 0.5, so the shortlist holds such offers."""
+    listed = {spare.player_id: spare for rid in snap.rosters if rid != ASKER
+              for spare in pair_spares(snap, ASKER, rid)["partner"]}
+    names = {snap.players[pid].name for pid in listed}
+
+    def answer(key, question, state):
+        n, _, kind = key.partition("|")
+        if key.startswith("spare:"):
+            return spare_answer if key.split(":")[1] != str(ASKER) else 0.9
+        if kind == "fair":
+            gets = next(side for side in state["offers"][n]["sides"] if side["team"] != snap.teams[ASKER].name)
+            return 0.95 if {player["name"] for player in gets["gives"]} & names else 0.5
+        return 0.9
+    return listed, search(ASKER, None, snap, FakeJev(answer=answer))
+
+
+def test_a_spares_tree_yes_is_a_pick_sheet_fact_and_changes_no_count_and_no_order(snap):
+    listed, yes = _spares_press(snap, 0.9)
+    _, no = _spares_press(snap, 0.1)
+    # The Spares tree builds no offer, drops no offer, and changes no order (decision 16).
+    assert [offer_id(t) for t in yes.offers] == [offer_id(t) for t in no.offers]
+    assert yes.step_two == no.step_two
+    assert [o.offer_id for o in yes.shortlist] == [o.offer_id for o in no.shortlist]
+    with_spares = [offer for offer in yes.shortlist if offer.spares]
+    assert with_spares and not any(offer.spares for offer in no.shortlist)
+    asker = snap.teams[ASKER].name
+    for offer in with_spares:
+        partner = snap.teams[offer.trade.sides[1].roster_id].name
+        texts = [fact.text for fact in offer_sheet(offer, snap, NewsFeed(fetch=no_news)).values()]
+        for pid, slot in offer.spares.items():
+            assert pid in offer.trade.sides[1].player_ids and slot == listed[pid].slot
+            name = snap.players[pid].name
+            assert f"For {asker}, {name} fills the weak slot {slot}, and {partner} can spare him." in texts
+    for offer in no.shortlist:
+        texts = [fact.text for fact in offer_sheet(offer, snap, NewsFeed(fetch=no_news)).values()]
+        assert not any("can spare him" in text for text in texts)
 
 
 def test_a_failed_jev_request_on_every_step_never_raises_and_never_hides_a_partner(snap):
@@ -446,7 +530,7 @@ def test_the_shortlist_asks_one_gain_noul_per_side_of_each_offer(snap):
     jev = FakeJev()
     found = search(ASKER, PARTNER, snap, jev)
     questions, _ = _shortlist_merged(jev)
-    for n in range(len(found.offers)):
+    for n in range(len(found.step_two)):
         for rid in (ASKER, PARTNER):
             question = questions[f"{n}|gain.{rid}"]
             assert str(question.instructions).startswith(
@@ -473,12 +557,50 @@ def test_an_unsure_gain_keeps_the_offer(snap):
     assert kept[offer_id(found.offers[0])].gains[ASKER] == pytest.approx(0.3)
 
 
+def test_a_gain_of_0_2_drops_the_offer_and_a_gain_of_0_5_keeps_it(snap):
+    # AT-45 with fixed answers: 0.2 is a clear no, and 0.5 is unsure.
+    first = offer_id(search(ASKER, PARTNER, snap, FakeJev(answer=_rising_fair)).offers[0])
+    for side in (ASKER, PARTNER):
+        found = search(ASKER, PARTNER, snap, FakeJev(answer=_gain_of_first_offer(0.2, side)))
+        assert first in found.step_two
+        assert first not in {offer.offer_id for offer in found.shortlist}
+        assert [offer.offer_id for offer in found.dropped] == [first]
+        found = search(ASKER, PARTNER, snap, FakeJev(answer=_gain_of_first_offer(0.5, side)))
+        assert found.dropped == [] and first in {offer.offer_id for offer in found.shortlist}
+
+
+def test_a_failed_step_two_call_of_one_offer_raises_an_error_and_never_reads_as_a_drop(snap):
+    trade = search(ASKER, PARTNER, snap, FakeJev()).shortlist[0].trade
+    with pytest.raises(JevError):
+        step_two_answers(snap, trade, FakeJev(error=JevError("timeout")))
+    answers = step_two_answers(snap, trade, FakeJev(answer=lambda key, q, state: 0.2 if "|gain." in key else 0.8))
+    assert gain_dropped({rid: answers[f"gain.{rid}"] for rid in (ASKER, PARTNER)})
+    assert not gain_dropped({ASKER: 0.5, PARTNER: 0.8})
+
+
+def test_need_answers_of_0_1_on_both_sides_drop_no_offer(snap):
+    # AT-59: need is a reason, never a gate. A gain of 0.8 on both sides keeps the offer.
+    def answer(key, question, state):
+        _, _, kind = key.partition("|")
+        if kind.startswith("need."):
+            return 0.1
+        return 0.8 if kind.startswith("gain.") else _rising_fair(key, question, state)
+
+    found = search(ASKER, PARTNER, snap, FakeJev(answer=answer))
+    assert found.dropped == []
+    assert len(found.shortlist) == min(SHORTLIST_KEEP, len(found.step_two))
+    for offer in found.shortlist:
+        assert list(offer.needs.values()) == pytest.approx([0.1, 0.1])
+        assert offer.score == offer.fair
+
+
 def test_the_gain_state_holds_the_lineup_points_of_each_side_before_and_after_each_offer(snap):
     jev = FakeJev()
     found = search(ASKER, PARTNER, snap, jev)
     _, offers = _shortlist_merged(jev)
-    assert len(offers) == len(found.offers)
-    for n, trade in enumerate(found.offers):
+    assert len(offers) == len(found.step_two)
+    by_id = {offer_id(trade): trade for trade in found.offers}
+    for n, trade in enumerate(by_id[oid] for oid in found.step_two):
         lines = offers[str(n)]["lineup_points"]
         for rid in (ASKER, PARTNER):
             [line] = [line for line in lines if line.startswith(snap.teams[rid].name + " ")]
@@ -490,8 +612,9 @@ def test_the_gain_state_holds_the_lineup_points_of_each_side_before_and_after_ea
 
 
 class _ShortlistFails(FakeJev):
+    """A Jev whose step 2 requests fail. The fair requests of step 1 answer as FakeJev does."""
     def ask(self, state, questions):
-        if any("|" in key for key in questions):
+        if any("|gain." in key for key in questions):
             raise JevError("timeout")
         return super().ask(state, questions)
 
@@ -500,18 +623,24 @@ def test_a_failed_shortlist_request_keeps_its_offers_as_unsure_and_never_reads_a
     with caplog.at_level(logging.INFO, logger="analyzer.finder_search"):
         found = search(ASKER, PARTNER, snap, _ShortlistFails())
     assert found.offers and found.shortlist and found.dropped == []
-    assert len(found.shortlist) == min(len(found.offers), SHORTLIST_KEEP)
+    assert len(found.shortlist) == min(len(found.step_two), SHORTLIST_KEEP)
     for offer in found.shortlist:
-        assert offer.failed
-        assert offer.fair == UNSURE and set(offer.needs.values()) == {UNSURE} and set(offer.gains.values()) == {UNSURE}
+        assert offer.failed and not offer.fair_failed
+        # The fair mean of step 1 still stands. Each step 2 answer is unsure.
+        assert offer.fair == found.fair_means[offer.offer_id]
+        assert set(offer.needs.values()) == {UNSURE} and set(offer.gains.values()) == {UNSURE}
     assert any("Finder shortlist with" in line and "failed request" in line for line in caplog.messages)
 
 
 def test_the_pick_sheet_of_an_offer_with_a_failed_shortlist_request_states_no_jev_answer(snap):
     failed = search(ASKER, PARTNER, snap, _ShortlistFails()).shortlist[0]
     sheet = offer_sheet(failed, snap, NewsFeed(fetch=no_news))
-    # The call never answered, so the pick never reads "unsure" for it.
-    assert sheet and not any(key.startswith(FACT_PREFIX) for key in sheet)
+    # The step 2 call never answered, so the pick never reads "unsure" for a need. The fair mean of step 1 stands.
+    assert sheet and [key for key in sheet if key.startswith(FACT_PREFIX)] == [f"{FACT_PREFIX}fair"]
+    # With every call failed, the sheet states no Jev answer at all.
+    none = search(ASKER, PARTNER, snap, FakeJev(error=JevError("timeout"))).shortlist[0]
+    assert none.failed and none.fair_failed
+    assert not any(key.startswith(FACT_PREFIX) for key in offer_sheet(none, snap, NewsFeed(fetch=no_news)))
     answered = search(ASKER, PARTNER, snap, FakeJev()).shortlist[0]
     assert any(key.startswith(FACT_PREFIX) for key in offer_sheet(answered, snap, NewsFeed(fetch=no_news)))
 
@@ -539,7 +668,7 @@ def test_a_partner_of_1200_offers_splits_under_64k_and_no_offer_passes_as_unsure
     assert len(answers[PARTNER]) == 1200
     for nouls in answers[PARTNER]:
         assert nouls is not None
-        assert nouls == {"fair": 0.8, f"need.{ASKER}": 0.8, f"need.{PARTNER}": 0.8,
+        assert nouls == {f"need.{ASKER}": 0.8, f"need.{PARTNER}": 0.8,
                          f"gain.{ASKER}": 0.8, f"gain.{PARTNER}": 0.8}
 
 
