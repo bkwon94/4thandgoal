@@ -39,7 +39,9 @@ export function DeadlineBanner({ lock, api, gradeHref, findHref }: { lock: numbe
     const el = ref.current;
     if (!el) return;
     const root = document.documentElement;
-    const measure = () => root.style.setProperty("--deadline-banner-h", `${el.offsetHeight}px`);
+    // The box height keeps the fraction of a pixel. offsetHeight rounds it, so the band token would end a fraction short
+    // of the real bottom of the band.
+    const measure = () => root.style.setProperty("--deadline-banner-h", `${el.getBoundingClientRect().height}px`);
     measure();
     // A browser with no ResizeObserver, such as jsdom, keeps the first height.
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
@@ -130,10 +132,12 @@ function Grid({
         <span className="col-start-2 row-span-2 text-row leading-tight font-bold text-pretty">{PASSED}</span>
       ) : (
         <>
+          {/* The eyebrow takes the meta size, the smallest size of the scale over the floor of 11px for other text at
+              every tier. The label size is 10px on a phone, under the floor. */}
           <span
             data-deadline-eyebrow
             className={cn(
-              "col-start-2 row-start-1 font-mono text-label leading-tight font-bold tracking-caps uppercase",
+              "col-start-2 row-start-1 font-mono text-meta leading-tight font-bold tracking-caps uppercase",
               last ? "deadline-shimmer text-on-dark" : "text-mute",
             )}
           >

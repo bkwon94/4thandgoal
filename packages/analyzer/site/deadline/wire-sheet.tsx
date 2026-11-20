@@ -44,7 +44,8 @@ export function WireSheet({
         {/* After the trade deadline Sleeper blocks a trade, so the links leave. */}
         {!closed && <Links links={links} />}
         <div className="flex flex-col gap-sp-1">
-          <span className="font-mono text-label leading-tight font-bold tracking-caps text-mute uppercase">
+          {/* The meta size, as the eyebrow of the banner: the label size is 10px on a phone, under the floor of 11px. */}
+          <span className="font-mono text-meta leading-tight font-bold tracking-caps text-mute uppercase">
             {closed ? "Final" : `Trade deadline ${countdown}`}
           </span>
           <div className="flex items-center gap-sp-2">
@@ -86,7 +87,7 @@ function Links({ links }: { links: TradeLinks }) {
 /* The live dot with "Updated Ns ago", which ticks each second while the sheet is open. After the trade deadline the list
    is final, so the line counts the trades of the week instead. */
 function LiveLine({ closed, readAt, count }: { closed: boolean; readAt: number; count: number }) {
-  const now = useNow(!closed);
+  const ago = useSecondsSince(readAt, !closed);
   if (closed) {
     return (
       <span className="ml-auto font-mono text-meta text-mute tabular-nums">
@@ -94,7 +95,6 @@ function LiveLine({ closed, readAt, count }: { closed: boolean; readAt: number; 
       </span>
     );
   }
-  const ago = Math.max(0, Math.floor((now - readAt) / 1000));
   return (
     <span data-wire-updated className="ml-auto flex items-center gap-sp-2 font-mono text-meta text-mute tabular-nums">
       <LiveDot />
@@ -108,16 +108,26 @@ export function LiveDot({ className }: { className?: string }) {
   return <span aria-hidden="true" className={cn("deadline-live relative size-sp-2 flex-none rounded-full bg-accent", className)} />;
 }
 
-/* The clock, read each second while `ticks` holds. */
-function useNow(ticks: boolean): number {
+/* The whole seconds since `since`, read on each whole second after it while `ticks` holds. The tick lines up with the
+   read and not with the open of the sheet, so the line reads N s at N s after the read, and never up to 1 s late. A new
+   read gives a new `since`, and the count starts again from it. */
+function useSecondsSince(since: number, ticks: boolean): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     setNow(Date.now());
     if (!ticks) return;
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, [ticks]);
-  return now;
+    let id: number | undefined;
+    const next = () => {
+      const intoSecond = (((Date.now() - since) % 1000) + 1000) % 1000;
+      id = window.setTimeout(() => {
+        setNow(Date.now());
+        next();
+      }, 1000 - intoSecond);
+    };
+    next();
+    return () => window.clearTimeout(id);
+  }, [since, ticks]);
+  return Math.max(0, Math.floor((now - since) / 1000));
 }
 
 /* The list. The rows on screen when the sheet opens do not animate. A trade that a poll brings in slides down from the

@@ -122,6 +122,14 @@ describe("the Deadline banner", () => {
     expect(within(sheet).getByText("No trades yet this week.")).toBeTruthy();
   });
 
+  it("sets the sheet eyebrow in the meta size, over the floor of 11px for other text", async () => {
+    await bannerAt("2026-11-21T09:55:00-05:00");
+    fireEvent.click(trigger());
+    const eyebrow = within(sheet()).getByText("Trade deadline ~2d 14h 05m");
+    expect(eyebrow.classList.contains("text-meta")).toBe(true);
+    expect(eyebrow.classList.contains("text-label")).toBe(false);
+  });
+
   it("shows the closed empty line in the sheet after the Lock", async () => {
     await bannerAt("2026-11-24T00:00:01-05:00");
     fireEvent.click(trigger());
@@ -229,6 +237,25 @@ describe("the Trade Wire", () => {
   it("says when it last updated, and the seconds tick (AT-21)", async () => {
     await bannerAt("2026-11-21T09:55:00-05:00");
     fireEvent.click(trigger());
+    expect(sheet().textContent).toContain("Updated 0s ago");
+    await wait(3000);
+    expect(sheet().textContent).toContain("Updated 3s ago");
+  });
+
+  it("counts the seconds from the read, so the line reads 3s at 3 s after a read off the second (AT-21)", async () => {
+    await bannerAt("2026-11-21T09:55:00-05:00");
+    // The sheet opens 400 ms after the read, so a tick that starts at the open lags the read by 400 ms.
+    await wait(400);
+    fireEvent.click(trigger());
+    expect(sheet().textContent).toContain("Updated 0s ago");
+    await wait(599);
+    expect(sheet().textContent).toContain("Updated 0s ago");
+    await wait(1);
+    expect(sheet().textContent).toContain("Updated 1s ago");
+    await wait(2000);
+    expect(sheet().textContent).toContain("Updated 3s ago");
+    // The poll reads again at 10 s, and the count starts again at that read.
+    await wait(7000);
     expect(sheet().textContent).toContain("Updated 0s ago");
     await wait(3000);
     expect(sheet().textContent).toContain("Updated 3s ago");
