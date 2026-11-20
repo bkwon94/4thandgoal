@@ -2,15 +2,11 @@
  * Tests for the waiver team pick in local storage. A pick survives a reload, and a blocked storage never throws.
  * A value that is not a whole roster id reads as no pick.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { getTeamPick, setTeamPick } from "./team-pick-store";
 
 beforeEach(() => {
   localStorage.clear();
-});
-
-afterEach(() => {
-  vi.restoreAllMocks();
 });
 
 describe("the team pick", () => {
@@ -35,10 +31,10 @@ describe("the team pick", () => {
   });
 
   it("reads as no pick and saves nothing when storage throws", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("blocked");
     });
     expect(() => setTeamPick(7)).not.toThrow();

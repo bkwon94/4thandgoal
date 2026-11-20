@@ -3,7 +3,7 @@
  * a press during a run starts a clean run, the odds of all runs show, and no control picks a winner. The clock is fake.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest, spyOn } from "bun:test";
 import { oneDecimal } from "@cpc/design/format/format";
 import { sim } from "../fixtures/sim";
 import { beatsOf } from "./beats";
@@ -11,12 +11,12 @@ import { replaySeason } from "./season";
 import { SimReplay } from "./sim-replay";
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 /* A pick that plays the given runs in order, so a test knows each run. */
@@ -30,7 +30,7 @@ function playBeats(run: number, from: number, count: number) {
   const beats = beatsOf(replaySeason(sim, run));
   for (const beat of beats.slice(from, from + count)) {
     act(() => {
-      vi.advanceTimersByTime(beat.ms);
+      jest.advanceTimersByTime(beat.ms);
     });
   }
 }
@@ -156,13 +156,12 @@ describe("the sim replay", () => {
   });
 
   it("plays a random run of the 200 when no pick is given", () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    spyOn(Math, "random").mockReturnValue(0.5);
     render(<SimReplay sim={sim} />);
     press();
     fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
     const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     expect(card.textContent).toContain(replaySeason(sim, 100).champion.name);
-    vi.restoreAllMocks();
   });
 
   it("has no control to pick the winner of a game at any beat", () => {

@@ -4,27 +4,43 @@
  */
 import { cleanup, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { ShareBar } from "./share-bar";
 
 /* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query, so motion is allowed. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
+const matchMediaStub = (query: string) =>
+  ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as unknown as MediaQueryList;
 
+beforeEach(() => {
+  spyOn(globalThis, "matchMedia").mockImplementation(matchMediaStub);
+});
 afterEach(() => cleanup());
-afterAll(() => vi.unstubAllGlobals());
+
+/* happy-dom has Element.prototype.animate, so Framer Motion runs a fade as a Web Animation and the inline style holds no
+   middle value. Framer Motion checks for the method once per file, so a file that reads the middle values hides it first. */
+const animate = Element.prototype.animate;
+// happy-dom has an IntersectionObserver that never reports an entry, so the fill would wait at 0. jsdom has none, and the
+// bar then grows on mount, so the file hides the observer too.
+const observer = globalThis.IntersectionObserver;
+beforeEach(() => {
+  // @ts-expect-error The bar checks for the observer with typeof.
+  delete globalThis.IntersectionObserver;
+  // @ts-expect-error Framer Motion checks for an own property, so only a delete hides it.
+  delete Element.prototype.animate;
+});
+afterEach(() => {
+  Element.prototype.animate = animate;
+  globalThis.IntersectionObserver = observer;
+});
 
 /* The scale of the fill along the bar: 1 for no transform, else the number in scaleX(). */
 function scaleOf(fill: HTMLElement): number {

@@ -2,7 +2,7 @@
  * Tests for the beats of a replay: the order of the Broadcast motion and the length of a full run.
  * They read the real sim file of CPC 2026 week 8.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { sim } from "../fixtures/sim";
 import { beatsOf, runLength } from "./beats";
 import { replaySeason } from "./season";

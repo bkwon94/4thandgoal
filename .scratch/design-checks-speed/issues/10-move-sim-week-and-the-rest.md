@@ -10,6 +10,6 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests none alone. It fee
 
 **Status:** ready-for-agent
 
-- [ ] The 40 files pass on `bun test` with no `vi.` call and no `vitest` import.
-- [ ] The count of tests that pass equals the count before the move for these files, or the ticket names each change.
-- [ ] The fast site check exits 0.
+- [x] The 40 files pass on `bun test` with no `vi.` call and no `vitest` import.
+- [x] The count of tests that pass equals the count before the move for these files, or the ticket names each change.
+- [x] The fast site check exits 0.

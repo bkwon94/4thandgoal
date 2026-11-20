@@ -3,7 +3,7 @@
  * midseason report, so no element has a full pill or a corner above 8 px. The press shows the table, then the end.
  */
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { sim } from "../fixtures/sim";
 import { SimReplay } from "./sim-replay";
 

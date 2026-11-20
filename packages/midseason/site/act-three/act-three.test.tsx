@@ -3,7 +3,7 @@
  * They read what a manager sees: each team's games left with the opponents' records.
  */
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";
 import type { MidseasonChapter } from "../schema/midseason-types";
@@ -69,10 +69,10 @@ describe("the look ahead", () => {
       `.${String(Math.round(teams[0].opponents_rate! * 1000)).padStart(3, "0")}`,
     );
     expect(rows[0].textContent).toContain("Softest");
-    expect(teams[0].roster_id).toBe(softest);
+    expect(teams[0].roster_id).toBe(softest!);
     fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
     const last = [...rows].at(-1)!;
-    expect(teams.at(-1)!.roster_id).toBe(hardest);
+    expect(teams.at(-1)!.roster_id).toBe(hardest!);
     expect(last.textContent).toContain("Hardest");
   });
 });

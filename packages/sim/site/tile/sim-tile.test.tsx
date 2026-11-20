@@ -3,7 +3,7 @@
  * league fact with no team, the title odds or the favorite in a playoff week, and the champion after the final.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { finalWeekSim, playoffsWeekSim, roundTwoWeekSim, weekSim } from "../fixtures/sim";
 import { SimTile } from "./sim-tile";
 import { simTileOf } from "./tile";

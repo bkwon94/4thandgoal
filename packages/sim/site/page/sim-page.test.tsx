@@ -4,15 +4,28 @@
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { norcalWeekSim, weekSim } from "../fixtures/sim";
 import { fakeWhatIfApi } from "../fixtures/what-if-api";
 import { whatIfApi } from "../lib/what-if-api";
 import { SimPage } from "./sim-page";
 
+// The happy-dom window is 1024 px wide, so matchMedia would match the tablet tier. The stub matches no query, so a test
+// sees the phone tier unless it spies on matchMedia itself.
+beforeEach(() => {
+  spyOn(window, "matchMedia").mockImplementation(
+    (query: string) =>
+      ({
+        matches: false,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }) as unknown as MediaQueryList,
+  );
+});
+
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 // Bo Girds is roster 6 in CPC and roster 7 in NorCal.
@@ -184,7 +197,7 @@ describe("the root-for card", () => {
 
   it("shows in full from the tablet tier, with no toggle", () => {
     // The tablet tier matches, as at 1080x740.
-    vi.spyOn(window, "matchMedia").mockImplementation(
+    spyOn(window, "matchMedia").mockImplementation(
       (query: string) =>
         ({
           matches: true,
@@ -213,7 +226,7 @@ describe("the root-for card", () => {
 
 describe("the calls of the page", () => {
   it("makes no call on load or on a switch of weeks", () => {
-    const fetch = vi.spyOn(globalThis, "fetch");
+    const fetch = spyOn(globalThis, "fetch");
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
     for (const label of ["Wk 12", "Wk 13", "Wk 14", "Playoffs", "Wk 11"]) {

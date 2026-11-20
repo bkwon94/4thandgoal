@@ -3,7 +3,7 @@
  * They read what a manager sees on the home page: the takeover through the end week, then the report tile.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { midseason } from "../fixtures/midseason";
 import { ReportTile } from "./report-tile";
 import { Takeover, takeoverOn } from "./takeover";

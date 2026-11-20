@@ -3,7 +3,7 @@
  * The first sentence tests use their own text, because the pipeline rewrites the blurbs of the published file.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import { matchupScene } from "../parts/matchup-scene";
 import { firstSentence, HomeMatchup } from "./home-matchup";

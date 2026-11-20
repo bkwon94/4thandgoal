@@ -3,7 +3,7 @@
  * the champion's team that the app passes, and the default frame when the app passes none.
  */
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { sim } from "../fixtures/sim";
 import { SimReplay } from "./sim-replay";
 

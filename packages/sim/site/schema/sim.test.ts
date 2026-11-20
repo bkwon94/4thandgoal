@@ -2,7 +2,7 @@
  * Tests for the Zod schemas of the sim files, on the real season file of CPC 2026 week 8 and the real week file of
  * CPC 2026 week 10. A change to the shape that the pipeline writes fails here first.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import json from "../fixtures/sim.json";
 import weekJson from "../fixtures/week-sim.json";
 import { simSchema, weekSimSchema } from "./sim";

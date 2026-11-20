@@ -2,7 +2,7 @@
  * Tests for the season of one stored run, as the replay plays it: the standings after each week, the bracket, and the champion.
  * Every test reads the real sim file of CPC 2026 week 8, and checks each of its 200 runs against the facts the sim stored.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { sim } from "../fixtures/sim";
 import { replaySeason } from "./season";
 
