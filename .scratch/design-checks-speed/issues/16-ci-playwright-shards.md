@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-29.
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The ticket records the time of each shard with each count it tried, and the chosen count.
 - [x] The serial Playwright projects run with one worker.
