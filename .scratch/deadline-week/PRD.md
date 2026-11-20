@@ -5,7 +5,7 @@ Date: 2026-11-19
 Apps: both. The site shows the Deadline banner, the Trade Wire sheet, the analyzer switch, and the Finder look. The API on Fly serves the Trade Wire route and the Finder stream. The `analyzer` and `league` packages, which the API imports, hold the Finder steps, the Spares tree, and the trade parser.
 Spec branch: `deadline-week`.
 Source: the map `.scratch/deadline-week/MAP.md` and decision tickets 01 to 18. ADR 0035 and ADR 0037 (ui-sdk through one wrapper). ADR 0038 (the Value screen is the one math cut of the Finder). Prototypes on the branches `deadline-week-07-proto` (`cd385837`), `deadline-week-08-proto` (`48f18de1`), and `deadline-week-17-proto` (`c403b55f`). The handoff `.handoff/deadline-week-fair-finder.md` holds Brian's rulings of 2026-11-19.
-Tickets: 01 to 10, in `issues/`, are built. The fair-first tickets, 11 and up: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 15, in `issues/`. Tickets 01 to 10 are built. Tickets 11 to 15 build the fair-first Finder.
 
 ## Problem Statement
 
