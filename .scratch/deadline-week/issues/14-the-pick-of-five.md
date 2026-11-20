@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-41 and AT-70.
 
 **Blocked by:** 13, 16
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Three real presses for Bo Girds and every team each run one pick call, and no id retry line shows in the log.
 - [x] The picks of a real press for Bo Girds hold at least 2 shapes and at least 3 partners.
