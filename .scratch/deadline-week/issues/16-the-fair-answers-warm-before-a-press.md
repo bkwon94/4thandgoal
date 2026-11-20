@@ -15,3 +15,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 19. Acceptance tests AT-55 to AT
 - [x] A test shows that a moved player gives new keys only for the offers that hold him.
 - [x] A test with a fixed clock shows that the warm-up sends no request while a press is live.
 - [x] A real press for Bo Girds on a warm local API asks no fair question live and gives a Shortlist of 10.
+
+## Comments
+
+- Brian chose CPC only on 2026-11-20, because a warm-up of CPC costs about $1.46 per deploy and Norcal adds $1.72.

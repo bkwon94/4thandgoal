@@ -21,6 +21,10 @@ log = logging.getLogger(__name__)
 REWARM_SECONDS = 15 * 60
 # The price of Jev: $0.042 per million input tokens, and its output is free (docs.typesafe.ai/models.md).
 JEV_USD_PER_TOKEN = 0.042 / 1_000_000
+# The clients whose fair answers the worker warms. Brian chose cpc only on 2026-11-20: Deadline week is for cpc only, a
+# warm-up of cpc costs about $1.46 of Jev per deploy, and norcal adds $1.72. A press of another client reads the cache
+# and asks each miss live, as before.
+WARM_SLUGS = ("cpc",)
 
 
 def signature(snapshot: Snapshot) -> tuple:
@@ -60,9 +64,11 @@ class FairWarmer:
             self.wake.set()
 
     def warm(self, served: Served) -> None:
-        """Warm the fair cache of one client from its live snapshot, unless its rosters and chart week are the same as
+        """Warm the fair cache of one client of WARM_SLUGS from its live snapshot, unless its rosters and chart week are the same as
         at the last warm-up. The waves wait while a press is live."""
         slug = served.client.slug
+        if slug not in WARM_SLUGS:
+            return
         snapshot = served.sources.snapshot(served.client.values.latest_season)
         mark = signature(snapshot)
         if mark == self._signatures.get(slug):

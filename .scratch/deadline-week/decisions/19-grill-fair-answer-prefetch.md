@@ -25,6 +25,8 @@ Brian agreed on 2026-11-20, after the page "Finder Prefetch" (https://claude.ai/
 
 This reverses one line of decision 02, "no prewarm", for the fair answers only.
 
+Brian chose CPC only on 2026-11-20, because a warm-up of CPC costs about $1.46 per deploy and Norcal adds $1.72.
+
 **Check before the build.** The fair state labels the two teams `asker` and `partner`. A real test must show that the mean of the two side orders does not move when the labels swap. If it moves, the fair state uses labels that name no asker, in the warm-up and in the live press.
 
 **Estimates, not claims.** A full warm-up is about 6 times the step 1 of one press: about 22M tokens, about 4 minutes, and about $0.90 of Jev. The Fly app keeps one machine up (`min_machines_running = 1`), so only a deploy clears the cache. No copy states a time.

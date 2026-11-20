@@ -2,6 +2,7 @@
 Tests for the fair warm-up of the API (decision 19): the worker fills the fair cache from the live snapshot of a client,
 logs one line as it starts and ends, and asks again only after a roster, the chart week, or the trade list changes.
 """
+import dataclasses
 import logging
 
 import test_api
@@ -76,3 +77,15 @@ def test_a_new_trade_on_the_trade_wire_wakes_the_worker(settings, sources):
     assert not warmer.wake.is_set()
     warmer.trades_seen(SLUG, ["2", "1"])
     assert warmer.wake.is_set()
+
+
+def test_a_warm_up_asks_no_fair_question_for_norcal_and_still_warms_cpc(settings, sources):
+    jev = FakeJev()
+    app = _app(settings, sources, jev)
+    cpc = app.state.served[SLUG]
+    norcal = dataclasses.replace(cpc, client=cpc.client.model_copy(update={"slug": "norcal"}))
+    warmer = FairWarmer({SLUG: cpc, "norcal": norcal}, app.state.fair_cache, jev)
+    warmer.warm(norcal)
+    assert len(jev.requests) == 0 and len(app.state.fair_cache) == 0
+    warmer.warm(cpc)
+    assert len(jev.requests) > 0 and len(app.state.fair_cache) > 1000
