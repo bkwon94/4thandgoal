@@ -2,7 +2,7 @@
  * Tests for the data of the Matchup scene, built from the real week 8 page of CPC.
  * They check the lights, the median guide, the flare, the label at rest, and the margin mark that the hero draws.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   type SceneRect,
   HINT_TEXT,

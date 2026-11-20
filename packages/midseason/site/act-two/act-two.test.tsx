@@ -3,7 +3,7 @@
  * They read what a manager sees: the steals and busts, the waivers, the trade cards, the lineups, and the record book.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { sleeperHeadshot } from "@cpc/league/images";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";

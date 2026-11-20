@@ -3,7 +3,7 @@
  * They check what a reader sees and the chip state, not the class names.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import { PositionLeaders } from "./position-leaders";
 
@@ -97,7 +97,7 @@ describe("PositionLeaders", () => {
     const chapter = renderLeaders();
     expect(chapter.querySelector("p")?.tagName).toBe("P");
     expect(prose(chapter)).toContain(top("QB"));
-    expect(week8.blurbs.position_leaders).toContain(prose(chapter));
+    expect(week8.blurbs.position_leaders).toContain(prose(chapter)!);
     expect(prose(chapter)).not.toContain(top("TE"));
   });
 

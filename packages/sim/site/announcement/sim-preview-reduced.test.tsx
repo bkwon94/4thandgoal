@@ -3,38 +3,32 @@
  * once, and the chip does not turn on by itself. matchMedia is a stub that must exist before Framer Motion first reads it.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest, spyOn } from "bun:test";
 import { weekSim } from "../fixtures/sim";
 import { previewOf } from "./preview";
 import { AUTO_WHAT_IF_MS, SimPreview } from "./sim-preview";
 
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
-);
+const matchMediaStub = (query: string) =>
+  ({
+    // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+    matches: query.includes("prefers-reduced-motion"),
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as MediaQueryList;
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  spyOn(globalThis, "matchMedia").mockImplementation(matchMediaStub);
+  jest.useFakeTimers();
 });
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
-afterAll(() => {
-  vi.unstubAllGlobals();
-});
-
 const BO_GIRDS = 6;
 const chip = () => screen.getByRole("button", { name: /^What-if:/ });
 
@@ -52,7 +46,7 @@ describe("the art of the sim Announcement with reduced motion (AT-61)", () => {
 
   it("does not turn the chip on by itself after the sheet settles", () => {
     render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS} settled />);
-    act(() => vi.advanceTimersByTime(AUTO_WHAT_IF_MS * 10));
+    act(() => jest.advanceTimersByTime(AUTO_WHAT_IF_MS * 10));
     expect(chip().getAttribute("aria-pressed")).toBe("false");
   });
 

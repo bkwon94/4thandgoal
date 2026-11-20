@@ -46,4 +46,10 @@ export const BUN_TEST_DIRS = [
   "packages/managers/site/page/race-group.test.ts",
   "packages/managers/site/page/season-so-far.test.tsx",
   "packages/managers/site/page/top-performers.test.tsx",
+  "packages/sim/site",
+  "packages/week/site",
+  "packages/midseason/site",
+  "packages/league/site",
+  "packages/waiver/site",
+  "packages/rankings/site",
 ];

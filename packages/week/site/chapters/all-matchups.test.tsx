@@ -3,7 +3,7 @@
  * They check what a reader sees and the button state.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { AllMatchups } from "./all-matchups";
 import { avatarSrc } from "@cpc/league/images";
 import { week8 } from "../fixtures/week-page";

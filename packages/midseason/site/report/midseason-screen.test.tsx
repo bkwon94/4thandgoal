@@ -3,7 +3,7 @@
  * They read what a manager sees: the opener, the three acts with their title pages, the rail, and the chapters of Act I.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { midseason } from "../fixtures/midseason";
 import type { Blurb } from "../schema/midseason-types";
 import { MidseasonScreen } from "./midseason-screen";

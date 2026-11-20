@@ -3,7 +3,7 @@
  * They read what a manager sees: the arcs and the Position top 10.
  */
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { sleeperHeadshot } from "@cpc/league/images";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";

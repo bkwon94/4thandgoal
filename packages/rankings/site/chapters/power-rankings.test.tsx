@@ -3,7 +3,7 @@
  * They render the fixture and read what a reader sees and taps, not the class names.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { rankings } from "../fixtures/rankings";
 import { Movement, PowerRankings } from "./power-rankings";
 

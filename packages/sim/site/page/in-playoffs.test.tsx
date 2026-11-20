@@ -4,7 +4,7 @@
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { finalWeekSim, playoffsWeekSim, roundTwoWeekSim } from "../fixtures/sim";
 import { fakeWhatIfApi } from "../fixtures/what-if-api";
 import { whatIfApi } from "../lib/what-if-api";

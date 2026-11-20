@@ -2,7 +2,7 @@
  * Tests for the two week series of the Trend tiles: the top score and the median of each week, from week 1 to the page week.
  * They read the real managers files of CPC, which has a published median, and of NorCal, which has none.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import cpcJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
 import norcalJson from "../../../../apps/site/src/fixtures/sites/norcal/public/2026/managers.json";
 import norcalWeek8Json from "../../../../apps/site/src/fixtures/sites/norcal/public/2026/week-08/page.json";

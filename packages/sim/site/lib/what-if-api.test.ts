@@ -2,10 +2,9 @@
  * Tests for the client of the What-if route against a real local HTTP server that sends a recorded answer of the API.
  * They check the path and the body of the call, the parse of the answer, a refusal, a cancel, and an API that is down.
  */
-// @vitest-environment node
 import { createServer, type IncomingMessage, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import winAbove from "../fixtures/what-if-win-above.json";
 import { WhatIfError, whatIfApi, type WhatIfApi } from "./what-if-api";
 
@@ -44,7 +43,27 @@ beforeAll(async () => {
   api = whatIfApi({ url: `http://127.0.0.1:${port}`, client: "cpc" });
 });
 
-afterAll(() => new Promise<void>((done) => server.close(() => done())));
+afterAll(
+  () =>
+    new Promise<void>((done) => {
+      server.close(() => done());
+      // The native fetch keeps its sockets open, and close waits for them.
+      server.closeAllConnections();
+    }),
+);
+
+// The call goes to a real local server through the native fetch of Bun. The fetch of happy-dom blocks a call to another origin and
+// ignores an abort, and the native fetch reads no signal of happy-dom, so this adapter rejects the call when the signal aborts.
+// The preload restores the spy after each test.
+beforeEach(() => {
+  spyOn(globalThis, "fetch").mockImplementation(
+    ((url: string, { signal, ...init }: RequestInit = {}) =>
+      new Promise<Response>((done, fail) => {
+        signal?.addEventListener("abort", () => fail(signal.reason));
+        Bun.fetch(url, init).then(done, fail);
+      })) as typeof fetch,
+  );
+});
 
 const SET = [{ week: 11, game: "win", median: "above" }] as const;
 

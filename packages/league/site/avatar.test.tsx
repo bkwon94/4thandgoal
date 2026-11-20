@@ -4,7 +4,7 @@
  * They read only the attributes of the image, never a class name.
  */
 import { cleanup, fireEvent, render } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { Avatar } from "./avatar";
 import { AVATAR_FALLBACK, avatarSrc } from "./images";
 

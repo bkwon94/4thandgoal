@@ -4,20 +4,20 @@
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import { weekSim } from "../fixtures/sim";
 import { fakeWhatIfApi } from "../fixtures/what-if-api";
 import { SimPage } from "../page/sim-page";
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
   // Framer Motion asks for its next frame once and waits for it, so the frame it asked for under the fake clock runs here.
-  vi.advanceTimersByTime(100);
-  vi.useRealTimers();
+  jest.advanceTimersByTime(100);
+  jest.useRealTimers();
 });
 
 // Bo Girds is roster 6 in CPC. Week 11 is Bo Girds vs Maye d'force B with U.
@@ -33,7 +33,7 @@ const press = (name: string) => fireEvent.click(screen.getByRole("button", { nam
 async function wait(...holds: number[]) {
   for (const ms of holds) {
     await act(async () => {
-      vi.advanceTimersByTime(ms);
+      jest.advanceTimersByTime(ms);
     });
   }
 }

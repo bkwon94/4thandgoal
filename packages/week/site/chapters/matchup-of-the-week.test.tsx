@@ -3,7 +3,7 @@
  * They check what a reader sees by role and text, not the class names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { firstSentence, week8 } from "../fixtures/week-page";
 import { matchupScene } from "../parts/matchup-scene";
 import { MatchupOfTheWeek } from "./matchup-of-the-week";

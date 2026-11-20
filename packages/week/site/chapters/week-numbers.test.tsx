@@ -3,7 +3,7 @@
  * They read each tile by its label, as a reader does, not by the class names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import cpcManagers from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
 import { WeekNumbers } from "./week-numbers";
