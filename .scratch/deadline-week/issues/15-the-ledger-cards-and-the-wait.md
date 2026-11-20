@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-36, AT-38, AT-65, AT-
 
 **Blocked by:** 14
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] A real press for Bo Girds on the local API shows Ledger cards for a 1-for-1, a 2-for-1, and a 3-for-2, at 375, 768, and 1280 px, in both themes.
 - [x] A card with totals of 68.0 and 62.5 shows "You get 9% more trade value".
