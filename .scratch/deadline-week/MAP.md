@@ -32,10 +32,10 @@ The Finder is fair-first: it finds fair trades of four shapes by chart value, an
 - The Value screen: four shapes in both directions, the side that gets more players gets 100% to 125% of the other sum, 1-for-1 within 10%, a floor of 5 per player on a multi-player side, no cap. ADR 0038 limits the exception to `no-math-filters`. `decisions/14-grill-value-screen.md`.
 - Jev questions in two steps: fair on every offer, asked in both side orders and averaged in code, with chart values in the state; then need and gain on the offers that pass. A clear no on fair or on a gain drops the offer. Need is a reason. The Spares tree builds no offers; its answers are reasons. `decisions/15-grill-jev-questions-per-shape.md`.
 - The Value screen is the one source of offers; the targets step and the wider pass go. Spares tree yeses become pick sheet facts. Step 2 gets the best offer per partner and shape direction. The score is fair alone. `varied()` puts the best per shape, then per partner, then per player first, in a Shortlist of 10. One shared pacer per API process. `decisions/16-grill-merge-and-variety.md`.
+- The card is A · Ledger: You get and You give columns with rank per player, a trade value total per side, and one plain gap line. 5 picks plus up to 3 near ideas. New wait lines with real counts. A to J labels stay. No time claim in the wait. `decisions/17-prototype-shape-cards.md`.
 
 ## NOT YET SPECIFIED
 
-- How do the new shapes look in the pick, the wait, and the cards? `decisions/17-prototype-shape-cards.md`.
 - Which acceptance tests change? `decisions/18-spec-changed-acceptance-tests.md`.
 
 ## OUT OF SCOPE
