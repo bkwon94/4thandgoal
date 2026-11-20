@@ -1,7 +1,7 @@
 # The wait contrast test of the analyzer stage fails on a slow runner
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-analyzer-wait`.
 Source: the handoff file `.handoff/flaky-specs.md`, item 5, and Check run 44645738360 of PR #80.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -59,3 +59,7 @@ Smoke: none. `pnpm --dir apps/site pick --base origin/main` prints "No flow: no 
 ## Comments
 
 - CI failure in run 44645738360: "the wait hero of cpc breaks the readability floor" in "wait contrast: cpc each hero text reaches 4.5:1 in 10 samples over 3 s of the wait, light 1280px (AT-20)". The handoff names the same spec at run 44201201184 and run 44393438643.
+- Closes with the squash merge of the PR of `bug-analyzer-wait`. Commits: `d2fc996a`, `1093ddf7`. Date: 2026-11-20.
+- The loop went red on 5 of 5 runs at `d2fc996a` and green at `1093ddf7`, with `25 passed` on `--repeat-each 5`; `make check-fast` passes.
+- Later: no other spec of the handoff list stays open; a new flaky spec gets its own quick run.
+- Read 3 files: AGENTS.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md; the count of the builder subagent is not in this line.
