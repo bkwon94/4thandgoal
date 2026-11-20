@@ -84,6 +84,7 @@ export function TeamSheet({
         <SheetGrip className="mt-sp-2 w-sp-6 h-sp-1" />
         {/* With a close, the right pad of the header clears the X, so a long title never runs under it. */}
         <div
+          // oxlint-disable-next-line design/no-arbitrary-value -- the pad clears the 44 px close button plus one step, a one-off
           className={`gap-sp-1 px-sp-5 pt-sp-4 pb-sp-3 relative flex flex-none flex-col ${onClose ? "pr-[calc(var(--spacing-touch)+var(--spacing-sp-2))]" : ""}`}
         >
           {onClose && (
@@ -105,6 +106,7 @@ export function TeamSheet({
           </p>
         </div>
         {/* The list scrolls inside the sheet. Its end keeps the home bar of an iPhone clear. */}
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step */}
         <ul className="gap-sp-1 px-sp-3 pt-sp-1 tablet:pb-sp-4 m-0 flex min-h-0 list-none flex-col overflow-y-auto overscroll-contain pb-[calc(var(--spacing-sp-4)+env(safe-area-inset-bottom))]">
           {teams.map((team, index) => {
             const picked = chosen === team.id;

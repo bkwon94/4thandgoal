@@ -45,7 +45,7 @@ export function Sheet({ open, title, onClose, children, footer }: SheetProps) {
       container={typeof document === "undefined" ? undefined : document.body}
     >
       <SheetBackdrop />
-      <SheetContent className="max-w-page rounded-t-hero border-rule bg-page mx-auto flex max-h-[85dvh] w-full flex-col border border-b-0 pb-[env(safe-area-inset-bottom)]">
+      <SheetContent className="max-w-page rounded-t-hero border-rule bg-page pb-door-safe mx-auto flex max-h-[85dvh] w-full flex-col border border-b-0">
         {/* The grip says "sheet" to a thumb. A drag down on the sheet closes it. */}
         <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />
         <div className="gap-sp-3 px-sp-4 pt-sp-3 flex items-center justify-between">

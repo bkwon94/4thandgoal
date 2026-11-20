@@ -208,6 +208,7 @@ function Detail({
     >
       <div className="min-h-0 overflow-hidden">
         <div
+          // oxlint-disable-next-line design/no-arbitrary-value -- the detail lines up under the 3rem rank column plus one step, a one-off
           className={`gap-sp-2 pb-sp-3 ml-[calc(3rem+var(--spacing-sp-3))] flex flex-col transition-[opacity,filter] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:blur-none motion-reduce:transition-none ${open ? "opacity-100 blur-none" : "opacity-0 blur-[4px]"}`}
         >
           <p className="text-meta text-mute m-0 font-mono leading-tight">{fact}</p>
@@ -329,10 +330,10 @@ function TotalToggle({
   const segment =
     "press relative z-1 min-h-touch cursor-pointer rounded-pill bg-transparent px-sp-3 font-mono text-meta leading-tight whitespace-nowrap transition-colors duration-150 aria-pressed:font-semibold aria-pressed:text-ink aria-[pressed=false]:text-mute";
   return (
-    <span className="rounded-pill bg-raised relative inline-grid grid-cols-2 p-[2px]">
+    <span className="rounded-pill bg-raised p-sp-0 relative inline-grid grid-cols-2">
       <span
         aria-hidden
-        className={`rounded-pill border-door-hair bg-card absolute inset-y-[2px] left-[2px] w-[calc(50%-2px)] border transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${withSwaps ? "translate-x-full" : "translate-x-0"}`}
+        className={`rounded-pill border-door-hair bg-card inset-y-sp-0 left-sp-0 absolute w-[calc(50%-2px)] border transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${withSwaps ? "translate-x-full" : "translate-x-0"}`}
       />
       <button
         type="button"

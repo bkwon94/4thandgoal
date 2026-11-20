@@ -149,6 +149,7 @@ function Tug({ block, live }: { block: NflGameBlock; live: boolean }) {
         aria-label={`Expected margin: ${block.margin === 0 ? "even game" : words}`}
         className="rounded-pill bg-rule relative h-2"
       >
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the tick runs 3 px past the bar, between two steps */}
         <span aria-hidden className="bg-mute absolute inset-y-[-3px] left-1/2 w-px" />
         {block.margin !== 0 && (
           <motion.span
@@ -256,7 +257,7 @@ function PassShare({ block, live }: { block: NflGameBlock; live: boolean }) {
                 <span
                   aria-hidden
                   data-league-mark
-                  className="bg-ink absolute inset-y-[-4px] w-px"
+                  className="bg-ink -inset-y-sp-1 absolute w-px"
                   style={{ left: `${league * 100}%` }}
                 />
               )}

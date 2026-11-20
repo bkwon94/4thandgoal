@@ -842,6 +842,7 @@ export function FrontDoor({
                 ref={dock}
                 layout={off ? false : "position"}
                 transition={{ layout: GLIDE }}
+                // oxlint-disable-next-line design/no-arbitrary-value -- the pinned ask box clears the safe-area inset plus one step, a one-off
                 className={`gap-sp-3 flex flex-col ${pinned ? "bottom-door-foot max-w-door border-rule bg-page px-gutter py-sp-3 fixed inset-x-0 z-10 mx-auto w-full border-t" : empty ? "" : "bottom-door-foot -mx-gutter border-rule bg-page px-gutter pt-sp-3 desktop:bottom-0 sticky z-10 border-t pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))]"}`}
                 exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
               >

@@ -34,6 +34,7 @@ function MoveBar({
     : {};
   return (
     <span aria-hidden className="relative block h-1.5">
+      {/* oxlint-disable-next-line design/no-arbitrary-value -- the tick runs 3 px past the bar, between two steps */}
       <span className="bg-rule absolute inset-y-[-3px] left-1/2 w-px" />
       {move !== 0 && (
         <motion.span

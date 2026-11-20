@@ -106,6 +106,7 @@ export function SellListView({ block, live }: { block: SellList; live: boolean }
                   >
                     <span
                       aria-hidden
+                      // oxlint-disable-next-line design/no-arbitrary-value -- the dot centers on the first text line, so it scales with the font in em
                       className={`size-sp-2 mt-[0.55em] flex-none rounded-full ${MARK_DOT[bullet.mark]}`}
                     />
                     <span>{bullet.text}</span>

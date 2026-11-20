@@ -42,6 +42,7 @@ export function ChampionCard({
           <>
             <motion.span
               aria-hidden="true"
+              // oxlint-disable-next-line design/no-arbitrary-value -- the glow spills 40 percent past the card, a size relative to the card
               className="pointer-events-none absolute inset-[-40%] rounded-full"
               style={{ background: RAYS }}
               initial={{ opacity: 0, rotate: 0, scale: 0.6 }}

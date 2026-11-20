@@ -251,6 +251,7 @@ type PastWeeksProps = { weeks: WeekLink[]; pageHref?: string; open: boolean; onT
 function PastWeeks({ weeks, pageHref, open, onToggle }: PastWeeksProps) {
   const id = useId();
   return (
+    // oxlint-disable-next-line design/no-arbitrary-value -- the chips line up under the label, past the 44 px icon and one step
     <div className="pl-[calc(var(--spacing-touch)+var(--spacing-sp-5))]">
       <button
         type="button"

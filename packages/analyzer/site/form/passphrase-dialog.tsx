@@ -48,6 +48,7 @@ export function PassphraseDialog({ open, error, onSubmit }: PassphraseDialogProp
         // The Drawer lifts its viewport by the --keyboard-inset that it reads from the visual viewport, so the field sits
         // right above the keyboard on iOS. The Drawer sets the top of the content inline, so a bottom offset here would
         // squash the content to its border and push the field off the screen.
+        // oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step
         className="max-w-sheet gap-sp-4 rounded-t-hero border-rule bg-card p-gutter shadow-sheet mx-auto flex w-full flex-col border border-b-0 pb-[calc(var(--spacing-gutter)+env(safe-area-inset-bottom))]"
       >
         <div className="gap-sp-2 flex flex-col">

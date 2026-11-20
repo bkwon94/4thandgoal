@@ -5,7 +5,7 @@
 import type { Act } from "../schema/midseason-types";
 
 /* The rail sits under the top band: a 44px row, 8px above and below, and its 1px rule at the bottom. */
-const UNDER_THE_BAND = "top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)]";
+const UNDER_THE_BAND = "top-band-height";
 
 export function ActRail({ acts }: { acts: Pick<Act, "key" | "title">[] }) {
   return (
