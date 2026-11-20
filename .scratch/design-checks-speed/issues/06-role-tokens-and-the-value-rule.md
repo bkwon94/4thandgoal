@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, 
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Fixtures with an arbitrary `bg-[color-mix(...)]` and an arbitrary `top-[calc(...)]` in a `cn(...)` call each fail with the rule and the line.
 - [x] A fixture with only `data-[state=open]:`, `grid-cols-[...]`, and `transition-[...]` passes.
