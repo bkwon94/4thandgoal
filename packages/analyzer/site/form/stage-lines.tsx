@@ -11,6 +11,9 @@ import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 const HOLD_MS = 2500;
 const SWAP_MS = 150;
 const GAP_MS = 50;
+// The length of one swap, from the start of the exit to the end of the rise. A caller that drives the line holds each
+// line at least this long, so a line that the next line follows at once still shows.
+export const LINE_SWAP_MS = SWAP_MS + GAP_MS;
 // A line wider than its box scrolls once to its end. It waits until the line has risen in and the reader sees where it
 // starts, moves for 1.3 s, and then rests at its end for the last 0.6 s, so the end is readable before the swap.
 const SCROLL_DELAY_MS = 600;

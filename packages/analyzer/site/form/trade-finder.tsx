@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronDown, RotateCcw, Users } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useLayoutEffect, useState } from "react";
 import { AsOfLine, NoChartLine, SwapCard, type SwapSide } from "./analyze-result";
 import { BulletRows } from "./bullet-rows";
 import { ErrorLine } from "@cpc/design/parts/error-line";
@@ -14,7 +14,7 @@ import { Hero } from "@cpc/design/parts/hero";
 import { HeroMesh } from "@cpc/design/parts/hero-mesh";
 import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Sheet } from "./sheet";
-import { StageLines } from "./stage-lines";
+import { LINE_SWAP_MS, StageLines } from "./stage-lines";
 import { Button } from "@cpc/design/ui/button";
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { PendingButton } from "@cpc/design/ui/pending-button";
@@ -40,10 +40,10 @@ const FIND_STEPS = 5;
 const AIMS = ["Any", "RB", "WR", "TE", "QB"] as const;
 type Aim = (typeof AIMS)[number];
 
-/* The wait holds the line of the running step, its place among the steps, and the teams that the search read. */
+/* The wait holds each wait line of the stream in order, and the teams that the search read. */
 type FindState =
   | { status: "idle" }
-  | { status: "finding"; step: number; line: string; read: number[] }
+  | { status: "finding"; lines: string[]; read: number[] }
   | { status: "done"; doc: FindResponse }
   | { status: "error"; message: string };
 
@@ -210,6 +210,24 @@ function waitLine(step: number, line: string): string {
   return `${Math.min(step, FIND_STEPS)} of ${FIND_STEPS} · ${line}`;
 }
 
+/* The wait line on the screen. The stream can start two steps in the same moment, so the lines queue, and each line
+   shows for at least one swap before the next one. A line with nothing queued behind it holds until the next line
+   comes, and a line that has held one swap gives way at once. */
+function useQueuedLine(lines: string[]): string {
+  const [index, setIndex] = useState(0);
+  // The index of the line that has shown for one swap. The hold is kept with its index, so a new line starts unheld.
+  const [held, setHeld] = useState(-1);
+  useEffect(() => {
+    const hold = setTimeout(() => setHeld(index), LINE_SWAP_MS);
+    return () => clearTimeout(hold);
+  }, [index]);
+  // The move to the next line runs before the paint, so a line that comes after the hold shows in the same frame.
+  useLayoutEffect(() => {
+    if (held === index && index < lines.length - 1) setIndex(index + 1);
+  }, [held, index, lines.length]);
+  return lines[Math.min(index, lines.length - 1)];
+}
+
 /* The teams of the search as one row of avatars, where the grade shows its trade. Each avatar lights as the stream
    reports its team read, so the reader sees the search move. The light is an opacity and scale change of 250 ms with
    the ease-out, so a burst of reads still reads as a turn. With motion off, the avatar lights at once. */
@@ -238,10 +256,11 @@ function TeamsRead({ teams, read }: { teams: Team[]; read: number[] }) {
 
 /* The hero of the find wait: the same hero, mesh, title level, and line part as the grade wait. The line is the running
    step of the stream with its count, a list of one line, so StageLines holds it until the next step starts and then
-   swaps it with the motion of the grade. The status holds the same line for a screen reader. The drive starts with
-   the hero, so the mesh moves on the first frame after the tap. */
-function FindWaitHero({ eyebrow, toggle, line, teams, read }: { eyebrow?: ReactNode; toggle?: ReactNode; line: string; teams: Team[]; read: number[] }) {
+   swaps it with the motion of the grade. The lines queue, so each step shows in turn. The status holds the same line
+   for a screen reader. The drive starts with the hero, so the mesh moves on the first frame after the tap. */
+function FindWaitHero({ eyebrow, toggle, lines, teams, read }: { eyebrow?: ReactNode; toggle?: ReactNode; lines: string[]; teams: Team[]; read: number[] }) {
   const [drive] = useState(() => waitDrive(performance.now()));
+  const line = useQueuedLine(lines);
   return (
     <Hero
       label="Finding Trades"
@@ -416,7 +435,7 @@ export function TradeFinder({
       timedOut = true;
       controller.abort();
     }, TIMEOUT_MS);
-    setFind({ status: "finding", step: 1, line: firstLine(partner), read: [] });
+    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner))], read: [] });
     // A live line starts a step, so it moves the wait line on. A done line ends the step, and the line holds until
     // the next step starts, because the next live line follows it at once.
     let step = 0;
@@ -424,7 +443,9 @@ export function TradeFinder({
       onStep: (line: string, live: boolean) => {
         if (!live || !run.isCurrent()) return;
         step += 1;
-        setFind((now) => (now.status === "finding" ? { ...now, step, line } : now));
+        const next = waitLine(step, line);
+        // The first live line repeats the line that the wait opens with, so it adds no line to the queue.
+        setFind((now) => (now.status === "finding" && now.lines[now.lines.length - 1] !== next ? { ...now, lines: [...now.lines, next] } : now));
       },
       onTeam: (rosterId: number) => {
         if (!run.isCurrent()) return;
@@ -496,7 +517,7 @@ export function TradeFinder({
   return (
     <section aria-label="Trade Ideas" className="flex flex-col">
       {find.status === "finding" ? (
-        <FindWaitHero eyebrow={eyebrow} toggle={toggle} line={waitLine(find.step, find.line)} teams={searched} read={find.read} />
+        <FindWaitHero eyebrow={eyebrow} toggle={toggle} lines={find.lines} teams={searched} read={find.read} />
       ) : (
         <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
       )}

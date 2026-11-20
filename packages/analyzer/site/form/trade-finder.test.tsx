@@ -157,13 +157,34 @@ describe("TradeFinder", () => {
     // The done line of a step does not move the line, so the line holds until the next step starts.
     await stream.send(step("Read 11 teams", false));
     expect(stageLine()).toBe("1 of 5 · Reading every team");
+    // Each line shows for at least one swap, so the next line comes after that hold.
     await stream.send(step("Looking for players who fit", true));
-    expect(stageLine()).toBe("2 of 5 · Looking for players who fit");
+    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Looking for players who fit"));
     await stream.send(step("Found 18 players who fit", false), step("Building offers", true), step("Built 42 offers", false), step("Making a shortlist", true));
-    expect(stageLine()).toBe("4 of 5 · Making a shortlist");
+    await waitFor(() => expect(stageLine()).toBe("4 of 5 · Making a shortlist"));
     // A screen reader hears the step in the one status of the wait, and no line names a chart.
     expect(screen.getByRole("status").textContent).toBe("4 of 5 · Making a shortlist");
     expect(screen.queryByText(/chart/i)).toBeNull();
+  });
+
+  it("shows each step line in order when two steps arrive in the same tick", async () => {
+    const stream = heldStream();
+    find();
+    await stream.send(step("Reading every team", true), step("Read 11 teams", false), step("Looking for players who fit", true));
+    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Looking for players who fit"));
+    // The stream can end one step and start two more at the same moment. The wait records each line that shows.
+    const seen = [stageLine()];
+    const watch = new MutationObserver(() => {
+      if (stageLine() !== seen[seen.length - 1]) seen.push(stageLine());
+    });
+    watch.observe(document.body, { subtree: true, childList: true, characterData: true });
+    try {
+      await stream.send(step("Found 18 players who fit", false), step("Building offers", true), step("Built 42 offers", false), step("Making a shortlist", true));
+      await waitFor(() => expect(stageLine()).toBe("4 of 5 · Making a shortlist"));
+    } finally {
+      watch.disconnect();
+    }
+    expect(seen).toEqual(["2 of 5 · Looking for players who fit", "3 of 5 · Building offers", "4 of 5 · Making a shortlist"]);
   });
 
   it("shows the wait in the hero of the grade wait, with the same title level and the mesh", async () => {
