@@ -4,8 +4,8 @@ Status: ready-for-agent
 Date: 2026-11-19
 Apps: both. The site shows the Deadline banner, the Trade Wire sheet, the analyzer switch, and the Finder look. The API on Fly serves the Trade Wire route and the Finder stream. The `analyzer` and `league` packages, which the API imports, hold the Finder steps, the Spares tree, and the trade parser.
 Spec branch: `deadline-week`.
-Source: the map `.scratch/deadline-week/MAP.md` and decision tickets 01 to 12. ADR 0035 and ADR 0037 (ui-sdk through one wrapper). Prototypes on the branches `deadline-week-07-proto` (`cd385837`) and `deadline-week-08-proto` (`48f18de1`).
-Tickets: 01 to 10, in `issues/`.
+Source: the map `.scratch/deadline-week/MAP.md` and decision tickets 01 to 18. ADR 0035 and ADR 0037 (ui-sdk through one wrapper). ADR 0038 (the Value screen is the one math cut of the Finder). Prototypes on the branches `deadline-week-07-proto` (`cd385837`), `deadline-week-08-proto` (`48f18de1`), and `deadline-week-17-proto` (`c403b55f`). The handoff `.handoff/deadline-week-fair-finder.md` holds Brian's rulings of 2026-11-19.
+Tickets: 01 to 10, in `issues/`, are built. The fair-first tickets, 11 and up: none yet. `4ag:to-tickets` writes them.
 
 ## Problem Statement
 
@@ -19,6 +19,7 @@ The trade tools are not in their best shape for the event:
 4. The Finder looks different from the analyzer, and it sits apart from the grade (decision 07).
 5. A trade Topic sometimes fails on the first call, then a retry answers fast. Nothing logs the cause (decision 06).
 6. A drag of the top of a sheet upward lifts the bottom edge of the sheet off the screen (decision 08).
+7. The Finder is need-first, so it gives few ideas and most of them fill one slot. Brian tried it with his team, Bo Girds: "no offers for a lot. only couple offers for qb… these are ideas that should be fair! not really always perfect adds that fill a need." Bo Girds has one weak slot, QB. The Spares tree stops 7 of 11 partners at once, and the 4 left give only QB offers (handoff).
 
 ## Solution
 
@@ -28,7 +29,7 @@ In the last 3 hours the Deadline banner turns to the accent fill and shows secon
 
 The analyzer hero gets a switch, "Grade a trade · Find a trade". The Finder takes the Stage look of the analyzer and the same wait, `StageLines`, fed by its real steps. Each Finder trade shows the Lean, a short Case, and folded Bullets, and a tap opens it in the analyzer, already graded.
 
-The Finder gets better ideas. A Jev tree, the Spares tree, asks if each player that a team could give would start over the weak starter of the other team. It runs on both sides of a trade. A gain question drops an offer that clearly makes a lineup worse. Each bad trade that Brian marks goes into a backtest set, and a change to the tree must pass it. The Finder gets faster, about 25 s for a press.
+The Finder is fair-first. It sparks ideas: it looks for every fair trade, and it shows varied ideas, not only the trades that fill a need. Code builds every trade of four shapes, 1-for-1, 2-for-1, 3-for-1, and 3-for-2, in both directions, and keeps the trades whose trade value sums sit close together. Jev then judges if each trade is fair, and if each lineup gets better. Five picks land as Ledger cards: "You get" and "You give" columns, a trade value total for each side, and one plain line for the gap. A need, or a player the other team can spare, becomes a reason in the Case, not a gate. A gain question still drops an offer that clearly makes a lineup worse. Each bad trade that Brian marks goes into a backtest set, and a change must pass it.
 
 The `finder` flag in CPC stays off until Brian checks the Finder on the phone and says go.
 
@@ -127,6 +128,35 @@ The `finder` flag in CPC stays off until Brian checks the Finder on the phone an
 77. As a manager, I want an unsure answer to pass, and only a clear no to stop an offer, so that the Finder does not starve itself of offers.
 78. As a manager, I want a failed check to count as an error, never as a no, so that a network blip does not hide a good trade.
 
+### Fair-first trade ideas (decisions 13 to 17)
+
+Stories 89 to 112 replace stories 57, 58, 67, 69, 70, 71, 72, and 73. Stories 75 to 78 and 81 to 85 stay.
+
+89. As a manager, I want the Finder to show fair trades, not only trades that fill a need, so that it sparks ideas I had not thought of.
+90. As a manager, I want 1-for-1, 2-for-1, 3-for-1, and 3-for-2 trades, so that I see ways to consolidate and ways to add depth.
+91. As a manager, I want each shape in both directions, so that a trade where I give more players and one where I get more players both show.
+92. As a manager, I want the side that gets more players to get more trade value, so that the one better player is paid for.
+93. As a manager, I want a 1-for-1 trade within 10% of trade value either way, so that a swap is close to even.
+94. As a manager, I want no filler player under 5 trade value on a side of two or three players, so that a trade is not padded to look even.
+95. As a manager, I want a fair check of each trade that reads the trade value of each player and each side, so that "fair" means what the numbers say.
+96. As a manager, I want the fair check to give the same answer whichever team is named first, so that a trade is not called fair only because it favors me.
+97. As a manager, I want a trade dropped only on a clear no to fairness, so that an unsure trade still has a chance.
+98. As a manager, I want the Finder to still drop a trade that clearly makes either lineup worse, so that "Kenneth Walker for Mahomes" and "Zay Flowers for Goff" never come back.
+99. As a manager, I want a need to show as a reason in the Case, not as a gate, so that a fair trade that adds depth can still show.
+100. As a manager, I want a card to say when the other team can spare the player I get, such as "fills your weak QB slot, and they can spare him", so that I see why the other manager might say yes.
+101. As a manager, I want the five picks to spread across shapes and partners, so that I do not get five forms of one trade.
+102. As a manager, I want the best trade for each shape and each partner to come first on the Shortlist, so that variety does not cost quality.
+103. As a manager, I want five picks, with up to three near ideas folded under them as "Close, but not sent", so that I have more ideas to weigh.
+104. As a manager, I want each trade card in the Ledger form, with "You get · N" and "You give · N" columns, so that a 3-for-2 reads as clearly as a 1-for-1.
+105. As a manager, I want each player row to show the position, the NFL team, and the rank, such as "RB · DAL · RB8", so that I know each player at a glance.
+106. As a manager, I want a trade value total under each column, so that I can compare the two sides.
+107. As a manager, I want one plain line for the gap, such as "You get 9% more trade value", so that I see if the trade is even without math.
+108. As a manager, I want no trade value on each player row, so that the card stays calm. The full result shows each value.
+109. As a manager, I want the wait lines "Reading 11 teams", "Matching trade value", "Checking 4,667 trades for fairness", "Checking 77 against both lineups", and "Picking the best 5", with the real counts of my press, so that I see what the search does.
+110. As a manager, I want the wait to make no promise of how long it takes, so that the site never states a time it cannot keep.
+111. As a manager, I want a search around one player, and my keep and aim choices, to hold on every fair trade, so that those tools still work.
+112. As a manager, I want two managers who press at the same time both to get full answers, so that deadline night does not break the Finder.
+
 ### The commissioner
 
 79. As the commissioner, I want the Lock as one value in the client config, so that I change it in one place.
@@ -210,6 +240,52 @@ The `finder` flag in CPC stays off until Brian checks the Finder on the phone an
 - The Shortlist asks one gain Noul per side: "Does {team} start a better lineup after this trade?" Code puts the lineup points of each side before and after the trade in the state as facts. A clear no, below `NO_AT` 0.3, drops the offer. An unsure answer stays. A failed call is an error, never a no.
 - The weak-slot rule, `YES_AT` 0.7, and `NO_AT` 0.3 stay as they are.
 
+### The fair-first Finder (decisions 13 to 17)
+
+These decisions replace the gate of "The Finder steps" above. The Spares tree list and its Noul stay, as a source of reasons. Each number is from the live CPC rosters of 2026-11-19 and the week 11 chart.
+
+**The Value screen (decision 14, ADR 0038).** It is the one cut of the Finder by math, and the one source of offers.
+
+- Code builds each trade of the shapes 1-for-1, 2-for-1, 3-for-1, and 3-for-2, in both directions, from the players that pass `in_pool`.
+- The side that gets more players gets 100% to 125% of the trade value sum of the other side. A 1-for-1 stays within 10% either way.
+- Each player on a side of two or three players has at least 5 trade value.
+- A player with no week 11 chart value never enters a Value offer. 29 of 148 pool players have none, Justin Herbert among them.
+- No cap ranks the trades after the screen. With no screen, a press of Bo Girds has 95,092 trades. The band with its direction leaves 9,777 before the floor of 5 (decision 13, the 20% column with the direction rule), and the floor cuts more. Decision 13 did not count the band and the floor together.
+- The targets step and the wider pass go. An anchor player, and the keep and aim choices of a Limit, become hard rules on Value offers.
+
+**The Jev questions (decision 15).** Two steps.
+
+- Step 1 asks one fair Noul of each Value offer. The state gets each player's `chart_value`, and each side under `offers.<n>.sides` lists its players and its `chart_sum`, next to the facts of today.
+- The fair wording won a live probe against the old `FAIR` text:
+  - Text: ``Is the trade in `offers.{n}` close to fair by chart value: {gives}?``
+  - Yes: ``Each team gives about as much chart value as it gets, by the sums in `offers.{n}.sides`.``
+  - No: ``One team gives a clearly larger chart sum in `offers.{n}.sides` than it gets back.``
+- Step 1 asks the fair Noul once in each side order. Code takes the mean. A clear no on the mean, below `NO_AT` 0.3, drops the offer. The probe found an offer reads more fair when the team named first gets the larger sum.
+- No Jev question asks about the consolidation premium. The Value screen holds it in code.
+- Step 2 asks the need Noul and the gain Noul of each side. A clear no on the gain of either side drops the offer (decision 09). No need answer drops an offer.
+- The Spares tree still runs once per pair and builds no offer. A "yes" for a player that the asker gets becomes a pick sheet fact, such as "fills the weak slot QB, and the partner can spare him."
+
+**The spread (decision 16).**
+
+- The offers that pass step 1 group by partner and by shape direction, up to 77 groups. The best of each group, by the fair answer, goes to step 2.
+- The score is the fair answer alone, the mean of the two side orders.
+- `varied()` puts first the best offer for each shape direction, then for each partner, then for each player the asker gives. The rest follow by score. The Shortlist stays at 10, labelled `A` to `J`.
+
+**The requests (decisions 14 and 16).**
+
+- The Jev requests of one partner split into chunks under the 64k context of one request. Today one request per partner fails above about 590 offers, and its offers pass as unsure. No long-context header.
+- One pacer for the whole API process replaces one pacer per press. The Fly app runs one machine with one process. Two presses at once share the budget of 100,000 tokens per second.
+
+**The pick and the cards (decision 17).**
+
+- The pick call picks up to 5 trades and up to 3 near ideas.
+- Each card is the Ledger of prototype 17: "You get · N" and "You give · N" columns, a row per player with the position, the NFL team, and the rank, a trade value total per side, and one plain gap line, such as "You get 9% more trade value". No row shows a trade value. The Lean, the Case, the folded Bullets, and "See the Full Result" stay.
+- The near ideas fold under the picks as "Close, but not sent · N".
+- The live wait lines, each with the "n of 5 ·" prefix, carry the real counts of the press: "Reading 11 teams", "Matching trade value", "Checking 4,667 trades for fairness", "Checking 77 against both lineups", "Picking the best 5".
+- The meta line "This can take about 25 seconds." goes. No copy states a time (memory `no-time-claims`).
+
+**The glossary.** `GLOSSARY.md` has Shape, Value screen, and Value offer. When the build lands, the entries Target, Offer, and Spares tree change: no targets step, an Offer comes from the Value screen only, and the Spares tree gives reasons, not a gate.
+
 ### The backtest (decision 05)
 
 - One command runs the Spares tree on every CPC pair of week 11 and writes a list of about 30 lines for Brian. Each line is one stop or pass with the answer that decided it.
@@ -237,7 +313,17 @@ The seams, highest first:
 2. **The site parts in Vitest.** The state and countdown function at the edges (3 h, the Lock, one day after), the badge count, the poll that stops when the tab hides and at the Lock, the failed read that keeps the list, `StageLines` with a held line, the switch through its wrapper, and the drag limit of the sheet wrapper. Prior art: `stage-lines.test.tsx`, `trade-finder.test.tsx`, `sheet.test.tsx`, `top-band.test.tsx`.
 3. **The API routes in pytest.** The Trade Wire route with a recorded Sleeper answer: only accepted week 11 trades, newest first, FAAB kept, sides from `adds`, the 5 s cache, the passphrase, and no count against the rate limit. The find route stream: the step lines, the labels `A` to `J` with no id retry, and the read sent with each trade. Prior art: `test_api.py`, `test_trade_topics.py`, and the fixtures of `cpc-week-10`.
 4. **The Finder steps in pytest.** The Spares tree list on fixed rosters (the can-play-now rule, both sides), the decision rules (a clear no stops, unsure passes, a failed call is an error), the Shortlist variety, and the gain Noul drop, with Jev answers fixed in the test. Prior art: `test_finder_search.py`, `test_advisor_eval.py`.
-5. **The backtest.** One command against the live Jev on the week 11 snapshot. It runs by hand, not in `make check-fast`, and its output goes into `EVIDENCE.md`.
+5. **The backtest.** One command against the live Jev on the week 11 snapshot. It runs by hand, not in `make check-fast`, and its output goes into `EVIDENCE.md`. Backtest marks 1 and 2 stay right under the fair-first Finder.
+6. **The fair-first Finder steps in pytest.** These go through the same seam as item 4, the search function of the Finder, with fixed rosters and fixed Jev answers:
+   - the Value screen on fixed rosters: the shapes and directions, the band with its direction, the 1-for-1 band, the floor of 5, and no player without a chart value;
+   - step 1: the mean of the two side orders, and the clear-no drop;
+   - step 2: the best offer per group, the gain drop, and need that drops nothing;
+   - the Spares tree "yes" as a pick sheet fact;
+   - the spread of `varied()`: the best per shape direction first, then per partner, then per player;
+   - the split of a large request under 64k;
+   - one shared pacer under two presses.
+   Prior art: `test_finder_search.py`, `test_jev_waves.py`.
+7. **The Ledger cards and the wait in Vitest and Playwright.** These go through the seams of items 1 and 2: 5 picks, the near fold, the Ledger columns for a 1-for-1, a 2-for-1, and a 3-for-2, the gap line, the new wait lines, and no time claim. Prior art: `trade-finder.test.tsx`, prototype 17.
 
 No test calls a paid API in `make check-fast`. The Jev answers in seams 3 and 4 are fixed inputs of the test, not a mock mode of the app.
 
@@ -250,7 +336,12 @@ No test calls a paid API in `make check-fast`. The Jev answers in seams 3 and 4 
 - Norcal. The dinner is a CPC event.
 - A theme for the whole site. The deadline look stays in the Deadline banner, the sheet, and the analyzer eyebrow.
 - A stream of Finder results per partner, and a prewarm of the Finder cache (decision 02).
-- The Accept tree, the split of the target question, and a Jev tree for fair (decision 05).
+- The Accept tree, the split of the target question, and a Jev tree for fair (decision 05). The Value screen is the one math cut, by ADR 0038.
+- A cap on the count of trades after the Value screen (decision 14). A later cap needs a new decision under ADR 0038.
+- The long-context header of TypeSafe (decision 14). The split of a request covers the 64k limit.
+- A trade value on each player row of a card (decision 17).
+- A second Fly machine for the API. One shared pacer assumes one process (decision 16).
+- The cause of the 29 pool players with no week 11 chart value. A follow-up (decision 14).
 - A change to the weak-slot rule, `YES_AT`, or `NO_AT`.
 - A season history in the Trade Wire. The transaction history of the weekly build already holds it.
 - The upgrade of Next.js. It is an open decision of Brian.
@@ -263,3 +354,6 @@ No test calls a paid API in `make check-fast`. The Jev answers in seams 3 and 4 
 - The Backtest marks list needs about 10 minutes of Brian's time during `4ag:implement`, after the Spares tree is built.
 - The sheet drag fix touches every sheet of the site. Check each sheet on the phone.
 - Prototype 08 found that the switcher bar of a prototype covers the grade bar of the analyzer at phone size. The switcher is not in the real build, so this needs no work.
+- The fair-first tickets go on the same Spec branch and into the same PR. The PR is on hold by Brian's ruling. It opens only after the fair-first tickets merge, the evidence is recorded again, and the Judge passes. Brian gets preview links before the PR (handoff, ruling 8).
+- The front door runs the Finder for every CPC manager, so a merge ships the fair-first Finder at once.
+- The research of decision 13 and the probes of decision 15 cost $0.006 of TypeSafe in total. One fair Noul per Value offer, in two orders, costs a few cents per press.
