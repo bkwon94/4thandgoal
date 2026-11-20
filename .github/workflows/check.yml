@@ -167,7 +167,7 @@ jobs:
       - name: Run the browser half of the site check
         run: make check-site-browser
 
-  pipeline:
+  pipeline-parallel:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -188,8 +188,33 @@ jobs:
       - name: Install the Python dependencies
         run: uv sync --locked --exact --package cornerstone
 
-      - name: Run the check of the pipeline
-        run: make check-pipeline
+      - name: Run the parallel half of the pipeline check
+        run: make check-pipeline-parallel
+
+  # The serial tests measure wall time, so they run alone in their own job.
+  pipeline-serial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+      # setup-uv publishes no major tag from v8 on, so the step names the full release.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # --locked fails the job if uv.lock is out of date. The check then runs the member with "uv run --exact --package".
+      - name: Install the Python dependencies
+        run: uv sync --locked --exact --package cornerstone
+
+      - name: Run the serial half of the pipeline check
+        run: make check-pipeline-serial
 
   api:
     runs-on: ubuntu-latest
@@ -244,7 +269,7 @@ jobs:
   # A skipped gate counts as a pass on a PR, so "if: always()" keeps the gate from a skip.
   check:
     if: always()
-    needs: [scripts, site-unit, site-browser, pipeline, api, packages]
+    needs: [scripts, site-unit, site-browser, pipeline-parallel, pipeline-serial, api, packages]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:

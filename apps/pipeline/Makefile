@@ -14,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test golden lint typecheck rules check check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
+.PHONY: need-week need-client need-main settings help install test test-parallel test-serial golden lint typecheck rules check check-parallel check-serial check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -25,8 +25,12 @@ install: ## Install the dependencies
 # The tests share no files or data, so they run in parallel. A test that measures wall time is marked serial and runs alone. See .scratch/fast-cycle/decisions/09-research-parallel-pytest.md.
 # The serial pass runs each serial test with its full assertion, alone, so no check gets weaker.
 # Each -m replaces the -m of addopts in pyproject.toml, so each pass also leaves out live.
-test: ## Run the tests
+test: test-parallel test-serial ## Run the tests
+
+test-parallel: ## Run the tests that can share the CPU
 	$(RUN) pytest -q -n auto -m 'not live and not serial'
+
+test-serial: ## Run the tests that measure wall time, alone
 	$(RUN) pytest -q -p no:xdist -m 'serial and not live'
 
 # A golden change must show in review, so commit the rewritten files with the code that changed them.
@@ -42,6 +46,11 @@ typecheck: ## Check the types of the listed modules in basic mode
 
 # The CI job on every push runs this target. See docs/adr/0014-the-rules-are-checks.md.
 check: lint typecheck test ## Run lint, typecheck, and all the tests
+
+# CI runs these two targets as two jobs at the same time. Together they run what "check" runs.
+check-parallel: lint typecheck test-parallel ## Run lint, typecheck, and the parallel tests
+
+check-serial: test-serial ## Run the serial tests
 
 # Name a rule test tests/test_rule_<topic>.py. This target finds each one with no edit.
 rules: ## Run the rule tests

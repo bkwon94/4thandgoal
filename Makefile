@@ -2,7 +2,7 @@
 # Run "make help" to list the targets.
 
 .DEFAULT_GOAL := help
-.PHONY: help check check-fast check-scripts check-site check-site-unit check-site-browser check-pipeline check-api check-packages
+.PHONY: help check check-fast check-scripts check-site check-site-unit check-site-browser check-pipeline check-pipeline-parallel check-pipeline-serial check-api check-packages
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
@@ -14,6 +14,8 @@ site-check = pnpm --dir apps/site check
 site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
+pipeline-check-parallel = make -C apps/pipeline check-parallel
+pipeline-check-serial = make -C apps/pipeline check-serial
 api-check = make -C apps/api check
 api-check-fast = make -C apps/api check-fast
 # The check of a package runs its Python side. The check of the site app typechecks and tests the site side of each
@@ -79,6 +81,13 @@ check-site-browser: ## Run the browser half of the site check: Playwright and th
 
 check-pipeline: ## Run the full check of the pipeline
 	@echo "==> pipeline: check"; $(pipeline-check)
+
+# CI splits the full check of the pipeline into two jobs that run at the same time. "make check-pipeline" runs both halves.
+check-pipeline-parallel: ## Run the parallel half of the pipeline check: lint, typecheck, and the parallel tests
+	@echo "==> pipeline: check-parallel"; $(pipeline-check-parallel)
+
+check-pipeline-serial: ## Run the serial half of the pipeline check: the tests that measure wall time
+	@echo "==> pipeline: check-serial"; $(pipeline-check-serial)
 
 check-api: ## Run the full check of the API
 	@echo "==> api: check"; $(api-check)
