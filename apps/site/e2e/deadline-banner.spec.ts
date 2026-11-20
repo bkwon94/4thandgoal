@@ -3,7 +3,7 @@
  * It checks the text of each phase, the band that grows to fit, the even pad, the press, the sheet, and no overlap.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { serveDir } from "./serve";
 
@@ -18,6 +18,16 @@ const OPEN = "2026-11-21T09:55:00-05:00";
 const LAST_HOURS = "2026-11-23T21:18:50-05:00";
 const CLOSED = "2026-11-24T00:00:01-05:00";
 const ENDED = "2026-11-25T00:00:01-05:00";
+
+/* The recorded answers of the Trade Wire route, the fixed inputs of the tests that open the sheet. Week 11 of cpc held
+   no trade when the route read Sleeper leg 11, so the route answered this empty list. The answer of leg 9 holds two
+   real trades, for a test that needs a trade. */
+type WireAnswer = { leg: number; trades: unknown[] };
+const WIRE_EMPTY: WireAnswer = { leg: 11, trades: [] };
+const WIRE_TWO: WireAnswer = JSON.parse(
+  readFileSync(join(process.cwd(), "..", "..", "packages", "analyzer", "site", "deadline", "fixtures", "trade-wire-cpc-week-9.json"), "utf8"),
+);
+const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET" };
 
 // The browser of a file is set at its top, because a group cannot pick the browser. Safari runs on WebKit.
 test.use({ browserName: "webkit", reducedMotion: "no-preference" });
@@ -45,14 +55,30 @@ type Rect = { x: number; y: number; width: number; height: number };
 
 /* The front door at the clock `time`, in the theme `theme`. A fixed clock stands still, so a slow load never moves the
    seconds. A clock that ticks starts at `time` and runs, so a test can move it on. Each call off the test server fails,
-   because the run uses no real API. The setup marks the Tour and the Announcement seen, unless the test asks for the
+   because the run uses no real API, except the Trade Wire route. That route gives the recorded answer `wire`, or fails
+   when `wire` is "fail". It answers only after `gate` resolves, so a test can look at the banner before the first read.
+   The setup marks the Tour and the Announcement seen, unless the test asks for the
    Tour, so no card covers the banner. */
 async function openAt(
   page: Page,
   time: string,
-  { theme = "light", path = DOOR, tour = false, ticks = false }: { theme?: "light" | "dark"; path?: string; tour?: boolean; ticks?: boolean } = {},
+  {
+    theme = "light",
+    path = DOOR,
+    tour = false,
+    ticks = false,
+    wire = WIRE_EMPTY,
+    gate = Promise.resolve(),
+  }: { theme?: "light" | "dark"; path?: string; tour?: boolean; ticks?: boolean; wire?: WireAnswer | "fail"; gate?: Promise<void> } = {},
 ) {
   await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  // A route added later takes the call first, so this one wins over the abort above.
+  await page.route(/\/deadline\/trades$/, async (route) => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    await gate;
+    if (wire === "fail") return route.abort();
+    return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body: JSON.stringify(wire) });
+  });
   if (ticks) await page.clock.install({ time: new Date(time) });
   else await page.clock.setFixedTime(new Date(time));
   await page.addInitScript(
@@ -168,14 +194,39 @@ for (const viewport of VIEWPORTS) {
     }
 
     test("the banner is one button named Open the Trade Wire, and it opens the Trade Wire sheet", async ({ page }) => {
-      await openAt(page, OPEN);
+      // The route holds its answer until the name before the first read is checked.
+      let answer = () => {};
+      const gate = new Promise<void>((resolve) => (answer = resolve));
+      await openAt(page, OPEN, { gate });
       await expect(trigger(page)).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Open the Trade Wire", exact: true })).toBeVisible();
+      answer();
+      await expect(page.getByRole("button", { name: "Open the Trade Wire, 0 new trades", exact: true })).toBeVisible();
       await trigger(page).click();
       const sheet = page.getByRole("dialog", { name: "Trade Wire" });
       await expect(sheet).toBeVisible();
       await expect(sheet).toContainText("No trades yet this week.");
       await expect(sheet.getByText(/^Trade deadline ~2d 14h 05m$/i)).toBeVisible();
+    });
+
+    test("the badge counts the trades of the recorded answer, and the sheet lists them", async ({ page }) => {
+      await openAt(page, OPEN, { wire: WIRE_TWO });
+      await expect(page.getByRole("button", { name: "Open the Trade Wire, 2 new trades", exact: true })).toBeVisible();
+      await expect(banner(page).locator("[data-deadline-badge]")).toHaveText("2 new");
+      await trigger(page).click();
+      const sheet = page.getByRole("dialog", { name: "Trade Wire" });
+      await expect(sheet.locator("[data-trade]")).toHaveCount(2);
+      await expect(sheet).toContainText("Puka Deez... gets");
+      await expect(sheet).toContainText("NFC Least gets");
+      await expect(sheet).not.toContainText("The last update failed.");
+    });
+
+    test("a failed read shows the note of the failure in the sheet", async ({ page }) => {
+      await openAt(page, OPEN, { wire: "fail" });
+      await trigger(page).click();
+      const sheet = page.getByRole("dialog", { name: "Trade Wire" });
+      await expect(sheet).toContainText("The last update failed.");
+      await expect(sheet.locator("[data-wire-empty]")).toHaveCount(0);
     });
 
     test("the banner content sinks to 0.98 over 150 ms on a press (AT-7)", async ({ page }) => {
