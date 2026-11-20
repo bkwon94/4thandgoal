@@ -5,13 +5,18 @@ The fair question reads only the players of each side, so one answer serves a pr
 import threading
 from typing import Literal
 
-from analyzer.trade import ProposedTrade
+from analyzer.trade import ProposedTrade, TradeSide
 from league.snapshot import Snapshot
 
 # The key of one fair answer: the client, the season, the chart week, and the player ids of each side in the side order.
 FairKey = tuple[str, int, int | None, tuple[str, ...], tuple[str, ...]]
 # The side order of a fair question: "asker" names the first side of the trade first, and "partner" the second side.
 SideOrder = Literal["asker", "partner"]
+
+
+def ordered_sides(trade: ProposedTrade, order: SideOrder) -> list[TradeSide]:
+    """The sides of the trade in the side order: the first side of the trade first, or the second side first."""
+    return list(trade.sides) if order == "asker" else list(reversed(trade.sides))
 
 
 def fair_key(snapshot: Snapshot, trade: ProposedTrade, order: SideOrder) -> FairKey:
@@ -21,8 +26,7 @@ def fair_key(snapshot: Snapshot, trade: ProposedTrade, order: SideOrder) -> Fair
     The process serves more than one client, and a team name of one league is not in another, so the key holds the
     client. A new chart week or a moved player gives a new key, so no answer of old values is read.
     """
-    sides = list(trade.sides) if order == "asker" else list(reversed(trade.sides))
-    first, second = (tuple(sorted(side.player_ids)) for side in sides)
+    first, second = (tuple(sorted(side.player_ids)) for side in ordered_sides(trade, order))
     return snapshot.client.slug, snapshot.season, snapshot.as_of.chart_week, first, second
 
 

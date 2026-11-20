@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from analyzer.fair_cache import FairCache, SideOrder, fair_key
+from analyzer.fair_cache import FairCache, SideOrder, fair_key, ordered_sides
 from analyzer.jev_waves import SPLIT_TOKENS, JevWaves, WaveRequest, estimated_tokens
 from analyzer.measures import is_handcuff, trade_handcuffs
 from analyzer.spares_tree import can_cover, pair_request, pair_spares, read_pair
@@ -490,14 +490,9 @@ def _side_line(snapshot: Snapshot, side: TradeSide) -> dict:
             "chart_sum": sum(values.values())}
 
 
-def _ordered(trade: ProposedTrade, order: SideOrder) -> list[TradeSide]:
-    """The sides of the trade in the side order: the asker first, or the partner first."""
-    return list(trade.sides) if order == "asker" else list(reversed(trade.sides))
-
-
 def _fair_lines(snapshot: Snapshot, offers: list[ProposedTrade], start: int, order: SideOrder) -> dict:
     """The sides of each offer in the side order, by offer number from `start`."""
-    return {str(n): {"sides": [_side_line(snapshot, side) for side in _ordered(trade, order)]}
+    return {str(n): {"sides": [_side_line(snapshot, side) for side in ordered_sides(trade, order)]}
             for n, trade in enumerate(offers, start)}
 
 
@@ -512,7 +507,7 @@ def _fair_questions(snapshot: Snapshot, offers: list[ProposedTrade], start: int,
 def _fair_gives(snapshot: Snapshot, trade: ProposedTrade, order: SideOrder) -> str:
     """The trade words of the fair question, with the teams in the side order, such as "A gives X and B gives Y"."""
     return " and ".join(f"{snapshot.teams[side.roster_id].name} gives {_listed(snapshot, side.player_ids)}"
-                        for side in _ordered(trade, order))
+                        for side in ordered_sides(trade, order))
 
 
 def sheet_questions(trade: ProposedTrade, snapshot: Snapshot) -> dict[str, NoulQuestion]:
