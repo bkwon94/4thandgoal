@@ -498,7 +498,9 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
     finder document. It is the stream of trade ideas, so the analyzer page and the front door read one protocol.
     A team part goes out with the roster id of each team as the first step reads it, so the avatars light in turn.
     A trade part goes out with each trade of the pick as soon as it stands, with its index in the pick order, the most
-    trades that the pick can keep, and the fields of a trade of the document, so each card shows in turn (decision 20). The Answer holds the whole document.
+    trades that the pick can keep, and the fields of a trade of the document, so each card shows in turn (decision 20).
+    A Shortlist part goes out before the pick with each trade of the Shortlist by the names of its players, so the wait
+    of step 5 names the trade that the pick weighs (decision 20). The Answer holds the whole document.
 
     It counts one grade, as the plain find route does, and the caps of the front door do not apply.
     """
@@ -515,7 +517,8 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
         # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
         document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=defer,
                                                read=lambda roster_id: emit("data-team", {"roster_id": roster_id}),
-                                               trade=trade)
+                                               trade=trade,
+                                               weigh=lambda trades: emit("data-shortlist", {"trades": trades}))
         emit("data-answer", {"kind": "find", "document": document})
 
     return stream("trade_ideas", work)

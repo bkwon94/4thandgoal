@@ -1,7 +1,9 @@
 /**
  * The Ledger cards and the near fold of the Finder, in WebKit, as Safari runs, on the phone, the iPad, and the desktop.
  * It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed bar over content.
- * It also streams the trades one part at a time, and checks that each card shows as its part comes, with the count line.
+ * It also streams the trades one part at a time, and checks that each card shows as its part comes, with the count line,
+ * and that the first card scrolls into view. On a fixed clock, it checks that step 5 names each Shortlist trade in turn on
+ * one line of the wait.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -21,7 +23,7 @@ const FIND = readFileSync(join(process.cwd(), "..", "..", "packages", "analyzer"
 const DOC = JSON.parse(FIND) as {
   trade_pair: { asker: { roster_id: number } };
   trades: { sides: { roster_id: number; team: string; gives: { player_id: string; name: string; position: string; nfl_team: string; headshot: string }[] }[] }[];
-  near: unknown[];
+  near: { sides: { roster_id: number; gives: { name: string }[] }[] }[];
 };
 // The find stream of the API: the document of the fixture in its answer part, as one event stream.
 const FIND_STREAM = `data: ${JSON.stringify({ type: "data-answer", data: { kind: "find", document: DOC } })}\n\ndata: [DONE]\n\n`;
@@ -63,6 +65,32 @@ test.afterAll(async () => {
   await server?.close();
 });
 
+/* The short name of a player as the API sends it: the last word that is not a suffix, such as "Walker". */
+const SUFFIXES = new Set(["jr.", "sr.", "ii", "iii", "iv"]);
+const lastOf = (name: string) => name.split(" ").filter((word) => !SUFFIXES.has(word.toLowerCase())).at(-1) ?? name;
+/* The Shortlist of the press: each trade and each near idea of the fixture was a Shortlist trade, from the side of the
+   asker, the players he gives, then the players he gets. */
+const SHORTLIST = [...DOC.trades, ...DOC.near].map((item, i) => ({
+  offer_id: `offer-${i}`,
+  gives: item.sides[0].gives.map(({ name }) => ({ name, last: lastOf(name) })),
+  gets: item.sides[1].gives.map(({ name }) => ({ name, last: lastOf(name) })),
+}));
+/* The parts of a find before the pick sends its first trade: steps 1 to 4 with their done lines, the Shortlist, and
+   the live line of step 5. They go out with the response, as the API sends them in about the first 5 s. */
+// The search reads each team of the find answer but the asker, as the teams route of the test lists them.
+const PARTNERS = new Set(DOC.trades.flatMap((trade) => trade.sides.map((side) => side.roster_id))).size - 1;
+const LEAD = [
+  [`Reading ${PARTNERS} teams`, true],
+  [`Read ${PARTNERS} teams`, false],
+  ["Matching trade value", true],
+  ["Matched 4,667 trades by trade value", false],
+  ["Checking 4,667 trades for fairness", true],
+  ["Checked 4,667 trades for fairness", false],
+  ["Checking 77 against both lineups", true],
+  [`Made a shortlist of ${SHORTLIST.length}`, false],
+].map(([line, live]) => ({ type: "data-step", data: { line, live } }));
+const LEAD_PARTS = [...LEAD, { type: "data-shortlist", data: { trades: SHORTLIST } }, { type: "data-step", data: { line: "Picking the best 5", live: true } }];
+
 /* The parts of a streamed find: one trade part per trade of the fixture, in order, each with the count of the trades,
    then the answer with the whole document. */
 const STREAMED = [
@@ -73,13 +101,18 @@ const STREAMED = [
 /* A find stream that the test feeds one part at a time. The browser fetch of the find stream gets a held body, and
    window.__sendNext sends the next part, so the test reads the page between two parts. Every other request goes on. */
 async function holdFindStream(page: Page) {
-  await page.addInitScript((parts) => {
+  await page.addInitScript(([lead, parts]) => {
     const realFetch = window.fetch.bind(window);
     window.fetch = async (input, init) => {
       const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
       if (!url.includes("/find-stream")) return realFetch(input, init);
       let controller!: ReadableStreamDefaultController<Uint8Array>;
-      const body = new ReadableStream<Uint8Array>({ start: (c) => void (controller = c) });
+      const body = new ReadableStream<Uint8Array>({
+        start: (c) => {
+          controller = c;
+          for (const part of lead) c.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`));
+        },
+      });
       const left = [...parts];
       (window as unknown as { __sendNext: () => number }).__sendNext = () => {
         controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(left.shift())}\n\n`));
@@ -88,12 +121,12 @@ async function holdFindStream(page: Page) {
       };
       return new Response(body, { status: 200, headers: { "content-type": "text/event-stream" } });
     };
-  }, STREAMED);
+  }, [LEAD_PARTS, STREAMED] as const);
 }
 
 /* Opens the analyzer in Find mode with the asker as Your team, taps Find, and waits for the cards. With `streamed`,
    the find stream is held, so no card shows until the test sends its part. */
-async function openFinder(page: Page, theme: Theme, streamed = false) {
+async function openFinder(page: Page, theme: Theme, streamed = false, clock = false) {
   await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
@@ -108,6 +141,13 @@ async function openFinder(page: Page, theme: Theme, streamed = false) {
   }, ASKER);
   if (streamed) await holdFindStream(page);
   await openPage(page, `${server.url}/analyze/?mode=find`, theme);
+  // The fixed clock starts after the page settles, so the settle wait of openPage runs on the real clock.
+  // A clock that runs on its own would move the lines while the test reads them, so it stands still until runFor.
+  if (clock) {
+    const now = Date.now();
+    await page.clock.install({ time: now });
+    await page.clock.pauseAt(now + 1000);
+  }
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();
@@ -158,8 +198,13 @@ for (const viewport of VIEWPORTS) {
           await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
           await expect(page.getByRole("button", { name: /Close, but not sent/ })).toHaveCount(0);
           if (shown === 1) {
+            // The first card lands in view on its own, so the reader sees it with no scroll of his own.
+            await expect.poll(async () => {
+              const box = (await cards.first().boundingBox())!;
+              return box.y >= 0 && box.y < viewport.use.viewport.height / 2;
+            }).toBe(true);
+            await page.screenshot({ path: info.outputPath(`stream-first-card-view-${theme}.png`) });
             await expectNoOverlap(page);
-            await cards.first().scrollIntoViewIfNeeded();
             await page.screenshot({ path: info.outputPath(`stream-first-card-${theme}.png`), fullPage: true });
           }
         }
@@ -170,6 +215,66 @@ for (const viewport of VIEWPORTS) {
         await expectNoOverlap(page);
         await page.screenshot({ path: info.outputPath(`stream-last-card-${theme}.png`), fullPage: true });
       });
+
+      for (const motion of ["no-preference", "reduce"] as const) {
+        test(`step 5 names each Shortlist trade on one line, motion ${motion}, ${theme} (AT-36, AT-73)`, async ({ page }, info) => {
+          await page.emulateMedia({ reducedMotion: motion });
+          await openFinder(page, theme, true, true);
+          const status = page.getByRole("status");
+          // The stream sends steps 1 to 4 at once, and each line still holds 1.5 s on the screen, then gives way.
+          await expect(status).toHaveText(`1 of 5 · Reading ${PARTNERS} teams`);
+          for (const line of ["2 of 5 · Matching trade value", "3 of 5 · Checking 4,667 trades for fairness", "4 of 5 · Checking 77 against both lineups", "5 of 5 · Picking the best 5"]) {
+            await page.clock.runFor(1400);
+            await expect(status).not.toHaveText(line);
+            await page.clock.runFor(100);
+            await expect(status).toHaveText(line);
+          }
+          const seen: string[] = [];
+          const fits: string[] = [];
+          for (let turn = 0; turn < SHORTLIST.length + 1; turn++) {
+            await page.clock.runFor(3000);
+            // The page renders the new line after the timer fires, so the read waits for the line to change.
+            await expect(status).not.toHaveText(seen.at(-1) ?? "5 of 5 · Picking the best 5");
+            const text = (await status.textContent())!;
+            seen.push(text);
+            // Each line names one Shortlist trade by its players, in the order of the Shortlist, and loops at the end.
+            const item = SHORTLIST[turn % SHORTLIST.length];
+            expect(text).toMatch(/^Weighing .+ for .+$/);
+            for (const player of [...item.gives, ...item.gets]) expect(text).toContain(player.last);
+            // The line on the screen is the line of the status. A line by full names fits its box. A longer line takes
+            // the last names. A line that still runs past the box scrolls once to its end with motion on, and wraps in
+            // full with motion off, so no line runs past the hero and no text overlaps.
+            const think = page.locator(".t-think").first();
+            await expect(think.locator(".t-think-text").last()).toHaveText(text);
+            const fit = await think.evaluate((box) => {
+              const line = box.querySelectorAll<HTMLElement>(".t-think-text");
+              const live = line[line.length - 1];
+              return { room: box.clientWidth, width: live.scrollWidth, scrolls: live.classList.contains("is-scroll"), height: live.getBoundingClientRect().height, lineHeight: parseFloat(getComputedStyle(live).lineHeight) };
+            });
+            const full = [...item.gives, ...item.gets].every((player) => text.includes(player.name));
+            if (full) expect(fit.width, `"${text}" fits the line`).toBeLessThanOrEqual(fit.room + 1);
+            if (motion === "no-preference") {
+              expect(fit.width <= fit.room + 1 || fit.scrolls, `"${text}" fits or scrolls`).toBe(true);
+              expect(fit.height, `"${text}" sits on one line`).toBeLessThan(fit.lineHeight * 1.5);
+            }
+            fits.push(`${fit.width}/${fit.room}${fit.scrolls ? " scrolls" : ""}`);
+            await expectNoOverlap(page);
+            if (turn < 2 && motion === "no-preference") {
+              // The swap of the line ends after its release timer, so the shot waits for the line to rest. It stays
+              // well inside the hold of 3 s, so the next turn still reads the next line.
+              await page.clock.runFor(400);
+              await page.screenshot({ path: info.outputPath(`step-5-line-${turn + 1}-${theme}.png`) });
+            }
+          }
+          console.log(`${viewport.name} ${theme} ${motion}: ${seen.map((text, i) => `${text} [${fits[i]}]`).join(" | ")}`);
+          // The first card stops the lines: the wait goes back to the step line and holds.
+          await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
+          await expect(page.getByRole("article")).toHaveCount(1);
+          await expect(status).toHaveText("5 of 5 · Picking the best 5");
+          await page.clock.runFor(9000);
+          await expect(status).toHaveText("5 of 5 · Picking the best 5");
+        });
+      }
 
       test(`the Ledger cards and the near fold, with no overlap and no fixed bar over content, ${theme} (AT-65, AT-66, AT-67)`, async ({ page }, info) => {
         await openFinder(page, theme);

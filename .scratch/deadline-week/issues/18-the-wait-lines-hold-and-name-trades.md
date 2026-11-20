@@ -10,7 +10,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 20. Acceptance tests AT-36 and A
 
 **Status:** ready-for-agent
 
-- [ ] A site test with a fixed clock shows each step line on screen at least 1.5 s, even when the steps end faster.
-- [ ] A test shows that the stream sends the Shortlist trades at step 5, by the names of their players.
-- [ ] A site test with a fixed clock shows at least 3 step 5 lines, each held about 3 s, each naming a Shortlist trade.
-- [ ] A real press on a local build shows two step 5 lines that name real Shortlist trades, at 375 px, in both themes.
+- [x] A site test with a fixed clock shows each step line on screen at least 1.5 s, even when the steps end faster.
+- [x] A test shows that the stream sends the Shortlist trades at step 5, by the names of their players.
+- [x] A site test with a fixed clock shows at least 3 step 5 lines, each held about 3 s, each naming a Shortlist trade.
+- [x] A real press on a local build shows two step 5 lines that name real Shortlist trades, at 375 px, in both themes.

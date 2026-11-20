@@ -181,18 +181,28 @@ export type FindRequest = { season: number; asker: number; partner?: number; lim
 
 /* What the find stream gives the finder before its document: each step line, live while its step works, the roster id
    of each team as the search reads it, and each trade of the pick as soon as it stands, with its place in the pick
-   order and the most trades that the pick can keep (decision 20). */
+   order and the most trades that the pick can keep, and the trades of the Shortlist by their players before the pick
+   starts (decision 20). */
 export type FindEvents = {
   onStep: (line: string, live: boolean) => void;
   onTeam: (rosterId: number) => void;
   onTrade?: (index: number, most: number, trade: FinderTrade) => void;
+  onShortlist?: (trades: ShortlistTrade[]) => void;
 };
+
+/* One player of a Shortlist trade: his full name, and his short name for a narrow line, such as "Walker". */
+const shortlistPlayerSchema = z.object({ name: z.string(), last: z.string() });
+/* One trade of the Shortlist that the pick weighs, from the side of the asker: the players he gives, then the players
+   he gets. The stream sends the Shortlist before the pick, so the wait of step 5 can name each trade (decision 20). */
+const shortlistTradeSchema = z.object({ offer_id: z.string(), gives: z.array(shortlistPlayerSchema), gets: z.array(shortlistPlayerSchema) });
+export type ShortlistTrade = z.infer<typeof shortlistTradeSchema>;
 
 /* One part of the find stream that the site reads. The stream sends more parts, such as the start, and the reader skips them. */
 const findPartSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("data-step"), data: z.object({ line: z.string(), live: z.boolean().optional() }) }),
   z.object({ type: z.literal("data-team"), data: z.object({ roster_id: z.number() }) }),
   z.object({ type: z.literal("data-trade"), data: z.object({ index: z.number(), most: z.number(), trade: finderTradeSchema }) }),
+  z.object({ type: z.literal("data-shortlist"), data: z.object({ trades: z.array(shortlistTradeSchema) }) }),
   z.object({ type: z.literal("data-answer"), data: z.object({ kind: z.literal("find"), document: findResponseSchema }) }),
   z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
 ]);
@@ -230,6 +240,7 @@ export async function streamFind(target: ApiTarget, passphrase: string, body: Fi
       if (type === "data-step") events.onStep(data.line, data.live ?? false);
       if (type === "data-team") events.onTeam(data.roster_id);
       if (type === "data-trade") events.onTrade?.(data.index, data.most, data.trade);
+      if (type === "data-shortlist") events.onShortlist?.(data.trades);
       if (type === "data-error") throw new ApiError(data.status, data.line, undefined, data.line);
       if (type === "data-answer") {
         void drain(reader);

@@ -763,6 +763,37 @@ def test_the_find_stream_sends_each_trade_as_its_own_part_before_the_answer(api)
         "data-step")
 
 
+def test_the_find_stream_sends_the_shortlist_by_player_names_before_step_5(api):
+    # AT-73 and decision 20: step 5 names the trades it weighs, so the stream sends each Shortlist trade by its players.
+    parts = _find_stream(api)
+    [shortlist] = _of(parts, "data-shortlist")
+    done = live_then_done(_of(parts, "data-step"))
+    count = int(re.fullmatch(r"Made a shortlist of (\d+)", done[3])[1])
+    assert len(shortlist["trades"]) == count > 0
+    # The part comes before the live line of step 5, so the wait has the trades when step 5 starts.
+    kinds = [(part["type"], part.get("data", {}).get("line")) for part in parts]
+    assert kinds.index(("data-shortlist", None)) < kinds.index(("data-step", "Picking the best 5"))
+    # Each trade the pick sends is a Shortlist trade, with the same players: what the asker gives, then gets.
+    [answer] = _of(parts, "data-answer")
+    by_id = {item["offer_id"]: item for item in shortlist["trades"]}
+    for trade in answer["document"]["trades"]:
+        item = by_id[trade["offer_id"]]
+        asker_side = trade["sides"][0]
+        assert asker_side["roster_id"] == BO_GIRDS
+        assert [p["name"] for p in item["gives"]] == [p["name"] for p in asker_side["gives"]]
+        assert [p["name"] for p in item["gets"]] == [p["name"] for p in asker_side["gets"]]
+    # Each player carries a short name for a narrow screen: his last name, never a suffix such as "III".
+    for item in shortlist["trades"]:
+        for player in item["gives"] + item["gets"]:
+            assert player["last"] in player["name"].split() or player["last"] == player["name"], player
+            assert player["last"].lower() not in {"jr.", "sr.", "ii", "iii", "iv"}, player
+
+
+def test_trade_ideas_of_the_front_door_send_no_shortlist_part(api):
+    # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
+    assert _of(_ideas(api), "data-shortlist") == []
+
+
 def test_trade_ideas_of_the_front_door_send_no_trade_part(api):
     # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
     assert _of(_ideas(api), "data-trade") == []

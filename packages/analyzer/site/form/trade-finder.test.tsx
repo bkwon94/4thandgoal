@@ -98,6 +98,39 @@ const step = (text: string, live: boolean) => ({ type: "data-step", data: { line
 const team = (rosterId: number) => ({ type: "data-team", data: { roster_id: rosterId } });
 const done = (doc: unknown) => ({ type: "data-answer", data: { kind: "find", document: doc } });
 const trade = (index: number, most: number, item: unknown) => ({ type: "data-trade", data: { index, most, trade: item } });
+/* The Shortlist part: each trade by its players, the full name and the short name of each, from the side of the asker. */
+const named = (name: string, last: string) => ({ name, last });
+const shortlist = (...trades: { gives: { name: string; last: string }[]; gets: { name: string; last: string }[] }[]) => ({
+  type: "data-shortlist",
+  data: { trades: trades.map((item, i) => ({ offer_id: `offer-${i}`, ...item })) },
+});
+/* Three Shortlist trades: two short ones that fit one line by full names, and one long one that needs last names. */
+const SHORT_A = { gives: [named("Tre Tucker", "Tucker")], gets: [named("Emeka Egbuka", "Egbuka")] };
+const SHORT_B = { gives: [named("Zay Flowers", "Flowers")], gets: [named("Tony Pollard", "Pollard")] };
+const LONG = {
+  gives: [named("Kenneth Walker III", "Walker")],
+  gets: [named("Trey Lawrence", "Lawrence"), named("Tony Pollard", "Pollard"), named("Rondale Moore", "Moore")],
+};
+
+/* The fixed clock of a wait test: the timers of the page move only when the test moves them. The stream reads land on
+   setImmediate, which the clock leaves real, so a part still reaches the page. */
+function fixedClock() {
+  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"] });
+}
+/* Steps 1 to 4 of a find, each live line with its done line, then the time for each line to show. */
+async function firstFourSteps(stream: ReturnType<typeof heldStream>) {
+  await stream.send(step("Reading 11 teams", true), step("Read 11 teams", false), step("Matching trade value", true), step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true), step("Made a shortlist of 9", false));
+  await tick(6000);
+}
+/* React starts the timer of a new line only after the act of the line before it ends, so the clock moves 1 ms per act,
+   and each timer starts at the time it would start in a browser. */
+async function tick(ms: number) {
+  for (let left = ms; left > 0; left -= 1) {
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+  }
+}
 
 /* A find stream that the test feeds part by part, so a test can read the wait between two parts. */
 function heldStream() {
@@ -108,8 +141,10 @@ function heldStream() {
     send: async (...parts: unknown[]) => {
       await act(async () => {
         for (const part of parts) controller.enqueue(line(part));
-        // The reader takes each chunk on a later turn, so the test waits for the reads to land.
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        // The reader takes each chunk on a later turn, so the test waits for the reads to land. setImmediate is never
+        // on the fixed clock of a wait test, so the wait works with the clock fixed or free.
+        await new Promise((resolve) => setImmediate(resolve));
+        await new Promise((resolve) => setImmediate(resolve));
       });
     },
     end: () => controller.close(),
@@ -203,46 +238,109 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
 describe("TradeFinder", () => {
   it("shows the wait in the stage lines, one real step at a time, each line held until the next step", async () => {
+    fixedClock();
     const stream = heldStream();
     find();
     await stream.send(step("Reading 11 teams", true));
     expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
     // The done line of a step does not move the line, so the line holds until the next step starts.
     await stream.send(step("Read 11 teams", false));
+    await tick(5000);
     expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
-    // Each line shows for at least one swap, so the next line comes after that hold.
     await stream.send(step("Matching trade value", true));
-    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Matching trade value"));
+    expect(stageLine()).toBe("2 of 5 · Matching trade value");
     await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
-    await waitFor(() => expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups"));
+    await tick(3000);
+    expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups");
     // A screen reader hears the step in the one status of the wait, and no line names a chart.
     expect(screen.getByRole("status").textContent).toBe("4 of 5 · Checking 77 against both lineups");
     expect(screen.queryByText(/chart/i)).toBeNull();
   });
 
-  it("shows each step line in order when two steps arrive in the same tick", async () => {
+  it("holds each step line at least 1.5 s, even when the steps end faster", async () => {
+    // AT-36 and decision 20: the stream can end three steps in the same moment, and each line still stays readable.
+    fixedClock();
     const stream = heldStream();
     find();
-    await stream.send(step("Reading 11 teams", true), step("Read 11 teams", false), step("Matching trade value", true));
-    await waitFor(() => expect(stageLine()).toBe("2 of 5 · Matching trade value"));
-    // The stream can end one step and start two more at the same moment. The wait records each line that shows.
-    const seen = [stageLine()];
-    const watch = new MutationObserver(() => {
-      if (stageLine() !== seen[seen.length - 1]) seen.push(stageLine());
-    });
-    watch.observe(document.body, { subtree: true, childList: true, characterData: true });
-    try {
-      await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
-      await waitFor(() => expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups"));
-    } finally {
-      watch.disconnect();
-    }
-    expect(seen).toEqual(["2 of 5 · Matching trade value", "3 of 5 · Checking 4,667 trades for fairness", "4 of 5 · Checking 77 against both lineups"]);
+    await stream.send(step("Reading 11 teams", true), step("Read 11 teams", false), step("Matching trade value", true), step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+    expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
+    await tick(1499);
+    expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
+    await tick(1);
+    expect(stageLine()).toBe("2 of 5 · Matching trade value");
+    await tick(1499);
+    expect(stageLine()).toBe("2 of 5 · Matching trade value");
+    await tick(1);
+    expect(stageLine()).toBe("3 of 5 · Checking 4,667 trades for fairness");
+    await tick(1500);
+    expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups");
+    // The last line has nothing queued behind it, so it holds until the next step starts.
+    await tick(10_000);
+    expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups");
+    // A step that starts after the hold of the line on screen shows at once.
+    await stream.send(step("Made a shortlist of 9", false), step("Picking the best 5", true));
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
+  });
+
+  it("names one Shortlist trade at a time on step 5, each held about 3 s, and loops", async () => {
+    // AT-73 and decision 20: the line changes about every 3 s, and each line names a Shortlist trade by its players.
+    fixedClock();
+    const stream = heldStream();
+    find();
+    await firstFourSteps(stream);
+    await stream.send(shortlist(SHORT_A, LONG, SHORT_B), step("Picking the best 5", true));
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
+    await tick(2999);
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
+    await tick(1);
+    // A line that fits one phone line keeps the full names.
+    expect(stageLine()).toBe("Weighing Tre Tucker for Emeka Egbuka");
+    await tick(2999);
+    expect(stageLine()).toBe("Weighing Tre Tucker for Emeka Egbuka");
+    await tick(1);
+    // A line too long for a phone takes the last names, so it never runs past one line.
+    expect(stageLine()).toBe("Weighing Walker for Lawrence, Pollard, Moore");
+    await tick(3000);
+    expect(stageLine()).toBe("Weighing Zay Flowers for Tony Pollard");
+    // The pick still runs after the last trade, so the lines start again at the first.
+    await tick(3000);
+    expect(stageLine()).toBe("Weighing Tre Tucker for Emeka Egbuka");
+    // A screen reader hears the same line, and no line names an inner tool, states a time, or says rival.
+    expect(screen.getByRole("status").textContent).toBe("Weighing Tre Tucker for Emeka Egbuka");
+    const hero = screen.getByRole("region", { name: "Finding Trades" });
+    expect(hero.textContent).not.toMatch(/\b(?:jev|advisor|finder|front door|lock|rival|brian)\b/i);
+    expect(hero.textContent).not.toMatch(/\b(?:seconds?|minutes?)\b/i);
+  });
+
+  it("stops the step 5 lines when the first card shows", async () => {
+    fixedClock();
+    const stream = heldStream();
+    find();
+    await firstFourSteps(stream);
+    await stream.send(shortlist(SHORT_A, SHORT_B), step("Picking the best 5", true));
+    await tick(3000);
+    expect(stageLine()).toBe("Weighing Tre Tucker for Emeka Egbuka");
+    await stream.send(trade(0, 5, FIVE.trades[0]));
+    // The card is the answer now, so the wait line goes back to the step and holds there.
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
+    await tick(12_000);
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
+  });
+
+  it("keeps the step 5 line when the stream sends no Shortlist", async () => {
+    fixedClock();
+    const stream = heldStream();
+    find();
+    await firstFourSteps(stream);
+    await stream.send(step("Picking the best 5", true));
+    await tick(12_000);
+    expect(stageLine()).toBe("5 of 5 · Picking the best 5");
   });
 
   it("shows the wait in the hero of the grade wait, with the same title level and the mesh", async () => {

@@ -16,7 +16,7 @@ import { Hero } from "@cpc/design/parts/hero";
 import { HeroMesh } from "@cpc/design/parts/hero-mesh";
 import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Sheet } from "./sheet";
-import { LINE_SWAP_MS, StageLines } from "./stage-lines";
+import { StageLines } from "./stage-lines";
 import { Button } from "@cpc/design/ui/button";
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { PendingButton } from "@cpc/design/ui/pending-button";
@@ -28,7 +28,7 @@ import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import { useRequest } from "./use-request";
 import type { FindResponse, FinderTrade, Lean } from "../lib/analyze-types";
-import { ApiError, type ApiTarget, type FindRequest, streamFind, toErrorLine, type Team } from "../lib/api";
+import { ApiError, type ApiTarget, type FindRequest, type ShortlistTrade, streamFind, toErrorLine, type Team } from "../lib/api";
 
 // A press can wait on a live fair check while the warm-up of the fair cache runs, and two presses share one Jev
 // budget, so the finder waits much longer than a grade before it gives up.
@@ -37,6 +37,17 @@ const TIMEOUT_MS = 180_000;
 // The steps of a find, in the order the stream sends them: the teams, the trade value match, the fair check, the
 // check against both lineups, and the pick. The wait line counts them, so the reader knows how far the search is.
 const FIND_STEPS = 5;
+
+// Each step line stays on screen at least 1.5 s, so the reader can read it even when the steps end faster (decision 20).
+const STEP_HOLD_MS = 1500;
+// The pick thinks for most of the wait, so on step 5 the line names one trade of the Shortlist about every 3 s, long
+// enough to read the names, short enough that the wait reads as work (decision 20).
+const WEIGH_MS = 3000;
+// The most characters of a step 5 line that fit one line of the wait at 390 px: the line box is 309 px there, and the
+// body text runs about 7.1 px a character. A longer line takes the last names. A count of characters is plain and needs
+// no measure of the font. A trade of five players can run past the box even by last names. StageLines then scrolls it
+// once to its end within its hold, or, with motion off, wraps it in full, so no line overlaps another.
+const WEIGH_FIT = 42;
 
 // The pick sends up to 5 trades and up to 3 near ideas (decision 17). The page keeps to that count.
 const MAX_PICKS = 5;
@@ -48,10 +59,10 @@ const AIMS = ["Any", "RB", "WR", "TE", "QB"] as const;
 type Aim = (typeof AIMS)[number];
 
 /* The wait holds each wait line of the stream in order, the teams that the search read, each trade that the pick has
-   sent so far, and the most trades that the pick can keep. */
+   sent so far, the most trades that the pick can keep, and the trades of the Shortlist that the pick weighs. */
 type FindState =
   | { status: "idle" }
-  | { status: "finding"; lines: string[]; read: number[]; trades: FinderTrade[]; most: number }
+  | { status: "finding"; lines: string[]; read: number[]; trades: FinderTrade[]; most: number; shortlist: ShortlistTrade[] }
   | { status: "done"; doc: FindResponse }
   | { status: "error"; message: string };
 
@@ -212,22 +223,42 @@ function waitLine(step: number, line: string): string {
   return `${Math.min(step, FIND_STEPS)} of ${FIND_STEPS} · ${line}`;
 }
 
+/* The line of step 5 that names one Shortlist trade: the players the asker gives, then "for", then the players he gets,
+   such as "Weighing Walker for Lawrence, Pollard, Moore". A line too long for a phone takes the last names. */
+export function weighLine(trade: ShortlistTrade): string {
+  const line = (key: "name" | "last") => `Weighing ${trade.gives.map((p) => p[key]).join(", ")} for ${trade.gets.map((p) => p[key]).join(", ")}`;
+  const full = line("name");
+  return full.length <= WEIGH_FIT ? full : line("last");
+}
+
 /* The wait line on the screen. The stream can start two steps in the same moment, so the lines queue, and each line
-   shows for at least one swap before the next one. A line with nothing queued behind it holds until the next line
-   comes, and a line that has held one swap gives way at once. */
-function useQueuedLine(lines: string[]): string {
+   shows for at least STEP_HOLD_MS before the next one. A line with nothing queued behind it holds until the next line
+   comes, and a line that has held gives way at once.
+   On step 5, the line names one trade of the Shortlist every WEIGH_MS, in the order of the Shortlist, and starts again
+   at the first while the pick still runs. The step line shows first, so the reader sees the step and its count. The
+   lines stop when the first card lands: the card is the answer, so the wait goes back to the step line and holds. */
+function useWaitLine(lines: string[], weighs: string[], landed: boolean): string {
   const [index, setIndex] = useState(0);
-  // The index of the line that has shown for one swap. The hold is kept with its index, so a new line starts unheld.
+  // The index of the line that has shown for its hold. The hold is kept with its index, so a new line starts unheld.
   const [held, setHeld] = useState(-1);
   useEffect(() => {
-    const hold = setTimeout(() => setHeld(index), LINE_SWAP_MS);
+    const hold = setTimeout(() => setHeld(index), STEP_HOLD_MS);
     return () => clearTimeout(hold);
   }, [index]);
   // The move to the next line runs before the paint, so a line that comes after the hold shows in the same frame.
   useLayoutEffect(() => {
     if (held === index && index < lines.length - 1) setIndex(index + 1);
   }, [held, index, lines.length]);
-  return lines[Math.min(index, lines.length - 1)];
+  const line = lines[Math.min(index, lines.length - 1)];
+  const weighing = !landed && weighs.length > 0 && index === lines.length - 1 && line.startsWith(waitLine(FIND_STEPS, ""));
+  // The turn of step 5: 0 shows the step line, and turn n shows Shortlist trade n - 1, round the list.
+  const [turn, setTurn] = useState(0);
+  useEffect(() => {
+    if (!weighing) return;
+    const next = setTimeout(() => setTurn(turn + 1), WEIGH_MS);
+    return () => clearTimeout(next);
+  }, [weighing, turn]);
+  return weighing && turn > 0 ? weighs[(turn - 1) % weighs.length] : line;
 }
 
 /* The teams of the search as one row of avatars, where the grade shows its trade. Each avatar lights as the stream
@@ -258,11 +289,28 @@ function TeamsRead({ teams, read }: { teams: Team[]; read: number[] }) {
 
 /* The hero of the find wait: the same hero, mesh, title level, and line part as the grade wait. The line is the running
    step of the stream with its count, a list of one line, so StageLines holds it until the next step starts and then
-   swaps it with the motion of the grade. The lines queue, so each step shows in turn. The status holds the same line
-   for a screen reader. The drive starts with the hero, so the mesh moves on the first frame after the tap. */
-function FindWaitHero({ eyebrow, toggle, lines, teams, read }: { eyebrow?: ReactNode; toggle?: ReactNode; lines: string[]; teams: Team[]; read: number[] }) {
+   swaps it with the motion of the grade. The lines queue, so each step shows in turn. On step 5 the line names each
+   Shortlist trade in turn, until the first card lands. The status holds the same line for a screen reader. The drive
+   starts with the hero, so the mesh moves on the first frame after the tap. */
+function FindWaitHero({
+  eyebrow,
+  toggle,
+  lines,
+  weighs,
+  landed,
+  teams,
+  read,
+}: {
+  eyebrow?: ReactNode;
+  toggle?: ReactNode;
+  lines: string[];
+  weighs: string[];
+  landed: boolean;
+  teams: Team[];
+  read: number[];
+}) {
   const [drive] = useState(() => waitDrive(performance.now()));
-  const line = useQueuedLine(lines);
+  const line = useWaitLine(lines, weighs, landed);
   return (
     <Hero
       label="Finding Trades"
@@ -446,6 +494,23 @@ function FinderResult({
   useEffect(() => {
     shown.current = trades.length;
   });
+  // On a phone the wait hero fills the screen, so the first card of the stream lands below the fold. When it lands and
+  // the reader cannot see all of it, the page scrolls once, smoothly, until the card sits at the top. A scroll keeps
+  // the hero as it is, so no text changes size or place under the reader's thumb, and the reader has waited for this
+  // card, so the move has a reason. A card already in full view does not move the page. With motion off, the scroll
+  // jumps at once.
+  const off = useMotionOff();
+  const list = useRef<HTMLOListElement>(null);
+  const landed = trades.length > 0;
+  const streaming = doc === null;
+  useEffect(() => {
+    if (!landed || !streaming) return;
+    const card = list.current?.firstElementChild;
+    if (!card || card.getBoundingClientRect().bottom <= window.innerHeight) return;
+    card.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
+    // Only the first card scrolls the page: the effect runs again only when a card first lands, so a later card never
+    // pulls the reader away from the one he reads.
+  }, [landed, streaming, off]);
   const left = doc === null ? Math.min(most, MAX_PICKS) - trades.length : 0;
   const count = doc === null ? Math.max(Math.min(most, MAX_PICKS), trades.length) : trades.length;
   if (doc === null && trades.length === 0) return null;
@@ -457,9 +522,9 @@ function FinderResult({
         <p className="m-0 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
       )}
       {trades.length > 0 && (
-        <ol aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
+        <ol ref={list} aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {trades.map((trade, i) => (
-            <li key={trade.offer_id}>
+            <li key={trade.offer_id} className="scroll-mt-sp-4">
               <FinderCard
                 trade={trade}
                 asker={asker}
@@ -539,7 +604,7 @@ export function TradeFinder({
       timedOut = true;
       controller.abort();
     }, TIMEOUT_MS);
-    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner, partners.length))], read: [], trades: [], most: MAX_PICKS });
+    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner, partners.length))], read: [], trades: [], most: MAX_PICKS, shortlist: [] });
     // A live line starts a step, so it moves the wait line on. A done line ends the step, and the line holds until
     // the next step starts, because the next live line follows it at once.
     let step = 0;
@@ -554,6 +619,11 @@ export function TradeFinder({
       onTeam: (rosterId: number) => {
         if (!run.isCurrent()) return;
         setFind((now) => (now.status === "finding" && !now.read.includes(rosterId) ? { ...now, read: [...now.read, rosterId] } : now));
+      },
+      // The Shortlist comes before the pick starts, so step 5 can name each trade it weighs.
+      onShortlist: (shortlist: ShortlistTrade[]) => {
+        if (!run.isCurrent()) return;
+        setFind((now) => (now.status === "finding" ? { ...now, shortlist } : now));
       },
       // The pick sends its trades in order, so each new trade joins the end of the list.
       onTrade: (_index: number, most: number, trade: FinderTrade) => {
@@ -636,7 +706,15 @@ export function TradeFinder({
   return (
     <section aria-label="Trade Ideas" className="flex flex-col">
       {find.status === "finding" ? (
-        <FindWaitHero eyebrow={eyebrow} toggle={toggle} lines={find.lines} teams={searched} read={find.read} />
+        <FindWaitHero
+          eyebrow={eyebrow}
+          toggle={toggle}
+          lines={find.lines}
+          weighs={find.shortlist.map(weighLine)}
+          landed={find.trades.length > 0}
+          teams={searched}
+          read={find.read}
+        />
       ) : (
         <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
       )}

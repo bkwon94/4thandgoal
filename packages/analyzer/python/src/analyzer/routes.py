@@ -25,6 +25,7 @@ from analyzer.stage import Stage
 from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
+from facts.names import NAME_SUFFIXES, last_name
 from facts.writer import metered_press
 from league.client import Client
 from league.player_ids import headshot_url, is_def
@@ -339,6 +340,30 @@ def finder_trade(pick: FinderPick, snapshot: Snapshot) -> dict:
     }
 
 
+def _short_name(name: str) -> str:
+    """The short name of a player for a narrow wait line: his last name, such as "Walker" for "Kenneth Walker III".
+
+    The last name of the facts helper keeps a particle, such as "St. Brown". It skips a short or odd last word, so the
+    short name then falls back to the last word that is not a suffix, and to the full name when no such word is left.
+    """
+    words = [word for word in name.split() if word.lower() not in NAME_SUFFIXES]
+    return last_name(name) or (words[-1] if words else name)
+
+
+def shortlist_trades(shortlist: Shortlist, snapshot: Snapshot) -> list[dict]:
+    """Each trade of the Shortlist by the names of its players, from the side of the asker: the players he gives, then
+    the players he gets. Each player has his full name and a short name, so the wait of step 5 can name the trade that
+    the pick weighs and still fit one line on a phone (decision 20)."""
+
+    def named(pids: list[str]) -> list[dict]:
+        return [{"name": snapshot.players[pid].name, "last": _short_name(snapshot.players[pid].name)} for pid in pids]
+
+    return [{"offer_id": offer.offer_id,
+             "gives": named(offer.trade.sides[0].player_ids),
+             "gets": named(offer.trade.gets(shortlist.asker))}
+            for offer in shortlist.shortlist]
+
+
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
@@ -384,7 +409,8 @@ def find(request: Request, pair: FindRequest, served: ServedClient, background: 
 
 def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None,
                 defer: Defer | None = None, read: Callable[[int], None] | None = None,
-                trade: Callable[[dict, int], None] | None = None) -> dict:
+                trade: Callable[[dict, int], None] | None = None,
+                weigh: Callable[[list[dict]], None] | None = None) -> dict:
     """The find press of the route, for the route, the find stream, and the trade ideas of the front door.
 
     With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
@@ -392,15 +418,18 @@ def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stag
     Jev checks, so the caller runs them after its Answer goes out. With `read`, the search hands it the roster id of
     each team as it reads it, so a stream can report each team in turn. With `trade`, the pick streams, and `trade` gets
     each trade in the shape of the document as soon as it stands, with the most trades that the pick can keep, so a
-    stream can show each card in turn and count the trades still to come (decision 20).
-    A cached repeat sends no trade, because its document comes at once.
+    stream can show each card in turn and count the trades still to come (decision 20). With `weigh`, the press hands
+    it the trades of the Shortlist by the names of their players before the pick starts, so the wait of step 5 can name
+    each trade that the pick weighs (decision 20).
+    A cached repeat sends no trade and no Shortlist, because its document comes at once.
     """
     with _press_log("find", served):
-        return _find(request, pair, served, stage, defer, read, trade)
+        return _find(request, pair, served, stage, defer, read, trade, weigh)
 
 
 def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None,
-          read: Callable[[int], None] | None, trade: Callable[[dict, int], None] | None) -> dict:
+          read: Callable[[int], None] | None, trade: Callable[[dict, int], None] | None,
+          weigh: Callable[[list[dict]], None] | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -434,6 +463,8 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     if trade is not None:
         deferred["on_pick"] = lambda pick, most: trade(finder_trade(pick, snapshot), most)
     shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored, **reads)
+    if weigh is not None and shortlist.shortlist:
+        weigh(shortlist_trades(shortlist, snapshot))
     picks = request.app.state.finder_pick(shortlist, snapshot, **staged, **deferred)
     document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
