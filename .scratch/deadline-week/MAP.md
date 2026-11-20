@@ -28,10 +28,10 @@ The Finder is fair-first: it finds fair trades of four shapes by chart value, an
 - No Deadline Board. The whole Deadline banner opens the Trade Wire in a sheet, with "Grade a trade" and "Find a trade" at its top. Week 11 trades only, a 5 s cache and a 10 s poll. Copy says "trade deadline", never "Lock". `decisions/08-prototype-event-look.md`.
 
 - The Spares tree lists a player when his team has a backup above the line behind him who can play now: 117 of 132 pairs. `decisions/12-spec-spares-tree-reading.md`.
+- Without a screen, a press has 95k to 242k candidates, and a 5% band leaves 4k to 10k. One fair Noul each costs $0.02 to $0.05 but runs 5 to 11 times over the rate limit. `decisions/13-research-candidate-size-and-cost.md`.
 
 ## NOT YET SPECIFIED
 
-- How many candidates does each shape give, and what do the Jev calls cost? `decisions/13-research-candidate-size-and-cost.md`.
 - What value screen cuts the candidate list in code? `decisions/14-grill-value-screen.md`.
 - Which questions does Jev answer for each shape? `decisions/15-grill-jev-questions-per-shape.md`.
 - How do the Spares tree and the value pairs merge, and how does the Shortlist spread them? `decisions/16-grill-merge-and-variety.md`.
