@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 20. Acceptance tests AT-36 and A
 
 **Blocked by:** 17
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A site test with a fixed clock shows each step line on screen at least 1.5 s, even when the steps end faster.
 - [x] A test shows that the stream sends the Shortlist trades at step 5, by the names of their players.
