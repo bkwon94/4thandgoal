@@ -44,22 +44,47 @@ function SheetBackdrop({
 // sheet is a 6rem block of the sheet color past its anchored edge, so that stretch never lifts the edge off the screen.
 // The ui-sdk default look has the same bleed, but the site does not load that look. A class that clips the overflow of
 // the sheet also clips the bleed.
+// The bleed is a child element, not a pseudo-element of the content. axe cannot find the background of a text inside a
+// box with a large pseudo-element, and it then gives an incomplete color-contrast result, which fails the floor. The
+// bleed comes first, so a consumer class such as space-y never puts a margin on it.
 function SheetContent({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof DrawerContent>) {
   return (
     <DrawerContent
       className={cn(
-        "relative border-rule bg-page text-ink outline-none data-[side=top]:rounded-b-card data-[side=top]:border-b data-[side=top]:shadow-drop",
-        "data-[side=bottom]:after:pointer-events-none data-[side=bottom]:after:absolute data-[side=bottom]:after:-inset-x-px data-[side=bottom]:after:top-full data-[side=bottom]:after:h-[6rem] data-[side=bottom]:after:bg-inherit",
-        "data-[side=top]:after:pointer-events-none data-[side=top]:after:absolute data-[side=top]:after:-inset-x-px data-[side=top]:after:bottom-full data-[side=top]:after:h-[6rem] data-[side=top]:after:bg-inherit",
+        "group/sheet relative border-rule bg-page text-ink outline-none data-[side=top]:rounded-b-card data-[side=top]:border-b data-[side=top]:shadow-drop",
         className,
       )}
       {...props}
-    />
+    >
+      {/* The Drawer takes children as nodes or as a function of its state, so the bleed goes first in both forms. */}
+      {typeof children === "function" ? (
+        (state) => (
+          <>
+            {sheetBleed}
+            {children(state)}
+          </>
+        )
+      ) : (
+        <>
+          {sheetBleed}
+          {children}
+        </>
+      )}
+    </DrawerContent>
   )
 }
+
+const sheetBleed = (
+  <div
+    aria-hidden
+    data-slot="sheet-bleed"
+    className="pointer-events-none absolute -inset-x-px hidden h-[6rem] bg-inherit group-data-[side=bottom]/sheet:top-full group-data-[side=bottom]/sheet:block group-data-[side=top]/sheet:bottom-full group-data-[side=top]/sheet:block"
+  />
+)
 
 // The grip shows that the sheet drags. A sheet with one snap point takes this plain bar, not the handle button of the
 // Drawer, because a press on that button has no other place to move the sheet to.

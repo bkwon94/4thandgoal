@@ -1,7 +1,7 @@
 /**
  * Tests for the sheet wrapper of the ui-sdk Drawer. They press the trigger by its name.
  * They read the role and the name of the open sheet, not its class names. The drag test reads the one class of the bleed,
- * because jsdom lays out no box and no pseudo-element.
+ * because jsdom lays out no box.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
@@ -68,10 +68,11 @@ function translateY(sheet: HTMLElement): number {
   return Number.parseFloat(sheet.style.translate.split(" ")[1] ?? "0");
 }
 
-/* The bleed is the pseudo-element past the anchored edge of the sheet. jsdom cannot measure it, so this reads its height
+/* The bleed is the element past the anchored edge of the sheet. jsdom cannot measure it, so this reads its height
    from its one class, in rem of 16 px. */
 function bleedHeight(sheet: HTMLElement): number {
-  const match = sheet.className.match(/after:h-\[(\d+(?:\.\d+)?)rem\]/);
+  const bleed = sheet.querySelector('[data-slot="sheet-bleed"]');
+  const match = bleed?.className.match(/(?:^|\s)h-\[(\d+(?:\.\d+)?)rem\]/);
   return match ? Number(match[1]) * 16 : 0;
 }
 
