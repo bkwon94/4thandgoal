@@ -100,3 +100,11 @@ def test_a_press_of_a_client_outside_the_warm_slugs_never_wakes_the_worker(setti
     warmer = FairWarmer(app.state.served, app.state.fair_cache, jev)
     warmer.check(norcal)
     assert not warmer.wake.is_set()
+
+
+def test_a_trade_wire_answer_of_a_client_outside_the_warm_slugs_never_wakes_the_worker(settings, sources):
+    jev = FakeJev()
+    app = _app(settings, sources, jev)
+    warmer = FairWarmer(app.state.served, app.state.fair_cache, jev)
+    warmer.trades_seen("norcal", ["1"])
+    assert not warmer.wake.is_set()

@@ -60,8 +60,9 @@ class FairWarmer:
             self.wake.set()
 
     def trades_seen(self, slug: str, trade_ids: list[str]) -> None:
-        """Wake the worker when the Trade Wire of the client shows a trade list that differs from the last one."""
-        if self._trades.get(slug) != trade_ids:
+        """Wake the worker when the Trade Wire of a client of WARM_SLUGS shows a trade list that differs from the last
+        one. A client outside WARM_SLUGS never warms, so its wake would load the snapshot of cpc for nothing."""
+        if slug in WARM_SLUGS and self._trades.get(slug) != trade_ids:
             self._trades[slug] = trade_ids
             self.wake.set()
 
