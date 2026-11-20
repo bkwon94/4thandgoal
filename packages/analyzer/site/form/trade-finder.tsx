@@ -632,6 +632,12 @@ export function TradeFinder({
           now.status === "finding" && !now.trades.some((kept) => kept.offer_id === trade.offer_id) ? { ...now, trades: [...now.trades, trade], most } : now,
         );
       },
+      // The pick states how many trades it keeps before it writes them, and states it again when a trade drops, so the
+      // count line shows the real count from the first card.
+      onTradesCount: (count: number) => {
+        if (!run.isCurrent()) return;
+        setFind((now) => (now.status === "finding" ? { ...now, most: count } : now));
+      },
       // The pick has no more trades, so the most is the count of the cards, and the count line goes. A trade of a
       // later attempt can still come, and it sets the most again.
       onTradesDone: () => {

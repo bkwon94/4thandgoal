@@ -118,6 +118,10 @@ class FinderPickOut(BaseModel):
     """The structured output of the pick call: up to 5 picks, up to 3 near ideas, with no pick a plain line that says
     why, and with fewer than 5 picks a plain line that says why it kept fewer."""
 
+    # The count of picks comes first, so a stream reads it before the first pick, and the count line under the cards
+    # shows the real count from the first card (AT-72). It is required, so the schema makes the model write it. No guard
+    # checks it against the picks: the picks that stand are the truth.
+    count: int = Field(description=f"How many picks you give, 0 to {MAX_PICKS}; write it first")
     # The count is a description only, as with the Bullets: the guard checks it.
     picks: list[PickOut] = Field(description=f"Up to {MAX_PICKS} picks")
     near: list[NearOut] = Field(description=f"Up to {MAX_NEAR} near ideas; at least 1 when there is no pick")
@@ -170,6 +174,16 @@ OnPicksEnd = Callable[[], None]
 
 def _no_end() -> None:
     """The default word of the end: a press with no stream sends no word before its end."""
+
+
+# The count of trades that the pick keeps, sent as soon as the streamed count closes, and again each time it changes:
+# down when a pick drops, up when a pick stands past the count. A stream sends it, so the count line under the cards
+# shows the real count from the first card (AT-72).
+OnPicksCount = Callable[[int], None]
+
+
+def _no_count(count: int) -> None:
+    """The default send of the count: a press with no stream sends no count before its end."""
 
 
 class FinderPicks(BaseModel):
@@ -388,7 +402,7 @@ class _PickWatch:
 
     def __init__(self, shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str, dict[str, Fact]],
                  repair_call: ClaudeCall, pool: ThreadPoolExecutor, send: OnPick, sent: set[str], most: int,
-                 end: OnPicksEnd = _no_end) -> None:
+                 end: OnPicksEnd = _no_end, count: OnPicksCount = _no_count) -> None:
         self._offers = labeled(shortlist)
         self._asker = shortlist.asker
         self._snapshot = snapshot
@@ -399,6 +413,14 @@ class _PickWatch:
         self._sent = sent
         self._most = most
         self._end = end
+        self._count = count
+        # The count of picks that the call states, or None until the stream has closed it.
+        self._stated: int | None = None
+        # The count that went out last, so a send goes out only when the count changes.
+        self._count_sent: int | None = None
+        # The count of picks of this call that stood, in the order of the pick, whether this watch or an earlier attempt
+        # sent its trade.
+        self._stood = 0
         # True once the picks list of the call has closed, so no pick comes after the picks that the watch holds.
         self._ended = False
         self._end_sent = False
@@ -418,8 +440,16 @@ class _PickWatch:
             return
         if not isinstance(partial, dict) or not isinstance(partial.get("picks"), list):
             return
+        keys = list(partial)
+        # A value is whole when a later key starts. The count comes before the picks, so it is whole before any pick.
+        if self._stated is None and "count" in keys and keys.index("count") < len(keys) - 1:
+            stated = partial["count"]
+            if isinstance(stated, int) and not isinstance(stated, bool):
+                with self._lock:
+                    self._stated = max(0, min(stated, self._most))
+                    self._send_count()
         picks = partial["picks"]
-        ended = next(iter(partial)) == "picks" and len(partial) > 1
+        ended = keys.index("picks") < len(keys) - 1
         for index in range(len(self._picks), len(picks) if ended else len(picks) - 1):
             try:
                 pick = PickOut.model_validate(picks[index])
@@ -459,9 +489,29 @@ class _PickWatch:
             self._results.append(future)
         future.add_done_callback(lambda _: self._flush())
 
+    def _total(self) -> int:
+        """The count of trades that this call keeps: the stated count less each pick that dropped, and never less than
+        the picks that stood. With no stated count, it is the most picks of the press. The caller holds the lock."""
+        if self._stated is None:
+            return self._most
+        dropped = sum(1 for future in self._results
+                      if future.done() and not future.cancelled() and future.result() is None)
+        return max(self._stood, self._stated - dropped)
+
+    def _send_count(self) -> None:
+        """Send the count of trades when it differs from the count that went out last. The caller holds the lock."""
+        if self._closed or self._stated is None:
+            return
+        total = self._total()
+        if total != self._count_sent:
+            self._count_sent = total
+            self._count(total)
+
     def _flush(self) -> None:
         """Send each pick that stands, in the order of the pick, up to the first pick whose repair still runs."""
         with self._lock:
+            # A pick that dropped lowers the count at once, even when an earlier repair still runs.
+            self._send_count()
             while self._next < len(self._results) and self._results[self._next].done():
                 # A closed watch reads no result, because close() cancels each repair that has not started.
                 if self._closed:
@@ -472,9 +522,12 @@ class _PickWatch:
                 if pick is None or fixed is None:
                     continue
                 offer = self._offers[label_of(pick.label)]
+                self._stood += 1
+                # A pick that stands past the stated count raises it before its trade goes out.
+                self._send_count()
                 if offer.offer_id not in self._sent:
                     self._sent.add(offer.offer_id)
-                    self._send(_finder_pick(fixed, offer, self._sheets[offer.offer_id]), self._most)
+                    self._send(_finder_pick(fixed, offer, self._sheets[offer.offer_id]), self._total())
             # The picks list has closed and each pick stood or dropped, so no trade of this call is still to come.
             if self._ended and self._next == len(self._results) and not self._closed and not self._end_sent:
                 self._end_sent = True
@@ -542,7 +595,7 @@ def _log_checks(stand: list[tuple[PickOut, ShortlistOffer]], near: list[tuple[Ne
 def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev: Jev,
                 call: ClaudeCall = finder_pick_call, repair_call: ClaudeCall = finder_repair_call,
                 stage: Stage = quiet, defer: Defer = run_now, on_pick: OnPick | None = None,
-                on_picks_end: OnPicksEnd = _no_end) -> FinderPicks:
+                on_picks_end: OnPicksEnd = _no_end, on_picks_count: OnPicksCount = _no_count) -> FinderPicks:
     """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
     NO_OFFER line.
 
@@ -558,6 +611,8 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     or repaired, in the order of the pick, with the most picks of the press (decision 20). The `call` must then take `on_text`, as finder_pick_call does.
     With `on_pick`, `on_picks_end` gets one word when the pick has no more trades: as soon as the streamed picks list
     closes and each of its picks stood or dropped. A later attempt can still send a trade after it.
+    With `on_pick`, `on_picks_count` gets the count of trades that the pick keeps, as soon as the streamed count closes,
+    and again each time a drop or an extra pick changes it. Each trade carries the same count.
     The FinderPicks that the press gives stay the truth: a pick that went out from a failed answer is not in them.
     """
     if not shortlist.shortlist:
@@ -574,7 +629,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     try:
         def attempt(system: str, user: str, output_model: type[BaseModel]) -> BaseModel:
             watch = _PickWatch(shortlist, snapshot, sheets, repair_call, pool, on_pick or _drop, sent, most,
-                               on_picks_end)
+                               on_picks_end, on_picks_count)
             watches.append(watch)
             try:
                 # Only a press that sends each pick streams the call, so a call with no stream keeps its plain shape.

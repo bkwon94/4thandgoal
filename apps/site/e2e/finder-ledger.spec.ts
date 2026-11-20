@@ -86,13 +86,19 @@ const LEAD = [
   ["Checking 77 against both lineups", true],
   [`Made a shortlist of ${SHORTLIST.length}`, false],
 ].map(([line, live]) => ({ type: "data-step", data: { line, live } }));
-const LEAD_PARTS = [...LEAD, { type: "data-shortlist", data: { trades: SHORTLIST } }, { type: "data-step", data: { line: "Picking the best 5", live: true } }];
+/* The pick can keep 5, as the live line "Picking the best 5" says, and it states that it keeps the 4 trades of the
+   fixture before it writes them. So the count part goes out after the live line of step 5, before the first trade. */
+const MOST = DOC.trades.length;
+const LEAD_PARTS = [
+  ...LEAD,
+  { type: "data-shortlist", data: { trades: SHORTLIST } },
+  { type: "data-step", data: { line: "Picking the best 5", live: true } },
+  { type: "data-trades-count", data: { count: MOST } },
+];
 
-/* The parts of a streamed find: one trade part per trade of the fixture, in order, each with the most trades that the
-   pick can keep, then the part that says the pick has no more trades, then the answer with the whole document. */
-// The pick can keep 5, as the live line "Picking the best 5" says, and it keeps the 4 trades of the fixture. So the
-// trades-done part follows the last trade, as the API sends it when the picks list closes.
-const MOST = 5;
+/* The parts of a streamed find: one trade part per trade of the fixture, in order, each with the count of trades that
+   the pick keeps, then the part that says the pick has no more trades, then the answer with the whole document. The
+   trades-done part follows the last trade, as the API sends it when the picks list closes. */
 const STREAMED = [
   ...DOC.trades.map((trade, index) => ({ type: "data-trade", data: { index, most: MOST, trade } })),
   { type: "data-trades-done", data: {} },
@@ -194,8 +200,11 @@ for (const viewport of VIEWPORTS) {
         for (let shown = 1; shown <= count; shown++) {
           await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
           await expect(cards).toHaveCount(shown);
+          // The count comes from the pick before the first card, so the line counts only the trades that still come.
           const left = MOST - shown;
-          await expect(more).toHaveText(`Writing ${left} more ${left === 1 ? "trade" : "trades"}`);
+          if (left > 0) await expect(more).toHaveText(`Writing ${left} more ${left === 1 ? "trade" : "trades"}`);
+          else await expect(more).toHaveCount(0);
+          await expect(cards.first()).toHaveAttribute("aria-label", `Trade 1 of ${MOST}`);
           // The wait stays while the cards come, and the near fold waits for the end.
           await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
           await expect(page.getByRole("button", { name: /Close, but not sent/ })).toHaveCount(0);

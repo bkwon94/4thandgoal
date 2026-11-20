@@ -1469,7 +1469,7 @@ def passing_pick(user: str, **changes) -> dict:
     """A pick that passes every guard: the labels of the first offers of the shortlist, up to 3, each Bullet on the
     week fact."""
     offers = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)[:3]
-    out = {"picks": [_passing_pick_of(offer) for offer in offers], "near": [], "none_line": None}
+    out = {"count": len(offers), "picks": [_passing_pick_of(offer) for offer in offers], "near": [], "none_line": None}
     return out | changes
 
 
@@ -1502,6 +1502,10 @@ class StubPicker:
         self.calls.append((system, user))
         build = self.builders[min(len(self.calls), len(self.builders)) - 1]
         out = build(user)
+        # The schema needs the count first, so a real answer always starts with it. A builder with no count gets the
+        # count of its picks.
+        if "count" not in out:
+            out = {"count": len(out["picks"]), **out}
         if on_text is not None:
             # A streamed call gives the JSON text as it grows, as the stream of the Claude API does.
             for snapshot in streamed_snapshots(json.dumps(out)):
@@ -1618,10 +1622,11 @@ class CountedPicker(StubPicker):
         return out
 
 
-def _streamed(settings, sources, picker, repair=None, ends=None):
+def _streamed(settings, sources, picker, repair=None, ends=None, counts=None):
     """The picks of one press of asker 2 over every team, and each pick that the press sent as it stood, with the count
     of snapshots that the picker had streamed at the send. With `ends`, it gets the count of snapshots at each word of
-    the press that the pick has no more trades."""
+    the press that the pick has no more trades. With `counts`, it gets each count of trades that the press sent, with
+    the count of snapshots at the send."""
     jev = FakeJev()
     snapshot = _find_client(settings, sources, jev=jev).app.state.served["cpc"].sources.snapshot(2026)
     shortlist = search(2, None, snapshot, jev)
@@ -1629,8 +1634,44 @@ def _streamed(settings, sources, picker, repair=None, ends=None):
     picks = pick_trades(shortlist, snapshot, news=NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED), jev=jev,
                         call=picker, repair_call=repair or StubRepair(),
                         on_pick=lambda pick, most: sent.append((pick, picker.fed, most)),
-                        **({} if ends is None else {"on_picks_end": lambda: ends.append(picker.fed)}))
+                        **({} if ends is None else {"on_picks_end": lambda: ends.append(picker.fed)}),
+                        **({} if counts is None else {"on_picks_count": lambda count: counts.append((count, picker.fed))}))
     return picks, sent, [offer.offer_id for offer in shortlist.shortlist]
+
+
+def test_the_press_sends_the_count_of_the_pick_as_soon_as_it_closes_before_the_first_trade(settings, sources):
+    # V1 and AT-72: the count line shows the real count from the first card. The pick states 3 before its picks.
+    picker = CountedPicker()
+    counts = []
+    picks, sent, _ = _streamed(settings, sources, picker, counts=counts)
+    assert len(picks.picks) == 3
+    [(count, fed)] = counts
+    assert count == 3
+    assert fed < sent[0][1]
+    # Each trade carries the count, so the site counts the trades still to come from 3, not from 5.
+    assert {most for _, _, most in sent} == {3}
+
+
+def test_the_count_goes_down_when_a_pick_fails_its_repair_and_drops(settings, sources):
+    picker = CountedPicker(_bad_pick({"text": "The trade lands in week 9."}))
+    repair = StubRepair(lambda user: passing_repair(user) | {"lean": "Lean no"})
+    counts = []
+    picks, sent, _ = _streamed(settings, sources, picker, repair, counts=counts)
+    assert len(picks.picks) == 2
+    assert [count for count, _ in counts] == [3, 2]
+    # The drop of the first pick comes before the first trade goes out, so each trade carries the count of 2.
+    assert counts[1][1] <= sent[0][1]
+    assert {most for _, _, most in sent} == {2}
+
+
+def test_the_count_goes_up_when_the_pick_writes_more_trades_than_it_stated(settings, sources):
+    # The answer stays the truth: a pick that states 2 and writes 3 sends 3 trades, and the count follows them.
+    picker = CountedPicker(lambda user: passing_pick(user) | {"count": 2})
+    counts = []
+    picks, sent, _ = _streamed(settings, sources, picker, counts=counts)
+    assert len(picks.picks) == 3
+    assert [count for count, _ in counts] == [2, 3]
+    assert [most for _, _, most in sent] == [2, 2, 3]
 
 
 def test_each_pick_is_sent_as_soon_as_it_stands_while_the_call_still_streams(settings, sources):
@@ -1642,8 +1683,8 @@ def test_each_pick_is_sent_as_soon_as_it_stands_while_the_call_still_streams(set
     # The first pick goes out while the rest of the answer still streams, not at its end.
     assert sent[0][1] < picker.total
     assert [fed for _, fed, _ in sent] == sorted(fed for _, fed, _ in sent)
-    # The shortlist holds more than 5 offers, so the press can keep 5 and the count of the trades still to come is 5.
-    assert {most for _, _, most in sent} == {5}
+    # The pick states that it keeps 3 of the 5 it can keep, so the count of the trades still to come starts at 3.
+    assert {most for _, _, most in sent} == {3}
 
 
 def test_the_press_says_the_pick_has_no_more_trades_as_soon_as_the_picks_list_closes(settings, sources):

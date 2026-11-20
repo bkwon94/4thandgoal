@@ -501,8 +501,10 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
     trades that the pick can keep, and the fields of a trade of the document, so each card shows in turn (decision 20).
     A Shortlist part goes out before the pick with each trade of the Shortlist by the names of its players, so the wait
     of step 5 names the trade that the pick weighs (decision 20). A trades-done part goes out once when the pick has no
-    more trades, so the site drops the count line when the pick keeps fewer than it can. The Answer holds the whole
-    document, and it stays the truth.
+    more trades, so the site drops the count line when the pick keeps fewer than it can. A trades-count part goes out
+    with the count of trades that the pick keeps, as soon as the pick states it and before the first trade, and again
+    each time a drop changes it, so the count line shows the real count from the first card. The Answer holds the
+    whole document, and it stays the truth.
 
     It counts one grade, as the plain find route does, and the caps of the front door do not apply.
     """
@@ -521,7 +523,8 @@ def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> St
                                                read=lambda roster_id: emit("data-team", {"roster_id": roster_id}),
                                                trade=trade,
                                                weigh=lambda trades: emit("data-shortlist", {"trades": trades}),
-                                               trades_done=lambda: emit("data-trades-done", {}))
+                                               trades_done=lambda: emit("data-trades-done", {}),
+                                               trades_count=lambda count: emit("data-trades-count", {"count": count}))
         emit("data-answer", {"kind": "find", "document": document})
 
     return stream("trade_ideas", work)

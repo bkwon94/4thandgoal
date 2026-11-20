@@ -411,7 +411,8 @@ def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stag
                 defer: Defer | None = None, read: Callable[[int], None] | None = None,
                 trade: Callable[[dict, int], None] | None = None,
                 weigh: Callable[[list[dict]], None] | None = None,
-                trades_done: Callable[[], None] | None = None) -> dict:
+                trades_done: Callable[[], None] | None = None,
+                trades_count: Callable[[int], None] | None = None) -> dict:
     """The find press of the route, for the route, the find stream, and the trade ideas of the front door.
 
     With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
@@ -422,16 +423,19 @@ def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stag
     stream can show each card in turn and count the trades still to come (decision 20). With `weigh`, the press hands
     it the trades of the Shortlist by the names of their players before the pick starts, so the wait of step 5 can name
     each trade that the pick weighs (decision 20). With `trades_done` and `trade`, the pick tells it once when it has no
-    more trades, so the stream can drop the count of the trades still to come before the document goes out.
+    more trades, so the stream can drop the count of the trades still to come before the document goes out. With
+    `trades_count` and `trade`, the pick tells it the count of trades that it keeps as soon as the streamed count
+    closes, and again each time the count changes, so the count line shows the real count from the first card.
     A cached repeat sends no trade and no Shortlist, because its document comes at once.
     """
     with _press_log("find", served):
-        return _find(request, pair, served, stage, defer, read, trade, weigh, trades_done)
+        return _find(request, pair, served, stage, defer, read, trade, weigh, trades_done, trades_count)
 
 
 def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None,
           read: Callable[[int], None] | None, trade: Callable[[dict, int], None] | None,
-          weigh: Callable[[list[dict]], None] | None, trades_done: Callable[[], None] | None) -> dict:
+          weigh: Callable[[list[dict]], None] | None, trades_done: Callable[[], None] | None,
+          trades_count: Callable[[int], None] | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -466,6 +470,8 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
         deferred["on_pick"] = lambda pick, most: trade(finder_trade(pick, snapshot), most)
         if trades_done is not None:
             deferred["on_picks_end"] = trades_done
+        if trades_count is not None:
+            deferred["on_picks_count"] = trades_count
     shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored, **reads)
     if weigh is not None and shortlist.shortlist:
         weigh(shortlist_trades(shortlist, snapshot))

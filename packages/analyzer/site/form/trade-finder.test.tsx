@@ -98,6 +98,8 @@ const step = (text: string, live: boolean) => ({ type: "data-step", data: { line
 const team = (rosterId: number) => ({ type: "data-team", data: { roster_id: rosterId } });
 const done = (doc: unknown) => ({ type: "data-answer", data: { kind: "find", document: doc } });
 const trade = (index: number, most: number, item: unknown) => ({ type: "data-trade", data: { index, most, trade: item } });
+/* The part that says how many trades the pick keeps. */
+const tradesCount = (count: number) => ({ type: "data-trades-count", data: { count } });
 /* The part that says the pick has no more trades. */
 const tradesDone = { type: "data-trades-done", data: {} };
 /* The Shortlist part: each trade by its players, the full name and the short name of each, from the side of the asker. */
@@ -532,6 +534,27 @@ describe("TradeFinder", () => {
     await screen.findByRole("button", { name: /^Close, but not sent/ });
     expect(cards()).toHaveLength(5);
     expect((within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("counts the trades still to come from the count of the pick, from the first card, and down when a trade drops", async () => {
+    // V1 and AT-72: the pick states it keeps 3 before it writes them, so the line never counts a trade that never comes.
+    const stream = heldStream();
+    find();
+    await stream.send(step("Picking the best 5", true), tradesCount(3));
+    expect(screen.queryByText(/^Writing \d+ more trade/)).toBeNull();
+    await stream.send(trade(0, 3, FIVE.trades[0]));
+    expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 3"]);
+    // A trade fails its guard and drops, so the count goes down with it.
+    await stream.send(tradesCount(2));
+    expect(screen.getByText("Writing 1 more trade")).toBeTruthy();
+    await stream.send(trade(1, 2, FIVE.trades[1]));
+    expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 2", "Trade 2 of 2"]);
+    await stream.send(tradesDone, done({ ...FIVE, trades: FIVE.trades.slice(0, 2) }));
+    stream.end();
+    await screen.findByRole("button", { name: /^Close, but not sent/ });
+    expect(cards()).toHaveLength(2);
   });
 
   it("shows the cards of the answer when it keeps fewer trades than the stream counted", async () => {
