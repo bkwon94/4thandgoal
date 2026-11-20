@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -603,20 +604,20 @@ function Stops({ onEnd }: { onEnd: () => void }) {
                   ))}
                 </span>
                 <div className="gap-sp-1 flex items-center">
-                  <button
+                  <PendingButton
                     type="button"
                     onClick={end}
                     className="press min-h-touch rounded-pill px-sp-3 text-body text-mute hover-fine:text-ink flex items-center font-semibold"
                   >
                     Skip
-                  </button>
-                  <button
+                  </PendingButton>
+                  <PendingButton
                     type="button"
                     onClick={next}
                     className="press min-h-touch rounded-pill bg-accent px-sp-5 text-body text-on-dark flex min-w-[5.5rem] items-center justify-center font-semibold"
                   >
                     {cardAt === targets.length - 1 ? "Done" : "Next"}
-                  </button>
+                  </PendingButton>
                 </div>
               </div>
             </div>

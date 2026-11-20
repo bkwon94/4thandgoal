@@ -12,7 +12,7 @@ Run these in `apps/site/`.
 - Dev server: `CLIENT=cpc pnpm dev`
 - Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.
 - Test: `pnpm test`. It runs Vitest, then `pnpm test:bun`. The tests read the generated files, so run `pnpm check:fast` or a build first.
-- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. It runs `bun test` from `apps/site` on the folders of `scripts/bun-test-files.mjs`. Vitest skips those folders. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it.
+- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. It runs `bun test --isolate` from `apps/site` on the folders and files of `scripts/bun-test-files.mjs`, so each file has its own global and module registry. Vitest skips them. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it.
 - Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.
 - Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page. It runs the parallel pass, then the tests tagged `@timing` alone with one worker.
 - Test the rules of the floor, the evidence runner, and the smoke run: `pnpm test:floor`. It needs Chromium and WebKit once: `pnpm exec playwright install chromium webkit`.
@@ -39,11 +39,25 @@ The tests move to `bun test` one folder at a time (ADR 0038). Until the last mov
 6. In a test of a package, change `vi.stubGlobal("x", fake)` to `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
 7. Remove each `vi.unstubAllGlobals()` and `vi.unstubAllEnvs()`. The preload restores each spy and each stub after each test.
 8. Move each spy and each stub at the top level of a file into `beforeEach`. The restore after the first test removes a top-level one.
-9. Change the setup of a test with `vi.resetModules` or `vi.hoisted`. Bun has neither call.
+9. Change `vi.resetModules()` to `resetModules()` of `apps/site/test/reset-modules.ts`. A file that loads a module with an env or `process.cwd` value resets the modules after each test. Change `vi.hoisted` to an import with a side effect that runs first, such as `@/fixtures/cpc-site`. Bun has no `vi.hoisted`.
 10. Add the folder to `BUN_TEST_DIRS` in `scripts/bun-test-files.mjs`. If a file of the folder stays on Vitest, add each moved file instead.
 11. Run `pnpm test:bun`. Compare the count of each file with step 1, and name each change in the ticket.
 
 The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. A test that depends on jsdom gets a fix for happy-dom. If it needs a real jsdom feature, the ticket names it for Brian.
+
+The preload makes happy-dom act as a browser in four more ways. `test/dom.test.ts` proves each one.
+
+- A failed expect prints a node as its markup. Bun prints each own property of an object, and a happy-dom node reaches the whole window. With no fix, each failed check of a `waitFor` on a node prints megabytes, and one test stalls for minutes.
+- `requestAnimationFrame` runs about 60 frames each second. Each callback of one frame gets the same time.
+- The page URL is `http://localhost:3000/`, so a relative `img` src resolves and fires no `error`.
+- A `spyOn(Storage.prototype, "getItem")` acts on `localStorage` and `sessionStorage`, also after the first call. Never spy on the storage object itself, because its Proxy keeps the spy as data.
+
+happy-dom differs from jsdom in these ways too. The preload does not change them, so a move ticket fixes each test that depends on them.
+
+- The window is 1024 pixels wide, and `matchMedia` answers each width query. jsdom has no `matchMedia`, so a test there saw the phone tier. For the phone tier, spy on `matchMedia` in `beforeEach` with a stub that matches no query.
+- `IntersectionObserver` exists, but it never reports an entry. A part that waits on `inView` of Framer Motion never starts. jsdom has none, so the part ran its fallback.
+- `Element.prototype.animate` exists, so Framer Motion runs `opacity`, `transform`, `filter`, `clipPath`, and `backgroundColor` as a Web Animation. The inline style then holds no middle value. In jsdom, Framer Motion wrote each frame to the inline style.
+- `bun test` runs each file in one process, with one module registry and one window. Framer Motion reads `(prefers-reduced-motion)` once per run, and it decides once per run if it uses `Element.prototype.animate`. A spy on `matchMedia` in a later file does not change reduced motion. A file can pass alone and fail in the full run, so run `pnpm test:bun` in full before the merge.
 
 ## Rules
 

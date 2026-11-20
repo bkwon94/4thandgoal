@@ -2,7 +2,7 @@
  * Tests for the stats-through segments that the analyze page and the finder page share.
  * The cases follow the as-of block of the result document.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { AsOf } from "./analyze-types";
 import { knownGamesSegments } from "./known-games-segments";
 

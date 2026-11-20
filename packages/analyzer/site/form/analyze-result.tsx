@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { motion } from "framer-motion";
 import { PencilIcon } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
@@ -309,7 +310,7 @@ function CaseText({ readCase }: { readCase: string }) {
         </p>
       </div>
       {!open && (
-        <button
+        <PendingButton
           type="button"
           aria-expanded={false}
           aria-controls={id}
@@ -317,7 +318,7 @@ function CaseText({ readCase }: { readCase: string }) {
           className="press min-h-touch text-meta text-accent-text focus-visible:outline-accent-text tablet:hidden cursor-pointer font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Read the full case
-        </button>
+        </PendingButton>
       )}
     </div>
   );
@@ -444,7 +445,7 @@ function ReasonFold({ reason }: { reason: string }) {
         {reason}
       </p>
       {long && !open && (
-        <button
+        <PendingButton
           type="button"
           aria-expanded={false}
           aria-controls={id}
@@ -452,7 +453,7 @@ function ReasonFold({ reason }: { reason: string }) {
           className="press -my-sp-1 min-h-touch min-w-touch text-meta text-accent-ink focus-visible:outline-accent inline-flex cursor-pointer items-center font-bold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           More
-        </button>
+        </PendingButton>
       )}
     </div>
   );
@@ -541,7 +542,7 @@ function SidesHeader({ onEdit }: { onEdit?: () => void }) {
       <Label heading className="mb-0">
         The Sides
       </Label>
-      <button
+      <PendingButton
         type="button"
         onClick={onEdit}
         aria-label="Edit the trade"
@@ -549,7 +550,7 @@ function SidesHeader({ onEdit }: { onEdit?: () => void }) {
       >
         <PencilIcon aria-hidden="true" className="size-sp-4" />
         Edit
-      </button>
+      </PendingButton>
     </div>
   );
 }

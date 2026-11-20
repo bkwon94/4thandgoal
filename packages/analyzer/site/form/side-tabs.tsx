@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@cpc/design/lib/utils";
 import { openId } from "@cpc/design/lib/stable-id";
@@ -59,7 +60,7 @@ export function SideTabs({ label, tabs }: { label: string; tabs: SideTab[] }) {
         {tabs.map((tab, index) => {
           const selected = index === open;
           return (
-            <button
+            <PendingButton
               key={tab.key}
               ref={(el) => {
                 refs.current[index] = el;
@@ -80,7 +81,7 @@ export function SideTabs({ label, tabs }: { label: string; tabs: SideTab[] }) {
               )}
             >
               <span className="line-clamp-2">{tab.label}</span>
-            </button>
+            </PendingButton>
           );
         })}
       </div>

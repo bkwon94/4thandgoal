@@ -3,7 +3,7 @@
  * Each test fires real pointer events on the page and reads what the hunt sent through the one fake of the port.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
@@ -14,20 +14,26 @@ import { CRACK_MS } from "./find-card";
 
 const MATCH = { match: true as const, claimed: false as const, letter: "C", token: "t1" };
 
-/* Fake timers replace the clock, so a wait of TAP_GAP_MS or CRACK_MS costs no real time. The clock also moves with
-   real time, so the polls of findBy and waitFor still end. */
+/* Fake timers replace the clock, so a wait of TAP_GAP_MS or CRACK_MS costs no real time. */
 beforeEach(() => {
-  vi.useFakeTimers({ shouldAdvanceTime: true });
+  jest.useFakeTimers();
+  // happy-dom opens at about:blank, so the page path reads "blank" until the test gives the page an address.
+  (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(
+    "http://localhost:3000/",
+  );
   localStorage.clear();
   document.documentElement.classList.remove("dark");
 });
 
 afterEach(() => {
+  // A timer that a test leaves pending, such as the spring of a stub, stalls the polls of the next test under Bun.
+  // The run ends it inside the test that started it.
+  act(() => void jest.runOnlyPendingTimers());
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
-const wait = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms));
+const wait = (ms: number) => act(async () => void jest.advanceTimersByTime(ms));
 
 /* Three fast taps on the Luck cell of Lil Fridge, then the end of the run. The board loads first, because the
    listener starts only when the board names a drop. */
@@ -330,11 +336,15 @@ describe("EggHunt", () => {
   it("names each egg word card by the text it shows, so the name a voice user reads out matches the card", async () => {
     await openSheet(fakeEggsApi(MATCH));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
+    // happy-dom puts a space before the "/" of the count where a browser puts none, so the match drops that space.
+    const named = (name: string) => (computed: string) => computed.replace(" /", "/") === name;
     expect(
-      screen.getByRole("button", { name: "CORNERSTONE $50 0/11 Lil Fridge leads with 1 of 11" }),
+      screen.getByRole("button", {
+        name: named("CORNERSTONE $50 0/11 Lil Fridge leads with 1 of 11"),
+      }),
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "EAGLES $20 0/6 No open C in this word." }),
+      screen.getByRole("button", { name: named("EAGLES $20 0/6 No open C in this word.") }),
     ).toBeTruthy();
   });
 

@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { Pause, Play, RotateCcw, SkipForward, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -325,37 +326,37 @@ function Player({
   // The controls of the end, or of the replay while it plays.
   const controls = ended ? (
     <>
-      <button
+      <PendingButton
         type="button"
         onClick={onAgain}
         className={cn(CONTROL, "bg-accent text-on-dark hover-fine:opacity-90")}
       >
         <RotateCcw aria-hidden />
         Sim again
-      </button>
-      <button type="button" onClick={onClose} className={cn(CONTROL, QUIET)}>
+      </PendingButton>
+      <PendingButton type="button" onClick={onClose} className={cn(CONTROL, QUIET)}>
         Done
-      </button>
+      </PendingButton>
     </>
   ) : (
     <>
-      <button
+      <PendingButton
         type="button"
         aria-label={playing ? "Pause" : "Play"}
         onClick={() => setPlaying((now) => !now)}
         className={cn(CONTROL, QUIET, "px-0")}
       >
         {playing ? <Pause aria-hidden /> : <Play aria-hidden />}
-      </button>
-      <button type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
+      </PendingButton>
+      <PendingButton type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
         <SkipForward aria-hidden />
         Skip
-      </button>
+      </PendingButton>
       {/* During the replay, "Sim again" stays quiet. It takes the brand red only at the end, where it is the next step. */}
-      <button type="button" onClick={onAgain} className={cn(CONTROL, QUIET, "ml-auto")}>
+      <PendingButton type="button" onClick={onAgain} className={cn(CONTROL, QUIET, "ml-auto")}>
         <RotateCcw aria-hidden />
         Sim again
-      </button>
+      </PendingButton>
     </>
   );
 
@@ -373,14 +374,14 @@ function Player({
           open={tabOpen}
           onGo={goTab}
         />
-        <button
+        <PendingButton
           type="button"
           aria-label="Close the replay"
           onClick={onClose}
           className={cn(CONTROL, "text-on-dark hover-fine:bg-chip-dark px-0")}
         >
           <X aria-hidden />
-        </button>
+        </PendingButton>
       </header>
       <div data-testid="stage-body" className="relative min-h-0 flex-1">
         <LayoutGroup>

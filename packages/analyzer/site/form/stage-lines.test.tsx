@@ -3,7 +3,7 @@
  * and a line wider than its box scrolls once to its end. Fake timers drive the clock, and each test reads the screen.
  */
 import { act, cleanup, render } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import { StageLines } from "./stage-lines";
 
 const LINES = ["Line one", "Line two", "Line three", "Line four"];
@@ -15,11 +15,11 @@ const CHAR_PX = 10;
 const FITS = "A line that fits in the box";
 const LONG = "Checking Bhayshul Tuten's depth at running back";
 
-/* Gives the box and each line the widths of a real layout, and puts back the jsdom values after the test. */
+/* Gives the box and each line the widths of a real layout, and puts back the real values after the test. */
 function layOut() {
-  const client = Object.getOwnPropertyDescriptor(Element.prototype, "clientWidth")!;
+  const client = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "clientWidth")!;
   const scroll = Object.getOwnPropertyDescriptor(Element.prototype, "scrollWidth")!;
-  Object.defineProperty(Element.prototype, "clientWidth", {
+  Object.defineProperty(HTMLElement.prototype, "clientWidth", {
     configurable: true,
     get(this: HTMLElement) {
       return this.classList.contains("t-think") ? BOX_PX : 0;
@@ -34,7 +34,7 @@ function layOut() {
     },
   });
   return () => {
-    Object.defineProperty(Element.prototype, "clientWidth", client);
+    Object.defineProperty(HTMLElement.prototype, "clientWidth", client);
     Object.defineProperty(Element.prototype, "scrollWidth", scroll);
   };
 }
@@ -52,21 +52,21 @@ function shown(container: HTMLElement): string {
 }
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 describe("StageLines", () => {
   it("shows the first line, and the next line after each 2.5 s", () => {
     const { container } = render(<StageLines lines={LINES} />);
     expect(shown(container)).toBe("Line one");
-    act(() => void vi.advanceTimersByTime(2500));
+    act(() => void jest.advanceTimersByTime(2500));
     expect(shown(container)).toBe("Line two");
-    act(() => void vi.advanceTimersByTime(2500));
+    act(() => void jest.advanceTimersByTime(2500));
     expect(shown(container)).toBe("Line three");
   });
 
@@ -74,7 +74,7 @@ describe("StageLines", () => {
     const { container } = render(<StageLines lines={LINES} />);
     const seen = new Set([shown(container)]);
     for (let i = 0; i < 4; i++) {
-      act(() => void vi.advanceTimersByTime(2500));
+      act(() => void jest.advanceTimersByTime(2500));
       seen.add(shown(container));
     }
     expect(seen.size).toBe(4);
@@ -84,7 +84,7 @@ describe("StageLines", () => {
     const { container } = render(<StageLines lines={LINES} />);
     const order: string[] = [];
     for (let i = 0; i < 6; i++) {
-      act(() => void vi.advanceTimersByTime(2500));
+      act(() => void jest.advanceTimersByTime(2500));
       order.push(shown(container));
     }
     expect(order).toEqual([
@@ -100,7 +100,7 @@ describe("StageLines", () => {
   it("hides every line from a screen reader", () => {
     const { container } = render(<StageLines lines={LINES} />);
     expect(container.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
-    act(() => void vi.advanceTimersByTime(2500));
+    act(() => void jest.advanceTimersByTime(2500));
     expect(container.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
   });
 
@@ -146,14 +146,14 @@ describe("StageLines", () => {
     it("measures each new line, so a long line scrolls and the next line that fits stays still", () => {
       const { container } = render(<StageLines lines={[LONG, FITS]} />);
       expect(live(container).classList.contains("is-scroll")).toBe(true);
-      act(() => void vi.advanceTimersByTime(2500));
+      act(() => void jest.advanceTimersByTime(2500));
       expect(live(container).textContent).toBe(FITS);
       expect(live(container).classList.contains("is-scroll")).toBe(false);
     });
 
     it("keeps the outgoing long line at its end, so it leaves from where the reader saw it", () => {
       const { container } = render(<StageLines lines={[LONG, FITS]} />);
-      act(() => void vi.advanceTimersByTime(2500));
+      act(() => void jest.advanceTimersByTime(2500));
       const leaving = container.querySelector<HTMLElement>(".t-think-text.is-exit")!;
       expect(leaving.textContent).toBe(LONG);
       expect(leaving.style.getPropertyValue("translate")).toBe("-170px 0");

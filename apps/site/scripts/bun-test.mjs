@@ -11,8 +11,8 @@ const SITE = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 
 // Bun reads a path that starts with "../" as a path, not as a name filter, so each folder goes from apps/site to the root.
 const paths = BUN_TEST_DIRS.map((dir) => `../../${dir}`);
-// --isolate gives each file a fresh global and module registry, as Vitest does. Without it, a file inherits the DOM
-// nodes, module state, and module mocks of the files before it, and a test passes or fails by the order of the run.
+// --isolate gives each test file its own global and module registry, as Vitest did. Without it, Framer Motion keeps the
+// reduced-motion value that the first file read, and a file that sets matchMedia late sees the wrong one.
 const run = spawnSync("bun", ["test", "--isolate", ...paths, ...process.argv.slice(2)], {
   cwd: SITE,
   stdio: "inherit",

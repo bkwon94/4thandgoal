@@ -3,7 +3,7 @@
  * It is a gate, so Escape leaves it open, the Drawer lifts it above the keyboard, and the field and the submit still work.
  */
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 import { PassphraseDialog } from "./passphrase-dialog";

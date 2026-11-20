@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { Headshot } from "@cpc/league/headshot";
@@ -68,18 +69,18 @@ export function PlayerSheet({
       title={`${title} gets`}
       onClose={onClose}
       footer={
-        <button
+        <PendingButton
           type="button"
           onClick={onClose}
           className="press min-h-touch rounded-pill bg-accent px-sp-4 text-lead text-on-dark focus-visible:outline-accent w-full cursor-pointer font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Done{gets.length > 0 ? ` · ${gets.length}` : ""}
-        </button>
+        </PendingButton>
       }
     >
       <div role="tablist" aria-label="From team" className="gap-sp-2 flex overflow-x-auto">
         {sources.map((s, index) => (
-          <button
+          <PendingButton
             key={s.sideId}
             type="button"
             role="tab"
@@ -88,7 +89,7 @@ export function PlayerSheet({
             className={cn(PILL, "max-w-full truncate", s === source ? PILL_ON : PILL_OFF)}
           >
             {s.team.team}
-          </button>
+          </PendingButton>
         ))}
       </div>
       <input
@@ -101,7 +102,7 @@ export function PlayerSheet({
       />
       <div role="group" aria-label="Position" className="gap-sp-2 flex flex-wrap">
         {POSITIONS.map((p) => (
-          <button
+          <PendingButton
             key={p}
             type="button"
             aria-pressed={p === position}
@@ -109,7 +110,7 @@ export function PlayerSheet({
             className={cn(PILL, p === position ? PILL_ON : PILL_OFF)}
           >
             {p}
-          </button>
+          </PendingButton>
         ))}
       </div>
       <ul
@@ -121,7 +122,7 @@ export function PlayerSheet({
           const goesTo = elsewhere.get(player.player_id);
           return (
             <li key={player.player_id}>
-              <button
+              <PendingButton
                 type="button"
                 role="checkbox"
                 aria-checked={on}
@@ -156,7 +157,7 @@ export function PlayerSheet({
                 >
                   {on && <CheckIcon className="size-sp-4" />}
                 </span>
-              </button>
+              </PendingButton>
             </li>
           );
         })}

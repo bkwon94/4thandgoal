@@ -1,7 +1,7 @@
 /**
  * Vitest config. Tests run in jsdom with the same @ alias as the app.
  * The test files under src/, the script tests under scripts/, and the tests of the site side of each package run.
- * The folders of scripts/bun-test-files.mjs run on `bun test` instead, so Vitest skips them.
+ * The folders and files of scripts/bun-test-files.mjs run on `bun test` instead, so Vitest skips them.
  */
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
@@ -24,7 +24,7 @@ export default defineConfig({
       "apps/site/scripts/**/*.test.mjs",
       "packages/*/site/**/*.test.{ts,tsx}",
     ],
-    // An entry is a folder or one test file, so the exclude names the entry itself and each file under it.
-    exclude: [...configDefaults.exclude, ...BUN_TEST_DIRS.flatMap((dir) => [dir, `${dir}/**`])],
+    // An entry of the list is a folder or a file, so each one excludes both its own path and the paths under it.
+    exclude: [...configDefaults.exclude, ...BUN_TEST_DIRS.flatMap((path) => [path, `${path}/**`])],
   },
 });

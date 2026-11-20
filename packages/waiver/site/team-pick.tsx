@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useEffect, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import { Avatar } from "@cpc/league/avatar";
@@ -50,14 +51,14 @@ function PickChip({
         <b className="text-row truncate leading-tight font-extrabold">{name}</b>
         <span className="text-meta text-on-dark-muted tabular-nums">{`you have $${budget}`}</span>
       </span>
-      <button
+      <PendingButton
         type="button"
         onClick={onChange}
         aria-label={`Change ${LABEL.toLowerCase()}`}
         className="press min-h-touch rounded-card px-sp-4 text-label text-on-dark flex-none cursor-pointer border-0 bg-transparent font-bold tracking-wide uppercase underline underline-offset-4"
       >
         Change
-      </button>
+      </PendingButton>
     </section>
   );
 }

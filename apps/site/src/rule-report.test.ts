@@ -2,7 +2,7 @@
  * Holds the report of a rule test to the house shape of ADR 0016, byte for byte.
  * Every rule test prints its offenses through this helper.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type Offense, report } from "./rule-report";
 
 const OFFENSE: Offense = {

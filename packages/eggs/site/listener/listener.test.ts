@@ -2,7 +2,7 @@
  * Tests for the listener of the egg hunt. They fire real pointer events on a rendered page and read the checks that
  * it sends through its send port.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import type { EggCheck } from "../lib/api";
 import { listenForEggs, SELECT_SETTLE_MS, TAP_GAP_MS } from "./listener";
 
@@ -10,7 +10,7 @@ let sent: EggCheck[];
 let stop: () => void;
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
   sent = [];
   document.body.innerHTML = `
     <table><tr>
@@ -32,12 +32,12 @@ beforeEach(() => {
 
 afterEach(() => {
   stop();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 function tap(element: Element, gap = 100) {
   element.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
-  vi.advanceTimersByTime(gap);
+  jest.advanceTimersByTime(gap);
 }
 
 const cell = (id: string) => document.querySelector(`[data-stable-id="${id}"]`)!;
@@ -47,11 +47,11 @@ function press(element: Element, ms: number, pointerType = "mouse") {
   element.dispatchEvent(
     new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType }),
   );
-  vi.advanceTimersByTime(ms);
+  jest.advanceTimersByTime(ms);
   element.dispatchEvent(
     new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType }),
   );
-  vi.advanceTimersByTime(TAP_GAP_MS + 1);
+  jest.advanceTimersByTime(TAP_GAP_MS + 1);
 }
 
 /* The menu event of a long press, as Android Chrome fires it during a touch hold. True when the listener blocked it. */
@@ -59,6 +59,11 @@ function menu(element: Element): boolean {
   const event = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
   element.dispatchEvent(event);
   return event.defaultPrevented;
+}
+
+/* happy-dom keeps scrollY read-only, so the test redefines it as a plain value. */
+function setScrollY(y: number) {
+  Object.defineProperty(window, "scrollY", { configurable: true, value: y });
 }
 
 describe("listenForEggs", () => {
@@ -182,7 +187,7 @@ describe("listenForEggs", () => {
     cell("luck-3").dispatchEvent(
       new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }),
     );
-    vi.advanceTimersByTime(4000);
+    jest.advanceTimersByTime(4000);
     expect(sent).toEqual([]);
     cell("luck-3").dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
     press(cell("luck-12"), 1900);
@@ -195,14 +200,14 @@ describe("listenForEggs", () => {
     target.dispatchEvent(
       new PointerEvent("pointerdown", { bubbles: true, isPrimary: true, pointerType: "touch" }),
     );
-    vi.advanceTimersByTime(600);
+    jest.advanceTimersByTime(600);
     // The listener blocks the menu, so the browser fires no pointercancel and the release comes.
     expect(menu(target)).toBe(true);
-    vi.advanceTimersByTime(1600);
+    jest.advanceTimersByTime(1600);
     target.dispatchEvent(
       new PointerEvent("pointerup", { bubbles: true, isPrimary: true, pointerType: "touch" }),
     );
-    vi.advanceTimersByTime(TAP_GAP_MS + 1);
+    jest.advanceTimersByTime(TAP_GAP_MS + 1);
     expect(sent).toEqual([
       {
         page: "/midseason/2026/",
@@ -245,12 +250,12 @@ describe("listenForEggs", () => {
     cell("luck-3").dispatchEvent(
       new PointerEvent("pointerdown", { bubbles: true, isPrimary: true }),
     );
-    vi.advanceTimersByTime(2000);
+    jest.advanceTimersByTime(2000);
     cell("luck-3").dispatchEvent(
       new PointerEvent("pointercancel", { bubbles: true, isPrimary: true }),
     );
     cell("luck-3").dispatchEvent(new PointerEvent("pointerup", { bubbles: true, isPrimary: true }));
-    vi.advanceTimersByTime(TAP_GAP_MS + 1);
+    jest.advanceTimersByTime(TAP_GAP_MS + 1);
     expect(sent).toEqual([]);
   });
 
@@ -315,7 +320,7 @@ describe("listenForEggs", () => {
     selection.removeAllRanges();
     selection.addRange(range);
     document.dispatchEvent(new Event("selectionchange"));
-    vi.advanceTimersByTime(SELECT_SETTLE_MS + 1);
+    jest.advanceTimersByTime(SELECT_SETTLE_MS + 1);
   }
 
   const blurb = () => cell("blurb-luck");
@@ -342,7 +347,7 @@ describe("listenForEggs", () => {
   it("sends one check for one selection, however many times the browser fires the change", () => {
     select(blurb(), at("lucky"), at("lucky") + 5);
     document.dispatchEvent(new Event("selectionchange"));
-    vi.advanceTimersByTime(SELECT_SETTLE_MS + 1);
+    jest.advanceTimersByTime(SELECT_SETTLE_MS + 1);
     expect(sent).toHaveLength(1);
   });
 
@@ -411,12 +416,12 @@ describe("listenForEggs", () => {
     const html = document.documentElement;
     Object.defineProperty(html, "scrollHeight", { configurable: true, value: 3000 });
     Object.defineProperty(window, "innerHeight", { configurable: true, value: 800 });
-    window.scrollY = 1000;
+    setScrollY(1000);
     window.dispatchEvent(new Event("scroll"));
     expect(conditionsNow()).toEqual({ theme: "light" });
-    window.scrollY = 2200;
+    setScrollY(2200);
     window.dispatchEvent(new Event("scroll"));
-    window.scrollY = 0;
+    setScrollY(0);
     window.dispatchEvent(new Event("scroll"));
     expect(conditionsNow()).toEqual({ theme: "light", scrolled_end: true });
   });

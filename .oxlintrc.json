@@ -18,6 +18,7 @@
   "rules": {
     "design/no-arbitrary-value": "error",
     "design/no-raw-color": "error",
+    "design/no-raw-element": "error",
     "no-restricted-imports": [
       "error",
       {

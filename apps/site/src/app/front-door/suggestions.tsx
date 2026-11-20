@@ -6,6 +6,7 @@
  */
 "use client";
 
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { type ComponentProps, useId, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
@@ -101,7 +102,7 @@ export function Suggestions({
         aria-busy={picks === null || undefined}
         className="-mx-gutter -my-sp-1 scroll-px-gutter gap-sp-2 px-gutter py-sp-1 flex snap-x [scrollbar-width:none] flex-nowrap overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden"
       >
-        <button
+        <PendingButton
           type="button"
           aria-expanded={moreOpen}
           aria-controls={panelId}
@@ -118,7 +119,7 @@ export function Suggestions({
             className={`size-sp-4 text-mute flex-none transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${moreOpen ? "-scale-y-100" : ""}`}
             strokeWidth={2.25}
           />
-        </button>
+        </PendingButton>
         {picks === null && (
           // The placeholders hold the size of a chip, with one still bar for the name. They do not pulse, so the dock
           // stays quiet for the moment until the chips land.
@@ -285,7 +286,7 @@ export function Suggestions({
                     animate={off ? { opacity: 1 } : { opacity: 1, y: 0 }}
                     transition={fadeIn(FAST, 0.04 + staggerOf(index))}
                   >
-                    <button
+                    <PendingButton
                       type="button"
                       disabled={!ready}
                       aria-label={ready ? `${topic.name}: ${fact}` : `${topic.name}: opens soon`}
@@ -303,7 +304,7 @@ export function Suggestions({
                       <span className="text-meta text-mute max-w-full truncate font-mono leading-tight tabular-nums">
                         {ready ? fact : "Opens soon"}
                       </span>
-                    </button>
+                    </PendingButton>
                   </motion.li>
                 );
               })}

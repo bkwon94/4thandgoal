@@ -1,7 +1,7 @@
 /**
  * Tests for the API client. fetch is a test stub that returns real Response objects.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, spyOn } from "bun:test";
 import {
   ApiError,
   fetchTeams,
@@ -16,14 +16,10 @@ import {
 // The API of the test. The client slug is not cpc, so a path that drops the slug or fixes it to cpc fails.
 const TARGET: ApiTarget = { url: "https://api.example.test", client: "norcal", season: 2026 };
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe("fetchTeams", () => {
   it("fills a missing avatar with null", async () => {
     const body = { teams: [{ roster_id: 1, team: "A", manager: "Ana", players: [] }] };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(body))));
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body)));
     expect((await fetchTeams(TARGET, "pw"))[0].avatar).toBeNull();
   });
 
@@ -32,7 +28,7 @@ describe("fetchTeams", () => {
       status: 429,
       headers: { "Retry-After": "12" },
     });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
+    spyOn(globalThis, "fetch").mockResolvedValue(response);
     await expect(fetchTeams(TARGET, "pw")).rejects.toMatchObject({
       status: 429,
       message: "slow down",
@@ -45,8 +41,9 @@ describe("fetchTeams", () => {
 describe("the client in the path", () => {
   it("calls the teams, analyze, and find routes of the client of the target", async () => {
     const teams = { teams: [] };
-    const stub = vi.fn().mockImplementation(async () => new Response(JSON.stringify(teams)));
-    vi.stubGlobal("fetch", stub);
+    const stub = spyOn(globalThis, "fetch").mockImplementation(
+      (async () => new Response(JSON.stringify(teams))) as unknown as typeof fetch,
+    );
     await fetchTeams(TARGET, "pw");
     const signal = new AbortController().signal;
     await postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, signal).catch(
@@ -98,14 +95,14 @@ describe("retryText", () => {
 describe("response parse", () => {
   it("throws an ApiError that names the path of the bad field", async () => {
     const body = { teams: [{ roster_id: "one", team: "A", manager: "Ana", players: [] }] };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(body))));
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body)));
     const error = await fetchTeams(TARGET, "pw").catch((e) => e);
     expect(error).toBeInstanceOf(ApiError);
     expect(error.message).toContain("teams.0.roster_id");
   });
 
   it("throws the same error for a wrong analyze body", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}")));
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
     const call = postAnalyze(
       TARGET,
       "pw",

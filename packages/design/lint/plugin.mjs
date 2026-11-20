@@ -5,6 +5,7 @@
 
 import noArbitraryValue from "./rules/no-arbitrary-value.mjs";
 import noRawColor from "./rules/no-raw-color.mjs";
+import noRawElement from "./rules/no-raw-element.mjs";
 import useLines from "./rules/use-lines.mjs";
 
 export default {
@@ -12,6 +13,7 @@ export default {
   rules: {
     "no-arbitrary-value": noArbitraryValue,
     "no-raw-color": noRawColor,
+    "no-raw-element": noRawElement,
     "use-lines": useLines,
   },
 };

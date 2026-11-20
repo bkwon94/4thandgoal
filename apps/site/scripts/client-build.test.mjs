@@ -2,7 +2,6 @@
  * Tests of the client build: the check of client.toml, the generated files, and the copy of the published data.
  * Each test builds a real client folder in a temp repo, or runs the script on the real clients/cpc folder.
  */
-// @vitest-environment node
 import { spawnSync } from "node:child_process";
 import {
   cpSync,
@@ -16,7 +15,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import {
   buildClient,
   ClientBuildError,

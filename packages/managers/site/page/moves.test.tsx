@@ -3,7 +3,7 @@
  * They read the three totals and the text of their trends, the week order, the empty line, the add and drop lines, and both sides of a trade, and the teams it names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { sleeperHeadshot } from "@cpc/league/images";
 import type { Manager, ManagerEntry } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";

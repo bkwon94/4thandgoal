@@ -5,14 +5,10 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, spyOn } from "bun:test";
+import { resetModules } from "../../../test/reset-modules";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@/fixtures/waiver.json";
-
-afterEach(() => {
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
-});
 
 /* A temp public/ folder with one week page per week folder, and the waiver file in the weeks given. */
 async function readerOver(weeks: string[], withWaiver: Record<string, unknown>) {
@@ -24,9 +20,9 @@ async function readerOver(weeks: string[], withWaiver: Record<string, unknown>) 
   for (const [week, body] of Object.entries(withWaiver)) {
     writeFileSync(join(root, "public", "2026", week, "waiver.json"), JSON.stringify(body));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
+  spyOn(process, "cwd").mockReturnValue(root);
   // The week reader reads the working folder when it loads, so reset it to pick up the temp folder.
-  vi.resetModules();
+  resetModules();
   return import("./waiver-data");
 }
 

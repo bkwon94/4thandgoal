@@ -3,7 +3,7 @@
  */
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import type { Team } from "../lib/api";
 import { TeamPicker } from "./team-picker";

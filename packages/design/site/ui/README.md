@@ -20,5 +20,5 @@ None.
 - It knows no league term. A component that shows a team, a player, or a week is a part in `site/parts/`, or it lives in its page folder.
 - It holds no state of the site.
 - It holds no `cn` helper. `site/lib/utils.ts` holds it.
-- No file outside this folder imports `@ui-sdk`. The Oxlint rule `no-restricted-imports` in `.oxlintrc.json` fails on one.
+- No file outside this folder imports `@ui-sdk` or renders a raw `<button>` or `<dialog>`. In `.oxlintrc.json`, `no-restricted-imports` fails the import, and `design/no-raw-element` fails the element and names `PendingButton` or `Dialog`. Test files may render a raw element.
 - It reads no file, no env, and no config, and it calls no loader (ADR 0012).

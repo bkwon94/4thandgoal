@@ -2,7 +2,7 @@
  * Tests for the data of the manager scene, built from the real managers file of CPC.
  * They check one light per played week, the tone of a win and a loss, the median of each week, and the label at rest.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { ManagerEntry } from "../schema/manager-types";
 import { managers } from "../fixtures/managers";
 import { managerScene } from "./manager-scene";
