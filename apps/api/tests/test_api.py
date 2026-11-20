@@ -1673,6 +1673,27 @@ def test_a_pick_of_five_offers_and_three_near_ideas_stands_from_one_pick_call(se
     assert [item["offer_id"] for item in doc["near"]] == picker.offer_ids(labels[5:8])
 
 
+def test_a_pick_of_fewer_than_five_carries_its_short_line_in_the_document_and_the_log(settings, sources, caplog):
+    # The pick keeps 5 trades unless an offer is clearly bad, and it says why in one plain line when it keeps fewer.
+    caplog.set_level("INFO", logger="analyzer.finder_pick")
+    line = "Two offers give up your only reliable RB, so they stay off the list."
+    picker = StubPicker(lambda user: passing_pick(user) | {"short_line": line})
+    doc = _find_client(settings, sources, picker).post("/find", json=FIND, headers=HEADERS).json()
+    assert len(doc["trades"]) == 3
+    assert doc["short_line"] == line
+    assert f"finder pick kept 3 of 5: {line}" in caplog.text
+
+
+def test_a_pick_of_five_has_no_short_line(settings, sources):
+    def five(user):
+        labels = re.findall(r"^Offer (\S+)$", user, re.MULTILINE)
+        return {"picks": [_passing_pick_of(label) for label in labels[:5]], "near": [], "none_line": None}
+
+    doc = _find_client(settings, sources, StubPicker(five)).post("/find", json=FIND, headers=HEADERS).json()
+    assert len(doc["trades"]) == 5
+    assert doc["short_line"] is None
+
+
 def test_each_trade_and_near_idea_holds_the_trade_value_total_of_each_side_and_each_player_line(settings, sources):
     # Decision 17: the Ledger card shows a trade value total under each column, and a row per player with the
     # position, the NFL team, and the rank, so the site needs no second call.
@@ -2289,6 +2310,9 @@ def test_the_pick_prompt_holds_the_playbook_and_the_pick_rules(settings, sources
                  "case: at most 3 short sentences to the asker,",
                  "near: up to 3 other offers of the list that came close, best first, each once.",
                  "With no pick, give at least one near idea.",
+                 "Keep 5 picks unless an offer is clearly bad for the asker.",
+                 "use at least 3 partners and at least 2 shapes",
+                 "short_line: null when you give 5 picks.",
                  "bullets: 2 to 4 Bullets, one claim each, in plain words.",
                  "Say why the asker sends it and why the other manager says yes.",
                  "Never name the commissioner, and never give a letter grade.",
