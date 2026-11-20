@@ -268,8 +268,22 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
  * with opacity, blends into each pixel first, as the browser draws it. Each text reaches HERO_MIN_RATIO.
  * A hero where the scan finds no text fails, so a change to the markup cannot make the scan pass with no test.
  * A scope, a CSS selector, limits the scan to the heroes inside that part. The page is as it was after the scan.
+ * The scan runs at the top of the page, then puts the scroll back. A full page shot draws the sticky top band at the
+ * scroll of the page, so after a scroll the band covers the top of a hero in the shot, and the scan would rate the band,
+ * not the art. A reader sees no text under the opaque band at all, so that text is not a contrast failure.
  */
 export async function scanHeroPixels(page: Page, scope?: string): Promise<string[]> {
+  const scroll = await page.evaluate(() => [scrollX, scrollY] as const);
+  try {
+    await page.evaluate(() => scrollTo({ left: 0, top: 0, behavior: "instant" }));
+    return await scanHeroPixelsHere(page, scope);
+  } finally {
+    await page.evaluate(([left, top]) => scrollTo({ left, top, behavior: "instant" }), scroll);
+  }
+}
+
+/* The pixel scan of hero text at the scroll of the page as it is. */
+async function scanHeroPixelsHere(page: Page, scope?: string): Promise<string[]> {
   const heroes = (await page.evaluate<unknown, InPage>(inPage, { scan: "heroes", limits: LIMITS, scope })) as HeroScan[];
   if (heroes.length === 0) return [];
   const hide = await page.addStyleTag({
