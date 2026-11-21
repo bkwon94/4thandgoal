@@ -1,7 +1,7 @@
 # Turn on the Finder of cpc
 
 Kind: quick-win
-Status: in-progress
+Status: done
 Branch: `win-cpc-finder-on`.
 Source: the handoff file `.handoff/cpc-finder-on.md` and the session of 2026-11-20.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam, it flips one existing flag; the done condition is one sentence.
@@ -38,3 +38,7 @@ Smoke: flow `Analyzer` on cpc. "Smoke run: 1 flow, 1 passed, 0 failed". Shots in
 Grade-bar run on cpc at `d0d53fac`: `cd apps/site && CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build && CLIENT=cpc pnpm check:export && CLIENT=cpc pnpm check:grade-bar-export`. Result: check:export passed; 38 passed, 4 skipped.
 The first run failed 2 tests: the back check of `finder-ledger.spec.ts` on the iPhone, light and dark. The cpc page has little content under the last card, so the page ends with the card top 20 px above the screen. NorCal has more content under it. The spec held a NorCal-only assumption (`box.y >= 0`). The check now also accepts a page at its end. NorCal still passes: 38 passed, 4 skipped.
 The first two smoke runs were red. Run 1 had no API keys in the shell, so the grade failed with status 500. Run 2 had the keys, but the fair warm-up of cpc started with 0 cached answers and held the grade past 120 s. One warm-up run filled `data/cache/fair/cpc.json` for $1.27, and run 3 passed.
+Closes with the squash merge of the PR of `win-cpc-finder-on`. Commits: `3f4e0e33`, `d0d53fac`, `df9d1606`. Date: 2026-11-20.
+The test of `client-steps.test.mjs` went red on the old steps of cpc, then green with 3 passed, and the grade-bar project passed on the cpc export with 38 passed.
+A later run can give the fair warm-up a switch, so a local smoke run of cpc does not wait on a cold cache.
+Read 9 files: AGENTS.md, apps/site/AGENTS.md, .handoff/cpc-finder-on.md, .claude/plugin/skills/quick/format.md, .claude/plugin/skills/quick/judge.md, apps/site/scripts/client-steps.mjs, apps/site/scripts/client-steps.test.mjs, apps/site/e2e/finder-ledger.spec.ts, apps/api/src/cornerstone_api/fair_warm.py.
