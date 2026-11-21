@@ -51,7 +51,7 @@ ok   week-data-: 0 -> 0
 PASS: 0 of 26 prefixes left temp folders behind.
 ```
 
-The check runs the full suite through `scripts/bun-test.mjs` with `TMPDIR` set to an empty folder under `apps/site/test-results/`, so the temp entries of other sessions do not change the count. The other 17 prefixes, `reset-modules` among them, show `0 -> 0` in both runs.
+The check runs the full suite through `scripts/bun-test.mjs` with `TMPDIR` set to an empty folder under `apps/site/test-results/`, so the temp entries of other sessions do not change the count. The other 17 prefixes show `0 -> 0` in both runs. `reset-modules.test.ts` makes its folder under `apps/site/test-results/` and removes it in `afterAll`, so it has no `os.tmpdir()` prefix.
 Test verdict: pending
 
 ### 2. Some site tests call the live API
