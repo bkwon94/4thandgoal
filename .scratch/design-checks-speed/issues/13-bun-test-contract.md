@@ -19,6 +19,8 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-19, AT-20, AT-2
 
 **Counts:** `bun test` passes 1,808 tests in 193 files, with no skip and no fail. Vitest passed 1,775 tests in 183 files at the base of the Spec branch (ticket 08). The math: 1,775 − 5 + 38 = 1,808, and 183 − 1 + 11 = 193 files. Each moved file keeps its Vitest count.
 
+**Count after ticket 15:** Ticket 15 adds `apps/site/scripts/test-scope.test.mjs`, with 14 tests in 1 file. The total is 1,808 + 14 = 1,822 tests in 193 + 1 = 194 files.
+
 | Ticket | Test file | Change |
 | --- | --- | --- |
 | 01 | `src/ui-sdk-rule.test.ts`, removed (ADR 0035 rule test) | −5 |
