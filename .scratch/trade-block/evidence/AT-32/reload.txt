@@ -1,0 +1,21 @@
+iphone-390x660 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+iphone-390x660 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+iphone-390x660 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+375 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+375 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+375 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+375 dark: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+375 dark: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+375 dark: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+768 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+768 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+768 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+768 dark: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+768 dark: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+768 dark: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+1280 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+1280 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+1280 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+1280 dark: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+1280 dark: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+1280 dark: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"

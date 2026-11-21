@@ -1,0 +1,5 @@
+scripts/zz-tb-flows.ts.txt (reloadFlow) ran at 375x812, 768x1024, 1280x900 in Chromium in light and dark, and at 390x660 in iPhone WebKit light.
+It opens Find mode as Bo Girds, taps Cam Skattebo (stand-in for Walker), logs the block, and takes before-<size>-<theme>.png.
+It reloads the page, fills the passphrase sheet if it shows, logs the mode, Your team, and the strip, and takes <size>-<theme>.png.
+The reload also clears Your team, so no strip shows. The script then picks Bo Girds again, logs the block, and takes repick-<size>-<theme>.png.
+reload.txt holds the log. playwright.txt holds the full output.

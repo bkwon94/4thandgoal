@@ -1,0 +1,73 @@
+/**
+ * Checks of the trade-block evidence scripts, copied from apps/site/e2e/trade-block.spec.ts: the frames after a tap, the
+ * text overlap scan, the fixed bars, and the fit of the strip in the hero. They read the real page and stub nothing.
+ */
+import type { Locator, Page } from "@playwright/test";
+import { findOverlap } from "./smoke";
+
+export async function framesAfterTap(page: Page, name: string, ms: number) {
+  return page.evaluate(
+    ([label, span]) =>
+      new Promise<{ t: number; x: number; front: number }[]>((done) => {
+        const group = document.querySelector('[role="group"][aria-label="Trade block"]') as HTMLElement;
+        const button = group.querySelector(`[aria-label="${label}"]`) as HTMLElement;
+        const front = () => group.getBoundingClientRect().left + parseFloat(getComputedStyle(group).paddingLeft);
+        const samples: { t: number; x: number; front: number }[] = [];
+        const start = performance.now();
+        button.click();
+        const read = () => {
+          const t = Math.round(performance.now() - start);
+          samples.push({ t, x: Math.round(button.getBoundingClientRect().left * 10) / 10, front: Math.round(front() * 10) / 10 });
+          if (t < span) requestAnimationFrame(read);
+          else done(samples);
+        };
+        requestAnimationFrame(read);
+      }),
+    [name, ms] as const,
+  );
+}
+
+/* Hides the fixed and sticky parts, runs the text overlap scan, shows them again, and reads the sideways scroll. */
+export async function overlapScan(page: Page) {
+  const hidden = await page.evaluate(() => {
+    const bars = [...document.querySelectorAll<HTMLElement>("body *")].filter((el) => ["fixed", "sticky"].includes(getComputedStyle(el).position));
+    for (const bar of bars) bar.style.visibility = "hidden";
+    return bars.length;
+  });
+  const overlap = await findOverlap(page);
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll<HTMLElement>("body *")) if (el.style.visibility === "hidden") el.style.visibility = "";
+  });
+  const sideways = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, innerWidth: window.innerWidth }));
+  return { hidden, overlap, sideways };
+}
+
+export async function fixedBars(page: Page) {
+  return page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>("body *")]
+      .filter((el) => ["fixed", "sticky"].includes(getComputedStyle(el).position) && el.checkVisibility({ opacityProperty: true, visibilityProperty: true }))
+      .map((el) => ({ name: el.getAttribute("aria-label") ?? el.tagName.toLowerCase(), ...el.getBoundingClientRect().toJSON() }))
+      .filter((box) => box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight),
+  );
+}
+
+export async function covers(bar: { top: number; bottom: number; left: number; right: number }, part: Locator, height: number) {
+  const box = (await part.boundingBox())!;
+  const top = Math.max(box.y, 0);
+  const bottom = Math.min(box.y + box.height, height);
+  if (bottom <= top || bar.top < 1) return false;
+  const across = Math.min(box.x + box.width, bar.right) - Math.max(box.x, bar.left);
+  const down = Math.min(bottom, bar.bottom) - Math.max(top, bar.top);
+  return across > 0 && down > 0;
+}
+
+export async function stripFit(page: Page) {
+  return page.evaluate(() => {
+    const hero = document.querySelector('section[aria-label="Trade Ideas"] section[aria-label="Trade Ideas"]') as HTMLElement;
+    const area = document.querySelector('[role="group"][aria-label="Trade block"]')!.closest("[data-slot=scroll-area-viewport]") as HTMLElement;
+    const h = hero.getBoundingClientRect();
+    const a = area.getBoundingClientRect();
+    const border = parseFloat(getComputedStyle(hero).borderLeftWidth);
+    return { heroLeft: h.left + border, heroRight: h.right - border, stripLeft: a.left, stripRight: a.right };
+  });
+}

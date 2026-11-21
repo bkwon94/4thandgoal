@@ -1,0 +1,30 @@
+# One probe POST to the local evidence API (127.0.0.1:18431), to pick a partner and a chip that leave no fair trade for Skattebo and Flowers.
+# curl -sN -X POST -H 'X-League-Passphrase: <passphrase>' -H 'content-type: application/json' --data '{"season":2026,"asker":6,"partner":10,"limit":{"aim_position":"QB"},"trade_block":["12481","9997"]}' http://127.0.0.1:18431/clients/cpc/find-stream
+# 2026-11-21 11:38 EST, at 3dd395a0. Every API log line of the press, with the httpx and typesafe_sdk lines left out:
+INFO:     127.0.0.1:54103 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 1 (spares tree): 1 requests, about 1807 tokens
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on asker; partner gives Pat Bryant=0.73, Quinshon Judkins=0.89, Kyle Monangai=0.86, Germie Bernard=0.88, Keenan Allen=0.93, Deebo Samuel Sr.=0.93, Rico Dowdle=0.87, Nico Collins=0.93, Javonte Williams=0.42, Drake London=0.94; asker gives no one
+INFO:     analyzer.finder_search: Finder Value offers of Bo Girds: 81; 1-for-1=0, 2-for-1=0, 1-for-2=0, 3-for-1=0, 1-for-3=6, 3-for-2=6, 2-for-3=69
+INFO:     analyzer.finder_search: Finder fair answers of Bo Girds: 162 questions, 162 from the cache, 0 asked live
+INFO:     analyzer.finder_search: Finder fair step of Bo Girds: checked 81, dropped 9, no answer 0
+INFO:     analyzer.finder_search: Finder step 2 of Bo Girds: 9 offers, the 3 best of each partner and shape direction
+INFO:     analyzer.finder_search: Finder offer 6:12481-10:11566+13274+1479: Bo Girds gives Cam Skattebo (RB, NYG); behold the lamb gives Jayden Daniels (QB, WAS) and Germie Bernard (WR, PIT) and Keenan Allen (WR, SF)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:11566+12534+13274: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Jayden Daniels (QB, WAS) and Kyle Monangai (RB, CHI) and Germie Bernard (WR, PIT)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:11566+13274+1479: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Jayden Daniels (QB, WAS) and Germie Bernard (WR, PIT) and Keenan Allen (WR, SF)
+INFO:     analyzer.finder_search: Finder offer 6:11586+12481+8130-10:11566+7588: Bo Girds gives Blake Corum (RB, LAR) and Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI); behold the lamb gives Jayden Daniels (QB, WAS) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:11586+8130+9997-10:11566+7588: Bo Girds gives Blake Corum (RB, LAR) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); behold the lamb gives Jayden Daniels (QB, WAS) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481+9487-10:11566+7588: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX); behold the lamb gives Jayden Daniels (QB, WAS) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+12501-10:11566+1479+7588: Bo Girds gives Cam Skattebo (RB, NYG) and Matthew Golden (WR, GB); behold the lamb gives Jayden Daniels (QB, WAS) and Keenan Allen (WR, SF) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487-10:11566+12512+7569: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX); behold the lamb gives Jayden Daniels (QB, WAS) and Quinshon Judkins (RB, CLE) and Nico Collins (WR, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-10:11566+1479+7588: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); behold the lamb gives Jayden Daniels (QB, WAS) and Keenan Allen (WR, SF) and Javonte Williams (RB, DAL)
+INFO:     analyzer.jev_waves: Jev wave 2 (shortlist): 1 requests, about 8312 tokens
+INFO:     analyzer.finder_search: Finder gain drop 6:12481-10:11566+13274+1479: gains={6: 0.05, 10: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:11566+12534+13274: gains={6: 0.97, 10: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:11566+13274+1479: gains={6: 0.04, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12481+8130-10:11566+7588: gains={6: 0.03, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-10:11566+7588: gains={6: 0.03, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481+9487-10:11566+7588: gains={6: 0.06, 10: 0.15}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+12501-10:11566+1479+7588: gains={6: 0.05, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487-10:11566+12512+7569: gains={6: 0.96, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-10:11566+1479+7588: gains={6: 0.04, 10: 0.12}
+INFO:     analyzer.routes: Press of find for cpc: time=2.5s cost=$0.0000 claude_calls=0

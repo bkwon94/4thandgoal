@@ -1,0 +1,53 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "fill": {
+        "selector": "input[type=password]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "button[type=submit]"
+    },
+    {
+      "wait": "[role=radiogroup][aria-label=\"Mode\"] button:text-is(\"Find a trade\")"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "[role=radiogroup][aria-label=\"Mode\"] button:text-is(\"Find a trade\")"
+    },
+    {
+      "wait": "section[aria-label=\"Trade Ideas\"] button:has-text(\"Pick a team\")"
+    },
+    {
+      "click": "section[aria-label=\"Trade Ideas\"] button:has-text(\"Pick a team\")"
+    },
+    {
+      "wait": "ul[aria-label=\"Teams\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "click": "ul[aria-label=\"Teams\"] button:has-text(\"Bo Girds\")"
+    },
+    {
+      "wait": "[role=group][aria-label=\"Trade block\"]"
+    },
+    {
+      "wait": 1000
+    },
+    {
+      "shot": "before"
+    },
+    {
+      "click": "[role=group][aria-label=\"Trade block\"] button[aria-label=\"Cam Skattebo, RB\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "shot": "after"
+    }
+  ]
+}

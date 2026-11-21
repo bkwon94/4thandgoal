@@ -1,0 +1,10 @@
+# POST http://127.0.0.1:18431/clients/cpc/find-stream
+# request body: {"season":2026,"asker":6,"trade_block":["8151"]}
+data: {"type": "start"}
+
+data: {"type": "data-answer", "data": {"kind": "find", "document": {"season": 2026, "trade_pair": {"asker": {"roster_id": 6, "team": "Bo Girds"}, "partner": null}, "trades": [], "near": [], "empty": "No fair trade sends Walker with the partner and the position you picked.", "short_line": null, "as_of": {"chart_week": 11, "stats_through": 11, "completed_through": 10, "rosters_fetched": "2026-11-21T11:39:46.263618-05:00", "known_games": {"week": 11, "games": 1, "in_progress": 0, "pending": {}}, "no_chart": false, "no_chart_note": null}, "fallback": false, "missing": [], "stale": []}}}
+
+data: {"type": "finish"}
+
+data: [DONE]
+

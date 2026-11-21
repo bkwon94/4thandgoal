@@ -1,0 +1,194 @@
+$ TB_ACTION_MS=30000 TB_IDS="AT-15 AT-16 AT-17 AT-19 AT-20 AT-21 AT-22 AT-31" TB_STAND_INS=none pnpm exec playwright test --config zz-tb.config.ts --project=webkit e2e/zz-tb-webkit.spec.ts
+# run from apps/site of a detached worktree of 3dd395a0 against http://127.0.0.1:18432 and the local evidence API on 127.0.0.1:18431, 2026-11-21 11:41 EST. TB_FLOWS is unset, so its default runs: AT-18 AT-24 AT-26 AT-27 AT-32.
+
+Running 18 tests using 1 worker
+
+  ✓   1 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-15 shots (7.5s)
+  ✓   2 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-16 shots (7.8s)
+  ✓   3 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-17 shots (7.1s)
+  ✓   4 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-19 shots (7.4s)
+  ✓   5 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-20 shots (5.5s)
+  ✓   6 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-21 shots (8.4s)
+  ✓   7 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-22 shots (9.5s)
+  ✓   8 [webkit] › e2e/zz-tb-webkit.spec.ts:20:9 › iPhone 15 WebKit 390x660 › AT-31 shots (7.8s)
+iphone-390x660 light: strip at its end scrollLeft=620 (scrollWidth 976, clientWidth 356); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓   9 [webkit] › e2e/zz-tb-webkit.spec.ts:25:36 › iPhone 15 WebKit 390x660 › AT-18 blocked (10.6s)
+iphone-390x660 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+iphone-390x660 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+iphone-390x660 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓  10 [webkit] › e2e/zz-tb-webkit.spec.ts:26:36 › iPhone 15 WebKit 390x660 › AT-32 reload (14.1s)
+iphone-390x660 light: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓  11 [webkit] › e2e/zz-tb-webkit.spec.ts:27:36 › iPhone 15 WebKit 390x660 › AT-26 keys (6.8s)
+iphone-390x660 light: hero inner 17 to 373, strip 17 to 373 (left gap 0, right gap 0)
+iphone-390x660 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 390, innerWidth 390
+iphone-390x660 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 light: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  12 [webkit] › e2e/zz-tb-webkit.spec.ts:28:84 › iPhone 15 WebKit 390x660 › AT-27 fit light (6.9s)
+iphone-390x660 dark: hero inner 17 to 373, strip 17 to 373 (left gap 0, right gap 0)
+iphone-390x660 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 390, innerWidth 390
+iphone-390x660 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  13 [webkit] › e2e/zz-tb-webkit.spec.ts:28:84 › iPhone 15 WebKit 390x660 › AT-27 fit dark (7.0s)
+iphone-390x660 reducedMotion=reduce: before the tap, Skattebo x=257
+iphone-390x660 reducedMotion=reduce: first frame after the tap at 7 ms: Skattebo x=41, front of the strip x=41, gap=0 px
+iphone-390x660 every frame for 300 ms: 7ms x=41, 25ms x=41, 41ms x=41, 57ms x=41, 76ms x=41, 91ms x=41, 108ms x=41, 124ms x=41, 142ms x=41, 158ms x=41, 177ms x=41, 191ms x=41, 208ms x=41, 225ms x=41, 242ms x=41, 257ms x=41, 276ms x=41, 291ms x=41, 310ms x=41
+iphone-390x660 after the tap: pressed=["Cam Skattebo, RB"]
+  ✓  14 [webkit] › e2e/zz-tb-webkit.spec.ts:33:36 › iPhone 15 WebKit 390x660, motion off › AT-24 motion off (4.4s)
+ipad-810x980 light: hero inner 102 to 708, strip 102 to 708 (left gap 0, right gap 0)
+ipad-810x980 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 810, innerWidth 810
+ipad-810x980 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 light: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  15 [webkit] › e2e/zz-tb-webkit.spec.ts:39:86 › iPad WebKit ipad-810x980 › AT-27 fit ipad-810x980 light (6.9s)
+ipad-810x980 dark: hero inner 102 to 708, strip 102 to 708 (left gap 0, right gap 0)
+ipad-810x980 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 810, innerWidth 810
+ipad-810x980 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  16 [webkit] › e2e/zz-tb-webkit.spec.ts:39:86 › iPad WebKit ipad-810x980 › AT-27 fit ipad-810x980 dark (6.8s)
+ipad-1080x740 light: hero inner 197 to 883, strip 197 to 883 (left gap 0, right gap 0)
+ipad-1080x740 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1080, innerWidth 1080
+ipad-1080x740 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 light: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  17 [webkit] › e2e/zz-tb-webkit.spec.ts:39:86 › iPad WebKit ipad-1080x740 › AT-27 fit ipad-1080x740 light (7.1s)
+ipad-1080x740 dark: hero inner 197 to 883, strip 197 to 883 (left gap 0, right gap 0)
+ipad-1080x740 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1080, innerWidth 1080
+ipad-1080x740 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  18 [webkit] › e2e/zz-tb-webkit.spec.ts:39:86 › iPad WebKit ipad-1080x740 › AT-27 fit ipad-1080x740 dark (7.0s)
+
+  18 passed (2.3m)
+
+$ TB_ACTION_MS=30000 pnpm exec playwright test --config zz-tb.config.ts --project=chromium e2e/zz-tb-chromium.spec.ts
+# run from the same place, 2026-11-21 11:44 EST. Defaults: TB_FLOWS="AT-18 AT-24 AT-25 AT-26 AT-27 AT-31 AT-32", TB_STAND_INS="AT-10/walker".
+
+Running 29 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/zz-tb-chromium.spec.ts:26:13 › AT-10/walker 375 light › AT-10/walker shots 375 light (12.3s)
+  ✓   2 [chromium] › e2e/zz-tb-chromium.spec.ts:26:13 › AT-10/walker 375 dark › AT-10/walker shots 375 dark (12.0s)
+  ✓   3 [chromium] › e2e/zz-tb-chromium.spec.ts:26:13 › AT-10/walker 768 light › AT-10/walker shots 768 light (11.4s)
+  ✓   4 [chromium] › e2e/zz-tb-chromium.spec.ts:26:13 › AT-10/walker 768 dark › AT-10/walker shots 768 dark (11.4s)
+  ✓   5 [chromium] › e2e/zz-tb-chromium.spec.ts:26:13 › AT-10/walker 1280 light › AT-10/walker shots 1280 light (11.2s)
+  ✓   6 [chromium] › e2e/zz-tb-chromium.spec.ts:26:13 › AT-10/walker 1280 dark › AT-10/walker shots 1280 dark (11.3s)
+375 light: strip at its end scrollLeft=635 (scrollWidth 976, clientWidth 341); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓   7 [chromium] › e2e/zz-tb-chromium.spec.ts:39:40 › 375 light › AT-18 blocked 375 light (10.0s)
+375 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+375 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+375 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓   8 [chromium] › e2e/zz-tb-chromium.spec.ts:40:40 › 375 light › AT-32 reload 375 light (13.4s)
+375 light: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓   9 [chromium] › e2e/zz-tb-chromium.spec.ts:41:40 › 375 light › AT-26 keys 375 light (6.2s)
+375 dark: strip at its end scrollLeft=635 (scrollWidth 976, clientWidth 341); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓  10 [chromium] › e2e/zz-tb-chromium.spec.ts:39:40 › 375 dark › AT-18 blocked 375 dark (10.0s)
+375 dark: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+375 dark: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+375 dark: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓  11 [chromium] › e2e/zz-tb-chromium.spec.ts:40:40 › 375 dark › AT-32 reload 375 dark (13.5s)
+375 dark: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓  12 [chromium] › e2e/zz-tb-chromium.spec.ts:41:40 › 375 dark › AT-26 keys 375 dark (6.3s)
+768 light: strip at its end scrollLeft=370 (scrollWidth 976, clientWidth 606); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓  13 [chromium] › e2e/zz-tb-chromium.spec.ts:39:40 › 768 light › AT-18 blocked 768 light (9.9s)
+768 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+768 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+768 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓  14 [chromium] › e2e/zz-tb-chromium.spec.ts:40:40 › 768 light › AT-32 reload 768 light (13.4s)
+768 light: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓  15 [chromium] › e2e/zz-tb-chromium.spec.ts:41:40 › 768 light › AT-26 keys 768 light (6.2s)
+768 dark: strip at its end scrollLeft=370 (scrollWidth 976, clientWidth 606); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓  16 [chromium] › e2e/zz-tb-chromium.spec.ts:39:40 › 768 dark › AT-18 blocked 768 dark (9.9s)
+768 dark: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+768 dark: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+768 dark: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓  17 [chromium] › e2e/zz-tb-chromium.spec.ts:40:40 › 768 dark › AT-32 reload 768 dark (13.4s)
+768 dark: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓  18 [chromium] › e2e/zz-tb-chromium.spec.ts:41:40 › 768 dark › AT-26 keys 768 dark (6.2s)
+1280 light: strip at its end scrollLeft=290 (scrollWidth 976, clientWidth 686); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓  19 [chromium] › e2e/zz-tb-chromium.spec.ts:39:40 › 1280 light › AT-18 blocked 1280 light (9.9s)
+1280 light: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+1280 light: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+1280 light: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓  20 [chromium] › e2e/zz-tb-chromium.spec.ts:40:40 › 1280 light › AT-32 reload 1280 light (13.5s)
+1280 light: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓  21 [chromium] › e2e/zz-tb-chromium.spec.ts:41:40 › 1280 light › AT-26 keys 1280 light (6.3s)
+1280 dark: strip at its end scrollLeft=290 (scrollWidth 976, clientWidth 686); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+  ✓  22 [chromium] › e2e/zz-tb-chromium.spec.ts:39:40 › 1280 dark › AT-18 blocked 1280 dark (10.0s)
+1280 dark: before the reload, pressed=["Cam Skattebo, RB"], counter="1 of 3", url=http://127.0.0.1:18432/analyze/?mode=find
+1280 dark: after the reload, url=http://127.0.0.1:18432/analyze/?mode=find, mode=["Find a trade"], Your team="YOUR TEAM / Pick a team / Change", strip shown=false
+1280 dark: after the reload and a new pick of Bo Girds, pressed=[], counter="0 of 3"
+  ✓  23 [chromium] › e2e/zz-tb-chromium.spec.ts:40:40 › 1280 dark › AT-32 reload 1280 dark (13.4s)
+1280 dark: Tab from Your team lands on "Fernando Mendoza, QB" (group "Trade block"); ArrowRight path: Fernando Mendoza, QB > Kirk Cousins, QB > Blake Corum, RB > Cam Skattebo, RB > Kenneth Walker III, RB > Tyjae Spears, RB > Zonovan Knight, RB > Antonio Williams, WR > Chimere Dike, WR > Matthew Golden, WR > Parker Washington, WR > Zay Flowers, WR; after Space pressed=["Zay Flowers, WR"], counter="1 of 3", focus on "Zay Flowers, WR"
+  ✓  24 [chromium] › e2e/zz-tb-chromium.spec.ts:41:40 › 1280 dark › AT-26 keys 1280 dark (6.3s)
+desktop-1280x800 light: hero inner 297 to 983, strip 297 to 983 (left gap 0, right gap 0)
+desktop-1280x800 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1280, innerWidth 1280
+desktop-1280x800 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 light: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  25 [chromium] › e2e/zz-tb-chromium.spec.ts:48:84 › desktop 1280x800 › AT-27 fit desktop light (6.5s)
+desktop-1280x800 dark: hero inner 297 to 983, strip 297 to 983 (left gap 0, right gap 0)
+desktop-1280x800 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1280, innerWidth 1280
+desktop-1280x800 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+  ✓  26 [chromium] › e2e/zz-tb-chromium.spec.ts:48:84 › desktop 1280x800 › AT-27 fit desktop dark (6.5s)
+# Chromium 1280x800, Find mode as Bo Girds on the local site, after a tap on Skattebo.
+# locator('[role="group"][aria-label="Trade block"]').ariaSnapshot():
+- group "Trade block":
+  - button "Cam Skattebo, RB" [pressed]: Skattebo RB
+  - button "Fernando Mendoza, QB": Mendoza QB
+  - button "Kirk Cousins, QB": Cousins QB
+  - button "Blake Corum, RB": Corum RB
+  - button "Kenneth Walker III, RB": Walker RB
+  - button "Tyjae Spears, RB": Spears RB
+  - button "Zonovan Knight, RB": Knight RB
+  - button "Antonio Williams, WR": Williams WR
+  - button "Chimere Dike, WR": Dike WR
+  - button "Matthew Golden, WR": Golden WR
+  - button "Parker Washington, WR": Washington WR
+  - button "Zay Flowers, WR": Flowers WR
+  - button "Trey McBride, TE": McBride TE
+
+# Each button of the group, its name, and its aria-pressed:
+role=button name="Cam Skattebo, RB" aria-pressed=true
+role=button name="Fernando Mendoza, QB" aria-pressed=false
+role=button name="Kirk Cousins, QB" aria-pressed=false
+role=button name="Blake Corum, RB" aria-pressed=false
+role=button name="Kenneth Walker III, RB" aria-pressed=false
+role=button name="Tyjae Spears, RB" aria-pressed=false
+role=button name="Zonovan Knight, RB" aria-pressed=false
+role=button name="Antonio Williams, WR" aria-pressed=false
+role=button name="Chimere Dike, WR" aria-pressed=false
+role=button name="Matthew Golden, WR" aria-pressed=false
+role=button name="Parker Washington, WR" aria-pressed=false
+role=button name="Zay Flowers, WR" aria-pressed=false
+role=button name="Trey McBride, TE" aria-pressed=false
+
+  ✓  27 [chromium] › e2e/zz-tb-chromium.spec.ts:51:9 › desktop 1280x800 › AT-25 accessibility tree (4.8s)
+# Chromium 1280x900, Find mode as Bo Girds on the local site. The strip scroll area: {"scrollLeft":290,"scrollWidth":976,"clientWidth":686} at its end.
+# player id in the headshot src of each toggle	its aria-label	the check against teams.json
+13269	Fernando Mendoza, QB	https://sleepercdn.com/content/nfl/players/13269.jpg	on Bo Girds (roster 6) in /teams: yes, 13269 Fernando Mendoza	on another roster: none
+1166	Kirk Cousins, QB	https://sleepercdn.com/content/nfl/players/1166.jpg	on Bo Girds (roster 6) in /teams: yes, 1166 Kirk Cousins	on another roster: none
+11586	Blake Corum, RB	https://sleepercdn.com/content/nfl/players/11586.jpg	on Bo Girds (roster 6) in /teams: yes, 11586 Blake Corum	on another roster: none
+12481	Cam Skattebo, RB	https://sleepercdn.com/content/nfl/players/12481.jpg	on Bo Girds (roster 6) in /teams: yes, 12481 Cam Skattebo	on another roster: none
+8151	Kenneth Walker III, RB	https://sleepercdn.com/content/nfl/players/8151.jpg	on Bo Girds (roster 6) in /teams: yes, 8151 Kenneth Walker III	on another roster: none
+9508	Tyjae Spears, RB	https://sleepercdn.com/content/nfl/players/9508.jpg	on Bo Girds (roster 6) in /teams: yes, 9508 Tyjae Spears	on another roster: none
+8122	Zonovan Knight, RB	https://sleepercdn.com/content/nfl/players/8122.jpg	on Bo Girds (roster 6) in /teams: yes, 8122 Zonovan Knight	on another roster: none
+13301	Antonio Williams, WR	https://sleepercdn.com/content/nfl/players/13301.jpg	on Bo Girds (roster 6) in /teams: yes, 13301 Antonio Williams	on another roster: none
+12540	Chimere Dike, WR	https://sleepercdn.com/content/nfl/players/12540.jpg	on Bo Girds (roster 6) in /teams: yes, 12540 Chimere Dike	on another roster: none
+12501	Matthew Golden, WR	https://sleepercdn.com/content/nfl/players/12501.jpg	on Bo Girds (roster 6) in /teams: yes, 12501 Matthew Golden	on another roster: none
+9487	Parker Washington, WR	https://sleepercdn.com/content/nfl/players/9487.jpg	on Bo Girds (roster 6) in /teams: yes, 9487 Parker Washington	on another roster: none
+9997	Zay Flowers, WR	https://sleepercdn.com/content/nfl/players/9997.jpg	on Bo Girds (roster 6) in /teams: yes, 9997 Zay Flowers	on another roster: none
+8130	Trey McBride, TE	https://sleepercdn.com/content/nfl/players/8130.jpg	on Bo Girds (roster 6) in /teams: yes, 8130 Trey McBride	on another roster: none
+# 13 toggles on the strip; Bo Girds has 14 players in /teams.
+
+  ✓  28 [chromium] › e2e/zz-tb-chromium.spec.ts:65:9 › desktop 1280x800 › AT-31 strip ids (4.0s)
+chromium-1280x800 reducedMotion=reduce: before the tap, Skattebo x=537
+chromium-1280x800 reducedMotion=reduce: first frame after the tap at 5 ms: Skattebo x=321, front of the strip x=321, gap=0 px
+chromium-1280x800 every frame for 300 ms: 5ms x=321, 13ms x=321, 32ms x=321, 48ms x=321, 64ms x=321, 81ms x=321, 98ms x=321, 115ms x=321, 131ms x=321, 148ms x=321, 165ms x=321, 182ms x=321, 199ms x=321, 215ms x=321, 232ms x=321, 248ms x=321, 265ms x=321, 282ms x=321, 298ms x=321, 315ms x=321
+chromium-1280x800 after the tap: pressed=["Cam Skattebo, RB"]
+  ✓  29 [chromium] › e2e/zz-tb-chromium.spec.ts:94:36 › desktop 1280x800, motion off › AT-24 motion off desktop (3.7s)
+
+  29 passed (4.6m)

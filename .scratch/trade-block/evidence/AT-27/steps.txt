@@ -1,0 +1,5 @@
+scripts/zz-tb-flows.ts.txt (fitFlow) ran in iPhone WebKit 390x660, iPad WebKit 810x980 and 1080x740 (devices["iPad Pro 11"]), and Chromium 1280x800, each in light and dark.
+It opens Find mode as Bo Girds and taps Cam Skattebo (stand-in for Walker) and Zay Flowers, then waits for "2 of 3".
+It reads the inner edges of the hero and the edges of the strip scroll area, runs findOverlap of apps/site/e2e/smoke.ts with the fixed and sticky parts hidden, and reads the page scrollWidth.
+Then it scrolls the strip, the chips, and the find button into view in turn, and checks each fixed part on screen against each one.
+fit.txt holds the log. playwright.txt holds the full output.

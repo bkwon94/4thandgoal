@@ -1,0 +1,14 @@
+AT-18 has no steps.json. The runner's click verb scrolls its target into view first, so it cannot show that the page scrolls the strip back.
+scripts/zz-tb-flows.ts.txt (blockedFlow) made each shot, in Chromium at 375x812, 768x1024, 1280x900 in light and dark, and in iPhone WebKit at 390x660 light.
+The steps: open Find mode as Bo Girds. Tap Cam Skattebo, Zay Flowers, and Blake Corum (Skattebo stands in for Walker).
+Set the scroll area of the strip to its end (scrollTo with behavior "instant"), wait 800 ms, read scrollLeft, take end-<size>-<theme>.png.
+Click Kirk Cousins (stand-in for Jackson) with locator.dispatchEvent("click"), a DOM click that does not scroll first. Cousins is a QB, so he sorts second, right after the picks.
+Wait 1000 ms, read scrollLeft, read the pressed toggles, the counter, and the full-block line, and take after-<size>-<theme>.png.
+The lines below are the log of each run:
+iphone-390x660 light: strip at its end scrollLeft=620 (scrollWidth 976, clientWidth 356); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+375 light: strip at its end scrollLeft=635 (scrollWidth 976, clientWidth 341); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+375 dark: strip at its end scrollLeft=635 (scrollWidth 976, clientWidth 341); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+768 light: strip at its end scrollLeft=370 (scrollWidth 976, clientWidth 606); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+768 dark: strip at its end scrollLeft=370 (scrollWidth 976, clientWidth 606); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+1280 light: strip at its end scrollLeft=290 (scrollWidth 976, clientWidth 686); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true
+1280 dark: strip at its end scrollLeft=290 (scrollWidth 976, clientWidth 686); DOM click on Cousins; after 1000 ms scrollLeft=0; pressed=["Cam Skattebo, RB","Zay Flowers, WR","Blake Corum, RB"]; counter="3 of 3"; full-block line shown=true

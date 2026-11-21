@@ -1,0 +1,78 @@
+/**
+ * Shared parts of the trade-block evidence scripts: open Find mode as Bo Girds on the real local site, run a step list
+ * of an evidence folder, and save the find answer of each press. The site and the API are real; nothing is stubbed.
+ */
+import { expect, type Page } from "@playwright/test";
+import { appendFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import type { Theme } from "@cpc/design/lib/theme";
+import { readSteps, runSteps, type EvidenceTest } from "./evidence";
+import { openPage } from "./floor";
+
+export const SITE = process.env.TB_SITE ?? "http://127.0.0.1:18432";
+export const EVID = "/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block/.scratch/trade-block/evidence";
+export const STRIP = '[role="group"][aria-label="Trade block"]';
+export const WALKER = "Kenneth Walker III, RB";
+export const FLOWERS = "Zay Flowers, WR";
+// Cam Skattebo stands in for Walker, and Kirk Cousins for Jackson (the Revisions line of ACCEPTANCE.md).
+export const SKATTEBO = "Cam Skattebo, RB";
+export const CORUM = "Blake Corum, RB";
+export const COUSINS = "Kirk Cousins, QB";
+/* A list from an env value. The value "none" gives an empty list, so no test runs for it. */
+export const listFrom = (value: string | undefined, fallback: string) => (value ?? fallback).split(" ").filter((id) => id && id !== "none");
+
+export function loadTest(id: string): EvidenceTest {
+  const folder = join(EVID, id);
+  return { id, folder, ...readSteps(join(folder, "steps.json")) };
+}
+
+/* Writes each find-stream answer of the page: the raw stream and the document of its data-answer part. */
+export function captureFind(page: Page, folder: string, tag: string) {
+  let n = 0;
+  page.on("response", async (response) => {
+    if (!response.url().includes("/find-stream") || response.request().method() !== "POST") return;
+    const body = await response.text().catch(() => "");
+    n += 1;
+    const suffix = n === 1 ? tag : `${tag}-${n}`;
+    writeFileSync(join(folder, `find-stream-${suffix}.txt`), `# POST ${response.url()}\n# request body: ${response.request().postData()}\n${body}`);
+    for (const block of body.split("\n\n")) {
+      const line = block.trim();
+      if (!line.startsWith("data: {")) continue;
+      const part = JSON.parse(line.slice(6));
+      if (part.type === "data-answer") writeFileSync(join(folder, `find-${suffix}.json`), JSON.stringify(part.data.document, null, 2) + "\n");
+    }
+  });
+}
+
+/* Opens the analyzer, fills the passphrase, switches to Find, and picks Bo Girds as Your team. */
+export async function openFind(page: Page, theme: Theme) {
+  await openPage(page, `${SITE}/analyze/`, theme);
+  await page.locator("input[type=password]").fill("localtest");
+  await page.locator("button[type=submit]").click();
+  // The teams load after the passphrase, and the switch shows with them. A tap before that changes nothing.
+  await page.locator('[role=radiogroup][aria-label="Mode"] button:text-is("Find a trade")').waitFor();
+  await page.waitForTimeout(800);
+  await page.locator('[role=radiogroup][aria-label="Mode"] button:text-is("Find a trade")').click();
+  await page.locator('section[aria-label="Trade Ideas"] button:has-text("Pick a team")').click();
+  // The sheet rises with a spring. A click waits for a stable row, so the script lets the spring settle first.
+  await page.locator('ul[aria-label="Teams"] button:has-text("Bo Girds")').waitFor();
+  await page.waitForTimeout(1000);
+  await page.locator('ul[aria-label="Teams"] button:has-text("Bo Girds")').click();
+  await expect(page.locator(STRIP)).toBeVisible();
+  await page.waitForTimeout(1000);
+}
+
+export const toggle = (page: Page, name: string) => page.locator(`${STRIP} button[aria-label="${name}"]`);
+
+/* Runs the step list of one evidence test in this page, with the label in the place of the width in each file name. */
+export async function runEvidence(page: Page, id: string, label: string, theme: Theme) {
+  const test = loadTest(id);
+  await openPage(page, `${SITE}${test.route}`, theme);
+  await page.waitForLoadState("networkidle");
+  await runSteps(page, test, "cpc", label as unknown as number, theme);
+}
+
+export function log(folder: string, file: string, line: string) {
+  console.log(line);
+  appendFileSync(join(EVID, folder, file), `${line}\n`);
+}

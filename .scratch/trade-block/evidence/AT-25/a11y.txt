@@ -1,0 +1,31 @@
+# Chromium 1280x800, Find mode as Bo Girds on the local site, after a tap on Skattebo.
+# locator('[role="group"][aria-label="Trade block"]').ariaSnapshot():
+- group "Trade block":
+  - button "Cam Skattebo, RB" [pressed]: Skattebo RB
+  - button "Fernando Mendoza, QB": Mendoza QB
+  - button "Kirk Cousins, QB": Cousins QB
+  - button "Blake Corum, RB": Corum RB
+  - button "Kenneth Walker III, RB": Walker RB
+  - button "Tyjae Spears, RB": Spears RB
+  - button "Zonovan Knight, RB": Knight RB
+  - button "Antonio Williams, WR": Williams WR
+  - button "Chimere Dike, WR": Dike WR
+  - button "Matthew Golden, WR": Golden WR
+  - button "Parker Washington, WR": Washington WR
+  - button "Zay Flowers, WR": Flowers WR
+  - button "Trey McBride, TE": McBride TE
+
+# Each button of the group, its name, and its aria-pressed:
+role=button name="Cam Skattebo, RB" aria-pressed=true
+role=button name="Fernando Mendoza, QB" aria-pressed=false
+role=button name="Kirk Cousins, QB" aria-pressed=false
+role=button name="Blake Corum, RB" aria-pressed=false
+role=button name="Kenneth Walker III, RB" aria-pressed=false
+role=button name="Tyjae Spears, RB" aria-pressed=false
+role=button name="Zonovan Knight, RB" aria-pressed=false
+role=button name="Antonio Williams, WR" aria-pressed=false
+role=button name="Chimere Dike, WR" aria-pressed=false
+role=button name="Matthew Golden, WR" aria-pressed=false
+role=button name="Parker Washington, WR" aria-pressed=false
+role=button name="Zay Flowers, WR" aria-pressed=false
+role=button name="Trey McBride, TE" aria-pressed=false

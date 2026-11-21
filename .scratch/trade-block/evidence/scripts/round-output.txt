@@ -1,0 +1,29 @@
+
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block/apps/site
+> node scripts/evidence.mjs "trade-block" "AT-10" "AT-11" "AT-12" "AT-13" "AT-14" "AT-15" "AT-16" "AT-17" "AT-19" "AT-20" "AT-21" "AT-22" "AT-31"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:61463, API http://127.0.0.1:61464, API log /var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/evidence-api-edDCQL/api.log
+build cpc: 8.4 s
+AT-10 /analyze/ cpc: 6 shots in 85.4 s
+AT-11 /analyze/ cpc: 6 shots in 79.0 s
+AT-12 /analyze/ cpc: 6 shots in 85.4 s
+AT-13 /analyze/ cpc: 6 shots in 72.0 s
+AT-14 /analyze/ cpc: 6 shots in 87.0 s
+AT-15 /analyze/ cpc: 6 shots in 31.6 s
+AT-16 /analyze/ cpc: 12 shots in 45.1 s
+AT-17 /analyze/ cpc: 6 shots in 41.8 s
+AT-19 /analyze/ cpc: 6 shots in 43.4 s
+AT-20 /analyze/ cpc: 6 shots in 31.5 s
+AT-21 /analyze/ cpc: 6 shots in 51.0 s
+AT-22 /analyze/ cpc: 6 shots in 56.0 s
+AT-31 /analyze/ cpc: 12 shots in 45.4 s
+Total: 13 tests of trade-block in 763.1 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:33:5 › the evidence of trade-block (12.8m)
+
+  Slow test file: [evidence] › e2e/evidence.spec.ts (12.8m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (12.8m)
+rc=0

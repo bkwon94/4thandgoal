@@ -1,0 +1,70 @@
+$ uv run --exact --package cpc-api python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block/.scratch/trade-block/evidence/scripts/live_block_search.py . at5
+Uninstalled 3 packages in 1ms
+Installed 8 packages in 11ms
+Live cpc snapshot: season 2026, trade week 11, rosters fetched 2026-11-21 11:36:37.576855-05:00, chart week 11
+Asker: roster 6, team 'Bo Girds', manager 'bkwon'
+Roster 6 on live Sleeper (14 players):
+  Antonio Williams id=13301 WR WAS status=None return_week=None in_pool=True
+  Blake Corum id=11586 RB LAR status=None return_week=None in_pool=True
+  Cam Skattebo id=12481 RB NYG status=None return_week=None in_pool=True
+  Chimere Dike id=12540 WR TEN status=None return_week=None in_pool=True
+  Fernando Mendoza id=13269 QB LV status=None return_week=None in_pool=True
+  Kenneth Walker III id=8151 RB KC status=Out return_week=None in_pool=False
+  Kirk Cousins id=1166 QB MIN status=None return_week=None in_pool=True
+  Los Angeles Chargers id=LAC DEF LAC status=None return_week=None in_pool=False
+  Matthew Golden id=12501 WR GB status=None return_week=None in_pool=True
+  Parker Washington id=9487 WR JAX status=None return_week=None in_pool=True
+  Trey McBride id=8130 TE ARI status=None return_week=None in_pool=True
+  Tyjae Spears id=9508 RB TEN status=Questionable return_week=None in_pool=True
+  Zay Flowers id=9997 WR BAL status=None return_week=None in_pool=True
+  Zonovan Knight id=8122 RB ARI status=None return_week=None in_pool=True
+Kenneth Walker III: id=8151 status=Out out_with_no_return_week=True in_pool=False
+Block player: Cam Skattebo id=12481 RB NYG chart=22.5 in_pool=True NOTE: STAND-IN: Kenneth Walker III is on roster 6 but fails the pool rules (status Out, no return week), so Cam Skattebo takes the place of Walker in this run (ACCEPTANCE.md, Revisions, 2026-11-21)
+Block player: Zay Flowers id=9997 WR BAL chart=23.0 in_pool=True
+Fixed Jev: FakeJev of apps/pipeline/tests/fakes.py (yes=0.9 for each question)
+
+Run 1, trade_block=[]: 5658 offers, Shortlist 10
+Run 2, no block:       5658 offers, Shortlist 10
+Same offers in the same order: True
+Same Shortlist in the same order: True
+First 10 offers of each run:
+  6:11586-1:13281  |  6:11586-1:13281
+  6:11586-1:2216  |  6:11586-1:2216
+  6:1166-1:13286  |  6:1166-1:13286
+  6:12501-1:8167  |  6:12501-1:8167
+  6:8130-1:13281  |  6:8130-1:13281
+  6:8130-1:2216  |  6:8130-1:2216
+  6:8130-1:8183  |  6:8130-1:8183
+  6:9487-1:11604  |  6:9487-1:11604
+  6:9487-1:8150  |  6:9487-1:8150
+  6:11586+12501-1:11584  |  6:11586+12501-1:11584
+Shortlist of each run:
+  6:11586+1166+12481-10:12512+7569  |  6:11586+1166+12481-10:12512+7569
+  6:11586+1166+12481-10:7588  |  6:11586+1166+12481-10:7588
+  6:11586+1166-10:11566+12512+13274  |  6:11586+1166-10:11566+12512+13274
+  6:11586+1166-12:4983  |  6:11586+1166-12:4983
+  6:11586-10:11566+12534  |  6:11586-10:11566+12534
+  6:11586-11:12495  |  6:11586-11:12495
+  6:11586-4:11625+12518+3163  |  6:11586-4:11625+12518+3163
+  6:11586+1166+12481-11:12495+8137  |  6:11586+1166+12481-11:12495+8137
+  6:11586+1166+12481-12:10236+12490  |  6:11586+1166+12481-12:10236+12490
+  6:11586+1166+12481-1:11604+13281  |  6:11586+1166+12481-1:11604+13281
+[exit 0]
+
+----
+$ uv run --exact --package cornerstone pytest apps/pipeline/tests/test_finder_search.py -v -s -p no:cacheprovider -k test_an_empty_trade_block_gives_the_same_offers
+Uninstalled 8 packages in 59ms
+Installed 3 packages in 2ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-unit2/.venv/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-unit2/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 62 items / 61 deselected / 1 selected
+
+apps/pipeline/tests/test_finder_search.py::test_an_empty_trade_block_gives_the_same_offers_in_the_same_order_as_no_block PASSED
+
+======================= 1 passed, 61 deselected in 0.47s =======================
+[exit 0]
+
+Ran in a detached worktree of trade-block at 3dd395a0, on 2026-11-21 11:38 EST.

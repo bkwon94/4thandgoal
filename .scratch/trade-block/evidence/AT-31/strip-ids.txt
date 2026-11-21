@@ -1,0 +1,16 @@
+# Chromium 1280x900, Find mode as Bo Girds on the local site. The strip scroll area: {"scrollLeft":290,"scrollWidth":976,"clientWidth":686} at its end.
+# player id in the headshot src of each toggle	its aria-label	the check against teams.json
+13269	Fernando Mendoza, QB	https://sleepercdn.com/content/nfl/players/13269.jpg	on Bo Girds (roster 6) in /teams: yes, 13269 Fernando Mendoza	on another roster: none
+1166	Kirk Cousins, QB	https://sleepercdn.com/content/nfl/players/1166.jpg	on Bo Girds (roster 6) in /teams: yes, 1166 Kirk Cousins	on another roster: none
+11586	Blake Corum, RB	https://sleepercdn.com/content/nfl/players/11586.jpg	on Bo Girds (roster 6) in /teams: yes, 11586 Blake Corum	on another roster: none
+12481	Cam Skattebo, RB	https://sleepercdn.com/content/nfl/players/12481.jpg	on Bo Girds (roster 6) in /teams: yes, 12481 Cam Skattebo	on another roster: none
+8151	Kenneth Walker III, RB	https://sleepercdn.com/content/nfl/players/8151.jpg	on Bo Girds (roster 6) in /teams: yes, 8151 Kenneth Walker III	on another roster: none
+9508	Tyjae Spears, RB	https://sleepercdn.com/content/nfl/players/9508.jpg	on Bo Girds (roster 6) in /teams: yes, 9508 Tyjae Spears	on another roster: none
+8122	Zonovan Knight, RB	https://sleepercdn.com/content/nfl/players/8122.jpg	on Bo Girds (roster 6) in /teams: yes, 8122 Zonovan Knight	on another roster: none
+13301	Antonio Williams, WR	https://sleepercdn.com/content/nfl/players/13301.jpg	on Bo Girds (roster 6) in /teams: yes, 13301 Antonio Williams	on another roster: none
+12540	Chimere Dike, WR	https://sleepercdn.com/content/nfl/players/12540.jpg	on Bo Girds (roster 6) in /teams: yes, 12540 Chimere Dike	on another roster: none
+12501	Matthew Golden, WR	https://sleepercdn.com/content/nfl/players/12501.jpg	on Bo Girds (roster 6) in /teams: yes, 12501 Matthew Golden	on another roster: none
+9487	Parker Washington, WR	https://sleepercdn.com/content/nfl/players/9487.jpg	on Bo Girds (roster 6) in /teams: yes, 9487 Parker Washington	on another roster: none
+9997	Zay Flowers, WR	https://sleepercdn.com/content/nfl/players/9997.jpg	on Bo Girds (roster 6) in /teams: yes, 9997 Zay Flowers	on another roster: none
+8130	Trey McBride, TE	https://sleepercdn.com/content/nfl/players/8130.jpg	on Bo Girds (roster 6) in /teams: yes, 8130 Trey McBride	on another roster: none
+# 13 toggles on the strip; Bo Girds has 14 players in /teams.

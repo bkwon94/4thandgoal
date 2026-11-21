@@ -1,0 +1,4 @@
+The shots at 375, 768, and 1280 px in light and dark come from the runner round: pnpm --dir apps/site evidence trade-block ..., run in the Spec worktree with steps.json.
+The shot at 390x660 in iPhone WebKit comes from scripts/zz-tb-webkit.spec.ts.txt. It runs the same steps.json with the runner's runSteps, in Playwright WebKit with devices["iPhone 15"], viewport 390x660, light theme.
+Both run on the cpc build of 3dd395a0, where cpc has finder = true. scripts/setup.txt says how.
+teams.json is the /teams answer of the local evidence API (127.0.0.1:18431) at 2026-11-21 11:44 EST: curl -H 'X-League-Passphrase: <passphrase>' 'http://127.0.0.1:18431/clients/cpc/teams?season=2026' | python3 -m json.tool.

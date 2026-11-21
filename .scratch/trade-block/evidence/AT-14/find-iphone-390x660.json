@@ -1,0 +1,34 @@
+{
+  "season": 2026,
+  "trade_pair": {
+    "asker": {
+      "roster_id": 6,
+      "team": "Bo Girds"
+    },
+    "partner": {
+      "roster_id": 10,
+      "team": "behold the lamb"
+    }
+  },
+  "trades": [],
+  "near": [],
+  "empty": "No fair trade sends Skattebo or Flowers with the partner and the position you picked.",
+  "short_line": null,
+  "as_of": {
+    "chart_week": 11,
+    "stats_through": 11,
+    "completed_through": 10,
+    "rosters_fetched": "2026-11-21T11:38:18.381433-05:00",
+    "known_games": {
+      "week": 11,
+      "games": 1,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": false,
+  "missing": [],
+  "stale": []
+}

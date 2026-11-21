@@ -1,0 +1,166 @@
+{
+  "season": 2026,
+  "trade_pair": {
+    "asker": {
+      "roster_id": 6,
+      "team": "Bo Girds"
+    },
+    "partner": null
+  },
+  "trades": [
+    {
+      "offer_id": "6:12481-11:13296+9502+9758",
+      "sides": [
+        {
+          "roster_id": 6,
+          "team": "Bo Girds",
+          "gives": [
+            {
+              "player_id": "12481",
+              "name": "Cam Skattebo",
+              "position": "RB",
+              "nfl_team": "NYG",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12481.jpg",
+              "season_rank": "RB22",
+              "recent_rank": "RB5",
+              "to": 11
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "13296",
+              "name": "Caleb Douglas",
+              "position": "WR",
+              "nfl_team": "MIA",
+              "headshot": "https://sleepercdn.com/content/nfl/players/13296.jpg",
+              "season_rank": "WR50",
+              "recent_rank": "WR22",
+              "from": 11
+            },
+            {
+              "player_id": "9502",
+              "name": "Tank Dell",
+              "position": "WR",
+              "nfl_team": "HOU",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9502.jpg",
+              "season_rank": "WR95",
+              "recent_rank": "WR36",
+              "from": 11
+            },
+            {
+              "player_id": "9758",
+              "name": "C.J. Stroud",
+              "position": "QB",
+              "nfl_team": "HOU",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
+              "season_rank": "QB3",
+              "recent_rank": null,
+              "from": 11
+            }
+          ]
+        },
+        {
+          "roster_id": 11,
+          "team": "Unsolicited Dak Picks",
+          "gives": [
+            {
+              "player_id": "13296",
+              "name": "Caleb Douglas",
+              "position": "WR",
+              "nfl_team": "MIA",
+              "headshot": "https://sleepercdn.com/content/nfl/players/13296.jpg",
+              "season_rank": "WR50",
+              "recent_rank": "WR22",
+              "to": 6
+            },
+            {
+              "player_id": "9502",
+              "name": "Tank Dell",
+              "position": "WR",
+              "nfl_team": "HOU",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9502.jpg",
+              "season_rank": "WR95",
+              "recent_rank": "WR36",
+              "to": 6
+            },
+            {
+              "player_id": "9758",
+              "name": "C.J. Stroud",
+              "position": "QB",
+              "nfl_team": "HOU",
+              "headshot": "https://sleepercdn.com/content/nfl/players/9758.jpg",
+              "season_rank": "QB3",
+              "recent_rank": null,
+              "to": 6
+            }
+          ],
+          "gets": [
+            {
+              "player_id": "12481",
+              "name": "Cam Skattebo",
+              "position": "RB",
+              "nfl_team": "NYG",
+              "headshot": "https://sleepercdn.com/content/nfl/players/12481.jpg",
+              "season_rank": "RB22",
+              "recent_rank": "RB5",
+              "from": 6
+            }
+          ]
+        }
+      ],
+      "totals": [
+        {
+          "roster_id": 6,
+          "trade_value": 22.5
+        },
+        {
+          "roster_id": 11,
+          "trade_value": 23
+        }
+      ],
+      "lean": "Gut call",
+      "case": "If you believe Skattebo's hot run is worth cashing in for depth, this is a gut call worth sending. You fill a weak flex slot and add a good QB, but you get thinner at RB right when Walker is out. The other manager is out of the race and gets the best player in the deal, so he likely says yes.",
+      "bullets": [
+        {
+          "text": "Douglas fills your weak FLEX2 slot, and the other manager can spare him.",
+          "mark": "for",
+          "fact_id": "13296.spare",
+          "fact_text": "For Bo Girds, Caleb Douglas fills the weak slot FLEX2, and Unsolicited Dak Picks can spare him."
+        },
+        {
+          "text": "You give up RB depth: your RBs in the top 36 go from 3 to 2.",
+          "mark": "against",
+          "fact_id": "6.depth.rb",
+          "fact_text": "For Bo Girds, the RBs in the top 36 go from 3 to 2. Of them, the RBs who can play now go from 2 to 1."
+        },
+        {
+          "text": "The other manager is out of the playoff race and wants the better player, and he gets him in Skattebo.",
+          "mark": "for",
+          "fact_id": "11.measure.standing",
+          "fact_text": "The standing measure for Unsolicited Dak Picks: Out of the playoff race, so you want the better player for the rest of the season, and you get him."
+        }
+      ],
+      "fact_lines": []
+    }
+  ],
+  "near": [],
+  "empty": null,
+  "short_line": null,
+  "as_of": {
+    "chart_week": 11,
+    "stats_through": 11,
+    "completed_through": 10,
+    "rosters_fetched": "2026-11-21T11:40:08.682843-05:00",
+    "known_games": {
+      "week": 11,
+      "games": 1,
+      "in_progress": 0,
+      "pending": {}
+    },
+    "no_chart": false,
+    "no_chart_note": null
+  },
+  "fallback": false,
+  "missing": [],
+  "stale": []
+}

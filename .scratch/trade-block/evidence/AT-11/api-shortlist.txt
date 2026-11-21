@@ -1,0 +1,22 @@
+# The AT-11 press: Find a Trade on the local site in iPhone WebKit at 11:40:02 EST, with Cam Skattebo (12481, stand-in for Walker) and Zay Flowers (9997) on the block, Every team, chip Any.
+# The request body: {"season":2026,"asker":6,"trade_block":["12481","9997"]}
+# The local evidence API on 127.0.0.1:18431, after its warm-up. The search lines of the press, with the per-offer lines (Finder offer, gain drop, Spares tree), httpx, and typesafe_sdk left out:
+INFO:     127.0.0.1:55757 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55757 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55757 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55757 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55757 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 28177 tokens
+INFO:     analyzer.finder_search: Finder Value offers of Bo Girds: 3237; 1-for-1=15, 2-for-1=73, 1-for-2=113, 3-for-1=129, 1-for-3=62, 3-for-2=1246, 2-for-3=1599
+INFO:     analyzer.finder_search: Finder fair answers of Bo Girds: 6474 questions, 6474 from the cache, 0 asked live
+INFO:     analyzer.finder_search: Finder fair step of Bo Girds: checked 3237, dropped 684, no answer 0
+INFO:     analyzer.finder_search: Finder step 2 of Bo Girds: 184 offers, the 3 best of each partner and shape direction
+INFO:     analyzer.jev_waves: Jev wave 2 (shortlist): 7 requests, about 93514 tokens
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 55865 tokens
+INFO:     analyzer.finder_search: Finder shortlist 6:12481-11:13296+9502+9758: score=0.860 fair=0.86 needs={6: 0.46, 11: 0.36} gains={6: 0.97, 11: 0.93}
+INFO:     facts.writer: FinderPickOut stream: first text at 7.0s
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=4301 input_tokens=5941 output_tokens=1087 model=claude-sonnet-5-5 effort=medium time=9.6s
+INFO:     analyzer.routes: Press of find for cpc: time=14.4s cost=$0.0232 claude_calls=1
+# Count of 'Finder gain drop' lines of the press: 183. Count of 'Finder shortlist' lines: 1.
+# Each 'Finder shortlist' line, with the ids that Bo Girds (roster 6) sends before the dash:
+INFO:     analyzer.finder_search: Finder shortlist 6:12481-11:13296+9502+9758: score=0.860 fair=0.86 needs={6: 0.46, 11: 0.36} gains={6: 0.97, 11: 0.93}

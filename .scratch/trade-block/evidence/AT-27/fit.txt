@@ -1,0 +1,40 @@
+iphone-390x660 light: hero inner 17 to 373, strip 17 to 373 (left gap 0, right gap 0)
+iphone-390x660 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 390, innerWidth 390
+iphone-390x660 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 light: find scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 dark: hero inner 17 to 373, strip 17 to 373 (left gap 0, right gap 0)
+iphone-390x660 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 390, innerWidth 390
+iphone-390x660 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+iphone-390x660 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 light: hero inner 102 to 708, strip 102 to 708 (left gap 0, right gap 0)
+ipad-810x980 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 810, innerWidth 810
+ipad-810x980 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 light: find scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 dark: hero inner 102 to 708, strip 102 to 708 (left gap 0, right gap 0)
+ipad-810x980 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 810, innerWidth 810
+ipad-810x980 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-810x980 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 light: hero inner 197 to 883, strip 197 to 883 (left gap 0, right gap 0)
+ipad-1080x740 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1080, innerWidth 1080
+ipad-1080x740 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 light: find scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 dark: hero inner 197 to 883, strip 197 to 883 (left gap 0, right gap 0)
+ipad-1080x740 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1080, innerWidth 1080
+ipad-1080x740 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+ipad-1080x740 dark: find scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 light: hero inner 297 to 983, strip 297 to 983 (left gap 0, right gap 0)
+desktop-1280x800 light: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1280, innerWidth 1280
+desktop-1280x800 light: strip scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 light: chips scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 light: find scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 dark: hero inner 297 to 983, strip 297 to 983 (left gap 0, right gap 0)
+desktop-1280x800 dark: the text scan hides 1 fixed or sticky parts; overlap: none; scrollWidth 1280, innerWidth 1280
+desktop-1280x800 dark: strip scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 dark: chips scrolled into view; fixed parts on screen: header; covering it: none
+desktop-1280x800 dark: find scrolled into view; fixed parts on screen: header; covering it: none
