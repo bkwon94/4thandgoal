@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests none alone. It fee
 
 **Blocked by:** 08
 
-**Status:** in-review
+**Status:** done
 
 - [x] The moved files pass on `bun test` with no `vi.` call and no `vitest` import.
 - [x] The count of tests that pass equals the count before the move for these files, or the ticket names each change.
@@ -32,3 +32,10 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests none alone. It fee
 - `page` fixes only `Date` with `setSystemTime`, in place of fake timers that fake only `Date`. `sim/announcement` fakes each timer, because Bun has no choice of which timers to fake.
 - `front-door/suggestions` checks one call and its value in place of `toHaveBeenCalledExactlyOnceWith`, which Bun lacks.
 - `page-free` and `page-personal` stay on Vitest, so their 8 s waits from ticket 04 stay as they are.
+
+## Comments
+
+The merge: `104d5960` merged into `design-checks-speed` on 2026-11-20; review fixes on fix branches a to n; Judge fix round on AT-13 (evidence only).
+The proof: `make check-fast BASE=main` passed at each merge, 3 green CI runs on 4d5f4d13 gave a median of 315 s, and the Judge gave PASS to AT-1 to AT-39.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/design-checks-speed/PRD.md, .scratch/design-checks-speed/ACCEPTANCE.md, .scratch/design-checks-speed/issues/11-move-site-tests-part-one.md.
+Closes with the squash merge of the spec PR.

@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, 
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] Fixtures with an arbitrary `bg-[color-mix(...)]` and an arbitrary `top-[calc(...)]` in a `cn(...)` call each fail with the rule and the line.
 - [x] A fixture with only `data-[state=open]:`, `grid-cols-[...]`, and `transition-[...]` passes.
@@ -17,3 +17,10 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-4, AT-5, AT-6, 
 - [x] The chips at rest, chosen, and in hover have the same fill as on `main`, at 375, 768, and 1280 px, in the light and dark themes.
 - [x] The glossary has the terms Role token and Scale step, and the spacing scale is the same as on `main`.
 - [x] The lint of all site code exits 0.
+
+## Comments
+
+The merge: `aebe2a42` merged into `design-checks-speed` on 2026-11-20; review fixes on fix branches a to n; Judge fix round on AT-13 (evidence only).
+The proof: `make check-fast BASE=main` passed at each merge, 3 green CI runs on 4d5f4d13 gave a median of 315 s, and the Judge gave PASS to AT-1 to AT-39.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/design-checks-speed/PRD.md, .scratch/design-checks-speed/ACCEPTANCE.md, .scratch/design-checks-speed/issues/06-role-tokens-and-the-value-rule.md.
+Closes with the squash merge of the spec PR.

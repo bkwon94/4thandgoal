@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-29, AT-30, AT-3
 
 **Blocked by:** 13
 
-**Status:** in-review
+**Status:** done
 
 - [x] The ticket records the time of the full suite with each shard count it tried, and the chosen count.
 - [x] A PR that changes one file of the rankings package runs fewer test files than the full count.
@@ -67,3 +67,10 @@ The list of config files is `FULL_SUITE_FILES` in `apps/site/scripts/test-scope.
   With no base, `make check-fast` ran `bun test --isolate`, "The run takes the full suite.", 1822 tests across 194 files.
   `scripts/test_ci_unit_shards.py` tests the condition lines.
 - A plain `bun test --changed` does not see a change to `apps/site/bunfig.toml`: it ran 0 test files. That is why the full-suite list exists.
+
+## Comments
+
+The merge: `b7e50a54` merged into `design-checks-speed` on 2026-11-20; review fixes on fix branches a to n; Judge fix round on AT-13 (evidence only).
+The proof: `make check-fast BASE=main` passed at each merge, 3 green CI runs on 4d5f4d13 gave a median of 315 s, and the Judge gave PASS to AT-1 to AT-39.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/design-checks-speed/PRD.md, .scratch/design-checks-speed/ACCEPTANCE.md, .scratch/design-checks-speed/issues/15-ci-unit-shards-and-changed.md.
+Closes with the squash merge of the spec PR.

@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-19, AT-20, AT-2
 
 **Blocked by:** 09, 10, 11, and 12
 
-**Status:** in-review
+**Status:** done
 
 - [x] The site unit check runs `bun test` and exits 0.
 - [x] No `package.json` names `vitest`, and the Vitest config does not exist.
@@ -52,3 +52,10 @@ The two test files under `packages/design/lint/fixtures/` are lint fixtures, and
 - `src/suppression-rule.test.ts` no longer lists `vitest.config.mts`, because the file is gone.
 - The four tests of `src/lib/data/` drop their `resetModules`, because each reader reads the working folder on each call.
 - `page-personal` sets `clientValues.packages` in the test, in place of `vi.doMock`, because `loadFrontDoor` reads it on each call. Bun types `toBe` strictly, so one `closest("li")` takes `<HTMLElement>`.
+
+## Comments
+
+The merge: `44303038` merged into `design-checks-speed` on 2026-11-20; review fixes on fix branches a to n; Judge fix round on AT-13 (evidence only).
+The proof: `make check-fast BASE=main` passed at each merge, 3 green CI runs on 4d5f4d13 gave a median of 315 s, and the Judge gave PASS to AT-1 to AT-39.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/design-checks-speed/PRD.md, .scratch/design-checks-speed/ACCEPTANCE.md, .scratch/design-checks-speed/issues/13-bun-test-contract.md.
+Closes with the squash merge of the spec PR.

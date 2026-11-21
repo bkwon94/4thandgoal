@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-33.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The ticket records the time of each half before the split.
 - [x] One job runs the parallel pipeline tests, and another runs the serial pipeline tests.
@@ -37,3 +37,10 @@ Date: 2026-11-21. Runs 44873662117, 44874144251, and 44874592510 of `check.yml` 
 | pipeline-serial | 43 | 45 | 37 |
 
 The slowest pipeline job is 268 s, below the limit of 360 s.
+
+## Comments
+
+The merge: `da46eda0` merged into `design-checks-speed` on 2026-11-20; review fixes on fix branches a to n; Judge fix round on AT-13 (evidence only).
+The proof: `make check-fast BASE=main` passed at each merge, 3 green CI runs on 4d5f4d13 gave a median of 315 s, and the Judge gave PASS to AT-1 to AT-39.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/design-checks-speed/PRD.md, .scratch/design-checks-speed/ACCEPTANCE.md, .scratch/design-checks-speed/issues/17-ci-pipeline-split.md.
+Closes with the squash merge of the spec PR.

@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-11, AT-28, AT-3
 
 **Blocked by:** 04, 05, 06, 07, 14, 15, 16, and 17
 
-**Status:** in-review
+**Status:** done
 
 - [x] The median of 3 full CI runs of the spec branch is 360 s or less, and no job takes more than 360 s.
 - [x] The lint of all site code exits 0.
@@ -56,3 +56,10 @@ Command: `git grep -n -E "node_modules|cache" -- .github`. No line names `node_m
 - `cache: pnpm` of `actions/setup-node`, which caches the pnpm store.
 - `actions/cache` of `~/.cache/ms-playwright` and `~/.cache/apt-archives`.
 - `enable-cache: true` of `setup-uv`, keyed on `uv.lock`.
+
+## Comments
+
+The merge: `342e25c0` merged into `design-checks-speed` on 2026-11-21; review fixes on fix branches a to n; Judge fix round on AT-13 (evidence only).
+The proof: `make check-fast BASE=main` passed at each merge, 3 green CI runs on 4d5f4d13 gave a median of 315 s, and the Judge gave PASS to AT-1 to AT-39.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/design-checks-speed/PRD.md, .scratch/design-checks-speed/ACCEPTANCE.md, .scratch/design-checks-speed/issues/18-proof-of-ci-time-and-guards.md.
+Closes with the squash merge of the spec PR.
