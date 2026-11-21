@@ -1,9 +1,11 @@
 /**
  * Runs `bun test` on each test folder of the site app and of the site side of each package, from apps/site, so Bun reads
  * the preload of bunfig.toml. Run it with pnpm test:bun [<bun test flag> ...]. It exits with the code of `bun test`.
+ * BUN_TEST_WORKERS=<n> sets the count of worker processes. The default is the count of CPU cores.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
+import { availableParallelism } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,10 +26,19 @@ const TEST_FOLDERS = [
     .map((name) => `../../packages/${name}/site`),
 ];
 
+/* --parallel runs the files in worker processes at the same time. In one process the files run one after another, and
+   the suite takes about 3 times as long. The hook sets a lower count, so two commits at the same time leave each test
+   enough CPU for its 5 s timeout. */
+const workers = process.env.BUN_TEST_WORKERS || String(availableParallelism());
+
 // --isolate gives each test file its own global and module registry. Without it, Framer Motion keeps the
 // reduced-motion value that the first file read, and a file that sets matchMedia late sees the wrong one.
-const run = spawnSync("bun", ["test", "--isolate", ...TEST_FOLDERS, ...process.argv.slice(2)], {
-  cwd: SITE,
-  stdio: "inherit",
-});
+const run = spawnSync(
+  "bun",
+  ["test", "--isolate", `--parallel=${workers}`, ...TEST_FOLDERS, ...process.argv.slice(2)],
+  {
+    cwd: SITE,
+    stdio: "inherit",
+  },
+);
 process.exit(run.status ?? 1);
