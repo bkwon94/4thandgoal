@@ -55,10 +55,10 @@ quote = '$(subst ','\'',$(1))'
 # The hook lints only the staged site files, as paths from the repo root. LINT_FILES is empty without STAGED=1, and the
 # lint script of the site then lints all site code. The paths leave out packages/design/lint/fixtures/, which break the
 # rules on purpose for the rule test.
-LINT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' packages/design/lint/plugin.mjs))
+LINT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' packages/design/lint/plugin.mjs 'packages/design/lint/rules/*.mjs'))
 # The hook checks the format of the same staged files, plus the CSS files. FMT_FILES is empty without STAGED=1, and the
 # fmt scripts of the site then take all site code and package code.
-FMT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'apps/site/*.mts' 'apps/site/*.css' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' 'packages/*/site/*.css' packages/design/lint/plugin.mjs))
+FMT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'apps/site/*.mts' 'apps/site/*.css' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' 'packages/*/site/*.css' packages/design/lint/plugin.mjs 'packages/design/lint/rules/*.mjs'))
 PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
