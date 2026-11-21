@@ -58,9 +58,40 @@ Test verdict: pending
 
 Done condition: One run of the site `bun test` suite sends no request to `https://api.4thandgoal.app` or to a Fly address, and its output holds no `Cross-Origin Request Blocked` and no `ECONNREFUSED`.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: `useBoard` in `packages/eggs/site/board/use-board.ts` calls `/eggs/board` of `eggsTarget` from `src/lib/config.ts`, the live API, for the egg button in the shell of each page, and `door-page.tsx` also calls `/suggestions` and `/deadline/trades`. No test stubbed `fetch` for these calls, so happy-dom sent each one: a CORS block, or a socket to a Fly address that the window close of the file canceled. The two sim tests of `sim-page.test.tsx` and `in-playoffs.test.tsx` called `http://127.0.0.1:9` on purpose for a refused connection.
+Red: at `ceba8eb5`, `node scripts/network-leak-check.mjs` in `apps/site`
+
+```text
+ 1955 pass
+ 0 fail
+Ran 1955 tests across 203 files. [48.97s]
+bun test exit code: 0
+LEAK ../../packages/sim/site/page/in-playoffs.test.tsx: ECONNREFUSED x2
+LEAK ../../packages/sim/site/page/sim-page.test.tsx: ECONNREFUSED x4
+LEAK src/app/_routes/ask/page.test.tsx: a Fly address x4
+LEAK src/app/_routes/eggs/targets.test.tsx: Cross-Origin Request Blocked x1
+LEAK src/app/_routes/eggs/targets.test.tsx: the live API x2
+LEAK src/app/front-door/tour.test.tsx: Cross-Origin Request Blocked x48
+LEAK src/app/front-door/tour.test.tsx: the live API x96
+LEAK src/app/home-flag.test.tsx: ECANCELED x2
+LEAK src/app/page.test.tsx: Cross-Origin Request Blocked x77
+LEAK src/app/page.test.tsx: ECONNREFUSED x4
+LEAK src/app/page.test.tsx: the live API x154
+LEAK src/reduced-motion.test.tsx: Cross-Origin Request Blocked x9
+FAIL: 504 output lines show a request that left the test process.
+```
+
+Green: at `bae8b6c6`, `node scripts/network-leak-check.mjs` in `apps/site`
+
+```text
+ 1956 pass
+ 0 fail
+Ran 1956 tests across 203 files. [49.24s]
+bun test exit code: 0
+PASS: no output line shows a request to the live API, a Fly address, Cross-Origin Request Blocked, ECONNREFUSED, ECANCELED.
+```
+
+The Red block keeps 12 of the 29 LEAK lines. The check names the file that printed each hit, so a request that fails after its test ends shows under a later file. The fix gives each test a `fetch` in `test/preload.ts` that rejects each call to a host other than `localhost` or `127.0.0.1`, so a new page test is safe too. The extra test is in `test/stubs.test.ts` and proves that a call to the live API rejects. Two tests of `front-page.test.tsx` passed only because a hung board call of an earlier test held the shared `inFlight` promise of `boardApi`. They now read only the teams call.
 Test verdict: pending
 
 ## Smoke
