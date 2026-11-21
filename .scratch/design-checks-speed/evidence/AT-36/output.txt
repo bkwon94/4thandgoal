@@ -1,0 +1,25 @@
+$ git ls-files Makefile .github .pre-commit-config.yaml
+.github/workflows/check.yml
+.github/workflows/deploy-api.yml
+.github/workflows/deploy-sites.yml
+.github/workflows/rebuild.yml
+.github/workflows/refresh.yml
+.github/workflows/rerun.yml
+.github/workflows/verdict.yml
+.pre-commit-config.yaml
+Makefile
+exit code: 0
+
+$ git grep -n -E "bun install|bun i\b|bun add" -- Makefile .github .pre-commit-config.yaml
+exit code: 1
+
+$ git grep -n -E "bun (install|i|add)( |$)" -- Makefile .github .pre-commit-config.yaml apps/site/package.json "packages/*/site/package.json"
+exit code: 1
+
+$ git grep -n -E "pnpm install|pnpm i\b" -- .github Makefile .pre-commit-config.yaml
+.github/workflows/check.yml:94:        run: pnpm install --frozen-lockfile
+.github/workflows/check.yml:136:        run: pnpm install --frozen-lockfile
+.github/workflows/deploy-sites.yml:105:        run: pnpm install --frozen-lockfile
+.github/workflows/rerun.yml:94:        run: pnpm install --frozen-lockfile
+exit code: 0
+

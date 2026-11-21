@@ -1,0 +1,16 @@
+$ pnpm --dir apps/site evidence design-checks-speed AT-16
+
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/apps/site
+> node scripts/evidence.mjs "design-checks-speed" "AT-16"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:61485, API http://127.0.0.1:61486, API log /var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/evidence-api-5jGTNv/api.log
+build cpc: 4.7 s
+AT-16 / cpc: 6 shots in 59.5 s
+Total: 1 test of design-checks-speed in 64.2 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:34:5 › the evidence of design-checks-speed (1.1m)
+
+  1 passed (1.1m)
+exit 0

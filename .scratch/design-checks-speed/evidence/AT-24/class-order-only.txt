@@ -1,0 +1,11 @@
+$ cd apps/site && FMT_FILES=apps/site/src/app/not-found.tsx pnpm fmt:check   # only the class order changed, no indent change
+-        <Rise step={2} className="gap-sp-3 flex flex-wrap">
++        <Rise step={2} className="flex-wrap flex gap-sp-3">
+
+> 4thandgoal-site@0.1.0 fmt:check <scratch>/wt-probe/apps/site
+> cd ../.. && bun fmt --no-script --check --no-error-on-unmatched-pattern --ignore-pattern apps/site/next-env.d.ts ${FMT_FILES:-'apps/site/**/*.{ts,tsx,mjs,mts,css}' 'packages/*/site/**/*.{ts,tsx,css}' packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+apps/site/src/app/not-found.tsx
+1 file needs formatting. Run bun fmt to fix it.
+ ELIFECYCLE  Command failed with exit code 1.
+exit code: 1

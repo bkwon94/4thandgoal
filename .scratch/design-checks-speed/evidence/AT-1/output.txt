@@ -1,0 +1,8 @@
+$ LINT_FILES=packages/design/lint/fixtures/no-raw-element/outside/raw-button.tsx pnpm --dir apps/site lint
+
+> 4thandgoal-site@0.1.0 lint /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/apps/site
+> cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+packages/design/lint/fixtures/no-raw-element/outside/raw-button.tsx:6:10: error design(no-raw-element): A raw <button> skips the wrapper of the ui folder. Use `Button` from packages/design/site/ui/button.tsx (`variant="plain"` keeps your own classes), or `PendingButton` from packages/design/site/ui/pending-button.tsx for an async action.
+ ELIFECYCLE  Command failed with exit code 1.
+exit 1

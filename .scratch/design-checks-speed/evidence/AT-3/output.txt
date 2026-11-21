@@ -1,0 +1,11 @@
+$ LINT_FILES=packages/design/lint/fixtures/raw-color/colored.tsx pnpm --dir apps/site lint
+
+> 4thandgoal-site@0.1.0 lint /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/apps/site
+> cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+packages/design/lint/fixtures/raw-color/colored.tsx:6:24: error design(no-raw-color): Use a role token of apps/site/src/app/globals.css, not a raw color literal.
+packages/design/lint/fixtures/raw-color/colored.tsx:7:22: error design(no-arbitrary-value): `bg-[rgb(0_0_0)]` is an arbitrary value in the color and spacing groups. Use a role token or a scale step of apps/site/src/app/globals.css. For a true one-off, put `// oxlint-disable-next-line design/no-arbitrary-value -- <reason>` on the line above.
+packages/design/lint/fixtures/raw-color/colored.tsx:7:21: error design(no-raw-color): Use a role token of apps/site/src/app/globals.css, not a raw color literal.
+packages/design/lint/fixtures/raw-color/colored.tsx:8:18: error design(no-raw-color): Use a role token of apps/site/src/app/globals.css, not a raw color literal.
+ ELIFECYCLE  Command failed with exit code 1.
+exit 1

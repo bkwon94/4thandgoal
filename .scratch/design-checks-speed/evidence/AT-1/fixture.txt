@@ -1,0 +1,8 @@
+$ cat -n packages/design/lint/fixtures/no-raw-element/outside/raw-button.tsx
+     1	/**
+     2	 * A lint fixture: a file outside the ui folder that renders a raw button.
+     3	 * The element rule test expects design(no-raw-element) to fail it at line 6.
+     4	 */
+     5	export function Part() {
+     6	  return <button type="button">Go</button>;
+     7	}

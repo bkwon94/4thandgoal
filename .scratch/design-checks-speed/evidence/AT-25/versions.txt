@@ -1,0 +1,75 @@
+$ git ls-files | grep bun.lock
+exit code: 1
+
+$ ls bun.lock bun.lockb apps/site/bun.lock 2>&1
+ls: apps/site/bun.lock: No such file or directory
+ls: bun.lock: No such file or directory
+ls: bun.lockb: No such file or directory
+exit code: 1
+
+$ git diff --stat main -- pnpm-lock.yaml
+ pnpm-lock.yaml | 1015 ++++++++++++--------------------------------------------
+ 1 file changed, 213 insertions(+), 802 deletions(-)
+exit code: 0
+
+$ git grep -n -E "\"packageManager\"|\"engines\"|\"node\":|\"pnpm\":" main -- "*package.json"
+main:apps/site/package.json:5:  "packageManager": "pnpm@10.12.4",
+main:apps/site/package.json:6:  "engines": {
+main:apps/site/package.json:7:    "node": ">=22"
+exit code: 0
+
+$ git grep -n -E "\"packageManager\"|\"engines\"|\"node\":|\"pnpm\":" HEAD -- "*package.json"
+HEAD:apps/site/package.json:5:  "packageManager": "pnpm@10.12.4",
+HEAD:apps/site/package.json:6:  "engines": {
+HEAD:apps/site/package.json:7:    "node": ">=22"
+exit code: 0
+
+$ git diff main -- "*package.json" | grep -n -E "packageManager|engines|\"node\"|\"pnpm\""
+exit code: 1
+
+$ git ls-files | grep -E "(^|/)\.(nvmrc|node-version|tool-versions|bun-version)$"
+.bun-version
+apps/site/.nvmrc
+exit code: 0
+
+$ git diff main --stat -- .nvmrc .node-version .tool-versions .bun-version
+ .bun-version | 1 +
+ 1 file changed, 1 insertion(+)
+exit code: 0
+
+$ cat .bun-version
+1.4.5
+exit code: 0
+
+$ git grep -n -E "pnpm/action-setup|node-version|version: [0-9]|bun-version" main -- .github
+main:.github/workflows/check.yml:54:        uses: pnpm/action-setup@v6
+main:.github/workflows/check.yml:61:          node-version: 22
+main:.github/workflows/check.yml:83:        uses: pnpm/action-setup@v6
+main:.github/workflows/check.yml:90:          node-version: 22
+main:.github/workflows/deploy-sites.yml:93:        uses: pnpm/action-setup@v6
+main:.github/workflows/deploy-sites.yml:100:          node-version: 22
+main:.github/workflows/rerun.yml:80:        uses: pnpm/action-setup@v6
+main:.github/workflows/rerun.yml:88:          node-version: 22
+exit code: 0
+
+$ git grep -n -E "pnpm/action-setup|node-version|version: [0-9]|bun-version" HEAD -- .github
+HEAD:.github/workflows/check.yml:75:        uses: pnpm/action-setup@v6
+HEAD:.github/workflows/check.yml:82:          node-version: 22
+HEAD:.github/workflows/check.yml:86:      # The Bun version comes from .bun-version at the root, the one place that pins it. bun check and bun fmt need 1.4.5.
+HEAD:.github/workflows/check.yml:90:          bun-version-file: .bun-version
+HEAD:.github/workflows/check.yml:123:        uses: pnpm/action-setup@v6
+HEAD:.github/workflows/check.yml:130:          node-version: 22
+HEAD:.github/workflows/deploy-sites.yml:93:        uses: pnpm/action-setup@v6
+HEAD:.github/workflows/deploy-sites.yml:100:          node-version: 22
+HEAD:.github/workflows/rerun.yml:80:        uses: pnpm/action-setup@v6
+HEAD:.github/workflows/rerun.yml:88:          node-version: 22
+exit code: 0
+
+$ git diff main -- .github | grep -E "^[-+].*(pnpm/action-setup|node-version|version:|setup-node)"
+exit code: 1
+
+$ git diff main --stat -- apps/site/.nvmrc; git show main:apps/site/.nvmrc; cat apps/site/.nvmrc
+22
+22
+exit code: 0
+

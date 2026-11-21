@@ -1,0 +1,11 @@
+$ git commit -m "probe"
+# worktree <scratch>/wt-a, HEAD 2108f8bc (detached)
+# staged: apps/site/src/lib/routes.test.ts
+# start 2026-11-21 11:05:46
+make check-fast STAGED=1.................................................Passed
+[detached HEAD d2489078] probe
+ 1 file changed, 1 insertion(+)
+exit code: 0
+# end 2026-11-21 11:07:00, 74 s
+$ git log -1 --oneline
+d2489078 probe

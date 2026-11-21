@@ -1,0 +1,5 @@
+$ git worktree remove --force <scratch>/wt-a && git worktree remove --force <scratch>/wt-b
+exit code: 0
+$ git worktree list | grep -c "wt-a\|wt-b"
+0
+$ git branch --contains f75a1a91; git branch --contains c681f105

@@ -1,0 +1,19 @@
+$ git ls-files | grep -E "oxlintrc|oxlint\.json|\.oxlintrc"
+.oxlintrc.json
+exit code: 0
+
+$ git grep -n -i -e 'landmines' -- '*.oxlintrc.json' '.oxlintrc.json' 'apps/site/.oxlintrc.json' '*package.json' 'packages/design/lint'
+exit code: 1
+
+$ git grep -n -i -e 'no-fixed-sleep' -- '*.oxlintrc.json' '.oxlintrc.json' 'apps/site/.oxlintrc.json' '*package.json' 'packages/design/lint'
+exit code: 1
+
+$ git grep -n -i -e 'no-flake-masking' -- '*.oxlintrc.json' '.oxlintrc.json' 'apps/site/.oxlintrc.json' '*package.json' 'packages/design/lint'
+exit code: 1
+
+$ git grep -n -i -e 'no-unsignaled-poll' -- '*.oxlintrc.json' '.oxlintrc.json' 'apps/site/.oxlintrc.json' '*package.json' 'packages/design/lint'
+exit code: 1
+
+$ git grep -n -i -E 'landmines|no-fixed-sleep|no-flake-masking|no-unsignaled-poll' -- ':!.scratch'
+exit code: 1
+

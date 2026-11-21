@@ -1,0 +1,17 @@
+$ gh run list --branch main --workflow check.yml --limit 3 --json databaseId,headSha,conclusion,event,createdAt
+[{"conclusion":"success","createdAt":"2026-11-21T05:23:18Z","databaseId":44870653426,"event":"push","headSha":"182ade52e720cddfc2d035bf770f1b6640bdf752"},{"conclusion":"success","createdAt":"2026-11-21T03:24:21Z","databaseId":44860949058,"event":"push","headSha":"05d7e8059be6ac59327d6ae733b65e38e3d56e75"},{"conclusion":"success","createdAt":"2026-11-20T01:48:31Z","databaseId":44656282511,"event":"push","headSha":"1fc0a06ec95dbd097960229193c4f1d0f738446a"}]
+
+$ git merge-base main design-checks-speed
+05d7e8059be6ac59327d6ae733b65e38e3d56e75
+
+# Run 44656282511 on main, head 1fc0a06e: the base of the Spec branch when the spec started (the 1,775 of the Given line).
+$ gh api repos/{owner}/{repo}/actions/jobs/136023183520/logs | grep -E "vitest run|Test Files|Tests  "   # job site-unit
+2026-11-20T01:49:17.1744929Z > CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED
+2026-11-20T01:51:59.2608570Z  Test Files  183 passed (183)
+2026-11-20T01:51:59.2616405Z       Tests  1775 passed (1775)
+
+# Run 44860949058 on main, head 05d7e805 (#84): the merge base now, after origin/main merged into the Spec branch at 3a2b689b.
+$ gh api repos/{owner}/{repo}/actions/jobs/136713957425/logs | grep -E "vitest run|Test Files|Tests  "   # job site-unit
+2026-11-21T03:25:21.6163495Z > CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && vitest run $VITEST_CHANGED
+2026-11-21T03:28:14.6955882Z  Test Files  192 passed (192)
+2026-11-21T03:28:14.6963847Z       Tests  1898 passed (1898)

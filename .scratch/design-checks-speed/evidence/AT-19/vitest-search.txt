@@ -1,0 +1,22 @@
+$ git ls-files "package.json" "**/package.json"
+apps/site/package.json
+packages/analyzer/site/package.json
+packages/design/site/package.json
+packages/eggs/site/package.json
+packages/league/site/package.json
+packages/managers/site/package.json
+packages/midseason/site/package.json
+packages/rankings/site/package.json
+packages/sim/site/package.json
+packages/waiver/site/package.json
+packages/week/site/package.json
+
+$ git ls-files -z "package.json" "**/package.json" | xargs -0 grep -n -i vitest; echo "exit code: $?"
+exit code: 1
+
+$ git ls-files apps/site | grep vitest; echo "exit code: $?"
+exit code: 1
+
+$ ls apps/site/vitest.config.mts; echo "exit code: $?"
+"apps/site/vitest.config.mts": No such file or directory (os error 2)
+exit code: 2

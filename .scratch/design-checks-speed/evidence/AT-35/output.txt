@@ -1,0 +1,17 @@
+$ cat docs/adr/0038-the-site-checks-run-on-bun-and-oxlint.md
+# The site checks run on Bun and Oxlint
+
+The site tests ran on Vitest, and Vitest took 138 s of a 195 s `make check-fast`. Bun v1.4.5 runs the same kind of test 3 to 5 times faster, and it ships `bun check`, a port of TypeScript 7, and `bun fmt`. We decided that `bun test`, `bun check`, and `bun fmt` replace Vitest, `tsc`, and a formatter, and that Oxlint runs the lint until `bun lint` leaves canary. pnpm stays the installer, because the move of the lock to `bun.lock` failed and Bun picked fresh versions. Brian decided it on 2026-11-20 (spec `design-checks-speed`, decision tickets 01, 05, and 06).
+
+## Consequences
+
+- The tests use the native `bun:test` API in happy-dom. One helper file gives `stubGlobal` and `stubEnv`. No shim of `vi` exists.
+- The design rules live in one ESLint-style plugin that Oxlint runs through `jsPlugins`. Canary `bun lint` runs the same plugin file, so the move to `bun lint` needs no rewrite.
+- The `@ui-sdk` import rule of ADR 0035 moves from a rule test to the built-in Oxlint rule `no-restricted-imports`.
+- Bun runs on the `node_modules` that pnpm installs. The move to `bun install` is a later decision.
+exit code: 0
+
+$ grep -n "0038" docs/adr/README.md
+42:| 0038 | [The site checks run on Bun and Oxlint](0038-the-site-checks-run-on-bun-and-oxlint.md) |
+exit code: 0
+

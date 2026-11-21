@@ -1,0 +1,62 @@
+$ grep -rn --include="*.ts" --include="*.tsx" "<button" apps/site/src packages/*/site | grep -v "/ui/" | grep -v "\.test\." | grep -v "\.spec\."
+exit 1
+
+$ grep -rnF "calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)" apps/site/src packages/*/site | grep -v "/ui/" | grep -v "\.test\." | grep -v "\.spec\."
+exit 1
+
+# The files outside ui/ and outside test files with a raw <button> at the merge base 05d7e805 of main (2026-11-20 22:24:17 -0500):
+$ git grep -l "<button" 05d7e805 -- apps/site/src "packages/*/site" | grep -v "\.test\." | grep -v "\.spec\." | grep -v "/ui/"
+05d7e805:apps/site/src/app/front-door/ask-box.tsx
+05d7e805:apps/site/src/app/front-door/front-door.tsx
+05d7e805:apps/site/src/app/front-door/lineup-block.tsx
+05d7e805:apps/site/src/app/front-door/miss-card.tsx
+05d7e805:apps/site/src/app/front-door/passphrase-sheet.tsx
+05d7e805:apps/site/src/app/front-door/personal-answer.tsx
+05d7e805:apps/site/src/app/front-door/suggestions.tsx
+05d7e805:apps/site/src/app/front-door/team-sheet.tsx
+05d7e805:apps/site/src/app/front-door/tour-replay.tsx
+05d7e805:apps/site/src/app/front-door/tour.tsx
+05d7e805:apps/site/src/app/front-door/trade-answer.tsx
+05d7e805:apps/site/src/app/front-door/trade-block.tsx
+
+$ git diff --stat 05d7e805 HEAD -- <the files above>
+ apps/site/src/app/front-door/ask-box.tsx          |  26 +-
+ apps/site/src/app/front-door/front-door.tsx       | 494 +++++++++++++++++-----
+ apps/site/src/app/front-door/lineup-block.tsx     | 204 ++++++---
+ apps/site/src/app/front-door/miss-card.tsx        | 128 ++++--
+ apps/site/src/app/front-door/passphrase-sheet.tsx |  52 ++-
+ apps/site/src/app/front-door/personal-answer.tsx  | 142 +++++--
+ apps/site/src/app/front-door/suggestions.tsx      | 126 ++++--
+ apps/site/src/app/front-door/team-sheet.tsx       |  66 ++-
+ apps/site/src/app/front-door/tour-replay.tsx      |  22 +-
+ apps/site/src/app/front-door/tour.tsx             | 140 ++++--
+ apps/site/src/app/front-door/trade-answer.tsx     | 305 ++++++++++---
+ apps/site/src/app/front-door/trade-block.tsx      | 264 +++++++++---
+ 12 files changed, 1496 insertions(+), 473 deletions(-)
+
+$ for f in <the files above>; do echo "-- $f"; grep -n -E 'import .*(/ui/|@design/ui|ui-sdk)' $f; done   # the ui imports of each file now
+-- apps/site/src/app/front-door/ask-box.tsx
+8:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/front-door.tsx
+9:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/lineup-block.tsx
+7:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/miss-card.tsx
+7:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/passphrase-sheet.tsx
+7:import { Button } from "@cpc/design/ui/button";
+10:import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
+-- apps/site/src/app/front-door/personal-answer.tsx
+8:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/suggestions.tsx
+9:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/team-sheet.tsx
+7:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/tour-replay.tsx
+7:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/tour.tsx
+7:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/trade-answer.tsx
+8:import { Button } from "@cpc/design/ui/button";
+-- apps/site/src/app/front-door/trade-block.tsx
+7:import { Button } from "@cpc/design/ui/button";

@@ -1,0 +1,8 @@
+$ cat -n packages/design/lint/fixtures/no-arbitrary-value/color.tsx
+     1	/**
+     2	 * A lint fixture: an arbitrary color value in a className.
+     3	 * The value rule test expects design/no-arbitrary-value to fail it at line 6.
+     4	 */
+     5	export const Chip = () => (
+     6	  <span className="text-ink bg-[color-mix(in_srgb,var(--color-accent)_28%,var(--color-card))]">Chip</span>
+     7	);

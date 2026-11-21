@@ -1,0 +1,15 @@
+54:   BUN_TEST_BASE: HEAD^1
+230:   BUN_TEST_BASE: HEAD^1
+259:   BUN_TEST_BASE: HEAD^1
+278:   BUN_TEST_BASE: HEAD^1
+296:   BUN_TEST_BASE: HEAD^1
+317:   BUN_TEST_BASE: HEAD^1
+350: bun test --isolate --parallel=4 --shard=1/1 --timings=bun-test-timings.json
+351: The run takes the full suite.
+352: bun test v1.4.5 (a7733435c) 4x PARALLEL
+353: --shard=1/1: running 203/203 test files
+5870: (pass) the DOM of bun test > reports no unhandled rejection when an animation is canceled [13.75ms]
+5938: (pass) the DOM of bun test > runs about 60 frames per second, as a browser does [201.47ms]
+5950: (pass) the DOM of bun test > keeps the frames running when a test replaces setTimeout with a fake [16.20ms]
+5981: (pass) the DOM of bun test > gives each callback of one frame the same time, and runs no canceled callback [52.49ms]
+5991: (pass) the DOM of bun test > has a page URL, so a relative image src fires no error [112.52ms]

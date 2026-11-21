@@ -1,0 +1,129 @@
+$ grep -n -E "matrix:|shard: \[|BUN_TEST_SHARD:|PLAYWRIGHT_SHARD:|^  [a-z-]+:$" .github/workflows/check.yml
+10:  push:
+29:  scripts:
+49:  site-unit:
+55:      matrix:
+56:        shard: [1]
+59:      BUN_TEST_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+104:  site-browser:
+110:      matrix:
+111:        shard: [1, 2, 3, 4, 5, 6, 7]
+114:      PLAYWRIGHT_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+202:  pipeline-parallel:
+208:      matrix:
+209:        shard: [1, 2]
+233:  pipeline-serial:
+257:  api:
+282:  packages:
+308:  check:
+exit code: 0
+
+$ sed -n 41,64p .github/workflows/check.yml
+  # The site check runs as two jobs at the same time, because the browser half alone takes most of the time.
+  # The unit half needs no browser. "make check-site" runs both halves in sequence.
+  # The unit half runs in a matrix of shards, and each job runs bun test on the files of its shard only, split by the time
+  # of each file in apps/site/bun-test-timings.json. With --parallel, the timings also start the slowest files first. Each
+  # job also runs the lint, the format check, the client build, and typecheck. The measured times of ticket 15 of
+  # design-checks-speed set the count. With 4 workers, the count of an ubuntu-latest runner, the slowest shard takes 47 s
+  # with 1 shard and 34 s with 2, 3, or 4, because one test file takes 33 s alone. One more job costs about 42 s of setup,
+  # so a second shard saves less than it costs. With 1 worker, the slowest shard takes 170 s with 1 shard and 97 s with 2.
+  site-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1]
+    env:
+      # scripts/bun-test.mjs reads it, such as "1/1". The total comes from the matrix, so the list above is the one count.
+      BUN_TEST_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+      # On a PR, bun test runs only the test files that the diff since the base can reach. The checkout of a PR is the test
+      # merge commit, and its first parent HEAD^1 is the tip of the base branch, so the diff is the change of the PR.
+      # A push, a dispatch, and a call from a deploy set no base, so each runs the full suite, also a push to main.
+      # A diff that names a file of FULL_SUITE_FILES in scripts/test-scope.mjs, such as the lock file, runs the full suite too.
+      BUN_TEST_BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || '' }}
+exit code: 0
+
+$ sed -n 99,114p .github/workflows/check.yml
+  # Playwright runs in a matrix of shards. Each job runs the whole browser check, and each Playwright run in it takes only the
+  # tests of its shard, so each job builds each client again. Real CI times set the count: with 5 shards the jobs took 276 to
+  # 389 s on two runs, above the limit of 360 s. With 6 shards and the built-in split of Playwright, shard 1 took 363 s, because
+  # it held the slow first file of each run. The reporter scripts/playwright-shard-reporter.mjs now gives each shard each Nth
+  # test, and the matrix has 7. Each job holds about 120 s of setup and builds. The serial projects keep one worker.
+  site-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7]
+    env:
+      # The Playwright config reads it, such as "2/7". The total comes from the matrix, so the list above is the one count.
+      PLAYWRIGHT_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+exit code: 0
+
+$ grep -n -E "workers|fullyParallel|name: \"(floor-timing|eggs)\"" apps/site/playwright.config.ts
+22:  // A static page loads fast. The CI runner of a public repo has four cores, so CI runs four workers.
+23:  // A local run keeps two workers, because agents run the checks in many worktrees at once.
+24:  workers: process.env.CI ? 4 : 2,
+25:  fullyParallel: true,
+64:    // with one worker (scripts/check-floor.mjs does both). CPU load from other workers delays a frame, so a limit of 100 ms
+66:    // The one worker still runs one test at a time. fullyParallel lets a shard take single tests, not a whole file, so the
+70:      name: "floor-timing",
+73:      fullyParallel: true,
+74:      workers: 1,
+90:    { name: "eggs", testMatch: "eggs.spec.ts", fullyParallel: false, workers: 1 },
+exit code: 0
+
+$ sed -n 60,92p apps/site/playwright.config.ts
+      testMatch: FLOOR_SPECS,
+      grepInvert: /@timing/,
+    },
+    // The project "floor-timing" runs the tests of the floor that assert a wall-time limit. Run it after the project "floor",
+    // with one worker (scripts/check-floor.mjs does both). CPU load from other workers delays a frame, so a limit of 100 ms
+    // fails in a parallel run and holds in a run alone.
+    // The one worker still runs one test at a time. fullyParallel lets a shard take single tests, not a whole file, so the
+    // timing tests spread over the shards of CI. Most of them sit in one file. The project is not in wholeFileProjects of the
+    // shard reporter for the same reason.
+    {
+      name: "floor-timing",
+      testMatch: FLOOR_SPECS,
+      grep: /@timing/,
+      fullyParallel: true,
+      workers: 1,
+    },
+    // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
+    // It also checks the Ledger cards and the near fold of the Finder on the same export.
+    { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "finder-ledger.spec.ts"] },
+    // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
+    { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
+    // The smoke run of the verify skill drives each picked flow in WebKit and Chromium, with motion on, against its own
+    // local API on a free port. It launches its own two browsers. Run it with pnpm smoke --out <dir>.
+    { name: "smoke", testMatch: "smoke.spec.ts", use: { reducedMotion: "no-preference" } },
+    // The project "open-card" checks find-in-page and the frame rate of the Open card on the export of cpc, with motion on.
+    // It records evidence for ADR 0028, so no check of CI runs it.
+    { name: "open-card", testMatch: "open-card.spec.ts", use: { reducedMotion: "no-preference" } },
+    // The end-to-end run of the egg hunt against the local API. It starts no API, unlike the smoke run and the evidence
+    // round, so run make -C apps/api api-evidence first, with its default port and origin.
+    // One worker, because the two widths claim the same test egg one after the other.
+    { name: "eggs", testMatch: "eggs.spec.ts", fullyParallel: false, workers: 1 },
+  ],
+});
+exit code: 0
+
+$ grep -n -i -E "workers|fullyParallel|project" apps/site/scripts/playwright-shard-reporter.mjs | head -20
+6:/* The tests of `shard`, out of `tests` in the order of the run. A unit is one test, or one whole file of a project in
+7:   `wholeFileProjects`, whose tests must run in one place and in order. The shard keeps each Nth unit, so every test lands in
+10:   alone. `projectOf` and `fileOf` read the project name and the file of a test. */
+11:export function inShard(tests, shard, { wholeFileProjects = [], projectOf, fileOf } = {}) {
+14:    const unit = wholeFileProjects.includes(projectOf?.(test))
+15:      ? `${projectOf(test)}\n${fileOf(test)}`
+23:   It prints nothing. The option wholeFileProjects names the projects that are not fully parallel. The config does not
+26:  constructor({ wholeFileProjects = [] } = {}) {
+27:    this.wholeFileProjects = wholeFileProjects;
+36:        wholeFileProjects: this.wholeFileProjects,
+37:        projectOf: (test) => test.parent.project()?.name,
+exit code: 0
+

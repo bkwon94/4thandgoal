@@ -1,0 +1,35 @@
+How each file of AT-16 was made, on 2026-11-21.
+
+The Spec branch, full-page shots (375/768/1280 x light/dark):
+1. steps.json in this folder: route "/", pick the team "Lil Fridge", Skip the Tour, ask "what tools are there",
+   fill the passphrase "localtest", wait for "Pages to read", wait 1500 ms, expect "Season Sim" in the article.
+2. From the Spec worktree (2108f8bc): `pnpm --dir apps/site evidence design-checks-speed AT-16`, with ~/.secrets sourced.
+   The full output is runner.txt. The runner wrote <width>-<theme>.png.
+
+main, full-page shots, and the computed fills of both branches (agent-browser, session dcs16):
+1. `git worktree add --detach <scratchpad>/dcs-main main` from /Users/brian.kwon/repos/4thandgoal. main was 182ade52.
+2. In it: `pnpm install --frozen-lockfile`.
+3. In it: `make -C apps/api api-evidence API_PORT=8391 API_ORIGIN=http://127.0.0.1:4391`, with ~/.secrets sourced, in the background.
+4. In it: `CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:8391 pnpm --dir apps/site build`.
+5. Serve apps/site/out on http://127.0.0.1:4391 with a static server that answers a missing path with 404.html and status 404.
+6. agent-browser at 1280x900: open /, set cpc.theme, pick "Lil Fridge", Skip the Tour, ask "what tools are there",
+   fill the passphrase "localtest". Then dismiss the Announcement "See your path to the playoffs" with "Not now".
+   The kept thread (cpc.thread in local storage) then shows the same site answer after each reload.
+7. chips.sh (copied in chips.sh.txt), for each width 375, 768, 1280 and each theme light, dark:
+   1. `agent-browser set viewport <width> 900`, open /, set cpc.theme in local storage, reload, wait 1500 ms.
+   2. Scroll to the end, wait 1500 ms, scroll to the top, wait 800 ms.
+   3. `agent-browser screenshot <path> --full` -> main-<width>-<theme>.png.
+   4. eval getComputedStyle of the Season Sim tile (rest) and of its icon circle span.rounded-full (chosen).
+   5. Move the mouse to (2, 2), then `agent-browser hover 'article ul li a'` (the Season Sim tile), wait 600 ms.
+   6. eval getComputedStyle of the tile again (hover). Viewport shot -> main-hover-<width>-<theme>.png.
+   The raw output is main-computed-raw.txt.
+8. For the Spec branch values: `git worktree add --detach <scratchpad>/dcs-spec 2108f8bc`, `pnpm install --frozen-lockfile`,
+   `CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:8391 pnpm --dir apps/site build`, and serve its apps/site/out on the
+   same port 4391 in place of main, so the same local API and the same local storage apply.
+9. chips.sh again on the Spec build. Its hover viewport shots are hover-<width>-<theme>.png. Its full-page shots were
+   not kept, because the runner shots above are the Spec full-page shots. The raw output is spec-computed-raw.txt.
+10. computed.txt puts the values of both branches side by side.
+11. Stop the static server and the API, close the browser, and remove both detached worktrees with `git worktree remove`.
+
+The chip is the Tool tile of a site answer: the tile itself (bg-accent-wash on the Spec branch), its icon circle
+(bg-accent-wash-chosen), and the hover of the tile (hover-fine:bg-accent-wash-hover).

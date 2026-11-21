@@ -1,0 +1,20 @@
+{
+  "route": "/",
+  "steps": [
+    { "wait": "text=Which team is yours?" },
+    { "wait": 1200 },
+    { "click": "[role=dialog] button:has-text(\"Lil Fridge\")" },
+    { "wait": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]" },
+    { "click": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]" },
+    { "wait": "input[aria-label=\"Ask a question\"]" },
+    { "wait": 800 },
+    { "fill": { "selector": "input[aria-label=\"Ask a question\"]", "value": "what tools are there" } },
+    { "click": "button[aria-label=\"Send\"]" },
+    { "wait": "input[type=password]" },
+    { "fill": { "selector": "input[type=password]", "value": "localtest" } },
+    { "click": "button[aria-label=\"Use this passphrase\"]" },
+    { "wait": "text=Pages to read" },
+    { "wait": 1500 },
+    { "expect": "article >> text=Season Sim" }
+  ]
+}

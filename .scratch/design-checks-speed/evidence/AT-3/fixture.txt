@@ -1,0 +1,11 @@
+$ cat -n packages/design/lint/fixtures/raw-color/colored.tsx
+     1	/**
+     2	 * A lint fixture: a hex color in a style object, an rgb() color in a class string, an oklch() color in a template.
+     3	 * The raw color rule test expects one failure at each of lines 6, 7, and 8, and none elsewhere.
+     4	 */
+     5	export const Part = () => (
+     6	  <div style={{ color: "#ff0000" }}>
+     7	    <span className="bg-[rgb(0_0_0)]" />
+     8	    <span title={`oklch(0.5 0.1 20)`} />
+     9	  </div>
+    10	);

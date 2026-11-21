@@ -1,0 +1,59 @@
+$ gh run view <id> --json databaseId,event,headSha,headBranch,conclusion,createdAt,updatedAt,jobs   # for each of the 3 runs; the table is computed from the JSON
+
+Run 44873662117: event workflow_dispatch, branch design-checks-speed, head 4d5f4d13, conclusion success, createdAt 2026-11-21T06:02:43Z, updatedAt 2026-11-21T06:08:34Z
+  api                      success  2026-11-21T06:02:46Z -> 2026-11-21T06:07:05Z  259 s
+  check                    success  2026-11-21T06:08:31Z -> 2026-11-21T06:08:33Z  2 s
+  packages                 success  2026-11-21T06:02:46Z -> 2026-11-21T06:04:09Z  83 s
+  pipeline-parallel (1)    success  2026-11-21T06:02:47Z -> 2026-11-21T06:07:06Z  259 s
+  pipeline-parallel (2)    success  2026-11-21T06:02:46Z -> 2026-11-21T06:07:10Z  264 s
+  pipeline-serial          success  2026-11-21T06:02:47Z -> 2026-11-21T06:03:30Z  43 s
+  scripts                  success  2026-11-21T06:02:47Z -> 2026-11-21T06:03:25Z  38 s
+  site-browser (1)         success  2026-11-21T06:02:46Z -> 2026-11-21T06:07:12Z  266 s
+  site-browser (2)         success  2026-11-21T06:02:47Z -> 2026-11-21T06:08:17Z  330 s
+  site-browser (3)         success  2026-11-21T06:02:46Z -> 2026-11-21T06:06:37Z  231 s
+  site-browser (4)         success  2026-11-21T06:02:48Z -> 2026-11-21T06:07:18Z  270 s
+  site-browser (5)         success  2026-11-21T06:02:47Z -> 2026-11-21T06:07:08Z  261 s
+  site-browser (6)         success  2026-11-21T06:02:46Z -> 2026-11-21T06:07:06Z  260 s
+  site-browser (7)         success  2026-11-21T06:02:47Z -> 2026-11-21T06:08:29Z  342 s
+  site-unit (1)            success  2026-11-21T06:02:47Z -> 2026-11-21T06:04:35Z  108 s
+  start of first job to end of last job: 347 s; createdAt to updatedAt: 351 s
+
+Run 44874144251: event workflow_dispatch, branch design-checks-speed, head 4d5f4d13, conclusion success, createdAt 2026-11-21T06:08:44Z, updatedAt 2026-11-21T06:13:59Z
+  api                      success  2026-11-21T06:08:48Z -> 2026-11-21T06:13:53Z  305 s
+  check                    success  2026-11-21T06:13:55Z -> 2026-11-21T06:13:58Z  3 s
+  packages                 success  2026-11-21T06:08:47Z -> 2026-11-21T06:10:07Z  80 s
+  pipeline-parallel (1)    success  2026-11-21T06:08:47Z -> 2026-11-21T06:12:04Z  197 s
+  pipeline-parallel (2)    success  2026-11-21T06:08:47Z -> 2026-11-21T06:12:01Z  194 s
+  pipeline-serial          success  2026-11-21T06:08:47Z -> 2026-11-21T06:09:32Z  45 s
+  scripts                  success  2026-11-21T06:08:48Z -> 2026-11-21T06:09:29Z  41 s
+  site-browser (1)         success  2026-11-21T06:08:47Z -> 2026-11-21T06:12:44Z  237 s
+  site-browser (2)         success  2026-11-21T06:08:47Z -> 2026-11-21T06:13:22Z  275 s
+  site-browser (3)         success  2026-11-21T06:08:48Z -> 2026-11-21T06:13:02Z  254 s
+  site-browser (4)         success  2026-11-21T06:08:47Z -> 2026-11-21T06:13:31Z  284 s
+  site-browser (5)         success  2026-11-21T06:08:47Z -> 2026-11-21T06:13:36Z  289 s
+  site-browser (6)         success  2026-11-21T06:08:47Z -> 2026-11-21T06:13:12Z  265 s
+  site-browser (7)         success  2026-11-21T06:08:47Z -> 2026-11-21T06:13:17Z  270 s
+  site-unit (1)            success  2026-11-21T06:08:47Z -> 2026-11-21T06:10:54Z  127 s
+  start of first job to end of last job: 311 s; createdAt to updatedAt: 315 s
+
+Run 44874592510: event workflow_dispatch, branch design-checks-speed, head 4d5f4d13, conclusion success, createdAt 2026-11-21T06:14:24Z, updatedAt 2026-11-21T06:19:39Z
+  api                      success  2026-11-21T06:14:28Z -> 2026-11-21T06:18:26Z  238 s
+  check                    success  2026-11-21T06:19:33Z -> 2026-11-21T06:19:38Z  5 s
+  packages                 success  2026-11-21T06:14:27Z -> 2026-11-21T06:16:05Z  98 s
+  pipeline-parallel (1)    success  2026-11-21T06:14:27Z -> 2026-11-21T06:18:20Z  233 s
+  pipeline-parallel (2)    success  2026-11-21T06:14:27Z -> 2026-11-21T06:18:55Z  268 s
+  pipeline-serial          success  2026-11-21T06:14:27Z -> 2026-11-21T06:15:04Z  37 s
+  scripts                  success  2026-11-21T06:14:27Z -> 2026-11-21T06:15:03Z  36 s
+  site-browser (1)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:18:45Z  258 s
+  site-browser (2)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:19:29Z  302 s
+  site-browser (3)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:18:54Z  267 s
+  site-browser (4)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:19:31Z  304 s
+  site-browser (5)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:18:41Z  254 s
+  site-browser (6)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:18:03Z  216 s
+  site-browser (7)         success  2026-11-21T06:14:27Z -> 2026-11-21T06:19:23Z  296 s
+  site-unit (1)            success  2026-11-21T06:14:27Z -> 2026-11-21T06:16:19Z  112 s
+  start of first job to end of last job: 311 s; createdAt to updatedAt: 315 s
+
+Start of first job to end of last job, the 3 runs: [347, 311, 311] s; median 311 s
+createdAt to updatedAt, the 3 runs: [351, 315, 315] s; median 315 s
+Slowest job of the 3 runs: 342 s, site-browser (7) of run 44873662117

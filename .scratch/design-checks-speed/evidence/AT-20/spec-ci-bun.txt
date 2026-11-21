@@ -1,0 +1,10 @@
+# Run 44873662117 (workflow_dispatch) of check.yml on the Spec branch, head 4d5f4d13. Job site-unit (1), id 136753507714.
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507714/logs | grep -E "bun test --isolate|full suite| pass$| fail$|Ran [0-9]+ tests|==> test"
+2026-11-21T06:04:32.1969031Z bun test --isolate --parallel=4 --shard=1/1 --timings=bun-test-timings.json
+2026-11-21T06:04:32.1969414Z The run takes the full suite.
+2026-11-21T06:04:32.3413535Z  1954 pass
+2026-11-21T06:04:32.3413594Z  0 fail
+2026-11-21T06:04:32.3413751Z Ran 1954 tests across 203 files. [66.80s]
+2026-11-21T06:04:32.3413822Z ==> test: ok (67.2 s)
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507714/logs | grep -cE "\((skip|todo)\)"
+0

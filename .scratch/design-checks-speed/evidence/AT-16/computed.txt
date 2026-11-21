@@ -1,0 +1,36 @@
+# The computed background-color of one Tool chip of the site answer "what tools are there", on main and on the Spec branch.
+# The chip is the Season Sim tile of the Tools group. Rest: getComputedStyle(tile).backgroundColor.
+# Chosen: the Tool icon circle inside the tile (span.rounded-full), which takes the chosen wash (TOOL_TINT).
+# Hover: agent-browser hover on the tile, a 600 ms wait past the 150 ms transition, then getComputedStyle again.
+# fine pointer: matchMedia('(hover: hover) and (pointer: fine)').matches in the page.
+# main: a build of main 182ade52 in a detached worktree. Spec: a build of the Spec head 2108f8bc in a detached worktree.
+# Both builds call the same local API (make -C apps/api api-evidence of main, port 8391). See steps.txt.
+
+ 375 dark  rest   main: rgb(38, 38, 38)                            spec: rgb(38, 38, 38)                            same
+ 375 dark  chosen main: color(srgb 0.286431 0.162196 0.152784)     spec: color(srgb 0.286431 0.162196 0.152784)     same
+ 375 dark  hover  main: color(srgb 0.343686 0.167686 0.154353)     spec: color(srgb 0.343686 0.167686 0.154353)     same
+ 375 dark  fine pointer main: True spec: True; tile :hover main: True spec: True
+ 375 light rest   main: color(srgb 0.972157 0.920392 0.916471)     spec: color(srgb 0.972157 0.920392 0.916471)     same
+ 375 light chosen main: color(srgb 0.944314 0.840784 0.832941)     spec: color(srgb 0.944314 0.840784 0.832941)     same
+ 375 light hover  main: color(srgb 0.922039 0.777098 0.766118)     spec: color(srgb 0.922039 0.777098 0.766118)     same
+ 375 light fine pointer main: True spec: True; tile :hover main: True spec: True
+ 768 dark  rest   main: rgb(38, 38, 38)                            spec: rgb(38, 38, 38)                            same
+ 768 dark  chosen main: color(srgb 0.286431 0.162196 0.152784)     spec: color(srgb 0.286431 0.162196 0.152784)     same
+ 768 dark  hover  main: color(srgb 0.343686 0.167686 0.154353)     spec: color(srgb 0.343686 0.167686 0.154353)     same
+ 768 dark  fine pointer main: True spec: True; tile :hover main: True spec: True
+ 768 light rest   main: color(srgb 0.972157 0.920392 0.916471)     spec: color(srgb 0.972157 0.920392 0.916471)     same
+ 768 light chosen main: color(srgb 0.944314 0.840784 0.832941)     spec: color(srgb 0.944314 0.840784 0.832941)     same
+ 768 light hover  main: color(srgb 0.922039 0.777098 0.766118)     spec: color(srgb 0.922039 0.777098 0.766118)     same
+ 768 light fine pointer main: True spec: True; tile :hover main: True spec: True
+1280 dark  rest   main: rgb(38, 38, 38)                            spec: rgb(38, 38, 38)                            same
+1280 dark  chosen main: color(srgb 0.286431 0.162196 0.152784)     spec: color(srgb 0.286431 0.162196 0.152784)     same
+1280 dark  hover  main: color(srgb 0.343686 0.167686 0.154353)     spec: color(srgb 0.343686 0.167686 0.154353)     same
+1280 dark  fine pointer main: True spec: True; tile :hover main: True spec: True
+1280 light rest   main: color(srgb 0.972157 0.920392 0.916471)     spec: color(srgb 0.972157 0.920392 0.916471)     same
+1280 light chosen main: color(srgb 0.944314 0.840784 0.832941)     spec: color(srgb 0.944314 0.840784 0.832941)     same
+1280 light hover  main: color(srgb 0.922039 0.777098 0.766118)     spec: color(srgb 0.922039 0.777098 0.766118)     same
+1280 light fine pointer main: True spec: True; tile :hover main: True spec: True
+
+# The class attribute of the tile at 1280 light:
+main: press group flex w-full flex-col justify-between gap-sp-3 rounded-card p-sp-4 no-underline min-h-[156px] border border-transparent bg-[color-mix(in_srgb,var(--color-accent)_10%,var(--color-card))] text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_28%,var(--color-card))] dark:border-rule dark:bg-raised dark:hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_34%,var(--color-raised))]
+spec: press group gap-sp-3 rounded-card p-sp-4 flex w-full flex-col justify-between no-underline min-h-[156px] border border-transparent bg-accent-wash text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-accent-wash-hover dark:border-rule
