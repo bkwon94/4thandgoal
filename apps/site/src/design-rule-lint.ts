@@ -14,6 +14,8 @@ export function lintFixture(fixture: string): { status: number | null; output: s
   const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/${fixture}`], {
     cwd: ROOT_DIR,
     encoding: "utf8",
+    // The CI format of Oxlint drops the custom message of a rule, and the tests read that message.
+    env: { ...process.env, GITHUB_ACTIONS: undefined },
   });
   return { status: run.status, output: run.stdout + run.stderr };
 }
