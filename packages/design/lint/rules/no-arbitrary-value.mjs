@@ -70,6 +70,11 @@ function utilityOf(className) {
   return className.slice(start);
 }
 
+/* A test may set an arbitrary value to check a part, so a test file is exempt, as in the element rule. */
+function isTestFile(filename) {
+  return /\.(test|spec)\.[cm]?[jt]sx?$/.test(filename.replaceAll("\\", "/"));
+}
+
 /* Each class of a string, with its offset in the string. */
 function* classesOf(text) {
   for (const match of text.matchAll(/\S+/g)) yield { name: match[0], offset: match.index };
@@ -85,6 +90,7 @@ export default {
     },
   },
   create(context) {
+    if (isTestFile(context.filename)) return {};
     const sourceCode = context.sourceCode;
 
     /* The raw text starts at the node, so an offset in the raw text gives the line of the class itself. A string with an

@@ -43,6 +43,12 @@ describe("the value rule", () => {
     expect(output).toContain("template.tsx:7:");
   });
 
+  it("passes an arbitrary color value in a test file", () => {
+    const { status, output } = lint("color.test.tsx");
+    expect(output).not.toContain(RULE);
+    expect(status).toBe(0);
+  });
+
   it("passes a variant, a layout value, and a motion value", () => {
     const { status, output } = lint("allowed.tsx");
     expect(output).not.toContain(RULE);
