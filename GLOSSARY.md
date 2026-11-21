@@ -583,12 +583,11 @@ two states: fair and lopsided. A lopsided trade names the side that gives more.
 _Avoid_: balance, even trade
 
 **Finder**:
-The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. With
-no picked partner, the partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
-every one-for-one, two-for-one, and one-for-two trade from the targets only, and Jev makes the shortlist. The Advisor then
-picks up to three trades from the shortlist that are good for both, and writes why each one works. The trades share no player. A
-handcuff, a player out with no return week, and an unlisted player are never in a trade. The chart lists no
-kicker and no defense, so they are always unlisted.
+The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. The partner
+filter runs with each partner and stops none. Code builds every one-for-one, two-for-one, and one-for-two trade that
+passes the Value screen, and Jev makes the shortlist. The Advisor then picks up to three trades from the shortlist that
+are good for both, and writes why each one works. The trades share no player. A handcuff, a player out with no return
+week, and an unlisted player are never in a trade. The chart lists no kicker and no defense, so they are always unlisted.
 _Avoid_: suggested trades, counters (a counter changes one trade for one side)
 
 **Trade block**:
