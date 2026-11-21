@@ -66,10 +66,11 @@ FLOOR = 5.0
 
 
 class Anchor(BaseModel):
-    """The one player that a search of trade ideas is built around, and his side: the asker gives him, or gets him."""
+    """The one player that the asker gets in a search of trade ideas. The side is always "gets", because a player that
+    the asker gives goes on his Trade block."""
 
     player_id: str
-    side: Literal["gives", "gets"]
+    side: Literal["gets"]
 
 
 class Limit(BaseModel):
@@ -217,8 +218,8 @@ def _within(trade: ProposedTrade, snapshot: Snapshot, limit: Limit | None) -> bo
 
 
 def _holds(trade: ProposedTrade, anchor: Anchor) -> bool:
-    """True when the trade holds the anchor on his side: the first side for "gives", the second side for "gets"."""
-    return anchor.player_id in trade.sides[0 if anchor.side == "gives" else 1].player_ids
+    """True when the trade holds the anchor on the second side, the side that the asker gets."""
+    return anchor.player_id in trade.sides[1].player_ids
 
 
 def _sends_block(trade: ProposedTrade, trade_block: list[str] | None) -> bool:

@@ -295,7 +295,7 @@ class FindRequest(BaseModel):
     """The body of the find route: the season, the roster that asks, and the partner roster.
 
     The partner is optional. With no partner, the search runs over every other team of the league.
-    The anchor is optional too. With an anchor, each offer holds that one player on his side.
+    The anchor is optional too. With an anchor, each offer holds that one player on the side that the asker gets.
     The limit is optional too. With a limit, no offer breaks it.
     The Trade block is optional too: 0 to TRADE_BLOCK_MOST players of the asker's roster. With a block, each offer
     sends at least one of them. An empty block and a missing block mean the same thing: no rule.

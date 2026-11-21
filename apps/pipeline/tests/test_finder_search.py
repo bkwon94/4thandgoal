@@ -738,15 +738,6 @@ def _last_pool_player(snap, roster_id):
     return max(pid for pid in snap.rosters[roster_id] if in_pool(snap, pid, roster_id) and pid in snap.chart.values)
 
 
-def test_an_anchor_that_the_asker_gives_is_in_each_offer_on_the_asker_side(snap):
-    anchor = _last_pool_player(snap, ASKER)
-    found = search(ASKER, None, snap, FakeJev(), anchor=Anchor(player_id=anchor, side="gives"))
-    assert found.offers and found.shortlist
-    for trade in found.offers + [offer.trade for offer in found.shortlist]:
-        assert trade.sides[0].roster_id == ASKER and anchor in trade.sides[0].player_ids
-        assert all(anchor not in side.player_ids for side in trade.sides[1:])
-
-
 def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_offer_holds_him(snap):
     anchor = _last_pool_player(snap, PARTNER)
     jev = FakeJev()
@@ -760,7 +751,7 @@ def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_o
 
 
 
-def test_an_anchored_search_runs_the_spares_tree_on_each_pair_and_stops_no_partner(snap):
+def test_a_block_search_runs_the_spares_tree_on_each_pair_and_stops_no_partner(snap):
     # Each Spares tree answer is a clear no, so a filter would stop every partner.
     def answer(key, question, state):
         return 0.1 if key.startswith("spare:") else 0.9
@@ -768,7 +759,7 @@ def test_an_anchored_search_runs_the_spares_tree_on_each_pair_and_stops_no_partn
     others = sorted(rid for rid in snap.rosters if rid != ASKER)
     anchor = _last_pool_player(snap, ASKER)
     jev = FakeJev(answer=answer)
-    found = search(ASKER, None, snap, jev, anchor=Anchor(player_id=anchor, side="gives"))
+    found = search(ASKER, None, snap, jev, trade_block=[anchor])
     # The Spares tree runs once per pair with a listed player, and the Value screen still builds the offers.
     assert len(_filter_requests(jev)) == sum(any(pair_spares(snap, ASKER, rid).values()) for rid in others)
     assert sorted(read.roster_id for read in found.partners) == others
