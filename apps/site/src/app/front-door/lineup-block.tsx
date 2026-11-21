@@ -334,7 +334,7 @@ function TotalToggle({
     <span className="rounded-pill bg-raised p-sp-0 relative inline-grid grid-cols-2">
       <span
         aria-hidden
-        className={`rounded-pill border-door-hair bg-card inset-y-sp-0 left-sp-0 absolute w-[calc(50%-2px)] border transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${withSwaps ? "translate-x-full" : "translate-x-0"}`}
+        className={`rounded-pill border-door-hair bg-card inset-y-sp-0 left-sp-0 absolute w-[calc(50%-var(--spacing-sp-0))] border transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${withSwaps ? "translate-x-full" : "translate-x-0"}`}
       />
       <PendingButton
         type="button"
