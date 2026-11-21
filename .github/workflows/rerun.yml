@@ -89,6 +89,13 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      # The site unit tests run on Bun (ADR 0038). The Bun version comes from .bun-version at the root, as in check.yml.
+      - name: Set up Bun
+        if: steps.needs.outputs.site == 'true'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
       - name: Install the site dependencies
         if: steps.needs.outputs.site == 'true'
         run: pnpm install --frozen-lockfile
