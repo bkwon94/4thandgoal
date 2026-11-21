@@ -5,7 +5,7 @@ Date: 2026-11-21
 Apps: both. The site adds the Trade block picker to Find mode of the analyzer. The analyzer package and the API take a Trade block on the find route, and the search keeps only offers that send a block player. The front door chat sends its "gives" ask as a Trade block of one player. The weekly pipeline does not change.
 Spec branch: `trade-block`.
 Source: the map `.scratch/trade-block/MAP.md` and decision tickets 01 to 04. ADR 0037 (ui-sdk standard), ADR 0038 (Value screen).
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 05, in `issues/`.
 
 ## Problem Statement
 
