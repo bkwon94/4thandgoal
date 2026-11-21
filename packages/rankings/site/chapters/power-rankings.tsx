@@ -2,6 +2,7 @@
  * The power rankings Ladder: the hero for the team at rank 1, the week chips, one card for each other team, and the note on the four parts.
  * Each card is an Open card. A tap opens the ranks of Stand, Form, Sched, and Pts, the move, the bye and seed odds, the blurb, and a link to the manager page.
  * Every part number is a rank, never a score. The cards and the chips hold state, so this file is a client component.
+ * A scratch line for the CI evidence of AT-30. This branch never merges.
  */
 "use client";
 
