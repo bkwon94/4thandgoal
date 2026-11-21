@@ -264,7 +264,7 @@ def test_the_check_client_command_names_an_unknown_key_and_the_file(tmp_path, ca
 
     cli_root(tmp_path)
     path = tmp_path / "clients" / "cpc" / "client.toml"
-    path.write_text(path.read_text(encoding="utf-8").replace("finder = false", "finder = false\nfinderr = true"))
+    path.write_text(path.read_text(encoding="utf-8").replace("finder = true", "finder = true\nfinderr = true"))
     assert cli.main(["check-client", str(path.parent)]) == 2
     out = capsys.readouterr().out
     assert "finderr" in out and str(path) in out

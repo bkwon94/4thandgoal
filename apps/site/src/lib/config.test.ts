@@ -29,7 +29,7 @@ describe("config", () => {
   it("takes the season, the finder, and the usage code from the cpc client.toml", async () => {
     const { finderOn, season, usageCode } = await import("./config");
     expect(season).toBe(2026);
-    expect(finderOn).toBe(false);
+    expect(finderOn).toBe(true);
     expect(usageCode).toBe("cpcfantasy");
   });
 
@@ -41,11 +41,11 @@ describe("config", () => {
 
   it("ignores the old env flags of the season, the finder, the waiver page, and the usage code", async () => {
     stubEnv("NEXT_PUBLIC_SEASON", "2027");
-    stubEnv("NEXT_PUBLIC_FINDER", "on");
+    stubEnv("NEXT_PUBLIC_FINDER", "off");
     stubEnv("NEXT_PUBLIC_USAGE_CODE", "other");
     const config = await import("./config");
     expect(config.season).toBe(2026);
-    expect(config.finderOn).toBe(false);
+    expect(config.finderOn).toBe(true);
     expect(config.usageCode).toBe("cpcfantasy");
     expect("waiverOn" in config).toBe(false);
   });

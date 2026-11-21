@@ -93,7 +93,7 @@ describe("the client build", () => {
   });
 
   it("fails on an unknown key and names the key and the file", () => {
-    const repo = tempRepo(CPC_TOML.replace("finder = false", "finder = false\nfinderr = true"));
+    const repo = tempRepo(CPC_TOML.replace("finder = true", "finder = true\nfinderr = true"));
     const file = join(repo.root, "clients", "cpc", "client.toml");
     expect(() => buildClient(repo)).toThrow(ClientBuildError);
     expect(() => buildClient(repo)).toThrow("- values.analyzer.finderr: is not a known key");
@@ -110,7 +110,7 @@ describe("the client build", () => {
   });
 
   it("checks a [values] table with the schema of its package", () => {
-    const repo = tempRepo(CPC_TOML.replace("finder = false", 'finder = "yes"'));
+    const repo = tempRepo(CPC_TOML.replace("finder = true", 'finder = "yes"'));
     expect(() => buildClient(repo)).toThrow("- values.analyzer.finder: must be boolean");
   });
 
@@ -473,7 +473,7 @@ describe("the client build", () => {
     );
     buildClient(repo);
     const text = readFileSync(join(repo.site, "src", "generated", "client-values.ts"), "utf8");
-    expect(text).toContain('"finder": false');
+    expect(text).toContain('"finder": true');
     expect(text).toContain('"usageCode": "cpcfantasy"');
     expect(text).toContain('"season": 2026');
   });

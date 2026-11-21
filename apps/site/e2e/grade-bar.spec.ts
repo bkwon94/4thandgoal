@@ -9,7 +9,7 @@ import { LOCAL_API } from "./evidence";
 import { serveDir } from "./serve";
 
 const OUT = join(process.cwd(), "out");
-// Run it on the export of NorCal, the client with the finder on, built against the local API URL:
+// Run it on the export of a client with the finder on, such as NorCal or cpc, built against the local API URL:
 // CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The finder document of the analyzer tests, in the exact shape of the API. Its asker is roster 2.
 const FIND = readFileSync(

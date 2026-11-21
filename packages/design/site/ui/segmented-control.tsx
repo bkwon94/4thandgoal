@@ -54,6 +54,7 @@ function SegmentedControlIndicator({
 }
 
 // basis-0 with flex-1 gives each item the same width whatever its label, so two items make two equal halves.
+// A disabled unchecked item fades to 75%, not lower: on the dark tone, 60% put its text at 3.97:1 on the chip, under 4.5:1.
 function SegmentedControlItem({
   className,
   ...props
@@ -61,7 +62,7 @@ function SegmentedControlItem({
   return (
     <SdkSegmentedControlItem
       className={cn(
-        "press min-h-touch rounded-pill px-sp-2 text-row text-mute focus-visible:outline-accent data-[checked]:text-ink group-data-[tone=dark]/seg:text-on-dark-2 group-data-[tone=dark]/seg:data-[checked]:text-band flex min-w-0 flex-1 basis-0 cursor-pointer items-center justify-center font-bold whitespace-nowrap outline-none focus-visible:outline-2 focus-visible:outline-offset-2 data-[disabled]:cursor-not-allowed data-[disabled]:data-[unchecked]:opacity-60",
+        "press min-h-touch rounded-pill px-sp-2 text-row text-mute focus-visible:outline-accent data-[checked]:text-ink group-data-[tone=dark]/seg:text-on-dark-2 group-data-[tone=dark]/seg:data-[checked]:text-band flex min-w-0 flex-1 basis-0 cursor-pointer items-center justify-center font-bold whitespace-nowrap outline-none focus-visible:outline-2 focus-visible:outline-offset-2 data-[disabled]:cursor-not-allowed data-[disabled]:data-[unchecked]:opacity-75",
         className,
       )}
       {...props}
