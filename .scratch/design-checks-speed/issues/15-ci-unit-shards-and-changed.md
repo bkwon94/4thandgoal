@@ -56,6 +56,8 @@ The matrix stays, so a later count is a one-line change. With 1 worker, the rule
 
 The list of config files is `FULL_SUITE_FILES` in `apps/site/scripts/test-scope.mjs`. `scripts/test-scope.test.mjs` tests it.
 
+**Counts:** This ticket adds `apps/site/scripts/test-scope.test.mjs`, with 14 tests in 1 file (`bun test scripts/test-scope.test.mjs` in `apps/site`: 14 pass, 0 fail). The total is 1,808 + 14 = 1,822 tests in 194 files (AT-20).
+
 - One rankings file: `packages/rankings/site/chapters/power-rankings.tsx` changed, and `BUN_TEST_BASE=HEAD` ran
   `bun test --isolate --changed=HEAD`. Bun printed "--changed: 1 changed file, running 1/194 test files", and the run took 25 tests across 1 file, exit 0.
   With `BUN_TEST_SHARD=<i>/3` too, shard 1 ran the 1 file, and shards 2 and 3 ran 0 files with exit 0.
