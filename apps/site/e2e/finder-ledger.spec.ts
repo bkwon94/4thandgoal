@@ -217,12 +217,10 @@ async function openFinder(page: Page, theme: Theme, streamed = false, clock = fa
   if (streamed) await holdFindStream(page);
   await openPage(page, `${server.url}/analyze/?mode=find`, theme);
   // The fixed clock starts after the page settles, so the settle wait of openPage runs on the real clock.
-  // A clock that runs on its own would move the lines while the test reads them, so it stands still until runFor.
-  if (clock) {
-    const now = Date.now();
-    await page.clock.install({ time: now });
-    await page.clock.pauseAt(now + 1000);
-  }
+  // A clock that runs on its own would move the lines while the test reads them, so it stands still until fastForward.
+  // pauseAt alone installs the clock at time 0 and then jumps it forward to now, so its target is never in the past.
+  // An install at now, then a pauseAt at a later time, races the clock: a slow runner can pass the target between the two calls.
+  if (clock) await page.clock.pauseAt(Date.now());
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();
