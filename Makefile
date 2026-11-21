@@ -6,12 +6,11 @@
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
-# A selected run of the site tests only the vitest files that the changed files reach through imports. VITEST_CHANGED is
-# empty without a selection, so the site still runs every vitest file. "make check-site" never sets it, so CI runs all.
+# The site fast check runs every site test on `bun test`, with or without a selection.
 # A git hook sets GIT_DIR and GIT_INDEX_FILE and no GIT_WORK_TREE, so git takes the folder of the command as the top of the
-# work tree. Vitest runs git from apps/site, would see every file as changed, and would select all of them. The env -u
-# calls make git find the work tree from the folder, as it does outside a hook.
-site-check-fast = VITEST_CHANGED="$(VITEST_CHANGED)" LINT_FILES="$(LINT_FILES)" FMT_FILES="$(FMT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
+# work tree. A site test that runs git from apps/site, such as the tracker rule test, would read apps/site as the top. The
+# env -u calls make git find the work tree from the folder, as it does outside a hook.
+site-check-fast = LINT_FILES="$(LINT_FILES)" FMT_FILES="$(FMT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 pipeline-check-parallel = make -C apps/pipeline check-parallel
@@ -50,7 +49,6 @@ LINT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --
 # The hook checks the format of the same staged files, plus the CSS files. FMT_FILES is empty without STAGED=1, and the
 # fmt scripts of the site then take all site code and package code.
 FMT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --diff-filter=d -- 'apps/site/*.ts' 'apps/site/*.tsx' 'apps/site/*.mjs' 'apps/site/*.mts' 'apps/site/*.css' 'packages/*/site/*.ts' 'packages/*/site/*.tsx' 'packages/*/site/*.css' packages/design/lint/plugin.mjs))
-VITEST_CHANGED = $(if $(filter 1,$(STAGED)),--changed,$(if $(BASE),--changed $(BASE)))
 PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
@@ -80,7 +78,7 @@ check-site: ## Run the full check of the site
 
 # CI splits the full check of the site into two jobs that run at the same time. "make check-site" runs both halves in
 # sequence: the unit half first, then the browser half.
-check-site-unit: ## Run the unit half of the site check: the lint, the client build, typecheck, and all vitest files
+check-site-unit: ## Run the unit half of the site check: the lint, the format check, the client build, typecheck, and bun test
 	@echo "==> site: check:fast"; pnpm --dir apps/site check:fast
 
 check-site-browser: ## Run the browser half of the site check: Playwright and the export of each client

@@ -6,26 +6,37 @@ import { copyFileSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
-import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  onTestFinished,
+  setDefaultTimeout,
+} from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import { fixturePublished, readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { clientValues } from "@/generated/client-values";
+import { loadFrontDoor } from "@/lib/data/front-door-data";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
 import HomePage from "./front-door/door-page";
 
 /* The path to "Checked" holds "Checking" for HOLD_MS after the stream, and a loaded CPU can take seconds for the
    renders before it. So each wait for an Answer gets 8 s, inside a test limit of 15 s. */
-vi.setConfig({ testTimeout: 15_000 });
+setDefaultTimeout(15_000);
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
 const BO_GIRDS = 6;
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const streams: (() => Response)[] = [];
 
 // The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
@@ -81,7 +92,7 @@ beforeEach(() => {
       return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", String(LIL_FRIDGE));
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -91,8 +102,6 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   streams.length = 0;
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 describe("the personal Topics of Lil Fridge", () => {
@@ -360,23 +369,21 @@ describe("the links of the personal Topics", () => {
     for (const file of ["page.json", "topics.json"])
       copyFileSync(join(from, "week-08", file), join(root, "public", "2026", "week-08", file));
     copyFileSync(join(from, "managers.json"), join(root, "public", "2026", "managers.json"));
-    vi.spyOn(process, "cwd").mockReturnValue(root);
-    // The readers read the working folder when they load, so reset them.
-    vi.resetModules();
-    return import("@/lib/data/front-door-data");
+    // The readers read the working folder on each call. restoreFixtureSite puts the real one back after the test.
+    process.cwd = () => root;
+    return { loadFrontDoor };
   }
 
   /* The client values of the build, with the package list set by the test. The fixed copy of cpc holds a waiver file,
      so only the package list tells whether the client has the waiver page. */
   async function dataWithPackages(packages: string[]) {
-    readFixtureSite("cpc");
-    vi.resetModules();
-    const values = await import("../generated/client-values");
-    vi.doMock("../generated/client-values", () => ({
-      clientValues: { ...values.clientValues, packages },
-    }));
-    onTestFinished(() => vi.doUnmock("../generated/client-values"));
-    return import("@/lib/data/front-door-data");
+    // The reader reads the package list on each call, so the test sets it and puts the built list back at the end.
+    const built = clientValues.packages;
+    clientValues.packages = packages as typeof built;
+    onTestFinished(() => {
+      clientValues.packages = built;
+    });
+    return { loadFrontDoor };
   }
 
   it("give waiver targets the waiver page when the client takes the waiver package and the week has its file", async () => {
@@ -516,7 +523,7 @@ describe("Start or sit", () => {
     // The first row with a Swap or a Q opens on arrival, and only that one.
     const open = within(answer).getAllByRole("button", { expanded: true });
     expect(open).toHaveLength(1);
-    expect(open[0].closest("li")).toBe(washington);
+    expect(open[0].closest<HTMLElement>("li")).toBe(washington);
     // The reason comes with the block after the check, and the open row shows it.
     await waitFor(() => {
       const detail = document.getElementById(open[0].getAttribute("aria-controls") ?? "");

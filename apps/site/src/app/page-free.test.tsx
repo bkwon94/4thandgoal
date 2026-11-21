@@ -5,24 +5,33 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
-import { readFixtureSite } from "@/fixtures/sites";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  onTestFinished,
+  setDefaultTimeout,
+} from "bun:test";
+import { stubGlobal } from "../../test/stubs";
+import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import { MISS_LEAD } from "./front-door/miss-card";
 import { FIXING_LINE } from "./front-door/free-answer";
 import HomePage from "./front-door/door-page";
 
 /* The path to "Checked" holds "Checking" for HOLD_MS after the stream, and a loaded CPU can take seconds for the
    renders before it. So each wait for an Answer gets 8 s, inside a test limit of 15 s. */
-vi.setConfig({ testTimeout: 15_000 });
+setDefaultTimeout(15_000);
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const routes: unknown[] = [];
 const streams: (() => Response)[] = [];
 
@@ -107,7 +116,7 @@ beforeEach(() => {
       return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", "3");
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -118,7 +127,6 @@ afterEach(() => {
   fetchStub.mockReset();
   routes.length = 0;
   streams.length = 0;
-  vi.unstubAllGlobals();
 });
 
 describe("the free answer of Lil Fridge", () => {

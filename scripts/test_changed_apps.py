@@ -285,20 +285,20 @@ class TheSiteTestSelection(unittest.TestCase):
             output = subprocess.check_output(["make", "-n", "check-fast", *options], cwd=root, env=env, text=True)
             return next(line for line in output.splitlines() if "check:fast" in line)
 
-    def test_a_staged_run_of_the_site_tests_only_the_changed_files(self):
-        self.assertIn("--changed", self.site_command("STAGED=1"))
+    def test_a_staged_run_tests_every_site_file(self):
+        self.assertNotIn("--changed", self.site_command("STAGED=1"))
 
-    def test_a_base_run_of_the_site_tests_only_the_files_changed_since_the_base(self):
-        self.assertIn("--changed HEAD~1", self.site_command("BASE=HEAD"))
+    def test_a_base_run_tests_every_site_file(self):
+        self.assertNotIn("--changed", self.site_command("BASE=HEAD"))
 
     def test_a_run_with_no_selection_tests_every_site_file(self):
         self.assertNotIn("--changed", self.site_command())
 
-    def test_a_hook_run_in_a_work_tree_with_git_dir_set_selects_only_the_changed_files(self):
+    def test_a_hook_run_in_a_work_tree_with_git_dir_set_finds_the_top_of_the_work_tree(self):
         """Run the real prefix of the site command with GIT_DIR set as a git hook sets it, with git as the probe.
 
-        Vitest finds the changed files with `git diff --name-only HEAD` from apps/site. A hook sets GIT_DIR and no
-        GIT_WORK_TREE, so git takes apps/site as the top of the work tree and sees every file as changed.
+        A site test, such as the tracker rule test, runs git from apps/site. A hook sets GIT_DIR and no GIT_WORK_TREE,
+        so git takes apps/site as the top of the work tree and sees every file as changed.
         """
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -322,7 +322,7 @@ class TheSiteTestSelection(unittest.TestCase):
             make_env = {key: value for key, value in env.items() if key not in ("MAKEFLAGS", "MFLAGS", "MAKELEVEL")}
             plan = subprocess.check_output(["make", "-n", "check-fast", "STAGED=1"], cwd=root, env=make_env, text=True)
             line = next(line for line in plan.splitlines() if "check:fast" in line)
-            command = line[line.index("VITEST_CHANGED="):]
+            command = line[line.index("LINT_FILES="):]
             probe = command.replace("pnpm --dir apps/site check:fast", "git diff --name-only HEAD")
             self.assertNotEqual(command, probe)
             hook_env = {**env, "GIT_DIR": str(root / ".git"), "GIT_INDEX_FILE": str(root / ".git/index")}

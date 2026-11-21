@@ -24,8 +24,8 @@ export function fixturePublished(slug: FixtureClient, ...path: string[]): string
 const realCwd = process.cwd;
 
 /* Points the working folder at the fixed site folder of one client, so each reader of public/ reads the fixed copy.
-   It sets `process.cwd` itself and no spy of one runner, because Vitest and `bun test` both run the tests that call it.
-   A test file under `bun test` calls `restoreFixtureSite` after each test. */
+   It sets `process.cwd` itself and no spy, because the preload restores each spy after each test, and `@/fixtures/cpc-site`
+   sets it once for a whole file. A test file that calls it in `beforeEach` calls `restoreFixtureSite` after each test. */
 export function readFixtureSite(slug: FixtureClient = "cpc"): void {
   process.cwd = () => fixtureSite(slug);
 }

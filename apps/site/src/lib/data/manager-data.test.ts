@@ -6,7 +6,6 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, spyOn } from "bun:test";
-import { resetModules } from "../../../test/reset-modules";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
@@ -39,8 +38,7 @@ async function readerOver({ managers, rankings }: { managers?: unknown; rankings
   if (rankings !== undefined)
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   spyOn(process, "cwd").mockReturnValue(root);
-  // The week reader reads the working folder when it loads, so reset it to pick up the temp folder.
-  resetModules();
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./manager-data");
 }
 
