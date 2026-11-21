@@ -266,7 +266,9 @@ def build_pick_prompt(shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str
     facts. With a Trade block, a line after the asker names the block players, so the pick can spread across them."""
     lines = [f"The asker: roster {shortlist.asker}, {snapshot.teams[shortlist.asker].name}."]
     if shortlist.trade_block:
-        names = " and ".join(snapshot.players[pid].name for pid in shortlist.trade_block)
+        block = [snapshot.players[pid].name for pid in shortlist.trade_block]
+        # A list of 3 names reads "A, B, and C", a list of 2 reads "A and B", and a list of 1 reads "A".
+        names = ", and ".join([", ".join(block[:-1]), block[-1]]) if len(block) > 2 else " and ".join(block)
         lines.append(f"The Trade block: {names}.")
     lines.append("")
     # One player or one team sits on many offers, so a fact text that an earlier offer gave is not sent again. This
