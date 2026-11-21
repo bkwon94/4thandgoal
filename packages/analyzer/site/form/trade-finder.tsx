@@ -1,5 +1,5 @@
 /**
- * Find mode of the analyzer: the dark hero with Your team, the partner choice, the position chips, and the find button.
+ * Find mode of the analyzer: the dark hero with Your team, the Trade block, the partner choice, the position chips, and the find button.
  * The find streams its real steps into the same wait as a grade, and each of up to five Ledger cards lands in one list
  * as the pick sends it, with the near ideas folded under them at the end.
  */
@@ -17,6 +17,7 @@ import { HeroMesh } from "@cpc/design/parts/hero-mesh";
 import { waitDrive } from "@cpc/design/parts/mesh-canvas";
 import { Sheet } from "./sheet";
 import { StageLines } from "./stage-lines";
+import { TradeBlock } from "./trade-block";
 import { Button } from "@cpc/design/ui/button";
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { PendingButton } from "@cpc/design/ui/pending-button";
@@ -92,13 +93,15 @@ type TradeFinderProps = {
   locked?: boolean;
 };
 
-/* The body of a find: the asker, the partner when one is picked, and the limit when a chip other than Any is picked. */
-export function findBody(season: number, asker: number, partner: number | null, aim: Aim): FindRequest {
+/* The body of a find: the asker, the partner when one is picked, the limit when a chip other than Any is picked, and
+   the Trade block when it holds a player. The route reads an empty block as no block, so the body leaves it out. */
+export function findBody(season: number, asker: number, partner: number | null, aim: Aim, tradeBlock: string[] = []): FindRequest {
   return {
     season,
     asker,
     ...(partner === null ? {} : { partner }),
     ...(aim === "Any" ? {} : { limit: { aim_position: aim } }),
+    ...(tradeBlock.length === 0 ? {} : { trade_block: tradeBlock }),
   };
 }
 
@@ -573,6 +576,12 @@ export function TradeFinder({
   const [partner, setPartner] = useState<number | null>(null);
   const [aim, setAim] = useState<Aim>("Any");
   const [find, setFind] = useState<FindState>({ status: "idle" });
+  // The Trade block holds player ids of one asker. The page state alone keeps it, so a reload clears it. The block
+  // keeps its asker, so a change of Your team reads as an empty block and the strip never sends another roster.
+  const [block, setBlock] = useState<{ asker: number | null; picks: string[] }>({ asker, picks: [] });
+  // A new asker resets the block in the same render, so a pick of the old team never comes back with that team.
+  if (block.asker !== asker) setBlock({ asker, picks: [] });
+  const picks = block.asker === asker ? block.picks : [];
   // A late answer for an old partner must not overwrite the state of a new one.
   const request = useRequest();
 
@@ -595,6 +604,13 @@ export function TradeFinder({
   function pickAim(next: Aim) {
     request.drop();
     setAim(next);
+    setFind({ status: "idle" });
+  }
+
+  // A new block makes the old cards stale too, so a change clears them, as a new partner or chip does.
+  function pickBlock(next: string[]) {
+    request.drop();
+    setBlock({ asker, picks: next });
     setFind({ status: "idle" });
   }
 
@@ -649,7 +665,7 @@ export function TradeFinder({
       },
     };
     try {
-      const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim), events, controller.signal);
+      const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim, picks), events, controller.signal);
       if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
@@ -673,6 +689,9 @@ export function TradeFinder({
         onChange={(rosterId) => rosterId !== null && onAsker(rosterId)}
         disabled={off || teams.length === 0}
       />
+      {asker !== null && (
+        <TradeBlock players={teams.find((team) => team.roster_id === asker)?.players ?? []} picks={picks} onPicks={pickBlock} disabled={off} />
+      )}
       <TeamChoice label="Trade with" listName="Partners" teams={partners} value={partner} every="Every team" onChange={pickPartner} disabled={off || asker === null} />
       <PositionChips value={aim} onChange={pickAim} disabled={off} />
       {/* The hero shows the error line, so the reader sees why the search stopped where the search started. */}
