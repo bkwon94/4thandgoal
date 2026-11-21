@@ -49,6 +49,12 @@ describe("the value rule", () => {
     expect(status).toBe(0);
   });
 
+  it("passes an arbitrary value in a plain string outside a class string", () => {
+    const { status, output } = lint("plain-string.tsx");
+    expect(output).not.toContain(RULE);
+    expect(status).toBe(0);
+  });
+
   it("passes a variant, a layout value, and a motion value", () => {
     const { status, output } = lint("allowed.tsx");
     expect(output).not.toContain(RULE);

@@ -40,6 +40,12 @@ describe("the use lines rule", () => {
     expect(status).toBe(0);
   });
 
+  it("skips a parts file that exports no component", () => {
+    const { status, output } = lint("parts/no-component.tsx");
+    expect(output).not.toContain("design(use-lines)");
+    expect(status).toBe(0);
+  });
+
   it("skips a test file", () => {
     const { status, output } = lint("parts/both-lines.test.tsx");
     expect(output).not.toContain("design(use-lines)");
