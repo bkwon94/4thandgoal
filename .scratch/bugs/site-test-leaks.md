@@ -52,7 +52,7 @@ PASS: 0 of 26 prefixes left temp folders behind.
 ```
 
 The check runs the full suite through `scripts/bun-test.mjs` with `TMPDIR` set to an empty folder under `apps/site/test-results/`, so the temp entries of other sessions do not change the count. The other 17 prefixes show `0 -> 0` in both runs. `reset-modules.test.ts` makes its folder under `apps/site/test-results/` and removes it in `afterAll`, so it has no `os.tmpdir()` prefix.
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. Some site tests call the live API
 
@@ -106,7 +106,7 @@ PASS: no output line shows a request to the live API, a Fly address, Cross-Origi
 ```
 
 The Red block holds all 26 LEAK lines of a run at `ceba8eb5`. The count of each line changes from run to run, because each hit depends on network time. The check names the file that printed each hit, so a request that fails after its test ends shows under a later file. The fix gives each test a `fetch` in `test/preload.ts` that rejects each call to a host other than `localhost` or `127.0.0.1`, so a new page test is safe too. The extra test is in `test/stubs.test.ts` and proves that a call to the live API rejects. Two tests of `front-page.test.tsx` passed only because a hung board call of an earlier test held the shared `inFlight` promise of `boardApi`. They now read only the teams call.
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
