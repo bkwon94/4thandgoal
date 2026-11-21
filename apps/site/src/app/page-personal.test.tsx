@@ -2,7 +2,7 @@
  * Tests for the personal Topics of the front door at /. Each test renders the page with the fixed copy of the published data of cpc,
  * and the personal route plays a stream that the API recorded in a live run with the real Jev and the real Claude.
  */
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
@@ -24,6 +24,12 @@ import { loadFrontDoor } from "@/lib/data/front-door-data";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
 import HomePage from "./front-door/door-page";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 /* The path to "Checked" holds "Checking" for HOLD_MS after the stream, and a loaded CPU can take seconds for the
    renders before it. So each wait for an Answer gets 8 s, inside a test limit of 15 s. */
@@ -367,6 +373,7 @@ describe("the links of the personal Topics", () => {
   /* A temp public/ folder with the latest week of the fixed copy of cpc and its managers file, but no waiver file. */
   async function dataWithoutWaiver() {
     const root = mkdtempSync(join(tmpdir(), "front-door-personal-"));
+    roots.push(root);
     const from = fixturePublished("cpc", "2026");
     mkdirSync(join(root, "public", "2026", "week-08"), { recursive: true });
     for (const file of ["page.json", "topics.json"])

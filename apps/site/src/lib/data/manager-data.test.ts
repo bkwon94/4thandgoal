@@ -2,13 +2,19 @@
  * Tests for the managers reader. Each test builds a temp public/ folder, because the real one may not hold the file yet.
  * The fixtures are the managers file and the rankings file in the exact shape the pipeline writes.
  */
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it, spyOn } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 /* The rankings fixture with a week 5 before week 6, where each team's playoff odds are 10 points lower.
    The fixture's own week before week 6 is week 1, which has no odds. */
@@ -28,6 +34,7 @@ const rankingsWithWeek5 = (() => {
 /* A temp public/ folder with one week page, and the managers file and the rankings file when one is given. */
 async function readerOver({ managers, rankings }: { managers?: unknown; rankings?: unknown }) {
   const root = mkdtempSync(join(tmpdir(), "manager-data-"));
+  roots.push(root);
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
   writeFileSync(
     join(root, "public", "2026", "week-06", "page.json"),

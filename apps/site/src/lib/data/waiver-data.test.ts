@@ -2,16 +2,23 @@
  * Tests for the waiver reader. Each test builds a temp public/ folder with week pages, some with a waiver file.
  * The fixture is the file in the exact shape the pipeline writes, so a change to that shape breaks these tests.
  */
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it, spyOn } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@/fixtures/waiver.json";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 /* A temp public/ folder with one week page per week folder, and the waiver file in the weeks given. */
 async function readerOver(weeks: string[], withWaiver: Record<string, unknown>) {
   const root = mkdtempSync(join(tmpdir(), "waiver-data-"));
+  roots.push(root);
   for (const week of weeks) {
     mkdirSync(join(root, "public", "2026", week), { recursive: true });
     writeFileSync(join(root, "public", "2026", week, "page.json"), weekPageJson());

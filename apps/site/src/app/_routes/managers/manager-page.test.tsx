@@ -5,7 +5,7 @@
  * The Grade dial test reads the published managers file and rankings file of CPC, week 8.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
@@ -13,6 +13,12 @@ import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 afterEach(() => {
   cleanup();
@@ -39,6 +45,7 @@ async function routeOver({
   rankings,
 }: { managers?: boolean | object; rankings?: unknown } = {}) {
   const root = mkdtempSync(join(tmpdir(), "manager-page-"));
+  roots.push(root);
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
   writeFileSync(
     join(root, "public", "2026", "week-06", "page.json"),

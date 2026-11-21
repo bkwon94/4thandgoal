@@ -3,12 +3,18 @@
  * They read the static params and what a reader sees: the masthead line, the menu, and the lists with the week page avatars.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@/fixtures/waiver.json";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 afterEach(() => {
   cleanup();
@@ -17,6 +23,7 @@ afterEach(() => {
 /* A temp public/ folder with week 5 and week 6 pages. Only week 6 has the waiver file. */
 async function routeOver() {
   const root = mkdtempSync(join(tmpdir(), "waiver-page-"));
+  roots.push(root);
   for (const week of ["week-05", "week-06"]) {
     mkdirSync(join(root, "public", "2026", week), { recursive: true });
     writeFileSync(

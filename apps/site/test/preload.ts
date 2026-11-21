@@ -3,7 +3,7 @@
  * happy-dom differs from a browser. After each test, it unmounts each render and restores each spy and each stub of `./stubs`.
  */
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
-import { afterEach, mock } from "bun:test";
+import { afterEach, beforeEach, mock } from "bun:test";
 
 // happy-dom sets `TransformStream` to `Stream.Transform` and `WritableStream` to `Stream.Writable` of Node. Those are not
 // web streams, so Bun's native `pipeThrough` refuses them and each streamed Answer fails. A browser has the web stream
@@ -78,7 +78,7 @@ Animation.prototype.cancel = function (this: Animation) {
 
 // Import these after the register, because React Testing Library reads `document` when it loads.
 const { cleanup, prettyDOM } = await import("@testing-library/react");
-const { restoreStubs } = await import("./stubs");
+const { restoreStubs, stubGlobal } = await import("./stubs");
 
 // Bun prints each own property of an object in a failed expect and in `console.log`. A happy-dom node reaches the whole
 // window, so one failed `expect(node).toBeNull()` prints megabytes. In a `waitFor`, each failed check prints it again, and
@@ -94,6 +94,21 @@ Object.defineProperty(Node.prototype, Bun.inspect.custom, {
     return markup || `${this.nodeName} ${JSON.stringify(this.textContent?.slice(0, 200))}`;
   },
 });
+
+// The site of the build calls the live API, such as the board of the egg button in the shell of each page. A test
+// that renders a page with no stub of `fetch` then sends a real request, and the run prints a CORS block or a refused
+// connection after the test ends. So each test starts with a `fetch` that rejects each call to another host, as when
+// the API is down, and passes a call to a local server of a test to the real `fetch`. A test that needs an answer of
+// the API stubs `fetch` again in its own `beforeEach`.
+const realFetch = globalThis.fetch;
+const localHost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//;
+beforeEach(() =>
+  stubGlobal("fetch", (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = input instanceof Request ? input.url : String(input);
+    if (localHost.test(url)) return realFetch(input, init);
+    return Promise.reject(new TypeError(`Failed to fetch ${url}: the tests reach no other host`));
+  }),
+);
 
 afterEach(() => {
   cleanup();

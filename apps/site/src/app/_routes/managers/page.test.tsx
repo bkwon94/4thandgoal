@@ -3,7 +3,7 @@
  * They read the static params, the title, and the Index list of the real week 8 files of CPC and NorCal: the order, the chips, and an open row.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { cpSync, mkdtempSync, mkdirSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, mkdtempSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
@@ -13,6 +13,12 @@ import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
 import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
 
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
 afterEach(() => {
   cleanup();
 });
@@ -20,6 +26,7 @@ afterEach(() => {
 /* A temp public/ folder with the week 6 page, the rankings file, and the managers file when one is given. */
 async function routeOver(managers?: unknown) {
   const root = mkdtempSync(join(tmpdir(), "managers-index-"));
+  roots.push(root);
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
   writeFileSync(
     join(root, "public", "2026", "week-06", "page.json"),
@@ -37,6 +44,7 @@ async function routeOver(managers?: unknown) {
    The images stay out, because the route reads only the JSON files and the copy stays fast. */
 async function routeOfClient(slug: FixtureClient) {
   const root = mkdtempSync(join(tmpdir(), "managers-index-"));
+  roots.push(root);
   cpSync(fixturePublished(slug), join(root, "public"), {
     recursive: true,
     filter: (source) => statSync(source).isDirectory() || source.endsWith(".json"),
