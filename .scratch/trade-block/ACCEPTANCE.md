@@ -310,4 +310,4 @@ Out of scope "A full pool check in the picker": no test. Reason: AT-15 checks th
 
 ## Revisions
 
-None yet.
+- 2026-11-21, approved by Brian: the stand-in rule also covers a block player who fails the pool rules. On the week 11 data, Walker is Out with no return week, so the search drops him (story 21). Cam Skattebo stands in for Walker in each test that names Walker. Kirk Cousins stands in for Jackson, who left the roster.
