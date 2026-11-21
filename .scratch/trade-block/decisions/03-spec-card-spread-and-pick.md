@@ -6,7 +6,7 @@ Map: `.scratch/trade-block/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ With two or three block players, the up to five cards must not all send the same
 
 ## Decision
 
-None yet.
+`varied` counts only block players in its tier of "the best offer of each player that the asker gives", so the best offer of each block player comes first. The pick gets the names of the block players, and one prompt rule: when the shortlist holds a fair offer for a block player, at least one pick sends him. The code names the field `trade_block`; `Anchor` stays only for the "gets" ask. Recorded in `PRD.md`, which Brian approved on 2026-11-21.
