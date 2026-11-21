@@ -3,7 +3,7 @@
  * They read what a reader sees: the empty state, or the Ladder of the last week of the file with the week page avatars.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
@@ -11,6 +11,12 @@ import { stubPhone } from "../../../../test/phone";
 import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 /* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
 beforeEach(stubPhone);
@@ -24,6 +30,7 @@ afterEach(() => {
 /* A temp public/ folder with the week 6 page, and the rankings file when one is given. */
 async function pageOver(rankings?: unknown) {
   const root = mkdtempSync(join(tmpdir(), "rankings-page-"));
+  roots.push(root);
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
   writeFileSync(
     join(root, "public", "2026", "week-06", "page.json"),
