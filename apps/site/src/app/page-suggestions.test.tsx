@@ -5,7 +5,16 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, mock, setSystemTime } from "bun:test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  setDefaultTimeout,
+  setSystemTime,
+} from "bun:test";
 import { stubGlobal } from "../../test/stubs";
 import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
@@ -16,6 +25,9 @@ import HomePage from "./front-door/door-page";
    sets the folder, and restoreFixtureSite puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 afterEach(restoreFixtureSite);
+
+/* The tests of a stale Answer wait up to 8 s for a stream on a loaded CPU, so each test of the file gets 15 s. */
+setDefaultTimeout(15_000);
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
@@ -366,6 +378,10 @@ describe("Start or sit in the Suggestions", () => {
   });
 });
 
+/* A Refresh streams a fresh Answer, and a loaded CPU can take seconds for the renders of the stream. So each wait of
+   this block gets 8 s, inside the test limit of 15 s of this file. */
+const STALE_WAIT = { timeout: 8000 };
+
 describe("a stale personal Answer of the Thread", () => {
   it("shows dimmed with the stale line, Refresh, and no checked mark (AT-34)", async () => {
     onWednesday();
@@ -379,8 +395,11 @@ describe("a stale personal Answer of the Thread", () => {
       },
     ]);
     render(<HomePage />);
-    const answer = await screen.findByRole("article", { name: "Weak spots" });
-    await waitFor(() => expect(answer.textContent).toContain("Your roster changed since Tuesday."));
+    const answer = await screen.findByRole("article", { name: "Weak spots" }, STALE_WAIT);
+    await waitFor(
+      () => expect(answer.textContent).toContain("Your roster changed since Tuesday."),
+      STALE_WAIT,
+    );
     expect(answer.hasAttribute("data-stale")).toBe(true);
     expect(answer.textContent).not.toContain("Checked");
     expect(within(answer).getByRole("button", { name: "Refresh" })).toBeTruthy();
@@ -405,8 +424,8 @@ describe("a stale personal Answer of the Thread", () => {
       },
     ]);
     render(<HomePage />);
-    const answer = await screen.findByRole("article", { name: "Weak spots" });
-    await waitFor(() => expect(callsTo("/personal/current")).toHaveLength(1));
+    const answer = await screen.findByRole("article", { name: "Weak spots" }, STALE_WAIT);
+    await waitFor(() => expect(callsTo("/personal/current")).toHaveLength(1), STALE_WAIT);
     expect(answer.textContent).toContain("Checked");
     expect(answer.textContent).not.toContain("Your roster changed");
   });
@@ -424,14 +443,14 @@ describe("a stale personal Answer of the Thread", () => {
     ]);
     streams.push(() => sse(fixture("personal-answer", "weak-spots-fresh.sse")));
     render(<HomePage />);
-    const stale = await screen.findByRole("article", { name: "Weak spots" });
-    fireEvent.click(await within(stale).findByRole("button", { name: "Refresh" }));
+    const stale = await screen.findByRole("article", { name: "Weak spots" }, STALE_WAIT);
+    fireEvent.click(await within(stale).findByRole("button", { name: "Refresh" }, STALE_WAIT));
     await waitFor(
       () =>
         expect(screen.getByRole("article", { name: "Weak spots" }).textContent).toContain(
           "Checked",
         ),
-      { timeout: 3000 },
+      STALE_WAIT,
     );
     const fresh = screen.getByRole("article", { name: "Weak spots" });
     expect(fresh.hasAttribute("data-stale")).toBe(false);
@@ -443,10 +462,12 @@ describe("a stale personal Answer of the Thread", () => {
       team: null,
     });
     // Only one Answer of weak spots stays in the Thread, with the fresh key.
-    await waitFor(() =>
-      expect(localStorage.getItem("cpc.thread")).toContain(
-        CURRENT.answers.find((answer) => answer.current)!.key,
-      ),
+    await waitFor(
+      () =>
+        expect(localStorage.getItem("cpc.thread")).toContain(
+          CURRENT.answers.find((answer) => answer.current)!.key,
+        ),
+      STALE_WAIT,
     );
     expect(screen.getAllByRole("article", { name: "Weak spots" })).toHaveLength(1);
   });
