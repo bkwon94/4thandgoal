@@ -1,7 +1,7 @@
 # Site tests leak temp folders and reach the live API
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-site-test-leaks`.
 Source: the queue task `Site tests leave temp folders behind`, and the handoff file `.handoff/2026-11-21-quick-test-fixes.md`, items 1 and 3.
 Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -113,3 +113,8 @@ Test verdict: PASS
 Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 7 passed, 0 failed". Shots in `.scratch/bugs/site-test-leaks/smoke/`.
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-site-test-leaks`. Commits: `2d625fd0`, `e0d999f0`, `ceba8eb5`, `bae8b6c6`. Date: 2026-11-21.
+The loop of each item went red, then green; the suite passed with 1956 tests and 0 failed, and the smoke run passed 7 of 7 flows.
+The smoke run needs `~/.secrets` sourced in its shell, or the flows of the front door and the analyzer fail with a 503 and a 500.
+Read 22 files: AGENTS.md, apps/site/AGENTS.md, .claude/plugin/skills/quick/format.md, apps/site/test/stubs.ts, apps/site/test/preload.ts, apps/site/test/reset-modules.test.ts, apps/site/src/lib/data/published-file.test.ts, apps/site/scripts/bun-test.mjs, packages/eggs/site/board/use-board.ts, apps/site/src/lib/config.ts, and the 12 test files that the run changed.
