@@ -2,21 +2,10 @@
  * Runs the real Oxlint config of the repo root on the fixture files of the doc rule, one fixture per case.
  * Each case checks the exit code of the lint and the rule name, the file, and the missing line in its output (ADR 0038).
  */
-import { spawnSync } from "node:child_process";
-import { join } from "node:path";
 import { describe, expect, it } from "bun:test";
+import { lintFixture } from "./design-rule-lint";
 
-/* The lint runs from the repo root, because Oxlint takes no path with "..". */
-const ROOT_DIR = join(process.cwd(), "..", "..");
-const OXLINT = join(process.cwd(), "node_modules", ".bin", "oxlint");
-
-function lint(fixture: string): { status: number | null; output: string } {
-  const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/use-lines/${fixture}`], {
-    cwd: ROOT_DIR,
-    encoding: "utf8",
-  });
-  return { status: run.status, output: run.stdout + run.stderr };
-}
+const lint = (fixture: string) => lintFixture(`use-lines/${fixture}`);
 
 describe("the use lines rule", () => {
   it("fails a part with no `Use it when:` line, and names the rule, the file, and the line", () => {
