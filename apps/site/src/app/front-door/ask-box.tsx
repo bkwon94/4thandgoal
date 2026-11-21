@@ -5,7 +5,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { type CSSProperties, useState } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -53,7 +53,8 @@ export function AskBox({
         autoComplete="off"
         className="text-lead text-ink placeholder:text-mute min-w-0 flex-1 bg-transparent leading-tight outline-none focus-visible:outline-none"
       />
-      <PendingButton
+      <Button
+        variant="plain"
         type="submit"
         aria-label="Send"
         aria-busy={pending || undefined}
@@ -74,7 +75,7 @@ export function AskBox({
         ) : (
           <ArrowUpIcon aria-hidden className="size-sp-5" strokeWidth={2.25} />
         )}
-      </PendingButton>
+      </Button>
     </form>
   );
 }

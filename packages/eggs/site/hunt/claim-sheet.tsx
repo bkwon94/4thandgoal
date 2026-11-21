@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { Label } from "@cpc/design/parts/label";
 import {
@@ -206,14 +206,15 @@ export function ClaimSheet({
             {manager === null ? (
               <div role="group" aria-label="Your team" className="gap-sp-2 flex flex-wrap">
                 {board?.managers.map((each) => (
-                  <PendingButton
+                  <Button
+                    variant="plain"
                     key={each.roster_id}
                     type="button"
                     onClick={() => pickTeam(each.roster_id)}
                     className="press min-h-touch rounded-pill border-rule bg-card px-sp-4 text-body text-ink border font-bold"
                   >
                     {each.team}
-                  </PendingButton>
+                  </Button>
                 ))}
               </div>
             ) : (
@@ -234,13 +235,14 @@ export function ClaimSheet({
                   </svg>
                   {manager.team}
                 </span>
-                <PendingButton
+                <Button
+                  variant="plain"
                   type="button"
                   onClick={() => pickTeam(null)}
                   className="press min-h-touch px-sp-3 text-body text-accent-ink font-bold"
                 >
                   Change
-                </PendingButton>
+                </Button>
               </div>
             )}
           </section>
@@ -355,7 +357,8 @@ function WordCard({
   // The card takes its name from the text it shows, so the name holds each visible word (WCAG 2.5.3). The slot row is
   // aria-hidden, as the count says the same.
   return (
-    <PendingButton
+    <Button
+      variant="plain"
       type="button"
       aria-pressed={picked}
       disabled={!open}
@@ -407,6 +410,6 @@ function WordCard({
         />
       </span>
       <span className="text-meta text-mute">{note}</span>
-    </PendingButton>
+    </Button>
   );
 }

@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import {
   useRef,
   useState,
@@ -390,14 +390,15 @@ function OpenSlide({ race }: { race: Race }) {
               );
             })}
           </ol>
-          <PendingButton
+          <Button
+            variant="plain"
             type="button"
             aria-expanded={all}
             onClick={() => setAll(!all)}
             className="press mt-sp-1 min-h-touch rounded-pill border-rule-dark text-body text-on-dark cursor-pointer border bg-transparent font-semibold"
           >
             {all ? `Show the top ${TOP}` : `Show all ${word.managers.length}`}
-          </PendingButton>
+          </Button>
         </>
       )}
     </>
@@ -510,7 +511,8 @@ function EggWordSlider({ words }: { words: Word[] }) {
         {races.map((race, tabIndex) => {
           const on = race === shown;
           return (
-            <PendingButton
+            <Button
+              variant="plain"
               key={race.word.word}
               ref={(element) => {
                 tabs.current[tabIndex] = element;
@@ -534,7 +536,7 @@ function EggWordSlider({ words }: { words: Word[] }) {
               <span className={cn("tabular-nums", on ? "text-on-dark-2" : "text-mute")}>
                 {tabCount(race)}
               </span>
-            </PendingButton>
+            </Button>
           );
         })}
       </div>

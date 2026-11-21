@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { type CSSProperties, Fragment, useState } from "react";
 import { Avatar } from "@cpc/league/avatar";
 import { OpenCard } from "@cpc/design/parts/open-card";
@@ -125,7 +125,8 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
             const count = countOf(chip);
             const on = chip === filter;
             return (
-              <PendingButton
+              <Button
+                variant="plain"
                 key={chip}
                 type="button"
                 aria-pressed={on}
@@ -139,7 +140,7 @@ export function IndexList({ rows, teams }: { rows: IndexRow[]; teams: number }) 
               >
                 {label}
                 <sup className="ml-sp-0 text-meta font-mono leading-none tabular-nums">{count}</sup>
-              </PendingButton>
+              </Button>
             );
           })}
         </div>

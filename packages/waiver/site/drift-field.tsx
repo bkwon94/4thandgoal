@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { shortName } from "@cpc/design/format/format";
@@ -79,7 +79,8 @@ function Orb({
             : INSTANT
         }
       >
-        <PendingButton
+        <Button
+          variant="plain"
           type="button"
           aria-label={price ? `${player.name}, ${price}` : player.name}
           aria-pressed={open}
@@ -111,7 +112,7 @@ function Orb({
             {shortName(player.name)}
           </span>
           <span className="text-label text-on-dark-2 block leading-tight">{`${player.position} · ${player.team}`}</span>
-        </PendingButton>
+        </Button>
       </motion.div>
     </motion.div>
   );

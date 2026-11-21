@@ -6,7 +6,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, frame, motion } from "framer-motion";
 import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -520,7 +520,8 @@ export function FrontDoor({
     setMoreOpen(false);
   };
   const changeTeam = team && (
-    <PendingButton
+    <Button
+      variant="plain"
       type="button"
       onClick={() => setPicking(true)}
       aria-label={`Your team: ${team.name}. Change the team`}
@@ -542,7 +543,7 @@ export function FrontDoor({
       {!empty && (
         <ChevronsUpDownIcon aria-hidden className="size-sp-4 flex-none" strokeWidth={2.25} />
       )}
-    </PendingButton>
+    </Button>
   );
 
   return (
@@ -575,7 +576,8 @@ export function FrontDoor({
                   {EXAMPLES.map((example, index) => (
                     <Fragment key={example}>
                       {index > 0 && <span>or</span>}
-                      <PendingButton
+                      <Button
+                        variant="plain"
                         type="button"
                         onMouseDown={keepFocus}
                         onClick={() => {
@@ -587,7 +589,7 @@ export function FrontDoor({
                         <span aria-hidden>&ldquo;</span>
                         {example}
                         <span aria-hidden>&rdquo;</span>
-                      </PendingButton>
+                      </Button>
                     </Fragment>
                   ))}
                 </p>
@@ -602,13 +604,14 @@ export function FrontDoor({
                   className="top-band-height -mx-gutter min-h-door-head gap-sp-3 bg-page/90 px-gutter sticky z-10 flex items-center justify-between backdrop-blur-md"
                 >
                   {changeTeam}
-                  <PendingButton
+                  <Button
+                    variant="plain"
                     type="button"
                     onClick={clear}
                     className="press -mr-sp-2 min-h-touch rounded-pill px-sp-3 text-meta text-mute hover-fine:text-ink flex flex-none items-center leading-tight font-semibold"
                   >
                     Clear
-                  </PendingButton>
+                  </Button>
                 </header>
                 <Thread
                   entries={thread}

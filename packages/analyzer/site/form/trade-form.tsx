@@ -4,7 +4,6 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
@@ -521,13 +520,14 @@ export function TradeForm({
         onClose={cancelEdit}
         footer={
           <div className="gap-sp-3 flex items-center">
-            <PendingButton
+            <Button
+              variant="plain"
               type="button"
               onClick={cancelEdit}
               className="press min-h-touch min-w-touch rounded-pill px-sp-2 text-meta text-accent-ink focus-visible:outline-accent flex cursor-pointer items-center justify-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               Cancel
-            </PendingButton>
+            </Button>
             {gradeBar}
           </div>
         }

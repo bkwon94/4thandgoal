@@ -339,7 +339,7 @@ describe("MidseasonScreen", () => {
     for (const button of buttons) {
       expect(button.className).not.toMatch(/(^|\s)(rounded-|border|bg-)/);
       // A native button with no negative tabindex, so Tab reaches each segment and the focus ring of the site shows.
-      expect(button.getAttribute("tabindex")).toBeNull();
+      expect(button.getAttribute("tabindex")).not.toBe("-1");
     }
     const line = group.querySelector<HTMLElement>("[data-underline]")!;
     expect(line.getAttribute("aria-hidden")).toBe("true");

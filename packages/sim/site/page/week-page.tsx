@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 import { cn } from "@cpc/design/lib/utils";
@@ -116,7 +116,8 @@ function RootForCard({ sim, week }: { sim: WeekSim; week: PageWeek }) {
             {header}
           </span>
         ) : (
-          <PendingButton
+          <Button
+            variant="plain"
             type="button"
             aria-expanded={open}
             aria-controls={list}
@@ -141,7 +142,7 @@ function RootForCard({ sim, week }: { sim: WeekSim; week: PageWeek }) {
                 )}
               />
             </span>
-          </PendingButton>
+          </Button>
         )}
       </h2>
       {/* The grid row grows from 0fr to 1fr, so the list opens with no measure of its height. */}
