@@ -3,7 +3,8 @@
  * A color comes from a role token, so a theme change reaches each part (ADR 0038).
  */
 
-const RAW_COLOR = /(?<![\w&])#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{3,4})\b|\b(?:rgba?|hsla?|oklch)\(/i;
+const RAW_COLOR =
+  /(?<![\w&])#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{3,4})\b|\b(?:rgba?|hsla?|oklch)\(/i;
 
 const MESSAGE = "Use a role token of apps/site/src/app/globals.css, not a raw color literal.";
 

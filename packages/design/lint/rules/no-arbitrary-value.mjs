@@ -83,7 +83,11 @@ function inClassPlace(node) {
       const name = parent.name.type === "JSXIdentifier" ? parent.name.name : "";
       return name === "className" || name.endsWith("ClassName");
     }
-    if (parent.type === "CallExpression" && parent.callee.type === "Identifier" && parent.callee.name === "cn") {
+    if (
+      parent.type === "CallExpression" &&
+      parent.callee.type === "Identifier" &&
+      parent.callee.name === "cn"
+    ) {
       return true;
     }
   }
@@ -119,7 +123,10 @@ export default {
           continue;
         }
         const base = node.range[0] + index + offset;
-        const loc = { start: sourceCode.getLocFromIndex(base), end: sourceCode.getLocFromIndex(base + name.length) };
+        const loc = {
+          start: sourceCode.getLocFromIndex(base),
+          end: sourceCode.getLocFromIndex(base + name.length),
+        };
         context.report({ node, loc, messageId: "arbitrary", data: { name } });
       }
     }
