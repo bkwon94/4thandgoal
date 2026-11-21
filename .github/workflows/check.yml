@@ -41,10 +41,11 @@ jobs:
   # The site check runs as two jobs at the same time, because the browser half alone takes most of the time.
   # The unit half needs no browser. "make check-site" runs both halves in sequence.
   # The unit half runs in a matrix of shards, and each job runs bun test on the files of its shard only, split by the time
-  # of each file in apps/site/bun-test-timings.json. Each job also runs the lint, the format check, the client build, and
-  # typecheck. The measured times of ticket 15 of design-checks-speed set the count: the slowest shard takes 170 s with 1,
-  # 97 s with 2, 70 s with 3, and 52 s with 4. One more job costs about 42 s of setup, so a third shard saves less than
-  # it costs.
+  # of each file in apps/site/bun-test-timings.json. With --parallel, the timings also start the slowest files first. Each
+  # job also runs the lint, the format check, the client build, and typecheck. The measured times of ticket 15 of
+  # design-checks-speed set the count. With 4 workers, the count of an ubuntu-latest runner, the slowest shard takes 47 s
+  # with 1 shard and 34 s with 2, 3, or 4, because one test file takes 33 s alone. One more job costs about 42 s of setup,
+  # so a second shard saves less than it costs. With 1 worker, the slowest shard takes 170 s with 1 shard and 97 s with 2.
   site-unit:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -52,9 +53,9 @@ jobs:
       # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1]
     env:
-      # scripts/bun-test.mjs reads it, such as "2/2". The total comes from the matrix, so the list above is the one count.
+      # scripts/bun-test.mjs reads it, such as "1/1". The total comes from the matrix, so the list above is the one count.
       BUN_TEST_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
       # On a PR, bun test runs only the test files that the diff since the base can reach. The checkout of a PR is the test
       # merge commit, and its first parent HEAD^1 is the tip of the base branch, so the diff is the change of the PR.

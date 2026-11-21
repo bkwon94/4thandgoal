@@ -23,8 +23,9 @@ def env_value(job: str, name: str) -> str:
 
 
 class TheUnitShards(unittest.TestCase):
-    def test_the_unit_job_runs_in_a_matrix_of_two_shards(self):
-        self.assertIn("matrix:\n        shard: [1, 2]\n", job_text("site-unit"))
+    def test_the_unit_job_runs_in_a_matrix_of_one_shard(self):
+        # With the 4 workers of bun test --parallel, a second shard saves 13 s and one more job costs about 42 s of setup.
+        self.assertIn("matrix:\n        shard: [1]\n", job_text("site-unit"))
 
     def test_each_shard_takes_its_count_from_the_matrix(self):
         self.assertEqual(env_value("site-unit", "BUN_TEST_SHARD"), "${{ matrix.shard }}/${{ strategy.job-total }}")
