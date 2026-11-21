@@ -6,7 +6,6 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, spyOn } from "bun:test";
-import { resetModules } from "../../../test/reset-modules";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { listWeeks, listWeekSummaries, loadWeek } from "./week-data";
 
@@ -36,8 +35,7 @@ describe("loadWeek schema check", () => {
       JSON.stringify({ schema_version: 1 }),
     );
     spyOn(process, "cwd").mockReturnValue(root);
-    // The module reads the working folder when it loads, so reset it to pick up the temp folder.
-    resetModules();
+    // The module reads the working folder on each call, so the spy points it at the temp folder.
     const { loadWeek: load } = await import("./week-data");
     expect(() => load("2026", "week-01")).toThrow(/schema_version 1/);
   });
@@ -73,7 +71,6 @@ describe("listWeekSummaries", () => {
       );
     }
     spyOn(process, "cwd").mockReturnValue(root);
-    resetModules();
     const { listWeekSummaries: list } = await import("./week-data");
     expect(list().map((summary) => summary.href)).toEqual([
       "/2027/week-01/",

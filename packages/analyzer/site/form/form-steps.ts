@@ -4,7 +4,7 @@
  */
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 
-// This file imports no test runner, so a Vitest file and a `bun test` file can both use it. A wait throws its own error.
+// This file imports no test runner. A wait throws its own error.
 
 export type SideTitle = "Your Team" | "Team Two" | "Team Three" | "Team Four";
 

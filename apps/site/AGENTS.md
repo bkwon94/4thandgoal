@@ -11,8 +11,8 @@ Run these in `apps/site/`.
 - Install: `pnpm install`
 - Dev server: `CLIENT=cpc pnpm dev`
 - Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.
-- Test: `pnpm test`. It runs Vitest, then `pnpm test:bun`. The tests read the generated files, so run `pnpm check:fast` or a build first.
-- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. It runs `bun test --isolate` from `apps/site` on the folders and files of `scripts/bun-test-files.mjs`, so each file has its own global and module registry. Vitest skips them. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it.
+- Test: `pnpm test`. It runs `pnpm test:bun`. The tests read the generated files, so run `pnpm check:fast` or a build first.
+- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. `scripts/bun-test.mjs` runs `bun test --isolate` from `apps/site` on `src/`, `scripts/`, `test/`, and the `site/` folder of each package. With `--isolate`, each file has its own global and module registry. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it. `bunfig.toml` does not read `isolate`, so a direct `bun test` call needs the flag.
 - Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.
 - Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page. It runs the parallel pass, then the tests tagged `@timing` alone with one worker.
 - Test the rules of the floor, the evidence runner, and the smoke run: `pnpm test:floor`. It needs Chromium and WebKit once: `pnpm exec playwright install chromium webkit`.
@@ -25,25 +25,23 @@ Run these in `apps/site/`.
 - Format: `pnpm fmt`. `bun fmt` rewrites all site code and package code. The config is `bunfig.toml` at the repo root. It sorts the Tailwind classes. Set `FMT_FILES` to paths from the repo root to format only those files.
 - Format check: `pnpm fmt:check`. It exits 1 and names each file that is out of format. It takes `FMT_FILES` as well. The hook and CI run it.
 - Bun version: `.bun-version` at the repo root pins it, and CI installs that version. `bun check` and `bun fmt` need 1.4.5 or later.
-- Fast check: `pnpm check:fast`. It runs the lint, the format check, the client build of `cpc`, typecheck, Vitest, and `pnpm test:bun`. The hook runs it and lints and checks the format of only the staged site files. Vitest tests only the changed files in the hook, and `bun test` runs every moved file.
+- Fast check: `pnpm check:fast`. It runs the lint, the format check, the client build of `cpc`, typecheck, and `pnpm test:bun`. The hook runs it and lints and checks the format of only the staged site files. `bun test` runs every test file, also in the hook.
 
-## Move a test folder from Vitest to `bun test`
+## Write a test for `bun test`
 
-The tests move to `bun test` one folder at a time (ADR 0038). Until the last move, each test file runs on one runner.
+Each site test runs on `bun test` with happy-dom (ADR 0038). No test runs on Vitest. A test imports only from `bun:test`, and these rules replace the `vi` calls of Vitest.
 
-1. Run the folder on Vitest. Record the count of tests that pass in each file.
-2. In each test file, import from `bun:test`, not from `vitest`.
-3. Change `vi.fn` to `mock` and `vi.spyOn` to `spyOn`. Remove each `vi.restoreAllMocks()`.
-4. Change `vi.mock` to `mock.module`.
-5. In a test of the app, change `vi.stubGlobal` and `vi.stubEnv` to `stubGlobal` and `stubEnv` of `apps/site/test/stubs.ts`.
-6. In a test of a package, change `vi.stubGlobal("x", fake)` to `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
-7. Remove each `vi.unstubAllGlobals()` and `vi.unstubAllEnvs()`. The preload restores each spy and each stub after each test.
-8. Move each spy and each stub at the top level of a file into `beforeEach`. The restore after the first test removes a top-level one.
-9. Change `vi.resetModules()` to `resetModules()` of `apps/site/test/reset-modules.ts`. A file that loads a module with an env or `process.cwd` value resets the modules after each test. Change `vi.hoisted` to an import with a side effect that runs first, such as `@/fixtures/cpc-site`. Bun has no `vi.hoisted`.
-10. Add the folder to `BUN_TEST_DIRS` in `scripts/bun-test-files.mjs`. If a file of the folder stays on Vitest, add each moved file instead.
-11. Run `pnpm test:bun`. Compare the count of each file with step 1, and name each change in the ticket.
+1. Use `mock` for a fake function, `spyOn` for a spy, and `mock.module` for a fake module.
+2. In a test of the app, use `stubGlobal` and `stubEnv` of `apps/site/test/stubs.ts`.
+3. In a test of a package, use `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
+4. Restore nothing by hand. The preload restores each spy and each stub after each test.
+5. Put each spy and each stub in `beforeEach`. The restore after the first test removes a spy or a stub at the top level of a file.
+6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env or `process.cwd` value when it loads. Then import the module again.
+7. Use an import with a side effect that runs first, such as `@/fixtures/cpc-site`, for a setup that must run before the other imports. Bun has no `vi.hoisted`.
+8. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
+9. Run `pnpm test:bun` in full before the merge.
 
-The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. A test that depends on jsdom gets a fix for happy-dom. If it needs a real jsdom feature, the ticket names it for Brian.
+The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. If a test needs a real jsdom feature, the ticket names it for Brian.
 
 The preload makes happy-dom act as a browser in five more ways. `test/dom.test.ts` proves each one.
 
@@ -53,7 +51,7 @@ The preload makes happy-dom act as a browser in five more ways. `test/dom.test.t
 - The page URL is `http://localhost:3000/`, so a relative `img` src resolves and fires no `error`.
 - A `spyOn(Storage.prototype, "getItem")` acts on `localStorage` and `sessionStorage`, also after the first call. Never spy on the storage object itself, because its Proxy keeps the spy as data.
 
-happy-dom differs from jsdom in these ways too. The preload does not change them, so a move ticket fixes each test that depends on them.
+happy-dom differs from jsdom in these ways too. The preload does not change them, so each test that depends on them has its own fix.
 
 - The window is 1024 pixels wide, and `matchMedia` answers each width query. jsdom has no `matchMedia`, so a test there saw the phone tier. For the phone tier, spy on `matchMedia` in `beforeEach` with a stub that matches no query.
 - `IntersectionObserver` exists, but it never reports an entry. A part that waits on `inView` of Framer Motion never starts. jsdom has none, so the part ran its fallback.
