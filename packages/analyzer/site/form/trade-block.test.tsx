@@ -122,6 +122,15 @@ describe("Trade block", () => {
     expect(names().slice(0, 3)).toEqual(["Zay Flowers, WR", "Kenneth Walker III, RB", "Aaron Rodgers, QB"]);
   });
 
+  it("scrolls the strip back to its start when a pick from the scrolled end lands at the front", () => {
+    const { container } = renderFinder(6);
+    const viewport = container.querySelector<HTMLElement>("[data-slot=scroll-area-viewport]") as HTMLElement;
+    viewport.scrollLeft = 600;
+    fireEvent.click(toggle("Parker Washington, WR"));
+    expect(names()[0]).toBe("Parker Washington, WR");
+    expect(viewport.scrollLeft).toBe(0);
+  });
+
   it("shows the empty line while no one is on the block", () => {
     renderFinder(6);
     const EMPTY = "No one on the block. The search can offer any of your players.";

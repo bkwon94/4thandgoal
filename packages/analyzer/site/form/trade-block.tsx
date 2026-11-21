@@ -6,7 +6,7 @@
 
 import { motion } from "framer-motion";
 import { CheckIcon, CircleAlertIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Headshot } from "@cpc/league/headshot";
 import { HEADSHOT_FALLBACK } from "@cpc/league/images";
 import { ScrollArea, ScrollAreaContent, ScrollAreaViewport } from "@cpc/design/ui/scroll-area";
@@ -25,6 +25,10 @@ const BLOCK_EMPTY = "No one on the block. The search can offer any of your playe
 
 // The chart lists only these positions, so no trade can send a kicker or a defense, and the strip never lists one.
 const POSITIONS = ["QB", "RB", "WR", "TE"];
+
+// The shake of a refused tap, after the error state of transitions.dev: two large and two small swings of 6 px and
+// 4 px over 0.4 s. Each refused tap mounts the line again, so it shakes again and the live region reads it again.
+const SHAKE = [0, -6, 6, -4, 4, 0];
 
 // A critically damped spring, as apple-design advises for a move that no flick started: it settles with no bounce.
 const PIN_SPRING = { type: "spring", duration: 0.4, bounce: 0 } as const;
@@ -58,28 +62,43 @@ export function TradeBlock({
   const off = useMotionOff();
   const viewport = useRef<HTMLDivElement>(null);
   // A 4th tap sets the reason. Any change of the block clears it, so the line names only the tap the reader just made.
-  const [refused, setRefused] = useState(false);
+  // It counts each refused tap, so each one replays the shake of the reason line. 0 means no refused tap.
+  const [refused, setRefused] = useState(0);
   const roster = blockRoster(players);
   const full = picks.length >= BLOCK_MAX;
   const picked = picks.flatMap((id) => roster.filter((player) => player.player_id === id));
   // The picks lead in the order of the taps, then the rest of the roster in its own order.
   const order = [...picked, ...roster.filter((player) => !picks.includes(player.player_id))];
+  // A new pick sets it, so the commit of that pick scrolls the strip back to its start.
+  const pinned = useRef(false);
+
+  // The strip scrolls back after Framer Motion has read the old place of each item and before it reads the new one.
+  // So each item glides from where the reader saw it, and the pick never jumps the other way under the thumb, as it
+  // does when a smooth scroll runs under the spring. The scroll itself is instant: the spring of each item is the motion.
+  useLayoutEffect(() => {
+    if (!pinned.current || !viewport.current) return;
+    pinned.current = false;
+    viewport.current.style.scrollBehavior = "auto";
+    viewport.current.scrollLeft = 0;
+    viewport.current.style.scrollBehavior = "";
+  }, [picks]);
 
   function change(next: string[]) {
     const added = next.find((id) => !picks.includes(id));
     if (added === undefined) {
-      setRefused(false);
+      setRefused(0);
       onPicks(picks.filter((id) => next.includes(id)));
       return;
     }
-    // A pick lands at the front, and a refused 4th tap shows the 3 picks it names, so both scroll the strip back to
-    // its start. The viewport scrolls smoothly unless motion is off, through its class.
-    if (viewport.current) viewport.current.scrollLeft = 0;
     if (full) {
-      setRefused(true);
+      // A refused 4th tap shows the 3 picks it names, so the strip scrolls back to its start. Nothing moves in the
+      // strip, so the viewport scrolls smoothly unless motion is off, through its class.
+      if (viewport.current) viewport.current.scrollLeft = 0;
+      setRefused((count) => count + 1);
       return;
     }
-    setRefused(false);
+    setRefused(0);
+    pinned.current = true;
     onPicks([...picks, added]);
   }
 
@@ -100,13 +119,13 @@ export function TradeBlock({
       </div>
       {/* The strip runs to the edges of the hero. The mask fades both ends, so a cut headshot says "scroll for more".
           The viewport of the ScrollArea is the native scroller, and it hides the scrollbar itself. */}
-      <ScrollArea className="-mx-sp-4">
+      <ScrollArea className="-mx-hero-x">
         <ScrollAreaViewport
           ref={viewport}
           className="overscroll-x-contain motion-safe:scroll-smooth [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-sp-4),black_calc(100%-var(--spacing-sp-6)*2),transparent)] [&::-webkit-scrollbar]:hidden"
         >
           <ScrollAreaContent className="w-max">
-            <ToggleGroup multiple aria-label="Trade block" value={picks} onValueChange={change} disabled={disabled} className="flex gap-sp-2 px-sp-4 py-sp-1">
+            <ToggleGroup multiple aria-label="Trade block" value={picks} onValueChange={change} disabled={disabled} className="flex gap-sp-2 px-hero-x py-sp-1">
               {order.map((player) => {
                 const on = picks.includes(player.player_id);
                 return (
@@ -114,7 +133,7 @@ export function TradeBlock({
                     <Toggle
                       value={player.player_id}
                       aria-label={`${player.name}, ${player.position}`}
-                      className="press flex w-[64px] cursor-pointer flex-col items-center gap-sp-1 rounded-card py-sp-1 outline-none focus-visible:outline-2 focus-visible:outline-accent aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+                      className="press group/item flex w-[64px] cursor-pointer flex-col items-center gap-sp-1 rounded-card py-sp-1 outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-accent aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
                     >
                       {/* A player past the cap dims only his headshot, so his name keeps full contrast. */}
                       <span className={cn("relative transition-opacity duration-150 ease-out", full && !on && "opacity-40")}>
@@ -137,7 +156,13 @@ export function TradeBlock({
                           <CheckIcon className="size-sp-3" strokeWidth={3} />
                         </span>
                       </span>
-                      <span className={cn("w-full truncate text-center text-label leading-tight font-bold", on ? "text-on-dark" : "text-on-dark-2")}>
+                      {/* A pointer that rests on a player lifts his name to full ink, so a mouse sees what a click picks. */}
+                      <span
+                        className={cn(
+                          "w-full truncate text-center text-label leading-tight font-bold transition-[color] duration-150 ease-out",
+                          on ? "text-on-dark" : "text-on-dark-2 group-hover/item:text-on-dark",
+                        )}
+                      >
                         {lastName(player.name)}
                       </span>
                       <span className="text-label leading-none text-on-dark-muted">{player.position}</span>
@@ -150,11 +175,15 @@ export function TradeBlock({
         </ScrollAreaViewport>
       </ScrollArea>
       <div aria-live="polite" className="px-sp-1">
-        {refused && full && (
-          <p className="m-0 flex items-start gap-sp-2 text-meta leading-tight font-bold text-pretty text-on-dark">
+        {refused > 0 && full && (
+          <motion.p
+            key={refused}
+            animate={off ? undefined : { x: SHAKE }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="m-0 flex items-start gap-sp-2 text-meta leading-tight font-bold text-pretty text-on-dark">
             <CircleAlertIcon aria-hidden="true" className="mt-px size-sp-4 flex-none text-accent-text" />
             {BLOCK_FULL}
-          </p>
+          </motion.p>
         )}
         {picks.length === 0 && <p className="m-0 text-meta leading-tight text-pretty text-on-dark-2">{BLOCK_EMPTY}</p>}
       </div>
