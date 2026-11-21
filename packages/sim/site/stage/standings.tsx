@@ -29,13 +29,28 @@ export const MONO = "font-mono tabular-nums";
 export const EYEBROW = "font-mono text-meta leading-tight font-bold tracking-caps uppercase";
 
 /* A score that counts up from zero once, when `live`. Otherwise it shows the score at rest. */
-export function Score({ value, live, delay = 0, className }: { value: number; live: boolean; delay?: number; className?: string }) {
+export function Score({
+  value,
+  live,
+  delay = 0,
+  className,
+}: {
+  value: number;
+  live: boolean;
+  delay?: number;
+  className?: string;
+}) {
   const box = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     if (!live || box.current === null) return;
     const node = box.current;
     node.textContent = oneDecimal(0);
-    const controls = animate(0, value, { duration: 0.6, delay, ease: EASE_OUT, onUpdate: (v) => (node.textContent = oneDecimal(v)) });
+    const controls = animate(0, value, {
+      duration: 0.6,
+      delay,
+      ease: EASE_OUT,
+      onUpdate: (v) => (node.textContent = oneDecimal(v)),
+    });
     return () => {
       controls.stop();
       node.textContent = oneDecimal(value);
@@ -49,7 +64,15 @@ export function Score({ value, live, delay = 0, className }: { value: number; li
 }
 
 /* Text that swaps in place: the old text leaves fast, the new text rises in with a short blur. Under reduced motion it only fades. */
-export function SwapText({ text, off, className }: { text: string; off: boolean; className?: string }) {
+export function SwapText({
+  text,
+  off,
+  className,
+}: {
+  text: string;
+  off: boolean;
+  className?: string;
+}) {
   return (
     <span className={cn("relative inline-grid", className)}>
       <AnimatePresence mode="popLayout" initial={false}>
@@ -69,9 +92,20 @@ export function SwapText({ text, off, className }: { text: string; off: boolean;
 }
 
 /* The W or L of the week beside the record. It flashes in, holds, and fades, so the row is quiet again by the next week. */
-function ResultFlash({ mark, week, show }: { mark: Mark | null; week: number | null; show: boolean }) {
+function ResultFlash({
+  mark,
+  week,
+  show,
+}: {
+  mark: Mark | null;
+  week: number | null;
+  show: boolean;
+}) {
   return (
-    <span aria-hidden="true" className={cn(MONO, "w-[1.5ch] flex-none text-center text-meta font-bold")}>
+    <span
+      aria-hidden="true"
+      className={cn(MONO, "text-meta w-[1.5ch] flex-none text-center font-bold")}
+    >
       {show && mark !== null && week !== null && (
         <motion.span
           key={week}
@@ -90,29 +124,49 @@ function ResultFlash({ mark, week, show }: { mark: Mark | null; week: number | n
 /* A zone rule between two rows: a dashed rule under the bye seeds, and the red playoff line under the last seed.
    It sits in the gap between rows and carries no label, so it never covers a row. Under reduced motion it is a plain
    box, and a new place of the rule comes only with a new list, which fades in. */
-function ZoneRule({ at, rows, kind, off }: { at: number; rows: number; kind: "bye" | "playoff"; off: boolean }) {
+function ZoneRule({
+  at,
+  rows,
+  kind,
+  off,
+}: {
+  at: number;
+  rows: number;
+  kind: "bye" | "playoff";
+  off: boolean;
+}) {
   const top = `${(at / rows) * 100}%`;
   const className = cn(
     "pointer-events-none absolute inset-x-0 z-10 -translate-y-1/2",
-    kind === "bye" ? "border-t border-dashed border-on-dark-muted" : "h-0.5 rounded-report bg-accent",
+    kind === "bye"
+      ? "border-on-dark-muted border-t border-dashed"
+      : "rounded-report bg-accent h-0.5",
   );
   // A transition of no duration still tweens `top` over a few frames in WebKit, so reduced motion gets a plain box.
   if (off) return <div aria-hidden="true" style={{ top }} className={className} />;
-  return <motion.div aria-hidden="true" initial={false} animate={{ top }} transition={FLIP} className={className} />;
+  return (
+    <motion.div
+      aria-hidden="true"
+      initial={false}
+      animate={{ top }}
+      transition={FLIP}
+      className={className}
+    />
+  );
 }
 
 /* The key of the two zone rules, one short line under the title, so the rules need no labels of their own. */
 export function ZoneKey({ byes, spots }: { byes: number; spots: number }) {
   return (
-    <p className="m-0 flex items-center gap-sp-3 text-meta leading-tight text-on-dark-2">
+    <p className="gap-sp-3 text-meta text-on-dark-2 m-0 flex items-center leading-tight">
       {byes > 0 && (
-        <span className="flex items-center gap-sp-1 whitespace-nowrap">
-          <span aria-hidden="true" className="w-sp-3 border-t border-dashed border-on-dark-muted" />
+        <span className="gap-sp-1 flex items-center whitespace-nowrap">
+          <span aria-hidden="true" className="w-sp-3 border-on-dark-muted border-t border-dashed" />
           {`Top ${byes} bye`}
         </span>
       )}
-      <span className="flex items-center gap-sp-1 whitespace-nowrap">
-        <span aria-hidden="true" className="h-0.5 w-sp-3 rounded-report bg-accent" />
+      <span className="gap-sp-1 flex items-center whitespace-nowrap">
+        <span aria-hidden="true" className="w-sp-3 rounded-report bg-accent h-0.5" />
         {`Top ${spots} in`}
       </span>
     </p>
@@ -130,7 +184,8 @@ function foldName(name: string): string {
   return out.length < name.length ? out.replace(/[.,]+$/, "") : name;
 }
 
-type Item = { kind: "row"; row: StandingRow } | { kind: "fold"; side: "top" | "bottom"; rows: StandingRow[] };
+type Item =
+  { kind: "row"; row: StandingRow } | { kind: "fold"; side: "top" | "bottom"; rows: StandingRow[] };
 
 /* The rows past the playoff line that stay in full in the Race style (decision 04). */
 const RACE_BELOW = 3;
@@ -138,11 +193,24 @@ const RACE_BELOW = 3;
 /* The items of the list in place order. Each run of rows far from the playoff line folds into one item: the byes at
    the top, and the rows more than three below the line at the bottom. Your team never folds. At the cut every row
    shows, so each seed can fly to the bracket. */
-function itemsOf(rows: StandingRow[], spots: number, byes: number, yourTeam: number, cut: boolean): Item[] {
+function itemsOf(
+  rows: StandingRow[],
+  spots: number,
+  byes: number,
+  yourTeam: number,
+  cut: boolean,
+): Item[] {
   if (cut) return rows.map((row) => ({ kind: "row", row }));
   const items: Item[] = [];
   for (const row of rows) {
-    const side = row.roster_id === yourTeam ? null : row.place <= byes ? "top" : row.place > spots + RACE_BELOW ? "bottom" : null;
+    const side =
+      row.roster_id === yourTeam
+        ? null
+        : row.place <= byes
+          ? "top"
+          : row.place > spots + RACE_BELOW
+            ? "bottom"
+            : null;
     const last = items.at(-1);
     if (side === null) items.push({ kind: "row", row });
     else if (last?.kind === "fold" && last.side === side) last.rows.push(row);
@@ -160,9 +228,12 @@ function FoldLine({ item }: { item: Extract<Item, { kind: "fold" }> }) {
   const first = item.rows[0].place;
   const last = item.rows.at(-1)!.place;
   const range = first === last ? `${first}` : `${first}–${last}`;
-  const words = item.side === "top" ? `byes: ${item.rows.map((r) => foldName(r.name)).join(", ")}` : "out of it";
+  const words =
+    item.side === "top"
+      ? `byes: ${item.rows.map((r) => foldName(r.name)).join(", ")}`
+      : "out of it";
   return (
-    <span className="flex min-w-0 flex-1 items-center gap-sp-2 text-meta leading-tight text-on-dark-2">
+    <span className="gap-sp-2 text-meta text-on-dark-2 flex min-w-0 flex-1 items-center leading-tight">
       <span className={cn(MONO, "flex-none")}>{range}</span>
       <span aria-hidden="true">·</span>
       <span className="min-w-0 truncate">{words}</span>
@@ -202,7 +273,10 @@ export function Standings({
   const list = {
     "aria-label": "Standings",
     className: "relative m-0 grid min-h-0 w-full flex-1 list-none grid-cols-1 p-0",
-    style: { gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`, maxHeight: `calc(${count} * var(--spacing-touch))` },
+    style: {
+      gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`,
+      maxHeight: `calc(${count} * var(--spacing-touch))`,
+    },
   };
   const body = (
     <>
@@ -219,7 +293,7 @@ export function Standings({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.15 } }}
                 transition={{ layout: FLIP, ...fade }}
-                className="relative flex min-h-0 items-center pr-sp-2 pl-sp-3"
+                className="pr-sp-2 pl-sp-3 relative flex min-h-0 items-center"
               >
                 <FoldLine item={item} />
               </motion.li>
@@ -237,10 +311,21 @@ export function Standings({
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ layout: FLIP, ...fade }}
               data-roster={row.roster_id}
-              className="relative flex min-h-0 items-center gap-sp-2 pr-sp-2 pl-sp-3"
+              className="gap-sp-2 pr-sp-2 pl-sp-3 relative flex min-h-0 items-center"
             >
-              {you && <span aria-hidden="true" className="absolute inset-y-sp-1 left-0 w-1 rounded-report bg-accent" />}
-              <span className={cn(MONO, "w-[2ch] flex-none text-right text-meta", you ? "font-bold text-accent-text" : "text-on-dark-muted")}>
+              {you && (
+                <span
+                  aria-hidden="true"
+                  className="inset-y-sp-1 rounded-report bg-accent absolute left-0 w-1"
+                />
+              )}
+              <span
+                className={cn(
+                  MONO,
+                  "text-meta w-[2ch] flex-none text-right",
+                  you ? "text-accent-text font-bold" : "text-on-dark-muted",
+                )}
+              >
                 {row.place}
               </span>
               {/* The shared id is set from the mount of the row, because Framer Motion reads a shared id when the part
@@ -248,22 +333,41 @@ export function Standings({
               <motion.span
                 layoutId={off ? undefined : `team-${row.roster_id}`}
                 transition={{ layout: FLIP }}
-                className="flex min-w-0 flex-1 items-center gap-sp-2"
+                className="gap-sp-2 flex min-w-0 flex-1 items-center"
               >
                 {/* Only Your team keeps its avatar, so it stands out and the other rows stay quiet. */}
                 {you && (
                   <span data-avatar className="flex flex-none">
-                    <PhotoFrame src={avatars[String(row.roster_id)] ?? null} name={row.name} size="sm" decorative />
+                    <PhotoFrame
+                      src={avatars[String(row.roster_id)] ?? null}
+                      name={row.name}
+                      size="sm"
+                      decorative
+                    />
                   </span>
                 )}
-                <span className={cn("min-w-0 truncate text-row leading-tight text-on-dark", you ? "font-bold" : "font-semibold")}>
+                <span
+                  className={cn(
+                    "text-row text-on-dark min-w-0 truncate leading-tight",
+                    you ? "font-bold" : "font-semibold",
+                  )}
+                >
                   {row.name}
                   {you && <span className="sr-only"> (Your team)</span>}
                 </span>
               </motion.span>
-              <ResultFlash mark={marks?.get(row.roster_id) ?? null} week={week} show={row.move !== 0} />
+              <ResultFlash
+                mark={marks?.get(row.roster_id) ?? null}
+                week={week}
+                show={row.move !== 0}
+              />
               {/* The record changes on most rows each week, so it changes in place with no motion of its own. */}
-              <span className={cn(MONO, "w-[5ch] flex-none text-right text-row font-bold whitespace-nowrap text-on-dark")}>
+              <span
+                className={cn(
+                  MONO,
+                  "text-row text-on-dark w-[5ch] flex-none text-right font-bold whitespace-nowrap",
+                )}
+              >
                 {record(row.wins, row.losses)}
               </span>
             </motion.li>
@@ -276,7 +380,11 @@ export function Standings({
   // Under reduced motion, each new order, and each new place of a rule, is a new list. The old list fades out before
   // the new one fades in, so no row and no rule jumps to its new place at full opacity.
   const order = items
-    .map((item) => (item.kind === "row" ? `${item.row.roster_id}:${item.row.place}` : `${item.side}:${item.rows.length}`))
+    .map((item) =>
+      item.kind === "row"
+        ? `${item.row.roster_id}:${item.row.place}`
+        : `${item.side}:${item.rows.length}`,
+    )
     .join(",");
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -299,7 +407,21 @@ const GAME_GAP = 0.4;
 
 /* One game as one row: team A, score A, score B, team B. After the count-up, the winner turns bold and the loser mutes.
    Your team always sits on the left of its own row. */
-function GameRow({ a, b, played, live, delay, yours }: { a: WeekTeam; b: WeekTeam; played: boolean; live: boolean; delay: number; yours: boolean }) {
+function GameRow({
+  a,
+  b,
+  played,
+  live,
+  delay,
+  yours,
+}: {
+  a: WeekTeam;
+  b: WeekTeam;
+  played: boolean;
+  live: boolean;
+  delay: number;
+  yours: boolean;
+}) {
   // The result shows at once at rest, or after the count-up of this game when the week plays live.
   const [shown, setShown] = useState(!live);
   useEffect(() => {
@@ -310,27 +432,47 @@ function GameRow({ a, b, played, live, delay, yours }: { a: WeekTeam; b: WeekTea
   }, [live, delay]);
   const decided = played && shown && a.score !== b.score;
   const tone = (team: WeekTeam, other: WeekTeam) =>
-    !decided ? "font-semibold text-on-dark" : team.score > other.score ? "font-bold text-on-dark" : "font-normal text-on-dark-muted";
+    !decided
+      ? "font-semibold text-on-dark"
+      : team.score > other.score
+        ? "font-bold text-on-dark"
+        : "font-normal text-on-dark-muted";
   const name = (team: WeekTeam, other: WeekTeam, side: "left" | "right") => (
-    <span className={cn("min-w-0 truncate text-row leading-tight transition-colors duration-300", side === "right" && "text-right", tone(team, other))}>
+    <span
+      className={cn(
+        "text-row min-w-0 truncate leading-tight transition-colors duration-300",
+        side === "right" && "text-right",
+        tone(team, other),
+      )}
+    >
       {team.name}
     </span>
   );
   const score = (team: WeekTeam, other: WeekTeam) =>
     played ? (
-      <Score value={team.score} live={live} delay={delay} className={cn("text-row transition-colors duration-300", tone(team, other))} />
+      <Score
+        value={team.score}
+        live={live}
+        delay={delay}
+        className={cn("text-row transition-colors duration-300", tone(team, other))}
+      />
     ) : (
       <span className={cn(MONO, "text-row text-on-dark-muted")}>–</span>
     );
   return (
     <li
       className={cn(
-        "relative grid min-h-0 grid-cols-[minmax(0,1fr)_5ch_5ch_minmax(0,1fr)] items-center gap-x-sp-2 px-sp-3",
+        "gap-x-sp-2 px-sp-3 relative grid min-h-0 grid-cols-[minmax(0,1fr)_5ch_5ch_minmax(0,1fr)] items-center",
         // Your game sits on its own card; the other rows share plain rules between them.
-        yours ? "rounded-report bg-chip-dark" : "border-b border-rule-dark last:border-b-0",
+        yours ? "rounded-report bg-chip-dark" : "border-rule-dark border-b last:border-b-0",
       )}
     >
-      {yours && <span aria-hidden="true" className="absolute inset-y-sp-2 left-0 w-1 rounded-report bg-accent" />}
+      {yours && (
+        <span
+          aria-hidden="true"
+          className="inset-y-sp-2 rounded-report bg-accent absolute left-0 w-1"
+        />
+      )}
       {name(a, b, "left")}
       <span className="text-right">{score(a, b)}</span>
       <span className="text-left">{score(b, a)}</span>
@@ -345,7 +487,17 @@ function GameRow({ a, b, played, live, delay, yours }: { a: WeekTeam; b: WeekTea
 
 /* The games of one week: one row per game, Your game first and marked. When the week plays, the scores count up one
    by one. One line under the games gives the median and where Your team landed. */
-export function WeekGames({ week, played, live, yourTeam }: { week: ReplayWeek; played: boolean; live: boolean; yourTeam: number }) {
+export function WeekGames({
+  week,
+  played,
+  live,
+  yourTeam,
+}: {
+  week: ReplayWeek;
+  played: boolean;
+  live: boolean;
+  yourTeam: number;
+}) {
   const games = week.games.map(({ teams }) => {
     const [a, b] = teams;
     // Your team sits on the left of its row, so the eye finds it at the same place each week.
@@ -356,13 +508,22 @@ export function WeekGames({ week, played, live, yourTeam }: { week: ReplayWeek; 
   const count = ordered.length;
   const yours = mine < 0 ? null : games[mine][0];
   const side =
-    yours === null || week.median === null ? null : yours.score > week.median ? "above" : yours.score < week.median ? "below" : "level with";
+    yours === null || week.median === null
+      ? null
+      : yours.score > week.median
+        ? "above"
+        : yours.score < week.median
+          ? "below"
+          : "level with";
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-sp-2">
+    <div className="gap-sp-2 flex min-h-0 flex-1 flex-col">
       <ul
         aria-label={`Week ${week.week} games`}
         className="m-0 grid min-h-0 w-full flex-1 list-none grid-cols-1 p-0"
-        style={{ gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`, maxHeight: `calc(${count} * var(--spacing-row-touch))` }}
+        style={{
+          gridTemplateRows: `repeat(${count}, minmax(0, 1fr))`,
+          maxHeight: `calc(${count} * var(--spacing-row-touch))`,
+        }}
       >
         {ordered.map(([a, b], i) => (
           <GameRow
@@ -382,9 +543,11 @@ export function WeekGames({ week, played, live, yourTeam }: { week: ReplayWeek; 
           initial={live ? { opacity: 0 } : false}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, ease: EASE_OUT, delay: live ? count * GAME_GAP + 0.4 : 0 }}
-          className={cn(MONO, "m-0 flex-none px-sp-3 text-meta text-on-dark-2")}
+          className={cn(MONO, "px-sp-3 text-meta text-on-dark-2 m-0 flex-none")}
         >
-          {played ? `Median ${oneDecimal(week.median)}${side === null ? "" : ` · you were ${side}`}` : "Median –"}
+          {played
+            ? `Median ${oneDecimal(week.median)}${side === null ? "" : ` · you were ${side}`}`
+            : "Median –"}
         </motion.p>
       )}
     </div>

@@ -16,7 +16,8 @@ export type WeekTrends = { week: number; top: TrendPoint[]; median: TrendPoint[]
 export function medianOf(scores: number[]): number {
   const cents = scores.map((score) => Math.round(score * 100)).sort((a, b) => a - b);
   const middle = Math.floor(cents.length / 2);
-  const value = cents.length % 2 === 1 ? cents[middle] : Math.round((cents[middle - 1] + cents[middle]) / 2);
+  const value =
+    cents.length % 2 === 1 ? cents[middle] : Math.round((cents[middle - 1] + cents[middle]) / 2);
   return value / 100;
 }
 
@@ -45,8 +46,10 @@ export function trendText(points: TrendPoint[], week: number): string {
   const prior = season.at(-2);
   if (!current || !prior) return "The first week of the season.";
   const values = season.map((point) => point.value);
-  if (current.value === Math.max(...values) && current.value > prior.value) return "The highest of the season so far.";
-  if (current.value === Math.min(...values) && current.value < prior.value) return "The lowest of the season so far.";
+  if (current.value === Math.max(...values) && current.value > prior.value)
+    return "The highest of the season so far.";
+  if (current.value === Math.min(...values) && current.value < prior.value)
+    return "The lowest of the season so far.";
   if (current.value === prior.value) return `Level with week ${prior.week}.`;
   const way = current.value > prior.value ? "Up" : "Down";
   return `${way} from ${num(prior.value)} in week ${prior.week}.`;

@@ -3,34 +3,37 @@
  * roll, no blur, and no letter swap. matchMedia is a stub, and it must exist before Framer Motion first reads it.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { boardWith } from "../lib/fixtures/eggs-api";
 import { EggBoard } from "./egg-board";
 
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
-);
+beforeEach(() => {
+  spyOn(globalThis, "matchMedia").mockImplementation(
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList,
+  );
+});
 
 afterEach(cleanup);
-afterAll(() => vi.unstubAllGlobals());
 
 // One hour after the claim of the fixture.
 const NOW = new Date("2026-10-19T13:00:00-04:00");
 
 /* The board of AT-22: Lil Fridge holds five letters of EAGLES and two of CORNERSTONE, and no manager holds a letter of LANSDALE. */
-const close = boardWith({ EAGLES: { 3: ["E", "A", "G", "L", "S"] }, CORNERSTONE: { 3: ["C", "O"] } });
+const close = boardWith({
+  EAGLES: { 3: ["E", "A", "G", "L", "S"] },
+  CORNERSTONE: { 3: ["C", "O"] },
+});
 
 describe("The egg word slider with reduced motion", () => {
   it("changes the slide at once on a tap of a tab, with no roll, no blur, and no letter swap", () => {

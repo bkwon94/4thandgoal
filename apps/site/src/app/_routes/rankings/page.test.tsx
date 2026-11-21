@@ -6,14 +6,17 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
+import { stubPhone } from "../../../../test/phone";
 import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
 
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
+
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
   // A chip click sets the hash, so a test must not leak its week into the next test.
   window.history.replaceState(null, "", "/");
 });
@@ -30,9 +33,8 @@ async function pageOver(rankings?: unknown) {
   if (rankings !== undefined) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return (await import("./page")).default;
 }
 
@@ -67,7 +69,9 @@ describe("RankingsPage", () => {
     render(<RankingsPage />);
     const page = document.body;
     const chip = (week: number) =>
-      within(screen.getByRole("group", { name: "Week" })).getByRole("button", { name: `Week ${week}` });
+      within(screen.getByRole("group", { name: "Week" })).getByRole("button", {
+        name: `Week ${week}`,
+      });
     expect(page.textContent).toContain("WEEK 6");
     fireEvent.click(chip(1));
     expect(page.textContent).toContain("WEEK 1");
@@ -95,14 +99,19 @@ describe("RankingsPage", () => {
     // The rank sits large in the plain raised panel at the top of the card, before the team.
     const rank = within(head).getByText("05");
     expect(rank.closest("[data-rank-panel]")).toBeTruthy();
-    expect(rank.compareDocumentPosition(within(head).getByText("The Blue Tent")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      rank.compareDocumentPosition(within(head).getByText("The Blue Tent")) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(within(head).getByText("9-7")).toBeTruthy();
     expect(within(head).getByText("Up").parentElement?.textContent).toBe("Up3");
     expect((card.querySelector("[data-odds-bar]") as HTMLElement).style.width).toBe("75%");
     expect(within(head).getByText(/^Playoff/).textContent).toBe("Playoff 75%");
     // The details stay closed until a tap.
     expect(head.getAttribute("aria-expanded")).toBe("false");
-    expect(document.getElementById(head.getAttribute("aria-controls")!)!.getAttribute("hidden")).toBe("until-found");
+    expect(
+      document.getElementById(head.getAttribute("aria-controls")!)!.getAttribute("hidden"),
+    ).toBe("until-found");
   });
 
   it("opens The Blue Tent of CPC week 8 to the overview, the seven chips, and then the blurb", async () => {
@@ -127,8 +136,12 @@ describe("RankingsPage", () => {
     expect(chips[4].querySelector("svg")?.dataset.arrow).toBe("up");
     // The overview line is the rank, the record, and the move, and the blurb follows the chips.
     expect(panel.querySelector("p")?.textContent).toBe("Rank 5 · 9-7 · Up3");
-    const row = cpc.weeks.at(-1).rows.find((each: { name: string }) => each.name === "The Blue Tent");
-    const blurb = within(panel).getByText(row.blurb.map((sentence: { text: string }) => sentence.text).join(" "));
+    const row = cpc.weeks
+      .at(-1)
+      .rows.find((each: { name: string }) => each.name === "The Blue Tent");
+    const blurb = within(panel).getByText(
+      row.blurb.map((sentence: { text: string }) => sentence.text).join(" "),
+    );
     expect(chips[6].compareDocumentPosition(blurb) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

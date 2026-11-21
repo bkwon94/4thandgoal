@@ -6,7 +6,8 @@ import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 
 /* Bo Girds, the team of the acceptance tests, in each league. */
@@ -16,7 +17,10 @@ type League = keyof typeof BO_GIRDS;
 const roots: string[] = [];
 
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 404 })));
+  stubGlobal(
+    "fetch",
+    mock(async () => new Response("", { status: 404 })),
+  );
 });
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
    action. */
@@ -26,8 +30,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 /* The front door over week 9 of one league, with Bo Girds as Your team. With `sim`, the season holds the real week sim
@@ -36,14 +38,15 @@ async function doorOf(league: League, { sim = false } = {}) {
   const root = mkdtempSync(join(tmpdir(), "front-door-season-"));
   roots.push(root);
   // The path comes from this file and not from the working folder, because the test points the working folder at root.
-  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), { recursive: true });
+  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), {
+    recursive: true,
+  });
   if (sim) {
     mkdirSync(join(root, "public", "2026", "week-10"), { recursive: true });
     writeFileSync(join(root, "public", "2026", "week-10", "sim.json"), JSON.stringify(weekSimJson));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }
@@ -63,7 +66,9 @@ describe("the standings ladder", () => {
     const Door = await doorOf("cpc");
     render(<Door />);
     const ladder = await openBlock("Playoff race", "ladder");
-    const rows = within(within(ladder).getByRole("list", { name: "Standings" })).getAllByRole("listitem");
+    const rows = within(within(ladder).getByRole("list", { name: "Standings" })).getAllByRole(
+      "listitem",
+    );
     expect(rows).toHaveLength(12);
     expect(rows[0].textContent).toContain("1");
     expect(rows[0].textContent).toContain("All You Need Is Love");
@@ -72,7 +77,9 @@ describe("the standings ladder", () => {
     for (const row of rows) expect(row.querySelectorAll("[data-odds]")).toHaveLength(1);
     expect(rows[0].getAttribute("aria-label")).toMatch(/\d+% playoff odds/);
     // The rule of the playoff line sits under the 6th row and nowhere else.
-    expect(rows.map((row) => row.hasAttribute("data-cut"))).toEqual(rows.map((_, index) => index === 5));
+    expect(rows.map((row) => row.hasAttribute("data-cut"))).toEqual(
+      rows.map((_, index) => index === 5),
+    );
     expect(ladder.textContent).toContain("Playoff line");
     const you = rows.filter((row) => row.hasAttribute("data-you"));
     expect(you).toHaveLength(1);
@@ -109,8 +116,16 @@ describe("the schedule strip", () => {
     expect(path.getAttribute("stroke-dasharray")).toBeTruthy();
     expect(strip.querySelectorAll("[data-step]")).toHaveLength(5);
     expect(strip.querySelector("[data-cut]")).not.toBeNull();
-    const rows = within(within(strip).getByRole("list", { name: "Weeks left" })).getAllByRole("listitem");
-    expect(rows.map((row) => row.getAttribute("data-week"))).toEqual(["10", "11", "12", "13", "14"]);
+    const rows = within(within(strip).getByRole("list", { name: "Weeks left" })).getAllByRole(
+      "listitem",
+    );
+    expect(rows.map((row) => row.getAttribute("data-week"))).toEqual([
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+    ]);
     expect(rows[0].textContent).toContain("The Blue Tent");
     expect(rows[0].textContent).toContain("5th");
     expect(rows[0].textContent).toContain("11-7");
@@ -122,7 +137,9 @@ describe("the schedule strip", () => {
     const Door = await doorOf("norcal");
     render(<Door />);
     const strip = await openBlock("Your season", "schedule");
-    const rows = within(within(strip).getByRole("list", { name: "Weeks left" })).getAllByRole("listitem");
+    const rows = within(within(strip).getByRole("list", { name: "Weeks left" })).getAllByRole(
+      "listitem",
+    );
     expect(rows).toHaveLength(5);
     expect(rows[0].textContent).toContain("Davlionman");
   });

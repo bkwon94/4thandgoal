@@ -24,7 +24,10 @@ test.afterAll(async () => {
 
 /* A browser with Your team and a kept passphrase. Each call off the test server fails, because the run uses no real API. */
 async function setUp(page: Page, width: number, height = 900) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript((team) => {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", team);
@@ -43,15 +46,20 @@ async function openSeen(page: Page, width: number, height = 900) {
 }
 
 const card = (page: Page, name: string) => page.getByRole("dialog", { name });
-const tourButton = (page: Page) => page.getByRole("banner").getByRole("button", { name: "Show the tour" });
+const tourButton = (page: Page) =>
+  page.getByRole("banner").getByRole("button", { name: "Show the tour" });
 const seenKey = (page: Page) => page.evaluate((key) => localStorage.getItem(key), TOUR_SEEN_KEY);
 
 for (const width of [375, 768]) {
-  test(`at ${width} px "Show the tour" in the menu sheet closes the sheet, then shows Stop 1 (AT-27)`, async ({ page }) => {
+  test(`at ${width} px "Show the tour" in the menu sheet closes the sheet, then shows Stop 1 (AT-27)`, async ({
+    page,
+  }) => {
     await openSeen(page, width);
     await expect(tourButton(page)).toBeHidden();
     await page.getByRole("button", { name: "Open the menu" }).click();
-    const sheet = page.getByRole("dialog").filter({ has: page.getByRole("navigation", { name: "Pages" }) });
+    const sheet = page
+      .getByRole("dialog")
+      .filter({ has: page.getByRole("navigation", { name: "Pages" }) });
     await expect(sheet).toBeVisible();
     await sheet.getByRole("button", { name: "Show the tour" }).click();
     const stop = card(page, "Suggestions");
@@ -61,7 +69,9 @@ for (const width of [375, 768]) {
   });
 }
 
-test("at 390x660 a replay from the menu sheet waits for the sheet to leave, and blurs a focused ask box before Stop 1 (AT-32)", async ({ page }) => {
+test("at 390x660 a replay from the menu sheet waits for the sheet to leave, and blurs a focused ask box before Stop 1 (AT-32)", async ({
+  page,
+}) => {
   await openSeen(page, 390, 660);
   // The page at the moment the Stop card joins it, before the card moves the focus into itself.
   await page.evaluate(() => {
@@ -77,7 +87,9 @@ test("at 390x660 a replay from the menu sheet waits for the sheet to leave, and 
     observer.observe(document.body, { subtree: true, childList: true });
   });
   await page.getByRole("button", { name: "Open the menu" }).click();
-  const sheet = page.getByRole("dialog").filter({ has: page.getByRole("navigation", { name: "Pages" }) });
+  const sheet = page
+    .getByRole("dialog")
+    .filter({ has: page.getByRole("navigation", { name: "Pages" }) });
   await sheet.getByRole("button", { name: "Show the tour" }).click();
   // Once the sheet leaves, the reader taps the ask box before Stop 1 shows.
   await expect(page.getByRole("navigation", { name: "Pages" })).toHaveCount(0);
@@ -92,11 +104,15 @@ test("at 390x660 a replay from the menu sheet waits for the sheet to leave, and 
     return `${active?.tagName} "${(active?.textContent ?? "").trim()}"`;
   });
   console.log(`AT-32 focused element at Stop 1: ${focus}`);
-  const focusedField = await page.evaluate(() => !!document.activeElement?.matches("input, textarea, [contenteditable]"));
+  const focusedField = await page.evaluate(
+    () => !!document.activeElement?.matches("input, textarea, [contenteditable]"),
+  );
   expect(focusedField).toBe(false);
 });
 
-test('at 1280 px the "?" button beside the theme button shows Stop 1, and its name is "Show the tour" (AT-28)', async ({ page }) => {
+test('at 1280 px the "?" button beside the theme button shows Stop 1, and its name is "Show the tour" (AT-28)', async ({
+  page,
+}) => {
   await openSeen(page, 1280, 800);
   const replay = tourButton(page);
   await expect(replay).toBeVisible();
@@ -110,7 +126,9 @@ test('at 1280 px the "?" button beside the theme button shows Stop 1, and its na
   await expect(stop.getByText("1 of 4")).toBeVisible();
 });
 
-test('after a keyboard replay from the "?" button, Done puts focus back on the "?" button (AT-31)', async ({ page }) => {
+test('after a keyboard replay from the "?" button, Done puts focus back on the "?" button (AT-31)', async ({
+  page,
+}) => {
   await openSeen(page, 1280, 800);
   await tourButton(page).focus();
   await page.keyboard.press("Enter");
@@ -128,7 +146,9 @@ test('after a keyboard replay from the "?" button, Done puts focus back on the "
 });
 
 for (const path of ["/analyze/", "/2026/week-10/"]) {
-  test(`${path} shows no Tour and no replay control, and sets no seen key (AT-34)`, async ({ page }) => {
+  test(`${path} shows no Tour and no replay control, and sets no seen key (AT-34)`, async ({
+    page,
+  }) => {
     await setUp(page, 375);
     await page.goto(`${server.url}${path}`);
     await page.getByRole("button", { name: "Open the menu" }).click();

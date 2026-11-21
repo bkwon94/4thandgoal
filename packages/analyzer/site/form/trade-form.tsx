@@ -100,7 +100,8 @@ const stackParts = ({ hero, form, result }: FormParts) => (
 type TradeToGrade = { sides: Sides; season: number };
 
 /* The sheet that is open, if any: the team sheet of a slot, the team sheet of "+" for a new side, or the picker of one side. */
-type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
+type OpenSheet =
+  { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
 /* The hero while the grade runs, in the hero slots: the eyebrow and the locked switch of the page, the title, the line,
    and the wait as the feature. The Find wait shows the same eyebrow and switch, so the two waits read as one.
@@ -110,7 +111,17 @@ type OpenSheet = { kind: "team"; slot: number } | { kind: "add" } | { kind: "pla
    on the stage, and the mesh weighs each side in turn under it, so the wait shows what the grade does. The drive starts
    with the hero, so the mesh moves on the first frame after the tap. The trade is read once, because the grade locks
    the form. With motion off, the mesh stays still and flat. */
-function GradingHero({ trade, stage, eyebrow, toggle }: { trade: StageTrade; stage: StageSide[]; eyebrow: ReactNode; toggle?: ReactNode }) {
+function GradingHero({
+  trade,
+  stage,
+  eyebrow,
+  toggle,
+}: {
+  trade: StageTrade;
+  stage: StageSide[];
+  eyebrow: ReactNode;
+  toggle?: ReactNode;
+}) {
   const [lines] = useState(() => stageLines(trade));
   const [drive] = useState(() => waitDrive(performance.now()));
   return (
@@ -126,7 +137,7 @@ function GradingHero({ trade, stage, eyebrow, toggle }: { trade: StageTrade; sta
         // aria-busy marks the wait part as busy until the grade replaces it. It has no role, because the grade button
         // holds the one status of the wait.
         <div aria-busy="true">
-          <div aria-hidden="true" className="flex flex-col gap-sp-5">
+          <div aria-hidden="true" className="gap-sp-5 flex flex-col">
             <StageLines lines={lines} />
             {/* The headshots go up to the stage on the tap, so the trade on the scale is the one the reader built. */}
             <TradeOnStage sides={stage} show="tokens" rise />
@@ -141,7 +152,15 @@ function GradingHero({ trade, stage, eyebrow, toggle }: { trade: StageTrade; sta
    Its ground is the mesh, calm and flat in idle, with no scene. Once a player is in the Stack, the trade shows on the
    stage as the feature, one row per side with a count of its players. The cards of the Stack below show each player, so
    the stage waits for the grade to show the faces. The grading hero and the read take its place while a grade runs and under a result. */
-function TitleHero({ stage, eyebrow, toggle }: { stage: StageSide[]; eyebrow: ReactNode; toggle?: ReactNode }) {
+function TitleHero({
+  stage,
+  eyebrow,
+  toggle,
+}: {
+  stage: StageSide[];
+  eyebrow: ReactNode;
+  toggle?: ReactNode;
+}) {
   const hasPlayer = stage.some((side) => side.players.length > 0);
   return (
     <Hero
@@ -217,7 +236,9 @@ export function TradeForm({
     if (!(finderOn && mode === "find") || openedOffer.current === null) return;
     const offer = openedOffer.current;
     openedOffer.current = null;
-    const card = [...(finderRef.current?.querySelectorAll<HTMLElement>("[data-offer-id]") ?? [])].find((el) => el.dataset.offerId === offer);
+    const card = [
+      ...(finderRef.current?.querySelectorAll<HTMLElement>("[data-offer-id]") ?? []),
+    ].find((el) => el.dataset.offerId === offer);
     card?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
   }, [finderOn, mode, off]);
 
@@ -258,7 +279,9 @@ export function TradeForm({
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
   // The teams that another side holds. The team sheet of a slot leaves its own team on, so a tap on it changes nothing.
-  const taken = sides.flatMap((side, i) => (side.rosterId === null || teamSheet?.slot === i ? [] : [side.rosterId]));
+  const taken = sides.flatMap((side, i) =>
+    side.rosterId === null || teamSheet?.slot === i ? [] : [side.rosterId],
+  );
 
   /* A draft leaves the graded result in place until submit. A page edit clears it and drops a late answer. */
   function changeTrade(update: (current: Sides) => Sides) {
@@ -294,7 +317,11 @@ export function TradeForm({
   function teamSheetOf(open: OpenSheet) {
     if (open?.kind === "team") {
       const index = open.slot;
-      return { title: `Pick ${SIDE_TITLES[index]}`, slot: index, pick: (rosterId: number) => pickTeam(index, rosterId) };
+      return {
+        title: `Pick ${SIDE_TITLES[index]}`,
+        slot: index,
+        pick: (rosterId: number) => pickTeam(index, rosterId),
+      };
     }
     if (open?.kind === "add") {
       return {
@@ -311,7 +338,9 @@ export function TradeForm({
   /* A removed side takes its card out, and each player it gives leaves the other cards. */
   function removeSide(id: number) {
     changeTrade((current) =>
-      current.filter((side) => side.id !== id).map((side) => ({ ...side, gets: side.gets.filter((get) => get.fromSide !== id) })),
+      current
+        .filter((side) => side.id !== id)
+        .map((side) => ({ ...side, gets: side.gets.filter((get) => get.fromSide !== id) })),
     );
   }
 
@@ -320,15 +349,22 @@ export function TradeForm({
     changeTrade((current) =>
       current.map((side, i) => {
         if (i !== index) return side;
-        const has = side.gets.some((g) => g.playerId === get.playerId && g.fromSide === get.fromSide);
-        return { ...side, gets: has ? side.gets.filter((g) => g.playerId !== get.playerId) : [...side.gets, get] };
+        const has = side.gets.some(
+          (g) => g.playerId === get.playerId && g.fromSide === get.fromSide,
+        );
+        return {
+          ...side,
+          gets: has ? side.gets.filter((g) => g.playerId !== get.playerId) : [...side.gets, get],
+        };
       }),
     );
   }
 
   function removeGet(index: number, playerId: string) {
     changeTrade((current) =>
-      current.map((side, i) => (i === index ? { ...side, gets: side.gets.filter((g) => g.playerId !== playerId) } : side)),
+      current.map((side, i) =>
+        i === index ? { ...side, gets: side.gets.filter((g) => g.playerId !== playerId) } : side,
+      ),
     );
   }
 
@@ -395,7 +431,8 @@ export function TradeForm({
       // An abort from unmount must not set state on a gone component.
       if (!run.isCurrent()) return;
       if (error instanceof ApiError && error.status === 401) onUnauthorized();
-      else setGrade({ status: "error", ...toErrorLine(error, timedOut, "The grade took too long.") });
+      else
+        setGrade({ status: "error", ...toErrorLine(error, timedOut, "The grade took too long.") });
       if (error instanceof ApiError && error.status === 422) onRostersStale?.();
     } finally {
       clearTimeout(timer);
@@ -422,23 +459,34 @@ export function TradeForm({
   /* Each player that a side other than this one gets, with the name of that team. */
   function elsewhereOf(index: number): Map<string, string> {
     return new Map(
-      sides.flatMap((side, i) => (i === index ? [] : side.gets.map((get) => [get.playerId, teamOf(teams, side.rosterId)?.team ?? SIDE_TITLES[i]] as const))),
+      sides.flatMap((side, i) =>
+        i === index
+          ? []
+          : side.gets.map(
+              (get) =>
+                [get.playerId, teamOf(teams, side.rosterId)?.team ?? SIDE_TITLES[i]] as const,
+            ),
+      ),
     );
   }
 
   const playerSide = sheet?.kind === "players" ? sheet.side : null;
 
   const stack = (
-    <section aria-label="Who gets what" className="mt-sp-5 flex flex-col gap-sp-4">
+    <section aria-label="Who gets what" className="mt-sp-5 gap-sp-4 flex flex-col">
       <TeamsRow
-        slots={sides.map((side, index) => ({ id: side.id, title: SIDE_TITLES[index], team: teamOf(teams, side.rosterId) }))}
+        slots={sides.map((side, index) => ({
+          id: side.id,
+          title: SIDE_TITLES[index],
+          team: teamOf(teams, side.rosterId),
+        }))}
         onPickSlot={(slot) => setSheet({ kind: "team", slot })}
         onAdd={() => setSheet({ kind: "add" })}
         locked={locked}
       />
       {/* From the tablet tier the cards are a two-column grid, one side per cell, in document order. A third and a fourth
           side wrap to the next row. relative holds a removed card that popLayout lifts out. */}
-      <div className="relative flex flex-col gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start">
+      <div className="gap-sp-3 tablet:grid tablet:grid-cols-2 tablet:items-start relative flex flex-col">
         {/* popLayout takes a removed card out of the flow at once, so the cards after it slide into place while it fades. */}
         <AnimatePresence initial={false} mode="popLayout">
           {sides.map((side, index) => (
@@ -458,17 +506,23 @@ export function TradeForm({
           ))}
         </AnimatePresence>
       </div>
-      <p className="m-0 text-lead text-mute">Each team gives and gets at least one player.</p>
+      <p className="text-lead text-mute m-0">Each team gives and gets at least one player.</p>
       {/* The error box is the last part of the form, so it sits right above the bar. */}
       {grade.status === "error" && (
         <div role="group" aria-label="The grade failed">
-          <Card edge className="flex flex-col gap-sp-3">
-            <div className="flex items-start gap-sp-2">
-              <CircleAlertIcon aria-hidden="true" className="mt-sp-0 size-sp-5 flex-none text-accent-ink" />
+          <Card edge className="gap-sp-3 flex flex-col">
+            <div className="gap-sp-2 flex items-start">
+              <CircleAlertIcon
+                aria-hidden="true"
+                className="mt-sp-0 size-sp-5 text-accent-ink flex-none"
+              />
               <ErrorLine>{grade.message}</ErrorLine>
             </div>
             {/* Every error shows Try Again, so the reader has one next step after a fix to the trade or a wait. */}
-            <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => submit()}>
+            <Button
+              className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+              onClick={() => submit()}
+            >
               Try Again
             </Button>
           </Card>
@@ -505,7 +559,15 @@ export function TradeForm({
     </>
   );
 
-  const gradeBar = <GradeBar ready={ready} grading={grading} level={haloLevel(sides)} onGrade={() => submit()} inEditSheet={editing} />;
+  const gradeBar = (
+    <GradeBar
+      ready={ready}
+      grading={grading}
+      level={haloLevel(sides)}
+      onGrade={() => submit()}
+      inEditSheet={editing}
+    />
+  );
   const form = (
     <>
       {/* The bar sticks inside this part, so it stays pinned at the bottom of the screen over the form and rests at the end
@@ -515,22 +577,21 @@ export function TradeForm({
         <div hidden={formHidden}>{!editing && stack}</div>
         {grade.status !== "done" && !findMode && gradeBar}
       </div>
-      <div hidden={formHidden}>
-        {!editing && pickers}
-      </div>
+      <div hidden={formHidden}>{!editing && pickers}</div>
       <Sheet
         open={editing}
         title="Edit the trade"
         onClose={cancelEdit}
         footer={
-          <div className="flex items-center gap-sp-3">
-            <button
+          <div className="gap-sp-3 flex items-center">
+            <Button
+              variant="plain"
               type="button"
               onClick={cancelEdit}
-              className="press flex min-h-touch min-w-touch cursor-pointer items-center justify-center rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="press min-h-touch min-w-touch rounded-pill px-sp-2 text-meta text-accent-ink focus-visible:outline-accent flex cursor-pointer items-center justify-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               Cancel
-            </button>
+            </Button>
             {gradeBar}
           </div>
         }
@@ -552,7 +613,7 @@ export function TradeForm({
           // The same step as the back gesture. The popstate of the browser returns the page to the cards.
           onClick={() => window.history.back()}
           pendingAnnouncement=""
-          className="press mt-sp-4 flex min-h-touch cursor-pointer items-center gap-sp-2 rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="press mt-sp-4 min-h-touch gap-sp-2 rounded-pill px-sp-2 text-meta text-accent-ink focus-visible:outline-accent flex cursor-pointer items-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           <ArrowLeftIcon aria-hidden="true" className="size-sp-4" />
           Back to trade ideas
@@ -563,18 +624,32 @@ export function TradeForm({
   );
 
   // One pass over the sides gives the stage and the grading trade the same team and rows for each side.
-  const sideViews = sides.map((side, index) => ({ side, index, team: teamOf(teams, side.rosterId), rows: rowsOf(index) }));
+  const sideViews = sides.map((side, index) => ({
+    side,
+    index,
+    team: teamOf(teams, side.rosterId),
+    rows: rowsOf(index),
+  }));
 
   /* The trade on the stage: one row for each side with a team, and the players it gets with their headshots. */
   const stage: StageSide[] = sideViews.flatMap(({ side, team, rows }) => {
     if (!team) return [];
-    const players = rows.map(({ player }) => ({ id: player.player_id, name: player.name, headshot: player.headshot }));
+    const players = rows.map(({ player }) => ({
+      id: player.player_id,
+      name: player.name,
+      headshot: player.headshot,
+    }));
     return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
   });
 
   // The switch shows only with the finder on. A wait locks it, so a wait always ends in the mode that started it.
   const toggle = finderOn ? (
-    <ModeSwitch value={mode} from={shownMode.current} onChange={(next) => onModeChange?.(next)} disabled={grading || finding} />
+    <ModeSwitch
+      value={mode}
+      from={shownMode.current}
+      onChange={(next) => onModeChange?.(next)}
+      disabled={grading || finding}
+    />
   ) : undefined;
 
   // Under a result the read is the hero, so the form puts no hero of its own above it. In Find mode the finder is the hero.

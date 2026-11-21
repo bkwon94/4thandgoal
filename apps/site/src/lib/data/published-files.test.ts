@@ -5,7 +5,7 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { ZodType } from "zod";
 import { type Offense, report } from "../../rule-report";
 import { managersFileSchema } from "@cpc/managers/schema/managers";

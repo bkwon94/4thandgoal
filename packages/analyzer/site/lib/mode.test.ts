@@ -2,7 +2,7 @@
  * Tests for the mode of the analyzer from the query of its link: Grade a trade, or Find a trade with the finder flag on.
  * Each test reads one query string.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { readMode, withMode } from "./mode";
 
 describe("readMode", () => {

@@ -2,7 +2,7 @@
  * Tests for the usage helpers: the count script URL and the event call.
  * The event call must never throw, so one test runs it with no goatcounter global.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { countEvent, usageScriptUrl } from "./usage";
 
 afterEach(() => {
@@ -25,7 +25,7 @@ describe("usageScriptUrl", () => {
 
 describe("countEvent", () => {
   it("calls count with the event name as the path", () => {
-    const count = vi.fn();
+    const count = mock();
     window.goatcounter = { count };
     countEvent("analyze-grade");
     expect(count).toHaveBeenCalledWith({ path: "analyze-grade", event: true });

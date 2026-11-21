@@ -3,7 +3,7 @@
  * They check what a reader sees, not the class names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import { GameChanger } from "./game-changer";
 
@@ -14,7 +14,9 @@ afterEach(() => {
 const gameChanger = week8.game_changer!;
 
 function renderChapter(changer = gameChanger, headshots = week8.headshots) {
-  render(<GameChanger gameChanger={changer} headshots={headshots} blurb={week8.blurbs.game_changer} />);
+  render(
+    <GameChanger gameChanger={changer} headshots={headshots} blurb={week8.blurbs.game_changer} />,
+  );
   return screen.getByRole("region", { name: "Game Changer" });
 }
 
@@ -29,7 +31,9 @@ describe("GameChanger", () => {
   it("shows Joe Burrow in a round photo frame with his team line (AT-16)", () => {
     const chapter = renderChapter();
     expect(chapter.id).toBe("game-changer");
-    expect(within(chapter).getByRole("img", { name: "Joe Burrow" }).getAttribute("src")).toBe("headshots/6770.png");
+    expect(within(chapter).getByRole("img", { name: "Joe Burrow" }).getAttribute("src")).toBe(
+      "headshots/6770.png",
+    );
     expect(within(chapter).getByText("Joe Burrow")).toBeTruthy();
     expect(within(chapter).getByText("QB · CIN · All You Need Is Love")).toBeTruthy();
   });
@@ -40,11 +44,9 @@ describe("GameChanger", () => {
 
   it("shows a dash for projected and over when the player has no projection", () => {
     const line = { ...gameChanger.award.line, projection: null };
-    expect(tiles(renderChapter({ ...gameChanger, award: { ...gameChanger.award, line } }))).toEqual([
-      "Scored42.48",
-      "Projected—",
-      "Over—",
-    ]);
+    expect(tiles(renderChapter({ ...gameChanger, award: { ...gameChanger.award, line } }))).toEqual(
+      ["Scored42.48", "Projected—", "Over—"],
+    );
   });
 
   it("shows the initials when the week has no headshot of the player (AT-33)", () => {

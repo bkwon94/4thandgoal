@@ -5,14 +5,14 @@
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { vi } from "vitest";
+import { spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 
 const roots: string[] = [];
 
 /* A temp public/ folder with the week pages of 2026 from week 6 to `latest`, and the midseason file and the sim file
-   when each is given. The latest week holds the given avatars. The readers read the working folder when they load, so the module cache resets, and the next
-   import of a route or a part reads the temp folder. */
+   when each is given. The latest week holds the given avatars. The readers read the working folder on each call, so each
+   route or part reads the temp folder after this call. */
 export function publicOver({
   latest = 8,
   report,
@@ -29,16 +29,19 @@ export function publicOver({
   for (let week = 6; week <= latest; week++) {
     const folder = join(root, "public", "2026", `week-${String(week).padStart(2, "0")}`);
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "page.json"), weekPageJson({ week, avatars: week === latest ? avatars : {} }));
+    writeFileSync(
+      join(folder, "page.json"),
+      weekPageJson({ week, avatars: week === latest ? avatars : {} }),
+    );
   }
-  if (report !== undefined) writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
-  if (sim !== undefined) writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  if (report !== undefined)
+    writeFileSync(join(root, "public", "2026", "midseason.json"), JSON.stringify(report));
+  if (sim !== undefined)
+    writeFileSync(join(root, "public", "2026", "sim.json"), JSON.stringify(sim));
+  spyOn(process, "cwd").mockReturnValue(root);
 }
 
 /* Removes each temp folder of the test and gives the working folder back. Call it after each test. */
 export function removePublics(): void {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.restoreAllMocks();
 }

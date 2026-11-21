@@ -1,0 +1,949 @@
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:57647 CORNERSTONE_REPO=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed UV_PROJECT_ENVIRONMENT=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/.venv-api-evidence uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --host 127.0.0.1 --port 57648
+Using CPython 3.11.10 interpreter at: [36m/Users/brian.kwon/.pyenv/versions/3.11.10/bin/python3.11[39m
+Creating virtual environment at: [36m/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/.venv-api-evidence[39m
+[2mInstalled [1m51 packages[0m [2min 342ms[0m[0m
+INFO:     Started server process [24892]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:57648 (Press CTRL+C to quit)
+INFO:     127.0.0.1:57738 - "GET /health HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/players/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/players/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/ac893662-21cd-4a54-beba-45d6319423d6?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A18%3A17Z&rscd=attachment%3B+filename%3Dgames.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A17%3A46Z&ske=2026-11-21T07%3A18%3A17Z&sks=b&skv=2018-11-09&sig=7MADNJI1TwrcCk%2Ff0e6yAnjh4r4UCzQmbpCa%2BllsR7Y%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0MjY0MSwibmJmIjoxNzk1MjQyMzQxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.8DW52dNerz5Ku1z4XV2syabRYfBbQNuf0mGquBhONs0&response-content-disposition=attachment%3B%20filename%3Dgames.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/ac893662-21cd-4a54-beba-45d6319423d6?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A18%3A17Z&rscd=attachment%3B+filename%3Dgames.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A17%3A46Z&ske=2026-11-21T07%3A18%3A17Z&sks=b&skv=2018-11-09&sig=7MADNJI1TwrcCk%2Ff0e6yAnjh4r4UCzQmbpCa%2BllsR7Y%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0MjY0MSwibmJmIjoxNzk1MjQyMzQxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.8DW52dNerz5Ku1z4XV2syabRYfBbQNuf0mGquBhONs0&response-content-disposition=attachment%3B%20filename%3Dgames.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/78ed1837-3f47-4595-8a27-57a8ac3da067?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A17%3A50Z&rscd=attachment%3B+filename%3Ddepth_charts_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A17%3A32Z&ske=2026-11-21T07%3A17%3A50Z&sks=b&skv=2018-11-09&sig=V7WXfb0vX7PGqvDj4wCxDYlx3fSyk9bfCyZfsQRyPrU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0NDI2OSwibmJmIjoxNzk1MjQyNDY5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.YNBiyTuZOkFYZR9ekH1AcNscQaYD8lZhJXxGgpqF7nM&response-content-disposition=attachment%3B%20filename%3Ddepth_charts_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/78ed1837-3f47-4595-8a27-57a8ac3da067?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A17%3A50Z&rscd=attachment%3B+filename%3Ddepth_charts_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A17%3A32Z&ske=2026-11-21T07%3A17%3A50Z&sks=b&skv=2018-11-09&sig=V7WXfb0vX7PGqvDj4wCxDYlx3fSyk9bfCyZfsQRyPrU%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0NDI2OSwibmJmIjoxNzk1MjQyNDY5LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.YNBiyTuZOkFYZR9ekH1AcNscQaYD8lZhJXxGgpqF7nM&response-content-disposition=attachment%3B%20filename%3Ddepth_charts_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://raw.githubusercontent.com/dynastyprocess/data/master/files/db_playerids.csv "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/4c487816-3db3-4477-b5f6-5852318dc790?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A25%3A47Z&rscd=attachment%3B+filename%3Dinjuries_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A25%3A20Z&ske=2026-11-21T07%3A25%3A47Z&sks=b&skv=2018-11-09&sig=TiH3xNfA2H3iz6OrsAOX1fWxYx9LDQ9W8j%2BMAfGgRRM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3MSwibmJmIjoxNzk1MjQyNDcxLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.uRYpFEPe60pL6gTp1InyCX__-udfpF6_1w9nIoOVmPc&response-content-disposition=attachment%3B%20filename%3Dinjuries_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_2026.csv "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/372253066/1663fb9c-ad1b-45dd-9dab-6f34f2f9b3d0?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A25%3A47Z&rscd=attachment%3B+filename%3Dep_weekly_2026.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A25%3A02Z&ske=2026-11-21T07%3A25%3A47Z&sks=b&skv=2018-11-09&sig=ZO5vGehTYh%2FmbJhnA5R9V9Jnr9JdN5UvRzZQG8vNDrk%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3MiwibmJmIjoxNzk1MjQyNDcyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.jN-quSMfOe9TRlgOfjTtYh5bTZwgDVIWQgM3AOOQcKM&response-content-disposition=attachment%3B%20filename%3Dep_weekly_2026.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/bb2d8358-3b70-414d-a2c8-34c6b3c8f8fd?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A20%3A32Z&rscd=attachment%3B+filename%3Dstats_player_week_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A20%3A19Z&ske=2026-11-21T07%3A20%3A32Z&sks=b&skv=2018-11-09&sig=P%2BD6mW3IB7EcTc9SwBD4IgzOJF5t9BKMki1MOR%2BKRi4%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3MiwibmJmIjoxNzk1MjQyNDcyLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.jN-quSMfOe9TRlgOfjTtYh5bTZwgDVIWQgM3AOOQcKM&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/17d54afd-4e5b-473f-b7d4-7ff3f8c5593d?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A28%3A22Z&rscd=attachment%3B+filename%3Dstats_team_week_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A27%3A26Z&ske=2026-11-21T07%3A28%3A22Z&sks=b&skv=2018-11-09&sig=fltw%2FxpuxNOUsc2xvXzsyUMH4hIVdKvmoXSLujdVCXA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3MywibmJmIjoxNzk1MjQyNDczLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.ZjWnhqTNAX-0BwXvslcdA7_tsJg45EB4Kzh1x7jgh40&response-content-disposition=attachment%3B%20filename%3Dstats_team_week_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     league.past_seasons: Downloading the past season file of 2023
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2023.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/c39fbe06-91c6-4a1b-ae5c-84d3f9927d11?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A05%3A24Z&rscd=attachment%3B+filename%3Dstats_player_week_2023.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A04%3A54Z&ske=2026-11-21T07%3A05%3A24Z&sks=b&skv=2018-11-09&sig=Sgjf32p1RkW4qUNvBQzWpiUECw3xnYHSLeuyrRcCCV4%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3MywibmJmIjoxNzk1MjQyNDczLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.ZjWnhqTNAX-0BwXvslcdA7_tsJg45EB4Kzh1x7jgh40&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2023.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     league.past_seasons: Downloading the past season file of 2023
+INFO:     league.past_seasons: Downloading the past season file of 2024
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2023.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/c39fbe06-91c6-4a1b-ae5c-84d3f9927d11?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A05%3A24Z&rscd=attachment%3B+filename%3Dstats_player_week_2023.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A04%3A54Z&ske=2026-11-21T07%3A05%3A24Z&sks=b&skv=2018-11-09&sig=Sgjf32p1RkW4qUNvBQzWpiUECw3xnYHSLeuyrRcCCV4%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3MywibmJmIjoxNzk1MjQyNDczLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.ZjWnhqTNAX-0BwXvslcdA7_tsJg45EB4Kzh1x7jgh40&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2023.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2024.csv.gz "HTTP/1.1 302 Found"
+INFO:     league.past_seasons: Downloading the past season file of 2024
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/b568c3cc-d1e1-49e7-a8ff-f56c17b639bf?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A26%3A39Z&rscd=attachment%3B+filename%3Dstats_player_week_2024.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A25%3A48Z&ske=2026-11-21T07%3A26%3A39Z&sks=b&skv=2018-11-09&sig=ABHztDaaJmmXWhJLrsCtceVYsnHh%2BCiM6gH7Q5aBF3U%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3NCwibmJmIjoxNzk1MjQyNDc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2XuKh75ka3CCHFHIQxJf3u2laMLsbb-kphqMG1X2gzk&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2024.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2024.csv.gz "HTTP/1.1 302 Found"
+INFO:     league.past_seasons: Downloading the past season file of 2025
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/b568c3cc-d1e1-49e7-a8ff-f56c17b639bf?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A26%3A39Z&rscd=attachment%3B+filename%3Dstats_player_week_2024.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A25%3A48Z&ske=2026-11-21T07%3A26%3A39Z&sks=b&skv=2018-11-09&sig=ABHztDaaJmmXWhJLrsCtceVYsnHh%2BCiM6gH7Q5aBF3U%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3NCwibmJmIjoxNzk1MjQyNDc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2XuKh75ka3CCHFHIQxJf3u2laMLsbb-kphqMG1X2gzk&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2024.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2025.csv.gz "HTTP/1.1 302 Found"
+INFO:     league.past_seasons: Downloading the past season file of 2025
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/0c7a72e0-1eb5-44fa-b60d-4f3dafd9e6f1?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A19%3A43Z&rscd=attachment%3B+filename%3Dstats_player_week_2025.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A19%3A41Z&ske=2026-11-21T07%3A19%3A43Z&sks=b&skv=2018-11-09&sig=%2F5wEkTldHridQyIbMg0h2Gf7E468emVwTAa0pqI5Vaw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3NCwibmJmIjoxNzk1MjQyNDc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2XuKh75ka3CCHFHIQxJf3u2laMLsbb-kphqMG1X2gzk&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2025.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2025.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/0c7a72e0-1eb5-44fa-b60d-4f3dafd9e6f1?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-21T07%3A19%3A43Z&rscd=attachment%3B+filename%3Dstats_player_week_2025.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-21T06%3A19%3A41Z&ske=2026-11-21T07%3A19%3A43Z&sks=b&skv=2018-11-09&sig=%2F5wEkTldHridQyIbMg0h2Gf7E468emVwTAa0pqI5Vaw%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTI0Mjc3NCwibmJmIjoxNzk1MjQyNDc0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2XuKh75ka3CCHFHIQxJf3u2laMLsbb-kphqMG1X2gzk&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2025.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-content/uploads/2026/11/1QB0.5PPR4pt_20261117.png "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-content/uploads/2026/11/1QB0.5PPR4pt_20261117.png "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58024 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58024 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58028 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 142ms (request req_01a1fcca99427358a124f90ce9f70efa)
+INFO:     127.0.0.1:58024 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58024 - "OPTIONS /clients/cpc/ask/free HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58024 - "POST /clients/cpc/ask/free HTTP/1.1" 200 OK
+                 pydantic-ai v2.66.0 • Python 3.11.10
+
+      / \        agent: free_answer • model: anthropic:claude-sonnet-5-5 • tools: 11
+     /   \         capabilities: 2
+   /___.___\
+  /    |    \    observability: off — see every model and tool call live, with cost
+/      |      \    set it up free with Pydantic Logfire: uvx logfire-cli wizard --task pydantic-ai
+`---.._|_..---'    or use any OpenTelemetry backend: https://pydantic.dev/docs/ai/logfire/#otel
+
+                 goes away once observability is on — or PYDANTIC_AI_NO_BANNER=1
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58037 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242501551089000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58037 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242511550635000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58047 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13118 output_tokens=5470 model=claude-opus-5-5 effort=high time=35.9s
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13118 output_tokens=5475 model=claude-opus-5-5 effort=high time=36.8s
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242521614440000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58065 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB1.0PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-content/uploads/2026/11/1QB1.0PPR4pt_20261117.png "HTTP/1.1 200 OK"
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams, 0 answers loaded from the file
+INFO:     analyzer.jev_waves: Jev wave 1 (fair): 3 requests, about 93892 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 293ms (request req_01a1fccb12897ac68d3b0aab22795703)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 311ms (request req_01a1fccb129d7d1b876f9c896e430566)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 321ms (request req_01a1fccb12b37fbd9bccadff2e854196)
+INFO:     analyzer.jev_waves: Jev wave 2 (fair): 3 requests, about 92740 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccb16597b5b866ef4c19f8b7492)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccb165677faa6feccc97d9ab390)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 280ms (request req_01a1fccb165d7d699631a5a912eb22c0)
+INFO:     analyzer.jev_waves: Jev wave 3 (fair): 3 requests, about 93888 tokens
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 248ms (request req_01a1fccb1a447753a12e0522414fa651)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 254ms (request req_01a1fccb1a3f772589efc4b5d1f20758)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 256ms (request req_01a1fccb1a427d74bdebcf59cdc76c1e)
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242531565929000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58094 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 4 (fair): 3 requests, about 92717 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 249ms (request req_01a1fccb1e1e75ce8c59ee29372181f9)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccb1e2c79618da791422b65f027)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 283ms (request req_01a1fccb1e2d7195a39ea03db66b6b39)
+INFO:     analyzer.jev_waves: Jev wave 5 (fair): 3 requests, about 82652 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 215ms (request req_01a1fccb22177a3aab15c49b3fa48d57)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 251ms (request req_01a1fccb22017adc905f325b83ab8542)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccb22187a5686ce71f4d0c56123)
+INFO:     analyzer.jev_waves: Jev wave 6 (fair): 3 requests, about 93569 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 269ms (request req_01a1fccb25fc7e889557908b3db6f38b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 281ms (request req_01a1fccb260f744da9848be955b3953b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 339ms (request req_01a1fccb260f7526bea1675a70c8ad07)
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13118 output_tokens=5482 model=claude-opus-5-5 effort=high time=36.0s
+INFO:     analyzer.jev_waves: Jev wave 7 (fair): 3 requests, about 82826 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 193ms (request req_01a1fccb29fe7b0994c1af6cb2d68545)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 251ms (request req_01a1fccb29f1721d93ba63a1911747e2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 265ms (request req_01a1fccb2a087e3ab2d3988ec646ba6d)
+INFO:     analyzer.jev_waves: Jev wave 8 (fair): 3 requests, about 93742 tokens
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/players/nfl/trending/add?lookback_hours=24&limit=50 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 240ms (request req_01a1fccb2dd8764bac89593a7027c237)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 278ms (request req_01a1fccb2deb7cd6a6ade26f9281ccd7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 290ms (request req_01a1fccb2ded79a4ac5c4c1e571b0db7)
+INFO:     analyzer.jev_waves: Jev wave 9 (fair): 3 requests, about 94134 tokens
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 153ms (request req_01a1fccb32b970d38f74bc19b3741299)
+INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 10717 input tokens, 124 output tokens, and a cost of $0.0171
+INFO:     httpx: HTTP Request: POST https://sleeper.com/graphql "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 294ms (request req_01a1fccb327d771f9331c41a7c9db44f)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 297ms (request req_01a1fccb326d7957b4de103814856cd2)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 292ms (request req_01a1fccb328973cc9ee24f062ea32130)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 74ms (request req_01a1fccb3381791a8ca948028dbe2686)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 50ms (request req_01a1fccb33c97214a781f5de71cbf7c6)
+INFO:     127.0.0.1:58028 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     cornerstone_api.suggestions: The head start builds the personal Topic weak_spots on open
+INFO:     analyzer.jev_waves: Jev wave 10 (fair): 3 requests, about 94114 tokens
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 249ms (request req_01a1fccb364b7e1499e0ab9c07a53220)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccb365672f0856ca2c18260b518)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 282ms (request req_01a1fccb36617237af54a7e59eedd587)
+INFO:     analyzer.jev_waves: Jev wave 11 (fair): 3 requests, about 76548 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 151ms (request req_01a1fccb3a42709f95434246a7ec896d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccb3a3f7462a3c8162ef901944e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 289ms (request req_01a1fccb3a3a7a1cb7102ad0461fe6bf)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 65ms (request req_01a1fccb3bd57075a4d374466371b7e2)
+INFO:     cornerstone_api.claude_stream: A sentence of the personal Topic weak_spots failed the check at 0.67: The one hole in your lineup is the FLEX2 slot, where Zach Charbonnet plays at 42nd among RBs, past the line of 36.
+INFO:     analyzer.jev_waves: Jev wave 12 (fair): 3 requests, about 93742 tokens
+INFO:     127.0.0.1:58123 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 252ms (request req_01a1fccb3e1b7ce98780c7f5f16c2fd5)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccb3e387c99b42d077472171e96)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccb3e387b8984bdbe7a96881356)
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     analyzer.jev_waves: Jev wave 13 (fair): 3 requests, about 94134 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccb420a7bb3a241c409e43741cc)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 257ms (request req_01a1fccb42257a1bae7ab4616880df15)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 320ms (request req_01a1fccb42237fbe8511b08f59ab2684)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 62ms (request req_01a1fccb43807390a0060137ab93c7c7)
+INFO:     cornerstone_api.claude_stream: A sentence of the personal Topic weak_spots failed the check at 0.70: Elic Ayomanor is 36th at WR, right on the line in a FLEX slot, so he is the next spot to watch.
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as an honest miss, with 2 texts, 3984 input tokens, 351 output tokens, and a cost of $0.0090
+INFO:     analyzer.jev_waves: Jev wave 14 (fair): 3 requests, about 94114 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 244ms (request req_01a1fccb45fa7782b8e8a0939eecda99)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 265ms (request req_01a1fccb4614797f8d3b9e376bda8dbc)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccb46087bd68a195ab2f071ab21)
+INFO:     analyzer.jev_waves: Jev wave 15 (fair): 3 requests, about 76568 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 150ms (request req_01a1fccb49f27fec830d674c05dd5f2c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccb49fc71579e7742518267da43)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 278ms (request req_01a1fccb49f47a55b490c3b35a3a00e2)
+INFO:     analyzer.jev_waves: Jev wave 16 (fair): 3 requests, about 94043 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccb4df374319548c0f3406a2414)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 354ms (request req_01a1fccb4de6775f976c8ef718b1d9ad)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 401ms (request req_01a1fccb4de677d7ae7c1c065f7ce5b0)
+INFO:     127.0.0.1:58139 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 17 (fair): 3 requests, about 76157 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 131ms (request req_01a1fccb51d3748aa3ff9ff9f6daa5e7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 252ms (request req_01a1fccb51cc7aaba138075ed1f4d8ed)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 301ms (request req_01a1fccb51e17aaaab5ddcbe09390cbc)
+INFO:     analyzer.jev_waves: Jev wave 18 (fair): 3 requests, about 94043 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccb55bf7813b17b58fb013fb63b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 281ms (request req_01a1fccb55d37bf694bdfcaf09e5e7f4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 298ms (request req_01a1fccb55d17e6cae30ec43b9e1b6d5)
+INFO:     analyzer.jev_waves: Jev wave 19 (fair): 3 requests, about 75884 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 148ms (request req_01a1fccb59a573d7a4539b824767c1b5)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 242ms (request req_01a1fccb599b7c8e9af728c5376efd08)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 259ms (request req_01a1fccb59b1732e8d5d0c34ca45b96b)
+INFO:     analyzer.jev_waves: Jev wave 20 (fair): 4 requests, about 97004 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 105ms (request req_01a1fccb5d9771cbbc89a7f804da5c94)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccb5d957133b08bb4dd7b869408)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 275ms (request req_01a1fccb5da77a67b69ac2da924f3a91)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 359ms (request req_01a1fccb5d8b76f6bbd8d397d5dacdbb)
+INFO:     analyzer.jev_waves: Jev wave 21 (fair): 3 requests, about 93707 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccb618872cb97331b708a13988c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccb618d7ae2a809a7ea1f51a491)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 288ms (request req_01a1fccb618d7e6981f3f40229ed8e77)
+INFO:     analyzer.jev_waves: Jev wave 22 (fair): 4 requests, about 96596 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 91ms (request req_01a1fccb6563792aaa9c27351d3ac667)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 253ms (request req_01a1fccb656476e8b98b666bce6b2e59)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 257ms (request req_01a1fccb657e7963a9bca657147efdf9)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccb657f76cfad5b3edf7179c62e)
+INFO:     127.0.0.1:58154 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 23 (fair): 3 requests, about 93986 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 263ms (request req_01a1fccb696c7de386197f579db571f5)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccb695c742ebf8d08150d47b4ad)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 353ms (request req_01a1fccb696d72f58e3886b9de00dcf4)
+INFO:     analyzer.jev_waves: Jev wave 24 (fair): 3 requests, about 94138 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 255ms (request req_01a1fccb6d3e7a6eb0f5d5281f18b26c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccb6d547976b7714a7b25abb251)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 275ms (request req_01a1fccb6d5871b189eee9c40b2a9773)
+INFO:     analyzer.jev_waves: Jev wave 25 (fair): 3 requests, about 93689 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 255ms (request req_01a1fccb713d7554babe766c989b3c37)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 282ms (request req_01a1fccb7143749b827dabc6bca2f7a3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 411ms (request req_01a1fccb71487f23abf42caefb0484d0)
+INFO:     analyzer.jev_waves: Jev wave 26 (fair): 4 requests, about 98381 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 103ms (request req_01a1fccb75137e718c7544188bed3ac6)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 237ms (request req_01a1fccb750f7fc2bb1d3c5c854f9d74)
+INFO:     127.0.0.1:58170 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 253ms (request req_01a1fccb752c7efbbae09249822e6ded)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccb75297f309f8c7005e3e0fdbe)
+INFO:     analyzer.jev_waves: Jev wave 27 (fair): 3 requests, about 93986 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 263ms (request req_01a1fccb791d73b993a172a95ca98856)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccb7922741dbdb47d2ec0ba31d4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 289ms (request req_01a1fccb7922763da848eab658a795ae)
+INFO:     analyzer.jev_waves: Jev wave 28 (fair): 3 requests, about 94138 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 251ms (request req_01a1fccb7d017b949f7a5d6746c58207)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 254ms (request req_01a1fccb7d0b76659282e53cbd93db2b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 275ms (request req_01a1fccb7d107af88545e32055f27119)
+INFO:     analyzer.jev_waves: Jev wave 29 (fair): 3 requests, about 93689 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 283ms (request req_01a1fccb80eb746a9e7715540cc92634)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 291ms (request req_01a1fccb81067a969eb02de899c32a67)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 294ms (request req_01a1fccb80fa793f8fe26f723bf99f12)
+INFO:     127.0.0.1:58181 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 30 (fair): 4 requests, about 98618 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 90ms (request req_01a1fccb84d873d3af4d1ee82adac7aa)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 237ms (request req_01a1fccb84d07289809f71bb36fab28f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccb84e97f7ebd7c065a0a5ded79)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 271ms (request req_01a1fccb84ec7042afe8cf336c5fac9f)
+INFO:     analyzer.jev_waves: Jev wave 31 (fair): 3 requests, about 94161 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 252ms (request req_01a1fccb88cd7594be86b7c85f42b9d1)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 292ms (request req_01a1fccb88dc72358abdce0ce4c78332)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 316ms (request req_01a1fccb88de7f8d8e989171a90bc6e4)
+INFO:     analyzer.jev_waves: Jev wave 32 (fair): 3 requests, about 93759 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccb8ca9785fb72edb139440952c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 265ms (request req_01a1fccb8cbe77298267186ffc7db569)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 274ms (request req_01a1fccb8cc77c4eacedf587be0a492f)
+INFO:     127.0.0.1:58194 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=14156 output_tokens=5372 model=claude-opus-5-5 effort=high time=36.6s
+INFO:     analyzer.jev_waves: Jev wave 33 (fair): 3 requests, about 93723 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccb909f7bb89e5779d38f632855)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccb90b479a3a3e1456f5e6cefdd)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccb90b37099b3656240420352a5)
+INFO:     analyzer.jev_waves: Jev wave 34 (fair): 3 requests, about 71203 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 123ms (request req_01a1fccb948e7846b8b97fc1f387149d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccb9486749d9a2abb02b88a704d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 263ms (request req_01a1fccb94967eb3b745444b313bde96)
+INFO:     analyzer.jev_waves: Jev wave 35 (fair): 3 requests, about 93866 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 283ms (request req_01a1fccb988b75d594f72322c146bf2c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 278ms (request req_01a1fccb988d7711ba17f60b56ff0be7)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 281ms (request req_01a1fccb988776fabdf7f5612367b584)
+INFO:     analyzer.jev_waves: Jev wave 36 (fair): 3 requests, about 94007 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 244ms (request req_01a1fccb9c6d772e88e78c3f47e2138f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 255ms (request req_01a1fccb9c7575e7bd9e8737cbdcefc7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 272ms (request req_01a1fccb9c5b70fa8ddc5e57558893fc)
+INFO:     127.0.0.1:58230 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 37 (fair): 3 requests, about 93694 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 249ms (request req_01a1fccba0517cfaa57b836a829140b4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 259ms (request req_01a1fccba05c72999dbc4248d04229a1)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 271ms (request req_01a1fccba0657726ab255f8a77435dd4)
+INFO:     127.0.0.1:58230 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 38 (fair): 3 requests, about 71110 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 119ms (request req_01a1fccba44d75be9db165f8ad83c182)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccba43b77539a33b20dad2d2687)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 257ms (request req_01a1fccba44a73b1b3758b4d1401fa69)
+INFO:     analyzer.jev_waves: Jev wave 39 (fair): 3 requests, about 93753 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 279ms (request req_01a1fccba8307397a94ff4cc8202c4f5)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 285ms (request req_01a1fccba82d77e0ae58c062c0dd6409)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 288ms (request req_01a1fccba83c7051b9d8ee3a0917e639)
+INFO:     analyzer.jev_waves: Jev wave 40 (fair): 3 requests, about 94084 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccbac1a705bba0ecc4562443e5a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbac2e77b383c7956797e35e47)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccbac327513abf176343642044b)
+INFO:     127.0.0.1:58264 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 41 (fair): 4 requests, about 95387 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 110ms (request req_01a1fccbb006717db85c0efb01678750)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 250ms (request req_01a1fccbb004700a9cd7bf3eee079c3b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccbb01575bab58f21b88fa93663)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 272ms (request req_01a1fccbb01f780da3fd008ba8db2a09)
+INFO:     127.0.0.1:58264 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 42 (fair): 3 requests, about 94137 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 261ms (request req_01a1fccbb3f770cb9c3251ae3af37de4)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 277ms (request req_01a1fccbb4117541aaf6c9a9c9ec8321)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 282ms (request req_01a1fccbb40c70ae9eec3aafe6add00e)
+INFO:     analyzer.jev_waves: Jev wave 43 (fair): 4 requests, about 95476 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 101ms (request req_01a1fccbb7e97c2fad65968d5dfaa562)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 259ms (request req_01a1fccbb7ec770f8d21bc7b2d0e23a8)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 284ms (request req_01a1fccbb7eb7239818b4196be3d2e13)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 418ms (request req_01a1fccbb7fc7419bf28cea56856733b)
+INFO:     analyzer.jev_waves: Jev wave 44 (fair): 3 requests, about 93916 tokens
+INFO:     127.0.0.1:58292 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1404ms (request req_01a1fccbbbe47282ab319717957e1589)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1407ms (request req_01a1fccbbbe47e42bc9f80d38479da23)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1406ms (request req_01a1fccbbbcd79f6a1f6f8e19e1c6cd6)
+INFO:     analyzer.jev_waves: Jev wave 45 (fair): 3 requests, about 94151 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 241ms (request req_01a1fccbc15070359922aa5e5959a578)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 261ms (request req_01a1fccbc16578b7b1aea0e6499d48cd)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 288ms (request req_01a1fccbc1697898a54766ff6d6242e4)
+INFO:     127.0.0.1:58292 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 46 (fair): 3 requests, about 81658 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 185ms (request req_01a1fccbc54c7aaea86ecfafcfb998c7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1059ms (request req_01a1fccbc53f7c0c86a070a4e931665a)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 1057ms (request req_01a1fccbc55077ec8032160aa7364376)
+INFO:     analyzer.jev_waves: Jev wave 47 (fair): 3 requests, about 93707 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 235ms (request req_01a1fccbc96173b69834c8c53eeda0ad)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbc9787c5395a5ce5d89da4343)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 289ms (request req_01a1fccbc97a786ab0b57cdc0fb94867)
+INFO:     analyzer.jev_waves: Jev wave 48 (fair): 3 requests, about 94123 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccbcd64753dbfb6fb7a72c1b788)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 275ms (request req_01a1fccbcd4d77d9b57a84e28059b0be)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 305ms (request req_01a1fccbcd67724e8c390b25a035e713)
+INFO:     127.0.0.1:58327 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 49 (fair): 3 requests, about 93964 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 244ms (request req_01a1fccbd14074c283265031fdcc7ffe)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 251ms (request req_01a1fccbd1577585855dad0c84900417)
+INFO:     127.0.0.1:58327 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 388ms (request req_01a1fccbd157728e95e3090ae3232ad5)
+INFO:     analyzer.jev_waves: Jev wave 50 (fair): 3 requests, about 81372 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 159ms (request req_01a1fccbd51f7edb9769c1d8b2a13240)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbd5357492bfde6b6a700c4139)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 320ms (request req_01a1fccbd53b7ecc93aaf35ad6122829)
+INFO:     analyzer.jev_waves: Jev wave 51 (fair): 3 requests, about 93892 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 249ms (request req_01a1fccbd91f7713b379fbbca84b708c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 252ms (request req_01a1fccbd938751ca7c5d9795939d8c2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccbd9367e8194db58217fb6598e)
+INFO:     analyzer.jev_waves: Jev wave 52 (fair): 3 requests, about 93566 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbdd1f7765a3458511b50be47b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58354 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccbdd0e7c9bae00d99a0ac008a0)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 313ms (request req_01a1fccbdd2870fa90883ec6ebb4b497)
+INFO:     127.0.0.1:58354 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58354 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 53 (fair): 3 requests, about 86875 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 198ms (request req_01a1fccbe10077bd82cc43142ccf0227)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbe1147ce7a5b3a616619c43ef)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 357ms (request req_01a1fccbe10f72b080d8d819667d6e8c)
+INFO:     analyzer.jev_waves: Jev wave 54 (fair): 3 requests, about 93892 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccbe4ef7cfc88d4f29e80993bf2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccbe50c71bc999c6beaa07c727b)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccbe50473cea7dcb1f5d7f68fb9)
+INFO:     analyzer.jev_waves: Jev wave 55 (fair): 3 requests, about 93566 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 233ms (request req_01a1fccbe8db756db6c9fc79f6d6ef2f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 257ms (request req_01a1fccbe8f57398a4bf05d214bf9eef)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbe8f771e4bfb340c618377e9e)
+INFO:     analyzer.jev_waves: Jev wave 56 (fair): 3 requests, about 86954 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 182ms (request req_01a1fccbecca79d7ba43685761a2ccf0)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 253ms (request req_01a1fccbece272dfa6d6e82d46a152bb)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccbece6742c944af25c2e6e8d5f)
+INFO:     analyzer.jev_waves: Jev wave 57 (fair): 3 requests, about 94122 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccbf0d57760b479c38d256e9ffa)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 296ms (request req_01a1fccbf0ca77178e787c27cbe82bf5)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 287ms (request req_01a1fccbf0df78bcbe40f22fa284231b)
+INFO:     analyzer.jev_waves: Jev wave 58 (fair): 3 requests, about 93556 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 278ms (request req_01a1fccbf4b27eacaff2b46578cf8b57)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 277ms (request req_01a1fccbf4c872039407ae4d07cba0a8)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 375ms (request req_01a1fccbf4ca7239a9a8f40954e25e85)
+INFO:     analyzer.jev_waves: Jev wave 59 (fair): 3 requests, about 93817 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 279ms (request req_01a1fccbf8987e978a3d07dbb55d9853)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 276ms (request req_01a1fccbf8b27770afd09b19d8d34a90)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 302ms (request req_01a1fccbf8af7121927ed1364c9efebc)
+INFO:     127.0.0.1:58372 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     analyzer.jev_waves: Jev wave 60 (fair): 3 requests, about 93410 tokens
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 241ms (request req_01a1fccbfc837802a9d0fe5fae7c7934)
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 305ms (request req_01a1fccbfc9b75169b0ca0fdc9c86092)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 312ms (request req_01a1fccbfc977e588608dae6ca4603fa)
+INFO:     analyzer.jev_waves: Jev wave 61 (fair): 3 requests, about 82950 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 220ms (request req_01a1fccc009d7cfc89fbc17b707a55fa)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccc008b743d89273061aec15ca0)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccc0098725fb0ae9b9efc990e17)
+INFO:     analyzer.jev_waves: Jev wave 62 (fair): 3 requests, about 93630 tokens
+INFO:     127.0.0.1:58379 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccc04997738ad6d7db1f55c951a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 286ms (request req_01a1fccc048b7710902a7fe7fdec12c7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 294ms (request req_01a1fccc04a372c281c38a76939d27b8)
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242591585545000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58379 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/10229/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 10229: 5 items
+INFO:     analyzer.jev_waves: Jev wave 63 (fair): 3 requests, about 93995 tokens
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/players/nfl/10213/news "HTTP/1.1 200 OK"
+INFO:     analyzer.trade_news: News fetch of player 10213: 5 items
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 56ms (request req_01a1fccc08d07834b44de002737d5547)
+INFO:     analyzer.trade_jev: The Jev request of the trade: model=jev-1.14.0 input_tokens=816
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 261ms (request req_01a1fccc086e78c9bad602cc14fa14fb)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccc086e76228537d3604f942a88)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 273ms (request req_01a1fccc0878762a811645603f44319b)
+INFO:     analyzer.jev_waves: Jev wave 64 (fair): 3 requests, about 93708 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 257ms (request req_01a1fccc0c487113bf929fa5c55405e2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 274ms (request req_01a1fccc0c5270dc8f96433bd5ce484a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 304ms (request req_01a1fccc0c617b19a68b88093ad1c4e1)
+INFO:     analyzer.jev_waves: Jev wave 65 (fair): 3 requests, about 93656 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccc105a7d258c0c4a2b5d79c58d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 269ms (request req_01a1fccc10507ba8a62aece946ab4f85)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 306ms (request req_01a1fccc10557ccb9573fd260418b79e)
+INFO:     analyzer.jev_waves: Jev wave 66 (fair): 3 requests, about 93605 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 273ms (request req_01a1fccc144c79389dbc8522eacd987f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 283ms (request req_01a1fccc143c71d6ab0648ab94c29f2c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 289ms (request req_01a1fccc144c7578904acef6347bb0d2)
+INFO:     analyzer.jev_waves: Jev wave 67 (fair): 3 requests, about 82795 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 221ms (request req_01a1fccc18357c3fa178c7cc097e531c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 294ms (request req_01a1fccc18377fc49d9965ac4ade7063)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 371ms (request req_01a1fccc18407b75a82f6ab4d9767d50)
+INFO:     analyzer.jev_waves: Jev wave 68 (fair): 3 requests, about 76430 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 131ms (request req_01a1fccc1c127c94a3d7eab9bc204558)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccc1c177f5b8725fa79b3411dc5)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 358ms (request req_01a1fccc1c247564bb2c9074ee5b446d)
+INFO:     analyzer.jev_waves: Jev wave 69 (fair): 3 requests, about 76335 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 137ms (request req_01a1fccc20047c70bb5115b7e3ee79d1)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 279ms (request req_01a1fccc20167fc4bccba358419ede95)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 316ms (request req_01a1fccc201471e0a73527fbae5b25c2)
+INFO:     analyzer.jev_waves: Jev wave 70 (fair): 3 requests, about 93786 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 256ms (request req_01a1fccc240d7ce18fa7448c8cb699d6)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 273ms (request req_01a1fccc23f67d23a3199153a8bdc89e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 308ms (request req_01a1fccc24187995901fdca1587bca42)
+INFO:     analyzer.jev_waves: Jev wave 71 (fair): 3 requests, about 81746 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 179ms (request req_01a1fccc27ee756eb6b5212f2f5853ed)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 258ms (request req_01a1fccc27f4704d8faf792547a7acaf)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 284ms (request req_01a1fccc28047ef59a5c7c5425b43611)
+INFO:     analyzer.jev_waves: Jev wave 72 (fair): 3 requests, about 93786 tokens
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242601579044000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58403 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccc2be27bad93d38bba2ea0717e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccc2be972b5934041789b992efb)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 274ms (request req_01a1fccc2bee7292bc2f590e98162bf2)
+INFO:     analyzer.jev_waves: Jev wave 73 (fair): 3 requests, about 81923 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 185ms (request req_01a1fccc2fce7f5baf3f8702d8e078f8)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 237ms (request req_01a1fccc2fc476d5a1ebf05d87d649f6)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 253ms (request req_01a1fccc2fdb73b9a557c9380621e10f)
+INFO:     analyzer.jev_waves: Jev wave 74 (fair): 3 requests, about 82793 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 187ms (request req_01a1fccc33c07982861c9d3e7b5c6e28)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 274ms (request req_01a1fccc33d07e0cb41af195d7a1c7ad)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 285ms (request req_01a1fccc33b37f32a5eab995ba435e28)
+INFO:     analyzer.jev_waves: Jev wave 75 (fair): 3 requests, about 82747 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 190ms (request req_01a1fccc37ac74fe9df193a6b3e82845)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 247ms (request req_01a1fccc37a878a6aa0256f43dd36b86)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 313ms (request req_01a1fccc37b7775da680f1103ef47078)
+INFO:     analyzer.jev_waves: Jev wave 76 (fair): 3 requests, about 86719 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 242ms (request req_01a1fccc3b987d67a65a5427058162cc)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 242ms (request req_01a1fccc3bb17c809894f88be26e7c81)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 250ms (request req_01a1fccc3ba478458348cb748f48a2a8)
+INFO:     analyzer.jev_waves: Jev wave 77 (fair): 3 requests, about 93828 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 234ms (request req_01a1fccc3f867a308e13d4cec311a753)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 285ms (request req_01a1fccc3fa27fc9b544f427b20d39b0)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 321ms (request req_01a1fccc3fa07c41b22b4032e6b30184)
+INFO:     analyzer.jev_waves: Jev wave 78 (fair): 3 requests, about 81057 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 180ms (request req_01a1fccc438d70e08aeb6fc3b6a9a823)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccc43897e03a939537a9929ebe3)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccc437e7f18b6fa9e2ad24ba0a2)
+INFO:     analyzer.jev_waves: Jev wave 79 (fair): 3 requests, about 93828 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 245ms (request req_01a1fccc47697529b956d71a59f30850)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 247ms (request req_01a1fccc47807235918da6664ccd9c3e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 265ms (request req_01a1fccc47857bb6bca7ccbbdd0a14cf)
+INFO:     analyzer.jev_waves: Jev wave 80 (fair): 3 requests, about 81057 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 184ms (request req_01a1fccc4b6c741d97bb427d1da6e520)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 263ms (request req_01a1fccc4b677950a67bd8780acc577d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 270ms (request req_01a1fccc4b727976845057ca04744e22)
+INFO:     analyzer.jev_waves: Jev wave 81 (fair): 3 requests, about 93813 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 287ms (request req_01a1fccc4f6e7c5197f54f13b0b891de)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 292ms (request req_01a1fccc4f5c795ba1fc706cc7a2be0d)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 286ms (request req_01a1fccc4f6b7d6eb47e4e7c1c6ccbd7)
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     facts.writer: AdvisorOut call: cache_creation_input_tokens=2926 cache_read_input_tokens=0 input_tokens=3522 output_tokens=1940 model=claude-opus-5-5 effort=medium time=18.3s
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 92ms (request req_01a1fccc5075774ebf32f86f1e6c1655)
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=2371 faithful.1.1=0.02 no faithful.1.2=0.87 yes faithful.1.3=0.62 unsure faithful.1.4=0.77 yes faithful.1.5=0.92 yes faithful.2.1=0.09 no faithful.2.2=0.8 yes faithful.2.3=0.84 yes faithful.2.4=0.82 yes faithful.2.5=0.92 yes
+INFO:     analyzer.routes: Press of analyze for cpc: time=21.8s cost=$0.0763 claude_calls=1
+INFO:     127.0.0.1:58372 - "POST /clients/cpc/analyze HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 82 (fair): 3 requests, about 93690 tokens
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795242611573967000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:58372 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 245ms (request req_01a1fccc53357013a86b325a2965f5dd)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 257ms (request req_01a1fccc534b757eac2dcc9754d09bca)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 306ms (request req_01a1fccc534571288e4912f7ad74bec7)
+INFO:     analyzer.jev_waves: Jev wave 83 (fair): 3 requests, about 75825 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 138ms (request req_01a1fccc571f769680375e6247939813)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 247ms (request req_01a1fccc57317713827b260e261da39b)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 339ms (request req_01a1fccc573e79f88c73bc8fdb365192)
+INFO:     analyzer.jev_waves: Jev wave 84 (fair): 3 requests, about 93841 tokens
+INFO:     127.0.0.1:58441 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 273ms (request req_01a1fccc5b2d72f09fed5d0f101cdf3f)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 278ms (request req_01a1fccc5b357766afa8e6f19e51460e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 300ms (request req_01a1fccc5b1a76b882f8c665f8c097d4)
+INFO:     analyzer.jev_waves: Jev wave 85 (fair): 3 requests, about 75568 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 124ms (request req_01a1fccc5ef471bfaa2e4c344a692dfa)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 250ms (request req_01a1fccc5f0479bc998ceec68b048cb3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 259ms (request req_01a1fccc5f0d794fbeaf69bd28514c24)
+INFO:     analyzer.jev_waves: Jev wave 86 (fair): 3 requests, about 79320 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 179ms (request req_01a1fccc63037ab787b0a586058288ef)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 253ms (request req_01a1fccc62f779729cc3be05c2515fd9)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 254ms (request req_01a1fccc63037a4d9524af160a314bb7)
+INFO:     127.0.0.1:58454 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 87 (fair): 3 requests, about 93659 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 252ms (request req_01a1fccc66e67d0a8159d86b5eebee7d)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 251ms (request req_01a1fccc66e6720dac8568022ca1cb33)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 275ms (request req_01a1fccc66ed735f88731ad3a0fd93ee)
+INFO:     analyzer.jev_waves: Jev wave 88 (fair): 3 requests, about 79295 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 151ms (request req_01a1fccc6ac4725d872b36a359ace1d8)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 250ms (request req_01a1fccc6adb7fed8643ce7fa9b04a3a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 266ms (request req_01a1fccc6ad0726287a182406a453390)
+INFO:     analyzer.jev_waves: Jev wave 89 (fair): 3 requests, about 83872 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 207ms (request req_01a1fccc6ed1748080caf150f01e5fd7)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccc6ed27825818720ed6fb05ac3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccc6ed0753b921a80ff94ba3f60)
+INFO:     analyzer.jev_waves: Jev wave 90 (fair): 3 requests, about 93746 tokens
+INFO:     127.0.0.1:58470 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 260ms (request req_01a1fccc72bd77a9a7c17fb6f34b1757)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 273ms (request req_01a1fccc72c5761bbfcda1ba15c2807a)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 294ms (request req_01a1fccc72bf795fb4ac9dfef05f4735)
+INFO:     analyzer.jev_waves: Jev wave 91 (fair): 3 requests, about 83843 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 193ms (request req_01a1fccc76a870708fd1410cea21358c)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 256ms (request req_01a1fccc76b57e1bbd7f424ac35bf1de)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccc769c7e899bad7e0d6535c4ea)
+INFO:     analyzer.jev_waves: Jev wave 92 (fair): 4 requests, about 99658 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 104ms (request req_01a1fccc7a9875eb9ef66d727a348d21)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 263ms (request req_01a1fccc7a987599a7f30677143801b2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 304ms (request req_01a1fccc7a86760dbdfe2c694c949255)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 326ms (request req_01a1fccc7aa377c780dc340aa59895a5)
+INFO:     analyzer.jev_waves: Jev wave 93 (fair): 3 requests, about 93769 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 252ms (request req_01a1fccc7e7f7a26b3302b0d14e839fd)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccc7e8f720a9368d268101cb06e)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 271ms (request req_01a1fccc7e997123875d60d143f0862a)
+INFO:     analyzer.jev_waves: Jev wave 94 (fair): 4 requests, about 99522 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 107ms (request req_01a1fccc826b7b2d8788a083ab4875e2)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 236ms (request req_01a1fccc826b78e38839b5a6b49646be)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 265ms (request req_01a1fccc82847b83b8d3e533bfd8b696)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 264ms (request req_01a1fccc82857657871cbe147dc0eacf)
+INFO:     analyzer.jev_waves: Jev wave 95 (fair): 3 requests, about 94027 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 272ms (request req_01a1fccc86707316b4afc49dec41efc3)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 279ms (request req_01a1fccc86707b43aacfdaf6772fcb9b)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 284ms (request req_01a1fccc86547b309b8c2890729c2b21)
+INFO:     127.0.0.1:58496 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 96 (fair): 3 requests, about 93953 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccc8a57740a84b236806b1e6245)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 278ms (request req_01a1fccc8a5f769b98d540243148349d)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 406ms (request req_01a1fccc8a6872f599cd588b38a57dcb)
+INFO:     analyzer.jev_waves: Jev wave 97 (fair): 3 requests, about 87947 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 241ms (request req_01a1fccc8e41799fbec5f747e7641baf)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 245ms (request req_01a1fccc8e3f76dd926282ffb44782eb)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 276ms (request req_01a1fccc8e4e798494bab13fd6b89ac1)
+INFO:     analyzer.jev_waves: Jev wave 98 (fair): 3 requests, about 94027 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 262ms (request req_01a1fccc922d75569b6b4c53a7033193)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 276ms (request req_01a1fccc923473bf876edf08d5e3ebe0)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 539ms (request req_01a1fccc922e7ba288336c43324fb3b1)
+INFO:     analyzer.jev_waves: Jev wave 99 (fair): 3 requests, about 93953 tokens
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 268ms (request req_01a1fccc96197e9bb299398c7693aa45)
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 267ms (request req_01a1fccc962175eabb5c840882f88273)
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 308ms (request req_01a1fccc96247391a0724b1d852aaae9)
+INFO:     analyzer.jev_waves: Jev wave 100 (fair): 3 requests, about 87764 tokens
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [24892]
+make: *** [api-evidence] Error 143

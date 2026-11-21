@@ -205,4 +205,7 @@ export const wireTradeSchema = z.object({
 });
 
 /* The answer of the Trade Wire route: the accepted trades of the current leg, newest first. */
-export const tradeWireResponseSchema = z.object({ leg: z.number(), trades: z.array(wireTradeSchema) });
+export const tradeWireResponseSchema = z.object({
+  leg: z.number(),
+  trades: z.array(wireTradeSchema),
+});

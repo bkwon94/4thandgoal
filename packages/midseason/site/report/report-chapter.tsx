@@ -32,8 +32,8 @@ export function ReportChapter({
   const Heading = level === 3 ? "h3" : "h4";
   return (
     <section id={id} aria-labelledby={heading}>
-      <Reveal duration={DURATION.rise} ease={RISE_EASE} className="flex flex-col gap-sp-3">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
+      <Reveal duration={DURATION.rise} ease={RISE_EASE} className="gap-sp-3 flex flex-col">
+        <div className="gap-x-sp-3 gap-y-sp-1 flex flex-wrap items-baseline justify-between">
           <Heading
             id={heading}
             className={`m-0 leading-tight font-bold ${level === 3 ? "text-stat" : "text-lead"}`}
@@ -42,7 +42,9 @@ export function ReportChapter({
             {title}
           </Heading>
           {note !== undefined && (
-            <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{note}</span>
+            <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+              {note}
+            </span>
           )}
         </div>
         {children}

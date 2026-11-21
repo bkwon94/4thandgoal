@@ -40,14 +40,35 @@ jobs:
 
   # The site check runs as two jobs at the same time, because the browser half alone takes most of the time.
   # The unit half needs no browser. "make check-site" runs both halves in sequence.
+  # The unit half runs in a matrix of shards, and each job runs bun test on the files of its shard only, split by the time
+  # of each file in apps/site/bun-test-timings.json. With --parallel, the timings also start the slowest files first. Each
+  # job also runs the lint, the format check, the client build, and typecheck. The measured times of ticket 15 of
+  # design-checks-speed set the count. With 4 workers, the count of an ubuntu-latest runner, the slowest shard takes 47 s
+  # with 1 shard and 34 s with 2, 3, or 4, because one test file takes 33 s alone. One more job costs about 42 s of setup,
+  # so a second shard saves less than it costs. With 1 worker, the slowest shard takes 170 s with 1 shard and 97 s with 2.
   site-unit:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1]
+    env:
+      # scripts/bun-test.mjs reads it, such as "1/1". The total comes from the matrix, so the list above is the one count.
+      BUN_TEST_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+      # On a PR, bun test runs only the test files that the diff since the base can reach. The checkout of a PR is the test
+      # merge commit, and its first parent HEAD^1 is the tip of the base branch, so the diff is the change of the PR.
+      # A push, a dispatch, and a call from a deploy set no base, so each runs the full suite, also a push to main.
+      # A diff that names a file of FULL_SUITE_FILES in scripts/test-scope.mjs, such as the lock file, runs the full suite too.
+      BUN_TEST_BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || '' }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
+          # A PR needs the base commit HEAD^1 for the diff. Every other run takes one commit.
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
 
       # The pnpm version comes from the packageManager field of the site package.json.
       - name: Set up pnpm
@@ -62,6 +83,12 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      # The Bun version comes from .bun-version at the root, the one place that pins it. bun check and bun fmt need 1.4.5.
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
       # One install at the root fills the whole pnpm workspace from the root lock file.
       - name: Install the site dependencies
         run: pnpm install --frozen-lockfile
@@ -69,9 +96,22 @@ jobs:
       - name: Run the unit half of the site check
         run: make check-site-unit
 
+  # Playwright runs in a matrix of shards. Each job runs the whole browser check, and each Playwright run in it takes only the
+  # tests of its shard, so each job builds each client again. Real CI times set the count: with 5 shards the jobs took 276 to
+  # 389 s on two runs, above the limit of 360 s. With 6 shards and the built-in split of Playwright, shard 1 took 363 s, because
+  # it held the slow first file of each run. The reporter scripts/playwright-shard-reporter.mjs now gives each shard each Nth
+  # test, and the matrix has 7. Each job holds about 120 s of setup and builds. The serial projects keep one worker.
   site-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7]
+    env:
+      # The Playwright config reads it, such as "2/7". The total comes from the matrix, so the list above is the one count.
+      PLAYWRIGHT_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
@@ -156,7 +196,41 @@ jobs:
       - name: Run the browser half of the site check
         run: make check-site-browser
 
-  pipeline:
+  # The parallel pipeline tests run in a matrix of 2 shards, and PYTEST_SHARD of apps/pipeline/tests/shard.py picks the tests
+  # of each shard. With 1 job the test step took 387 to 414 s, above the limit of 360 s. Shard 1 also runs lint and typecheck,
+  # about 5 s, so no job runs them twice. "make check-pipeline-parallel" runs the whole half in one run.
+  pipeline-parallel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+      # setup-uv publishes no major tag from v8 on, so the step names the full release.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # --locked fails the job if uv.lock is out of date. The check then runs the member with "uv run --exact --package".
+      - name: Install the Python dependencies
+        run: uv sync --locked --exact --package cornerstone
+
+      # The Makefile names the shard count of each target, so the matrix list above and the targets must match.
+      - name: Run one shard of the parallel half of the pipeline check
+        run: make check-pipeline-parallel-${{ matrix.shard }}
+
+  # The serial tests measure wall time, so they run alone in their own job.
+  pipeline-serial:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -177,8 +251,8 @@ jobs:
       - name: Install the Python dependencies
         run: uv sync --locked --exact --package cornerstone
 
-      - name: Run the check of the pipeline
-        run: make check-pipeline
+      - name: Run the serial half of the pipeline check
+        run: make check-pipeline-serial
 
   api:
     runs-on: ubuntu-latest
@@ -233,7 +307,7 @@ jobs:
   # A skipped gate counts as a pass on a PR, so "if: always()" keeps the gate from a skip.
   check:
     if: always()
-    needs: [scripts, site-unit, site-browser, pipeline, api, packages]
+    needs: [scripts, site-unit, site-browser, pipeline-parallel, pipeline-serial, api, packages]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:

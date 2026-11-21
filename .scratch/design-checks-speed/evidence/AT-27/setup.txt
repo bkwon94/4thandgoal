@@ -1,0 +1,36 @@
+$ git worktree add --detach <scratch>/wt-a design-checks-speed
+Preparing worktree (detached HEAD 2108f8bc)
+HEAD is now at 2108f8bc Mark design-checks-speed 18 in-review
+$ pnpm install --frozen-lockfile
+Progress: resolved 393, reused 393, downloaded 0, added 393, done
+Done in 2.8s
+$ cd apps/site && CLIENT=cpc node scripts/client-build.mjs
+exit code: 0
+$ git worktree add --detach <scratch>/wt-b design-checks-speed
+Preparing worktree (detached HEAD 2108f8bc)
+HEAD is now at 2108f8bc Mark design-checks-speed 18 in-review
+$ pnpm install --frozen-lockfile
+Progress: resolved 393, reused 393, downloaded 0, added 393, done
+Done in 2.7s
+$ cd apps/site && CLIENT=cpc node scripts/client-build.mjs
+exit code: 0
+$ git diff --cached   # wt-a
+diff --git a/apps/site/src/lib/routes.test.ts b/apps/site/src/lib/routes.test.ts
+index 9a1ca4ee..60907c8a 100644
+--- a/apps/site/src/lib/routes.test.ts
++++ b/apps/site/src/lib/routes.test.ts
+@@ -27,3 +27,4 @@ describe("routes", () => {
+     expect(call(await import("./routes"))).toBe(route);
+   });
+ });
++// probe: a harmless comment line for AT-27
+$ git diff --cached   # wt-b
+diff --git a/apps/site/src/lib/config.test.ts b/apps/site/src/lib/config.test.ts
+index 36f12ee5..5251ebf1 100644
+--- a/apps/site/src/lib/config.test.ts
++++ b/apps/site/src/lib/config.test.ts
+@@ -50,3 +50,4 @@ describe("config", () => {
+     expect("waiverOn" in config).toBe(false);
+   });
+ });
++// probe: a harmless comment line for AT-27

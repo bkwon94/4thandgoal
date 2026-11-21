@@ -20,19 +20,23 @@ function playoffLine(sim: WeekSim, page: SimPage): string {
     const vs = `Week ${playoffs.game.week} vs ${nameOf(sim, playoffs.game.opponent)}.`;
     return `${vs} ${winText(index, playoffs.rounds.length)}`;
   }
-  if (playoffs.bye && playoffs.week !== null) return `Seed ${playoffs.seed}, a bye in week ${playoffs.week}.`;
+  if (playoffs.bye && playoffs.week !== null)
+    return `Seed ${playoffs.seed}, a bye in week ${playoffs.week}.`;
   return `Seed ${playoffs.seed}, in the ${roundName(0, playoffs.rounds.length).toLowerCase()}.`;
 }
 
 /* The tile of one team. In the regular season it is the playoff odds and the sentence of more wins of the build. */
 function teamTile(sim: WeekSim, page: SimPage): TeamTile | null {
   const playoffs = page.playoffs;
-  if (playoffs === null) return { label: "Playoff odds", odds: oddsText(page.playoff), line: page.sentence };
+  if (playoffs === null)
+    return { label: "Playoff odds", odds: oddsText(page.playoff), line: page.sentence };
   if (playoffs.champion !== null || !playoffs.alive) return null;
   return { label: "Title odds", odds: oddsText(playoffs.title), line: playoffLine(sim, page) };
 }
 
 export function simTileOf(sim: WeekSim): SimTileData {
-  const teams = Object.fromEntries(Object.values(sim.pages).map((page) => [page.you, teamTile(sim, page)]));
+  const teams = Object.fromEntries(
+    Object.values(sim.pages).map((page) => [page.you, teamTile(sim, page)]),
+  );
   return { fact: sim.fact, teams };
 }

@@ -1,6 +1,8 @@
 /**
  * The mesh: the live grid art of a hero, as a client leaf that holds the canvas, so `Hero` stays a server component.
  * The page passes it as the art of a hero, and it starts the runner of `mesh-canvas.ts` on a `2d` context.
+ * Use it when: a hero needs the live grid art as its `art`.
+ * Do not use it when: the hero shows a scene of a matchup. Use `HeroSceneCanvas`.
  */
 "use client";
 
@@ -20,7 +22,8 @@ export function HeroMesh({ drive }: { drive?: MeshDrive }) {
     // The runner pauses out of view with an IntersectionObserver. A browser with none, such as jsdom, draws no mesh,
     // so the mesh never runs where it cannot pause. A browser with no canvas gets no context. Either way the hero shows
     // its band color with the brackets.
-    if (!canvas.current || !probe.current || !hero || typeof IntersectionObserver === "undefined") return;
+    if (!canvas.current || !probe.current || !hero || typeof IntersectionObserver === "undefined")
+      return;
     const ctx = canvas.current.getContext("2d");
     if (!ctx) return;
     return runMesh({ canvas: canvas.current, ctx, hero, probe: probe.current, motionOff, drive });

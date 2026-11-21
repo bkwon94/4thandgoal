@@ -4,8 +4,9 @@
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, mock, onTestFinished } from "bun:test";
+import { stubGlobal } from "../test/stubs";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
 import HomePage from "@/app/front-door/door-page";
 import FrontPage from "@/app/front-page";
@@ -31,26 +32,27 @@ import { readFixtureSite } from "@/fixtures/sites";
 // The jsdom stand-ins that the Drawer of the team sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The readers
+   read the working folder on each call. Each test sets the folder, because the preload puts the real folder back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
+/* The stub of matchMedia lasts for one test, so each test sets it before Framer Motion reads it. */
+beforeEach(() =>
+  stubGlobal(
+    "matchMedia",
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList,
+  ),
 );
 
 const player = (id: string, name: string) => ({
@@ -62,9 +64,27 @@ const player = (id: string, name: string) => ({
 });
 
 const TEAMS: Team[] = [
-  { roster_id: 4, team: "Pukancun on 3", manager: "Ana", avatar: null, players: [player("p1", "Ana One")] },
-  { roster_id: 12, team: "Blitz Bakers", manager: "Ben", avatar: null, players: [player("p3", "Ben One")] },
-  { roster_id: 7, team: "Punt Punks", manager: "Cy", avatar: null, players: [player("p5", "Cy One")] },
+  {
+    roster_id: 4,
+    team: "Pukancun on 3",
+    manager: "Ana",
+    avatar: null,
+    players: [player("p1", "Ana One")],
+  },
+  {
+    roster_id: 12,
+    team: "Blitz Bakers",
+    manager: "Ben",
+    avatar: null,
+    players: [player("p3", "Ben One")],
+  },
+  {
+    roster_id: 7,
+    team: "Punt Punks",
+    manager: "Cy",
+    avatar: null,
+    players: [player("p5", "Cy One")],
+  },
 ];
 
 /* No box from the element up to the page root fades or moves. A motion box at its start state carries opacity 0 or a translate. */
@@ -89,7 +109,9 @@ function expectInPlainFade(element: HTMLElement) {
 /* Opens the team sheet of a slot or of "+" with a click, and taps one team. */
 async function pickTeam(button: string | RegExp, team: string) {
   fireEvent.click(screen.getByRole("button", { name: button }));
-  fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }));
+  fireEvent.click(
+    within(await screen.findByRole("dialog")).getByRole("button", { name: new RegExp(team) }),
+  );
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 }
 
@@ -103,15 +125,14 @@ async function pickPlayer(side: string, from: string, name: string) {
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
 }
 
-afterEach(cleanup);
-afterAll(() => {
-  vi.unstubAllGlobals();
-});
-
 describe("Reduced motion", () => {
   it("shows the Lean word still, in the plain fade of the result", () => {
     render(<AnalyzeResult doc={fixtureJson as AnalyzeResponse} />);
-    expectInPlainFade(screen.getByRole("heading", { level: 2, name: "Lean yes" }).querySelector("[data-stable-id='lean-word']") as HTMLElement);
+    expectInPlainFade(
+      screen
+        .getByRole("heading", { level: 2, name: "Lean yes" })
+        .querySelector("[data-stable-id='lean-word']") as HTMLElement,
+    );
   });
 
   it("shows the Bullets of the open tab still, in the plain fade of the result (AT-51)", () => {
@@ -125,12 +146,24 @@ describe("Reduced motion", () => {
   it("shows the fairness line at once", () => {
     // The state is set here, so the test does not depend on the fixture state.
     const doc = fixtureJson as AnalyzeResponse;
-    render(<AnalyzeResult doc={{ ...doc, fairness: { ...doc.fairness!, state: "fair", gives_more: null } }} />);
+    render(
+      <AnalyzeResult
+        doc={{ ...doc, fairness: { ...doc.fairness!, state: "fair", gives_more: null } }}
+      />,
+    );
     expect(screen.getByText("Fair")).toBeTruthy();
   });
 
   it("shows the picked team on its card at once", async () => {
-    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(
+      <TradeForm
+        teams={TEAMS}
+        target={apiTarget}
+        finderOn={false}
+        passphrase="localtest"
+        onUnauthorized={() => {}}
+      />,
+    );
     await pickTeam("Pick Your Team", "Pukancun on 3");
     const card = screen.getByRole("region", { name: "Your Team gets" });
     expect(within(card).getByText("Pukancun on 3")).toBeTruthy();
@@ -138,7 +171,15 @@ describe("Reduced motion", () => {
   });
 
   it("shows the Ready halo at its level at once", async () => {
-    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(
+      <TradeForm
+        teams={TEAMS}
+        target={apiTarget}
+        finderOn={false}
+        passphrase="localtest"
+        onUnauthorized={() => {}}
+      />,
+    );
     await pickTeam("Pick Your Team", "Pukancun on 3");
     await pickTeam("Pick Team Two", "Blitz Bakers");
     const halo = document.querySelector<HTMLElement>("[data-halo]")!;
@@ -152,28 +193,60 @@ describe("Reduced motion", () => {
   });
 
   it("shows no sweep while the grade runs", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
-    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    stubGlobal(
+      "fetch",
+      mock(() => new Promise(() => {})),
+    );
+    render(
+      <TradeForm
+        teams={TEAMS}
+        target={apiTarget}
+        finderOn={false}
+        passphrase="localtest"
+        onUnauthorized={() => {}}
+      />,
+    );
     await pickTeam("Pick Your Team", "Pukancun on 3");
     await pickTeam("Pick Team Two", "Blitz Bakers");
     await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
     await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
-    const status = screen.getByRole("region", { name: "Grading the Trade" }).querySelector("[aria-busy=true]") as HTMLElement;
+    const status = screen
+      .getByRole("region", { name: "Grading the Trade" })
+      .querySelector("[aria-busy=true]") as HTMLElement;
     expect(status).not.toBeNull();
     // The track is aria-hidden, so the query must include hidden elements to find the sweep if it existed. An image with no alt is presentation too, so the query skips images.
-    expect(within(status).queryAllByRole("presentation", { hidden: true }).filter((el) => el.tagName !== "IMG")).toEqual([]);
+    expect(
+      within(status)
+        .queryAllByRole("presentation", { hidden: true })
+        .filter((el) => el.tagName !== "IMG"),
+    ).toEqual([]);
   });
 
   it("fades the headshots into the stage on the tap of Grade, with no rise and no blur", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
-    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    stubGlobal(
+      "fetch",
+      mock(() => new Promise(() => {})),
+    );
+    render(
+      <TradeForm
+        teams={TEAMS}
+        target={apiTarget}
+        finderOn={false}
+        passphrase="localtest"
+        onUnauthorized={() => {}}
+      />,
+    );
     await pickTeam("Pick Your Team", "Pukancun on 3");
     await pickTeam("Pick Team Two", "Blitz Bakers");
     await pickPlayer("Your Team", "Blitz Bakers", "Ben One");
     await pickPlayer("Team Two", "Pukancun on 3", "Ana One");
     fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
-    const tokens = [...screen.getByRole("region", { name: "Grading the Trade" }).querySelectorAll("[data-mesh-hole][title]")] as HTMLElement[];
+    const tokens = [
+      ...screen
+        .getByRole("region", { name: "Grading the Trade" })
+        .querySelectorAll("[data-mesh-hole][title]"),
+    ] as HTMLElement[];
     expect(tokens.map((token) => token.title)).toEqual(["Ben One", "Ana One"]);
     for (const token of tokens) {
       expect(token.style.transform).toBe("");
@@ -184,18 +257,35 @@ describe("Reduced motion", () => {
 
 describe("Reduced motion on the trade form", () => {
   it("adds a side and a picked row at rest, and removes a side at once", async () => {
-    render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+    render(
+      <TradeForm
+        teams={TEAMS}
+        target={apiTarget}
+        finderOn={false}
+        passphrase="localtest"
+        onUnauthorized={() => {}}
+      />,
+    );
     await pickTeam("Pick Your Team", "Pukancun on 3");
     await pickTeam("Pick Team Two", "Blitz Bakers");
     await pickTeam("Add a team", "Punt Punks");
     expectAtRest(screen.getByRole("region", { name: "Team Three gets" }));
 
     await pickPlayer("Team Three", "Pukancun on 3", "Ana One");
-    expectAtRest(within(screen.getByRole("list", { name: "Players Team Three gets" })).getByRole("listitem"));
+    expectAtRest(
+      within(screen.getByRole("list", { name: "Players Team Three gets" })).getByRole("listitem"),
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
     // The exit takes the instant transition, so the side leaves by the next frame. A real exit fails the short wait.
-    await waitFor(() => expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull(), { timeout: 50 });
+    // A failed `expect` on an element makes Bun format the whole happy-dom tree, which takes seconds, so the wait throws its own error.
+    await waitFor(
+      () => {
+        if (screen.queryByRole("region", { name: "Team Three gets" }))
+          throw new Error("The side is still there.");
+      },
+      { timeout: 50 },
+    );
   });
 });
 
@@ -219,8 +309,19 @@ describe("Reduced motion on the power rankings", () => {
 
 describe("Reduced motion on the Open card", () => {
   it("opens and closes a game card at once, with no height change, no blur, and no spring", () => {
-    render(<AllMatchups matchups={week8.matchups} avatars={week8.avatars} managersHref="/2026/managers/" />);
-    const button = screen.getAllByRole("button").find((each) => !each.hasAttribute("aria-label") && each.textContent?.includes("All You Need Is Love"))!;
+    render(
+      <AllMatchups
+        matchups={week8.matchups}
+        avatars={week8.avatars}
+        managersHref="/2026/managers/"
+      />,
+    );
+    const button = screen
+      .getAllByRole("button")
+      .find(
+        (each) =>
+          !each.hasAttribute("aria-label") && each.textContent?.includes("All You Need Is Love"),
+      )!;
     const card = button.closest<HTMLElement>(".open-card")!;
     const panel = document.getElementById(button.getAttribute("aria-controls") ?? "")!;
     // Every duration of the height, the blur, the rise, and the chevron reads --oc-dur, so 0s ends each one at once.
@@ -245,7 +346,13 @@ describe("Reduced motion on the Index list", () => {
       odds: { playoff: 50, bye: 10, seed: null, status: "open" as const },
       odds_change: 0,
     }));
-    render(<ManagersIndex managers={{ season: 2026, through: 6, managers }} avatars={{}} managersHref="/2026/managers/" />);
+    render(
+      <ManagersIndex
+        managers={{ season: 2026, through: 6, managers }}
+        avatars={{}}
+        managersHref="/2026/managers/"
+      />,
+    );
     const list = within(screen.getByRole("list", { name: "Index List" }));
     const head = within(list.getAllByRole("listitem")[0]).getByRole("button");
     const row = head.closest<HTMLElement>(".open-card")!;
@@ -270,7 +377,13 @@ describe("Reduced motion on the Index list", () => {
       odds: { playoff: 50, bye: 10, seed: null, status: "open" as const },
       odds_change: 0,
     }));
-    render(<ManagersIndex managers={{ season: 2026, through: 6, managers }} avatars={{}} managersHref="/2026/managers/" />);
+    render(
+      <ManagersIndex
+        managers={{ season: 2026, through: 6, managers }}
+        avatars={{}}
+        managersHref="/2026/managers/"
+      />,
+    );
     const rows = within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem");
     fireEvent.pointerEnter(rows[1]);
     const box = document.querySelector("[data-ix-stage]")!;
@@ -283,7 +396,14 @@ describe("Reduced motion on the Index list", () => {
 
 describe("Reduced motion on the waiver page", () => {
   it("turns the drift off and shows the top six at once", () => {
-    render(<WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} TeamPicker={TeamPicker} />);
+    render(
+      <WarChest
+        board={waiver}
+        teams={week6.teams}
+        avatars={week6.avatars}
+        TeamPicker={TeamPicker}
+      />,
+    );
     const field = screen.getByRole("group", { name: "Top six" });
     expect(field.getAttribute("data-drift")).toBe("off");
     expect(within(field).getAllByRole("button")).toHaveLength(6);
@@ -321,9 +441,17 @@ describe("Reduced motion on the bars", () => {
 
   it("shows every budget bar of the war chest at its height at once", async () => {
     const { container } = render(
-      <WarChest board={waiver} teams={week6.teams} avatars={week6.avatars} TeamPicker={TeamPicker} />,
+      <WarChest
+        board={waiver}
+        teams={week6.teams}
+        avatars={week6.avatars}
+        TeamPicker={TeamPicker}
+      />,
     );
-    await expectBarsAtRest(within(container).getByRole("list", { name: "Budgets" }), waiver.budgets.length);
+    await expectBarsAtRest(
+      within(container).getByRole("list", { name: "Budgets" }),
+      waiver.budgets.length,
+    );
   });
 });
 
@@ -344,7 +472,9 @@ describe("Reduced motion on the static pages", () => {
     expect(main.getAllByText(week6.trades[0].sides[0].players[0].name).length).toBeGreaterThan(0);
     // The award and trade cards are Open cards too, so the count of game cards stays inside Every game.
     const games = within(main.getByRole("region", { name: "Every game" }));
-    expect(games.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(week6.matchups.length);
+    expect(games.getAllByRole("button", { expanded: false, name: /\d/ })).toHaveLength(
+      week6.matchups.length,
+    );
     expect(main.getByText("The median game")).toBeTruthy();
     expect(main.getByText("Standings")).toBeTruthy();
     expect(main.getByText("Next week")).toBeTruthy();
@@ -374,7 +504,9 @@ describe("Reduced motion on the static pages", () => {
     localStorage.setItem("cpc.passphrase", "cornerstone-test");
     onTestFinished(() => localStorage.clear());
     render(<HomePage />);
-    const [, first, second] = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button");
+    const [, first, second] = within(
+      await screen.findByRole("group", { name: "Suggestions" }),
+    ).getAllByRole("button");
     for (const chip of [first, second]) {
       fireEvent.click(chip);
       const name = chip.getAttribute("aria-label")!.split(":")[0];
@@ -397,7 +529,9 @@ describe("Reduced motion on the static pages", () => {
     localStorage.setItem("cpc.passphrase", "cornerstone-test");
     onTestFinished(() => localStorage.clear());
     render(<HomePage />);
-    const chip = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole("button")[1];
+    const chip = within(await screen.findByRole("group", { name: "Suggestions" })).getAllByRole(
+      "button",
+    )[1];
     const name = chip.getAttribute("aria-label")!.split(":")[0];
     // The first tap shows the fact in the strip, and the second tap opens the Topic.
     fireEvent.click(chip);
@@ -425,9 +559,13 @@ describe("Reduced motion on the first question of the front door", () => {
     const box = screen.getByRole("form", { name: "Ask" });
     // The ask box ends its first fade at the center before the question goes.
     await waitFor(() => expect(box.parentElement!.style.opacity).toBe("1"));
-    fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), { target: { value: "who am i playing sunday" } });
+    fireEvent.change(within(box).getByRole("textbox", { name: "Ask a question" }), {
+      target: { value: "who am i playing sunday" },
+    });
     fireEvent.submit(box);
-    await screen.findByRole("region", { name: "Thread" }).then(() => screen.findByRole("button", { name: "Clear" }));
+    await screen
+      .findByRole("region", { name: "Thread" })
+      .then(() => screen.findByRole("button", { name: "Clear" }));
     // The ask box leaves the center and shows at the foot from opacity 0, so it fades in place and never moves.
     const shown = screen.getByRole("form", { name: "Ask" });
     const boxes: HTMLElement[] = [];
@@ -453,7 +591,9 @@ function managerWithOdds(): Manager {
 
 describe("Reduced motion on the manager page", () => {
   it("shows the final grade letter and the final playoff percent at once", async () => {
-    render(<ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} through={9} />);
+    render(
+      <ManagerHero manager={managerWithOdds()} avatar="avatars/1.jpg" teams={12} through={9} />,
+    );
     const numbers = screen.getByRole("group", { name: "Hero Numbers" });
     const odds = numbers.children[0].children[1] as HTMLElement;
     const grade = screen.getByRole("button", { name: /^Grade D/ });
@@ -483,9 +623,14 @@ describe("Reduced motion on the manager page", () => {
     const line = screen.getByRole("img", { name: "Points per week against the league median" });
     const team = line.querySelector("[data-draw]")!;
     // A drawn path shows its full length: the first dash of the dash array is the whole normalized length.
-    await waitFor(() => expect(team.getAttribute("stroke-dasharray")).toMatch(/^1(px)? /), { timeout: 50 });
+    await waitFor(() => expect(team.getAttribute("stroke-dasharray")).toMatch(/^1(px)? /), {
+      timeout: 50,
+    });
     await waitFor(
-      () => line.querySelectorAll("[data-result]").forEach((dot) => expect((dot as HTMLElement).style.opacity).not.toBe("0")),
+      () =>
+        line
+          .querySelectorAll("[data-result]")
+          .forEach((dot) => expect((dot as HTMLElement).style.opacity).not.toBe("0")),
       { timeout: 50 },
     );
   });
@@ -494,13 +639,16 @@ describe("Reduced motion on the manager page", () => {
     render(<SeasonSoFar manager={managerWithOdds()} teams={12} />);
     const dial = screen.getByRole("list", { name: "Grade Dial" });
     const arcs = within(dial).getAllByRole("img");
-    const lit = () => arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length);
+    const lit = () =>
+      arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length);
     // The fixture entry ranks 1st, 4th, 7th, and 10th on the four parts.
     expect(lit()).toEqual([12, 9, 6, 3]);
     // The dial never darkens the lit blades to wait for the view, and no blade carries a stagger delay.
     await new Promise((done) => setTimeout(done, 50));
     expect(dial.hasAttribute("data-wait")).toBe(false);
     expect(lit()).toEqual([12, 9, 6, 3]);
-    dial.querySelectorAll<HTMLElement>("[data-blade]").forEach((blade) => expect(blade.style.transitionDelay).toBe(""));
+    dial
+      .querySelectorAll<HTMLElement>("[data-blade]")
+      .forEach((blade) => expect(blade.style.transitionDelay).toBe(""));
   });
 });

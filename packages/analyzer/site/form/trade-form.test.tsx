@@ -4,13 +4,21 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useState } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
 import type { AnalyzerMode } from "../lib/mode";
-import { addPlayer, chooseTeam, pickPlayers, pickTeam, pickTrade, slot, type SideTitle } from "./form-steps";
+import {
+  addPlayer,
+  chooseTeam,
+  pickPlayers,
+  pickTeam,
+  pickTrade,
+  slot,
+  type SideTitle,
+} from "./form-steps";
 import { TradeForm } from "./trade-form";
 
 // The finder flag is a prop from the page, so each render passes the flag the test sets.
@@ -25,13 +33,64 @@ const player = (id: string, name: string, position = "WR") => ({
 });
 
 const TEAMS: Team[] = [
-  { roster_id: 4, team: "Pukancun on 3", manager: "Ana", avatar: "https://cdn.test/ana.png", players: [player("p1", "Ana One"), player("p2", "Ana Two", "QB")] },
-  { roster_id: 12, team: "Blitz Bakers", manager: "Ben", avatar: null, players: [player("p3", "Ben One", "RB"), player("p4", "Ben Two")] },
-  { roster_id: 7, team: "Punt Punks", manager: "Cy", avatar: null, players: [player("p5", "Cy One")] },
+  {
+    roster_id: 4,
+    team: "Pukancun on 3",
+    manager: "Ana",
+    avatar: "https://cdn.test/ana.png",
+    players: [player("p1", "Ana One"), player("p2", "Ana Two", "QB")],
+  },
+  {
+    roster_id: 12,
+    team: "Blitz Bakers",
+    manager: "Ben",
+    avatar: null,
+    players: [player("p3", "Ben One", "RB"), player("p4", "Ben Two")],
+  },
+  {
+    roster_id: 7,
+    team: "Punt Punks",
+    manager: "Cy",
+    avatar: null,
+    players: [player("p5", "Cy One")],
+  },
 ];
 
-const fetchStub = vi.fn();
-const onUnauthorized = vi.fn();
+/* A clock for `setTimeout` and `clearTimeout` only. The fake timers of `bun:test` drop a timer that is still pending when
+   they end, and a frame would then wait for ever. The preload keeps its frame timer on the real `setTimeout`. The spies end
+   with the test. */
+function fakeTimeouts() {
+  let now = 0;
+  let lastId = 0;
+  const pending = new Map<number, { at: number; run: () => void }>();
+  spyOn(globalThis, "setTimeout").mockImplementation(((run: () => void, delay = 0) => {
+    lastId += 1;
+    pending.set(lastId, { at: now + delay, run });
+    return lastId;
+  }) as unknown as typeof setTimeout);
+  spyOn(globalThis, "clearTimeout").mockImplementation(((id: number) => {
+    pending.delete(id);
+  }) as unknown as typeof clearTimeout);
+  return {
+    // Runs each timer that falls due within `ms`, in order, as the timers that they set may fall due too.
+    advance(ms: number) {
+      const end = now + ms;
+      for (;;) {
+        const due = [...pending]
+          .filter(([, timer]) => timer.at <= end)
+          .sort((a, b) => a[1].at - b[1].at)[0];
+        if (!due) break;
+        pending.delete(due[0]);
+        now = due[1].at;
+        due[1].run();
+      }
+      now = end;
+    },
+  };
+}
+
+const fetchStub = mock();
+const onUnauthorized = mock();
 
 function answer(status: number, body: unknown = {}, headers: Record<string, string> = {}) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
@@ -41,7 +100,10 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
 const card = (side: SideTitle) => screen.getByRole("region", { name: `${side} gets` });
 const submit = () => screen.getByRole("button", { name: "Grade the Trade" }) as HTMLButtonElement;
 const sheet = () => screen.getByRole("dialog");
-const regrade = () => within(screen.getByRole("dialog", { name: "Edit the trade" })).getByRole("button", { name: "Regrade the Trade" }) as HTMLButtonElement;
+const regrade = () =>
+  within(screen.getByRole("dialog", { name: "Edit the trade" })).getByRole("button", {
+    name: "Regrade the Trade",
+  }) as HTMLButtonElement;
 /* A result hides the form, so a test taps Edit in the header of The Sides to change the trade. */
 const edit = () => fireEvent.click(screen.getByRole("button", { name: "Edit the trade" }));
 /* The elements that asked to scroll into view. jsdom does no layout and has no scrollIntoView, so each test records them. */
@@ -54,16 +116,23 @@ async function addTeam(team: string) {
 }
 
 /* The filled hero slots of a hero, in the order of the markup. */
-const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
-const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
+const slotsOf = (hero: HTMLElement) =>
+  [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
+const slotText = (hero: HTMLElement, slot: string) =>
+  hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
 
 /* The row of a team on the stage of a hero, and the src of each player headshot in it. The team avatar is not a headshot. */
 const stageRow = (hero: HTMLElement, team: string) =>
-  [...hero.querySelectorAll("[data-mesh-anchor]")].find((row) => row.querySelector("[data-stage-team]")?.textContent === team) as HTMLElement;
+  [...hero.querySelectorAll("[data-mesh-anchor]")].find(
+    (row) => row.querySelector("[data-stage-team]")?.textContent === team,
+  ) as HTMLElement;
 const stageHeadshots = (el: HTMLElement) =>
-  [...el.querySelectorAll("img")].map((img) => img.getAttribute("src") ?? "").filter((src) => /\/(p\d+\.png|players\/)/.test(src));
+  [...el.querySelectorAll("img")]
+    .map((img) => img.getAttribute("src") ?? "")
+    .filter((src) => /\/(p\d+\.png|players\/)/.test(src));
 
-const removeButton = (name: string) => screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
+const removeButton = (name: string) =>
+  screen.getByRole("button", { name: `Remove ${name}` }) as HTMLButtonElement;
 
 /* The text of each row of a card. */
 const rowsOf = (side: SideTitle) =>
@@ -72,7 +141,12 @@ const rowsOf = (side: SideTitle) =>
     .map((item) => item.textContent);
 
 /* The main trade of p1 for p4: my team gets Ben Two, and the other team gets Ana One. */
-const TRADE = { mine: "Pukancun on 3", other: "Blitz Bakers", mineGets: "Ben Two", otherGets: "Ana One" };
+const TRADE = {
+  mine: "Pukancun on 3",
+  other: "Blitz Bakers",
+  mineGets: "Ben Two",
+  otherGets: "Ana One",
+};
 
 beforeEach(() => {
   scrolled = [];
@@ -81,14 +155,20 @@ beforeEach(() => {
   };
   fetchStub.mockReset();
   onUnauthorized.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
-  render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
+  render(
+    <TradeForm
+      teams={TEAMS}
+      target={apiTarget}
+      finderOn={finderOn}
+      passphrase="localtest"
+      onUnauthorized={onUnauthorized}
+    />,
+  );
 });
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
 });
 
 /* A find stream that sends the first step and the document, then ends, as the find stream of the API does. */
@@ -96,12 +176,16 @@ function findStream(doc: unknown) {
   const encoded = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`);
   const body = new ReadableStream<Uint8Array>({
     start(controller) {
-      controller.enqueue(encoded({ type: "data-step", data: { line: "Reading their roster", live: true } }));
+      controller.enqueue(
+        encoded({ type: "data-step", data: { line: "Reading their roster", live: true } }),
+      );
       controller.enqueue(encoded({ type: "data-answer", data: { kind: "find", document: doc } }));
       controller.close();
     },
   });
-  fetchStub.mockResolvedValueOnce(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+  fetchStub.mockResolvedValueOnce(
+    new Response(body, { headers: { "content-type": "text/event-stream" } }),
+  );
 }
 
 describe("TradeForm", () => {
@@ -109,13 +193,30 @@ describe("TradeForm", () => {
     cleanup();
     const captured = fixtureJson.trade.sides;
     const teams = captured.map((side) => ({
-      roster_id: side.roster_id, team: side.team, manager: side.team, avatar: null, players: side.gives,
+      roster_id: side.roster_id,
+      team: side.team,
+      manager: side.team,
+      avatar: null,
+      players: side.gives,
     }));
     const prefill = captured.map((side, id) => ({
-      id, rosterId: side.roster_id,
-      gets: side.gets.map((player) => ({ playerId: player.player_id, fromSide: captured.findIndex((other) => other.roster_id === player.from) })),
+      id,
+      rosterId: side.roster_id,
+      gets: side.gets.map((player) => ({
+        playerId: player.player_id,
+        fromSide: captured.findIndex((other) => other.roster_id === player.from),
+      })),
     }));
-    render(<TradeForm teams={teams} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={onUnauthorized} prefill={prefill} />);
+    render(
+      <TradeForm
+        teams={teams}
+        target={apiTarget}
+        finderOn={false}
+        passphrase="localtest"
+        onUnauthorized={onUnauthorized}
+        prefill={prefill}
+      />,
+    );
     answer(200, fixtureJson);
     fireEvent.click(submit());
     const result = await screen.findByRole("region", { name: "The Read" });
@@ -150,7 +251,9 @@ describe("TradeForm", () => {
     const picker = screen.getByRole("dialog", { name: "Your Team gets" });
     fireEvent.click(within(picker).getByRole("checkbox", { name: /Garrett Wilson/ }));
     fireEvent.click(within(picker).getByRole("button", { name: /^Done/ }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Your Team gets" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Your Team gets" })).toBeNull(),
+    );
     expect(result.isConnected).toBe(true);
     expect(screen.getByRole("dialog", { name: "Edit the trade" })).toBe(reopened);
     answer(200, fixtureJson);
@@ -161,13 +264,16 @@ describe("TradeForm", () => {
     expect(fetchStub).toHaveBeenCalledTimes(2);
     expect(fetchStub).toHaveBeenLastCalledWith(
       "https://api.example.test/clients/cpc/analyze",
-      expect.objectContaining({ body: JSON.stringify({
-        season: 2026, asker: 4,
-        sides: [
-          { roster_id: 4, gives: [{ player_id: "7569", to: 12 }] },
-          { roster_id: 12, gives: [{ player_id: "10236", to: 4 }] },
-        ],
-      }) }),
+      expect.objectContaining({
+        body: JSON.stringify({
+          season: 2026,
+          asker: 4,
+          sides: [
+            { roster_id: 4, gives: [{ player_id: "7569", to: 12 }] },
+            { roster_id: 12, gives: [{ player_id: "10236", to: 4 }] },
+          ],
+        }),
+      }),
     );
     expect(screen.queryByRole("button", { name: "Remove Garrett Wilson" })).toBeNull();
   });
@@ -180,7 +286,10 @@ describe("TradeForm", () => {
     expect(within(row).getByRole("button", { name: "Pick Team Two" })).toBeTruthy();
     expect(within(row).getByRole("button", { name: "Add a team" })).toBeTruthy();
     expect(within(row).getByText("2 of 4")).toBeTruthy();
-    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual(["Your Team gets", "Team Two gets"]);
+    expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
+      "Your Team gets",
+      "Team Two gets",
+    ]);
     expect(rowsOf("Your Team")).toEqual([]);
     expect(rowsOf("Team Two")).toEqual([]);
     expect(screen.getByText("Each team gives and gets at least one player.")).toBeTruthy();
@@ -206,16 +315,26 @@ describe("TradeForm", () => {
   it("shows each team with its avatar, name, and manager in the team sheet", async () => {
     fireEvent.click(slot("Your Team"));
     const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
-    expect(rows.map((r) => r.textContent)).toEqual(["Pukancun on 3Ana", "Blitz BakersBen", "Punt PunksCy"]);
+    expect(rows.map((r) => r.textContent)).toEqual([
+      "Pukancun on 3Ana",
+      "Blitz BakersBen",
+      "Punt PunksCy",
+    ]);
     expect(rows[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/ana.png");
     // A team with no avatar shows the default image.
-    expect(rows[1].querySelector("img")!.getAttribute("src")).toContain("/images/avatar-default.svg");
+    expect(rows[1].querySelector("img")!.getAttribute("src")).toContain(
+      "/images/avatar-default.svg",
+    );
   });
 
   it("shows the picked team's avatar in its slot and its name on its card", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
-    expect(slot("Your Team").getAttribute("aria-label")).toBe("Your Team: Pukancun on 3. Change the team");
-    expect(slot("Your Team").querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/ana.png");
+    expect(slot("Your Team").getAttribute("aria-label")).toBe(
+      "Your Team: Pukancun on 3. Change the team",
+    );
+    expect(slot("Your Team").querySelector("img")!.getAttribute("src")).toBe(
+      "https://cdn.test/ana.png",
+    );
     expect(within(card("Your Team")).getByText("Pukancun on 3")).toBeTruthy();
   });
 
@@ -230,9 +349,15 @@ describe("TradeForm", () => {
     await pickTeam("Your Team", "Pukancun on 3");
     fireEvent.click(slot("Team Two"));
     const list = within(await screen.findByRole("list", { name: "Teams" }));
-    expect((list.getByRole("button", { name: /Pukancun on 3/ }) as HTMLButtonElement).disabled).toBe(true);
-    expect(list.getByRole("button", { name: /Pukancun on 3/ }).textContent).toContain("In the trade");
-    expect((list.getByRole("button", { name: /Blitz Bakers/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(
+      (list.getByRole("button", { name: /Pukancun on 3/ }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    expect(list.getByRole("button", { name: /Pukancun on 3/ }).textContent).toContain(
+      "In the trade",
+    );
+    expect((list.getByRole("button", { name: /Blitz Bakers/ }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
   });
 
   it("opens the picker with a tab for each other team, a search field, and the position chips", async () => {
@@ -243,9 +368,11 @@ describe("TradeForm", () => {
     expect(open.getByRole("heading", { name: "Your Team gets" })).toBeTruthy();
     expect(open.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Blitz Bakers"]);
     expect(open.getByRole("searchbox", { name: "Search players" })).toBeTruthy();
-    expect(within(open.getByRole("group", { name: "Position" })).getAllByRole("button").map((b) => b.textContent)).toEqual([
-      "All", "QB", "RB", "WR", "TE", "DEF",
-    ]);
+    expect(
+      within(open.getByRole("group", { name: "Position" }))
+        .getAllByRole("button")
+        .map((b) => b.textContent),
+    ).toEqual(["All", "QB", "RB", "WR", "TE", "DEF"]);
     const rows = open.getAllByRole("checkbox");
     expect(rows.map((r) => r.textContent)).toEqual(["Ben OneRB NYJ", "Ben TwoWR NYJ"]);
     expect(rows[0].querySelector("img")!.getAttribute("src")).toBe("https://cdn.test/p3.png");
@@ -282,14 +409,19 @@ describe("TradeForm", () => {
     await pickTeam("Your Team", "Pukancun on 3");
     await pickTeam("Team Two", "Blitz Bakers");
     await pickPlayers("Your Team", "Blitz Bakers", "Ben Two", "Ben One");
-    expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers", "Ben OneRB NYJ · from Blitz Bakers"]);
+    expect(rowsOf("Your Team")).toEqual([
+      "Ben TwoWR NYJ · from Blitz Bakers",
+      "Ben OneRB NYJ · from Blitz Bakers",
+    ]);
   });
 
   it("closes the picker with the close button and keeps the picks", async () => {
     await pickTeam("Your Team", "Pukancun on 3");
     await pickTeam("Team Two", "Blitz Bakers");
     fireEvent.click(addPlayer("Your Team"));
-    fireEvent.click(within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }));
+    fireEvent.click(
+      within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }),
+    );
     fireEvent.click(within(sheet()).getByRole("button", { name: "Close" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(rowsOf("Your Team")).toEqual(["Ben TwoWR NYJ · from Blitz Bakers"]);
@@ -299,7 +431,9 @@ describe("TradeForm", () => {
     await pickTeam("Your Team", "Pukancun on 3");
     await pickTeam("Team Two", "Blitz Bakers");
     fireEvent.click(addPlayer("Your Team"));
-    fireEvent.click(within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }));
+    fireEvent.click(
+      within(await screen.findByRole("dialog")).getByRole("checkbox", { name: /Ben Two/ }),
+    );
     const dim = document.querySelector<HTMLElement>('[data-slot="drawer-backdrop"]')!;
     // A tap is a press, a release, and a click, as in a browser. The press closes the sheet and removes the dim, so the click lands on the page.
     const mouse = { pointerId: 1, pointerType: "mouse", button: 0 };
@@ -316,7 +450,9 @@ describe("TradeForm", () => {
     await pickPlayers("Your Team", "Blitz Bakers", "Ben Two", "Ben One");
     fireEvent.click(removeButton("Ben Two"));
     // The row animates out, so it leaves the page a moment after the click.
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull(),
+    );
     expect(rowsOf("Your Team")).toEqual(["Ben OneRB NYJ · from Blitz Bakers"]);
   });
 
@@ -364,7 +500,9 @@ describe("TradeForm", () => {
     await pickTrade(TRADE);
     await pickTeam("Team Two", "Punt Punks");
     expect(submit().disabled).toBe(true);
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Remove Ben Two" })).toBeNull(),
+    );
     expect(rowsOf("Team Two")).toEqual(["Ana OneWR NYJ · from Pukancun on 3"]);
   });
 
@@ -401,7 +539,7 @@ describe("TradeForm", () => {
   });
 
   it("counts a grade event on submit", async () => {
-    const count = vi.fn();
+    const count = mock();
     window.goatcounter = { count };
     answer(200, fixtureJson);
     await pickTrade(TRADE);
@@ -446,7 +584,11 @@ describe("TradeForm", () => {
     expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual(["https://cdn.test/p4.png"]);
     expect(stageHeadshots(stageRow(hero, TRADE.other))).toEqual(["https://cdn.test/p1.png"]);
     // The track of a sweep is aria-hidden, so the query includes hidden elements. An image with no alt is presentation too, so the query skips images.
-    expect(within(hero).queryAllByRole("presentation", { hidden: true }).filter((el) => el.tagName !== "IMG")).toEqual([]);
+    expect(
+      within(hero)
+        .queryAllByRole("presentation", { hidden: true })
+        .filter((el) => el.tagName !== "IMG"),
+    ).toEqual([]);
     expect(hero.querySelector(".animate-pulse")).toBeNull();
   });
 
@@ -470,7 +612,10 @@ describe("TradeForm", () => {
     await pickPlayers("Team Two", TRADE.mine, "Ana One");
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
-    expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual(["https://cdn.test/p3.png", "https://cdn.test/p4.png"]);
+    expect(stageHeadshots(stageRow(hero, TRADE.mine))).toEqual([
+      "https://cdn.test/p3.png",
+      "https://cdn.test/p4.png",
+    ]);
     expect(stageHeadshots(stageRow(hero, TRADE.other))).toEqual(["https://cdn.test/p1.png"]);
     expect(within(hero).queryByText("2 players")).toBeNull();
   });
@@ -482,12 +627,17 @@ describe("TradeForm", () => {
     const heroRead = await screen.findByRole("region", { name: "The Read" });
     // The rows replace the empty columns, so the hero holds one anchor per side and the dip of the reveal sits under a row.
     const rows = [...heroRead.querySelectorAll("[data-mesh-anchor]")];
-    expect(rows.map((row) => row.querySelector("[data-stage-team]")?.textContent)).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team"]);
+    expect(rows.map((row) => row.querySelector("[data-stage-team]")?.textContent)).toEqual([
+      "Pukancun on 3",
+      "Amon-Ra Dawg Your Team",
+    ]);
     expect(stageHeadshots(rows[0] as HTMLElement)).toEqual([
       "https://sleepercdn.com/content/nfl/players/10236.jpg",
       "https://sleepercdn.com/content/nfl/players/8146.jpg",
     ]);
-    expect(stageHeadshots(rows[1] as HTMLElement)).toEqual(["https://sleepercdn.com/content/nfl/players/7569.jpg"]);
+    expect(stageHeadshots(rows[1] as HTMLElement)).toEqual([
+      "https://sleepercdn.com/content/nfl/players/7569.jpg",
+    ]);
     // The avatar of a team comes from the teams of the league.
     expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://cdn.test/ana.png");
   });
@@ -547,26 +697,26 @@ describe("TradeForm", () => {
     const statuses = screen.getAllByRole("status");
     expect(statuses.map((status) => status.textContent)).toEqual(["Grading the trade"]);
     expect(statuses[0].hasAttribute("aria-label")).toBe(false);
-    expect(within(hero).queryByText("Weighing the sides", { ignore: "[aria-hidden=true] *" })).toBeNull();
+    expect(
+      within(hero).queryByText("Weighing the sides", { ignore: "[aria-hidden=true] *" }),
+    ).toBeNull();
   });
 
   it("names a player, a team, or a manager of the trade in a stage line", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     // The clock starts after the picks, so the picks keep the real timers. The hero mounts in the click.
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    try {
-      fireEvent.click(submit());
-      const hero = screen.getByRole("region", { name: "Grading the Trade" });
-      const seen: string[] = [];
-      for (let i = 0; i < 12; i++) {
-        seen.push(hero.querySelector(".t-think-text:last-child")?.textContent ?? "");
-        await act(async () => void vi.advanceTimersByTime(2500));
-      }
-      expect(seen.some((text) => /Ben Two|Ana One|Pukancun on 3|Blitz Bakers|Ana|Ben/.test(text))).toBe(true);
-    } finally {
-      vi.useRealTimers();
+    const clock = fakeTimeouts();
+    fireEvent.click(submit());
+    const hero = screen.getByRole("region", { name: "Grading the Trade" });
+    const seen: string[] = [];
+    for (let i = 0; i < 12; i++) {
+      seen.push(hero.querySelector(".t-think-text:last-child")?.textContent ?? "");
+      await act(async () => void clock.advance(2500));
     }
+    expect(
+      seen.some((text) => /Ben Two|Ana One|Pukancun on 3|Blitz Bakers|Ana|Ben/.test(text)),
+    ).toBe(true);
   });
 
   it("sends one POST to the analyze route with a JSON body and takes a JSON response (AT-26)", async () => {
@@ -618,7 +768,10 @@ describe("TradeForm", () => {
     expect(editButton.textContent).toBe("Edit");
     expect(editButton.querySelector("svg[aria-hidden='true']")).not.toBeNull();
     expect(heroRead.compareDocumentPosition(sides) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(editButton.compareDocumentPosition(screen.getByRole("tablist", { name: "The sides" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      editButton.compareDocumentPosition(screen.getByRole("tablist", { name: "The sides" })) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("draws no scene under a folded result or after Edit, as each hero of the analyzer is static (AT-35, AT-44)", async () => {
@@ -656,7 +809,12 @@ describe("TradeForm", () => {
     fetchStub.mockReturnValueOnce(new Promise<Response>((resolve) => (finish = resolve)));
     await pickTrade(TRADE);
     // The grade folds the form out of view, so the test holds each control before the tap.
-    const controls = [slot("Your Team"), slot("Team Two"), addPlayer("Your Team"), addPlayer("Team Two")];
+    const controls = [
+      slot("Your Team"),
+      slot("Team Two"),
+      addPlayer("Your Team"),
+      addPlayer("Team Two"),
+    ];
     const removeAnaOne = removeButton("Ana One");
     fireEvent.click(submit());
     await screen.findByText("Grading the Trade");
@@ -684,7 +842,9 @@ describe("TradeForm", () => {
     await screen.findByText("Player p1 is not on the giving roster.");
     expect(removeButton("Ana One").disabled).toBe(false);
     fireEvent.click(removeButton("Ana One"));
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ana One" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Remove Ana One" })).toBeNull(),
+    );
     expect(slot("Team Two").disabled).toBe(false);
   });
 
@@ -718,17 +878,32 @@ describe("TradeForm", () => {
   });
 
   it.each([
-    ["a 422", 422, { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } }, {}, "Player p1 is not on the giving roster."],
-    ["a 429", 429, { detail: "slow down" }, { "Retry-After": "12" }, "Too many requests. Try again in 12 seconds."],
+    [
+      "a 422",
+      422,
+      { detail: { message: "Player p1 is not on the giving roster.", player_id: "p1" } },
+      {},
+      "Player p1 is not on the giving roster.",
+    ],
+    [
+      "a 429",
+      429,
+      { detail: "slow down" },
+      { "Retry-After": "12" },
+      "Too many requests. Try again in 12 seconds.",
+    ],
     ["a 502", 502, { detail: "bad shape" }, {}, "The API sent an answer the site cannot read."],
-  ])("shows Try Again under the line of toErrorLine on %s", async (_name, status, body, headers, line) => {
-    answer(status, body, headers);
-    await pickTrade(TRADE);
-    fireEvent.click(submit());
-    const box = await screen.findByRole("group", { name: "The grade failed" });
-    expect(within(box).getByRole("alert").textContent).toBe(line);
-    expect(within(box).getByRole("button", { name: "Try Again" })).toBeTruthy();
-  });
+  ])(
+    "shows Try Again under the line of toErrorLine on %s",
+    async (_name, status, body, headers, line) => {
+      answer(status, body, headers);
+      await pickTrade(TRADE);
+      fireEvent.click(submit());
+      const box = await screen.findByRole("group", { name: "The grade failed" });
+      expect(within(box).getByRole("alert").textContent).toBe(line);
+      expect(within(box).getByRole("button", { name: "Try Again" })).toBeTruthy();
+    },
+  );
 
   it("shows the wait time on a 429", async () => {
     answer(429, { detail: "slow down" }, { "Retry-After": "12" });
@@ -741,7 +916,9 @@ describe("TradeForm", () => {
     answer(503);
     await pickTrade(TRADE);
     fireEvent.click(submit());
-    expect(await screen.findByText("The analyzer is down for the moment. Try again in a few minutes.")).toBeTruthy();
+    expect(
+      await screen.findByText("The analyzer is down for the moment. Try again in a few minutes."),
+    ).toBeTruthy();
     expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
   });
 
@@ -767,7 +944,8 @@ describe("TradeForm", () => {
   });
 
   it("shows the plain error of a failed read with Try Again, and no Lean (AT-49)", async () => {
-    const message = "The read of this trade did not come through. Try again in a minute. This try does not count toward your grades.";
+    const message =
+      "The read of this trade did not come through. Try again in a minute. This try does not count toward your grades.";
     answer(503, { detail: { message } });
     await pickTrade(TRADE);
     fireEvent.click(submit());
@@ -801,15 +979,17 @@ describe("TradeForm", () => {
   it("aborts after 60 seconds, shows the timeout line, and the retry posts again", async () => {
     await pickTrade(TRADE);
     // Only the timeout is fake. A fake clock for frames would leave Framer Motion on a stale time, so a later exit would stall.
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const clock = fakeTimeouts();
     fetchStub.mockImplementationOnce(
       (_url: string, init: RequestInit) =>
         new Promise((_resolve, reject) => {
-          init.signal!.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")));
+          init.signal!.addEventListener("abort", () =>
+            reject(new DOMException("aborted", "AbortError")),
+          );
         }),
     );
     fireEvent.click(submit());
-    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    await act(async () => void clock.advance(60_000));
 
     expect(screen.getByText("The grade took too long.")).toBeTruthy();
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
@@ -819,7 +999,7 @@ describe("TradeForm", () => {
   });
 
   it("aborts a pending grade on unmount without an error or a state update", async () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
     let signal: AbortSignal | undefined;
     fetchStub.mockImplementationOnce(
       (_url: string, init: RequestInit) =>
@@ -845,12 +1025,26 @@ describe("TradeForm", () => {
 describe("TradeForm with three or four sides", () => {
   const FOUR_TEAMS: Team[] = [
     ...TEAMS,
-    { roster_id: 9, team: "Draft Dodgers", manager: "Dee", avatar: null, players: [player("p6", "Dee One")] },
+    {
+      roster_id: 9,
+      team: "Draft Dodgers",
+      manager: "Dee",
+      avatar: null,
+      players: [player("p6", "Dee One")],
+    },
   ];
 
   beforeEach(() => {
     cleanup();
-    render(<TradeForm teams={FOUR_TEAMS} target={apiTarget} finderOn={finderOn} passphrase="localtest" onUnauthorized={onUnauthorized} />);
+    render(
+      <TradeForm
+        teams={FOUR_TEAMS}
+        target={apiTarget}
+        finderOn={finderOn}
+        passphrase="localtest"
+        onUnauthorized={onUnauthorized}
+      />,
+    );
   });
 
   async function pickTwoTeams() {
@@ -863,7 +1057,12 @@ describe("TradeForm with three or four sides", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add a team" }));
     const list = within(await screen.findByRole("list", { name: "Teams" }));
     // Every team shows, and the two teams of the trade are dimmed.
-    expect(list.getAllByRole("button").map((b) => (b as HTMLButtonElement).disabled)).toEqual([true, true, false, false]);
+    expect(list.getAllByRole("button").map((b) => (b as HTMLButtonElement).disabled)).toEqual([
+      true,
+      true,
+      false,
+      false,
+    ]);
     expect(within(sheet()).getByRole("heading", { name: "Pick Team Three" })).toBeTruthy();
     await chooseTeam("Punt Punks");
     expect(within(card("Team Three")).getByText("Punt Punks")).toBeTruthy();
@@ -876,7 +1075,10 @@ describe("TradeForm with three or four sides", () => {
     await addTeam("Punt Punks");
     await addTeam("Draft Dodgers");
     expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
-      "Your Team gets", "Team Two gets", "Team Three gets", "Team Four gets",
+      "Your Team gets",
+      "Team Two gets",
+      "Team Three gets",
+      "Team Four gets",
     ]);
     expect(screen.queryByRole("button", { name: "Add a team" })).toBeNull();
     expect(removeButton("Team Four")).toBeTruthy();
@@ -895,9 +1097,15 @@ describe("TradeForm with three or four sides", () => {
     await addTeam("Punt Punks");
     fireEvent.click(addPlayer("Team Three"));
     const open = within(await screen.findByRole("dialog"));
-    expect(open.getAllByRole("tab").map((t) => t.textContent)).toEqual(["Pukancun on 3", "Blitz Bakers"]);
+    expect(open.getAllByRole("tab").map((t) => t.textContent)).toEqual([
+      "Pukancun on 3",
+      "Blitz Bakers",
+    ]);
     fireEvent.click(open.getByRole("tab", { name: "Pukancun on 3" }));
-    expect(open.getAllByRole("checkbox").map((r) => r.textContent)).toEqual(["Ana OneWR NYJ", "Ana TwoQB NYJ"]);
+    expect(open.getAllByRole("checkbox").map((r) => r.textContent)).toEqual([
+      "Ana OneWR NYJ",
+      "Ana TwoQB NYJ",
+    ]);
   });
 
   it("dims a player that another team already gets", async () => {
@@ -917,7 +1125,9 @@ describe("TradeForm with three or four sides", () => {
     await addTeam("Punt Punks");
     await pickPlayers("Your Team", "Punt Punks", "Cy One");
     fireEvent.click(removeButton("Team Three"));
-    await waitFor(() => expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("region", { name: "Team Three gets" })).toBeNull(),
+    );
     expect(rowsOf("Your Team")).toEqual([]);
     expect(screen.getByText("2 of 4")).toBeTruthy();
   });
@@ -945,7 +1155,8 @@ describe("TradeForm with three or four sides", () => {
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     expect(screen.queryByRole("group", { name: "The trade" })).toBeNull();
-    for (const team of ["Pukancun on 3", "Blitz Bakers", "Punt Punks"]) expect(stageRow(hero, team)).toBeTruthy();
+    for (const team of ["Pukancun on 3", "Blitz Bakers", "Punt Punks"])
+      expect(stageRow(hero, team)).toBeTruthy();
   });
 
   it("posts every side in order with the destination of each player, as main does", async () => {
@@ -962,7 +1173,13 @@ describe("TradeForm with three or four sides", () => {
       season: 2026,
       asker: 4,
       sides: [
-        { roster_id: 4, gives: [{ player_id: "p1", to: 12 }, { player_id: "p2", to: 7 }] },
+        {
+          roster_id: 4,
+          gives: [
+            { player_id: "p1", to: 12 },
+            { player_id: "p2", to: 7 },
+          ],
+        },
         { roster_id: 12, gives: [{ player_id: "p4", to: 7 }] },
         { roster_id: 7, gives: [{ player_id: "p5", to: 4 }] },
       ],
@@ -988,10 +1205,18 @@ describe("TradeForm with the finder", () => {
       manager: `Manager ${side.roster_id}`,
       avatar: null,
       // Every player of the fixture trades is on the roster of the side that gives him.
-      players: findJson.trades.flatMap((t) => t.sides.find((s) => s.roster_id === side.roster_id)!.gives),
+      players: findJson.trades.flatMap(
+        (t) => t.sides.find((s) => s.roster_id === side.roster_id)!.gives,
+      ),
     })),
     // A third team lets a test add a third side.
-    { roster_id: 99, team: "Third Wheel", manager: "Tess", avatar: null, players: [player("p99", "Tess One")] },
+    {
+      roster_id: 99,
+      team: "Third Wheel",
+      manager: "Tess",
+      avatar: null,
+      players: [player("p99", "Tess One")],
+    },
   ];
 
   function WithModes() {
@@ -1009,7 +1234,8 @@ describe("TradeForm with the finder", () => {
     );
   }
 
-  const modeHalf = (name: string) => within(screen.getByRole("radiogroup", { name: "Mode" })).getByRole("radio", { name });
+  const modeHalf = (name: string) =>
+    within(screen.getByRole("radiogroup", { name: "Mode" })).getByRole("radio", { name });
   const partnerButton = () => screen.getByRole("button", { name: /Trade with/ });
 
   /* Taps "Find a trade" on the switch and waits for the Find hero. */
@@ -1023,7 +1249,9 @@ describe("TradeForm with the finder", () => {
   /* Picks the fixture partner in the sheet of Find and waits for the sheet to close. */
   async function pickPartner() {
     fireEvent.click(partnerButton());
-    const rows = within(await screen.findByRole("list", { name: "Partners" })).getAllByRole("button");
+    const rows = within(await screen.findByRole("list", { name: "Partners" })).getAllByRole(
+      "button",
+    );
     fireEvent.click(rows.find((row) => partnerRow.test(row.textContent ?? "")) as HTMLElement);
     await waitFor(() => expect(screen.queryByRole("list", { name: "Partners" })).toBeNull());
   }
@@ -1063,18 +1291,30 @@ describe("TradeForm with the finder", () => {
     await pickTeam("Team Two", partnerName);
     await addTeam("Third Wheel");
     await toFind();
-    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false);
+    expect(
+      (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+    ).toBe(false);
   });
 
   it("keeps Find off until my team is picked, and Your team of Find picks the team of Grade", async () => {
     await toFind();
-    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(
+      (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
     const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
-    fireEvent.click(rows.find((row) => row.textContent?.includes("All You Need Is Love")) as HTMLElement);
-    await waitFor(() => expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(
+      rows.find((row) => row.textContent?.includes("All You Need Is Love")) as HTMLElement,
+    );
+    await waitFor(() =>
+      expect(
+        (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+      ).toBe(false),
+    );
     fireEvent.click(modeHalf("Grade a trade"));
-    await waitFor(() => expect(slot("Your Team").getAttribute("aria-label")).toContain("All You Need Is Love"));
+    await waitFor(() =>
+      expect(slot("Your Team").getAttribute("aria-label")).toContain("All You Need Is Love"),
+    );
   });
 
   /* Finds with the fixture partner and taps "See the Full Result" on a card. A card with a read shows it at once. A
@@ -1103,16 +1343,20 @@ describe("TradeForm with the finder", () => {
     fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
     const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
     fireEvent.click(rows.find((row) => partnerRow.test(row.textContent ?? "")) as HTMLElement);
-    await waitFor(() => expect(screen.getByRole("button", { name: /Your team/ }).textContent).toContain(partnerName));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /Your team/ }).textContent).toContain(partnerName),
+    );
     expect(screen.queryAllByRole("article")).toHaveLength(0);
     expect(partnerButton().textContent).toContain("Every team");
     // With no partner, the search runs over every other team, so Find stays on.
-    expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false);
+    expect(
+      (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+    ).toBe(false);
   });
 
   it("scrolls the result into view after a card opens its full result", async () => {
     // jsdom has no scrollIntoView, so the test supplies one.
-    const scrollIntoView = vi.fn();
+    const scrollIntoView = mock();
     Element.prototype.scrollIntoView = scrollIntoView;
     await openCard(findJson, 1);
     await waitFor(() => expect(scrollIntoView).toHaveBeenCalledTimes(1));
@@ -1120,8 +1364,14 @@ describe("TradeForm with the finder", () => {
   });
 
   it("grades a card of a fallback, which has no read, with the season of the finder document", async () => {
-    Element.prototype.scrollIntoView = vi.fn();
-    const trades = findJson.trades.map((trade) => ({ ...trade, lean: null, case: null, bullets: [], fact_lines: ["A fact."] }));
+    Element.prototype.scrollIntoView = mock();
+    const trades = findJson.trades.map((trade) => ({
+      ...trade,
+      lean: null,
+      case: null,
+      bullets: [],
+      fact_lines: ["A fact."],
+    }));
     await openCard({ ...findJson, season: 2025, fallback: true, trades }, 1);
     const [url, init] = fetchStub.mock.calls[1];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");
@@ -1129,21 +1379,27 @@ describe("TradeForm with the finder", () => {
   });
 
   it("opens the trade of a card with the read of the find, with no analyze request, and the form holds the trade", async () => {
-    Element.prototype.scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = mock();
     await openCard(findJson, 1);
     const trade = findJson.trades[1];
     const read = screen.getByRole("region", { name: "The Read" });
     expect(read.textContent).toContain(trade.case!);
     // The find stream is the one request. The read comes with the find.
-    expect(fetchStub.mock.calls.map(([url]) => url)).toEqual(["https://api.example.test/clients/cpc/find-stream"]);
+    expect(fetchStub.mock.calls.map(([url]) => url)).toEqual([
+      "https://api.example.test/clients/cpc/find-stream",
+    ]);
     // The read of a card shows in Grade mode, so Find leaves the page.
     expect(screen.queryByRole("heading", { name: "Trade Ideas" })).toBeNull();
     // The form shows the trade of the card, so the picks match the read, and an edit grades it again.
     const [mine, theirs] = trade.sides;
     edit();
     expect(slot("Team Two").getAttribute("aria-label")).toContain(partnerName);
-    expect(within(card("Team Two")).getByRole("button", { name: `Remove ${mine.gives[0].name}` })).toBeTruthy();
-    expect(within(card("Your Team")).getByRole("button", { name: `Remove ${theirs.gives[0].name}` })).toBeTruthy();
+    expect(
+      within(card("Team Two")).getByRole("button", { name: `Remove ${mine.gives[0].name}` }),
+    ).toBeTruthy();
+    expect(
+      within(card("Your Team")).getByRole("button", { name: `Remove ${theirs.gives[0].name}` }),
+    ).toBeTruthy();
   });
 
   it("locks the switch in the grade wait and shows the eyebrow of the page, not Live", async () => {
@@ -1157,7 +1413,12 @@ describe("TradeForm with the finder", () => {
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     expect(slotText(hero, "eyebrow")).toBe("Trade Analyzer");
     const toggle = within(hero).getByRole("radiogroup", { name: "Mode" });
-    expect(within(toggle).getByRole("radio", { name: "Grade a trade" }).getAttribute("aria-checked")).toBe("true");
-    expect(within(toggle).getByRole("radio", { name: "Find a trade" }).hasAttribute("disabled") || toggle.getAttribute("aria-disabled") === "true").toBe(true);
+    expect(
+      within(toggle).getByRole("radio", { name: "Grade a trade" }).getAttribute("aria-checked"),
+    ).toBe("true");
+    expect(
+      within(toggle).getByRole("radio", { name: "Find a trade" }).hasAttribute("disabled") ||
+        toggle.getAttribute("aria-disabled") === "true",
+    ).toBe(true);
   });
 });

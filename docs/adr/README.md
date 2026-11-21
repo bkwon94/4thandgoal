@@ -39,3 +39,4 @@ An ADR from 0022 on has one number, so it needs no map. These ADRs name the chec
 | Number | Title |
 | --- | --- |
 | 0037 | [Each PR of code carries a smoke run, a re-run, and a base and head rebuild](0037-each-pr-of-code-carries-a-smoke-run-a-rerun-and-a-rebuild.md) |
+| 0038 | [The site checks run on Bun and Oxlint](0038-the-site-checks-run-on-bun-and-oxlint.md) |

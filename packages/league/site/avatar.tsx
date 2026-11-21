@@ -7,7 +7,11 @@
 import { swapAvatarToDefault } from "./images";
 
 /* A named size maps to a size class of the theme. A number sets the width and the height in pixels, for a size that comes from a layout table. */
-const SIZES = { avatar: "size-avatar", headshot: "size-headshot", ring: "size-ring-avatar" } as const;
+const SIZES = {
+  avatar: "size-avatar",
+  headshot: "size-headshot",
+  ring: "size-ring-avatar",
+} as const;
 
 /* The team name sits next to the avatar, so the image is decorative.
    The size class comes first and the className follows. A plain join keeps each class list as the page had it, because cn can merge or drop a name it does not know. */

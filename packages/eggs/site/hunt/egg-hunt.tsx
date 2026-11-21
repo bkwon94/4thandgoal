@@ -52,7 +52,10 @@ export function EggHunt({ api }: { api: EggsApi }) {
           (failure) => {
             // The limit of the check has its own card. Any other failure shows nothing, so a stranger learns nothing from an error.
             if (failure instanceof EggsError && failure.status === 429) {
-              setState({ step: "end", end: { kind: "limit", minutes: minutesOf(failure.retryAfter) } });
+              setState({
+                step: "end",
+                end: { kind: "limit", minutes: minutesOf(failure.retryAfter) },
+              });
             }
           },
         );
@@ -78,7 +81,9 @@ export function EggHunt({ api }: { api: EggsApi }) {
         api={api}
         letter={letter}
         token={state.token}
-        onClaimed={(answer, prize, team) => setState({ step: "end", end: { kind: "claimed", answer, prize, team } })}
+        onClaimed={(answer, prize, team) =>
+          setState({ step: "end", end: { kind: "claimed", answer, prize, team } })
+        }
         onClaimedFirst={() => setState({ step: "end", end: { kind: "claimed-first", letter } })}
         onClose={close}
       />

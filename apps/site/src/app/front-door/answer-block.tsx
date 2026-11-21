@@ -32,9 +32,22 @@ import { WaiverListView, waiverListSchema, waiverListText } from "./waiver-list"
 const listBlockSchema = z.object({
   kind: z.literal("list"),
   title: z.string(),
-  rows: z.array(z.object({ rank: z.number(), name: z.string(), tag: z.string(), value: z.string(), note: z.string().optional() })),
+  rows: z.array(
+    z.object({
+      rank: z.number(),
+      name: z.string(),
+      tag: z.string(),
+      value: z.string(),
+      note: z.string().optional(),
+    }),
+  ),
 });
-const tableBlockSchema = z.object({ kind: z.literal("table"), title: z.string(), columns: z.array(z.string()), rows: z.array(z.array(z.string())) });
+const tableBlockSchema = z.object({
+  kind: z.literal("table"),
+  title: z.string(),
+  columns: z.array(z.string()),
+  rows: z.array(z.array(z.string())),
+});
 const playerBlockSchema = z.object({
   kind: z.literal("player"),
   name: z.string(),
@@ -86,9 +99,15 @@ export function blockText(block: AnswerBlock): string {
     case "table":
       return `${block.title}: ${[block.columns, ...block.rows].map((row) => row.join(" | ")).join("; ")}.`;
     case "player": {
-      const head = [block.name, block.position, block.nfl_team, block.fantasy_team ?? "free agent"].filter(Boolean).join(", ");
+      const head = [block.name, block.position, block.nfl_team, block.fantasy_team ?? "free agent"]
+        .filter(Boolean)
+        .join(", ");
       const stats = block.stats.map((stat) => `${stat.label} ${stat.value}.`);
-      return [`${head}, ${block.can_play_now ? "can play now" : "can't play now"} (${block.status}).`, ...stats, ...(block.note ? [block.note] : [])].join(" ");
+      return [
+        `${head}, ${block.can_play_now ? "can play now" : "can't play now"} (${block.status}).`,
+        ...stats,
+        ...(block.note ? [block.note] : []),
+      ].join(" ");
     }
     case "recap":
       return recapText(block);
@@ -124,7 +143,10 @@ export function blockText(block: AnswerBlock): string {
 /* The quiet mono label over a block, as the label of a stat of the data block. */
 function Label({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <p id={id} className="m-0 truncate font-mono text-meta leading-tight tracking-caps text-mute uppercase">
+    <p
+      id={id}
+      className="text-meta tracking-caps text-mute m-0 truncate font-mono leading-tight uppercase"
+    >
       {children}
     </p>
   );
@@ -132,11 +154,26 @@ function Label({ id, children }: { id?: string; children: ReactNode }) {
 
 /* One part of a block. A live block settles in after the words of its lead line: the label first, then each row rises
    from a soft blur on the stagger of the rows. A kept block shows at once. */
-function Rise({ live, index, as = "div", className, children, ...rest }: { live: boolean; index: number; as?: "div" | "li" | "tr"; className?: string; children: ReactNode } & Record<string, unknown>) {
+function Rise({
+  live,
+  index,
+  as = "div",
+  className,
+  children,
+  ...rest
+}: {
+  live: boolean;
+  index: number;
+  as?: "div" | "li" | "tr";
+  className?: string;
+  children: ReactNode;
+} & Record<string, unknown>) {
   const off = useMotionOff();
   const Tag = motion[as] as typeof motion.div;
   // The words of the lead line sweep in for up to --duration-very-slow, so the block starts as they settle.
-  const motionProps = live ? riseIn(off, { text: true, delay: VERY_SLOW * 0.6 + staggerOf(index) }) : {};
+  const motionProps = live
+    ? riseIn(off, { text: true, delay: VERY_SLOW * 0.6 + staggerOf(index) })
+    : {};
   return (
     <Tag className={className} {...motionProps} {...rest}>
       {children}
@@ -144,25 +181,49 @@ function Rise({ live, index, as = "div", className, children, ...rest }: { live:
   );
 }
 
-function ListView({ block, live }: { block: Extract<AnswerBlock, { kind: "list" }>; live: boolean }) {
+function ListView({
+  block,
+  live,
+}: {
+  block: Extract<AnswerBlock, { kind: "list" }>;
+  live: boolean;
+}) {
   const id = `block-${block.title}`.replace(/\W+/g, "-");
   return (
-    <div className="flex min-w-0 flex-col gap-sp-2" data-block="list">
+    <div className="gap-sp-2 flex min-w-0 flex-col" data-block="list">
       <Rise live={live} index={0}>
         <Label id={id}>{block.title}</Label>
       </Rise>
-      <ul aria-labelledby={id} className="m-0 flex list-none flex-col border-t border-rule p-0">
+      <ul aria-labelledby={id} className="border-rule m-0 flex list-none flex-col border-t p-0">
         {block.rows.map((row, index) => (
-          <Rise key={`${row.rank}-${row.name}`} as="li" live={live} index={index + 1} className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0">
-            <span className="font-mono text-meta leading-tight text-mute tabular-nums">{row.rank}</span>
-            <span className="flex min-w-0 flex-col">
-              <span className="flex min-w-0 items-baseline gap-sp-2">
-                <span className="truncate text-row leading-tight font-semibold text-ink">{row.name}</span>
-                <span className="flex-none font-mono text-meta leading-tight text-mute">{row.tag}</span>
-              </span>
-              {row.note && <span className="truncate font-mono text-meta leading-tight text-mute">{row.note}</span>}
+          <Rise
+            key={`${row.rank}-${row.name}`}
+            as="li"
+            live={live}
+            index={index + 1}
+            className="gap-x-sp-3 border-rule py-sp-2 grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center border-b last:border-b-0"
+          >
+            <span className="text-meta text-mute font-mono leading-tight tabular-nums">
+              {row.rank}
             </span>
-            <span className="font-mono text-row leading-tight text-ink-2 tabular-nums">{row.value}</span>
+            <span className="flex min-w-0 flex-col">
+              <span className="gap-sp-2 flex min-w-0 items-baseline">
+                <span className="text-row text-ink truncate leading-tight font-semibold">
+                  {row.name}
+                </span>
+                <span className="text-meta text-mute flex-none font-mono leading-tight">
+                  {row.tag}
+                </span>
+              </span>
+              {row.note && (
+                <span className="text-meta text-mute truncate font-mono leading-tight">
+                  {row.note}
+                </span>
+              )}
+            </span>
+            <span className="text-row text-ink-2 font-mono leading-tight tabular-nums">
+              {row.value}
+            </span>
           </Rise>
         ))}
       </ul>
@@ -172,14 +233,23 @@ function ListView({ block, live }: { block: Extract<AnswerBlock, { kind: "list" 
 
 /* A table fits the card at 390 px: the columns share the width, and a long cell truncates whole with its full text in
    its title, so the card never scrolls sideways. The first column names each row, so it reads left and takes more room. */
-function TableView({ block, live }: { block: Extract<AnswerBlock, { kind: "table" }>; live: boolean }) {
+function TableView({
+  block,
+  live,
+}: {
+  block: Extract<AnswerBlock, { kind: "table" }>;
+  live: boolean;
+}) {
   const first = block.columns.length > 2 ? "34%" : "50%";
   return (
-    <div className="flex min-w-0 flex-col gap-sp-2" data-block="table">
+    <div className="gap-sp-2 flex min-w-0 flex-col" data-block="table">
       <Rise live={live} index={0}>
         <Label>{block.title}</Label>
       </Rise>
-      <table aria-label={block.title} className="w-full table-fixed border-collapse border-t border-rule">
+      <table
+        aria-label={block.title}
+        className="border-rule w-full table-fixed border-collapse border-t"
+      >
         <colgroup>
           <col style={{ width: first }} />
           {block.columns.slice(1).map((column, index) => (
@@ -187,9 +257,14 @@ function TableView({ block, live }: { block: Extract<AnswerBlock, { kind: "table
           ))}
         </colgroup>
         <thead>
-          <tr className="border-b border-rule">
+          <tr className="border-rule border-b">
             {block.columns.map((column, index) => (
-              <th key={`${column}-${index}`} scope="col" title={column} className={`truncate py-sp-2 font-mono text-meta leading-tight font-normal tracking-caps text-mute uppercase ${index === 0 ? "text-left" : "pl-sp-2 text-right"}`}>
+              <th
+                key={`${column}-${index}`}
+                scope="col"
+                title={column}
+                className={`py-sp-2 text-meta tracking-caps text-mute truncate font-mono leading-tight font-normal uppercase ${index === 0 ? "text-left" : "pl-sp-2 text-right"}`}
+              >
                 {column}
               </th>
             ))}
@@ -197,9 +272,19 @@ function TableView({ block, live }: { block: Extract<AnswerBlock, { kind: "table
         </thead>
         <tbody>
           {block.rows.map((row, rowIndex) => (
-            <Rise key={rowIndex} as="tr" live={live} index={rowIndex + 1} className="border-b border-rule last:border-b-0">
+            <Rise
+              key={rowIndex}
+              as="tr"
+              live={live}
+              index={rowIndex + 1}
+              className="border-rule border-b last:border-b-0"
+            >
               {row.map((cell, index) => (
-                <td key={index} title={cell} className={`truncate py-sp-2 text-row leading-tight ${index === 0 ? "text-left font-semibold text-ink" : "pl-sp-2 text-right font-mono text-ink-2 tabular-nums"}`}>
+                <td
+                  key={index}
+                  title={cell}
+                  className={`py-sp-2 text-row truncate leading-tight ${index === 0 ? "text-ink text-left font-semibold" : "pl-sp-2 text-ink-2 text-right font-mono tabular-nums"}`}
+                >
                   {cell}
                 </td>
               ))}
@@ -211,35 +296,60 @@ function TableView({ block, live }: { block: Extract<AnswerBlock, { kind: "table
   );
 }
 
-function PlayerView({ block, live }: { block: Extract<AnswerBlock, { kind: "player" }>; live: boolean }) {
+function PlayerView({
+  block,
+  live,
+}: {
+  block: Extract<AnswerBlock, { kind: "player" }>;
+  live: boolean;
+}) {
   const team = block.fantasy_team ?? "Free agent";
   return (
-    <div role="group" aria-label={block.name} className="flex min-w-0 flex-col gap-sp-3 border-t border-rule pt-sp-3" data-block="player">
-      <Rise live={live} index={0} className="flex min-w-0 flex-col gap-sp-1">
-        <p className="m-0 truncate text-stat leading-tight font-bold text-ink">{block.name}</p>
-        <p className="m-0 truncate font-mono text-meta leading-tight text-mute">{[block.position, block.nfl_team, team].filter(Boolean).join(" · ")}</p>
+    <div
+      role="group"
+      aria-label={block.name}
+      className="gap-sp-3 border-rule pt-sp-3 flex min-w-0 flex-col border-t"
+      data-block="player"
+    >
+      <Rise live={live} index={0} className="gap-sp-1 flex min-w-0 flex-col">
+        <p className="text-stat text-ink m-0 truncate leading-tight font-bold">{block.name}</p>
+        <p className="text-meta text-mute m-0 truncate font-mono leading-tight">
+          {[block.position, block.nfl_team, team].filter(Boolean).join(" · ")}
+        </p>
       </Rise>
       <Rise live={live} index={1}>
         {/* The status reads in words and in color, so it never rests on color alone. */}
-        <p className="m-0 inline-flex items-center gap-sp-2 text-row leading-tight font-semibold text-ink">
-          <span aria-hidden className={`size-sp-2 flex-none rounded-full ${block.can_play_now ? "bg-move-up" : "bg-move-down"}`} />
+        <p className="gap-sp-2 text-row text-ink m-0 inline-flex items-center leading-tight font-semibold">
+          <span
+            aria-hidden
+            className={`size-sp-2 flex-none rounded-full ${block.can_play_now ? "bg-move-up" : "bg-move-down"}`}
+          />
           {block.can_play_now ? "Can play now" : "Can't play now"}
-          <span className="font-mono text-meta font-normal text-mute">{block.status}</span>
+          <span className="text-meta text-mute font-mono font-normal">{block.status}</span>
         </p>
       </Rise>
       {block.stats.length > 0 && (
-        <dl className="m-0 grid grid-cols-2 gap-x-sp-4 gap-y-sp-3">
+        <dl className="gap-x-sp-4 gap-y-sp-3 m-0 grid grid-cols-2">
           {block.stats.map((stat, index) => (
-            <Rise key={stat.label} live={live} index={index + 2} className="flex min-w-0 flex-col gap-sp-1">
-              <dt className="truncate font-mono text-meta leading-tight tracking-caps text-mute uppercase">{stat.label}</dt>
-              <dd className="m-0 truncate text-row leading-tight font-bold tabular-nums">{stat.value}</dd>
+            <Rise
+              key={stat.label}
+              live={live}
+              index={index + 2}
+              className="gap-sp-1 flex min-w-0 flex-col"
+            >
+              <dt className="text-meta tracking-caps text-mute truncate font-mono leading-tight uppercase">
+                {stat.label}
+              </dt>
+              <dd className="text-row m-0 truncate leading-tight font-bold tabular-nums">
+                {stat.value}
+              </dd>
             </Rise>
           ))}
         </dl>
       )}
       {block.note && (
         <Rise live={live} index={block.stats.length + 2}>
-          <p className="m-0 text-body leading-body text-ink-2">{block.note}</p>
+          <p className="text-body leading-body text-ink-2 m-0">{block.note}</p>
         </Rise>
       )}
     </div>
@@ -247,7 +357,15 @@ function PlayerView({ block, live }: { block: Extract<AnswerBlock, { kind: "play
 }
 
 /* The component of each kind of block. `you` is the name of Your team, for a block that names each team only by its name. */
-export function BlockView({ block, live, you }: { block: AnswerBlock; live: boolean; you?: string }) {
+export function BlockView({
+  block,
+  live,
+  you,
+}: {
+  block: AnswerBlock;
+  live: boolean;
+  you?: string;
+}) {
   switch (block.kind) {
     case "list":
       return <ListView block={block} live={live} />;

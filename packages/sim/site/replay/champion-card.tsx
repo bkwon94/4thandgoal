@@ -11,7 +11,8 @@ import type { Champion } from "./season";
 import { stableId } from "@cpc/design/lib/stable-id";
 
 /* The rays: thin wedges of the accent around the avatar, as a conic gradient. */
-const RAYS = "repeating-conic-gradient(from 0deg, var(--color-accent) 0deg 4deg, transparent 4deg 18deg)";
+const RAYS =
+  "repeating-conic-gradient(from 0deg, var(--color-accent) 0deg 4deg, transparent 4deg 18deg)";
 
 export function ChampionCard({
   champion,
@@ -34,13 +35,14 @@ export function ChampionCard({
       aria-label="Champion of This Run"
       {...enter(pace, { scale: 0.96 }, { duration: 0.4 })}
       // The card sits in the flow of the stage above the bracket, so the final state shows both. It clips the rays.
-      className="relative flex flex-col items-center gap-sp-3 overflow-hidden px-sp-4 text-center"
+      className="gap-sp-3 px-sp-4 relative flex flex-col items-center overflow-hidden text-center"
     >
-      <div className="relative flex items-center justify-center p-sp-6">
+      <div className="p-sp-6 relative flex items-center justify-center">
         {burst && (
           <>
             <motion.span
               aria-hidden="true"
+              // oxlint-disable-next-line design/no-arbitrary-value -- the glow spills 40 percent past the card, a size relative to the card
               className="pointer-events-none absolute inset-[-40%] rounded-full"
               style={{ background: RAYS }}
               initial={{ opacity: 0, rotate: 0, scale: 0.6 }}
@@ -49,14 +51,18 @@ export function ChampionCard({
             />
             <motion.span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-full border-2 border-accent"
+              className="border-accent pointer-events-none absolute inset-0 rounded-full border-2"
               initial={{ opacity: 1, scale: 0.6 }}
               animate={{ opacity: 0, scale: 1.8 }}
               transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
             />
           </>
         )}
-        <motion.span data-avatar {...enter(pace, { scale: 0.4 }, { spring: true, delay: 0.1 })} className="relative">
+        <motion.span
+          data-avatar
+          {...enter(pace, { scale: 0.4 }, { spring: true, delay: 0.1 })}
+          className="relative"
+        >
           <PhotoFrame src={avatar} name={champion.name} size="lg" decorative />
         </motion.span>
         {/* The trophy drops in to the top of the box, centered over the avatar. */}
@@ -65,14 +71,19 @@ export function ChampionCard({
           aria-hidden="true"
           {...stableId("sim-trophy")}
           {...enter(pace, { y: -24 }, { spring: true, delay: 0.35 })}
-          className="absolute top-0 left-1/2 -translate-x-1/2 text-accent-text"
+          className="text-accent-text absolute top-0 left-1/2 -translate-x-1/2"
         >
           <Trophy className="size-sp-6" strokeWidth={2.5} />
         </motion.span>
       </div>
-      <motion.div {...enter(pace, {}, { duration: 0.4, delay: 0.5 })} className="flex flex-col items-center gap-sp-1">
-        <span className="font-mono text-meta font-bold tracking-caps text-accent-text uppercase">Champion of This Run</span>
-        <span className="text-score leading-tight font-bold text-on-dark">{champion.name}</span>
+      <motion.div
+        {...enter(pace, {}, { duration: 0.4, delay: 0.5 })}
+        className="gap-sp-1 flex flex-col items-center"
+      >
+        <span className="text-meta tracking-caps text-accent-text font-mono font-bold uppercase">
+          Champion of This Run
+        </span>
+        <span className="text-score text-on-dark leading-tight font-bold">{champion.name}</span>
         <span className="text-body text-on-dark-2">{`Wins the title in ${champion.title}% of all ${thousands(runs)} runs`}</span>
       </motion.div>
     </motion.div>

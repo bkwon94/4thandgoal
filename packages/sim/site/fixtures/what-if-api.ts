@@ -27,7 +27,8 @@ export function fakeWhatIfApi(): FakeWhatIfApi {
     await Promise.resolve();
     if (signal.aborted) throw new DOMException("The call was cancelled.", "AbortError");
     const answer = ANSWERS.find((entry) => keyOf(entry) === keyOf(ask));
-    if (answer === undefined) throw new WhatIfError(422, `The fake has no answer for ${keyOf(ask)}.`);
+    if (answer === undefined)
+      throw new WhatIfError(422, `The fake has no answer for ${keyOf(ask)}.`);
     return answer;
   };
   return Object.assign(api, { calls });

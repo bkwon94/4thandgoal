@@ -3,7 +3,7 @@
  * A copy of the JSON with no trades checks that the chapter is left out.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import { Trades } from "./trades";
 
@@ -36,7 +36,9 @@ describe("Trades", () => {
     expect(gets(chapter, "NFC Least")).toEqual(["Saquon Barkley", "CeeDee Lamb"]);
     expect(gets(chapter, "behold the lamb")).toEqual(["Omar Cooper Jr.", "Puka Nacua"]);
     // The name sits beside the frame, so the photo is decorative and a screen reader hears the name once.
-    const saquon = within(within(chapter).getByRole("list", { name: "NFC Least gets" })).getAllByRole("listitem")[0];
+    const saquon = within(
+      within(chapter).getByRole("list", { name: "NFC Least gets" }),
+    ).getAllByRole("listitem")[0];
     expect(saquon.querySelector("img")?.getAttribute("src")).toBe("headshots/4866.png");
   });
 
@@ -55,7 +57,12 @@ describe("Trades", () => {
 
   it("shows picks as plain lines and all sides of a trade of three", () => {
     const [a, b] = week8.trades[0].sides;
-    const third = { ...a, team: { ...a.team, roster_id: 901, name: "Third Team" }, players: [], picks: ["2027 1st round"] };
+    const third = {
+      ...a,
+      team: { ...a.team, roster_id: 901, name: "Third Team" },
+      players: [],
+      picks: ["2027 1st round"],
+    };
     const chapter = renderTrades([{ sides: [a, b, third] }]);
     expect(gets(chapter, "Third Team")).toEqual(["2027 1st round"]);
     expect(within(chapter).getByText("1 this week")).toBeTruthy();

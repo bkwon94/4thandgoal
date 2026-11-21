@@ -2,7 +2,7 @@
  * Parses the API fixtures with the response schemas.
  * A fixture that drifts from its schema fails here, and the message names the bad field.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import analyzeJson from "../fixtures/analyze-response.json";
 import findJson from "../fixtures/find-response.json";
 import findBoGirdsJson from "../fixtures/find-response-bo-girds-rb.json";
@@ -52,11 +52,14 @@ describe("API response schemas", () => {
   it("parses the recorded find answer of a real press for Bo Girds, with the totals of each pick and near idea", () => {
     const parsed = findResponseSchema.parse(fixture("find-response-bo-girds-rb.json"));
     expect(parsed.trades.length).toBeGreaterThan(0);
-    for (const offer of [...parsed.trades, ...parsed.near]) expect(offer.totals.map((t) => t.roster_id)).toEqual(offer.sides.map((s) => s.roster_id));
+    for (const offer of [...parsed.trades, ...parsed.near])
+      expect(offer.totals.map((t) => t.roster_id)).toEqual(offer.sides.map((s) => s.roster_id));
   });
 
   it("accepts a null trade value total, for a week with no chart", () => {
-    const body = fixture("find-response.json") as { trades: { totals: { trade_value: number | null }[] }[] };
+    const body = fixture("find-response.json") as {
+      trades: { totals: { trade_value: number | null }[] }[];
+    };
     body.trades[0].totals[0].trade_value = null;
     expect(findResponseSchema.safeParse(body).success).toBe(true);
   });
@@ -79,14 +82,22 @@ describe("API response schemas", () => {
   });
 
   it("rejects a finder Bullet with no fact text", () => {
-    const body = fixture("find-response.json") as { trades: { bullets: Record<string, unknown>[] }[] };
+    const body = fixture("find-response.json") as {
+      trades: { bullets: Record<string, unknown>[] }[];
+    };
     delete body.trades[0].bullets[0].fact_text;
     expect(findResponseSchema.safeParse(body).success).toBe(false);
   });
 
   it("accepts the nulls the API sends in as_of", () => {
     const body = fixture("analyze-response.json") as { as_of: Record<string, unknown> };
-    body.as_of = { ...body.as_of, chart_week: null, rosters_fetched: null, no_chart: false, no_chart_note: null };
+    body.as_of = {
+      ...body.as_of,
+      chart_week: null,
+      rosters_fetched: null,
+      no_chart: false,
+      no_chart_note: null,
+    };
     expect(analyzeResponseSchema.safeParse(body).success).toBe(true);
   });
 });

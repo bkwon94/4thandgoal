@@ -2,7 +2,7 @@
  * Tests for the pick of the stored run that the replay of the sim page plays: a run comes up with a chance in
  * proportion to its weight, and a run of weight 0 never comes up. The random number is a port, so each test sets it.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { pickRun } from "./pick";
 
 describe("the pick of a stored run", () => {

@@ -30,11 +30,18 @@ type State = {
 
 /* The held block of `week` with the odds of the answer on its set result. The answer holds the result of the tap and
    each other set result, so the pressed tile shows the header odds of that answer, not the noisy odds of the split. */
-function withOdds(held: State["held"], week: number, choice: NonNullable<Choice>, page: SimPage): State["held"] {
+function withOdds(
+  held: State["held"],
+  week: number,
+  choice: NonNullable<Choice>,
+  page: SimPage,
+): State["held"] {
   const block = held[week];
   if (block === undefined) return held;
   const results = block.results.map((result) =>
-    result.game === choice.game && result.median === choice.median ? { ...result, playoff: page.playoff, about: false } : result,
+    result.game === choice.game && result.median === choice.median
+      ? { ...result, playoff: page.playoff, about: false }
+      : result,
   );
   return { ...held, [week]: { ...block, results } };
 }
@@ -73,7 +80,8 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
     (week: number, choice: Choice) => {
       cancel();
       const rest = state.set.filter((result) => result.week !== week);
-      const set = choice === null ? rest : [...rest, { week, ...choice }].sort((a, b) => a.week - b.week);
+      const set =
+        choice === null ? rest : [...rest, { week, ...choice }].sort((a, b) => a.week - b.week);
       const held = { ...state.held };
       delete held[week];
       if (choice !== null) {
@@ -92,7 +100,9 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
         setState((was) => {
           const kept = was.answer?.set ?? [];
           const keep = new Set(kept.map((result) => result.week));
-          const left = Object.fromEntries(Object.entries(was.held).filter(([key]) => keep.has(Number(key))));
+          const left = Object.fromEntries(
+            Object.entries(was.held).filter(([key]) => keep.has(Number(key))),
+          );
           return { ...was, set: kept, held: left, pending: false, down: true };
         });
       if (api === undefined) {
@@ -105,7 +115,15 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
           call.current = null;
           setState((was) => ({
             ...was,
-            answer: { page: answer.page, set, runs: { teams: answer.teams, sample: answer.sample, sample_weights: answer.sample_weights } },
+            answer: {
+              page: answer.page,
+              set,
+              runs: {
+                teams: answer.teams,
+                sample: answer.sample,
+                sample_weights: answer.sample_weights,
+              },
+            },
             held: choice === null ? was.held : withOdds(was.held, week, choice, answer.page),
             pending: false,
             down: false,
@@ -127,7 +145,17 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
     setState(EMPTY);
   }, []);
 
-  const weekOf = (week: number) => state.held[week] ?? shown.weeks.find((entry) => entry.week === week);
+  const weekOf = (week: number) =>
+    state.held[week] ?? shown.weeks.find((entry) => entry.week === week);
 
-  return { set: state.set, page: shown, runs: answered?.runs ?? null, weekOf, pending: state.pending, down: state.down, choose, reset };
+  return {
+    set: state.set,
+    page: shown,
+    runs: answered?.runs ?? null,
+    weekOf,
+    pending: state.pending,
+    down: state.down,
+    choose,
+    reset,
+  };
 }

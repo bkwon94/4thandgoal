@@ -3,7 +3,7 @@
  * They check what a reader sees, not the class names.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import { NextWeek } from "./next-week";
 
@@ -12,7 +12,14 @@ afterEach(() => {
 });
 
 function renderNext(games = week8.next) {
-  render(<NextWeek week={week8.week} games={games} avatars={week8.avatars} blurb={week8.blurbs.next_week} />);
+  render(
+    <NextWeek
+      week={week8.week}
+      games={games}
+      avatars={week8.avatars}
+      blurb={week8.blurbs.next_week}
+    />,
+  );
   return screen.getByRole("region", { name: "Next week" });
 }
 
@@ -25,7 +32,9 @@ describe("NextWeek", () => {
     expect(within(chapter).getByText("Week 09")).toBeTruthy();
     const blurb = within(chapter).getByText(week8.blurbs.next_week!);
     expect(blurb.tagName).toBe("P");
-    expect(blurb.compareDocumentPosition(cards(chapter)[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      blurb.compareDocumentPosition(cards(chapter)[0]) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("shows a card for each game with both teams and their records", () => {
@@ -40,7 +49,10 @@ describe("NextWeek", () => {
   it("gives each game an id with the roster ids of its two teams, lower first, apart from the ids of this week", () => {
     const chapter = renderNext();
     expect(cards(chapter).map((card) => card.id)).toEqual(
-      week8.next.map((game) => `next-game-${Math.min(game.a.roster_id, game.b.roster_id)}-${Math.max(game.a.roster_id, game.b.roster_id)}`),
+      week8.next.map(
+        (game) =>
+          `next-game-${Math.min(game.a.roster_id, game.b.roster_id)}-${Math.max(game.a.roster_id, game.b.roster_id)}`,
+      ),
     );
     expect(document.getElementById("next-game-3-10")?.textContent).toContain("Lil Fridge");
   });
@@ -59,7 +71,9 @@ describe("NextWeek", () => {
     const chapter = renderNext();
     const card = cards(chapter)[2];
     const line = within(card).getAllByText("On bye")[1].parentElement!;
-    expect(line.textContent).toBe("On bye Jaylen Warren RB · Carnell Tate WR · Pittsburgh Steelers DEF");
+    expect(line.textContent).toBe(
+      "On bye Jaylen Warren RB · Carnell Tate WR · Pittsburgh Steelers DEF",
+    );
     expect(within(line).getByText("Jaylen Warren").tagName).toBe("STRONG");
     expect(within(line).getByText("Pittsburgh Steelers").tagName).not.toBe("STRONG");
   });

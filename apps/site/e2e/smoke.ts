@@ -2,7 +2,14 @@
  * The smoke run of the verify skill: it drives each picked flow of the flow list at the smoke sizes, in the light theme.
  * A flow fails on a failed step, a failed expect, a page error, a console error, an API error, or an overlap of two texts.
  */
-import { chromium, devices, webkit, type Browser, type BrowserContextOptions, type Page } from "@playwright/test";
+import {
+  chromium,
+  devices,
+  webkit,
+  type Browser,
+  type BrowserContextOptions,
+  type Page,
+} from "@playwright/test";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { checkStep, LOCAL_API, runSteps, type EvidenceTest, type Step } from "./evidence";
@@ -12,13 +19,26 @@ import { openPage } from "./floor";
  * One flow of the flow list. The expect steps hold its expected results; "expected" says them in words for the Judge.
  * "claude" marks a flow whose steps call Claude, and "layout" marks a flow whose layout changes with the width.
  */
-export type Flow = { name: string; globs: string[]; route: string; steps: Step[]; expected: string; claude: boolean; layout: boolean };
+export type Flow = {
+  name: string;
+  globs: string[];
+  route: string;
+  steps: Step[];
+  expected: string;
+  claude: boolean;
+  layout: boolean;
+};
 
 /* The keys of a flow, as the spec names them. Any other key is an error. */
 const KEYS = ["name", "globs", "route", "steps", "expected", "claude", "layout"] as const;
 
 /* One size of a smoke run: its name in the log, its browser, and its context. */
-type Size = { name: string; browser: "webkit" | "chromium"; width: number; context: BrowserContextOptions };
+type Size = {
+  name: string;
+  browser: "webkit" | "chromium";
+  width: number;
+  context: BrowserContextOptions;
+};
 
 // The iPhone and iPad profiles with no browser type, because the size names its own browser.
 const { defaultBrowserType: _phoneBrowser, ...phone } = devices["iPhone 15"];
@@ -28,13 +48,33 @@ const { defaultBrowserType: _tabletBrowser, ...tablet } = devices["iPad Pro 11"]
  * The two smoke sizes of each flow: the iPhone in WebKit at 390x660, the screen that Safari leaves under its bars, and the
  * desktop at 1280x800. The acceptance rounds of the evidence runner keep their own sizes.
  */
-const PHONE: Size = { name: "390x660", browser: "webkit", width: 390, context: { ...phone, viewport: { width: 390, height: 660 } } };
-const DESKTOP: Size = { name: "1280x800", browser: "chromium", width: 1280, context: { viewport: { width: 1280, height: 800 } } };
+const PHONE: Size = {
+  name: "390x660",
+  browser: "webkit",
+  width: 390,
+  context: { ...phone, viewport: { width: 390, height: 660 } },
+};
+const DESKTOP: Size = {
+  name: "1280x800",
+  browser: "chromium",
+  width: 1280,
+  context: { viewport: { width: 1280, height: 800 } },
+};
 
 /* The two iPad sizes of a layout flow, in WebKit as on an iPad: upright at 810x980, and on its side at 1080x740. */
 const TABLETS: readonly Size[] = [
-  { name: "810x980", browser: "webkit", width: 810, context: { ...tablet, viewport: { width: 810, height: 980 } } },
-  { name: "1080x740", browser: "webkit", width: 1080, context: { ...tablet, viewport: { width: 1080, height: 740 } } },
+  {
+    name: "810x980",
+    browser: "webkit",
+    width: 810,
+    context: { ...tablet, viewport: { width: 810, height: 980 } },
+  },
+  {
+    name: "1080x740",
+    browser: "webkit",
+    width: 1080,
+    context: { ...tablet, viewport: { width: 1080, height: 740 } },
+  },
 ];
 
 /*
@@ -72,7 +112,11 @@ export type SmokeOptions = {
 };
 
 /* The folder name of a flow: its name in lower case, with a hyphen for each run of other characters. */
-export const flowSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export const flowSlug = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
 /* The route of a flow that opens the latest published week of the client. */
 export const LATEST_WEEK = "{latest-week}";
@@ -113,21 +157,38 @@ export function readFlows(file: string): Flow[] {
   const names = new Set<string>();
   return list.map((flow, index) => {
     const at = `${file}: flow ${index + 1}`;
-    if (typeof flow !== "object" || flow === null || Array.isArray(flow)) throw new Error(`${at} must be an object`);
+    if (typeof flow !== "object" || flow === null || Array.isArray(flow))
+      throw new Error(`${at} must be an object`);
     for (const key of Object.keys(flow)) {
-      if (!(KEYS as readonly string[]).includes(key)) throw new Error(`${at}: unknown key "${key}". The known keys are ${KEYS.join(", ")}.`);
+      if (!(KEYS as readonly string[]).includes(key))
+        throw new Error(`${at}: unknown key "${key}". The known keys are ${KEYS.join(", ")}.`);
     }
     const { name, globs, route, steps, expected, claude, layout } = flow as Record<string, unknown>;
-    if (typeof name !== "string" || name === "" || names.has(name)) throw new Error(`${at}: "name" must be a distinct name`);
+    if (typeof name !== "string" || name === "" || names.has(name))
+      throw new Error(`${at}: "name" must be a distinct name`);
     names.add(name);
-    if (!Array.isArray(globs) || !globs.every((glob) => typeof glob === "string" && glob !== "")) throw new Error(`${at} "${name}": "globs" must be a list of globs`);
+    if (!Array.isArray(globs) || !globs.every((glob) => typeof glob === "string" && glob !== ""))
+      throw new Error(`${at} "${name}": "globs" must be a list of globs`);
     if (typeof route !== "string" || !(route.startsWith("/") || route === LATEST_WEEK)) {
-      throw new Error(`${at} "${name}": "route" must be a path that starts with "/", with ${SEASON} for the season, or ${LATEST_WEEK}`);
+      throw new Error(
+        `${at} "${name}": "route" must be a path that starts with "/", with ${SEASON} for the season, or ${LATEST_WEEK}`,
+      );
     }
-    if (typeof expected !== "string" || expected === "") throw new Error(`${at} "${name}": "expected" must say the expected results`);
-    if (typeof claude !== "boolean") throw new Error(`${at} "${name}": "claude" must be true or false`);
-    if (typeof layout !== "boolean") throw new Error(`${at} "${name}": "layout" must be true or false`);
-    return { name, globs, route, expected, claude, layout, steps: checkSteps(`${at} "${name}"`, steps) };
+    if (typeof expected !== "string" || expected === "")
+      throw new Error(`${at} "${name}": "expected" must say the expected results`);
+    if (typeof claude !== "boolean")
+      throw new Error(`${at} "${name}": "claude" must be true or false`);
+    if (typeof layout !== "boolean")
+      throw new Error(`${at} "${name}": "layout" must be true or false`);
+    return {
+      name,
+      globs,
+      route,
+      expected,
+      claude,
+      layout,
+      steps: checkSteps(`${at} "${name}"`, steps),
+    };
   });
 }
 
@@ -135,7 +196,9 @@ export function readFlows(file: string): Flow[] {
 function checkSteps(at: string, steps: unknown): Step[] {
   if (!Array.isArray(steps)) throw new Error(`${at}: "steps" must be a list`);
   const checked: Step[] = [];
-  steps.forEach((step, index) => checked.push(checkStep(`${at}: step ${index + 1} ${JSON.stringify(step)}`, step, checked)));
+  steps.forEach((step, index) =>
+    checked.push(checkStep(`${at}: step ${index + 1} ${JSON.stringify(step)}`, step, checked)),
+  );
   return checked;
 }
 
@@ -145,13 +208,20 @@ function checkSteps(at: string, steps: unknown): Step[] {
  */
 export function addSteps(flows: readonly Flow[], file: string): Flow[] {
   const added: unknown = JSON.parse(readFileSync(file, "utf8"));
-  if (typeof added !== "object" || added === null || Array.isArray(added)) throw new Error(`${file}: the file must map a flow name to its steps`);
+  if (typeof added !== "object" || added === null || Array.isArray(added))
+    throw new Error(`${file}: the file must map a flow name to its steps`);
   for (const name of Object.keys(added)) {
-    if (!flows.some((flow) => flow.name === name)) throw new Error(`${file}: no picked flow is named "${name}"`);
+    if (!flows.some((flow) => flow.name === name))
+      throw new Error(`${file}: no picked flow is named "${name}"`);
   }
   return flows.map((flow) => {
     const more = (added as Record<string, unknown>)[flow.name];
-    return more === undefined ? flow : { ...flow, steps: checkSteps(`${file} "${flow.name}"`, [...flow.steps, ...(more as unknown[])]) };
+    return more === undefined
+      ? flow
+      : {
+          ...flow,
+          steps: checkSteps(`${file} "${flow.name}"`, [...flow.steps, ...(more as unknown[])]),
+        };
   });
 }
 
@@ -173,7 +243,11 @@ export async function findOverlap(page: Page): Promise<string | null> {
     // together. The element counts too, so the 1 px box of a screen-reader text clips its own text away.
     const clipOf = (element: Element) => {
       let clip = { top: -Infinity, bottom: Infinity, left: -Infinity, right: Infinity };
-      for (let at: Element | null = element; at && at !== document.documentElement; at = at.parentElement) {
+      for (
+        let at: Element | null = element;
+        at && at !== document.documentElement;
+        at = at.parentElement
+      ) {
         const style = getComputedStyle(at);
         if (style.overflowX === "visible" && style.overflowY === "visible") continue;
         const box = at.getBoundingClientRect();
@@ -187,7 +261,9 @@ export async function findOverlap(page: Page): Promise<string | null> {
       return clip;
     };
     // The open modal layers, by the layer rule of the front door: an element with aria-modal="true" that shows.
-    const layers = [...document.querySelectorAll('[aria-modal="true"]')].filter((layer) => layer.checkVisibility());
+    const layers = [...document.querySelectorAll('[aria-modal="true"]')].filter((layer) =>
+      layer.checkVisibility(),
+    );
     const boxes: Box[] = [];
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -231,29 +307,56 @@ export async function findOverlap(page: Page): Promise<string | null> {
  * Runs one flow at one size in a fresh context. It gives the causes of a failure, or an empty list for a pass.
  * The page listens for errors from the first load, so an error before the first step still fails the flow.
  */
-async function runFlow(browser: Browser, size: Size, flow: Flow, client: string, url: string, api: string, out: string): Promise<string[]> {
+async function runFlow(
+  browser: Browser,
+  size: Size,
+  flow: Flow,
+  client: string,
+  url: string,
+  api: string,
+  out: string,
+): Promise<string[]> {
   const folder = join(out, flowSlug(flow.name));
   mkdirSync(folder, { recursive: true });
-  const test: EvidenceTest = { id: flow.name, file: "", folder, route: flow.route, steps: flow.steps, widths: [size.width], themes: [THEME], clients: [client] };
+  const test: EvidenceTest = {
+    id: flow.name,
+    file: "",
+    folder,
+    route: flow.route,
+    steps: flow.steps,
+    widths: [size.width],
+    themes: [THEME],
+    clients: [client],
+  };
   const context = await browser.newContext({ ...size.context, reducedMotion: "no-preference" });
   const page = await context.newPage();
   page.setDefaultTimeout(flow.claude ? CLAUDE_STEP_MS : STEP_MS);
   const causes: string[] = [];
   page.on("pageerror", (error) => causes.push(`page error: ${error.message}`));
   page.on("console", (message) => {
-    if (message.type() !== "error" || isOtherHostLoad(message.text(), message.location().url, url, api)) return;
+    if (
+      message.type() !== "error" ||
+      isOtherHostLoad(message.text(), message.location().url, url, api)
+    )
+      return;
     causes.push(`console error: ${message.text()}`);
   });
   page.on("response", (response) => {
     if (response.url().startsWith(api) && response.status() >= 400) {
-      causes.push(`API error: ${response.status()} ${response.request().method()} ${response.url()}`);
+      causes.push(
+        `API error: ${response.status()} ${response.request().method()} ${response.url()}`,
+      );
     }
   });
   page.on("request", (request) => {
-    if (isForeignLocal(request.url(), url, api)) causes.push(`foreign local call: ${request.method()} ${request.url()}`);
+    if (isForeignLocal(request.url(), url, api))
+      causes.push(`foreign local call: ${request.method()} ${request.url()}`);
   });
   page.on("requestfailed", (request) => {
-    if (request.url().startsWith(api)) causes.push(`API error: ${request.method()} ${request.url()} failed: ${request.failure()?.errorText}`);
+    if (request.url().startsWith(api))
+      causes.push(
+        `API error: ${request.method()} ${request.url()} failed: ${request.failure()?.errorText}`,
+      );
   });
   try {
     await openPage(page, `${url}${flow.route}`, THEME);
@@ -265,7 +368,10 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, client: string,
     causes.push((error as Error).message.split("\n")[0]);
   }
   // A shot of the page as it failed, so the Judge and the agent see the cause.
-  if (causes.length > 0) await page.screenshot({ path: join(folder, `fail-${size.width}-${THEME}.png`), fullPage: true }).catch(() => undefined);
+  if (causes.length > 0)
+    await page
+      .screenshot({ path: join(folder, `fail-${size.width}-${THEME}.png`), fullPage: true })
+      .catch(() => undefined);
   await context.close();
   return causes;
 }
@@ -276,7 +382,12 @@ async function runFlow(browser: Browser, size: Size, flow: Flow, client: string,
  * of the API still fails the flow.
  */
 function isOtherHostLoad(text: string, from: string, site: string, api: string): boolean {
-  return text.startsWith("Failed to load resource") && from !== "" && !from.startsWith(site) && !from.startsWith(api);
+  return (
+    text.startsWith("Failed to load resource") &&
+    from !== "" &&
+    !from.startsWith(site) &&
+    !from.startsWith(api)
+  );
 }
 
 /* The host names of this machine. A server on one of them is a server of this run or of another session. */
@@ -313,7 +424,15 @@ export async function runSmoke(options: SmokeOptions): Promise<{ failures: strin
       let green = true;
       for (const size of sizesOf(flow)) {
         const start = Date.now();
-        const causes = await runFlow(browsers[size.browser], size, flow, options.client ?? "cpc", options.url, options.api ?? LOCAL_API, options.out);
+        const causes = await runFlow(
+          browsers[size.browser],
+          size,
+          flow,
+          options.client ?? "cpc",
+          options.url,
+          options.api ?? LOCAL_API,
+          options.out,
+        );
         const where = `${flow.name} ${size.name} ${size.browser}`;
         if (causes.length === 0) log(`PASS ${where} in ${seconds(start)}`);
         for (const cause of causes) {
@@ -330,7 +449,9 @@ export async function runSmoke(options: SmokeOptions): Promise<{ failures: strin
     await browsers.chromium.close();
   }
   const count = options.flows.length;
-  log(`Smoke run: ${count} ${count === 1 ? "flow" : "flows"}, ${passed} passed, ${count - passed} failed`);
+  log(
+    `Smoke run: ${count} ${count === 1 ? "flow" : "flows"}, ${passed} passed, ${count - passed} failed`,
+  );
   writeFileSync(join(options.out, "smoke.log"), `${lines.join("\n")}\n`);
   return { failures };
 }

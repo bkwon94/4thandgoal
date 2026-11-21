@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { useState } from "react";
 import { num } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
@@ -16,18 +17,29 @@ import { WeekChapter } from "../parts/week-chapter";
 import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* One row: the rank, the round photo, the player over the fantasy team, and the points. A long name cuts at its end. */
-function Row({ row, position, headshots }: { row: LeaderRow; position: string; headshots: HeadshotMap }) {
+function Row({
+  row,
+  position,
+  headshots,
+}: {
+  row: LeaderRow;
+  position: string;
+  headshots: HeadshotMap;
+}) {
   return (
-    <li className="grid list-none grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-sp-3 py-sp-2" {...stableId("leader", position, row.rank)}>
-      <span className="font-mono text-meta text-mute tabular-nums">{row.rank}</span>
+    <li
+      className="gap-sp-3 py-sp-2 grid list-none grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center"
+      {...stableId("leader", position, row.rank)}
+    >
+      <span className="text-meta text-mute font-mono tabular-nums">{row.rank}</span>
       <PhotoFrame src={photoOf(headshots, row.player_id)} name={row.player} size="md" />
       <span className="min-w-0">
-        <span data-player className="block truncate text-body leading-tight font-bold">
+        <span data-player className="text-body block truncate leading-tight font-bold">
           {row.player}
         </span>
-        <span className="block truncate text-meta leading-tight text-mute">{row.team}</span>
+        <span className="text-meta text-mute block truncate leading-tight">{row.team}</span>
       </span>
-      <span className="font-mono text-body font-bold tabular-nums">{num(row.points)}</span>
+      <span className="text-body font-mono font-bold tabular-nums">{num(row.points)}</span>
     </li>
   );
 }
@@ -61,23 +73,24 @@ export function PositionLeaders({
   return (
     <WeekChapter id="leaders" title="Position leaders">
       {/* Each chip is a 44px pill. The chosen chip is filled, and aria-pressed tells a screen reader which one. */}
-      <div className="flex gap-sp-2">
+      <div className="gap-sp-2 flex">
         {leaders.map(({ position }) => {
           const on = position === board?.position;
           return (
-            <button
+            <Button
+              variant="plain"
               key={position}
               type="button"
               aria-pressed={on}
               {...openId("chip", position)}
               onClick={() => setChosen(position)}
               className={cn(
-                "press min-h-touch min-w-touch flex-1 cursor-pointer rounded-pill border font-mono text-meta font-bold",
-                on ? "border-ink bg-ink text-page" : "border-rule bg-transparent text-ink-2",
+                "press min-h-touch min-w-touch rounded-pill text-meta flex-1 cursor-pointer border font-mono font-bold",
+                on ? "border-ink bg-ink text-page" : "border-rule text-ink-2 bg-transparent",
               )}
             >
               {position}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -94,7 +107,14 @@ export function PositionLeaders({
           )}
         </Card>
       )}
-      {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", text)}>{text}</p>}
+      {text && (
+        <p
+          className="max-w-measure text-lead leading-body text-ink-2 m-0"
+          {...textId("blurb", text)}
+        >
+          {text}
+        </p>
+      )}
     </WeekChapter>
   );
 }

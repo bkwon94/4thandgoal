@@ -16,7 +16,10 @@ type PillBarProps = {
 export function PillBar({ items, current, className }: PillBarProps) {
   return (
     // A long list scrolls inside the bar, so the page never scrolls sideways.
-    <nav aria-label="Site menu" className={cn("hidden items-center gap-sp-1 overflow-x-auto desktop:flex", className)}>
+    <nav
+      aria-label="Site menu"
+      className={cn("gap-sp-1 desktop:flex hidden items-center overflow-x-auto", className)}
+    >
       {items.map((item) => (
         // A plain anchor, so the static export moves with scripts off and with no client router.
         // The raised fill marks the open destination, so the mark is not color alone: the pill has a shape.
@@ -24,7 +27,7 @@ export function PillBar({ items, current, className }: PillBarProps) {
           key={item.href}
           href={item.href}
           aria-current={item.href === current ? "page" : undefined}
-          className="press inline-flex min-h-touch flex-none items-center rounded-pill px-sp-4 text-meta font-semibold whitespace-nowrap text-ink-2 no-underline hover-fine:text-ink aria-[current=page]:bg-raised aria-[current=page]:text-ink"
+          className="press min-h-touch rounded-pill px-sp-4 text-meta text-ink-2 hover-fine:text-ink aria-[current=page]:bg-raised aria-[current=page]:text-ink inline-flex flex-none items-center font-semibold whitespace-nowrap no-underline"
         >
           {item.label}
         </a>

@@ -250,6 +250,14 @@ _Avoid_: Loading message, progress line, status line
 The live grid art of the analyzer hero, which weighs the sides of the trade during a grade wait. It is not a hero scene, because it fills the whole hero and sits under text.
 _Avoid_: Grid animation, background, hero scene
 
+**Role token**:
+A look token whose name says what it is for, such as the gutter or the wash of a chosen chip. A part uses a role token where one exists.
+_Avoid_: Semantic token, alias, design variable
+
+**Scale step**:
+A look token that names one size on a fixed scale, such as the third spacing step. It has no role, and a role token may point at it.
+_Avoid_: Primitive, base token, raw value
+
 ## Pipeline language
 
 The pipeline builds the weekly report page for the Cornerstone fantasy football league. It turns Sleeper and nflverse

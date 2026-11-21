@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef } from "react";
 import { RotateCwIcon } from "lucide-react";
@@ -18,7 +19,15 @@ import { shownText } from "./free-stream";
 import { QuestionBubble, Surface } from "./miss-card";
 import { riseIn } from "./motion";
 import { Steps, useIntentDelay } from "./steps";
-import { type PersonalBlock, type PersonalCap, type PersonalResult, type PersonalTopic, type PersonalView, personalViewOf, shownBlock } from "./personal-stream";
+import {
+  type PersonalBlock,
+  type PersonalCap,
+  type PersonalResult,
+  type PersonalTopic,
+  type PersonalView,
+  personalViewOf,
+  shownBlock,
+} from "./personal-stream";
 
 /* The step between the data block and the text, while Claude writes the text. */
 export const WRITING_LINE = "Writing";
@@ -34,13 +43,29 @@ type Shared = {
 
 /* The card of one personal Answer: the data block, then the text and the check, then the link once the text is checked.
    Under the data block, the Writing step waits until the check comes, so the card never sits still. */
-function PersonalBody({ block, view, live, href, avatars }: { block: PersonalBlock; view: PersonalView; live: boolean; href: string | null; avatars: Shared["avatars"] }) {
+function PersonalBody({
+  block,
+  view,
+  live,
+  href,
+  avatars,
+}: {
+  block: PersonalBlock;
+  view: PersonalView;
+  live: boolean;
+  href: string | null;
+  avatars: Shared["avatars"];
+}) {
   const checked = view.check === "checked";
   const { stats, rows, asOf, answerBlock } = shownBlock(block);
   return (
-    <AnswerBody answer={{ stats, rows, text: [], href: checked ? href : null }} avatars={avatars} asOf={asOf}>
+    <AnswerBody
+      answer={{ stats, rows, text: [], href: checked ? href : null }}
+      avatars={avatars}
+      asOf={asOf}
+    >
       {answerBlock && <BlockView block={answerBlock} live={live} />}
-      <div className="flex flex-col gap-sp-3">
+      <div className="gap-sp-3 flex flex-col">
         <FreeBody view={view} live={live} first={WRITING_LINE} />
       </div>
     </AnswerBody>
@@ -55,18 +80,22 @@ export const REFRESH_LABEL = "Refresh";
 export function StaleLine({ line, onRefresh }: { line: string; onRefresh: () => void }) {
   const off = useMotionOff();
   return (
-    <motion.div className="flex flex-wrap items-center gap-x-sp-2 gap-y-sp-1 px-sp-1" {...riseIn(off)}>
-      <p role="status" className="m-0 text-meta leading-tight font-semibold text-ink">
+    <motion.div
+      className="gap-x-sp-2 gap-y-sp-1 px-sp-1 flex flex-wrap items-center"
+      {...riseIn(off)}
+    >
+      <p role="status" className="text-meta text-ink m-0 leading-tight font-semibold">
         {line}
       </p>
-      <button
+      <Button
+        variant="plain"
         type="button"
         onClick={onRefresh}
-        className="press flex min-h-touch items-center gap-sp-1 rounded-pill border border-door-hair bg-card px-sp-3 text-meta leading-tight font-semibold text-ink hover-fine:bg-raised"
+        className="press min-h-touch gap-sp-1 rounded-pill border-door-hair bg-card px-sp-3 text-meta text-ink hover-fine:bg-raised flex items-center border leading-tight font-semibold"
       >
         <RotateCwIcon aria-hidden className="size-sp-4" strokeWidth={2.25} />
         {REFRESH_LABEL}
-      </button>
+      </Button>
     </motion.div>
   );
 }
@@ -75,37 +104,52 @@ export function StaleLine({ line, onRefresh }: { line: string; onRefresh: () => 
    roster changed since the API kept it, shows dimmed with no "Checked" mark, the stale line, and Refresh (AT-34). It
    takes the place of the live card when the stream ends, so its parts show at once with no fade, and the card never
    goes blank (AT-20). A stale line that shows later still rises in. */
-export const PersonalAnswerCard = forwardRef<HTMLElement, Shared & { result: PersonalResult; stale?: { line: string; onRefresh: () => void } | null }>(
-  function PersonalAnswerCard({ name, href, avatars, result, stale = null }, ref) {
-    const view: PersonalView = {
-      steps: [],
-      first: result.text,
-      answerBlock: null,
-      second: null,
-      // A stale read is no longer checked against the roster now, so it loses its mark.
-      check: stale ? null : "checked",
-      suggestion: null,
-      closest: null,
-      block: result.block,
-      key: result.key,
-      cap: null,
-    };
-    return (
-      <AnimatePresence initial={false}>
-        <article key="kept" ref={ref} aria-label={name} data-stale={stale ? "" : undefined} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-          <QuestionBubble question={name} />
-          {/* The stale line comes before the read it warns about, so the manager sees it first. */}
-          {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
-          {/* The dim is an opacity change only, so reduced motion keeps it as is. The link to the full page shows only
+export const PersonalAnswerCard = forwardRef<
+  HTMLElement,
+  Shared & { result: PersonalResult; stale?: { line: string; onRefresh: () => void } | null }
+>(function PersonalAnswerCard({ name, href, avatars, result, stale = null }, ref) {
+  const view: PersonalView = {
+    steps: [],
+    first: result.text,
+    answerBlock: null,
+    second: null,
+    // A stale read is no longer checked against the roster now, so it loses its mark.
+    check: stale ? null : "checked",
+    suggestion: null,
+    closest: null,
+    block: result.block,
+    key: result.key,
+    cap: null,
+  };
+  return (
+    <AnimatePresence initial={false}>
+      <article
+        key="kept"
+        ref={ref}
+        aria-label={name}
+        data-stale={stale ? "" : undefined}
+        className="scroll-mt-door-under-head gap-sp-3 flex flex-col"
+      >
+        <QuestionBubble question={name} />
+        {/* The stale line comes before the read it warns about, so the manager sees it first. */}
+        {stale && <StaleLine line={stale.line} onRefresh={stale.onRefresh} />}
+        {/* The dim is an opacity change only, so reduced motion keeps it as is. The link to the full page shows only
               under a "Checked" mark, so a stale read hides it too. */}
-          <div className={`flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}>
-            <PersonalBody block={result.block} view={view} live={false} href={href} avatars={avatars} />
-          </div>
-        </article>
-      </AnimatePresence>
-    );
-  },
-);
+        <div
+          className={`flex flex-col transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${stale ? "opacity-60" : "opacity-100"}`}
+        >
+          <PersonalBody
+            block={result.block}
+            view={view}
+            live={false}
+            href={href}
+            avatars={avatars}
+          />
+        </div>
+      </article>
+    </AnimatePresence>
+  );
+});
 
 /* A personal Answer as it streams. On the end it hands the Thread a checked result, the closest Topics of an honest
    miss, the line of a cap, or an error, so the Thread keeps only what ended. */
@@ -114,13 +158,22 @@ export const PersonalAnswerLive = forwardRef<
   Shared & {
     target: AskTarget;
     passphrase: string;
-    body: { topic: PersonalTopic; roster_id: number; team: number | null; turns?: Turn[]; question?: string };
+    body: {
+      topic: PersonalTopic;
+      roster_id: number;
+      team: number | null;
+      turns?: Turn[];
+      question?: string;
+    };
     onDone: (result: PersonalResult) => void;
     onMiss: (closest: string[], block: PersonalBlock | null) => void;
     onCap: (cap: PersonalCap) => void;
     onError: () => void;
   }
->(function PersonalAnswerLive({ name, href, avatars, morph, target, passphrase, body, onDone, onMiss, onCap, onError }, ref) {
+>(function PersonalAnswerLive(
+  { name, href, avatars, morph, target, passphrase, body, onDone, onMiss, onCap, onError },
+  ref,
+) {
   // The API reads only the body, so the prompt of Claude comes from the facts and the typed question, if any.
   const { view, busy, kept } = useAnswerStream({
     target,
@@ -149,7 +202,12 @@ export const PersonalAnswerLive = forwardRef<
   });
   const waited = useIntentDelay();
   return (
-    <article ref={ref} aria-label={name} aria-busy={busy} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
+    <article
+      ref={ref}
+      aria-label={name}
+      aria-busy={busy}
+      className="scroll-mt-door-under-head gap-sp-3 flex flex-col"
+    >
       <QuestionBubble question={name} morph={morph} />
       {view.block ? (
         // A kept Answer of the API shows whole at once, with no stream of its words (AT-8).

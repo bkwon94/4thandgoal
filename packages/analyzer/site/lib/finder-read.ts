@@ -14,7 +14,11 @@ export function finderRead(trade: FinderTrade, doc: FindResponse): AnalyzeRespon
     trade: { asker, sides: trade.sides },
     lean: trade.lean,
     case: trade.case,
-    sides: trade.sides.map((side) => ({ roster_id: side.roster_id, bullets: side.roster_id === asker ? trade.bullets : [], week_lines: [] })),
+    sides: trade.sides.map((side) => ({
+      roster_id: side.roster_id,
+      bullets: side.roster_id === asker ? trade.bullets : [],
+      week_lines: [],
+    })),
     as_of: doc.as_of,
     missing: doc.missing,
     stale: doc.stale,

@@ -1,0 +1,8 @@
+$ LINT_FILES=packages/design/lint/fixtures/outside/top-band.tsx pnpm --dir apps/site lint
+
+> 4thandgoal-site@0.1.0 lint /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/apps/site
+> cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+packages/design/lint/fixtures/outside/top-band.tsx:5:1: error eslint(no-restricted-imports): '@ui-sdk/react' import is restricted from being used by a pattern. help: Only packages/design/site/ui/ imports @ui-sdk (ADR 0035). Import the wrapper in the ui folder of the design package.
+ ELIFECYCLE  Command failed with exit code 1.
+exit 1

@@ -15,5 +15,11 @@ export function HomeBanner() {
   const season = listWeeks().sort((a, b) => Number(b.season) - Number(a.season))[0]?.season;
   const sim = season === undefined ? null : latestWeekSim(season);
   if (season === undefined || sim === null) return null;
-  return <SimAnnouncement data={previewOf(sim)} siteName={clientValues.copy.siteName} href={simHref(season)} />;
+  return (
+    <SimAnnouncement
+      data={previewOf(sim)}
+      siteName={clientValues.copy.siteName}
+      href={simHref(season)}
+    />
+  );
 }

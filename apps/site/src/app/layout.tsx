@@ -23,7 +23,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     // suppressHydrationWarning: the boot script may remove the dark class before React hydrates.
     // The server markup has the class, so the two differ on purpose.
-    <html lang="en" className={[paint.rootClass, fontVariables].filter(Boolean).join(" ")} suppressHydrationWarning {...(eggs ? { "data-eggs": "" } : {})}>
+    <html
+      lang="en"
+      className={[paint.rootClass, fontVariables].filter(Boolean).join(" ")}
+      suppressHydrationWarning
+      {...(eggs ? { "data-eggs": "" } : {})}
+    >
       <head>
         {/* Inline and first in the head, so a stored light choice applies before the body paints. */}
         <script dangerouslySetInnerHTML={{ __html: paint.bootScript }} />

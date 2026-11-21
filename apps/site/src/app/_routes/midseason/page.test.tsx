@@ -3,7 +3,7 @@
  * They read what a reader sees: a static param per season with the file, and the report of that season.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import fixture from "@cpc/midseason/fixtures/midseason.json";
 import simFixture from "@cpc/sim/fixtures/sim.json";
 import { publicOver, removePublics } from "./temp-public";
@@ -39,7 +39,9 @@ describe("the midseason route", () => {
     const route = await import("./page");
     render(await route.default({ params: Promise.resolve({ season: "2026" }) }));
     // Return of T Mac, roster 8, is the Streaming king of the fixture.
-    expect(screen.getByRole("img", { name: "Return of T Mac" }).getAttribute("src")).toBe("/2026/week-08/avatars/8.webp");
+    expect(screen.getByRole("img", { name: "Return of T Mac" }).getAttribute("src")).toBe(
+      "/2026/week-08/avatars/8.webp",
+    );
   });
 
   it("fails loud on a midseason file of another schema version", async () => {

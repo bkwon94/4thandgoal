@@ -1,0 +1,8 @@
+$ cat -n packages/design/lint/fixtures/use-lines/parts/no-use-line.tsx
+     1	/**
+     2	 * A lint fixture: a part that exports a component and has no use line in its top docstring.
+     3	 * Do not use it when: a test needs a part that passes the doc rule.
+     4	 */
+     5	export function NoUseLine() {
+     6	  return <p>No use line</p>;
+     7	}

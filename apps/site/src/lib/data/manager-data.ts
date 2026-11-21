@@ -6,7 +6,12 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { managersHref } from "../routes";
 import { managersFileSchema } from "@cpc/managers/schema/managers";
-import type { Manager, ManagerEntry, Managers, SeasonWeek } from "@cpc/managers/schema/manager-types";
+import type {
+  Manager,
+  ManagerEntry,
+  Managers,
+  SeasonWeek,
+} from "@cpc/managers/schema/manager-types";
 import { clientValues } from "../../generated/client-values";
 import { readPublished } from "./published-file";
 import { latestSeason, loadRankings } from "./rankings-data";
@@ -40,7 +45,8 @@ export function loadManagers(): Managers | null {
   const { season, through, managers } = data;
   // One number has one source, so the odds and the power rank come from the last week of the rankings file.
   const weeks = loadRankings()?.weeks ?? [];
-  const rowsOf = (index: number) => new Map((weeks.at(index)?.rows ?? []).map((row) => [row.roster_id, row]));
+  const rowsOf = (index: number) =>
+    new Map((weeks.at(index)?.rows ?? []).map((row) => [row.roster_id, row]));
   const last = rowsOf(-1);
   const before = weeks.length > 1 ? rowsOf(-2) : new Map<number, RankingsRow>();
   const fallback = [...managers].sort(byRecord).map((entry) => entry.roster_id);

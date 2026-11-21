@@ -4,14 +4,23 @@
  */
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
-import { afterEach, describe, expect, it } from "vitest";
-import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "./segmented-control";
+import { afterEach, describe, expect, it } from "bun:test";
+import {
+  SegmentedControl,
+  SegmentedControlIndicator,
+  SegmentedControlItem,
+} from "./segmented-control";
 
 function Modes({ disabled = false }: { disabled?: boolean }) {
   const [value, setValue] = useState<string | null>("grade");
   return (
     <>
-      <SegmentedControl aria-label="Mode" value={value} onValueChange={setValue} disabled={disabled}>
+      <SegmentedControl
+        aria-label="Mode"
+        value={value}
+        onValueChange={setValue}
+        disabled={disabled}
+      >
         <SegmentedControlIndicator />
         <SegmentedControlItem value="grade">Grade a trade</SegmentedControlItem>
         <SegmentedControlItem value="find">Find a trade</SegmentedControlItem>

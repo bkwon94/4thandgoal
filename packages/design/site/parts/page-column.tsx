@@ -1,6 +1,8 @@
 /**
  * The page column: the shared shell that centers every page's content and spaces its chapters.
  * It renders the three-track grid from the tablet tier, an optional rail in the left track, and the main.
+ * Use it when: a page needs the shared shell that centers its content.
+ * Do not use it when: the block sits inside a chapter. The page column holds the chapters.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
@@ -12,18 +14,27 @@ import { cn } from "../lib/utils";
 /* A wide page, such as the managers index with its stage, takes the width of the top band from the desktop tier.
    It leaves a gutter on each side, so two columns fit side by side.
    The grid track sets the width, so the main drops its cap there. */
-export function PageColumn({ rail, wide = false, children }: { rail?: ReactNode; wide?: boolean; children: ReactNode }) {
+export function PageColumn({
+  rail,
+  wide = false,
+  children,
+}: {
+  rail?: ReactNode;
+  wide?: boolean;
+  children: ReactNode;
+}) {
   return (
     <div
       className={cn(
         "tablet:grid tablet:grid-cols-[minmax(0,1fr)_var(--container-page)_minmax(0,1fr)]",
-        wide && "desktop:[--container-page:min(var(--container-band),100%_-_2*var(--spacing-gutter))]",
+        wide &&
+          "desktop:[--container-page:min(var(--container-band),100%_-_2*var(--spacing-gutter))]",
       )}
     >
       {rail}
       <main
         className={cn(
-          "mx-auto w-full max-w-page bg-page tablet:col-start-2 tablet:flex tablet:flex-col tablet:gap-card-gap tablet:bg-transparent",
+          "max-w-page bg-page tablet:col-start-2 tablet:flex tablet:flex-col tablet:gap-card-gap tablet:bg-transparent mx-auto w-full",
           wide && "desktop:max-w-none",
         )}
       >

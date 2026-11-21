@@ -1,0 +1,11 @@
+54:   BUN_TEST_BASE: HEAD^1
+230:   BUN_TEST_BASE: HEAD^1
+259:   BUN_TEST_BASE: HEAD^1
+283:   BUN_TEST_BASE: HEAD^1
+300:   BUN_TEST_BASE: HEAD^1
+316:   BUN_TEST_BASE: HEAD^1
+349: bun test --isolate --parallel=4 --shard=1/1 --timings=bun-test-timings.json --changed=HEAD^1
+351: bun test v1.4.5 (a7733435c) 4x PARALLEL
+352: --changed: 5 changed files, running 1/203 test files
+353: --shard=1/1: running 1/1 test file
+387: Ran 25 tests across 1 file. [2.80s]

@@ -4,7 +4,7 @@
  */
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 import { publicOver, removePublics } from "../midseason/temp-public";
 
@@ -22,7 +22,10 @@ function publicWithSims(latest: number, simWeeks: number[]) {
 describe("the menu link of the sim package", () => {
   it("links the sim page of the season of the latest week", async () => {
     publicWithSims(10, [10]);
-    expect((await import("./menu")).menuLink()).toEqual({ label: "Season Sim", href: "/sim/2026/" });
+    expect((await import("./menu")).menuLink()).toEqual({
+      label: "Season Sim",
+      href: "/sim/2026/",
+    });
   });
 
   it("gives no link when no week of the season has a sim file", async () => {

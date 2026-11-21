@@ -1,0 +1,26 @@
+$ cd apps/site && bun test ./test/stubs.test.ts
+bun test v1.4.5 (a7733435c)
+
+ 2 pass
+ 0 fail
+ 7 expect() calls
+Ran 2 tests across 1 file. [282.00ms]
+exit code: 0
+
+$ cd apps/site && bun test ./test/stubs.test.ts --reporter=junit --reporter-outfile=<scratch>/stubs.xml && cat <scratch>/stubs.xml
+bun test v1.4.5 (a7733435c)
+
+ 2 pass
+ 0 fail
+ 7 expect() calls
+Ran 2 tests across 1 file. [115.00ms]
+exit code: 0
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="bun test" tests="2" assertions="7" failures="0" skipped="0" time="0.115928">
+  <testsuite name="test/stubs.test.ts" file="test/stubs.test.ts" tests="2" assertions="7" failures="0" skipped="0" time="0.110161" hostname="<host>">
+    <testsuite name="stubGlobal and stubEnv" file="test/stubs.test.ts" line="13" tests="2" assertions="7" failures="0" skipped="0" time="0" hostname="<host>">
+      <testcase name="replace the global and the env value inside one test" classname="stubGlobal and stubEnv" time="0.000132" file="test/stubs.test.ts" line="14" assertions="3" />
+      <testcase name="give the next test the real global and the real env value" classname="stubGlobal and stubEnv" time="0.000023" file="test/stubs.test.ts" line="25" assertions="4" />
+    </testsuite>
+  </testsuite>
+</testsuites>

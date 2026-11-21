@@ -19,7 +19,12 @@ export const TOPICS: readonly Topic[] = [
   { key: "power_rankings", name: "Power rankings", chip: "Ranks", kind: "league" },
   { key: "playoff_race", name: "Playoff race", chip: "Playoffs", kind: "league" },
   { key: "your_season", name: "Your season", chip: "Season", kind: "league" },
-  { key: "leaders_trades", name: "Position leaders and recent trades", chip: "Leaders", kind: "league" },
+  {
+    key: "leaders_trades",
+    name: "Position leaders and recent trades",
+    chip: "Leaders",
+    kind: "league",
+  },
   { key: "waiver_targets", name: "Waiver targets", chip: "Waivers", kind: "personal" },
   { key: "stack_up", name: "How you stack up", chip: "Roster", kind: "personal" },
   { key: "weak_spots", name: "Weak spots", chip: "Holes", kind: "personal" },
@@ -60,7 +65,12 @@ export function dayOrder(day: number): string[] {
    lead, most urgent first, then the order of the day. Jev judges what is urgent on the API, and this rule only places
    it. A Topic with no fact yet, such as a live Topic before the API serves it, never shows as a Suggestion. The API
    picks the head start with the same rule, in suggestions.py. */
-export function pickSuggestions(day: number, facts: Record<string, string>, opened: Record<string, string>, urgent: string[] = []): string[] {
+export function pickSuggestions(
+  day: number,
+  facts: Record<string, string>,
+  opened: Record<string, string>,
+  urgent: string[] = [],
+): string[] {
   return [...urgent, ...dayOrder(day).filter((key) => !urgent.includes(key))]
     .filter((key) => key in facts && opened[key] !== facts[key])
     .slice(0, SUGGESTION_COUNT);

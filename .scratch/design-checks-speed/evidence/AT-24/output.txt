@@ -1,0 +1,2592 @@
+$ git add apps/site/src/app/not-found.tsx && git commit -m "probe: format"   # in a scratch worktree on the scratch branch design-checks-speed-at-probe, made from design-checks-speed at 2108f8bc
+
+$ git branch --show-current
+design-checks-speed-at-probe
+$ git log -1 --oneline   # before
+2108f8bc Mark design-checks-speed 18 in-review
+
+$ git diff   # the change: the class list out of order (line 48), and the wrong indent (line 73)
+diff --git a/apps/site/src/app/not-found.tsx b/apps/site/src/app/not-found.tsx
+index b9428f1d..294a7268 100644
+--- a/apps/site/src/app/not-found.tsx
++++ b/apps/site/src/app/not-found.tsx
+@@ -45,7 +45,7 @@ export function NotFoundHero({ scene }: { scene?: HeroScene }) {
+         </Rise>
+       }
+       action={
+-        <Rise step={2} className="gap-sp-3 flex flex-wrap">
++        <Rise step={2} className="flex-wrap flex gap-sp-3">
+           {/* A client with no published week has no week to go to, so it shows only the home button. */}
+           {latest !== undefined && (
+             <a href={latest.href} className={`${BUTTON} bg-accent text-on-dark`}>
+@@ -70,7 +70,7 @@ export default function NotFound() {
+       {/* The page is no destination, so it passes no page href, and no item of the shell is marked. */}
+       <TopBand {...shellProps()} />
+       {/* The mark tells the egg hunt that the page is the 404 page, whatever path the reader typed. */}
+-      <main className="max-w-page px-gutter py-sp-6 mx-auto w-full" {...{ [NOT_FOUND]: true }}>
++         <main className="max-w-page px-gutter py-sp-6 mx-auto w-full" {...{ [NOT_FOUND]: true }}>
+         {/* A lost page has no data to chart, so its lights drift and never settle (story 28). */}
+         <NotFoundHero scene={driftScene} />
+       </main>
+
+$ git add apps/site/src/app/not-found.tsx && git commit -m "probe: format"   # start 10:55:18
+make check-fast STAGED=1.................................................Failed
+- hook id: check-fast
+- exit code: 2
+
+  ==> scripts: check-fast
+  ...............................................................................................................................................................................................................................................
+  ----------------------------------------------------------------------
+  Ran 239 tests in 13.596s
+
+  OK
+  ==> scripts: ok (13.7 s)
+  ==> site: check-fast
+
+  > 4thandgoal-site@0.1.0 check:fast <scratch>/wt-probe/apps/site
+  > CLIENT=cpc node scripts/client-build.mjs && python3 -B ../../scripts/parallel.py lint 'pnpm lint' fmt 'pnpm fmt:check' typecheck 'pnpm typecheck' test 'pnpm test:bun'
+
+
+  > 4thandgoal-site@0.1.0 lint <scratch>/wt-probe/apps/site
+  > cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+  ==> lint: ok (0.5 s)
+
+  > 4thandgoal-site@0.1.0 fmt:check <scratch>/wt-probe/apps/site
+  > cd ../.. && bun fmt --no-script --check --no-error-on-unmatched-pattern --ignore-pattern apps/site/next-env.d.ts ${FMT_FILES:-'apps/site/**/*.{ts,tsx,mjs,mts,css}' 'packages/*/site/**/*.{ts,tsx,css}' packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+  apps/site/src/app/not-found.tsx
+  1 file needs formatting. Run bun fmt to fix it.
+   ELIFECYCLE  Command failed with exit code 1.
+  ==> fmt: FAILED with exit code 1 (0.6 s)
+
+  > 4thandgoal-site@0.1.0 typecheck <scratch>/wt-probe/apps/site
+  > next typegen && bun check --no-script
+
+  Generating route types...
+  ✓ Types generated successfully
+  ✓ No type errors in 613 files [421.39ms]
+  ==> typecheck: ok (1.1 s)
+
+  > 4thandgoal-site@0.1.0 test:bun <scratch>/wt-probe/apps/site
+  > node scripts/bun-test.mjs
+
+  bun test --isolate --parallel=3
+  The run takes the full suite.
+  bun test v1.4.5 (a7733435c) 3x PARALLEL
+
+  scripts/brand-contrast.test.mjs:
+  cpc light: text on page 16.75
+  cpc light: text on card 18.42
+  cpc light: text on raised 15.45
+  cpc light: ink_2 on page 10.34
+  cpc light: ink_2 on card 11.37
+  cpc light: ink_2 on raised 9.54
+  cpc light: muted on page 5.22
+  cpc light: muted on card 5.74
+  cpc light: muted on raised 4.82
+  cpc light: accent_ink on page 6.33
+  cpc light: accent_ink on card 6.96
+  cpc light: on_dark on band 18.42
+  cpc light: on_dark_2 on band 11.47
+  cpc light: on_dark_muted on band 6.47
+  cpc light: accent_text on band 9.34
+  cpc light: on_dark on card_band 18.42
+  cpc light: on_dark_2 on card_band 11.47
+  cpc light: on_dark_muted on card_band 6.47
+  cpc light: accent_text on card_band 9.34
+  cpc light: on_dark on chip_dark 15.13
+  cpc light: on_dark_2 on chip_dark 9.42
+  cpc light: on_dark_muted on chip_dark 5.31
+  cpc light: on_dark on accent 5.89
+  cpc dark: text on page 18.42
+  cpc dark: text on card 16.48
+  cpc dark: text on raised 15.13
+  cpc dark: ink_2 on page 11.47
+  cpc dark: ink_2 on card 10.26
+  cpc dark: ink_2 on raised 9.42
+  cpc dark: muted on page 6.47
+  cpc dark: muted on card 5.79
+  cpc dark: muted on raised 5.31
+  cpc dark: accent_ink on page 9.34
+  cpc dark: accent_ink on card 8.36
+  cpc dark: on_dark on band 18.42
+  cpc dark: on_dark_2 on band 11.47
+  cpc dark: on_dark_muted on band 6.47
+  cpc dark: accent_text on band 9.34
+  cpc dark: on_dark on card_band 15.13
+  cpc dark: on_dark_2 on card_band 9.42
+  cpc dark: on_dark_muted on card_band 5.31
+  cpc dark: accent_text on card_band 7.68
+  cpc dark: on_dark on chip_dark 13.01
+  cpc dark: on_dark_2 on chip_dark 8.10
+  cpc dark: on_dark_muted on chip_dark 4.57
+  cpc dark: on_dark on accent 5.89
+  norcal light: text on page 15.78
+  norcal light: text on card 17.49
+  norcal light: text on raised 14.67
+  norcal light: ink_2 on page 10.14
+  norcal light: ink_2 on card 11.24
+  norcal light: ink_2 on raised 9.43
+  norcal light: muted on page 5.33
+  norcal light: muted on card 5.91
+  norcal light: muted on raised 4.96
+  norcal light: accent_ink on page 6.59
+  norcal light: accent_ink on card 7.31
+  norcal light: on_dark on band 17.43
+  norcal light: on_dark_2 on band 12.90
+  norcal light: on_dark_muted on band 7.82
+  norcal light: accent_text on band 9.03
+  norcal light: on_dark on card_band 17.43
+  norcal light: on_dark_2 on card_band 12.90
+  norcal light: on_dark_muted on card_band 7.82
+  norcal light: accent_text on card_band 9.03
+  norcal light: on_dark on chip_dark 13.84
+  norcal light: on_dark_2 on chip_dark 10.24
+  norcal light: on_dark_muted on chip_dark 6.21
+  norcal light: on_dark on accent 4.56
+  norcal dark: text on page 16.22
+  norcal dark: text on card 13.84
+  norcal dark: text on raised 12.30
+  norcal dark: ink_2 on page 11.86
+  norcal dark: ink_2 on card 10.12
+  norcal dark: ink_2 on raised 8.99
+  norcal dark: muted on page 7.28
+  norcal dark: muted on card 6.21
+  norcal dark: muted on raised 5.52
+  norcal dark: accent_ink on page 8.40
+  norcal dark: accent_ink on card 7.17
+  norcal dark: on_dark on band 17.43
+  norcal dark: on_dark_2 on band 12.90
+  norcal dark: on_dark_muted on band 7.82
+  norcal dark: accent_text on band 9.03
+  norcal dark: on_dark on card_band 17.43
+  norcal dark: on_dark_2 on card_band 12.90
+  norcal dark: on_dark_muted on card_band 7.82
+  norcal dark: accent_text on card_band 9.03
+  norcal dark: on_dark on chip_dark 13.84
+  norcal dark: on_dark_2 on chip_dark 10.24
+  norcal dark: on_dark_muted on chip_dark 6.21
+  norcal dark: on_dark on accent 4.56
+
+  ../../packages/design/site/shell/top-band.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/design/site/ui/pending-button.test.tsx:
+  An update to Button inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/design/site/ui/sheet.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/eggs/site/board/egg-board-motion-off.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  ../../packages/eggs/site/board/egg-board.test.tsx:
+  An update to EggBoardScreen inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/eggs/site/board/egg-button.test.tsx:
+  An update to EggButtonScreen inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/eggs/site/hunt/claim-sheet.test.tsx:
+  The current testing environment is not configured to support act(...)
+  The current testing environment is not configured to support act(...)
+
+  scripts/playwright-shard.test.mjs:
+  45 |       return applyHandlers(handlers, emitter, args), !0;
+  46 |   }
+  47 |   let er;
+  48 |   if (args.length > 0)
+  49 |     er = args[0];
+  50 |     throw er;
+                  ^
+  AggregateError: 
+        at emitError (node:events:50:13)
+        at emitErrorEvent (node:_http_client:23:48)
+        at socketErrorListenerInner (node:_http_client:319:42)
+        at applyHandlers (node:events:64:20)
+        at emitError (node:events:44:27)
+        at emitErrorNT (internal:streams/destroy:88:12)
+        at emitErrorCloseNT (internal:streams/destroy:69:14)
+
+  Bun v1.4.5 (macOS arm64)
+
+  ../../packages/eggs/site/hunt/egg-hunt-motion-off.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  src/reduced-motion-blocks.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  src/app/_routes/ask/page.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:39)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at node:dns:210:15
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+
+  src/app/_routes/eggs/targets.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+
+  src/app/_routes/managers/manager-page.test.tsx:
+  Encountered two children with the same key, `drop-2197`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+  Encountered two children with the same key, `add-13305`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+  Encountered two children with the same key, `drop-13294`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+  Encountered two children with the same key, `add-11834`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+  Encountered two children with the same key, `add-11834`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+  ../../packages/eggs/site/lib/api.test.ts:
+  POST http://127.0.0.1:60929/clients/cpc/eggs/check 429 (Too Many Requests)
+  POST http://127.0.0.1:60929/clients/cpc/eggs/claim 422 (Unprocessable Entity)
+
+  src/app/_routes/sim/announcement.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/_routes/waiver/page.test.tsx:
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+
+  src/app/_routes/week/page.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+  error: Socket is closed
+   code: "ERR_SOCKET_CLOSED"
+
+        at unknown:1:1
+        at close (node:net:922:67)
+
+
+  src/app/front-door/passphrase-sheet.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/suggestions.test.tsx:
+  An update to AnimatePresence inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to AnimatePresence inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to AnimatePresence inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/sim/site/announcement/sim-preview-reduced.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  ../../packages/sim/site/page/in-playoffs.test.tsx:
+  An update to PlayoffSimPage inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to PlayoffSimPage inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  error: connect ECONNREFUSED 127.0.0.1:9
+     errno: -61,
+   syscall: "connect",
+      port: 9,
+   address: "127.0.0.1",
+      code: "ECONNREFUSED"
+
+        at afterConnect (node:net:2001:39)
+        at connectError (node:net:963:21)
+
+
+  ../../packages/sim/site/page/sim-page.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to AnimatePresence inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to AnimatePresence inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour-norcal.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  ../../packages/sim/site/page/sim-page.test.tsx:
+  error: connect ECONNREFUSED 127.0.0.1:9
+     errno: -61,
+   syscall: "connect",
+      port: 9,
+   address: "127.0.0.1",
+      code: "ECONNREFUSED"
+
+        at afterConnect (node:net:2001:39)
+        at connectError (node:net:963:21)
+
+  error: connect ECONNREFUSED 127.0.0.1:9
+     errno: -61,
+   syscall: "connect",
+      port: 9,
+   address: "127.0.0.1",
+      code: "ECONNREFUSED"
+
+        at afterConnect (node:net:2001:39)
+        at connectError (node:net:963:21)
+
+
+  src/app/front-door/tour-replay.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+
+  ../../packages/sim/site/replay/sim-replay-reduced.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  ../../packages/sim/site/stage/sim-stage-reduced.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  src/app/front-door/tour-replay.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+
+  src/reduced-motion-site.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  ../../packages/design/site/parts/announcement.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/reduced-motion.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  src/reduced-motion.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/next-matchup 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/next-matchup".
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+
+  ../../packages/analyzer/site/form/passphrase-dialog.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to PassphraseDialog inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to PassphraseDialog inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to PassphraseDialog inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/analyzer/site/form/sheet.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  ../../packages/analyzer/site/form/stage-lines-motion-off.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  src/reduced-motion.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  ../../packages/analyzer/site/deadline/deadline-banner-reduced-motion.test.tsx:
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+
+  ../../packages/analyzer/site/deadline/deadline-banner.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  ../../packages/analyzer/site/form/trade-form.test.tsx:
+  An update to AnimatePresence inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  An update to Banner inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+
+  ../../packages/analyzer/site/form/trade-form.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  An update to Banner inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  ../../packages/analyzer/site/form/trade-form.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+
+  ../../packages/analyzer/site/form/trade-form.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-door/tour.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  An update to Banner inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  An update to AskBox inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  An update to Banner inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/front-page.test.tsx:
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+
+  src/app/home-flag.test.tsx:
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+
+  src/app/page-ask.test.tsx:
+  An update to AskBox inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/page.test.tsx:
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to DrawerContent inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  An update to Banner inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/next-matchup 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/next-matchup".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  src/app/page-personal.test.tsx:
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/page.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+
+  src/app/page-personal.test.tsx:
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/page.test.tsx:
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  You have Reduced Motion enabled on your device. Animations may not appear as expected.. For more information and steps for solving, visit https://motion.dev/troubleshooting/reduced-motion-disabled
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/eggs/board 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/eggs/board".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/deadline/trades 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/deadline/trades".
+  OPTIONS https://api.4thandgoal.app/clients/cpc/suggestions 400 (Bad Request)
+  Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at "https://api.4thandgoal.app/clients/cpc/suggestions".
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+  1940 |     return;
+  1941 |   }
+  1942 |   let tls = clientTLSOptionsForAttempt(self, context.options, port);
+  1943 |   self.emit("connectionAttempt", address, port, addressType);
+  1944 |   let req = {};
+  1945 |     let ex = new ExceptionWithHostPort(err, "connect", address, port);
+                                  ^
+  error: connect ECONNREFUSED 2a09:8280:1::1c3:4ec0:0:443
+     errno: -61,
+   syscall: "connect",
+      port: 443,
+   address: "2a09:8280:1::1c3:4ec0:0",
+      code: "ECONNREFUSED"
+
+        at internalConnectMultiple (node:net:1945:14)
+        at emitLookup (node:net:1860:48)
+        at guarded (internal:shared:114:26)
+        at <anonymous> (node:dns:210:15)
+  2022 |   afterConnect(status, self._handle, req, readable, writable);
+  2023 | }
+  2024 | function createConnectionError(req, status) {
+  2025 |   let details, localAddress = req.localAddress, localPort;
+  2026 |   if (localAddress && (localPort = req.localPort))
+  2027 |   let ex = new ExceptionWithHostPort(status, "connect", req.address, req.port, details);
+                    ^
+  error: connect ECANCELED 66.241.125.83:443
+     errno: -89,
+   syscall: "connect",
+      port: 443,
+   address: "66.241.125.83",
+      code: "ECANCELED"
+
+        at createConnectionError (node:net:2027:12)
+        at afterConnectMultiple (node:net:2014:35)
+        at connectError (node:net:963:21)
+
+  error: Socket is closed
+   code: "ERR_SOCKET_CLOSED"
+
+        at unknown:1:1
+        at close (node:net:922:67)
+
+  error: Socket is closed
+   code: "ERR_SOCKET_CLOSED"
+
+        at unknown:1:1
+        at close (node:net:922:67)
+
+  326 | function socketOnEnd() {
+  327 |   return runInFrame(this._httpMessage?.[kClientAsyncContext], socketOnEndInner, this);
+  328 | }
+  329 | function socketOnEndInner() {
+  330 |   let socket = this, req = this._httpMessage, parser = this.parser;
+  331 |     req.socket._hadError = !0, emitErrorEvent(req, new ConnResetException("socket hang up"));
+                                                         ^
+  error: socket hang up
+   code: "ECONNRESET"
+
+        at socketOnEndInner (node:_http_client:331:52)
+        at emit (node:events:118:23)
+        at endReadableNT (internal:streams/readable:901:50)
+
+  326 | function socketOnEnd() {
+  327 |   return runInFrame(this._httpMessage?.[kClientAsyncContext], socketOnEndInner, this);
+  328 | }
+  329 | function socketOnEndInner() {
+  330 |   let socket = this, req = this._httpMessage, parser = this.parser;
+  331 |     req.socket._hadError = !0, emitErrorEvent(req, new ConnResetException("socket hang up"));
+                                                         ^
+  error: socket hang up
+   code: "ECONNRESET"
+
+        at socketOnEndInner (node:_http_client:331:52)
+        at emit (node:events:118:23)
+        at endReadableNT (internal:streams/readable:901:50)
+
+  326 | function socketOnEnd() {
+  327 |   return runInFrame(this._httpMessage?.[kClientAsyncContext], socketOnEndInner, this);
+  328 | }
+  329 | function socketOnEndInner() {
+  330 |   let socket = this, req = this._httpMessage, parser = this.parser;
+  331 |     req.socket._hadError = !0, emitErrorEvent(req, new ConnResetException("socket hang up"));
+                                                         ^
+  error: socket hang up
+   code: "ECONNRESET"
+
+        at socketOnEndInner (node:_http_client:331:52)
+        at emit (node:events:118:23)
+        at endReadableNT (internal:streams/readable:901:50)
+
+
+  src/app/page-personal.test.tsx:
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/page-grade-blocks.test.tsx:
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+  src/app/page-personal.test.tsx:
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+  An update to ForwardRef(PersonalAnswerLive) inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+   1954 pass
+   0 fail
+   54612 expect() calls
+  Ran 1954 tests across 203 files. [66.25s]
+  ==> test: ok (66.6 s)
+   ELIFECYCLE  Command failed with exit code 1.
+  ==> site: FAILED with exit code 1 (67.1 s)
+  make: *** [check-fast] Error 1
+exit code: 1   # end 10:56:25
+
+$ git log -1 --oneline   # after
+2108f8bc Mark design-checks-speed 18 in-review
+$ git status --short
+M  apps/site/src/app/not-found.tsx

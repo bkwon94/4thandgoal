@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { type MouseEvent, useEffect, useState } from "react";
 import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
@@ -46,7 +47,7 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
     return () => clearTimeout(timer);
   }, [phase]);
 
-  const crackEgg = (event: MouseEvent<HTMLButtonElement>) => {
+  const crackEgg = (event: MouseEvent<HTMLElement>) => {
     // With motion off, the tap shows the letter at once, with no crack.
     if (!motion) {
       setPhase("letter");
@@ -64,8 +65,13 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
   const tap = crack?.point ?? EGG_MIDDLE;
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="egg-find-title" className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-gutter">
-      <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/75" />
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="egg-find-title"
+      className="p-gutter fixed inset-0 z-50 grid place-items-center overflow-y-auto"
+    >
+      <div aria-hidden="true" className="egg-scrim bg-band/75 fixed inset-0" />
       {motion && origin && phase === "egg" && (
         // The box is fixed, so it is no item of the grid of the dialog. An item in the flow of the grid adds a row
         // above the card and pushes the card down, and the card then jumps up when the ring goes at the tap.
@@ -74,16 +80,20 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
           <span className="egg-ripple egg-ripple-late" style={{ left: origin.x, top: origin.y }} />
         </div>
       )}
-      <HeroFrame label={phase === "letter" ? "Letter found" : "Egg found"} className="egg-hero egg-hero-in egg-hero-in-late w-full max-w-sm">
-        <div className="flex flex-col items-center gap-sp-4 text-center">
-          <Label dark className="mb-0 self-start text-meta">
+      <HeroFrame
+        label={phase === "letter" ? "Letter found" : "Egg found"}
+        className="egg-hero egg-hero-in egg-hero-in-late w-full max-w-sm"
+      >
+        <div className="gap-sp-4 flex flex-col items-center text-center">
+          <Label dark className="text-meta mb-0 self-start">
             {phase === "letter" ? "Letter found" : "Egg found"}
           </Label>
           <div className="relative flex h-58 w-50 items-center justify-center">
             {/* The ground reaches past the art to the edges of the hero, and never above or below the art. */}
             <ArtGround inset="inset-y-0 -inset-x-16" />
             {phase !== "letter" && (
-              <button
+              <Button
+                variant="plain"
                 type="button"
                 aria-label="Crack the egg"
                 disabled={phase === "cracking"}
@@ -92,20 +102,30 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
               >
                 <span aria-hidden="true" className="egg-halo" />
                 <Egg crack={crack} motion={motion} />
-              </button>
+              </Button>
             )}
             {phase !== "egg" && (
               // The box of the egg art, so a point of the art is a point in px of this box.
               <div className="absolute top-1/2 left-1/2 flex h-55 w-45 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-                {motion && <span aria-hidden="true" className="egg-flash" style={{ left: tap.x, top: tap.y }} />}
+                {motion && (
+                  <span
+                    aria-hidden="true"
+                    className="egg-flash"
+                    style={{ left: tap.x, top: tap.y }}
+                  />
+                )}
                 <span
                   data-testid="egg-letter"
                   className={cn(
-                    "relative flex size-28 items-center justify-center rounded-letter bg-accent font-mono text-hero leading-hero font-bold text-on-dark shadow-orb",
+                    "rounded-letter bg-accent text-hero leading-hero text-on-dark shadow-orb relative flex size-28 items-center justify-center font-mono font-bold",
                     motion && "egg-tile-rise",
                   )}
                   // The tile sits in the middle of the art, so the tap point less the top left of the tile is a point of the tile.
-                  style={motion ? { transformOrigin: `${tap.x - TILE_AT.x}px ${tap.y - TILE_AT.y}px` } : undefined}
+                  style={
+                    motion
+                      ? { transformOrigin: `${tap.x - TILE_AT.x}px ${tap.y - TILE_AT.y}px` }
+                      : undefined
+                  }
                 >
                   {letter}
                 </span>
@@ -113,8 +133,10 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
             )}
           </div>
           {phase === "letter" ? (
-            <div className={cn("flex w-full flex-col items-center gap-sp-4", motion && "egg-fade-in")}>
-              <div className="flex flex-col gap-sp-1">
+            <div
+              className={cn("gap-sp-4 flex w-full flex-col items-center", motion && "egg-fade-in")}
+            >
+              <div className="gap-sp-1 flex flex-col">
                 <h2 id="egg-find-title" className="text-score leading-tight font-bold">
                   The letter {letter} is yours to claim.
                 </h2>
@@ -122,31 +144,31 @@ export function FindCard({ letter, origin, onClaim, onClose }: FindCardProps) {
                   The first claim wins. Another manager can still beat you to it.
                 </p>
               </div>
-              <button
+              <Button
+                variant="plain"
                 type="button"
                 onClick={onClaim}
-                className="press min-h-touch w-full rounded-pill bg-accent text-lead font-bold text-on-dark shadow-orb"
+                className="press min-h-touch rounded-pill bg-accent text-lead text-on-dark shadow-orb w-full font-bold"
               >
                 Claim {letter}
-              </button>
+              </Button>
             </div>
           ) : (
-            <div className="flex flex-col gap-sp-1">
+            <div className="gap-sp-1 flex flex-col">
               <h2 id="egg-find-title" className="text-score leading-tight font-bold">
                 You found an egg
               </h2>
-              <p className="text-lead text-on-dark-2">
-                Tap it to crack it open.
-              </p>
+              <p className="text-lead text-on-dark-2">Tap it to crack it open.</p>
             </div>
           )}
-          <button
+          <Button
+            variant="plain"
             type="button"
             onClick={onClose}
-            className="press min-h-touch w-full rounded-pill border border-rule-dark bg-band text-body font-bold text-on-dark"
+            className="press min-h-touch rounded-pill border-rule-dark bg-band text-body text-on-dark w-full border font-bold"
           >
             Close
-          </button>
+          </Button>
         </div>
       </HeroFrame>
     </div>

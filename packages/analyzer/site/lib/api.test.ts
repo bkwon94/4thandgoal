@@ -1,21 +1,27 @@
 /**
  * Tests for the API client. fetch is a test stub that returns real Response objects.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { ApiError, fetchTeams, postAnalyze, retryText, streamFind, toApiError, toErrorLine, type ApiTarget } from "./api";
+import { waitFor } from "@testing-library/react";
+import { describe, expect, it, mock, spyOn } from "bun:test";
+import {
+  ApiError,
+  fetchTeams,
+  postAnalyze,
+  retryText,
+  streamFind,
+  toApiError,
+  toErrorLine,
+  type ApiTarget,
+} from "./api";
 import { findResponse } from "./fixtures/api";
 
 // The API of the test. The client slug is not cpc, so a path that drops the slug or fixes it to cpc fails.
 const TARGET: ApiTarget = { url: "https://api.example.test", client: "norcal", season: 2026 };
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe("fetchTeams", () => {
   it("fills a missing avatar with null", async () => {
     const body = { teams: [{ roster_id: 1, team: "A", manager: "Ana", players: [] }] };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(body))));
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body)));
     expect((await fetchTeams(TARGET, "pw"))[0].avatar).toBeNull();
   });
 
@@ -24,8 +30,12 @@ describe("fetchTeams", () => {
       status: 429,
       headers: { "Retry-After": "12" },
     });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
-    await expect(fetchTeams(TARGET, "pw")).rejects.toMatchObject({ status: 429, message: "slow down", retryAfter: 12 });
+    spyOn(globalThis, "fetch").mockResolvedValue(response);
+    await expect(fetchTeams(TARGET, "pw")).rejects.toMatchObject({
+      status: 429,
+      message: "slow down",
+      retryAfter: 12,
+    });
     await expect(fetchTeams(TARGET, "pw")).rejects.toBeInstanceOf(ApiError);
   });
 });
@@ -33,13 +43,18 @@ describe("fetchTeams", () => {
 describe("the client in the path", () => {
   it("calls the teams, analyze, and find stream routes of the client of the target", async () => {
     const teams = { teams: [] };
-    const stub = vi.fn().mockImplementation(async () => new Response(JSON.stringify(teams)));
-    vi.stubGlobal("fetch", stub);
+    const stub = spyOn(globalThis, "fetch").mockImplementation(
+      (async () => new Response(JSON.stringify(teams))) as unknown as typeof fetch,
+    );
     await fetchTeams(TARGET, "pw");
     const signal = new AbortController().signal;
-    await postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, signal).catch(() => undefined);
+    await postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, signal).catch(
+      () => undefined,
+    );
     const events = { onStep: () => {}, onTeam: () => {} };
-    await streamFind(TARGET, "pw", { season: 2026, asker: 1, partner: 2 }, events, signal).catch(() => undefined);
+    await streamFind(TARGET, "pw", { season: 2026, asker: 1, partner: 2 }, events, signal).catch(
+      () => undefined,
+    );
     expect(stub.mock.calls.map(([url]) => url)).toEqual([
       "https://api.example.test/clients/norcal/teams?season=2026",
       "https://api.example.test/clients/norcal/analyze",
@@ -55,7 +70,9 @@ describe("toApiError", () => {
   });
 
   it("reads the message from a 422 object detail", async () => {
-    const response = new Response(JSON.stringify({ detail: { message: "bad trade" } }), { status: 422 });
+    const response = new Response(JSON.stringify({ detail: { message: "bad trade" } }), {
+      status: 422,
+    });
     const error = await toApiError(response);
     expect(error).toMatchObject({ status: 422, message: "bad trade" });
     expect(error.retryAfter).toBeUndefined();
@@ -81,15 +98,20 @@ describe("retryText", () => {
 describe("response parse", () => {
   it("throws an ApiError that names the path of the bad field", async () => {
     const body = { teams: [{ roster_id: "one", team: "A", manager: "Ana", players: [] }] };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(body))));
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body)));
     const error = await fetchTeams(TARGET, "pw").catch((e) => e);
     expect(error).toBeInstanceOf(ApiError);
     expect(error.message).toContain("teams.0.roster_id");
   });
 
   it("throws the same error for a wrong analyze body", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}")));
-    const call = postAnalyze(TARGET, "pw", { season: 2026, asker: 1, sides: [] }, new AbortController().signal);
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
+    const call = postAnalyze(
+      TARGET,
+      "pw",
+      { season: 2026, asker: 1, sides: [] },
+      new AbortController().signal,
+    );
     await expect(call).rejects.toBeInstanceOf(ApiError);
   });
 });
@@ -103,7 +125,10 @@ describe("toErrorLine for a wrong body", () => {
 
 /* A find stream as the API sends it: each part as one `data:` line of an event stream. */
 function streamOf(parts: unknown[]): Response {
-  const text = [...parts.map((part) => `data: ${JSON.stringify(part)}\n\n`), "data: [DONE]\n\n"].join("");
+  const text = [
+    ...parts.map((part) => `data: ${JSON.stringify(part)}\n\n`),
+    "data: [DONE]\n\n",
+  ].join("");
   return new Response(text, { headers: { "content-type": "text/event-stream" } });
 }
 
@@ -111,7 +136,7 @@ describe("streamFind", () => {
   const body = { season: 2026, asker: 6 };
 
   it("posts the find body to the find stream of the client, and gives each step, each team read, and the document", async () => {
-    const stub = vi.fn().mockResolvedValue(
+    const stub = spyOn(globalThis, "fetch").mockResolvedValue(
       streamOf([
         { type: "start" },
         { type: "data-step", data: { line: "Reading every team", live: true } },
@@ -122,11 +147,19 @@ describe("streamFind", () => {
         { type: "finish" },
       ]),
     );
-    vi.stubGlobal("fetch", stub);
     const steps: [string, boolean][] = [];
     const teams: number[] = [];
-    const doc = await streamFind(TARGET, "pw", body, { onStep: (line, live) => steps.push([line, live]), onTeam: (id) => teams.push(id) }, new AbortController().signal);
-    const [url, init] = stub.mock.calls[0];
+    const doc = await streamFind(
+      TARGET,
+      "pw",
+      body,
+      { onStep: (line, live) => steps.push([line, live]), onTeam: (id) => teams.push(id) },
+      new AbortController().signal,
+    );
+    const [url, init] = stub.mock.calls[0] as unknown as [
+      string,
+      { headers: Record<string, string>; body: string },
+    ];
     expect(url).toBe("https://api.example.test/clients/norcal/find-stream");
     expect(init.headers["X-League-Passphrase"]).toBe("pw");
     expect(JSON.parse(init.body)).toEqual(body);
@@ -139,16 +172,34 @@ describe("streamFind", () => {
   });
 
   it("throws an ApiError with the status and the line of an error part", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamOf([{ type: "data-error", data: { status: 503, line: "Try again in a minute." } }])));
-    await expect(streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {} }, new AbortController().signal)).rejects.toMatchObject({
+    spyOn(globalThis, "fetch").mockResolvedValue(
+      streamOf([{ type: "data-error", data: { status: 503, line: "Try again in a minute." } }]),
+    );
+    await expect(
+      streamFind(
+        TARGET,
+        "pw",
+        body,
+        { onStep: () => {}, onTeam: () => {} },
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({
       status: 503,
       detail: "Try again in a minute.",
     });
   });
 
   it("throws the ApiError of a failed response, such as a 500", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 500 })));
-    await expect(streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {} }, new AbortController().signal)).rejects.toMatchObject({ status: 500 });
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status: 500 }));
+    await expect(
+      streamFind(
+        TARGET,
+        "pw",
+        body,
+        { onStep: () => {}, onTeam: () => {} },
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({ status: 500 });
   });
 
   it("drains the stream to its end after the document, so it leaves no open stream for an abort to cut", async () => {
@@ -159,7 +210,7 @@ describe("streamFind", () => {
       { type: "finish" },
     ].map((part) => encoder.encode(`data: ${JSON.stringify(part)}\n\n`));
     chunks.push(encoder.encode("data: [DONE]\n\n"));
-    const cancel = vi.fn();
+    const cancel = mock();
     let reads = 0;
     const body = new ReadableStream<Uint8Array>({
       pull(controller) {
@@ -170,33 +221,54 @@ describe("streamFind", () => {
       },
       cancel,
     });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(body, { headers: { "content-type": "text/event-stream" } })));
+    spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(body, { headers: { "content-type": "text/event-stream" } }),
+    );
     const controller = new AbortController();
-    const doc = await streamFind(TARGET, "pw", { season: 2026, asker: 6 }, { onStep: () => {}, onTeam: () => {} }, controller.signal);
+    const doc = await streamFind(
+      TARGET,
+      "pw",
+      { season: 2026, asker: 6 },
+      { onStep: () => {}, onTeam: () => {} },
+      controller.signal,
+    );
     expect(doc.trades).toHaveLength(findResponse.trades.length);
-    await vi.waitFor(() => expect(reads).toBeGreaterThanOrEqual(5));
+    await waitFor(() => expect(reads).toBeGreaterThanOrEqual(5));
     expect(chunks).toHaveLength(0);
     controller.abort();
     expect(cancel).not.toHaveBeenCalled();
   });
 
   it("tells the finder when the pick has no more trades, before the document", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        streamOf([
-          { type: "data-trades-done", data: {} },
-          { type: "data-answer", data: { kind: "find", document: findResponse } },
-        ]),
-      ),
+    spyOn(globalThis, "fetch").mockResolvedValue(
+      streamOf([
+        { type: "data-trades-done", data: {} },
+        { type: "data-answer", data: { kind: "find", document: findResponse } },
+      ]),
     );
     const seen: string[] = [];
-    await streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {}, onTradesDone: () => seen.push("done") }, new AbortController().signal);
+    await streamFind(
+      TARGET,
+      "pw",
+      body,
+      { onStep: () => {}, onTeam: () => {}, onTradesDone: () => seen.push("done") },
+      new AbortController().signal,
+    );
     expect(seen).toEqual(["done"]);
   });
 
   it("throws a 502 for a stream that ends with no document", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(streamOf([{ type: "data-step", data: { line: "Reading every team", live: true } }])));
-    await expect(streamFind(TARGET, "pw", body, { onStep: () => {}, onTeam: () => {} }, new AbortController().signal)).rejects.toMatchObject({ status: 502 });
+    spyOn(globalThis, "fetch").mockResolvedValue(
+      streamOf([{ type: "data-step", data: { line: "Reading every team", live: true } }]),
+    );
+    await expect(
+      streamFind(
+        TARGET,
+        "pw",
+        body,
+        { onStep: () => {}, onTeam: () => {} },
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({ status: 502 });
   });
 });

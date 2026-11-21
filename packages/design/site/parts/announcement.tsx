@@ -1,6 +1,8 @@
 /**
  * The Announcement: a bottom sheet on the shared Sheet that introduces a new feature once. From the top it holds the art
  * slot, the eyebrow, the title, one line, the link to the feature, and "Not now". The use fills the art and the copy.
+ * Use it when: one new feature needs a one-time introduction.
+ * Do not use it when: the sheet needs an answer from the reader. Use `Dialog`.
  */
 "use client";
 
@@ -84,37 +86,47 @@ export function Announcement({
         initialFocus="content"
         aria-describedby="announcement-line"
         // The sheet never reaches the top of a short phone, so the dim above it still reads as the page to come back to.
-        className="mx-auto flex max-h-[calc(100dvh-env(safe-area-inset-top)-var(--spacing-sp-6))] w-full max-w-sheet flex-col rounded-t-hero border border-b-0 border-rule bg-card shadow-sheet"
+        className="max-w-sheet rounded-t-hero border-rule bg-card shadow-sheet mx-auto flex max-h-[calc(100dvh-env(safe-area-inset-top)-var(--spacing-sp-6))] w-full flex-col border border-b-0"
       >
         <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />
         {/* The art and the words scroll inside the sheet on a very short screen. The actions stay in their own row. */}
-        <div className="flex min-h-0 flex-col gap-sp-4 overflow-y-auto overscroll-contain px-sp-4 pt-sp-3">
+        <div className="gap-sp-4 px-sp-4 pt-sp-3 flex min-h-0 flex-col overflow-y-auto overscroll-contain">
           {art}
-          <div className="flex flex-col gap-sp-1 px-sp-1">
-            <motion.span {...riseIn(off, 0)} className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">
+          <div className="gap-sp-1 px-sp-1 flex flex-col">
+            <motion.span
+              {...riseIn(off, 0)}
+              className="text-meta tracking-caps text-accent-ink font-mono leading-tight font-bold uppercase"
+            >
               {/* The site name is in the prop, not in the art, so a screen reader hears whose note it is (ADR 0012). */}
               <span className="sr-only">{`${siteName}: `}</span>
               {copy.eyebrow}
             </motion.span>
             <motion.div {...riseIn(off, 1)}>
-              <SheetTitle className="m-0 text-score leading-tight font-bold tracking-tight text-balance">{copy.title}</SheetTitle>
+              <SheetTitle className="text-score m-0 leading-tight font-bold tracking-tight text-balance">
+                {copy.title}
+              </SheetTitle>
             </motion.div>
-            <motion.p {...riseIn(off, 2)} id="announcement-line" className="m-0 text-lead leading-body text-pretty text-ink-2">
+            <motion.p
+              {...riseIn(off, 2)}
+              id="announcement-line"
+              className="text-lead leading-body text-ink-2 m-0 text-pretty"
+            >
               {copy.line}
             </motion.p>
           </div>
         </div>
         {/* The end of the sheet keeps the home bar of an iPhone clear. */}
-        <div className="flex flex-none flex-col gap-sp-1 px-sp-5 pt-sp-4 pb-[calc(var(--spacing-sp-2)+env(safe-area-inset-bottom))]">
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step */}
+        <div className="gap-sp-1 px-sp-5 pt-sp-4 flex flex-none flex-col pb-[calc(var(--spacing-sp-2)+env(safe-area-inset-bottom))]">
           <a
             href={href}
             onClick={onFollow}
-            className="press flex min-h-touch items-center justify-center gap-sp-2 rounded-pill bg-accent px-sp-5 text-body leading-tight font-semibold text-on-dark no-underline outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            className="press min-h-touch gap-sp-2 rounded-pill bg-accent px-sp-5 text-body text-on-dark focus-visible:outline-ink flex items-center justify-center leading-tight font-semibold no-underline outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             {copy.follow}
             <ArrowRightIcon aria-hidden className="size-sp-4" strokeWidth={2.25} />
           </a>
-          <SheetClose className="press flex min-h-touch items-center justify-center self-center rounded-pill px-sp-4 text-meta leading-tight font-semibold text-mute outline-none hover-fine:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">
+          <SheetClose className="press min-h-touch rounded-pill px-sp-4 text-meta text-mute hover-fine:text-ink focus-visible:outline-ink flex items-center justify-center self-center leading-tight font-semibold outline-none focus-visible:outline-2 focus-visible:outline-offset-2">
             {copy.dismiss}
           </SheetClose>
         </div>

@@ -5,14 +5,9 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@/fixtures/waiver.json";
-
-afterEach(() => {
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
-});
 
 /* A temp public/ folder with one week page per week folder, and the waiver file in the weeks given. */
 async function readerOver(weeks: string[], withWaiver: Record<string, unknown>) {
@@ -24,9 +19,8 @@ async function readerOver(weeks: string[], withWaiver: Record<string, unknown>) 
   for (const [week, body] of Object.entries(withWaiver)) {
     writeFileSync(join(root, "public", "2026", week, "waiver.json"), JSON.stringify(body));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The week reader reads the working folder when it loads, so reset it to pick up the temp folder.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./waiver-data");
 }
 
@@ -43,7 +37,11 @@ describe("loadWaiver", () => {
     const board = loadWaiver("2026", "week-06")!;
     expect(board.week).toBe(6);
     expect(board.buckets.best_adds).toHaveLength(8);
-    expect(board.buckets.best_adds[0]).toMatchObject({ player_id: "7567", name: "Kenny Gainwell", position: "RB" });
+    expect(board.buckets.best_adds[0]).toMatchObject({
+      player_id: "7567",
+      name: "Kenny Gainwell",
+      position: "RB",
+    });
     expect(board.budgets).toHaveLength(12);
   });
 
@@ -53,7 +51,9 @@ describe("loadWaiver", () => {
   });
 
   it("throws when the schema version is not 1", async () => {
-    const { loadWaiver } = await readerOver(["week-06"], { "week-06": { ...fixture, schema_version: 2 } });
+    const { loadWaiver } = await readerOver(["week-06"], {
+      "week-06": { ...fixture, schema_version: 2 },
+    });
     expect(() => loadWaiver("2026", "week-06")).toThrow(/schema_version 2/);
   });
 });

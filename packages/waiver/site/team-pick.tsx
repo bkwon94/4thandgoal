@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { useEffect, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import { Avatar } from "@cpc/league/avatar";
@@ -29,22 +30,36 @@ function pickerTeams(budgets: BudgetRow[], teams: TeamNames, avatars: AvatarMap)
 /* The picked team as one row: the avatar, the name, the budget left, and a Change link that opens the list again.
    The picker has its own collapsed row, but it opens on every mount and has no budget line. A change to it changes the analyzer,
    so the waiver page keeps this second chip. */
-function PickChip({ name, avatar, budget, onChange }: { name: string; avatar: string; budget: number; onChange: () => void }) {
+function PickChip({
+  name,
+  avatar,
+  budget,
+  onChange,
+}: {
+  name: string;
+  avatar: string;
+  budget: number;
+  onChange: () => void;
+}) {
   return (
-    <section aria-label={LABEL} className="flex h-pick-chip items-center gap-sp-3 rounded-card bg-chip-dark py-sp-1 pl-sp-3">
+    <section
+      aria-label={LABEL}
+      className="h-pick-chip gap-sp-3 rounded-card bg-chip-dark py-sp-1 pl-sp-3 flex items-center"
+    >
       <Avatar src={avatar} />
       <span className="flex min-w-0 flex-1 flex-col">
-        <b className="truncate text-row leading-tight font-extrabold">{name}</b>
+        <b className="text-row truncate leading-tight font-extrabold">{name}</b>
         <span className="text-meta text-on-dark-muted tabular-nums">{`you have $${budget}`}</span>
       </span>
-      <button
+      <Button
+        variant="plain"
         type="button"
         onClick={onChange}
         aria-label={`Change ${LABEL.toLowerCase()}`}
-        className="press min-h-touch flex-none cursor-pointer rounded-card border-0 bg-transparent px-sp-4 text-label font-bold tracking-wide text-on-dark uppercase underline underline-offset-4"
+        className="press min-h-touch rounded-card px-sp-4 text-label text-on-dark flex-none cursor-pointer border-0 bg-transparent font-bold tracking-wide uppercase underline underline-offset-4"
       >
         Change
-      </button>
+      </Button>
     </section>
   );
 }

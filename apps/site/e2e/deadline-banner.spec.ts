@@ -25,9 +25,26 @@ const ENDED = "2026-11-25T00:00:01-05:00";
 type WireAnswer = { leg: number; trades: unknown[] };
 const WIRE_EMPTY: WireAnswer = { leg: 11, trades: [] };
 const WIRE_TWO: WireAnswer = JSON.parse(
-  readFileSync(join(process.cwd(), "..", "..", "packages", "analyzer", "site", "deadline", "fixtures", "trade-wire-cpc-week-9.json"), "utf8"),
+  readFileSync(
+    join(
+      process.cwd(),
+      "..",
+      "..",
+      "packages",
+      "analyzer",
+      "site",
+      "deadline",
+      "fixtures",
+      "trade-wire-cpc-week-9.json",
+    ),
+    "utf8",
+  ),
 );
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "GET",
+};
 
 // The browser of a file is set at its top, because a group cannot pick the browser. Safari runs on WebKit.
 test.use({ browserName: "webkit", reducedMotion: "no-preference" });
@@ -69,15 +86,31 @@ async function openAt(
     ticks = false,
     wire = WIRE_EMPTY,
     gate = Promise.resolve(),
-  }: { theme?: "light" | "dark"; path?: string; tour?: boolean; ticks?: boolean; wire?: WireAnswer | "fail"; gate?: Promise<void> } = {},
+  }: {
+    theme?: "light" | "dark";
+    path?: string;
+    tour?: boolean;
+    ticks?: boolean;
+    wire?: WireAnswer | "fail";
+    gate?: Promise<void>;
+  } = {},
 ) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   // A route added later takes the call first, so this one wins over the abort above.
   await page.route(/\/deadline\/trades$/, async (route) => {
-    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    if (route.request().method() === "OPTIONS")
+      return route.fulfill({ status: 204, headers: CORS });
     await gate;
     if (wire === "fail") return route.abort();
-    return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body: JSON.stringify(wire) });
+    return route.fulfill({
+      status: 200,
+      headers: CORS,
+      contentType: "application/json",
+      body: JSON.stringify(wire),
+    });
   });
   if (ticks) await page.clock.install({ time: new Date(time) });
   else await page.clock.setFixedTime(new Date(time));
@@ -98,13 +131,17 @@ const banner = (page: Page) => page.locator("[data-deadline-banner]");
 const trigger = (page: Page) => page.getByRole("button", { name: /^Open the Trade Wire/ });
 
 async function rectOf(page: Page, selector: string): Promise<Rect> {
-  return page.locator(selector).first().evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-  });
+  return page
+    .locator(selector)
+    .first()
+    .evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    });
 }
 
-const overlap = (a: Rect, b: Rect) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+const overlap = (a: Rect, b: Rect) =>
+  a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 /* No horizontal scroll, the banner inside the band and under its row, and the band height token equal to the band. */
 async function expectFits(page: Page) {
@@ -120,7 +157,9 @@ async function expectFits(page: Page) {
       document.body.append(probe);
       const token = probe.getBoundingClientRect().height;
       probe.remove();
-      const bannerToken = parseFloat(document.documentElement.style.getPropertyValue("--deadline-banner-h"));
+      const bannerToken = parseFloat(
+        document.documentElement.style.getPropertyValue("--deadline-banner-h"),
+      );
       return {
         scroll: document.documentElement.scrollWidth - window.innerWidth,
         rowBottom: row.bottom,
@@ -137,12 +176,20 @@ async function expectFits(page: Page) {
     });
     console.log(`fit: ${JSON.stringify(fit)}`);
     expect(fit.scroll, "the page scrolls sideways").toBeLessThanOrEqual(0);
-    expect(fit.stripTop, "the banner overlaps the row of the band").toBeGreaterThanOrEqual(fit.rowBottom - 0.5);
+    expect(fit.stripTop, "the banner overlaps the row of the band").toBeGreaterThanOrEqual(
+      fit.rowBottom - 0.5,
+    );
     expect(fit.stripBottom).toBeLessThanOrEqual(fit.headerBottom + 0.5);
     expect(fit.stripWidth).toBeLessThanOrEqual(fit.width);
-    expect(Math.abs(fit.token - fit.headerHeight), "the band height token does not hold the banner").toBeLessThanOrEqual(0.01);
+    expect(
+      Math.abs(fit.token - fit.headerHeight),
+      "the band height token does not hold the banner",
+    ).toBeLessThanOrEqual(0.01);
     // The banner token keeps the fraction of a pixel, so a part that sticks at the band height sits flush with the band.
-    expect(Math.abs(fit.bannerToken - fit.stripHeight), "the banner token rounds the height of the banner").toBeLessThanOrEqual(0.01);
+    expect(
+      Math.abs(fit.bannerToken - fit.stripHeight),
+      "the banner token rounds the height of the banner",
+    ).toBeLessThanOrEqual(0.01);
   }).toPass({ timeout: 2000 });
 }
 
@@ -152,9 +199,13 @@ for (const viewport of VIEWPORTS) {
     test.skip(CLIENT !== "cpc", "Only cpc has a Lock.");
 
     for (const theme of ["light", "dark"] as const) {
-      test(`${theme}: the banner shows TRADE DEADLINE over the countdown, fits the band, and ticks (AT-1, AT-2)`, async ({ page }, info) => {
+      test(`${theme}: the banner shows TRADE DEADLINE over the countdown, fits the band, and ticks (AT-1, AT-2)`, async ({
+        page,
+      }, info) => {
         await openAt(page, OPEN, { theme, ticks: true });
-        await expect(banner(page).locator("[data-deadline-eyebrow]")).toHaveText("TRADE DEADLINE", { useInnerText: true });
+        await expect(banner(page).locator("[data-deadline-eyebrow]")).toHaveText("TRADE DEADLINE", {
+          useInnerText: true,
+        });
         await expect(banner(page).locator("[data-deadline-countdown]")).toHaveText("~2d 14h 05m");
         await expectFits(page);
         await page.locator("header").screenshot({ path: info.outputPath(`open-${theme}.png`) });
@@ -166,19 +217,30 @@ for (const viewport of VIEWPORTS) {
         await openAt(page, OPEN, { theme });
         await expect(banner(page).locator("[data-deadline-countdown]")).toHaveText("~2d 14h 05m");
         const box = await page.evaluate(() => {
-          const rect = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
+          const rect = (selector: string) =>
+            document.querySelector(selector)!.getBoundingClientRect();
           const button = rect("[data-deadline-banner] button");
           const eyebrow = rect("[data-deadline-eyebrow]");
           const countdown = rect("[data-deadline-countdown]");
-          const border = parseFloat(getComputedStyle(document.querySelector("[data-deadline-banner] button")!).borderTopWidth);
-          return { top: eyebrow.top - button.top - border, bottom: button.bottom - countdown.bottom, eyebrowX: eyebrow.left, countdownX: countdown.left };
+          const border = parseFloat(
+            getComputedStyle(document.querySelector("[data-deadline-banner] button")!)
+              .borderTopWidth,
+          );
+          return {
+            top: eyebrow.top - button.top - border,
+            bottom: button.bottom - countdown.bottom,
+            eyebrowX: eyebrow.left,
+            countdownX: countdown.left,
+          };
         });
         console.log(`AT-8 ${viewport.name} ${theme}: ${JSON.stringify(box)}`);
         expect(Math.abs(box.top - box.bottom)).toBeLessThanOrEqual(1);
         expect(Math.abs(box.eyebrowX - box.countdownX)).toBeLessThanOrEqual(0.5);
       });
 
-      test(`${theme}: the last hours take the accent fill and show seconds (AT-3)`, async ({ page }) => {
+      test(`${theme}: the last hours take the accent fill and show seconds (AT-3)`, async ({
+        page,
+      }) => {
         await openAt(page, LAST_HOURS, { theme });
         await expect(banner(page).locator("[data-deadline-countdown]")).toHaveText("~2h 41m 10s");
         const fill = await page.evaluate(() => {
@@ -187,30 +249,44 @@ for (const viewport of VIEWPORTS) {
           document.body.append(probe);
           const accent = getComputedStyle(probe).backgroundColor;
           probe.remove();
-          return { accent, banner: getComputedStyle(document.querySelector("[data-deadline-banner] button")!).backgroundColor };
+          return {
+            accent,
+            banner: getComputedStyle(document.querySelector("[data-deadline-banner] button")!)
+              .backgroundColor,
+          };
         });
         console.log(`AT-3 ${viewport.name} ${theme}: ${JSON.stringify(fill)}`);
         expect(fill.banner).toBe(fill.accent);
         await expectFits(page);
       });
 
-      test(`${theme}: the banner says the trade deadline has passed, with Final, after the Lock (AT-9)`, async ({ page }) => {
+      test(`${theme}: the banner says the trade deadline has passed, with Final, after the Lock (AT-9)`, async ({
+        page,
+      }) => {
         await openAt(page, CLOSED, { theme });
-        await expect(trigger(page)).toContainText("The trade deadline has passed. Good luck in the playoffs.");
+        await expect(trigger(page)).toContainText(
+          "The trade deadline has passed. Good luck in the playoffs.",
+        );
         await expect(trigger(page)).toContainText("Final");
         await expectFits(page);
       });
     }
 
-    test("the banner is one button named Open the Trade Wire, and it opens the Trade Wire sheet", async ({ page }) => {
+    test("the banner is one button named Open the Trade Wire, and it opens the Trade Wire sheet", async ({
+      page,
+    }) => {
       // The route holds its answer until the name before the first read is checked.
       let answer = () => {};
       const gate = new Promise<void>((resolve) => (answer = resolve));
       await openAt(page, OPEN, { gate });
       await expect(trigger(page)).toHaveCount(1);
-      await expect(page.getByRole("button", { name: "Open the Trade Wire", exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Open the Trade Wire", exact: true }),
+      ).toBeVisible();
       answer();
-      await expect(page.getByRole("button", { name: "Open the Trade Wire, 0 new trades", exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Open the Trade Wire, 0 new trades", exact: true }),
+      ).toBeVisible();
       await trigger(page).click();
       const sheet = page.getByRole("dialog", { name: "Trade Wire" });
       await expect(sheet).toBeVisible();
@@ -218,9 +294,13 @@ for (const viewport of VIEWPORTS) {
       await expect(sheet.getByText(/^Trade deadline ~2d 14h 05m$/i)).toBeVisible();
     });
 
-    test("the badge counts the trades of the recorded answer, and the sheet lists them", async ({ page }) => {
+    test("the badge counts the trades of the recorded answer, and the sheet lists them", async ({
+      page,
+    }) => {
       await openAt(page, OPEN, { wire: WIRE_TWO });
-      await expect(page.getByRole("button", { name: "Open the Trade Wire, 2 new trades", exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Open the Trade Wire, 2 new trades", exact: true }),
+      ).toBeVisible();
       await expect(banner(page).locator("[data-deadline-badge]")).toHaveText("2 new");
       await trigger(page).click();
       const sheet = page.getByRole("dialog", { name: "Trade Wire" });
@@ -251,7 +331,12 @@ for (const viewport of VIEWPORTS) {
       const press = await page.locator("[data-deadline-grid]").evaluate(async (el) => {
         await Promise.all(el.getAnimations().map((animation) => animation.finished));
         const style = getComputedStyle(el);
-        return { transform: style.transform, scale: style.scale, duration: style.transitionDuration, property: style.transitionProperty };
+        return {
+          transform: style.transform,
+          scale: style.scale,
+          duration: style.transitionDuration,
+          property: style.transitionProperty,
+        };
       });
       await page.mouse.up();
       console.log(`AT-7 ${viewport.name}: ${JSON.stringify(press)}`);
@@ -264,8 +349,11 @@ for (const viewport of VIEWPORTS) {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await openAt(page, LAST_HOURS);
       await expect(banner(page).locator("[data-deadline-countdown]")).toHaveText("~2h 41m 10s");
-      const running = await banner(page).evaluate((el) =>
-        el.getAnimations({ subtree: true }).filter((animation) => animation.playState === "running").length,
+      const running = await banner(page).evaluate(
+        (el) =>
+          el
+            .getAnimations({ subtree: true })
+            .filter((animation) => animation.playState === "running").length,
       );
       console.log(`AT-4 ${viewport.name}: running animations ${running}`);
       expect(running).toBe(0);
@@ -297,7 +385,9 @@ test.describe("the Tour", () => {
   test.use(VIEWPORTS[0].use);
   test.skip(CLIENT !== "cpc", "Only cpc has a Lock.");
 
-  test("the front door Tour still shows in full on the first visit, with no overlap by the banner", async ({ page }) => {
+  test("the front door Tour still shows in full on the first visit, with no overlap by the banner", async ({
+    page,
+  }) => {
     await openAt(page, OPEN, { tour: true });
     const card = page.getByRole("dialog", { name: "Suggestions" });
     await expect(card).toBeVisible();

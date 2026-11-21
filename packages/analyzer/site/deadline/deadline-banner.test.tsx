@@ -3,10 +3,11 @@
  * The clock and the route answer are fixed inputs: the real Lock of CPC and the real answer of leg 9, which holds trade W.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, setSystemTime, spyOn } from "bun:test";
 // The jsdom stand-ins that the Drawer of the sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 import type { ApiTarget } from "../lib/api";
+import { fakeClock } from "../lib/fake-clock";
 import { DeadlineBanner } from "./deadline-banner";
 import WEEK_9 from "./fixtures/trade-wire-cpc-week-9.json";
 
@@ -18,26 +19,37 @@ const FIND = "/analyze/?mode=find";
 const TRADE_W = "1424578776058155008";
 const OTHER = "1425209111854747648";
 const EMPTY = { leg: 11, trades: [] };
-const onlyOther = { leg: 9, trades: WEEK_9.trades.filter((trade) => trade.transaction_id === OTHER) };
+const onlyOther = {
+  leg: 9,
+  trades: WEEK_9.trades.filter((trade) => trade.transaction_id === OTHER),
+};
 
 /* The answer that the route gives now. A test changes it to show a new trade or a failed read. */
 let answer: { status: number; body: unknown };
-let fetchStub: ReturnType<typeof vi.fn>;
+let fetchStub: ReturnType<typeof mock>;
 let hidden = false;
 
 beforeEach(() => {
   answer = { status: 200, body: EMPTY };
   hidden = false;
-  fetchStub = vi.fn(async () => new Response(JSON.stringify(answer.body), { status: answer.status }));
-  vi.stubGlobal("fetch", fetchStub);
-  Object.defineProperty(document, "visibilityState", { configurable: true, get: () => (hidden ? "hidden" : "visible") });
+  fetchStub = mock(
+    async () => new Response(JSON.stringify(answer.body), { status: answer.status }),
+  );
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
+  Object.defineProperty(document, "visibilityState", {
+    configurable: true,
+    get: () => (hidden ? "hidden" : "visible"),
+  });
   localStorage.setItem("cpc.passphrase", "league-word");
 });
 
+/* The fake clock of the test, so the countdown and the reads of the Trade Wire move only when the test moves them. */
+let clock: ReturnType<typeof fakeClock> | null = null;
+
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
+  clock = null;
+  setSystemTime();
   localStorage.clear();
 });
 
@@ -53,17 +65,19 @@ async function settle() {
 
 /* The banner at the time `iso`, after its first tick and its first read of the Trade Wire. */
 async function bannerAt(iso: string, findHref: string | null = FIND) {
-  vi.useFakeTimers({ toFake: ["Date", "setInterval", "clearInterval", "setTimeout", "clearTimeout"] });
-  vi.setSystemTime(new Date(iso));
-  const view = render(<DeadlineBanner lock={LOCK} api={TARGET} gradeHref={GRADE} findHref={findHref} />);
-  act(() => vi.advanceTimersByTime(0));
+  clock ??= fakeClock();
+  clock.setTime(new Date(iso));
+  const view = render(
+    <DeadlineBanner lock={LOCK} api={TARGET} gradeHref={GRADE} findHref={findHref} />,
+  );
+  act(() => clock!.advance(0));
   await settle();
   return view;
 }
 
 /* Moves the clock on `ms`, and lets each read that went out answer. */
 async function wait(ms: number) {
-  act(() => vi.advanceTimersByTime(ms));
+  act(() => clock!.advance(ms));
   await settle();
 }
 
@@ -97,13 +111,19 @@ describe("the Deadline banner", () => {
   it("shows the seconds in the last hours (AT-3)", async () => {
     await bannerAt("2026-11-23T21:18:50-05:00");
     expect(trigger().textContent).toContain("~2h 41m 10s");
-    expect(trigger().closest("[data-deadline-banner]")?.getAttribute("data-phase")).toBe("last-hours");
+    expect(trigger().closest("[data-deadline-banner]")?.getAttribute("data-phase")).toBe(
+      "last-hours",
+    );
   });
 
   it("says the trade deadline has passed, with the badge Final, after the Lock (AT-9)", async () => {
     await bannerAt("2026-11-24T00:00:01-05:00");
-    const button = screen.getByRole("button", { name: "Open the Trade Wire, final. The trade deadline has passed." });
-    expect(button.textContent).toContain("The trade deadline has passed. Good luck in the playoffs.");
+    const button = screen.getByRole("button", {
+      name: "Open the Trade Wire, final. The trade deadline has passed.",
+    });
+    expect(button.textContent).toContain(
+      "The trade deadline has passed. Good luck in the playoffs.",
+    );
     expect(button.textContent).toContain("Final");
     expect(button.textContent).not.toContain("Trade deadline~");
   });
@@ -138,13 +158,16 @@ describe("the Deadline banner", () => {
   });
 
   it("never says Lock or that rosters are locked", async () => {
-    for (const iso of ["2026-11-21T09:55:00-05:00", "2026-11-23T21:18:50-05:00", "2026-11-24T00:00:01-05:00"]) {
+    for (const iso of [
+      "2026-11-21T09:55:00-05:00",
+      "2026-11-23T21:18:50-05:00",
+      "2026-11-24T00:00:01-05:00",
+    ]) {
       answer = { status: 200, body: WEEK_9 };
       const view = await bannerAt(iso);
       fireEvent.click(trigger());
       expect(document.body.textContent).not.toMatch(/\block/i);
       view.unmount();
-      vi.useRealTimers();
     }
   });
 });
@@ -183,12 +206,23 @@ describe("the Trade Wire", () => {
     await bannerAt("2026-11-21T09:55:00-05:00");
     fireEvent.click(trigger());
     const text = sheet().textContent ?? "";
-    const order = ["Grade a trade", "Find a trade", "Trade deadline ~2d 14h 05m", "Trade Wire", "Updated 0s ago", "NFC Least"];
+    const order = [
+      "Grade a trade",
+      "Find a trade",
+      "Trade deadline ~2d 14h 05m",
+      "Trade Wire",
+      "Updated 0s ago",
+      "NFC Least",
+    ];
     const places = order.map((part) => text.indexOf(part));
     expect(places.every((place) => place >= 0)).toBe(true);
     expect([...places].sort((a, b) => a - b)).toEqual(places);
-    expect(within(sheet()).getByRole("link", { name: "Grade a trade" }).getAttribute("href")).toBe(GRADE);
-    expect(within(sheet()).getByRole("link", { name: "Find a trade" }).getAttribute("href")).toBe(FIND);
+    expect(within(sheet()).getByRole("link", { name: "Grade a trade" }).getAttribute("href")).toBe(
+      GRADE,
+    );
+    expect(within(sheet()).getByRole("link", { name: "Find a trade" }).getAttribute("href")).toBe(
+      FIND,
+    );
   });
 
   it("shows each trade with its time, each team, the players it gets with positions, and the FAAB (AT-13, AT-19)", async () => {
@@ -199,7 +233,9 @@ describe("the Trade Wire", () => {
     expect(newest.textContent).toContain("Puka Deez...");
     expect(tradeW.textContent).toContain("Fri 7:04 PM");
     expect(tradeW.textContent).toContain("NFC Least gets");
-    expect(tradeW.textContent).toContain("Tetairoa McMillan WR, Makai Lemon WR, Seth McGowan RB, Chase Brown RB");
+    expect(tradeW.textContent).toContain(
+      "Tetairoa McMillan WR, Makai Lemon WR, Seth McGowan RB, Chase Brown RB",
+    );
     expect(tradeW.textContent).toContain("Return of T Mac gets");
     expect(tradeW.textContent).toContain("Rome Odunze WR, CeeDee Lamb WR, Jordan Mason RB");
     expect(tradeW.textContent).toContain("$5 FAAB");
@@ -228,7 +264,11 @@ describe("the Trade Wire", () => {
     expect(rows()[0].getAttribute("style") ?? "").not.toMatch(/opacity: 0/);
     answer = { status: 200, body: WEEK_9 };
     await wait(10_000);
-    expect(rows().find((row) => row.getAttribute("data-trade") === OTHER)?.getAttribute("style") ?? "").not.toMatch(/opacity: 0/);
+    expect(
+      rows()
+        .find((row) => row.getAttribute("data-trade") === OTHER)
+        ?.getAttribute("style") ?? "",
+    ).not.toMatch(/opacity: 0/);
     const arrived = rows().find((row) => row.getAttribute("data-trade") === TRADE_W);
     expect(arrived?.getAttribute("style")).toMatch(/opacity: 0/);
     expect(arrived?.getAttribute("style")).toMatch(/translateY\(-[\d.]+px\)|blur\([\d.]+px\)/);
@@ -320,7 +360,9 @@ describe("the Trade Wire", () => {
     answer = { status: 200, body: WEEK_9 };
     await bannerAt("2026-11-21T09:55:00-05:00");
     fireEvent.click(trigger());
-    const hrefs = within(sheet()).getAllByRole("link").map((link) => link.getAttribute("href"));
+    const hrefs = within(sheet())
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
     expect(hrefs).toEqual([GRADE, FIND]);
     expect(document.body.textContent).not.toMatch(/board/i);
   });

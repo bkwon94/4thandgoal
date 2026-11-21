@@ -80,7 +80,12 @@ export function dustOf(count: number, box: SceneBox, seed: number): DustPoint[] 
 const wrap = (value: number, size: number) => ((value % size) + size) % size;
 
 /* The place of each point of dust at a time after entry. The dust stops at `stopAt`, the time of rest of the scene. */
-export function dustAt(dust: DustPoint[], box: SceneBox, elapsed: number, stopAt: number = REST_MS): ScenePoint[] {
+export function dustAt(
+  dust: DustPoint[],
+  box: SceneBox,
+  elapsed: number,
+  stopAt: number = REST_MS,
+): ScenePoint[] {
   const seconds = Math.min(elapsed, stopAt) / 1000;
   return dust.map((point) => ({
     x: wrap(point.x + point.vx * seconds, box.width),
@@ -99,8 +104,14 @@ export function driftAt(from: ScenePoint[], box: SceneBox, elapsed: number): Sce
     const speed = 0.35 + (index % 5) * 0.08;
     const angle = seconds * speed + index * 1.7;
     return {
-      x: Math.max(box.padding, Math.min(box.width - box.padding, start.x + DRIFT_REACH * Math.cos(angle))),
-      y: Math.max(box.padding, Math.min(box.height - box.padding, start.y + DRIFT_REACH * Math.sin(angle * 1.3))),
+      x: Math.max(
+        box.padding,
+        Math.min(box.width - box.padding, start.x + DRIFT_REACH * Math.cos(angle)),
+      ),
+      y: Math.max(
+        box.padding,
+        Math.min(box.height - box.padding, start.y + DRIFT_REACH * Math.sin(angle * 1.3)),
+      ),
     };
   });
 }

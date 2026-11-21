@@ -2,7 +2,7 @@
  * Tests for the two week series of the Trend tiles: the top score and the median of each week, from week 1 to the page week.
  * They read the real managers files of CPC, which has a published median, and of NorCal, which has none.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import cpcJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
 import norcalJson from "../../../../apps/site/src/fixtures/sites/norcal/public/2026/managers.json";
 import norcalWeek8Json from "../../../../apps/site/src/fixtures/sites/norcal/public/2026/week-08/page.json";
@@ -16,7 +16,9 @@ const values = (series: { value: number }[]) => series.map((point) => point.valu
 describe("weekTrends", () => {
   it("gives the top score of each week from week 1 to the page week", () => {
     const trends = weekTrends(cpcWeeks, 8);
-    expect(values(trends.top)).toEqual([156.92, 156.52, 140.6, 145.63, 158.96, 126.79, 148.13, 134.1]);
+    expect(values(trends.top)).toEqual([
+      156.92, 156.52, 140.6, 145.63, 158.96, 126.79, 148.13, 134.1,
+    ]);
     expect(trends.top.map((point) => point.week)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
@@ -28,7 +30,9 @@ describe("weekTrends", () => {
 
   it("takes the published median of each week when the league has a median game", () => {
     const trends = weekTrends(cpcWeeks, 8);
-    expect(values(trends.median)).toEqual([111.36, 96.34, 107.14, 104.58, 107.35, 106.83, 103.87, 99.6]);
+    expect(values(trends.median)).toEqual([
+      111.36, 96.34, 107.14, 104.58, 107.35, 106.83, 103.87, 99.6,
+    ]);
   });
 
   it("takes the median of the points of every team when the league has no median game", () => {

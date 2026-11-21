@@ -12,11 +12,11 @@ function WeekLink({ week, rel }: { week: WeekSummary; rel: "prev" | "next" }) {
       href={week.href}
       rel={rel}
       className={cn(
-        "press flex min-h-touch flex-col gap-sp-1 rounded-card border border-rule bg-card p-sp-4 text-ink no-underline hover-fine:border-accent",
+        "press min-h-touch gap-sp-1 rounded-card border-rule bg-card p-sp-4 text-ink hover-fine:border-accent flex flex-col border no-underline",
         rel === "next" && "items-end text-right",
       )}
     >
-      <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">
+      <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
         {rel === "prev" ? "Previous" : "Next"}
       </span>
       <b className="text-lead leading-tight">Week {week.number}</b>
@@ -26,10 +26,16 @@ function WeekLink({ week, rel }: { week: WeekSummary; rel: "prev" | "next" }) {
 }
 
 /* Each side is a slot of a two-column list. A missing week leaves its slot empty, so the other link keeps its side. */
-export function WeekFooter({ prior, next }: { prior: WeekSummary | null; next: WeekSummary | null }) {
+export function WeekFooter({
+  prior,
+  next,
+}: {
+  prior: WeekSummary | null;
+  next: WeekSummary | null;
+}) {
   return (
     <nav aria-label="Weeks">
-      <ul className="m-0 grid list-none grid-cols-2 gap-sp-2 p-0">
+      <ul className="gap-sp-2 m-0 grid list-none grid-cols-2 p-0">
         <li>{prior && <WeekLink week={prior} rel="prev" />}</li>
         <li>{next && <WeekLink week={next} rel="next" />}</li>
       </ul>

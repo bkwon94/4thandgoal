@@ -15,7 +15,11 @@ export function knownGamesSegments(asOf: AsOf): string[] {
 
   const inProgress = known.in_progress > 0 ? `, ${known.in_progress} in progress` : "";
   const pending = Object.entries(known.pending).map(
-    ([name, n]) => `${name.charAt(0).toUpperCase()}${name.slice(1)} pending for ${count(n, "game", "games")}`,
+    ([name, n]) =>
+      `${name.charAt(0).toUpperCase()}${name.slice(1)} pending for ${count(n, "game", "games")}`,
   );
-  return [`${stats}, plus ${count(known.games, `week ${known.week} game`, `week ${known.week} games`)}${inProgress}`, ...pending];
+  return [
+    `${stats}, plus ${count(known.games, `week ${known.week} game`, `week ${known.week} games`)}${inProgress}`,
+    ...pending,
+  ];
 }

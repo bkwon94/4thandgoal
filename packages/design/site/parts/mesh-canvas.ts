@@ -2,7 +2,15 @@
  * The runner of the mesh on one Canvas 2D context: the grid, the low corner glow, the weights and the light pulses of a wait, the flash and the dip of a reveal, and a soft hole under each hero text.
  * It draws a frame only on a change, and never while the hero is out of view.
  */
-import { type MeshLine, type MeshNodes, type MeshWeight, meshNodes, pointOnLine, pullSigma, turnPulls } from "./mesh-math";
+import {
+  type MeshLine,
+  type MeshNodes,
+  type MeshWeight,
+  meshNodes,
+  pointOnLine,
+  pullSigma,
+  turnPulls,
+} from "./mesh-math";
 
 /* A point in the pixels of the canvas. */
 export type MeshPoint = { x: number; y: number };
@@ -20,7 +28,13 @@ export type MeshAnchor = MeshPoint & { w: number; h: number };
 export type MeshDrive = (
   now: number,
   anchors: readonly MeshAnchor[],
-) => { weights: MeshWeight[]; busy: boolean; pulses?: number; flash?: { at: MeshAnchor; amount: number }; lightIn?: MeshAnchor };
+) => {
+  weights: MeshWeight[];
+  busy: boolean;
+  pulses?: number;
+  flash?: { at: MeshAnchor; amount: number };
+  lightIn?: MeshAnchor;
+};
 
 export const IDLE_DRIVE: MeshDrive = () => ({ weights: [], busy: false });
 
@@ -33,7 +47,11 @@ const WAIT_PULL = 0.5;
 export function waitDrive(start: number): MeshDrive {
   return (now, anchors) => {
     const pulls = turnPulls(now - start, anchors.length, WAIT_PULL);
-    return { weights: anchors.map((a, i) => ({ x: a.x, y: a.y, pull: pulls[i] })), busy: true, pulses: 1 };
+    return {
+      weights: anchors.map((a, i) => ({ x: a.x, y: a.y, pull: pulls[i] })),
+      busy: true,
+      pulses: 1,
+    };
   };
 }
 
@@ -50,7 +68,9 @@ const REVEAL_PULL = 0.55;
 /* The share of the flash at `since` ms into the reveal. */
 function flashAt(since: number): number {
   if (since < 0 || since >= FLASH_END_MS) return 0;
-  return since < FLASH_PEAK_MS ? since / FLASH_PEAK_MS : Math.exp(-(since - FLASH_PEAK_MS) / FLASH_FADE_MS);
+  return since < FLASH_PEAK_MS
+    ? since / FLASH_PEAK_MS
+    : Math.exp(-(since - FLASH_PEAK_MS) / FLASH_FADE_MS);
 }
 
 /* The pull of the dip at `since` ms into the reveal. The power on the phase puts the peak at about a third of the dip,
@@ -163,13 +183,25 @@ function channels(color: string): [number, number, number, number] {
 }
 
 /* Starts the mesh and returns its stop. */
-export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIVE }: MeshParts): () => void {
+export function runMesh({
+  canvas,
+  ctx,
+  hero,
+  probe,
+  motionOff,
+  drive = IDLE_DRIVE,
+}: MeshParts): () => void {
   const content = hero.querySelector<HTMLElement>(":scope > [data-hero-content]");
   let width = 0;
   let height = 0;
   let dpr = 1;
   let pitch = 24;
-  let colors = { grid: "", dot: "", glow: [0, 0, 0, 0] as number[], pulse: [0, 0, 0, 0] as number[] };
+  let colors = {
+    grid: "",
+    dot: "",
+    glow: [0, 0, 0, 0] as number[],
+    pulse: [0, 0, 0, 0] as number[],
+  };
   let raf = 0;
   let inView = true;
   // A frame is owed: the canvas was cleared or the layout changed while no frame could draw.
@@ -192,9 +224,14 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
   let lastNow = 0;
 
   function readColors() {
-    const [grid, glow, dot, pulse] = Array.from(probe.children).map((child) => getComputedStyle(child).color);
+    const [grid, glow, dot, pulse] = Array.from(probe.children).map(
+      (child) => getComputedStyle(child).color,
+    );
     colors = { grid, dot, glow: channels(glow), pulse: channels(pulse ?? glow) };
-    pitch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--spacing-hero-grid")) || 24;
+    pitch =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--spacing-hero-grid"),
+      ) || 24;
   }
 
   function resize() {
@@ -218,7 +255,14 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     const origin = canvas.getBoundingClientRect();
     const list: Hole[] = [];
     const add = (box: DOMRect, depth: number) => {
-      if (box.width > 0 && box.height > 0) list.push({ x: box.left - origin.left, y: box.top - origin.top, w: box.width, h: box.height, depth });
+      if (box.width > 0 && box.height > 0)
+        list.push({
+          x: box.left - origin.left,
+          y: box.top - origin.top,
+          w: box.width,
+          h: box.height,
+          depth,
+        });
     };
     const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -226,12 +270,14 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
       // A text inside [data-mesh-skip] sits over a hole that another element holds, such as the still stage line over
       // its sizer, so a swap of that text changes no hole and the still mesh draws the same pixels.
       if (!el || !node.textContent?.trim() || el.closest("[data-mesh-skip]")) continue;
-      const depth = parseFloat(getComputedStyle(el).fontSize) <= SMALL_TEXT_PX ? HOLE_DEPTH_SMALL : HOLE_DEPTH;
+      const depth =
+        parseFloat(getComputedStyle(el).fontSize) <= SMALL_TEXT_PX ? HOLE_DEPTH_SMALL : HOLE_DEPTH;
       const range = document.createRange();
       range.selectNodeContents(node);
       for (const line of range.getClientRects()) add(line, depth);
     }
-    for (const chip of content.querySelectorAll("[data-mesh-hole]")) add(chip.getBoundingClientRect(), HOLE_DEPTH);
+    for (const chip of content.querySelectorAll("[data-mesh-hole]"))
+      add(chip.getBoundingClientRect(), HOLE_DEPTH);
     return list;
   }
 
@@ -241,7 +287,12 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     const origin = canvas.getBoundingClientRect();
     return Array.from(content.querySelectorAll("[data-mesh-anchor]"), (el) => {
       const box = el.getBoundingClientRect();
-      return { x: box.left - origin.left + box.width / 2, y: box.top - origin.top + box.height / 2, w: box.width, h: box.height };
+      return {
+        x: box.left - origin.left + box.width / 2,
+        y: box.top - origin.top + box.height / 2,
+        w: box.width,
+        h: box.height,
+      };
     });
   }
 
@@ -261,7 +312,12 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     maskCtx.shadowOffsetX = FAR * dpr;
     for (const hole of holeList) {
       maskCtx.globalAlpha = hole.depth;
-      maskCtx.fillRect(hole.x - HOLE_PAD_X - FAR, hole.y - HOLE_PAD_Y, hole.w + 2 * HOLE_PAD_X, hole.h + 2 * HOLE_PAD_Y);
+      maskCtx.fillRect(
+        hole.x - HOLE_PAD_X - FAR,
+        hole.y - HOLE_PAD_Y,
+        hole.w + 2 * HOLE_PAD_X,
+        hole.h + 2 * HOLE_PAD_Y,
+      );
     }
     maskCtx.globalAlpha = 1;
   }
@@ -366,12 +422,25 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     const sign: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
     const lines = dir === "h" ? nodes.rows : nodes.cols;
     const length = dir === "h" ? nodes.cols : nodes.rows;
-    const near = anchors.length > 0 && Math.random() < 0.5 ? anchors[Math.floor(Math.random() * anchors.length)] : null;
+    const near =
+      anchors.length > 0 && Math.random() < 0.5
+        ? anchors[Math.floor(Math.random() * anchors.length)]
+        : null;
     const index = near
       ? Math.round(((dir === "h" ? near.y : near.x) + pitch) / pitch + (Math.random() - 0.5) * 6)
       : 1 + Math.floor(Math.random() * (lines - 2));
-    const t = spread ? Math.random() * (length - 1) : sign > 0 ? -PULSE_TAIL : length - 1 + PULSE_TAIL;
-    return { dir, index: Math.max(1, Math.min(lines - 2, index)), t, sign, speed: PULSE_SPEED * (0.8 + Math.random() * 0.4) };
+    const t = spread
+      ? Math.random() * (length - 1)
+      : sign > 0
+        ? -PULSE_TAIL
+        : length - 1 + PULSE_TAIL;
+    return {
+      dir,
+      index: Math.max(1, Math.min(lines - 2, index)),
+      t,
+      sign,
+      speed: PULSE_SPEED * (0.8 + Math.random() * 0.4),
+    };
   }
 
   /* Moves each pulse along its line and draws it. A pulse near a weight that pulls runs faster, so the side that pulls
@@ -394,7 +463,8 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     pulses = pulses.filter((pulse) => {
       const head = pointOnLine(nodes, pulse, pulse.t);
       let boost = 0;
-      for (const w of weights) boost += w.pull * Math.exp(-((head.x - w.x) ** 2 + (head.y - w.y) ** 2) / twoSigmaSq);
+      for (const w of weights)
+        boost += w.pull * Math.exp(-((head.x - w.x) ** 2 + (head.y - w.y) ** 2) / twoSigmaSq);
       pulse.t += pulse.sign * pulse.speed * (1 + PULSE_BOOST * boost) * step;
       const length = pulse.dir === "h" ? nodes.cols : nodes.rows;
       if (pulse.t < -PULSE_TAIL || pulse.t > length - 1 + PULSE_TAIL) return false;
@@ -472,7 +542,12 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
       const path = gridPath(nodes);
       drawGrid(nodes, path);
       // A drive that keeps its light on one side lights the box of that side by the pull of its weights.
-      if (drawn.lightIn) drawInBox(path, drawn.lightIn, Math.min(1, Math.max(0, ...weights.map((w) => w.pull)) / WAIT_PULL) * WEIGHT_LIGHT);
+      if (drawn.lightIn)
+        drawInBox(
+          path,
+          drawn.lightIn,
+          Math.min(1, Math.max(0, ...weights.map((w) => w.pull)) / WAIT_PULL) * WEIGHT_LIGHT,
+        );
       else drawWeightLight(path, weights);
       if (flash) drawFlash(path, flash);
       drawGlow();
@@ -481,7 +556,11 @@ export function runMesh({ canvas, ctx, hero, probe, motionOff, drive = IDLE_DRIV
     }
     canvas.dataset.meshFrames = String(++frames);
     // The pull of each weight, in the order of the anchors. The evidence of AT-5 reads it to find the side that pulls.
-    canvas.dataset.meshPulls = (motionOff ? drawn.weights.map(() => 0) : drawn.weights.map((w) => w.pull)).map((p) => p.toFixed(3)).join(",");
+    canvas.dataset.meshPulls = (
+      motionOff ? drawn.weights.map(() => 0) : drawn.weights.map((w) => w.pull)
+    )
+      .map((p) => p.toFixed(3))
+      .join(",");
     // The share of the flash. The evidence of AT-12 reads it to see the flash before the dip.
     canvas.dataset.meshFlash = (flash?.amount ?? 0).toFixed(3);
     const fading = pulses.length > 0 && pulseShare >= 0.01;

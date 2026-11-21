@@ -4,20 +4,20 @@
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import { weekSim } from "../fixtures/sim";
 import { fakeWhatIfApi } from "../fixtures/what-if-api";
 import { SimPage } from "../page/sim-page";
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
   // Framer Motion asks for its next frame once and waits for it, so the frame it asked for under the fake clock runs here.
-  vi.advanceTimersByTime(100);
-  vi.useRealTimers();
+  jest.advanceTimersByTime(100);
+  jest.useRealTimers();
 });
 
 // Bo Girds is roster 6 in CPC. Week 11 is Bo Girds vs Maye d'force B with U.
@@ -33,13 +33,14 @@ const press = (name: string) => fireEvent.click(screen.getByRole("button", { nam
 async function wait(...holds: number[]) {
   for (const ms of holds) {
     await act(async () => {
-      vi.advanceTimersByTime(ms);
+      jest.advanceTimersByTime(ms);
     });
   }
 }
 
 /* The games of the week on the stage, each as its text. */
-const games = () => within(within(stage()).getByRole("list", { name: /^Week \d+ games$/ })).getAllByRole("listitem");
+const games = () =>
+  within(within(stage()).getByRole("list", { name: /^Week \d+ games$/ })).getAllByRole("listitem");
 
 describe("Sim week 11", () => {
   it("plays the games with Bo Girds first and one median line, then the standings in the Race style", async () => {
@@ -66,18 +67,30 @@ describe("Sim week 11", () => {
     // The standings follow the games by themselves, then the rows move to the order after the week.
     await wait(2400, 700);
     expect(tab("Standings").getAttribute("aria-current")).toBe("step");
-    const standings = within(within(stage()).getByRole("list", { name: "Standings" })).getAllByRole("listitem");
+    const standings = within(within(stage()).getByRole("list", { name: "Standings" })).getAllByRole(
+      "listitem",
+    );
     // The Race style: the two byes fold into one line at the top, places 3 to 9 show in full, and 10 to 12 fold at the bottom.
     expect(standings[0].textContent).toMatch(/^1–2·byes: /);
     expect(standings.at(-1)?.textContent).toBe("10–12·out of it");
     const full = standings.slice(1, -1);
-    expect(full.map((row) => row.textContent?.match(/^\d+/)?.[0])).toEqual(["3", "4", "5", "6", "7", "8", "9"]);
+    expect(full.map((row) => row.textContent?.match(/^\d+/)?.[0])).toEqual([
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+    ]);
     // A loss and a miss of the median take Bo Girds from 11-9 to 11-11.
     const you = full.find((row) => row.textContent?.includes("Bo Girds"));
     expect(you?.textContent).toContain("(Your team)");
     expect(you?.textContent).toContain("11-11");
     // Only the row of Your team has an avatar.
-    const avatars = [...within(stage()).getByRole("list", { name: "Standings" }).querySelectorAll("[data-avatar]")];
+    const avatars = [
+      ...within(stage()).getByRole("list", { name: "Standings" }).querySelectorAll("[data-avatar]"),
+    ];
     expect(avatars.map((avatar) => avatar.closest("li")?.textContent)).toEqual([you?.textContent]);
 
     // The tab of a part that has played goes back to it.
@@ -96,12 +109,18 @@ describe("Sim the season", () => {
     press("Sim the season");
     expect(document.documentElement.style.overflow).toBe("hidden");
     const screens = within(stage()).getByRole("list", { name: "Screens" });
-    expect(within(screens).getAllByRole("button").map((button) => button.textContent)).toEqual(["Season", "Playoffs", "Champion"]);
+    expect(
+      within(screens)
+        .getAllByRole("button")
+        .map((button) => button.textContent),
+    ).toEqual(["Season", "Playoffs", "Champion"]);
     expect(tab("Playoffs").hasAttribute("disabled")).toBe(true);
     // The controls sit in their own row, after the body of the stage and outside it.
     const body = within(stage()).getByTestId("stage-body");
     expect(body.contains(controls())).toBe(false);
-    expect(body.compareDocumentPosition(controls()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      body.compareDocumentPosition(controls()) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(within(controls()).getByRole("button", { name: "Pause" })).toBeTruthy();
     expect(within(controls()).getByRole("button", { name: "Skip" })).toBeTruthy();
     expect(within(controls()).getByRole("button", { name: "Sim again" })).toBeTruthy();
@@ -121,7 +140,9 @@ describe("Sim the season", () => {
     const rounds = () => within(stage()).getAllByRole("region", { name: /, week 1[5-7]$/ });
     expect(rounds().map((round) => round.getAttribute("aria-label"))).toEqual(["Round 1, week 15"]);
     await wait(1500, 2000);
-    expect(rounds().map((round) => round.getAttribute("aria-label"))).toEqual(["Semifinal, week 16"]);
+    expect(rounds().map((round) => round.getAttribute("aria-label"))).toEqual([
+      "Semifinal, week 16",
+    ]);
     await wait(800, 2000);
     expect(rounds().map((round) => round.getAttribute("aria-label"))).toEqual(["Final, week 17"]);
 
@@ -129,7 +150,9 @@ describe("Sim the season", () => {
     await wait(800, 2000);
     expect(tab("Champion").getAttribute("aria-current")).toBe("step");
     expect(within(stage()).getByRole("heading", { name: "Lil Fridge" })).toBeTruthy();
-    expect(within(stage()).getByText(/^Your team finished 8th at \d+-\d+ and missed the playoffs\.$/)).toBeTruthy();
+    expect(
+      within(stage()).getByText(/^Your team finished 8th at \d+-\d+ and missed the playoffs\.$/),
+    ).toBeTruthy();
     expect(within(controls()).getByRole("button", { name: "Sim again" })).toBeTruthy();
     fireEvent.click(within(controls()).getByRole("button", { name: "Done" }));
     await wait(1000);
@@ -144,17 +167,27 @@ describe("the replay of a What-if", () => {
     for (const random of [0, 0.5, 0.9999]) {
       render(<SimPage sim={weekSim} you={YOU} whatIf={api} random={() => random} />);
       const card = screen.getByRole("article", { name: /^Week 11 vs / });
-      fireEvent.click(within(within(card).getByRole("group", { name: "Results" })).getByRole("button", { name: /^Win, beat median/ }));
+      fireEvent.click(
+        within(within(card).getByRole("group", { name: "Results" })).getByRole("button", {
+          name: /^Win, beat median/,
+        }),
+      );
       await wait(0);
       await wait(400);
       // The next week opens after the tap, so the reader goes back to week 11.
-      fireEvent.click(within(screen.getByRole("navigation", { name: "Weeks" })).getByRole("button", { name: /^Wk 11/ }));
+      fireEvent.click(
+        within(screen.getByRole("navigation", { name: "Weeks" })).getByRole("button", {
+          name: /^Wk 11/,
+        }),
+      );
       press("Sim week 11");
       fireEvent.click(within(controls()).getByRole("button", { name: "Skip" }));
       await wait(0);
       fireEvent.click(tab("Games"));
       const [mine] = games();
-      const [you, them] = [...mine.querySelectorAll("[data-score]")].map((score) => Number(score.textContent));
+      const [you, them] = [...mine.querySelectorAll("[data-score]")].map((score) =>
+        Number(score.textContent),
+      );
       expect(mine.textContent).toMatch(/^Bo Girds/);
       expect(mine.textContent).toContain(OPPONENT);
       expect(mine.textContent).toContain("Bo Girds wins.");

@@ -4,11 +4,12 @@
  * stream, and each test reads the screen.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, findResponse as fixtureJson } from "../lib/fixtures/api";
 import type { FindResponse, FinderTrade, NearIdea } from "../lib/analyze-types";
 import type { Team } from "../lib/api";
+import { fakeClock } from "../lib/fake-clock";
 import { TradeFinder } from "./trade-finder";
 
 const fixture = fixtureJson as FindResponse;
@@ -25,11 +26,11 @@ const TEAMS: Team[] = Array.from({ length: 12 }, (_, i) => ({
   players: [],
 }));
 
-const fetchStub = vi.fn();
-const onUnauthorized = vi.fn();
-const onOpen = vi.fn();
-const onRostersStale = vi.fn();
-const onAsker = vi.fn();
+const fetchStub = mock();
+const onUnauthorized = mock();
+const onOpen = mock();
+const onRostersStale = mock();
+const onAsker = mock();
 
 function answer(status: number, body: unknown = {}, headers: Record<string, string> = {}) {
   fetchStub.mockResolvedValueOnce(new Response(JSON.stringify(body), { status, headers }));
@@ -38,22 +39,44 @@ function answer(status: number, body: unknown = {}, headers: Record<string, stri
 /* The players of the fixture by name, and one more player of the asker, so a test can build a 3-for-2. */
 type Player = FinderTrade["sides"][number]["gives"][number];
 const PLAYERS: Record<string, Player> = Object.fromEntries(
-  [...fixture.trades, ...fixture.near].flatMap((trade) => trade.sides.flatMap((side) => side.gives)).map(({ to: _to, ...player }) => [player.name, player]),
+  [...fixture.trades, ...fixture.near]
+    .flatMap((trade) => trade.sides.flatMap((side) => side.gives))
+    .map(({ to: _to, ...player }) => [player.name, player]),
 );
-PLAYERS["Kenneth Walker III"] = { player_id: "8151", name: "Kenneth Walker III", position: "RB", nfl_team: "SEA", headshot: "https://sleepercdn.com/content/nfl/players/8151.jpg", season_rank: "RB8", recent_rank: null };
+PLAYERS["Kenneth Walker III"] = {
+  player_id: "8151",
+  name: "Kenneth Walker III",
+  position: "RB",
+  nfl_team: "SEA",
+  headshot: "https://sleepercdn.com/content/nfl/players/8151.jpg",
+  season_rank: "RB8",
+  recent_rank: null,
+};
 const ASKER = fixture.trade_pair.asker;
 const PARTNER = { roster_id: 10, team: "behold the lamb" };
 
 /* One offer of the asker with roster 10, in the shape of the find answer: the sides in order and the trade value total
    of each side, the chart sum of the players that the side gives. */
-function offerOf(give: string[], get: string[], [giveValue, getValue]: [number | null, number | null]) {
+function offerOf(
+  give: string[],
+  get: string[],
+  [giveValue, getValue]: [number | null, number | null],
+) {
   const gives = give.map((name) => PLAYERS[name]);
   const gets = get.map((name) => PLAYERS[name]);
   return {
     offer_id: `2:${gives.map((p) => p.player_id).join("+")}-10:${gets.map((p) => p.player_id).join("+")}`,
     sides: [
-      { ...ASKER, gives: gives.map((p) => ({ ...p, to: 10 })), gets: gets.map((p) => ({ ...p, from: 10 })) },
-      { ...PARTNER, gives: gets.map((p) => ({ ...p, to: 2 })), gets: gives.map((p) => ({ ...p, from: 2 })) },
+      {
+        ...ASKER,
+        gives: gives.map((p) => ({ ...p, to: 10 })),
+        gets: gets.map((p) => ({ ...p, from: 10 })),
+      },
+      {
+        ...PARTNER,
+        gives: gets.map((p) => ({ ...p, to: 2 })),
+        gets: gives.map((p) => ({ ...p, from: 2 })),
+      },
     ],
     totals: [
       { roster_id: 2, trade_value: giveValue },
@@ -63,7 +86,11 @@ function offerOf(give: string[], get: string[], [giveValue, getValue]: [number |
 }
 
 /* A pick of the find answer with the read of the first fixture trade. */
-function pickOf(give: string[], get: string[], totals: [number | null, number | null]): FinderTrade {
+function pickOf(
+  give: string[],
+  get: string[],
+  totals: [number | null, number | null],
+): FinderTrade {
   const { lean, case: text, bullets, fact_lines } = fixture.trades[0];
   return { ...offerOf(give, get, totals), lean, case: text, bullets, fact_lines };
 }
@@ -75,7 +102,11 @@ function nearOf(give: string[], get: string[], reason: string): NearIdea {
 /* A find answer of 5 picks, a 1-for-1, a 2-for-1, a 3-for-2, and two more, and 3 near ideas. */
 const ONE_FOR_ONE = pickOf(["Tre Tucker"], ["Emeka Egbuka"], [24.5, 22.0]);
 const TWO_FOR_ONE = pickOf(["Tre Tucker", "Colston Loveland"], ["Emeka Egbuka"], [26.5, 25.0]);
-const THREE_FOR_TWO = pickOf(["Kenneth Walker III", "Tre Tucker", "Colston Loveland"], ["Emeka Egbuka", "Roschon Johnson"], [62.5, 68.0]);
+const THREE_FOR_TWO = pickOf(
+  ["Kenneth Walker III", "Tre Tucker", "Colston Loveland"],
+  ["Emeka Egbuka", "Roschon Johnson"],
+  [62.5, 68.0],
+);
 const FIVE: FindResponse = {
   ...fixture,
   trades: [
@@ -88,7 +119,11 @@ const FIVE: FindResponse = {
   near: [
     nearOf(["Tre Tucker"], ["Germie Bernard"], "The other lineup gets worse."),
     nearOf(["Colston Loveland"], ["Roschon Johnson"], "Your lineup gets no better."),
-    nearOf(["Kenneth Walker III", "Tre Tucker"], ["Emeka Egbuka"], "You give much more than you get."),
+    nearOf(
+      ["Kenneth Walker III", "Tre Tucker"],
+      ["Emeka Egbuka"],
+      "You give much more than you get.",
+    ),
   ],
 };
 
@@ -97,33 +132,55 @@ const line = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify
 const step = (text: string, live: boolean) => ({ type: "data-step", data: { line: text, live } });
 const team = (rosterId: number) => ({ type: "data-team", data: { roster_id: rosterId } });
 const done = (doc: unknown) => ({ type: "data-answer", data: { kind: "find", document: doc } });
-const trade = (index: number, most: number, item: unknown) => ({ type: "data-trade", data: { index, most, trade: item } });
+const trade = (index: number, most: number, item: unknown) => ({
+  type: "data-trade",
+  data: { index, most, trade: item },
+});
 /* The part that says how many trades the pick keeps. */
 const tradesCount = (count: number) => ({ type: "data-trades-count", data: { count } });
 /* The part that says the pick has no more trades. */
 const tradesDone = { type: "data-trades-done", data: {} };
 /* The Shortlist part: each trade by its players, the full name and the short name of each, from the side of the asker. */
 const named = (name: string, last: string) => ({ name, last });
-const shortlist = (...trades: { gives: { name: string; last: string }[]; gets: { name: string; last: string }[] }[]) => ({
+const shortlist = (
+  ...trades: { gives: { name: string; last: string }[]; gets: { name: string; last: string }[] }[]
+) => ({
   type: "data-shortlist",
   data: { trades: trades.map((item, i) => ({ offer_id: `offer-${i}`, ...item })) },
 });
 /* Three Shortlist trades: two short ones that fit one line by full names, and one long one that needs last names. */
 const SHORT_A = { gives: [named("Tre Tucker", "Tucker")], gets: [named("Emeka Egbuka", "Egbuka")] };
-const SHORT_B = { gives: [named("Zay Flowers", "Flowers")], gets: [named("Tony Pollard", "Pollard")] };
+const SHORT_B = {
+  gives: [named("Zay Flowers", "Flowers")],
+  gets: [named("Tony Pollard", "Pollard")],
+};
 const LONG = {
   gives: [named("Kenneth Walker III", "Walker")],
-  gets: [named("Trey Lawrence", "Lawrence"), named("Tony Pollard", "Pollard"), named("Rondale Moore", "Moore")],
+  gets: [
+    named("Trey Lawrence", "Lawrence"),
+    named("Tony Pollard", "Pollard"),
+    named("Rondale Moore", "Moore"),
+  ],
 };
 
 /* The fixed clock of a wait test: the timers of the page move only when the test moves them. The stream reads land on
    setImmediate, which the clock leaves real, so a part still reaches the page. */
+let clock: ReturnType<typeof fakeClock> | null = null;
 function fixedClock() {
-  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"] });
+  clock = fakeClock();
 }
 /* Steps 1 to 4 of a find, each live line with its done line, then the time for each line to show. */
 async function firstFourSteps(stream: ReturnType<typeof heldStream>) {
-  await stream.send(step("Reading 11 teams", true), step("Read 11 teams", false), step("Matching trade value", true), step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true), step("Made a shortlist of 9", false));
+  await stream.send(
+    step("Reading 11 teams", true),
+    step("Read 11 teams", false),
+    step("Matching trade value", true),
+    step("Matched 4,667 trades by trade value", false),
+    step("Checking 4,667 trades for fairness", true),
+    step("Checked 4,667 trades for fairness", false),
+    step("Checking 77 against both lineups", true),
+    step("Made a shortlist of 9", false),
+  );
   await tick(6000);
 }
 /* React starts the timer of a new line only after the act of the line before it ends, so the clock moves 1 ms per act,
@@ -131,7 +188,7 @@ async function firstFourSteps(stream: ReturnType<typeof heldStream>) {
 async function tick(ms: number) {
   for (let left = ms; left > 0; left -= 1) {
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1);
+      clock!.advance(1);
     });
   }
 }
@@ -140,7 +197,9 @@ async function tick(ms: number) {
 function heldStream() {
   let controller!: ReadableStreamDefaultController<Uint8Array>;
   const body = new ReadableStream<Uint8Array>({ start: (c) => void (controller = c) });
-  fetchStub.mockResolvedValueOnce(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+  fetchStub.mockResolvedValueOnce(
+    new Response(body, { headers: { "content-type": "text/event-stream" } }),
+  );
   return {
     send: async (...parts: unknown[]) => {
       await act(async () => {
@@ -177,7 +236,9 @@ function streamOf(doc: unknown) {
       controller.close();
     },
   });
-  fetchStub.mockResolvedValueOnce(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+  fetchStub.mockResolvedValueOnce(
+    new Response(body, { headers: { "content-type": "text/event-stream" } }),
+  );
 }
 
 /* The text of the line on the screen in the stage lines part: the last line, because an outgoing line stays a moment. */
@@ -188,7 +249,9 @@ function stageLine(): string {
 
 /* The roster ids of the avatars of the wait that are lit, in the order of the row. */
 function litTeams(): number[] {
-  return [...document.querySelectorAll<HTMLElement>("[data-team-read]")].filter((el) => el.dataset.lit === "true").map((el) => Number(el.dataset.teamRead));
+  return [...document.querySelectorAll<HTMLElement>("[data-team-read]")]
+    .filter((el) => el.dataset.lit === "true")
+    .map((el) => Number(el.dataset.teamRead));
 }
 
 const partnerButton = () => screen.getByRole("button", { name: /Trade with/ });
@@ -225,7 +288,7 @@ beforeEach(() => {
   onOpen.mockReset();
   onRostersStale.mockReset();
   onAsker.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
   render(
     <TradeFinder
       teams={TEAMS}
@@ -242,8 +305,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
+  clock = null;
 });
 
 describe("TradeFinder", () => {
@@ -259,11 +321,18 @@ describe("TradeFinder", () => {
     expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
     await stream.send(step("Matching trade value", true));
     expect(stageLine()).toBe("2 of 5 · Matching trade value");
-    await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+    await stream.send(
+      step("Matched 4,667 trades by trade value", false),
+      step("Checking 4,667 trades for fairness", true),
+      step("Checked 4,667 trades for fairness", false),
+      step("Checking 77 against both lineups", true),
+    );
     await tick(3000);
     expect(stageLine()).toBe("4 of 5 · Checking 77 against both lineups");
     // A screen reader hears the step in the one status of the wait, and no line names a chart.
-    expect(screen.getByRole("status").textContent).toBe("4 of 5 · Checking 77 against both lineups");
+    expect(screen.getByRole("status").textContent).toBe(
+      "4 of 5 · Checking 77 against both lineups",
+    );
     expect(screen.queryByText(/chart/i)).toBeNull();
   });
 
@@ -272,7 +341,15 @@ describe("TradeFinder", () => {
     fixedClock();
     const stream = heldStream();
     find();
-    await stream.send(step("Reading 11 teams", true), step("Read 11 teams", false), step("Matching trade value", true), step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true), step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+    await stream.send(
+      step("Reading 11 teams", true),
+      step("Read 11 teams", false),
+      step("Matching trade value", true),
+      step("Matched 4,667 trades by trade value", false),
+      step("Checking 4,667 trades for fairness", true),
+      step("Checked 4,667 trades for fairness", false),
+      step("Checking 77 against both lineups", true),
+    );
     expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
     await tick(1499);
     expect(stageLine()).toBe("1 of 5 · Reading 11 teams");
@@ -348,11 +425,21 @@ describe("TradeFinder", () => {
     await stream.send(step("Read 11 teams", false), step("Matching trade value", true));
     record();
     await until(3000);
-    await stream.send(step("Matched 4,667 trades by trade value", false), step("Checking 4,667 trades for fairness", true));
+    await stream.send(
+      step("Matched 4,667 trades by trade value", false),
+      step("Checking 4,667 trades for fairness", true),
+    );
     await until(3200);
-    await stream.send(step("Checked 4,667 trades for fairness", false), step("Checking 77 against both lineups", true));
+    await stream.send(
+      step("Checked 4,667 trades for fairness", false),
+      step("Checking 77 against both lineups", true),
+    );
     await until(5000);
-    await stream.send(step("Made a shortlist of 9", false), shortlist(SHORT_A, LONG, SHORT_B), step("Picking the best 5", true));
+    await stream.send(
+      step("Made a shortlist of 9", false),
+      shortlist(SHORT_A, LONG, SHORT_B),
+      step("Picking the best 5", true),
+    );
     await until(20_000);
     await stream.send(trade(0, 3, FIVE.trades[0]));
     record();
@@ -429,16 +516,29 @@ describe("TradeFinder", () => {
     const stream = heldStream();
     await findWithPartner();
     await stream.send(step("Reading their roster", true), team(3));
-    expect([...document.querySelectorAll<HTMLElement>("[data-team-read]")].map((el) => el.dataset.teamRead)).toEqual(["3"]);
+    expect(
+      [...document.querySelectorAll<HTMLElement>("[data-team-read]")].map(
+        (el) => el.dataset.teamRead,
+      ),
+    ).toEqual(["3"]);
     expect(litTeams()).toEqual([3]);
   });
 
   it("tells the form that a search runs, and that it ended", async () => {
-    const onFindingChange = vi.fn();
+    const onFindingChange = mock();
     cleanup();
     const stream = heldStream();
     render(
-      <TradeFinder teams={TEAMS} target={apiTarget} asker={2} onAsker={onAsker} passphrase="localtest" onUnauthorized={onUnauthorized} onOpen={onOpen} onFindingChange={onFindingChange} />,
+      <TradeFinder
+        teams={TEAMS}
+        target={apiTarget}
+        asker={2}
+        onAsker={onAsker}
+        passphrase="localtest"
+        onUnauthorized={onUnauthorized}
+        onOpen={onOpen}
+        onFindingChange={onFindingChange}
+      />,
     );
     find();
     await waitFor(() => expect(onFindingChange).toHaveBeenLastCalledWith(true));
@@ -474,7 +574,11 @@ describe("TradeFinder", () => {
     streamOf(fixture);
     await findWithPartner();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({ season: 2026, asker: 2, partner: 3 });
+    expect(JSON.parse(fetchStub.mock.calls[0][1].body)).toEqual({
+      season: 2026,
+      asker: 2,
+      partner: 3,
+    });
     await pickPartner(/Every team/);
     expect(cards()).toHaveLength(0);
     expect(partnerButton().textContent).toContain("Every team");
@@ -492,9 +596,10 @@ describe("TradeFinder", () => {
     expect(within(list).getAllByRole("article")).toHaveLength(3);
     cards().forEach((card, i) => {
       const trade = fixture.trades[i];
-      expect(within(card).getByRole("heading", { level: 3 }).textContent).toBe(trade.lean);
+      expect(within(card).getByRole("heading", { level: 3 }).textContent).toBe(trade.lean!);
       expect(within(card).getByText(trade.case!)).toBeTruthy();
-      for (const side of trade.sides) for (const player of side.gives) expect(card.textContent).toContain(player.name);
+      for (const side of trade.sides)
+        for (const player of side.gives) expect(card.textContent).toContain(player.name);
     });
   });
 
@@ -513,13 +618,24 @@ describe("TradeFinder", () => {
     expect(within(three).getByText("You give · 3")).toBeTruthy();
     // Each row shows the name, then the position, the NFL team, and the rank.
     const gets = within(column(three, /You get/)).getAllByRole("listitem");
-    expect(gets.map((row) => row.textContent)).toEqual(["Emeka EgbukaWR · TB · WR24", "Roschon JohnsonRB · CHI · RB50"]);
+    expect(gets.map((row) => row.textContent)).toEqual([
+      "Emeka EgbukaWR · TB · WR24",
+      "Roschon JohnsonRB · CHI · RB50",
+    ]);
     const gives = within(column(three, /You give/)).getAllByRole("listitem");
-    expect(gives.map((row) => row.textContent)).toEqual(["Kenneth Walker IIIRB · SEA · RB8", "Tre TuckerWR · LV · WR16", "Colston LovelandTE · CHI · TE26"]);
+    expect(gives.map((row) => row.textContent)).toEqual([
+      "Kenneth Walker IIIRB · SEA · RB8",
+      "Tre TuckerWR · LV · WR16",
+      "Colston LovelandTE · CHI · TE26",
+    ]);
     // No row shows a trade value. The total of each column sits under it.
     for (const row of [...gets, ...gives]) expect(row.textContent).not.toMatch(/\d+\.\d/);
-    expect(within(three).getByText("68.0").closest("[data-total]")?.textContent).toBe("Trade value 68.0");
-    expect(within(three).getByText("62.5").closest("[data-total]")?.textContent).toBe("Trade value 62.5");
+    expect(within(three).getByText("68.0").closest("[data-total]")?.textContent).toBe(
+      "Trade value 68.0",
+    );
+    expect(within(three).getByText("62.5").closest("[data-total]")?.textContent).toBe(
+      "Trade value 62.5",
+    );
   });
 
   it("states the gap of the two totals in one plain line under them", async () => {
@@ -537,7 +653,11 @@ describe("TradeFinder", () => {
   });
 
   it("shows no total and no gap line when the week has no chart", async () => {
-    streamOf({ ...fixture, trades: [pickOf(["Tre Tucker"], ["Emeka Egbuka"], [null, null])], near: [] });
+    streamOf({
+      ...fixture,
+      trades: [pickOf(["Tre Tucker"], ["Emeka Egbuka"], [null, null])],
+      near: [],
+    });
     find();
     await waitFor(() => expect(cards()).toHaveLength(1));
     expect(cards()[0].querySelector("[data-total]")).toBeNull();
@@ -551,7 +671,9 @@ describe("TradeFinder", () => {
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
     expect(cards()[0].querySelector("[data-gap]")).toBeNull();
-    expect(cards()[1].querySelector("[data-gap]")?.textContent).toBe("You give 56% more trade value");
+    expect(cards()[1].querySelector("[data-gap]")?.textContent).toBe(
+      "You give 56% more trade value",
+    );
   });
 
   it("shows each card as its trade part comes, and the count line counts the trades still to come down to none", async () => {
@@ -569,7 +691,10 @@ describe("TradeFinder", () => {
     expect(screen.getByRole("region", { name: "Finding Trades" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Close, but not sent/ })).toBeNull();
     // A card of the stream has no document of the find yet, so its button waits for the end.
-    expect((within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(
+      (within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
     await stream.send(trade(1, 5, FIVE.trades[1]), trade(2, 5, FIVE.trades[2]));
     expect(cards()).toHaveLength(3);
     expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
@@ -579,12 +704,17 @@ describe("TradeFinder", () => {
     expect(cards()).toHaveLength(5);
     expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
     // The cards keep the order of the stream.
-    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual([1, 2, 3, 4, 5].map((n) => `Trade ${n} of 5`));
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(
+      [1, 2, 3, 4, 5].map((n) => `Trade ${n} of 5`),
+    );
     await stream.send(step("Picked the best 5", false), done(FIVE));
     stream.end();
     await screen.findByRole("button", { name: /^Close, but not sent/ });
     expect(cards()).toHaveLength(5);
-    expect((within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement).disabled).toBe(false);
+    expect(
+      (within(cards()[0]).getByRole("button", { name: "See the Full Result" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(false);
   });
 
   it("counts the trades still to come from the count of the pick, from the first card, and down when a trade drops", async () => {
@@ -601,7 +731,10 @@ describe("TradeFinder", () => {
     expect(screen.getByText("Writing 1 more trade")).toBeTruthy();
     await stream.send(trade(1, 2, FIVE.trades[1]));
     expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
-    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 2", "Trade 2 of 2"]);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual([
+      "Trade 1 of 2",
+      "Trade 2 of 2",
+    ]);
     await stream.send(tradesDone, done({ ...FIVE, trades: FIVE.trades.slice(0, 2) }));
     stream.end();
     await screen.findByRole("button", { name: /^Close, but not sent/ });
@@ -612,7 +745,11 @@ describe("TradeFinder", () => {
     // The pick can keep 3 of 5, so the answer ends the count line, and the answer is the truth.
     const stream = heldStream();
     find();
-    await stream.send(trade(0, 5, FIVE.trades[0]), trade(1, 5, FIVE.trades[1]), trade(2, 5, FIVE.trades[2]));
+    await stream.send(
+      trade(0, 5, FIVE.trades[0]),
+      trade(1, 5, FIVE.trades[1]),
+      trade(2, 5, FIVE.trades[2]),
+    );
     expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
     await stream.send(done({ ...FIVE, trades: FIVE.trades.slice(0, 3) }));
     stream.end();
@@ -625,11 +762,19 @@ describe("TradeFinder", () => {
     // Ticket 17: the count line counts the trades still to come until the last card shows. The pick kept 3 of 5.
     const stream = heldStream();
     find();
-    await stream.send(trade(0, 5, FIVE.trades[0]), trade(1, 5, FIVE.trades[1]), trade(2, 5, FIVE.trades[2]));
+    await stream.send(
+      trade(0, 5, FIVE.trades[0]),
+      trade(1, 5, FIVE.trades[1]),
+      trade(2, 5, FIVE.trades[2]),
+    );
     expect(screen.getByText("Writing 2 more trades")).toBeTruthy();
     await stream.send(tradesDone);
     expect(screen.queryAllByText(/^Writing \d+ more trade/)).toHaveLength(0);
-    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 3", "Trade 2 of 3", "Trade 3 of 3"]);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual([
+      "Trade 1 of 3",
+      "Trade 2 of 3",
+      "Trade 3 of 3",
+    ]);
     // The answer has not come, so the wait stays on screen.
     expect(screen.getByRole("region", { name: "Finding Trades" })).toBeTruthy();
     await stream.send(done({ ...FIVE, trades: FIVE.trades.slice(0, 3) }));
@@ -642,7 +787,13 @@ describe("TradeFinder", () => {
     streamOf(FIVE);
     find();
     await waitFor(() => expect(cards()).toHaveLength(5));
-    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 5", "Trade 2 of 5", "Trade 3 of 5", "Trade 4 of 5", "Trade 5 of 5"]);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual([
+      "Trade 1 of 5",
+      "Trade 2 of 5",
+      "Trade 3 of 5",
+      "Trade 4 of 5",
+      "Trade 5 of 5",
+    ]);
     const fold = screen.getByRole("button", { name: "Close, but not sent · 3" });
     expect(fold.getAttribute("aria-expanded")).toBe("false");
     // The closed fold shows no idea.
@@ -655,10 +806,13 @@ describe("TradeFinder", () => {
     expect(ideas).toHaveLength(3);
     FIVE.near.forEach((idea, i) => {
       expect(ideas[i].textContent).toContain(idea.reason);
-      for (const side of idea.sides) for (const player of side.gives) expect(ideas[i].textContent).toContain(player.name);
+      for (const side of idea.sides)
+        for (const player of side.gives) expect(ideas[i].textContent).toContain(player.name);
     });
     // The fold sits after the last card.
-    expect(cards()[4].compareDocumentPosition(fold) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      cards()[4].compareDocumentPosition(fold) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("keeps at most 5 picks and 3 near ideas", async () => {
@@ -691,9 +845,13 @@ describe("TradeFinder", () => {
     await waitFor(() => expect(cards()).toHaveLength(3));
     const card = cards()[0];
     const trade = fixture.trades[0];
-    const fold = within(card).getByRole("button", { name: `Why it works · ${trade.bullets.length}` });
+    const fold = within(card).getByRole("button", {
+      name: `Why it works · ${trade.bullets.length}`,
+    });
     expect(fold.getAttribute("aria-expanded")).toBe("false");
-    expect(within(card).queryByRole("button", { name: new RegExp(trade.bullets[0].text) })).toBeNull();
+    expect(
+      within(card).queryByRole("button", { name: new RegExp(trade.bullets[0].text) }),
+    ).toBeNull();
     fireEvent.click(fold);
     expect(fold.getAttribute("aria-expanded")).toBe("true");
     const panel = document.getElementById(fold.getAttribute("aria-controls")!) as HTMLElement;
@@ -731,12 +889,18 @@ describe("TradeFinder", () => {
     const hero = screen.getAllByRole("region", { name: "Trade Ideas" }).at(-1) as HTMLElement;
     expect(within(hero).getByRole("heading", { level: 1, name: "Trade Ideas" })).toBeTruthy();
     expect(within(hero).getByText("Who has a trade for you?")).toBeTruthy();
-    expect(within(hero).getByRole("button", { name: /Your team/ }).textContent).toContain("All You Need Is Love");
-    expect(within(hero).getByRole("button", { name: /Trade with/ }).textContent).toContain("Every team");
+    expect(within(hero).getByRole("button", { name: /Your team/ }).textContent).toContain(
+      "All You Need Is Love",
+    );
+    expect(within(hero).getByRole("button", { name: /Trade with/ }).textContent).toContain(
+      "Every team",
+    );
     expect(within(hero).getByRole("radiogroup", { name: "Position" })).toBeTruthy();
     expect(within(hero).getByRole("button", { name: "Find a Trade" })).toBeTruthy();
     await pickPartner(/Lil Fridge/);
-    expect(within(hero).getByRole("button", { name: /Trade with/ }).textContent).toContain("Lil Fridge");
+    expect(within(hero).getByRole("button", { name: /Trade with/ }).textContent).toContain(
+      "Lil Fridge",
+    );
   });
 
   it("hands a pick of Your team to the form", async () => {
@@ -750,7 +914,11 @@ describe("TradeFinder", () => {
     streamOf(fixture);
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual(["Trade 1 of 3", "Trade 2 of 3", "Trade 3 of 3"]);
+    expect(cards().map((card) => card.getAttribute("aria-label"))).toEqual([
+      "Trade 1 of 3",
+      "Trade 2 of 3",
+      "Trade 3 of 3",
+    ]);
     expect(within(cards()[0]).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
   });
 
@@ -760,22 +928,42 @@ describe("TradeFinder", () => {
     await waitFor(() => expect(cards()).toHaveLength(3));
     cards().forEach((card, i) => {
       fireEvent.click(within(card).getByRole("button", { name: "See the Full Result" }));
-      expect(onOpen).toHaveBeenLastCalledWith(fixture.trades[i], expect.objectContaining({ season: fixture.season, trades: fixture.trades }));
+      expect(onOpen).toHaveBeenLastCalledWith(
+        fixture.trades[i],
+        expect.objectContaining({ season: fixture.season, trades: fixture.trades }),
+      );
     });
   });
 
   it("shows the fact lines of each shortlist offer after a fallback, with no Lean and no row", async () => {
-    const lines = ["Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade.", "Second line."];
-    const trades = fixture.trades.map((t) => ({ ...t, lean: null, case: null, bullets: [], fact_lines: lines }));
+    const lines = [
+      "Tre Tucker (WR, LV) scored 11.1 points per game over 6 games before the trade.",
+      "Second line.",
+    ];
+    const trades = fixture.trades.map((t) => ({
+      ...t,
+      lean: null,
+      case: null,
+      bullets: [],
+      fact_lines: lines,
+    }));
     streamOf({ ...fixture, fallback: true, trades });
     find();
     await waitFor(() => expect(cards()).toHaveLength(3));
-    expect(screen.getByText("The picks did not come through. These are the trades the search kept, with their facts.")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "The picks did not come through. These are the trades the search kept, with their facts.",
+      ),
+    ).toBeTruthy();
     cards().forEach((card, i) => {
       expect(card.textContent).not.toContain(fixture.trades[i].lean);
       expect(within(card).queryByRole("button", { name: /Why it works/ })).toBeNull();
       const facts = within(card).getByRole("list", { name: "Facts" });
-      expect(within(facts).getAllByRole("listitem").map((item) => item.textContent)).toEqual(lines);
+      expect(
+        within(facts)
+          .getAllByRole("listitem")
+          .map((item) => item.textContent),
+      ).toEqual(lines);
       expect(within(card).getByRole("button", { name: "See the Full Result" })).toBeTruthy();
     });
   });
@@ -792,7 +980,9 @@ describe("TradeFinder", () => {
     find();
     // The fixture find ran with 14 known games of week 6, so the line names them as on the analyze result.
     const asOf = await screen.findByText(/^Stats through/);
-    expect(asOf.textContent).toMatch(/^Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · rosters fetched /);
+    expect(asOf.textContent).toMatch(
+      /^Stats through week 5, plus 14 week 6 games · Usage pending for 8 games · rosters fetched /,
+    );
   });
 
   it("shows the wait line on a 429", async () => {
@@ -823,7 +1013,10 @@ describe("TradeFinder", () => {
   it("shows the line of an error part of the stream, and Try Again runs the find again", async () => {
     const stream = heldStream();
     find();
-    await stream.send(step("Reading 11 teams", true), { type: "data-error", data: { status: 503, line: "The search failed. Try again." } });
+    await stream.send(step("Reading 11 teams", true), {
+      type: "data-error",
+      data: { status: 503, line: "The search failed. Try again." },
+    });
     expect(await screen.findByText("The search failed. Try again.")).toBeTruthy();
     streamOf(fixture);
     fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
@@ -834,7 +1027,9 @@ describe("TradeFinder", () => {
   it("shows the same down line as the trade form on a 503 with no detail", async () => {
     answer(503);
     find();
-    expect(await screen.findByText("The analyzer is down for the moment. Try again in a few minutes.")).toBeTruthy();
+    expect(
+      await screen.findByText("The analyzer is down for the moment. Try again in a few minutes."),
+    ).toBeTruthy();
     expect(screen.getByRole("button", { name: "Try Again" })).toBeTruthy();
     expect(onRostersStale).not.toHaveBeenCalled();
   });

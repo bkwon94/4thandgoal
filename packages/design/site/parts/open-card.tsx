@@ -1,11 +1,21 @@
 /**
  * The Open card: the one part that opens and closes a card in place, after the method of the Showcase Card item (ADR 0028).
  * The height grows on a spring, the details come into focus from a blur a beat behind it, and a chevron under the card turns.
+ * Use it when: a card opens and closes in place.
+ * Do not use it when: the card stays closed or open all the time. Use `Card`.
  */
 "use client";
 
+import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
-import { type CSSProperties, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useMotionOff } from "../hooks/use-motion-off";
 import { springCurve } from "../lib/spring";
 import { cn } from "../lib/utils";
@@ -116,48 +126,61 @@ export function OpenCard({
   }, []);
 
   // With motion off, every duration is 0, so the card reaches its end state at once (ADR 0028).
-  const vars = { "--oc-dur": off ? "0s" : `${OPEN_CARD_DURATION}s`, "--oc-spring": SPRING } as CSSProperties;
+  const vars = {
+    "--oc-dur": off ? "0s" : `${OPEN_CARD_DURATION}s`,
+    "--oc-spring": SPRING,
+  } as CSSProperties;
   const row = look === "row";
 
   const body = (
     <>
-      <button
+      <Button
+        variant="plain"
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
         {...headMarks}
         onClick={() => setOpen(!open)}
         className={cn(
-          "press flex min-h-touch w-full cursor-pointer flex-col gap-sp-3 border-0 bg-transparent p-sp-4 pb-0 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
+          "press min-h-touch gap-sp-3 p-sp-4 flex w-full cursor-pointer flex-col border-0 bg-transparent pb-0 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
           row && "p-0",
           headClassName,
         )}
       >
         {head}
-      </button>
+      </Button>
       <div className="oc-body">
         <div id={panelId} ref={panel} hidden={shut} className="oc-inner">
-          <div {...(open ? panelMarks : {})} className="oc-panel mx-sp-2 mt-sp-3 flex flex-col gap-sp-3 rounded-tile bg-raised p-sp-4">
-            {overview && <p className="m-0 text-lead leading-tight font-bold text-ink">{overview}</p>}
+          <div
+            {...(open ? panelMarks : {})}
+            className="oc-panel mx-sp-2 mt-sp-3 gap-sp-3 rounded-tile bg-raised p-sp-4 flex flex-col"
+          >
+            {overview && (
+              <p className="text-lead text-ink m-0 leading-tight font-bold">{overview}</p>
+            )}
             {chips.length > 0 && (
-              <ul className="m-0 flex list-none flex-wrap gap-sp-2 border-b border-rule p-0 pb-sp-3">
+              <ul className="gap-sp-2 border-rule pb-sp-3 m-0 flex list-none flex-wrap border-b p-0">
                 {chips.map((chip, index) => (
                   <li
                     key={index}
-                    className="inline-flex items-center gap-sp-2 rounded-pill bg-card px-sp-3 py-sp-1 font-mono text-meta leading-tight text-ink-2 tabular-nums"
+                    className="gap-sp-2 rounded-pill bg-card px-sp-3 py-sp-1 text-meta text-ink-2 inline-flex items-center font-mono leading-tight tabular-nums"
                   >
                     {chip}
                   </li>
                 ))}
               </ul>
             )}
-            {text && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textMarks}>{text}</p>}
+            {text && (
+              <p className="max-w-measure text-lead leading-body text-ink-2 m-0" {...textMarks}>
+                {text}
+              </p>
+            )}
             {children}
             {/* The pill has a solid fill under its label, because text on the frosted blur fails the axe floor. */}
             {action && (
               <a
                 href={action.href}
-                className="press inline-flex min-h-touch w-fit items-center rounded-pill bg-ink px-sp-5 text-body font-bold text-page no-underline"
+                className="press min-h-touch rounded-pill bg-ink px-sp-5 text-body text-page inline-flex w-fit items-center font-bold no-underline"
               >
                 {/* On a fine pointer the label rolls up to a copy of itself. The copy is CSS content, so a reader hears the label once. */}
                 <span className="oc-roll" data-label={action.label}>
@@ -170,22 +193,29 @@ export function OpenCard({
         </div>
       </div>
       {!row && (
-        <button
+        <Button
+          variant="plain"
           type="button"
           aria-expanded={open}
           aria-controls={panelId}
           aria-label={open ? "Hide the details" : "Show the details"}
           onClick={() => setOpen(!open)}
-          className="grid min-h-touch w-full cursor-pointer place-items-center border-0 bg-transparent p-0 text-mute [-webkit-tap-highlight-color:transparent]"
+          className="min-h-touch text-mute grid w-full cursor-pointer place-items-center border-0 bg-transparent p-0 [-webkit-tap-highlight-color:transparent]"
         >
           <ChevronDown aria-hidden="true" className="oc-chevron size-sp-5" strokeWidth={1.6} />
-        </button>
+        </Button>
       )}
     </>
   );
 
   return (
-    <Element data-open={open} className="open-card list-none" style={vars} onPointerEnter={onEnter} onFocus={onEnter}>
+    <Element
+      data-open={open}
+      className="open-card list-none"
+      style={vars}
+      onPointerEnter={onEnter}
+      onFocus={onEnter}
+    >
       {row ? (
         body
       ) : (

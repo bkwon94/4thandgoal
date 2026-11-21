@@ -1,0 +1,124 @@
+$ git grep -n -E "cache" -- .github
+.github/workflows/check.yml:83:          cache: pnpm
+.github/workflows/check.yml:84:          cache-dependency-path: pnpm-lock.yaml
+.github/workflows/check.yml:131:          cache: pnpm
+.github/workflows/check.yml:132:          cache-dependency-path: pnpm-lock.yaml
+.github/workflows/check.yml:138:      # The browser of a Playwright release is fixed, so the Playwright version in the lock file keys the cache.
+.github/workflows/check.yml:152:        id: playwright-cache
+.github/workflows/check.yml:153:        uses: actions/cache@v6
+.github/workflows/check.yml:155:          path: ~/.cache/ms-playwright
+.github/workflows/check.yml:156:          # The key names the browsers, so a cache that holds Chromium alone does not hit.
+.github/workflows/check.yml:159:      # A slow Ubuntu mirror once took 18 min for the 140 MB of .deb files, so the job keeps them in its own cache.
+.github/workflows/check.yml:160:      # The image and the Playwright version fix the package list, so they key the cache.
+.github/workflows/check.yml:162:        id: apt-cache
+.github/workflows/check.yml:163:        uses: actions/cache/restore@v6
+.github/workflows/check.yml:165:          path: ~/.cache/apt-archives
+.github/workflows/check.yml:169:      # The cache holds the browsers only. The system packages of Chromium and WebKit live outside it, so a hit installs them.
+.github/workflows/check.yml:170:      # apt reads the cached .deb files from its archives folder and downloads only what is missing. The copy back lets a miss save them.
+.github/workflows/check.yml:173:          BROWSERS_CACHED: ${{ steps.playwright-cache.outputs.cache-hit }}
+.github/workflows/check.yml:176:          mkdir -p ~/.cache/apt-archives
+.github/workflows/check.yml:180:          find ~/.cache/apt-archives -name '*.deb' -exec sudo cp -t /var/cache/apt/archives/ {} +
+.github/workflows/check.yml:186:          find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp -t ~/.cache/apt-archives/ {} +
+.github/workflows/check.yml:188:      # The save runs on a red job too, so a failed test does not keep the cache empty.
+.github/workflows/check.yml:190:        if: always() && steps.apt-cache.outputs.cache-hit != 'true'
+.github/workflows/check.yml:191:        uses: actions/cache/save@v6
+.github/workflows/check.yml:193:          path: ~/.cache/apt-archives
+.github/workflows/check.yml:216:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+.github/workflows/check.yml:221:          enable-cache: true
+.github/workflows/check.yml:222:          cache-dependency-glob: uv.lock
+.github/workflows/check.yml:242:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+.github/workflows/check.yml:247:          enable-cache: true
+.github/workflows/check.yml:248:          cache-dependency-glob: uv.lock
+.github/workflows/check.yml:266:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+.github/workflows/check.yml:271:          enable-cache: true
+.github/workflows/check.yml:272:          cache-dependency-glob: uv.lock
+.github/workflows/check.yml:291:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+.github/workflows/check.yml:296:          enable-cache: true
+.github/workflows/check.yml:297:          cache-dependency-glob: uv.lock
+.github/workflows/deploy-sites.yml:101:          cache: pnpm
+.github/workflows/deploy-sites.yml:102:          cache-dependency-path: pnpm-lock.yaml
+.github/workflows/rebuild.yml:69:          enable-cache: true
+.github/workflows/rebuild.yml:70:          cache-dependency-glob: |
+.github/workflows/rerun.yml:89:          cache: pnpm
+.github/workflows/rerun.yml:90:          cache-dependency-path: pnpm-lock.yaml
+.github/workflows/rerun.yml:96:      # The apt packages of the browsers come from a cache, as in the site-browser job of Check, so a slow mirror cannot stall the job.
+.github/workflows/rerun.yml:111:        id: apt-cache
+.github/workflows/rerun.yml:113:        uses: actions/cache/restore@v6
+.github/workflows/rerun.yml:115:          path: ~/.cache/apt-archives
+.github/workflows/rerun.yml:119:      # apt reads the cached .deb files from its archives folder and downloads only what is missing. The copy back lets a miss save them.
+.github/workflows/rerun.yml:124:          mkdir -p ~/.cache/apt-archives
+.github/workflows/rerun.yml:128:          find ~/.cache/apt-archives -name '*.deb' -exec sudo cp -t /var/cache/apt/archives/ {} +
+.github/workflows/rerun.yml:130:          find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp -t ~/.cache/apt-archives/ {} +
+.github/workflows/rerun.yml:132:      # The save runs on a red job too, so a failed test does not keep the cache empty.
+.github/workflows/rerun.yml:134:        if: steps.needs.outputs.site == 'true' && always() && steps.apt-cache.outputs.cache-hit != 'true'
+.github/workflows/rerun.yml:135:        uses: actions/cache/save@v6
+.github/workflows/rerun.yml:137:          path: ~/.cache/apt-archives
+.github/workflows/rerun.yml:144:          enable-cache: true
+.github/workflows/rerun.yml:145:          cache-dependency-glob: uv.lock
+exit code: 0
+
+$ git grep -n "node_modules" -- .github
+exit code: 1
+
+$ git diff main -- .github | grep -n -E "^[-+].*(cache|node_modules)"
+99:+      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+104:+          enable-cache: true
+105:+          cache-dependency-glob: uv.lock
+exit code: 0
+
+$ git grep -n -E "cache" main -- .github
+main:.github/workflows/check.yml:62:          cache: pnpm
+main:.github/workflows/check.yml:63:          cache-dependency-path: pnpm-lock.yaml
+main:.github/workflows/check.yml:91:          cache: pnpm
+main:.github/workflows/check.yml:92:          cache-dependency-path: pnpm-lock.yaml
+main:.github/workflows/check.yml:98:      # The browser of a Playwright release is fixed, so the Playwright version in the lock file keys the cache.
+main:.github/workflows/check.yml:112:        id: playwright-cache
+main:.github/workflows/check.yml:113:        uses: actions/cache@v6
+main:.github/workflows/check.yml:115:          path: ~/.cache/ms-playwright
+main:.github/workflows/check.yml:116:          # The key names the browsers, so a cache that holds Chromium alone does not hit.
+main:.github/workflows/check.yml:119:      # A slow Ubuntu mirror once took 18 min for the 140 MB of .deb files, so the job keeps them in its own cache.
+main:.github/workflows/check.yml:120:      # The image and the Playwright version fix the package list, so they key the cache.
+main:.github/workflows/check.yml:122:        id: apt-cache
+main:.github/workflows/check.yml:123:        uses: actions/cache/restore@v6
+main:.github/workflows/check.yml:125:          path: ~/.cache/apt-archives
+main:.github/workflows/check.yml:129:      # The cache holds the browsers only. The system packages of Chromium and WebKit live outside it, so a hit installs them.
+main:.github/workflows/check.yml:130:      # apt reads the cached .deb files from its archives folder and downloads only what is missing. The copy back lets a miss save them.
+main:.github/workflows/check.yml:133:          BROWSERS_CACHED: ${{ steps.playwright-cache.outputs.cache-hit }}
+main:.github/workflows/check.yml:136:          mkdir -p ~/.cache/apt-archives
+main:.github/workflows/check.yml:140:          find ~/.cache/apt-archives -name '*.deb' -exec sudo cp -t /var/cache/apt/archives/ {} +
+main:.github/workflows/check.yml:146:          find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp -t ~/.cache/apt-archives/ {} +
+main:.github/workflows/check.yml:148:      # The save runs on a red job too, so a failed test does not keep the cache empty.
+main:.github/workflows/check.yml:150:        if: always() && steps.apt-cache.outputs.cache-hit != 'true'
+main:.github/workflows/check.yml:151:        uses: actions/cache/save@v6
+main:.github/workflows/check.yml:153:          path: ~/.cache/apt-archives
+main:.github/workflows/check.yml:168:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+main:.github/workflows/check.yml:173:          enable-cache: true
+main:.github/workflows/check.yml:174:          cache-dependency-glob: uv.lock
+main:.github/workflows/check.yml:192:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+main:.github/workflows/check.yml:197:          enable-cache: true
+main:.github/workflows/check.yml:198:          cache-dependency-glob: uv.lock
+main:.github/workflows/check.yml:217:      # uv reads the Python version from the root .python-version, and the cache keys on the root lock file.
+main:.github/workflows/check.yml:222:          enable-cache: true
+main:.github/workflows/check.yml:223:          cache-dependency-glob: uv.lock
+main:.github/workflows/deploy-sites.yml:101:          cache: pnpm
+main:.github/workflows/deploy-sites.yml:102:          cache-dependency-path: pnpm-lock.yaml
+main:.github/workflows/rebuild.yml:69:          enable-cache: true
+main:.github/workflows/rebuild.yml:70:          cache-dependency-glob: |
+main:.github/workflows/rerun.yml:89:          cache: pnpm
+main:.github/workflows/rerun.yml:90:          cache-dependency-path: pnpm-lock.yaml
+main:.github/workflows/rerun.yml:96:      # The apt packages of the browsers come from a cache, as in the site-browser job of Check, so a slow mirror cannot stall the job.
+main:.github/workflows/rerun.yml:111:        id: apt-cache
+main:.github/workflows/rerun.yml:113:        uses: actions/cache/restore@v6
+main:.github/workflows/rerun.yml:115:          path: ~/.cache/apt-archives
+main:.github/workflows/rerun.yml:119:      # apt reads the cached .deb files from its archives folder and downloads only what is missing. The copy back lets a miss save them.
+main:.github/workflows/rerun.yml:124:          mkdir -p ~/.cache/apt-archives
+main:.github/workflows/rerun.yml:128:          find ~/.cache/apt-archives -name '*.deb' -exec sudo cp -t /var/cache/apt/archives/ {} +
+main:.github/workflows/rerun.yml:130:          find /var/cache/apt/archives -maxdepth 1 -name '*.deb' -exec cp -t ~/.cache/apt-archives/ {} +
+main:.github/workflows/rerun.yml:132:      # The save runs on a red job too, so a failed test does not keep the cache empty.
+main:.github/workflows/rerun.yml:134:        if: steps.needs.outputs.site == 'true' && always() && steps.apt-cache.outputs.cache-hit != 'true'
+main:.github/workflows/rerun.yml:135:        uses: actions/cache/save@v6
+main:.github/workflows/rerun.yml:137:          path: ~/.cache/apt-archives
+main:.github/workflows/rerun.yml:144:          enable-cache: true
+main:.github/workflows/rerun.yml:145:          cache-dependency-glob: uv.lock
+exit code: 0
+

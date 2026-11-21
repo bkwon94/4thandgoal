@@ -1,6 +1,8 @@
 /**
  * The team name, as a link to the manager page when the season has one.
  * The page passes the href, so the part holds no route format.
+ * Use it when: a team name links to its manager page when the season has one.
+ * Do not use it when: the text is not a team name.
  */
 /* A team name, as a link to the manager page when the season has one, else as plain text.
    The link inherits the color, the weight, the size, and the wrap of the name, so the name does not shift.
@@ -9,7 +11,10 @@
 export function TeamName({ name, href }: { name: string; href: string | null }) {
   if (href === null) return name;
   return (
-    <a href={href} className="relative z-1 text-inherit no-underline underline-offset-2 hover-fine:underline">
+    <a
+      href={href}
+      className="hover-fine:underline relative z-1 text-inherit no-underline underline-offset-2"
+    >
       {name}
     </a>
   );

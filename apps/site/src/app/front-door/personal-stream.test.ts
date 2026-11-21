@@ -5,12 +5,15 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { UIMessage } from "ai";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { personalResultSchema, personalViewOf } from "./personal-stream";
 
 /* The data of the `data-block` part of the recorded stream of Weak spots, which predates the kind. */
 function recordedBlock(): Record<string, unknown> {
-  const stream = readFileSync(join(__dirname, "..", "..", "fixtures", "personal-answer", "weak-spots.sse"), "utf8");
+  const stream = readFileSync(
+    join(__dirname, "..", "..", "fixtures", "personal-answer", "weak-spots.sse"),
+    "utf8",
+  );
   return stream
     .split("\n")
     .filter((line) => line.startsWith("data: {"))
@@ -18,7 +21,11 @@ function recordedBlock(): Record<string, unknown> {
     .find((chunk) => chunk.type === "data-block").data;
 }
 
-const messageWith = (data: unknown): UIMessage => ({ id: "a", role: "assistant", parts: [{ type: "data-block", data } as UIMessage["parts"][number]] });
+const messageWith = (data: unknown): UIMessage => ({
+  id: "a",
+  role: "assistant",
+  parts: [{ type: "data-block", data } as UIMessage["parts"][number]],
+});
 
 describe("the data part of a personal Topic", () => {
   it("carries the kind rows, and never reads as the block of a free answer", () => {
@@ -30,7 +37,9 @@ describe("the data part of a personal Topic", () => {
 
   it("reads a part kept with no kind as the kind rows, so an Answer kept in the browser still shows", () => {
     expect(personalViewOf(messageWith(recordedBlock())).block?.kind).toBe("rows");
-    expect(personalResultSchema.parse({ block: recordedBlock(), text: "Kept.", key: "k" }).block.kind).toBe("rows");
+    expect(
+      personalResultSchema.parse({ block: recordedBlock(), text: "Kept.", key: "k" }).block.kind,
+    ).toBe("rows");
   });
 
   it("drops a part with a kind of no personal block", () => {

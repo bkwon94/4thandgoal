@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { type ComponentType, useEffect, useState } from "react";
 import { useMarkHydrated } from "@cpc/design/hooks/use-mark-hydrated";
 import { avatarSrc, sleeperHeadshot } from "@cpc/league/images";
@@ -65,15 +66,21 @@ function BudgetRing({
           <Avatar
             src={avatarSrc(avatars, row.roster_id)}
             size="ring"
-            className="rounded-full border border-rule-dark bg-card object-cover"
+            className="border-rule-dark bg-card rounded-full border object-cover"
           />
           {/* The bar is a picture of the number under it, so it is hidden from a screen reader. */}
-          <span aria-hidden className="relative mt-sp-1 block h-ring-bar w-ring-bar-w overflow-hidden rounded-sm bg-rule-dark">
+          <span
+            aria-hidden
+            className="mt-sp-1 h-ring-bar w-ring-bar-w bg-rule-dark relative block overflow-hidden rounded-sm"
+          >
             <BarFill
               axis="y"
               pct={(row.budget_left / top) * 100}
               data-viewer={row.roster_id === viewerId || undefined}
-              className={cn("absolute inset-x-0 bottom-0 rounded-sm", row.roster_id === viewerId ? "bg-accent" : "bg-bar-off")}
+              className={cn(
+                "absolute inset-x-0 bottom-0 rounded-sm",
+                row.roster_id === viewerId ? "bg-accent" : "bg-bar-off",
+              )}
             />
           </span>
           <span className="mt-sp-0 text-label text-on-dark-muted tabular-nums">{`$${row.budget_left}`}</span>
@@ -110,34 +117,39 @@ function RestList({
         {rest.map((player, index) => {
           const open = player.player_id === sheetId;
           return (
-            <li key={player.player_id} className="border-b border-rule-dark">
+            <li key={player.player_id} className="border-rule-dark border-b">
               {/* The whole row is the button, so the touch target is the row. 44px is the smallest comfortable touch target. */}
-              <button
+              <Button
+                variant="plain"
                 type="button"
                 aria-pressed={open}
                 onClick={() => onOpen(player)}
                 className={cn(
                   ROW_GRID,
-                  "press min-h-touch w-full cursor-pointer border-0 bg-transparent px-0 py-sp-1 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
+                  "press min-h-touch py-sp-1 w-full cursor-pointer border-0 bg-transparent px-0 text-left text-inherit [-webkit-tap-highlight-color:transparent]",
                 )}
               >
-                <span className={open ? "font-bold text-accent-text" : "text-on-dark-muted"}>{SLOTS.length + index + 1}</span>
+                <span className={open ? "text-accent-text font-bold" : "text-on-dark-muted"}>
+                  {SLOTS.length + index + 1}
+                </span>
                 {/* The player name sits next to the headshot, so the image is decorative. */}
                 {/* The fill is the dark rule, so it stays one step off the black card in both themes. Ink-2 turns light grey in the dark theme. */}
                 <Headshot
                   src={sleeperHeadshot(player.player_id)}
                   size="avatar"
                   lazy
-                  className="rounded-full bg-rule-dark object-cover object-top"
+                  className="bg-rule-dark rounded-full object-cover object-top"
                 />
                 <span className="flex min-w-0 flex-col">
                   <b className="font-extrabold">{player.name}</b>
                   <span className="text-meta text-on-dark-muted">
-                    {player.drop ? `${waiverMetaLine(player)} · ${holderLine(player.drop)}` : waiverMetaLine(player)}
+                    {player.drop
+                      ? `${waiverMetaLine(player)} · ${holderLine(player.drop)}`
+                      : waiverMetaLine(player)}
                   </span>
                 </span>
                 <span className="text-right font-bold">{priceText(player)}</span>
-              </button>
+              </Button>
             </li>
           );
         })}
@@ -162,7 +174,9 @@ export function WarChest({
   const tabs = BUCKETS.filter(({ key }) => board.buckets[key]);
   const [bucket, setBucket] = useState<BucketKey>(BEST_ADDS);
   // The sheet holds the player and not an index, so it keeps him when the tab changes to a bucket without him.
-  const [sheetPlayer, setSheetPlayer] = useState<WaiverPlayer | null>(board.buckets[BEST_ADDS]?.[0] ?? null);
+  const [sheetPlayer, setSheetPlayer] = useState<WaiverPlayer | null>(
+    board.buckets[BEST_ADDS]?.[0] ?? null,
+  );
   const sheetId = sheetPlayer?.player_id ?? null;
   // Undefined until the page reads storage after the first render, since the static page has no storage. Null is no pick.
   const [pick, setPick] = useState<number | null | undefined>(undefined);
@@ -188,27 +202,40 @@ export function WarChest({
         {pick === undefined ? (
           <div aria-hidden className="h-pick-chip" />
         ) : (
-          <TeamPick viewer={viewer} budgets={board.budgets} teams={teams} avatars={avatars} onPick={choose} TeamPicker={TeamPicker} />
+          <TeamPick
+            viewer={viewer}
+            budgets={board.budgets}
+            teams={teams}
+            avatars={avatars}
+            onPick={choose}
+            TeamPicker={TeamPicker}
+          />
         )}
       </div>
       <Label dark>War chest</Label>
-      <BudgetRing budgets={board.budgets} teams={teams} avatars={avatars} viewerId={viewer?.roster_id ?? null} />
-      <div role="group" aria-label="Buckets" className="mt-sp-4 flex gap-sp-1">
+      <BudgetRing
+        budgets={board.budgets}
+        teams={teams}
+        avatars={avatars}
+        viewerId={viewer?.roster_id ?? null}
+      />
+      <div role="group" aria-label="Buckets" className="mt-sp-4 gap-sp-1 flex">
         {tabs.map((tab) => {
           const on = tab.key === bucket;
           return (
-            <button
+            <Button
+              variant="plain"
               key={tab.key}
               type="button"
               aria-pressed={on}
               onClick={() => setBucket(tab.key)}
               className={cn(
-                "press flex min-h-touch flex-1 cursor-pointer items-center justify-center rounded-full border-0 px-sp-2 text-label font-bold tracking-caps whitespace-nowrap uppercase",
+                "press min-h-touch px-sp-2 text-label tracking-caps flex flex-1 cursor-pointer items-center justify-center rounded-full border-0 font-bold whitespace-nowrap uppercase",
                 on ? "bg-accent text-on-dark" : "bg-chip-dark text-on-dark-2",
               )}
             >
               {tab.name}
-            </button>
+            </Button>
           );
         })}
       </div>

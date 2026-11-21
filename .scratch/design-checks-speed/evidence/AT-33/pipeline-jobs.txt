@@ -1,0 +1,85 @@
+# Run 44873662117 (event workflow_dispatch, head 4d5f4d13)
+136753507458 pipeline-parallel (1): success, 259 s (startedAt 2026-11-21T06:02:47Z, completedAt 2026-11-21T06:07:06Z)
+136753507634 pipeline-parallel (2): success, 264 s (startedAt 2026-11-21T06:02:46Z, completedAt 2026-11-21T06:07:10Z)
+136753507497 pipeline-serial: success, 43 s (startedAt 2026-11-21T06:02:47Z, completedAt 2026-11-21T06:03:30Z)
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507458/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:03:24.7380039Z ##[group]Run make check-pipeline-parallel-1
+2026-11-21T06:03:24.7511640Z ==> pipeline: check-parallel-1
+2026-11-21T06:03:29.0622915Z PYTEST_SHARD=1/2 uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+2026-11-21T06:07:02.7393213Z 877 passed in 210.69s (0:03:30)
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507497/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:03:19.7131311Z ##[group]Run make check-pipeline-serial
+2026-11-21T06:03:19.7500462Z ==> pipeline: check-serial
+2026-11-21T06:03:19.7512053Z uv run --exact --package cornerstone pytest -q -p no:xdist -m 'serial and not live'
+2026-11-21T06:03:26.8906033Z 2 passed, 1764 deselected in 4.55s
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507634/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:03:19.0690316Z ##[group]Run make check-pipeline-parallel-2
+2026-11-21T06:03:19.1098516Z ==> pipeline: check-parallel-2
+2026-11-21T06:03:19.1112840Z PYTEST_SHARD=2/2 uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+2026-11-21T06:07:07.7586921Z 877 passed in 225.56s (0:03:45)
+
+# Run 44874144251 (event workflow_dispatch, head 4d5f4d13)
+136755001777 pipeline-parallel (1): success, 197 s (startedAt 2026-11-21T06:08:47Z, completedAt 2026-11-21T06:12:04Z)
+136755001858 pipeline-parallel (2): success, 194 s (startedAt 2026-11-21T06:08:47Z, completedAt 2026-11-21T06:12:01Z)
+136755001525 pipeline-serial: success, 45 s (startedAt 2026-11-21T06:08:47Z, completedAt 2026-11-21T06:09:32Z)
+$ gh api repos/{owner}/{repo}/actions/jobs/136755001525/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:09:22.6957969Z ##[group]Run make check-pipeline-serial
+2026-11-21T06:09:22.7062531Z ==> pipeline: check-serial
+2026-11-21T06:09:22.7074421Z uv run --exact --package cornerstone pytest -q -p no:xdist -m 'serial and not live'
+2026-11-21T06:09:29.8023853Z 2 passed, 1764 deselected in 4.31s
+$ gh api repos/{owner}/{repo}/actions/jobs/136755001777/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:09:22.2890253Z ##[group]Run make check-pipeline-parallel-1
+2026-11-21T06:09:22.2994580Z ==> pipeline: check-parallel-1
+2026-11-21T06:09:25.3904520Z PYTEST_SHARD=1/2 uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+2026-11-21T06:12:01.1623117Z 877 passed in 153.58s (0:02:33)
+$ gh api repos/{owner}/{repo}/actions/jobs/136755001858/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:09:18.1589963Z ##[group]Run make check-pipeline-parallel-2
+2026-11-21T06:09:18.1689745Z ==> pipeline: check-parallel-2
+2026-11-21T06:09:18.1699608Z PYTEST_SHARD=2/2 uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+2026-11-21T06:11:58.0047581Z 877 passed in 157.76s (0:02:37)
+
+# Run 44874592510 (event workflow_dispatch, head 4d5f4d13)
+136756394565 pipeline-parallel (1): success, 233 s (startedAt 2026-11-21T06:14:27Z, completedAt 2026-11-21T06:18:20Z)
+136756394744 pipeline-parallel (2): success, 268 s (startedAt 2026-11-21T06:14:27Z, completedAt 2026-11-21T06:18:55Z)
+136756394705 pipeline-serial: success, 37 s (startedAt 2026-11-21T06:14:27Z, completedAt 2026-11-21T06:15:04Z)
+$ gh api repos/{owner}/{repo}/actions/jobs/136756394565/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:15:02.4191045Z ##[group]Run make check-pipeline-parallel-1
+2026-11-21T06:15:02.4443096Z ==> pipeline: check-parallel-1
+2026-11-21T06:15:06.5597544Z PYTEST_SHARD=1/2 uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+2026-11-21T06:18:17.9244366Z 877 passed in 188.68s (0:03:08)
+$ gh api repos/{owner}/{repo}/actions/jobs/136756394705/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:14:55.9849505Z ##[group]Run make check-pipeline-serial
+2026-11-21T06:14:56.0251290Z ==> pipeline: check-serial
+2026-11-21T06:14:56.0260888Z uv run --exact --package cornerstone pytest -q -p no:xdist -m 'serial and not live'
+2026-11-21T06:15:01.9099772Z 2 passed, 1764 deselected in 3.58s
+$ gh api repos/{owner}/{repo}/actions/jobs/136756394744/logs | grep -E "Run make|==> pipeline|pytest -q|passed"
+2026-11-21T06:14:59.6348502Z ##[group]Run make check-pipeline-parallel-2
+2026-11-21T06:14:59.6485917Z ==> pipeline: check-parallel-2
+2026-11-21T06:14:59.6503109Z PYTEST_SHARD=2/2 uv run --exact --package cornerstone pytest -q -n auto -m 'not live and not serial'
+2026-11-21T06:18:52.8866302Z 877 passed in 229.96s (0:03:49)
+
+
+$ grep -n -E "^check-pipeline-(parallel|serial)" -A1 Makefile
+105:check-pipeline-parallel: ## Run the parallel half of the pipeline check: lint, typecheck, and the parallel tests
+106-	@echo "==> pipeline: check-parallel"; $(pipeline-check-parallel)
+--
+109:check-pipeline-parallel-1: ## Run lint, typecheck, and shard 1 of 2 of the parallel pipeline tests
+110-	@echo "==> pipeline: check-parallel-1"; $(pipeline-check-parallel-1)
+--
+112:check-pipeline-parallel-2: ## Run shard 2 of 2 of the parallel pipeline tests
+113-	@echo "==> pipeline: check-parallel-2"; $(pipeline-check-parallel-2)
+--
+115:check-pipeline-serial: ## Run the serial half of the pipeline check: the tests that measure wall time
+116-	@echo "==> pipeline: check-serial"; $(pipeline-check-serial)
+$ grep -n -E "^(test-serial|check-parallel-1|check-parallel-2|check-serial):" -A1 apps/pipeline/Makefile
+33:test-serial: ## Run the tests that measure wall time, alone
+34-	$(RUN) pytest -q -p no:xdist -m 'serial and not live'
+--
+53:check-serial: test-serial ## Run the serial tests
+54-
+--
+58:check-parallel-1: lint typecheck ## Run lint, typecheck, and shard 1 of 2 of the parallel tests
+59-	PYTEST_SHARD=1/2 $(RUN) pytest -q -n auto -m 'not live and not serial'
+--
+61:check-parallel-2: ## Run shard 2 of 2 of the parallel tests
+62-	PYTEST_SHARD=2/2 $(RUN) pytest -q -n auto -m 'not live and not serial'

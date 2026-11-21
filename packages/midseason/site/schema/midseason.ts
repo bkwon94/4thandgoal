@@ -23,7 +23,11 @@ export const blurbSchema = z.object({
 const prose = { blurb: blurbSchema.nullable() };
 
 /* The opener, the title race: the leaders by title odds, best first, and the record leader. */
-export const titleLeaderSchema = z.object({ roster_id: z.number(), name: z.string(), title_odds: z.number() });
+export const titleLeaderSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  title_odds: z.number(),
+});
 
 export const recordLeaderSchema = z.object({
   roster_id: z.number(),
@@ -92,7 +96,11 @@ export const arcSchema = z.object({
   schedule_luck: z.number().nullable(),
 });
 
-export const teamArcsSchema = z.object({ roster_id: z.number(), name: z.string(), arcs: z.array(arcSchema) });
+export const teamArcsSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  arcs: z.array(arcSchema),
+});
 
 export const arcsChapterSchema = z.object({
   key: z.literal("arcs"),
@@ -125,12 +133,20 @@ export const swapCellSchema = z.object({
   ties: z.number(),
 });
 
-export const swapRowSchema = z.object({ roster_id: z.number(), name: z.string(), cells: z.array(swapCellSchema) });
+export const swapRowSchema = z.object({
+  roster_id: z.number(),
+  name: z.string(),
+  cells: z.array(swapCellSchema),
+});
 
 /* The best schedule other than its own for one team, with the record that it gives. */
 export const bestMissedSchema = swapCellSchema.extend({ roster_id: z.number() });
 
-export const swapRecordSchema = z.object({ wins: z.number(), losses: z.number(), ties: z.number() });
+export const swapRecordSchema = z.object({
+  wins: z.number(),
+  losses: z.number(),
+  ties: z.number(),
+});
 
 /* The best or the worst record of one team with the other schedules, and each schedule that gives it, in standings order. */
 export const swapEndSchema = swapRecordSchema.extend({
@@ -228,7 +244,10 @@ export const topPlayerSchema = z.object({
   tag: z.string().nullable(),
 });
 
-export const positionBoardSchema = z.object({ position: z.string(), players: z.array(topPlayerSchema) });
+export const positionBoardSchema = z.object({
+  position: z.string(),
+  players: z.array(topPlayerSchema),
+});
 
 export const top10ChapterSchema = z.object({
   key: z.literal("top10"),
@@ -389,7 +408,12 @@ export const lineupChapterSchema = z.object({
 });
 
 /* The record book: the four records of the season, then the seven awards in page order. */
-export const teamScoreSchema = z.object({ week: z.number(), roster_id: z.number(), team: z.string(), score: z.number() });
+export const teamScoreSchema = z.object({
+  week: z.number(),
+  roster_id: z.number(),
+  team: z.string(),
+  score: z.number(),
+});
 
 export const gameSchema = z.object({
   week: z.number(),
@@ -403,7 +427,15 @@ export const gameSchema = z.object({
 });
 
 export const awardSchema = z.object({
-  key: z.enum(["mvp", "streaming-king", "bench-crime", "heartbreak", "beatdown", "most-active", "set-and-forget"]),
+  key: z.enum([
+    "mvp",
+    "streaming-king",
+    "bench-crime",
+    "heartbreak",
+    "beatdown",
+    "most-active",
+    "set-and-forget",
+  ]),
   title: z.string(),
   roster_id: z.number(),
   team: z.string(),
@@ -454,7 +486,11 @@ export const teamLookAheadSchema = z.object({
 export const lookAheadChapterSchema = z.object({
   key: z.literal("look-ahead"),
   title: z.string(),
-  facts: z.object({ teams: z.array(teamLookAheadSchema), softest: z.number().nullable(), hardest: z.number().nullable() }),
+  facts: z.object({
+    teams: z.array(teamLookAheadSchema),
+    softest: z.number().nullable(),
+    hardest: z.number().nullable(),
+  }),
   ...prose,
 });
 
@@ -487,7 +523,11 @@ export const actSchema = z.object({
 });
 
 /* The one big fact of the home tile, which the home page shows after the takeover ends. */
-export const reportTileSchema = z.object({ label: z.string(), value: z.string(), note: z.string() });
+export const reportTileSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+  note: z.string(),
+});
 
 export const midseasonSchema = z.object({
   schema_version: z.literal(1),

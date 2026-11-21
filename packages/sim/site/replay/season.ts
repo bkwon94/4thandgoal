@@ -57,7 +57,11 @@ export type ReplaySeason = {
 type Tally = { wins: number; losses: number; points: number };
 
 /* The order of the sim: the most wins, then the most points, then the lowest roster ID. */
-function ordered(tally: Map<number, Tally>, names: Sim["names"], before?: StandingRow[]): StandingRow[] {
+function ordered(
+  tally: Map<number, Tally>,
+  names: Sim["names"],
+  before?: StandingRow[],
+): StandingRow[] {
   const ids = [...tally.keys()].sort((a, b) => {
     const x = tally.get(a)!;
     const y = tally.get(b)!;
@@ -89,7 +93,10 @@ export function replaySeason(sim: Sim, index: number): ReplaySeason {
   const { names } = sim;
   const regular = sim.weeks.filter((week) => !sim.bracket_weeks.includes(week));
   const tally = new Map<number, Tally>(
-    Object.entries(sim.records).map(([rid, [wins, losses, points]]) => [Number(rid), { wins, losses, points }]),
+    Object.entries(sim.records).map(([rid, [wins, losses, points]]) => [
+      Number(rid),
+      { wins, losses, points },
+    ]),
   );
   const start = ordered(tally, names);
 
@@ -97,7 +104,10 @@ export function replaySeason(sim: Sim, index: number): ReplaySeason {
   const weeks: ReplayWeek[] = regular.map((week, column) => {
     const score = (rid: number) => run.scores[rid][column]!;
     const games = sim.schedule[week].map(([a, b]) => ({
-      teams: [a, b].map((rid) => ({ roster_id: rid, name: names[rid], score: score(rid) })) as [WeekTeam, WeekTeam],
+      teams: [a, b].map((rid) => ({ roster_id: rid, name: names[rid], score: score(rid) })) as [
+        WeekTeam,
+        WeekTeam,
+      ],
     }));
     for (const { teams } of games) {
       const [x, y] = teams;
@@ -125,7 +135,10 @@ export function replaySeason(sim: Sim, index: number): ReplaySeason {
   const seedOf = new Map(seeds.map((seed) => [seed.roster_id, seed]));
   const rounds: ReplayRound[] = run.bracket.map((pairs, r) => {
     const column = regular.length + r;
-    const team = (rid: number): BracketTeam => ({ ...seedOf.get(rid)!, score: run.scores[rid][column]! });
+    const team = (rid: number): BracketTeam => ({
+      ...seedOf.get(rid)!,
+      score: run.scores[rid][column]!,
+    });
     const games = pairs.map(([a, b]) => {
       const [high, low] = [team(a), team(b)];
       // A tie in a bracket game goes to the higher seed, the same rule as the sim.

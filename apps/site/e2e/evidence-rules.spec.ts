@@ -36,7 +36,8 @@ type Fixture = { root: string; scratch: string; folder: (id: string) => string; 
  * A page for the verbs. Each event that a verb sets off adds one mark to the URL hash, so the url file of a step list
  * shows which events happened: "name-<value>" for a fill, "far" and "bottom" for a scroll, "ready" for a late element.
  */
-const VERBS_PAGE = sitePage(`<a id="to-week" href="/week-07/" style="display:block;height:200px;background:#0000ff">Week 7</a>
+const VERBS_PAGE =
+  sitePage(`<a id="to-week" href="/week-07/" style="display:block;height:200px;background:#0000ff">Week 7</a>
   <input id="name">
   <div id="far" style="margin-top:3000px;height:100px">Far</div>
   <div id="bottom" style="margin-top:3000px;height:100px">Bottom</div>
@@ -84,7 +85,10 @@ function fixture(lists: Record<string, unknown>): Fixture {
   const scratch = join(root, "scratch");
   mkdirSync(site);
   writeFileSync(join(site, "index.html"), REVEAL_PAGE);
-  writeFileSync(join(site, "404.html"), sitePage(`<div style="height:200px;background:#00ff00">Lost page</div>`));
+  writeFileSync(
+    join(site, "404.html"),
+    sitePage(`<div style="height:200px;background:#00ff00">Lost page</div>`),
+  );
   for (const [path, html] of Object.entries({ verbs: VERBS_PAGE, "week-07": WEEK_PAGE })) {
     mkdirSync(join(site, path));
     writeFileSync(join(site, path, "index.html"), html);
@@ -107,7 +111,9 @@ async function run(browser: import("@playwright/test").Browser, fx: Fixture): Pr
   });
 }
 
-test("a route-only step list gives six shots named <width>-<theme>.png beside its steps.json", async ({ browser }) => {
+test("a route-only step list gives six shots named <width>-<theme>.png beside its steps.json", async ({
+  browser,
+}) => {
   const fx = fixture({ "AT-1": { route: "/" } });
   await run(browser, fx);
   expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
@@ -122,7 +128,12 @@ test("a route-only step list gives six shots named <width>-<theme>.png beside it
 });
 
 /* The color of one pixel of a PNG as [r, g, b]. The browser decodes the file, so the test needs no image package. */
-async function pixel(page: import("@playwright/test").Page, file: string, x: number, y: number): Promise<number[]> {
+async function pixel(
+  page: import("@playwright/test").Page,
+  file: string,
+  x: number,
+  y: number,
+): Promise<number[]> {
   const data = readFileSync(file).toString("base64");
   return page.evaluate(
     async ({ data, x, y }) => {
@@ -143,7 +154,9 @@ async function pixel(page: import("@playwright/test").Page, file: string, x: num
 test("the light shot is light and the dark shot is dark", async ({ browser, page }) => {
   const fx = fixture({ "AT-1": { route: "/" } });
   await run(browser, fx);
-  expect(await pixel(page, join(fx.folder("AT-1"), "1280-light.png"), 600, 10)).toEqual([255, 255, 255]);
+  expect(await pixel(page, join(fx.folder("AT-1"), "1280-light.png"), 600, 10)).toEqual([
+    255, 255, 255,
+  ]);
   expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 600, 10)).toEqual([0, 0, 0]);
 });
 
@@ -151,14 +164,17 @@ test("a section that reveals on scroll shows in the full-page shot", async ({ br
   const fx = fixture({ "AT-1": { route: "/" } });
   await run(browser, fx);
   // The late section sits at 3000px to 3400px. Shown, it is red; hidden, the page background shows through.
-  expect(await pixel(page, join(fx.folder("AT-1"), "375-dark.png"), 100, 3200)).toEqual([255, 0, 0]);
+  expect(await pixel(page, join(fx.folder("AT-1"), "375-dark.png"), 100, 3200)).toEqual([
+    255, 0, 0,
+  ]);
 });
 
 /*
  * A page with a fixed band, as the sticky dock and the chapter rail of the site. The band reads window.scrollY on each
  * scroll: it is red at the top, with "Top", and blue below the top, with "Scrolled".
  */
-const STICKY_PAGE = sitePage(`<div id="band" style="position:fixed;top:0;left:0;right:0;height:100px;background:#ff0000">Top</div>
+const STICKY_PAGE =
+  sitePage(`<div id="band" style="position:fixed;top:0;left:0;right:0;height:100px;background:#ff0000">Top</div>
   <main style="height:4000px"></main>
   <script>
     const band = document.getElementById("band");
@@ -168,9 +184,17 @@ const STICKY_PAGE = sitePage(`<div id="band" style="position:fixed;top:0;left:0;
     });
   </script>`);
 
-test("a shot after a scroll shows the page at its scroll position, not at the top", async ({ browser, page }) => {
+test("a shot after a scroll shows the page at its scroll position, not at the top", async ({
+  browser,
+  page,
+}) => {
   const fx = fixture({
-    "AT-1": { route: "/sticky/", steps: [{ shot: "top" }, { scroll: "end" }, { shot: "end" }], widths: [1280], themes: ["dark"] },
+    "AT-1": {
+      route: "/sticky/",
+      steps: [{ shot: "top" }, { scroll: "end" }, { shot: "end" }],
+      widths: [1280],
+      themes: ["dark"],
+    },
   });
   mkdirSync(join(fx.root, "site", "sticky"));
   writeFileSync(join(fx.root, "site", "sticky", "index.html"), STICKY_PAGE);
@@ -194,13 +218,19 @@ test("a missing path shows the 404.html of the folder in each shot", async ({ br
   const shots = readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"));
   expect(shots).toHaveLength(6);
   // Only the 404.html of the folder has the green band. A plain server 404 page has no color at all.
-  for (const name of shots) expect(await pixel(page, join(fx.folder("AT-1"), name), 300, 100), name).toEqual([0, 255, 0]);
+  for (const name of shots)
+    expect(await pixel(page, join(fx.folder("AT-1"), name), 300, 100), name).toEqual([0, 255, 0]);
 });
 
-test("a bad verb, a bad key, and a bad value each stop the run before the first shot, with the file and the step named", async ({ browser }) => {
+test("a bad verb, a bad key, and a bad value each stop the run before the first shot, with the file and the step named", async ({
+  browser,
+}) => {
   // AT-1 is good and sorts first, so a run that checked each list only as it came to it would shoot AT-1 before it stopped.
   const cases = [
-    { list: { route: "/", steps: [{ tap: "text=Week 7" }] }, error: /AT-2[/\\]steps\.json: step 1 \{"tap":"text=Week 7"\}: unknown verb "tap"/ },
+    {
+      list: { route: "/", steps: [{ tap: "text=Week 7" }] },
+      error: /AT-2[/\\]steps\.json: step 1 \{"tap":"text=Week 7"\}: unknown verb "tap"/,
+    },
     { list: { route: "/", theme: "dark" }, error: /AT-2[/\\]steps\.json: unknown key "theme"/ },
     {
       list: { route: "/", steps: [{ fill: "#name" }] },
@@ -210,8 +240,14 @@ test("a bad verb, a bad key, and a bad value each stop the run before the first 
       list: { route: "/", steps: [{ shot: "before" }, { wait: "url" }] },
       error: /AT-2[/\\]steps\.json: step 2 \{"wait":"url"\}: "wait" "url" needs a click before it/,
     },
-    { list: { route: "/", themes: ["blue"] }, error: /AT-2[/\\]steps\.json: "themes" must be a list of light, dark/ },
-    { list: { route: "/", widths: [] }, error: /AT-2[/\\]steps\.json: "widths" must be a list of widths in px/ },
+    {
+      list: { route: "/", themes: ["blue"] },
+      error: /AT-2[/\\]steps\.json: "themes" must be a list of light, dark/,
+    },
+    {
+      list: { route: "/", widths: [] },
+      error: /AT-2[/\\]steps\.json: "widths" must be a list of widths in px/,
+    },
   ];
   for (const { list, error } of cases) {
     const fx = fixture({ "AT-1": { route: "/" }, "AT-2": list });
@@ -238,11 +274,21 @@ test("each verb runs: a click, a fill, a scroll to a selector and to the end, an
   const fx = fixture({
     "AT-1": {
       route: "/verbs/",
-      steps: [{ shot: "before" }, { click: "#to-week" }, { wait: "url" }, { shot: "after-tap" }, { url: true }],
+      steps: [
+        { shot: "before" },
+        { click: "#to-week" },
+        { wait: "url" },
+        { shot: "after-tap" },
+        { url: true },
+      ],
       widths: [375, 1280],
       themes: ["light", "dark"],
     },
-    "AT-2": { route: "/verbs/", steps: [{ fill: { selector: "#name", value: "Ja" } }, { url: true }], ...one },
+    "AT-2": {
+      route: "/verbs/",
+      steps: [{ fill: { selector: "#name", value: "Ja" } }, { url: true }],
+      ...one,
+    },
     "AT-3": { route: "/verbs/", steps: [{ scroll: "#far" }, { url: true }], ...one },
     "AT-4": { route: "/verbs/", steps: [{ scroll: "end" }, { url: true }], ...one },
     "AT-5": { route: "/verbs/?late", steps: [{ wait: "#ready" }, { url: true }], ...one },
@@ -250,22 +296,38 @@ test("each verb runs: a click, a fill, a scroll to a selector and to the end, an
     // The controls: with no wait, the late element has not come yet, and the click has not opened its page yet.
     "AT-7": { route: "/verbs/?late", steps: [{ url: true }], ...one },
     // The last wait lets the page open before the shot after the last step.
-    "AT-8": { route: "/verbs/", steps: [{ click: "#to-week" }, { url: true }, { wait: "url" }], ...one },
+    "AT-8": {
+      route: "/verbs/",
+      steps: [{ click: "#to-week" }, { url: true }, { wait: "url" }],
+      ...one,
+    },
   });
   await run(browser, fx);
   // AT-1 has shot steps, so the runner takes only the named shots, and no shot after the last step.
   const names = ["before", "after-tap"].flatMap((name) =>
-    [375, 1280].flatMap((width) => ["light", "dark"].map((theme) => `${name}-${width}-${theme}.png`)),
+    [375, 1280].flatMap((width) =>
+      ["light", "dark"].map((theme) => `${name}-${width}-${theme}.png`),
+    ),
   );
-  const urls = [375, 1280].flatMap((width) => ["light", "dark"].map((theme) => `url-${width}-${theme}.txt`));
+  const urls = [375, 1280].flatMap((width) =>
+    ["light", "dark"].map((theme) => `url-${width}-${theme}.txt`),
+  );
   expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([...names, ...urls, "steps.json"].sort());
   for (const name of urls) expect(urlOf(fx.folder("AT-1"), name), name).toBe("/week-07/");
   // The shot before the click shows the blue link; the shot after it shows the green week page.
-  expect(await pixel(page, join(fx.folder("AT-1"), "before-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
-  expect(await pixel(page, join(fx.folder("AT-1"), "after-tap-1280-dark.png"), 300, 100)).toEqual([0, 255, 0]);
+  expect(await pixel(page, join(fx.folder("AT-1"), "before-1280-dark.png"), 300, 100)).toEqual([
+    0, 0, 255,
+  ]);
+  expect(await pixel(page, join(fx.folder("AT-1"), "after-tap-1280-dark.png"), 300, 100)).toEqual([
+    0, 255, 0,
+  ]);
 
   // A step list with no shot step gets one shot after the last step, with the plain name.
-  expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-dark.png", "steps.json", "url-1280-dark.txt"]);
+  expect(readdirSync(fx.folder("AT-2")).sort()).toEqual([
+    "1280-dark.png",
+    "steps.json",
+    "url-1280-dark.txt",
+  ]);
   expect(urlOf(fx.folder("AT-2"), "url-1280-dark.txt")).toContain("name-Ja");
   expect(urlOf(fx.folder("AT-3"), "url-1280-dark.txt")).toContain("far");
   expect(urlOf(fx.folder("AT-3"), "url-1280-dark.txt")).not.toContain("bottom");
@@ -276,7 +338,9 @@ test("each verb runs: a click, a fill, a scroll to a selector and to the end, an
   expect(urlOf(fx.folder("AT-8"), "url-1280-dark.txt")).toMatch(/^\/verbs\//);
 });
 
-test("widths [768, 1280] writes no 375 file, and themes [light] writes no dark file", async ({ browser }) => {
+test("widths [768, 1280] writes no 375 file, and themes [light] writes no dark file", async ({
+  browser,
+}) => {
   const fx = fixture({
     "AT-1": { route: "/", widths: [768, 1280] },
     "AT-2": { route: "/", themes: ["light"] },
@@ -289,16 +353,27 @@ test("widths [768, 1280] writes no 375 file, and themes [light] writes no dark f
     "768-light.png",
     "steps.json",
   ]);
-  expect(readdirSync(fx.folder("AT-2")).sort()).toEqual(["1280-light.png", "375-light.png", "768-light.png", "steps.json"]);
+  expect(readdirSync(fx.folder("AT-2")).sort()).toEqual([
+    "1280-light.png",
+    "375-light.png",
+    "768-light.png",
+    "steps.json",
+  ]);
 });
 
 /* A serve that gives each client its own folder with its own band color, and counts each serve of each client. */
-function clientServe(fx: Fixture, colors: Record<string, string>): { serve: (client: string) => ReturnType<typeof serveDir>; served: string[] } {
+function clientServe(
+  fx: Fixture,
+  colors: Record<string, string>,
+): { serve: (client: string) => ReturnType<typeof serveDir>; served: string[] } {
   const served: string[] = [];
   for (const [client, color] of Object.entries(colors)) {
     const site = join(fx.root, client);
     mkdirSync(site);
-    writeFileSync(join(site, "index.html"), sitePage(`<div style="height:200px;background:${color}">${client}</div>`));
+    writeFileSync(
+      join(site, "index.html"),
+      sitePage(`<div style="height:200px;background:${color}">${client}</div>`),
+    );
   }
   return {
     served,
@@ -309,50 +384,111 @@ function clientServe(fx: Fixture, colors: Record<string, string>): { serve: (cli
   };
 }
 
-test("two tests with two clients serve each client one time and put the client first in each file name", async ({ browser, page }) => {
+test("two tests with two clients serve each client one time and put the client first in each file name", async ({
+  browser,
+  page,
+}) => {
   // Two tests in two clients take 24 shots, each with its scroll pass, so the run needs more than the default 30 s.
   test.setTimeout(120_000);
   const both = { route: "/", clients: ["cpc", "norcal"] };
   const fx = fixture({ "AT-1": both, "AT-2": both });
   const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
-  await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+  await runRound({
+    scratch: fx.scratch,
+    slug: "demo",
+    browser,
+    serve: site.serve,
+    log: (line) => fx.lines.push(line),
+  });
   expect(site.served).toEqual(["cpc", "norcal"]);
   for (const id of ["AT-1", "AT-2"]) {
     const shots = readdirSync(fx.folder(id)).filter((file) => file.endsWith(".png"));
     expect(shots.sort()).toEqual(
-      ["cpc", "norcal"].flatMap((client) => [375, 768, 1280].flatMap((width) => [`${client}-${width}-dark.png`, `${client}-${width}-light.png`])).sort(),
+      ["cpc", "norcal"]
+        .flatMap((client) =>
+          [375, 768, 1280].flatMap((width) => [
+            `${client}-${width}-dark.png`,
+            `${client}-${width}-light.png`,
+          ]),
+        )
+        .sort(),
     );
-    expect(await pixel(page, join(fx.folder(id), "cpc-1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
-    expect(await pixel(page, join(fx.folder(id), "norcal-1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
+    expect(await pixel(page, join(fx.folder(id), "cpc-1280-dark.png"), 300, 100)).toEqual([
+      0, 0, 255,
+    ]);
+    expect(await pixel(page, join(fx.folder(id), "norcal-1280-dark.png"), 300, 100)).toEqual([
+      255, 255, 0,
+    ]);
   }
 });
 
-test("a test with no clients key shoots cpc with no prefix, and a test of one client gets no prefix", async ({ browser, page }) => {
+test("a test with no clients key shoots cpc with no prefix, and a test of one client gets no prefix", async ({
+  browser,
+  page,
+}) => {
   const fx = fixture({ "AT-1": { route: "/" }, "AT-2": { route: "/", clients: ["norcal"] } });
   const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
-  const plain = [375, 768, 1280].flatMap((width) => [`${width}-dark.png`, `${width}-light.png`]).sort();
-  await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+  const plain = [375, 768, 1280]
+    .flatMap((width) => [`${width}-dark.png`, `${width}-light.png`])
+    .sort();
+  await runRound({
+    scratch: fx.scratch,
+    slug: "demo",
+    browser,
+    serve: site.serve,
+    log: (line) => fx.lines.push(line),
+  });
   expect(site.served).toEqual(["cpc", "norcal"]);
-  expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
-  expect(readdirSync(fx.folder("AT-2")).filter((file) => file.endsWith(".png")).sort()).toEqual(plain);
-  expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 300, 100)).toEqual([0, 0, 255]);
-  expect(await pixel(page, join(fx.folder("AT-2"), "1280-dark.png"), 300, 100)).toEqual([255, 255, 0]);
+  expect(
+    readdirSync(fx.folder("AT-1"))
+      .filter((file) => file.endsWith(".png"))
+      .sort(),
+  ).toEqual(plain);
+  expect(
+    readdirSync(fx.folder("AT-2"))
+      .filter((file) => file.endsWith(".png"))
+      .sort(),
+  ).toEqual(plain);
+  expect(await pixel(page, join(fx.folder("AT-1"), "1280-dark.png"), 300, 100)).toEqual([
+    0, 0, 255,
+  ]);
+  expect(await pixel(page, join(fx.folder("AT-2"), "1280-dark.png"), 300, 100)).toEqual([
+    255, 255, 0,
+  ]);
 });
 
-test("a bad clients value stops the run before the first shot, with the file named", async ({ browser }) => {
+test("a bad clients value stops the run before the first shot, with the file named", async ({
+  browser,
+}) => {
   for (const clients of ["cpc", [], ["cpc", "cpc"], [7]]) {
     const fx = fixture({ "AT-1": { route: "/" }, "AT-2": { route: "/", clients } });
-    await expect(run(browser, fx)).rejects.toThrow(/AT-2[/\\]steps\.json: "clients" must be a list of distinct client slugs/);
+    await expect(run(browser, fx)).rejects.toThrow(
+      /AT-2[/\\]steps\.json: "clients" must be a list of distinct client slugs/,
+    );
     expect(readdirSync(fx.folder("AT-1")).filter((file) => file.endsWith(".png"))).toEqual([]);
   }
 });
 
-test("a test with two clients puts the client first in a named shot and in the url file", async ({ browser }) => {
+test("a test with two clients puts the client first in a named shot and in the url file", async ({
+  browser,
+}) => {
   const fx = fixture({
-    "AT-1": { route: "/", steps: [{ shot: "top" }, { url: true }], widths: [1280], themes: ["dark"], clients: ["cpc", "norcal"] },
+    "AT-1": {
+      route: "/",
+      steps: [{ shot: "top" }, { url: true }],
+      widths: [1280],
+      themes: ["dark"],
+      clients: ["cpc", "norcal"],
+    },
   });
   const site = clientServe(fx, { cpc: "#0000ff", norcal: "#ffff00" });
-  await runRound({ scratch: fx.scratch, slug: "demo", browser, serve: site.serve, log: (line) => fx.lines.push(line) });
+  await runRound({
+    scratch: fx.scratch,
+    slug: "demo",
+    browser,
+    serve: site.serve,
+    log: (line) => fx.lines.push(line),
+  });
   expect(readdirSync(fx.folder("AT-1")).sort()).toEqual([
     "cpc-top-1280-dark.png",
     "cpc-url-1280-dark.txt",
@@ -363,17 +499,32 @@ test("a test with two clients puts the client first in a named shot and in the u
 });
 
 test("the evidence build calls the API of its run, even when the caller env names the production API", () => {
-  const env = buildEnv("norcal", "http://127.0.0.1:51234", { NEXT_PUBLIC_API_URL: "https://api.4thandgoal.app", HOME: "/home/reader" });
-  expect(env).toMatchObject({ CLIENT: "norcal", NEXT_PUBLIC_API_URL: "http://127.0.0.1:51234", HOME: "/home/reader" });
+  const env = buildEnv("norcal", "http://127.0.0.1:51234", {
+    NEXT_PUBLIC_API_URL: "https://api.4thandgoal.app",
+    HOME: "/home/reader",
+  });
+  expect(env).toMatchObject({
+    CLIENT: "norcal",
+    NEXT_PUBLIC_API_URL: "http://127.0.0.1:51234",
+    HOME: "/home/reader",
+  });
 });
 
-test("an expect that holds takes its shot, and an expect that fails stops the round and names the test and the step", async ({ browser }) => {
+test("an expect that holds takes its shot, and an expect that fails stops the round and names the test and the step", async ({
+  browser,
+}) => {
   const one = { widths: [1280], themes: ["dark"] };
-  const fx = fixture({ "AT-1": { route: "/verbs/", steps: [{ expect: "text=Far" }, { expect: "#name" }], ...one } });
+  const fx = fixture({
+    "AT-1": { route: "/verbs/", steps: [{ expect: "text=Far" }, { expect: "#name" }], ...one },
+  });
   await run(browser, fx);
   expect(readdirSync(fx.folder("AT-1")).sort()).toEqual(["1280-dark.png", "steps.json"]);
 
-  const bad = fixture({ "AT-2": { route: "/verbs/", steps: [{ expect: "#name" }, { expect: "text=Week 99" }], ...one } });
-  await expect(run(browser, bad)).rejects.toThrow(/AT-2 .*step 2 \{"expect":"text=Week 99"\}: the expect failed: "text=Week 99" is not visible/);
+  const bad = fixture({
+    "AT-2": { route: "/verbs/", steps: [{ expect: "#name" }, { expect: "text=Week 99" }], ...one },
+  });
+  await expect(run(browser, bad)).rejects.toThrow(
+    /AT-2 .*step 2 \{"expect":"text=Week 99"\}: the expect failed: "text=Week 99" is not visible/,
+  );
   expect(readdirSync(bad.folder("AT-2"))).toEqual(["steps.json"]);
 });

@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "../ui/button";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { DARK_CLASS, storeTheme } from "../lib/theme";
@@ -46,13 +47,17 @@ export function ThemeButton({ className }: { className: string }) {
   // The icon shows the theme a press gives: the moon in the light theme, the sun in the dark theme.
   const Icon = dark ? SunIcon : MoonIcon;
   return (
-    <button
+    <Button
+      variant="plain"
       type="button"
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={switchTheme}
-      className={cn("press flex size-touch flex-none items-center justify-center text-ink hover-fine:text-accent-ink", className)}
+      className={cn(
+        "press size-touch text-ink hover-fine:text-accent-ink flex flex-none items-center justify-center",
+        className,
+      )}
     >
       <Icon aria-hidden className="size-sp-5" />
-    </button>
+    </Button>
   );
 }

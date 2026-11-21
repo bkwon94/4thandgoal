@@ -25,7 +25,8 @@ const PROXY_CONTROL_SELECTOR = `${TARGET_SELECTOR}, [role=radio], [role=checkbox
    with aria-hidden, holds `[data-hero-art="texture"]`. The egg banner is a `section.hero-texture` itself. HERO_SELECTOR
    names both. A text of a hero is each element of the hero that holds a visible text node of its own, outside an
    SVG. An aria-hidden text counts, because a sighted reader still reads it. Its box is the box of each line of its text, not the box of the element. */
-export const HERO_SELECTOR = 'section:has(> [aria-hidden="true"] > [data-hero-art="texture"]), section.hero-texture';
+export const HERO_SELECTOR =
+  'section:has(> [aria-hidden="true"] > [data-hero-art="texture"]), section.hero-texture';
 /* Every hero text reaches 4.5 to 1, large or not (ADR 0036), so a glow that grows can never pass a title at 3 to 1. */
 export const HERO_MIN_RATIO = 4.5;
 /* The reasons of an axe incomplete result that the pixel scan of a hero can judge: art under the text, and a text so
@@ -54,11 +55,18 @@ const LIMITS = {
  * The one function that runs in the page. Playwright sends it to the browser as source, so it cannot call a helper
  * outside itself. It holds all the scans, and each one shares the same label of an element.
  */
-type InPage = { scan: "text" | "targets" | "scroll" | "words" | "heroes"; limits: typeof LIMITS; scope?: string };
+type InPage = {
+  scan: "text" | "targets" | "scroll" | "words" | "heroes";
+  limits: typeof LIMITS;
+  scope?: string;
+};
 
 function inPage({ scan, limits, scope }: InPage): unknown {
   const describe = (el: Element) => {
-    const cls = typeof el.className === "string" && el.className.trim() ? `.${el.className.trim().split(/\s+/)[0]}` : "";
+    const cls =
+      typeof el.className === "string" && el.className.trim()
+        ? `.${el.className.trim().split(/\s+/)[0]}`
+        : "";
     const text = (el.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 40);
     return `${el.tagName.toLowerCase()}${cls} "${text}"`;
   };
@@ -88,7 +96,9 @@ function inPage({ scan, limits, scope }: InPage): unknown {
       }
     }
     const culprit = widest ? `, widest is ${describe(widest)} at ${Math.round(right)}px` : "";
-    return [`the page scrolls sideways: ${root.scrollWidth}px wide in ${root.clientWidth}px${culprit}`];
+    return [
+      `the page scrolls sideways: ${root.scrollWidth}px wide in ${root.clientWidth}px${culprit}`,
+    ];
   }
 
   if (scan === "words") {
@@ -105,9 +115,12 @@ function inPage({ scan, limits, scope }: InPage): unknown {
         const range = document.createRange();
         range.setStart(node, match.index);
         range.setEnd(node, match.index + match[0].length);
-        const tops = [...range.getClientRects()].filter((box) => box.width > 0).map((box) => Math.round(box.top));
+        const tops = [...range.getClientRects()]
+          .filter((box) => box.width > 0)
+          .map((box) => Math.round(box.top));
         const lines = new Set(tops).size;
-        if (lines > 1) failures.push(`${describe(el)}: the word "${match[0]}" breaks over ${lines} lines`);
+        if (lines > 1)
+          failures.push(`${describe(el)}: the word "${match[0]}" breaks over ${lines} lines`);
       }
     }
     return failures;
@@ -119,7 +132,9 @@ function inPage({ scan, limits, scope }: InPage): unknown {
     // such as a box of 1px, gives no box. The scan drops a box under 2px on a side, because it is too small to read.
     const root = scope === undefined ? document.body : document.querySelector(scope);
     // A hero that the layout hides, such as the stage of the Index list under the desktop tier, is not on the page.
-    const heroes = [...document.querySelectorAll(limits.heroSelector)].filter((hero) => root !== null && root.contains(hero) && visible(hero));
+    const heroes = [...document.querySelectorAll(limits.heroSelector)].filter(
+      (hero) => root !== null && root.contains(hero) && visible(hero),
+    );
     const probe = document.createElement("canvas").getContext("2d")!;
     const rgba = (color: string) => {
       probe.clearRect(0, 0, 1, 1);
@@ -152,7 +167,8 @@ function inPage({ scan, limits, scope }: InPage): unknown {
         const clips: DOMRect[] = [];
         for (let up: Element | null = el; up && up !== hero.parentElement; up = up.parentElement) {
           const style = getComputedStyle(up);
-          if (style.overflowX !== "visible" || style.overflowY !== "visible") clips.push(up.getBoundingClientRect());
+          if (style.overflowX !== "visible" || style.overflowY !== "visible")
+            clips.push(up.getBoundingClientRect());
         }
         const range = document.createRange();
         range.selectNodeContents(node);
@@ -163,13 +179,21 @@ function inPage({ scan, limits, scope }: InPage): unknown {
             [right, bottom] = [Math.min(right, clip.right), Math.min(bottom, clip.bottom)];
           }
           if (right - left < 2 || bottom - top < 2) continue;
-          texts.set(el, [...(texts.get(el) ?? []), [left + scrollX, top + scrollY, right - left, bottom - top]]);
+          texts.set(el, [
+            ...(texts.get(el) ?? []),
+            [left + scrollX, top + scrollY, right - left, bottom - top],
+          ]);
         }
       }
       const list = [...texts].flatMap(([el, boxes]) => {
         // The opacity of the text and of each box above it fades the text into the pixels under it.
         let opacity = 1;
-        for (let up: Element | null = el; up && up !== document.documentElement; up = up.parentElement) opacity *= parseFloat(getComputedStyle(up).opacity);
+        for (
+          let up: Element | null = el;
+          up && up !== document.documentElement;
+          up = up.parentElement
+        )
+          opacity *= parseFloat(getComputedStyle(up).opacity);
         if (opacity === 0) return [];
         (el as HTMLElement).dataset.floorText = "";
         const [r, g, b, a] = rgba(getComputedStyle(el).color);
@@ -197,7 +221,12 @@ function inPage({ scan, limits, scope }: InPage): unknown {
         el.getAttribute("aria-hidden") === "true" &&
         el.getAttribute("tabindex") === "-1" &&
         getComputedStyle(el).pointerEvents === "none";
-      if (proxy && control !== null && control.matches(limits.proxyControlSelector) && visible(control)) {
+      if (
+        proxy &&
+        control !== null &&
+        control.matches(limits.proxyControlSelector) &&
+        visible(control)
+      ) {
         const box = control.getBoundingClientRect();
         if (box.width >= limits.targetMin && box.height >= limits.targetMin) {
           proxies.push(`${describe(el)} is the form proxy of ${describe(control)} at ${size(box)}`);
@@ -206,7 +235,9 @@ function inPage({ scan, limits, scope }: InPage): unknown {
       }
       const box = el.getBoundingClientRect();
       if (box.width < limits.targetMin || box.height < limits.targetMin) {
-        failures.push(`${describe(el)} is ${size(box)}, under the tap floor of ${limits.targetMin}px`);
+        failures.push(
+          `${describe(el)} is ${size(box)}, under the tap floor of ${limits.targetMin}px`,
+        );
       }
     }
     return { failures, exempt, proxies };
@@ -224,7 +255,9 @@ function inPage({ scan, limits, scope }: InPage): unknown {
     const size = parseFloat(getComputedStyle(el).fontSize);
     const min = prose ? limits.proseMin : limits.otherMin;
     if (size < min) {
-      failures.push(`${describe(el)} is ${size}px, under the ${prose ? "prose" : "other text"} floor of ${min}px`);
+      failures.push(
+        `${describe(el)} is ${size}px, under the ${prose ? "prose" : "other text"} floor of ${min}px`,
+      );
     }
   }
   const tiers = [...seen.values()];
@@ -233,22 +266,34 @@ function inPage({ scan, limits, scope }: InPage): unknown {
 
 /* Reads the computed font size of each visible text node, as prose or as other text. */
 export async function scanText(page: Page): Promise<TextScan> {
-  return (await page.evaluate<unknown, InPage>(inPage, { scan: "text", limits: LIMITS })) as TextScan;
+  return (await page.evaluate<unknown, InPage>(inPage, {
+    scan: "text",
+    limits: LIMITS,
+  })) as TextScan;
 }
 
 /* Reads the box of each visible link, button, and form control. It lists each skipped link inside prose and each skipped form proxy. */
 export async function scanTargets(page: Page): Promise<TargetScan> {
-  return (await page.evaluate<unknown, InPage>(inPage, { scan: "targets", limits: LIMITS })) as TargetScan;
+  return (await page.evaluate<unknown, InPage>(inPage, {
+    scan: "targets",
+    limits: LIMITS,
+  })) as TargetScan;
 }
 
 /* Fails when the page is wider than the viewport, and names the element that reaches furthest right. */
 export async function scanScroll(page: Page): Promise<string[]> {
-  return (await page.evaluate<unknown, InPage>(inPage, { scan: "scroll", limits: LIMITS })) as string[];
+  return (await page.evaluate<unknown, InPage>(inPage, {
+    scan: "scroll",
+    limits: LIMITS,
+  })) as string[];
 }
 
 /* Fails for each word that the layout splits over two lines or more. A wrap between words passes. */
 export async function scanWords(page: Page): Promise<string[]> {
-  return (await page.evaluate<unknown, InPage>(inPage, { scan: "words", limits: LIMITS })) as string[];
+  return (await page.evaluate<unknown, InPage>(inPage, {
+    scan: "words",
+    limits: LIMITS,
+  })) as string[];
 }
 
 type HeroText = { label: string; color: number[]; boxes: number[][] };
@@ -265,8 +310,12 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
   const builder = new AxeBuilder({ page }).withRules(["color-contrast"]);
   const result = await (scope === undefined ? builder : builder.include(scope)).analyze();
   const reason = (node: (typeof result.incomplete)[number]["nodes"][number]) =>
-    [...node.any, ...node.all, ...node.none].map((check) => (check.data as { messageKey?: string } | null)?.messageKey).find(Boolean);
-  const candidates = result.incomplete.flatMap((rule) => rule.nodes).filter((node) => PIXEL_REASONS.includes(reason(node) ?? ""));
+    [...node.any, ...node.all, ...node.none]
+      .map((check) => (check.data as { messageKey?: string } | null)?.messageKey)
+      .find(Boolean);
+  const candidates = result.incomplete
+    .flatMap((rule) => rule.nodes)
+    .filter((node) => PIXEL_REASONS.includes(reason(node) ?? ""));
   // A target of one selector names a node of the page itself. A longer target crosses a frame or a shadow root, and no hero sits there.
   // A node in an SVG keeps its line, because the pixel scan does not read that text. An aria-hidden text is read.
   const inHero = await page.evaluate(
@@ -278,11 +327,15 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
     [candidates.map((node) => node.target.map(String)), HERO_SELECTOR] as const,
   );
   const handed = new Set(candidates.filter((_, i) => inHero[i]));
-  const banded = result.incomplete.flatMap((rule) => rule.nodes).filter((node) => reason(node) === BAND_REASON && node.target.length === 1);
+  const banded = result.incomplete
+    .flatMap((rule) => rule.nodes)
+    .filter((node) => reason(node) === BAND_REASON && node.target.length === 1);
   const onBand = await page.evaluate(
     ([targets]) => {
       // A color is opaque when it paints a pixel with full alpha. A canvas reads each CSS color form, such as oklch.
-      const canvas = document.createElement("canvas").getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+      const canvas = document
+        .createElement("canvas")
+        .getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
       const opaque = (color: string) => {
         canvas.clearRect(0, 0, 1, 1);
         canvas.fillStyle = color;
@@ -297,7 +350,8 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
         for (let el: Element | null = node; el !== null; el = el.parentElement) {
           const style = getComputedStyle(el);
           if (style.opacity !== "1") return false;
-          if (band === null && (style.position === "sticky" || style.position === "fixed")) band = el;
+          if (band === null && (style.position === "sticky" || style.position === "fixed"))
+            band = el;
         }
         if (band === null) return false;
         const style = getComputedStyle(band);
@@ -312,9 +366,17 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
     items.flatMap((rule) =>
       rule.nodes
         .filter((node) => !skip.has(node))
-        .map((node) => `${kind}: ${node.target.join(" ")} ${node.failureSummary ?? rule.help}`.replace(/\s+/g, " ")),
+        .map((node) =>
+          `${kind}: ${node.target.join(" ")} ${node.failureSummary ?? rule.help}`.replace(
+            /\s+/g,
+            " ",
+          ),
+        ),
     );
-  const found = [...lines("violation", result.violations, handed), ...lines("incomplete", result.incomplete, handed)];
+  const found = [
+    ...lines("violation", result.violations, handed),
+    ...lines("incomplete", result.incomplete, handed),
+  ];
   if (atTop.length === 0) return found;
   // axe judges each text of an opaque band again at the top of the page, then the page goes back to its scroll.
   const scroll = await page.evaluate(() => {
@@ -322,9 +384,18 @@ async function axeContrast(page: Page, scope?: string): Promise<string[]> {
     window.scrollTo({ left: 0, top: 0, behavior: "instant" });
     return at;
   });
-  const again = await atTop.reduce((top, node) => top.include(String(node.target[0])), new AxeBuilder({ page }).withRules(["color-contrast"])).analyze();
+  const again = await atTop
+    .reduce(
+      (top, node) => top.include(String(node.target[0])),
+      new AxeBuilder({ page }).withRules(["color-contrast"]),
+    )
+    .analyze();
   await page.evaluate((at) => window.scrollTo({ ...at, behavior: "instant" }), scroll);
-  return [...found, ...lines("violation", again.violations, new Set()), ...lines("incomplete", again.incomplete, new Set())];
+  return [
+    ...found,
+    ...lines("violation", again.violations, new Set()),
+    ...lines("incomplete", again.incomplete, new Set()),
+  ];
 }
 
 /*
@@ -350,7 +421,11 @@ export async function scanHeroPixels(page: Page, scope?: string): Promise<string
 
 /* The pixel scan of hero text at the scroll of the page as it is. */
 async function scanHeroPixelsHere(page: Page, scope?: string): Promise<string[]> {
-  const heroes = (await page.evaluate<unknown, InPage>(inPage, { scan: "heroes", limits: LIMITS, scope })) as HeroScan[];
+  const heroes = (await page.evaluate<unknown, InPage>(inPage, {
+    scan: "heroes",
+    limits: LIMITS,
+    scope,
+  })) as HeroScan[];
   if (heroes.length === 0) return [];
   const hide = await page.addStyleTag({
     // A marked pseudo-element draws a copy of a text, such as the shimmer of a stage line, so it hides with the text.
@@ -360,7 +435,9 @@ async function scanHeroPixelsHere(page: Page, scope?: string): Promise<string[]>
   });
   try {
     // Two frames, so the browser paints the hidden text before the screenshot.
-    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+    await page.evaluate(
+      () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
+    );
     // One shot of the full page. A shot of one element leaves the part of a tall hero under the viewport blank.
     const shot = await page.screenshot({ fullPage: true, caret: "hide" });
     const rated = await page.evaluate(rateHeroText, { png: shot.toString("base64"), heroes });
@@ -372,17 +449,23 @@ async function scanHeroPixelsHere(page: Page, scope?: string): Promise<string[]>
         continue;
       }
       // One line per hero, so the log of the floor shows that the scan ran on it and how close its worst text sits.
-      console.log(`pixel scan: hero "${hero.name}": ${read.length} texts, worst ${Math.min(...read).toFixed(2)}:1`);
+      console.log(
+        `pixel scan: hero "${hero.name}": ${read.length} texts, worst ${Math.min(...read).toFixed(2)}:1`,
+      );
       for (const [t, text] of rated[h].entries()) {
         if (text.ratio === null || text.ratio >= HERO_MIN_RATIO) continue;
-        failures.push(`pixel: hero "${hero.name}" ${hero.texts[t].label} is ${text.ratio.toFixed(2)}:1 on ${text.pixel}, under ${HERO_MIN_RATIO}:1`);
+        failures.push(
+          `pixel: hero "${hero.name}" ${hero.texts[t].label} is ${text.ratio.toFixed(2)}:1 on ${text.pixel}, under ${HERO_MIN_RATIO}:1`,
+        );
       }
     }
     return failures;
   } finally {
     await hide.evaluate((el) => (el as Element).remove());
     await page.evaluate(() => {
-      for (const el of document.querySelectorAll<HTMLElement>("[data-floor-hero], [data-floor-text], [data-floor-before], [data-floor-after]")) {
+      for (const el of document.querySelectorAll<HTMLElement>(
+        "[data-floor-hero], [data-floor-text], [data-floor-before], [data-floor-after]",
+      )) {
         delete el.dataset.floorHero;
         delete el.dataset.floorText;
         delete el.dataset.floorBefore;
@@ -407,8 +490,10 @@ async function rateHeroText({ png, heroes }: { png: string; heroes: HeroScan[] }
     const s = c / 255;
     return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
   };
-  const luminance = (r: number, g: number, b: number) => 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-  const hex = (r: number, g: number, b: number) => "#" + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
+  const luminance = (r: number, g: number, b: number) =>
+    0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  const hex = (r: number, g: number, b: number) =>
+    "#" + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
   const rate = ({ color: [tr, tg, tb, alpha], boxes }: HeroText) => {
     let ratio: number | null = null;
     let pixel = "";
@@ -421,7 +506,11 @@ async function rateHeroText({ png, heroes }: { png: string; heroes: HeroScan[] }
       const data = ctx.getImageData(left, top, right - left, bottom - top).data;
       for (let k = 0; k < data.length; k += 4) {
         const [br, bg, bb] = [data[k], data[k + 1], data[k + 2]];
-        const text = luminance(tr * alpha + br * (1 - alpha), tg * alpha + bg * (1 - alpha), tb * alpha + bb * (1 - alpha));
+        const text = luminance(
+          tr * alpha + br * (1 - alpha),
+          tg * alpha + bg * (1 - alpha),
+          tb * alpha + bb * (1 - alpha),
+        );
         const ground = luminance(br, bg, bb);
         const r = (Math.max(text, ground) + 0.05) / (Math.min(text, ground) + 0.05);
         if (ratio === null || r < ratio) {
@@ -456,7 +545,14 @@ export async function scanContrastInSteps(page: Page, scope?: string): Promise<s
   const metrics = await page.evaluate(
     ([selector]) => {
       const list = document.querySelector(selector);
-      return list ? { overflow: list.scrollHeight > list.clientHeight, height: list.clientHeight, max: list.scrollHeight - list.clientHeight, rows: list.children.length } : null;
+      return list
+        ? {
+            overflow: list.scrollHeight > list.clientHeight,
+            height: list.clientHeight,
+            max: list.scrollHeight - list.clientHeight,
+            rows: list.children.length,
+          }
+        : null;
     },
     [listSelector],
   );
@@ -487,14 +583,21 @@ export async function scanContrastInSteps(page: Page, scope?: string): Promise<s
       if (row === null || row[1] === "violation") failures.add(line);
       if (row === null) continue;
       reported.add(Number(row[2]));
-      if (row[1] === "incomplete") incomplete.set(Number(row[2]), [...(incomplete.get(Number(row[2])) ?? []), line]);
+      if (row[1] === "incomplete")
+        incomplete.set(Number(row[2]), [...(incomplete.get(Number(row[2])) ?? []), line]);
     }
     for (const row of inView) if (!reported.has(row)) cleared.add(row);
     if (top >= metrics.max) break;
   }
-  await page.evaluate(([selector]) => ((document.querySelector(selector) as HTMLElement).scrollTop = 0), [listSelector]);
-  for (const [row, lines] of incomplete) if (!cleared.has(row)) for (const line of lines) failures.add(line);
-  for (let row = 1; row <= metrics.rows; row++) if (!cleared.has(row)) failures.add(`row ${row} of the scrolled list was never judged in full view`);
+  await page.evaluate(
+    ([selector]) => ((document.querySelector(selector) as HTMLElement).scrollTop = 0),
+    [listSelector],
+  );
+  for (const [row, lines] of incomplete)
+    if (!cleared.has(row)) for (const line of lines) failures.add(line);
+  for (let row = 1; row <= metrics.rows; row++)
+    if (!cleared.has(row))
+      failures.add(`row ${row} of the scrolled list was never judged in full view`);
   for (const line of await scanHeroPixels(page, scope)) failures.add(line);
   return [...failures];
 }
@@ -514,9 +617,17 @@ export async function scanAxe(page: Page, scope?: string): Promise<AxeScan> {
   const result = await (scope === undefined ? builder : builder.include(scope)).analyze();
   const lines = (kind: string, items: typeof result.violations) =>
     items.flatMap((rule) =>
-      rule.nodes.map((node) => `${kind}: ${node.target.join(" ")} ${rule.id}: ${node.failureSummary ?? rule.help}`.replace(/\s+/g, " ")),
+      rule.nodes.map((node) =>
+        `${kind}: ${node.target.join(" ")} ${rule.id}: ${node.failureSummary ?? rule.help}`.replace(
+          /\s+/g,
+          " ",
+        ),
+      ),
     );
-  return { violations: lines("violation", result.violations), incomplete: lines("incomplete", result.incomplete) };
+  return {
+    violations: lines("violation", result.violations),
+    incomplete: lines("incomplete", result.incomplete),
+  };
 }
 
 /* The longest wait of openPage for the animations of a page, in ms. */
@@ -534,7 +645,10 @@ const ANIMATION_WAIT_CAP_MS = 5_000;
  * never settles cannot hang a run. On the cap, the scan goes on with the page as it is.
  */
 export async function openPage(page: Page, url: string, theme: Theme): Promise<void> {
-  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [THEME_KEY, theme] as const);
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [
+    THEME_KEY,
+    theme,
+  ] as const);
   await page.goto(url);
   const html = page.locator("html");
   const dark = new RegExp(`(^|\\s)${DARK_CLASS}(\\s|$)`);

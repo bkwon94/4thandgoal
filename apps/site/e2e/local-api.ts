@@ -26,7 +26,14 @@ export type ApiOptions = {
 // pnpm runs each script of the site in apps/site, so the API app sits one folder up.
 const API_APP = join(process.cwd(), "..", "api");
 
-const makeTarget = (port: number, origin: string) => ["make", "-C", API_APP, "api-evidence", `API_PORT=${port}`, `API_ORIGIN=${origin}`];
+const makeTarget = (port: number, origin: string) => [
+  "make",
+  "-C",
+  API_APP,
+  "api-evidence",
+  `API_PORT=${port}`,
+  `API_ORIGIN=${origin}`,
+];
 
 /* The time in ms that stop waits after SIGTERM before it sends SIGKILL to the group. */
 const STOP_MS = 5000;
@@ -48,7 +55,10 @@ export async function holdPort(): Promise<LocalApi> {
   const server: Server = createServer((socket) => socket.destroy());
   await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
   const { port } = server.address() as { port: number };
-  return { url: `http://127.0.0.1:${port}`, stop: () => new Promise<void>((done) => server.close(() => done())) };
+  return {
+    url: `http://127.0.0.1:${port}`,
+    stop: () => new Promise<void>((done) => server.close(() => done())),
+  };
 }
 
 const pause = (ms: number) => new Promise((done) => setTimeout(done, ms));
@@ -92,7 +102,11 @@ export async function startApi(options: ApiOptions): Promise<LocalApi> {
   const fd = openSync(log, "w");
   const [command, ...args] = (options.command ?? makeTarget)(port, options.origin);
   // detached gives the API its own process group, so one signal stops make, uv, and uvicorn together.
-  const child = spawn(command, args, { detached: true, stdio: ["ignore", fd, fd], env: process.env });
+  const child = spawn(command, args, {
+    detached: true,
+    stdio: ["ignore", fd, fd],
+    env: process.env,
+  });
   closeSync(fd);
   const pid = child.pid ?? 0;
   writeFileSync(pidFile, String(pid));
@@ -113,9 +127,11 @@ export async function startApi(options: ApiOptions): Promise<LocalApi> {
   const stop = async () => {
     process.off("exit", backstop);
     signalGroup(pid, "SIGTERM");
-    for (const start = Date.now(); groupAlive(pid) && Date.now() - start < STOP_MS; ) await pause(100);
+    for (const start = Date.now(); groupAlive(pid) && Date.now() - start < STOP_MS;)
+      await pause(100);
     signalGroup(pid, "SIGKILL");
-    for (const start = Date.now(); groupAlive(pid) && Date.now() - start < STOP_MS; ) await pause(100);
+    for (const start = Date.now(); groupAlive(pid) && Date.now() - start < STOP_MS;)
+      await pause(100);
     rmSync(pidFile, { force: true });
   };
 
@@ -124,12 +140,19 @@ export async function startApi(options: ApiOptions): Promise<LocalApi> {
   for (const start = Date.now(); Date.now() - start < timeout; await pause(250)) {
     if (exited !== null) {
       await stop();
-      throw new Error(`the API exited with code ${exited} before it was ready on ${url}. The last lines of ${log}:\n${tail(log)}`);
+      throw new Error(
+        `the API exited with code ${exited} before it was ready on ${url}. The last lines of ${log}:\n${tail(log)}`,
+      );
     }
     if (!readFileSync(log, "utf8").includes(ready)) continue;
-    const status = await fetch(`${url}/health`).then((response) => response.status, () => 0);
+    const status = await fetch(`${url}/health`).then(
+      (response) => response.status,
+      () => 0,
+    );
     if (status === 200) return { url, stop };
   }
   await stop();
-  throw new Error(`the API is not ready on ${url} after ${timeout} ms. The last lines of ${log}:\n${tail(log)}`);
+  throw new Error(
+    `the API is not ready on ${url} after ${timeout} ms. The last lines of ${log}:\n${tail(log)}`,
+  );
 }

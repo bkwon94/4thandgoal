@@ -3,11 +3,12 @@
  * The sides are trade B and trade T of the spec, real cpc trades of 2026, and each test reads the screen.
  */
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { TradeOnStage, type StageSide } from "./trade-on-stage";
 
 const headshot = (id: string) => `https://sleepercdn.com/content/nfl/players/${id}.jpg`;
-const players = (list: [string, string][]) => list.map(([id, name]) => ({ id, name, headshot: headshot(id) }));
+const players = (list: [string, string][]) =>
+  list.map(([id, name]) => ({ id, name, headshot: headshot(id) }));
 
 /* Trade B: The Blue Tent gets 5 from Lil Fridge, All You Need Is Love gets 2, and Lil Fridge gets 3. */
 const TRADE_B: StageSide[] = [
@@ -46,13 +47,23 @@ const TRADE_B: StageSide[] = [
 
 /* Trade T: Bo Girds gets Tee Higgins and Bhayshul Tuten, and Teehee gets Kenneth Walker III. */
 const TRADE_T: StageSide[] = [
-  { id: 0, team: "Bo Girds", avatar: null, players: players([["6801", "Tee Higgins"], ["12490", "Bhayshul Tuten"]]) },
+  {
+    id: 0,
+    team: "Bo Girds",
+    avatar: null,
+    players: players([
+      ["6801", "Tee Higgins"],
+      ["12490", "Bhayshul Tuten"],
+    ]),
+  },
   { id: 1, team: "Teehee", avatar: null, players: players([["8151", "Kenneth Walker III"]]) },
 ];
 
 /* The row of a team on the stage, and the headshot images in it. The team avatar is not a headshot. */
-const rowOf = (container: HTMLElement, team: string) => within(container).getByText(team).closest("li") as HTMLElement;
-const headshotsIn = (el: HTMLElement) => [...el.querySelectorAll("img")].filter((img) => img.src.includes("/players/"));
+const rowOf = (container: HTMLElement, team: string) =>
+  within(container).getByText(team).closest("li") as HTMLElement;
+const headshotsIn = (el: HTMLElement) =>
+  [...el.querySelectorAll("img")].filter((img) => img.src.includes("/players/"));
 
 afterEach(cleanup);
 
@@ -61,7 +72,11 @@ describe("TradeOnStage", () => {
     const { container } = render(<TradeOnStage sides={TRADE_B} show="tokens" />);
     const rows = [...container.querySelectorAll("li")];
     expect(rows).toHaveLength(3);
-    expect(rows.map((row) => row.querySelector("[data-stage-team]")?.textContent)).toEqual(["The Blue Tent", "All You Need Is Love", "Lil Fridge"]);
+    expect(rows.map((row) => row.querySelector("[data-stage-team]")?.textContent)).toEqual([
+      "The Blue Tent",
+      "All You Need Is Love",
+      "Lil Fridge",
+    ]);
     for (const row of rows) expect(within(row).getByText("gets")).toBeTruthy();
     // Each row is the place of its side, so the mesh dips under the right row.
     expect(container.querySelectorAll("[data-mesh-anchor]")).toHaveLength(3);
@@ -70,7 +85,11 @@ describe("TradeOnStage", () => {
   it("shows 3 headshots and +2 for a side of 5 players (AT-27)", () => {
     const { container } = render(<TradeOnStage sides={TRADE_B} show="tokens" />);
     const tent = rowOf(container, "The Blue Tent");
-    expect(headshotsIn(tent).map((img) => img.src)).toEqual([headshot("11560"), headshot("1466"), headshot("2449")]);
+    expect(headshotsIn(tent).map((img) => img.src)).toEqual([
+      headshot("11560"),
+      headshot("1466"),
+      headshot("2449"),
+    ]);
     expect(within(tent).getByText("+2")).toBeTruthy();
     // A side of 3 or fewer shows each headshot and no count.
     expect(headshotsIn(rowOf(container, "Lil Fridge"))).toHaveLength(3);
@@ -105,7 +124,10 @@ describe("TradeOnStage", () => {
   });
 
   it("shows the initials of a player with no headshot at all", () => {
-    const sides = [TRADE_T[0], { ...TRADE_T[1], players: [{ id: "8151", name: "Kenneth Walker III", headshot: "" }] }];
+    const sides = [
+      TRADE_T[0],
+      { ...TRADE_T[1], players: [{ id: "8151", name: "Kenneth Walker III", headshot: "" }] },
+    ];
     const { container } = render(<TradeOnStage sides={sides} show="tokens" />);
     expect(within(rowOf(container, "Teehee")).getByText("KW")).toBeTruthy();
   });

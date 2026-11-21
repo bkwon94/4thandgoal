@@ -2,8 +2,7 @@
  * Tests of the steps that the full check runs for each client folder.
  * A client with the finder on gets a second build against the local API, then the grade-bar project.
  */
-// @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { stepsOfClient } from "./client-steps.mjs";
 
 describe("the steps of a client", () => {

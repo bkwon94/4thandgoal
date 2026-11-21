@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { type CSSProperties, useState } from "react";
 import { ArrowUpIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -14,7 +15,13 @@ import { haloOf } from "./motion";
 import { Spinner } from "./steps";
 
 /* `pending` is true while a question routes. The field still takes keys, and Send waits until the route answers. */
-export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) => void; pending?: boolean }) {
+export function AskBox({
+  onAsk,
+  pending = false,
+}: {
+  onAsk?: (question: string) => void;
+  pending?: boolean;
+}) {
   const off = useMotionOff();
   const [value, setValue] = useState("");
   const question = value.trim();
@@ -23,7 +30,7 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
   return (
     <form
       aria-label="Ask"
-      className="door-glass door-lift flex min-h-ask w-full items-center gap-sp-2 rounded-pill border border-door-hair py-sp-1 pr-sp-1 pl-sp-5 transition-[border-color] duration-150 focus-within:border-door-focus"
+      className="door-glass door-lift min-h-ask gap-sp-2 rounded-pill border-door-hair py-sp-1 pr-sp-1 pl-sp-5 focus-within:border-door-focus flex w-full items-center border transition-[border-color] duration-150"
       onSubmit={(event) => {
         event.preventDefault();
         if (!question || !onAsk || pending) return;
@@ -44,9 +51,10 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
         aria-label="Ask a question"
         enterKeyHint="send"
         autoComplete="off"
-        className="min-w-0 flex-1 bg-transparent text-lead leading-tight text-ink outline-none placeholder:text-mute focus-visible:outline-none"
+        className="text-lead text-ink placeholder:text-mute min-w-0 flex-1 bg-transparent leading-tight outline-none focus-visible:outline-none"
       />
-      <button
+      <Button
+        variant="plain"
         type="submit"
         aria-label="Send"
         aria-busy={pending || undefined}
@@ -55,15 +63,19 @@ export function AskBox({ onAsk, pending = false }: { onAsk?: (question: string) 
         // the Thread would drop under the thumb, and the click would land on the page, so the first tap would send nothing.
         onMouseDown={keepFocus}
         style={{ "--halo": haloOf(value) } as CSSProperties}
-        className="send-halo flex size-send flex-none items-center justify-center rounded-full bg-accent text-on-dark disabled:bg-raised disabled:text-mute"
+        className="send-halo size-send bg-accent text-on-dark disabled:bg-raised disabled:text-mute flex flex-none items-center justify-center rounded-full"
       >
         {pending ? (
           // Under reduced motion the busy button holds a static dot, as the live step does.
-          off ? <span aria-hidden className="size-1.5 rounded-full bg-current" /> : <Spinner className="font-mono text-lead leading-none" />
+          off ? (
+            <span aria-hidden className="size-1.5 rounded-full bg-current" />
+          ) : (
+            <Spinner className="text-lead font-mono leading-none" />
+          )
         ) : (
           <ArrowUpIcon aria-hidden className="size-sp-5" strokeWidth={2.25} />
         )}
-      </button>
+      </Button>
     </form>
   );
 }

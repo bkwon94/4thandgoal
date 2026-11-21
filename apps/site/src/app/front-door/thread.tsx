@@ -33,7 +33,11 @@ export function Thread({
   // The front door renders each item that is not a league Topic as its card: a trade, a free or personal Answer, a
   // miss, a cap line, a note, or a question in flight.
   // `morph` is the id that the newest item shares with its tapped Suggestion, so the chip morphs into its question.
-  renderOther: (entry: Exclude<Entry, { kind: "topic" }>, ref: RefObject<HTMLElement | null> | undefined, morph: string | undefined) => ReactNode;
+  renderOther: (
+    entry: Exclude<Entry, { kind: "topic" }>,
+    ref: RefObject<HTMLElement | null> | undefined,
+    morph: string | undefined,
+  ) => ReactNode;
 }) {
   // A kept Thread loads whole, so each Answer above the newest one settled on an earlier visit. Those show at rest: a
   // reread plays no rise and no blur again, and only the fades stay. The set holds for the life of the Thread, so a
@@ -49,7 +53,9 @@ export function Thread({
         if (entry.kind !== "topic") {
           body = renderOther(entry, last ? newest : undefined, last ? morphOf(entry) : undefined);
         } else {
-          const answer = (answers[entry.team] ?? []).find((candidate) => candidate.topic === entry.key);
+          const answer = (answers[entry.team] ?? []).find(
+            (candidate) => candidate.topic === entry.key,
+          );
           if (!answer) return null;
           // A typed question shows as its own bubble. A tapped Topic shows its name.
           const name = entry.question ?? topicName(entry.key);
@@ -71,11 +77,16 @@ export function Thread({
         // The first turn sits under the header already, so it holds no extra height and the page never scrolls for it.
         // The min-height counts the pt-sp-6 step above the question too, so the fill adds that step back. Else a short
         // Answer leaves the page one step short, and the browser stops the scroll with the question a step low.
-        const turn = last && index > 0 ? " min-h-[calc(var(--spacing-door-fill)-var(--spacing-door-head)-var(--spacing-sp-2)+var(--spacing-sp-6)-var(--door-dock,0px))] desktop:min-h-[calc(var(--spacing-door-fill-desktop)-var(--spacing-door-head)-var(--spacing-sp-2)+var(--spacing-sp-6)-var(--door-dock,0px))]" : "";
+        const turn =
+          last && index > 0
+            ? " min-h-[calc(var(--spacing-door-fill)-var(--spacing-door-head)-var(--spacing-sp-2)+var(--spacing-sp-6)-var(--door-dock,0px))] desktop:min-h-[calc(var(--spacing-door-fill-desktop)-var(--spacing-door-head)-var(--spacing-sp-2)+var(--spacing-sp-6)-var(--door-dock,0px))]"
+            : "";
         return (
           // Each Answer sits a step below the one above it, so each question and its Answer read as one turn.
           <div key={entry.id} className={`${index > 0 ? "pt-sp-6" : ""}${turn}`}>
-            <MotionConfig reducedMotion={kept.has(entry.id) ? "always" : "never"}>{body}</MotionConfig>
+            <MotionConfig reducedMotion={kept.has(entry.id) ? "always" : "never"}>
+              {body}
+            </MotionConfig>
           </div>
         );
       })}
@@ -87,14 +98,21 @@ export function Thread({
    league or personal Topic has no typed question. A tapped trade Topic asks with the name of its Topic, as
    tradeRequestOf reads it. A typed question has no chip, so it gets no id. */
 function morphOf(entry: Entry): string | undefined {
-  if (entry.kind === "topic" || entry.kind === "personal") return entry.question === null ? morphId(entry.key) : undefined;
-  if (entry.kind === "trade") return entry.question === topicName(TRADE_TOPIC_OF[entry.mode]) ? morphId(TRADE_TOPIC_OF[entry.mode]) : undefined;
+  if (entry.kind === "topic" || entry.kind === "personal")
+    return entry.question === null ? morphId(entry.key) : undefined;
+  if (entry.kind === "trade")
+    return entry.question === topicName(TRADE_TOPIC_OF[entry.mode])
+      ? morphId(TRADE_TOPIC_OF[entry.mode])
+      : undefined;
   return undefined;
 }
 
 /* The name of a personal Topic in the Thread: the typed question, else the Topic name, with the team after it when it
    is not Your team. */
-export function personalName(entry: { key: string; question: string | null }, other: string | undefined): string {
+export function personalName(
+  entry: { key: string; question: string | null },
+  other: string | undefined,
+): string {
   const topic = topicName(entry.key);
   return entry.question ?? (other ? `${topic}: ${other}` : topic);
 }

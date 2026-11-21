@@ -5,17 +5,20 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 
-/* The test sets the reduced-motion switch for each case. */
-const motion = vi.hoisted(() => ({ off: false }));
-vi.mock("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
+/* The test sets the reduced-motion switch for each case, and each test sets it back to off at its end. */
+const motion = { off: false };
+mock.module("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
 
 const { FeedView, feedBlockSchema } = await import("./feed-block");
 
 /* The feed of the `data-block` part of the recorded week 6 stream. */
 function recordedFeed() {
-  const stream = readFileSync(join(__dirname, "..", "..", "fixtures", "free-answer", "moves-feed-week-6.sse"), "utf8");
+  const stream = readFileSync(
+    join(__dirname, "..", "..", "fixtures", "free-answer", "moves-feed-week-6.sse"),
+    "utf8",
+  );
   const part = stream
     .split("\n")
     .filter((line) => line.startsWith("data: {"))
@@ -24,7 +27,7 @@ function recordedFeed() {
   return feedBlockSchema.parse(part.data);
 }
 
-beforeEach(() => {
+afterEach(() => {
   motion.off = false;
 });
 
@@ -32,7 +35,9 @@ afterEach(cleanup);
 
 /* The style of each box of the feed that moves, blurs, or scales as it enters. */
 function moved(root: HTMLElement) {
-  return [root, ...root.querySelectorAll<HTMLElement>("*")].filter((box) => /blur\((?!0)|translate|scale/.test(`${box.style.filter} ${box.style.transform}`));
+  return [root, ...root.querySelectorAll<HTMLElement>("*")].filter((box) =>
+    /blur\((?!0)|translate|scale/.test(`${box.style.filter} ${box.style.transform}`),
+  );
 }
 
 describe("the transaction feed", () => {
@@ -61,19 +66,27 @@ describe("the transaction feed", () => {
       expect(name.className).toContain("text-accent-ink");
       expect(name.textContent).toContain("You");
     }
-    const others = [...container.querySelectorAll<HTMLElement>(".font-semibold")].filter((name) => !name.closest("[data-you]") && name.textContent?.startsWith("Lil Fridge"));
+    const others = [...container.querySelectorAll<HTMLElement>(".font-semibold")].filter(
+      (name) => !name.closest("[data-you]") && name.textContent?.startsWith("Lil Fridge"),
+    );
     expect(others.length).toBeGreaterThan(0);
     for (const name of others) expect(name.className).not.toContain("text-accent");
   });
 
   it("marks Your side of a trade row in red and leaves the other side gray", () => {
-    const { container } = render(<FeedView block={recordedFeed()} live={false} you="Return of T Mac" />);
-    const trade = [...container.querySelectorAll<HTMLElement>("li")].find((row) => row.textContent?.includes("To Infinity and Bijan got"))!;
+    const { container } = render(
+      <FeedView block={recordedFeed()} live={false} you="Return of T Mac" />,
+    );
+    const trade = [...container.querySelectorAll<HTMLElement>("li")].find((row) =>
+      row.textContent?.includes("To Infinity and Bijan got"),
+    )!;
     const yours = [...trade.querySelectorAll<HTMLElement>("[data-you]")];
     expect(yours).toHaveLength(1);
     expect(yours[0].textContent).toMatch(/^Return of T Mac/);
     expect(yours[0].className).toContain("text-accent-ink");
-    const other = [...trade.querySelectorAll<HTMLElement>(".font-semibold")].find((name) => name.textContent?.startsWith("To Infinity and Bijan"))!;
+    const other = [...trade.querySelectorAll<HTMLElement>(".font-semibold")].find((name) =>
+      name.textContent?.startsWith("To Infinity and Bijan"),
+    )!;
     expect(other.className).not.toContain("text-accent");
   });
 

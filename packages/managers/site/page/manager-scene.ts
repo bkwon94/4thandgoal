@@ -2,7 +2,12 @@
  * The data of the manager scene of the hero: one light per played week at its points, bright for a win and dim for a
  * loss, against the dashed median of each week, with the latest week as the label at rest (decision 07).
  */
-import { sceneScore, type HeroScene, type SceneGuide, type SceneLight } from "@cpc/design/parts/scene-math";
+import {
+  sceneScore,
+  type HeroScene,
+  type SceneGuide,
+  type SceneLight,
+} from "@cpc/design/parts/scene-math";
 import type { ManagerEntry } from "../schema/manager-types";
 import { mediansOf } from "./medians";
 
@@ -25,7 +30,12 @@ export function managerScene(manager: Pick<ManagerEntry, "weeks">): HeroScene {
   // A league with no median game publishes no median, so its scene has no guide.
   const medians = weeks.length > 0 ? mediansOf(weeks) : null;
   const guides: SceneGuide[] = medians
-    ? [{ label: "WEEK MEDIAN", points: weeks.map((week, index) => ({ x: week.week, y: medians[index] })) }]
+    ? [
+        {
+          label: "WEEK MEDIAN",
+          points: weeks.map((week, index) => ({ x: week.week, y: medians[index] })),
+        },
+      ]
     : [];
 
   return {

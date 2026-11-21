@@ -3,7 +3,7 @@
  * They read the class on the root element and the stored choice, not the class names of the button.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { TopBand } from "./top-band";
 
 const TO_DARK = "Switch to dark theme";
@@ -29,21 +29,23 @@ function renderWeekBand() {
   );
 }
 
-/* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
+/* Framer Motion reads matchMedia. The stub matches no query, so each test sees a phone with motion on. The preload
+   restores each spy after each test, so each test sets the stub again. */
+const noMatch = (query: string) =>
+  ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as unknown as MediaQueryList;
+
+beforeEach(() => {
+  spyOn(window, "matchMedia").mockImplementation(noMatch);
+});
 
 function bandButton(name: string) {
   return within(screen.getByRole("banner")).getByRole("button", { name });
@@ -60,13 +62,8 @@ function shipDark() {
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
   document.documentElement.classList.remove("dark");
   localStorage.clear();
-});
-
-afterAll(() => {
-  vi.unstubAllGlobals();
 });
 
 describe("Theme button", () => {
@@ -102,7 +99,7 @@ describe("Theme button", () => {
   });
 
   it("counts each press as an event named for the theme it gives", () => {
-    const count = vi.fn();
+    const count = mock();
     window.goatcounter = { count };
     shipDark();
     renderWeekBand();
@@ -117,7 +114,9 @@ describe("Theme button", () => {
     shipDark();
     renderWeekBand();
     expect(screen.getAllByRole("button", { name: TO_LIGHT })).toHaveLength(1);
-    expect(within(screen.getByRole("navigation", { name: "Site menu" })).queryByRole("button")).toBeNull();
+    expect(
+      within(screen.getByRole("navigation", { name: "Site menu" })).queryByRole("button"),
+    ).toBeNull();
   });
 
   it("names the dark theme on mount when the boot script removed the dark class for a stored light choice", () => {
@@ -127,10 +126,10 @@ describe("Theme button", () => {
   });
 
   it("still switches the theme with blocked storage", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("blocked");
     });
     shipDark();

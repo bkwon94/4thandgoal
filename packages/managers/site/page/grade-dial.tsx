@@ -41,13 +41,29 @@ function arcName(part: GradePart, teams: number): string {
    roles, and an unlit blade takes the rule color of the hero.
    The wait color is the unlit color, spelled in full so Tailwind finds the class. */
 const TONES = {
-  page: { off: "bg-bar-off", wait: "group-data-[wait]:bg-bar-off", ink: "text-ink", mute: "text-mute" },
-  hero: { off: "bg-rule-dark", wait: "group-data-[wait]:bg-rule-dark", ink: "text-on-dark", mute: "text-on-dark-2" },
+  page: {
+    off: "bg-bar-off",
+    wait: "group-data-[wait]:bg-bar-off",
+    ink: "text-ink",
+    mute: "text-mute",
+  },
+  hero: {
+    off: "bg-rule-dark",
+    wait: "group-data-[wait]:bg-rule-dark",
+    ink: "text-on-dark",
+    mute: "text-on-dark-2",
+  },
 } as const;
 
 type Tone = keyof typeof TONES;
 
-type ArcProps = { part: GradePart; teams: number; size: "small" | "large"; off: boolean; tone: Tone };
+type ArcProps = {
+  part: GradePart;
+  teams: number;
+  size: "small" | "large";
+  off: boolean;
+  tone: Tone;
+};
 
 /* One arc: the blades, the rank in the arc, and the part name and weight under it. */
 function Arc({ part, teams, size, off, tone }: ArcProps) {
@@ -56,10 +72,17 @@ function Arc({ part, teams, size, off, tone }: ArcProps) {
   const step = teams > 1 ? SWEEP / (teams - 1) : 0;
   const large = size === "large";
   return (
-    <div role="img" aria-label={arcName(part, teams)} className="flex flex-col items-center text-center">
+    <div
+      role="img"
+      aria-label={arcName(part, teams)}
+      className="flex flex-col items-center text-center"
+    >
       {/* The blades are HTML boxes, not SVG, because axe reads no contrast for text over an SVG node, and the rank sits
           inside the box of the arc. The box has the ratio of the drawing, so each blade keeps its place in viewBox units. */}
-      <div className={cn("relative w-full", large ? "max-w-[10rem]" : "max-w-[6rem]")} style={{ aspectRatio: `${SIZE} / ${HEIGHT}` }}>
+      <div
+        className={cn("relative w-full", large ? "max-w-[10rem]" : "max-w-[6rem]")}
+        style={{ aspectRatio: `${SIZE} / ${HEIGHT}` }}
+      >
         {Array.from({ length: teams }, (_, i) => {
           const on = i < lit;
           return (
@@ -70,7 +93,7 @@ function Arc({ part, teams, size, off, tone }: ArcProps) {
               // A lit blade stays dark while the dial waits for the view, then fills in a stagger from the left end.
               // With motion off the blade has no delay, and the reduced-motion rule of globals.css drops the duration.
               className={cn(
-                "absolute rounded-pill transition-[background-color] duration-240 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                "rounded-pill absolute transition-[background-color] duration-240 ease-[cubic-bezier(0.4,0,0.2,1)]",
                 on ? cn("bg-accent", colors.wait) : colors.off,
               )}
               style={{
@@ -88,13 +111,25 @@ function Arc({ part, teams, size, off, tone }: ArcProps) {
         })}
         {/* The rank sits in the open end of the arc, so a reader gets the rank without a count of blades. */}
         <div className="absolute inset-x-0 bottom-0 flex flex-col items-center leading-none">
-          <span className={cn("font-extrabold tabular-nums", colors.ink, large ? "text-score" : "text-row")}>
+          <span
+            className={cn(
+              "font-extrabold tabular-nums",
+              colors.ink,
+              large ? "text-score" : "text-row",
+            )}
+          >
             {ordinal(part.rank)}
           </span>
-          {large && <span className={cn("mt-sp-1 text-meta tabular-nums", colors.mute)}>{`of ${teams}`}</span>}
+          {large && (
+            <span
+              className={cn("mt-sp-1 text-meta tabular-nums", colors.mute)}
+            >{`of ${teams}`}</span>
+          )}
         </div>
       </div>
-      <div className={cn("mt-sp-2 text-meta leading-tight font-semibold", colors.ink)}>{PART_NAMES[part.key]}</div>
+      <div className={cn("mt-sp-2 text-meta leading-tight font-semibold", colors.ink)}>
+        {PART_NAMES[part.key]}
+      </div>
       <div className={cn("text-meta leading-tight tabular-nums", colors.mute)}>
         {large ? `${GRADE_WEIGHTS[part.key]}% of the grade` : `${GRADE_WEIGHTS[part.key]}%`}
       </div>
@@ -136,7 +171,7 @@ export function GradeDial({ parts, teams, size = "large", tone = "page" }: Grade
       aria-label="Grade Dial"
       className={cn(
         "group m-0 grid list-none p-0",
-        size === "large" ? "grid-cols-2 gap-x-sp-4 gap-y-sp-6" : "grid-cols-4 gap-sp-2",
+        size === "large" ? "gap-x-sp-4 gap-y-sp-6 grid-cols-2" : "gap-sp-2 grid-cols-4",
       )}
     >
       {parts.map((part) => (

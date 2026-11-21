@@ -11,14 +11,53 @@ Run these in `apps/site/`.
 - Install: `pnpm install`
 - Dev server: `CLIENT=cpc pnpm dev`
 - Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.
-- Test: `pnpm test`. The tests read the generated files, so run `pnpm check:fast` or a build first.
+- Test: `pnpm test`. It runs `pnpm test:bun`. The tests read the generated files, so run `pnpm check:fast` or a build first.
+- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. `scripts/bun-test.mjs` runs `bun test --isolate` from `apps/site` on `src/`, `scripts/`, `test/`, and the `site/` folder of each package. With `--isolate`, each file has its own global, module registry, and window, in the same worker process. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it. `bunfig.toml` does not read `isolate`, so a direct `bun test` call needs the flag.
+- Run one shard of the unit suite: set `BUN_TEST_SHARD=<i>/<n>`, such as `BUN_TEST_SHARD=2/3 pnpm test:bun`. The split uses the time of each file in `bun-test-timings.json`. Refresh that file with `pnpm test:bun --timings=bun-test-timings.json --update-timings`.
+- Run only the tests that a diff can reach: set `BUN_TEST_BASE=<ref>`, such as `BUN_TEST_BASE=main pnpm test:bun`. It adds `bun test --changed=<ref>`. A diff that names a file of `FULL_SUITE_FILES` in `scripts/test-scope.mjs`, such as the lock file or the preload, runs the full suite. CI sets it on a PR only.
 - Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.
 - Check the readability floor: `CLIENT=cpc pnpm check:floor`. Run it after `pnpm build`, with the same `CLIENT`. Add `-g <route>` to check one page. It runs the parallel pass, then the tests tagged `@timing` alone with one worker.
 - Test the rules of the floor, the evidence runner, and the smoke run: `pnpm test:floor`. It needs Chromium and WebKit once: `pnpm exec playwright install chromium webkit`.
 - Flow pick: `pnpm pick [--base <ref>] [<file> ...]`. It prints the flows that the diff since the merge base picks. The default base is `main`.
 - Smoke run: `pnpm smoke --out <dir> [<flow name> ...]`. It drives the flows of `.claude/skills/verify/flows.json` at 390x660 WebKit and 1280x800. A layout flow adds 810x980 and 1080x740. A flow that calls Claude runs once, at 390x660. It starts its own site server and its own local API, each on a free port, and stops both at the end. Add `--no-api` for a run with the local API stopped. The `verify` skill says how.
 - Check all: `pnpm check`. It runs the fast check, the rules of the floor, then the build, `check:export`, and `check:floor` of each client under `clients/`. For a client with the finder on, it also builds it a second time against the local API URL and runs the grade-bar project on that export. Then it builds the fixture client of the midseason report and runs the floor of the report on it. CI runs it on every push.
-- Fast check: `pnpm check:fast`. It runs the client build of `cpc`, typecheck, and test. The hook runs it.
+- Type check: `pnpm typecheck`. It runs `next typegen`, then `bun check --no-script`. The flag stops `bun check` from running the script `check` of this app. It needs Bun 1.4.5 or later.
+- Run one shard of each Playwright run: set `PLAYWRIGHT_SHARD=<i>/<n>`, such as `PLAYWRIGHT_SHARD=2/7 CLIENT=cpc pnpm check:floor`. CI runs the browser check in a matrix of 7 shards. The reporter `scripts/playwright-shard-reporter.mjs` gives each shard each Nth test of the run. It keeps each file of `eggs` whole in one shard. The projects `floor-timing` and `eggs` keep one worker.
+- Lint: `pnpm lint`. Oxlint runs the config `.oxlintrc.json` of the repo root on all site code. Set `LINT_FILES` to paths from the repo root to lint only those files.
+- Format: `pnpm fmt`. `bun fmt` rewrites all site code and package code. The config is `bunfig.toml` at the repo root. It sorts the Tailwind classes. Set `FMT_FILES` to paths from the repo root to format only those files.
+- Format check: `pnpm fmt:check`. It exits 1 and names each file that is out of format. It takes `FMT_FILES` as well. The hook and CI run it.
+- Bun version: `.bun-version` at the repo root pins it, and CI installs that version. `bun check` and `bun fmt` need 1.4.5 or later.
+- Fast check: `pnpm check:fast`. It runs the client build of `cpc`. Then the lint, the format check, typecheck, and `pnpm test:bun` run at the same time through `scripts/parallel.py` of the root. `pnpm test:bun` runs the files in one worker process per CPU core. Set `BUN_TEST_WORKERS=<n>` to change the count. The hook sets 3. The hook runs it and lints and checks the format of only the staged site files. `bun test` runs every test file, also in the hook.
+
+## Write a test for `bun test`
+
+Each site test runs on `bun test` with happy-dom (ADR 0038). No test runs on Vitest. A test imports only from `bun:test`, and these rules replace the `vi` calls of Vitest.
+
+1. Use `mock` for a fake function, `spyOn` for a spy, and `mock.module` for a fake module.
+2. In a test of the app, use `stubGlobal` and `stubEnv` of `apps/site/test/stubs.ts`.
+3. In a test of a package, use `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
+4. Restore nothing by hand. The preload restores each spy and each stub after each test.
+5. Put each spy and each stub in `beforeEach`. The restore after the first test removes a spy or a stub at the top level of a file.
+6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env value when it loads, such as `src/lib/config.ts`. Then import the module again. The readers of `src/lib/data/` read `process.cwd` on each call, so a spy on it needs no reset.
+7. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
+8. Run `pnpm test:bun` in full before the merge.
+
+The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. If a test needs a real jsdom feature, the ticket names it for Brian.
+
+The preload makes happy-dom act as a browser in five more ways. `test/dom.test.ts` proves each one.
+
+- `TransformStream` and `WritableStream` are the web stream classes of Bun. happy-dom sets them to the Node classes `Stream.Transform` and `Stream.Writable`, so the native `pipeThrough` refused them, and each streamed Answer showed "The question did not go through".
+- A failed expect prints a node as its markup. Bun prints each own property of an object, and a happy-dom node reaches the whole window. With no fix, each failed check of a `waitFor` on a node prints megabytes, and one test stalls for minutes.
+- `requestAnimationFrame` runs about 60 frames each second. Each callback of one frame gets the same time. The frame timer keeps the real `setTimeout`. A test that fakes `setTimeout` leaves the frames running. Never use `jest.useFakeTimers` in a test that renders Framer Motion, because it drops each timer that is pending when it ends.
+- The page URL is `http://localhost:3000/`, so a relative `img` src resolves and fires no `error`.
+- A `spyOn(Storage.prototype, "getItem")` acts on `localStorage` and `sessionStorage`, also after the first call. Never spy on the storage object itself, because its Proxy keeps the spy as data.
+
+happy-dom differs from jsdom in these ways too. The preload does not change them, so each test that depends on them has its own fix.
+
+- The window is 1024 pixels wide, and `matchMedia` answers each width query. jsdom has no `matchMedia`, so a test there saw the phone tier. For the phone tier, spy on `matchMedia` in `beforeEach` with a stub that matches no query.
+- `IntersectionObserver` exists, but it never reports an entry. A part that waits on `inView` of Framer Motion never starts. jsdom has none, so the part ran its fallback.
+- `Element.prototype.animate` exists, so Framer Motion runs `opacity`, `transform`, `filter`, `clipPath`, and `backgroundColor` as a Web Animation. The inline style then holds no middle value. In jsdom, Framer Motion wrote each frame to the inline style.
+- `bun test --isolate` gives each file its own global, its own module registry, and its own window, and it runs the preload again for each file. Framer Motion reads `(prefers-reduced-motion)` once per file, and it decides once per file if it uses `Element.prototype.animate`. So the first render of a file sets reduced motion for each later test of that file, and a spy on `matchMedia` after it has no effect. A direct `bun test` call with no `--isolate` shares one registry and one window across the files, so a file can pass alone and fail in that run.
 
 ## Rules
 

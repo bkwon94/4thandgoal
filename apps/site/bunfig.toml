@@ -1,0 +1,4 @@
+# The settings of "bun test" in the site app. Run "bun test" from apps/site, so Bun reads this file.
+# The preload registers the happy-dom globals and restores each stub after each test.
+[test]
+preload = ["./test/preload.ts"]

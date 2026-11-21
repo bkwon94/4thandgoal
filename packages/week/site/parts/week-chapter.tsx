@@ -23,13 +23,19 @@ export function WeekChapter({
   const heading = `${id}-heading`;
   return (
     <section id={id} aria-labelledby={heading}>
-      <Reveal duration={DURATION.rise} ease={RISE_EASE} className="flex flex-col gap-sp-3">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-sp-3 gap-y-sp-1">
-          <h2 id={heading} className="m-0 text-stat leading-tight font-bold" {...stableId("heading", id)}>
+      <Reveal duration={DURATION.rise} ease={RISE_EASE} className="gap-sp-3 flex flex-col">
+        <div className="gap-x-sp-3 gap-y-sp-1 flex flex-wrap items-baseline justify-between">
+          <h2
+            id={heading}
+            className="text-stat m-0 leading-tight font-bold"
+            {...stableId("heading", id)}
+          >
             {title}
           </h2>
           {note !== undefined && (
-            <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{note}</span>
+            <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+              {note}
+            </span>
           )}
         </div>
         {children}

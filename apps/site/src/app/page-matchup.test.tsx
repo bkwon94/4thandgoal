@@ -6,7 +6,17 @@ import { cpSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  setDefaultTimeout,
+  spyOn,
+} from "bun:test";
+import { stubGlobal } from "../../test/stubs";
 import liveStream from "./front-door/fixtures/next-matchup-stream.json";
 
 /* Bo Girds, the team of the acceptance tests, in each league. */
@@ -15,8 +25,16 @@ type League = keyof typeof BO_GIRDS;
 
 const roots: string[] = [];
 
+/* The first render of the front door loads the page and its blocks by a dynamic import, and a loaded CPU can take
+   seconds for it. So each wait for a block gets 8 s, inside a test limit of 15 s. */
+const WAIT = { timeout: 8000 };
+setDefaultTimeout(15_000);
+
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 404 })));
+  stubGlobal(
+    "fetch",
+    mock(async () => new Response("", { status: 404 })),
+  );
 });
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
    action. */
@@ -26,8 +44,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 /* The front door over week 9 of one league, with Bo Girds as Your team. */
@@ -35,21 +51,22 @@ async function doorOf(league: League) {
   const root = mkdtempSync(join(tmpdir(), "front-door-matchup-"));
   roots.push(root);
   // The path comes from this file and not from the working folder, because the test points the working folder at root.
-  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), { recursive: true });
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), {
+    recursive: true,
+  });
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }
 
 /* Open "More", tap one Topic, and return the block of its Answer. */
 async function openBlock(topic: string, kind: string) {
-  fireEvent.click(await screen.findByRole("button", { name: "More" }));
-  const list = await screen.findByRole("list", { name: "All Topics" });
+  fireEvent.click(await screen.findByRole("button", { name: "More" }, WAIT));
+  const list = await screen.findByRole("list", { name: "All Topics" }, WAIT);
   fireEvent.click(within(list).getByRole("button", { name: new RegExp(`^${topic}:`) }));
-  const answer = await screen.findByRole("article", { name: topic });
-  await waitFor(() => expect(answer.querySelector(`[data-block="${kind}"]`)).not.toBeNull());
+  const answer = await screen.findByRole("article", { name: topic }, WAIT);
+  await waitFor(() => expect(answer.querySelector(`[data-block="${kind}"]`)).not.toBeNull(), WAIT);
   return answer.querySelector<HTMLElement>(`[data-block="${kind}"]`)!;
 }
 
@@ -64,7 +81,17 @@ describe("the matchup card", () => {
     expect(card.textContent).toContain("Teehee");
     const slots = within(card).getByRole("list", { name: "Slot by slot" });
     const rows = within(slots).getAllByRole("listitem");
-    expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual(["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "DEF"]);
+    expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual([
+      "QB",
+      "RB",
+      "RB",
+      "WR",
+      "WR",
+      "TE",
+      "FLEX",
+      "FLEX",
+      "DEF",
+    ]);
     // Each slot has one bar from the center line, to the side of the player who won it.
     for (const row of rows) expect(row.querySelectorAll("[data-gap]")).toHaveLength(1);
     const flex = rows[6];
@@ -81,7 +108,9 @@ describe("the matchup card", () => {
     const card = await openBlock("Your next matchup", "matchup");
     expect(card.textContent).toContain("Projected");
     expect(card.textContent).toContain("The Blue Tent");
-    const rows = within(within(card).getByRole("list", { name: "Slot by slot" })).getAllByRole("listitem");
+    const rows = within(within(card).getByRole("list", { name: "Slot by slot" })).getAllByRole(
+      "listitem",
+    );
     // The Blue Tent holds no DEF, so its side of the slot is empty.
     expect(rows.at(-1)!.textContent).toContain("Empty");
   });
@@ -91,20 +120,25 @@ describe("the matchup card", () => {
     render(<Door />);
     const card = await openBlock("Your last matchup", "matchup");
     expect(within(card).getByText("155.38")).toBeTruthy();
-    const rows = within(within(card).getByRole("list", { name: "Slot by slot" })).getAllByRole("listitem");
+    const rows = within(within(card).getByRole("list", { name: "Slot by slot" })).getAllByRole(
+      "listitem",
+    );
     expect(rows.filter((row) => row.getAttribute("data-slot") === "FLEX")).toHaveLength(3);
   });
 });
 
 /* The stream of the live card, as the API sent it over the live Sleeper week 10 of cpc. */
-const sse = (parts: unknown[]) => parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
+const sse = (parts: unknown[]) =>
+  parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n";
 
 describe("the live card of Your next matchup", () => {
   it("swaps in the projected totals and the win odds of the live week, with the time of the read (AT-25)", async () => {
-    const fetchStub = vi.fn(async (url: string) =>
-      String(url).endsWith("/next-matchup") ? new Response(sse(liveStream), { headers: { "Content-Type": "text/event-stream" } }) : new Response("", { status: 404 }),
+    const fetchStub = mock(async (url: string) =>
+      String(url).endsWith("/next-matchup")
+        ? new Response(sse(liveStream), { headers: { "Content-Type": "text/event-stream" } })
+        : new Response("", { status: 404 }),
     );
-    vi.stubGlobal("fetch", fetchStub);
+    stubGlobal("fetch", fetchStub);
     localStorage.setItem("cpc.passphrase", "cornerstone-test");
     const Door = await doorOf("cpc");
     render(<Door />);
@@ -115,7 +149,9 @@ describe("the live card of Your next matchup", () => {
     expect(card.textContent).toContain("92.9");
     expect(within(card).getByRole("img", { name: "Your win odds, 82%" })).toBeTruthy();
     expect(answer.textContent).toContain("Live projections as of");
-    const [url, init] = fetchStub.mock.calls.find(([each]) => String(each).endsWith("/next-matchup"))! as unknown as [string, RequestInit];
+    const [url, init] = fetchStub.mock.calls.find(([each]) =>
+      String(each).endsWith("/next-matchup"),
+    )! as unknown as [string, RequestInit];
     expect(url).toMatch(/\/clients\/cpc\/next-matchup$/);
     expect(JSON.parse(String(init.body))).toEqual({ roster_id: BO_GIRDS.cpc });
   });
@@ -126,7 +162,9 @@ describe("the live card of Your next matchup", () => {
     render(<Door />);
     const card = await openBlock("Your next matchup", "matchup");
     expect(card.textContent).toContain("The Blue Tent");
-    expect(screen.getByRole("article", { name: "Your next matchup" }).textContent).not.toContain("Live projections");
+    expect(screen.getByRole("article", { name: "Your next matchup" }).textContent).not.toContain(
+      "Live projections",
+    );
   });
 });
 
@@ -135,7 +173,9 @@ describe("the rank mover list", () => {
     const Door = await doorOf("cpc");
     render(<Door />);
     const list = await openBlock("Power rankings", "rank_movers");
-    const rows = within(within(list).getByRole("list", { name: "Power rankings" })).getAllByRole("listitem");
+    const rows = within(within(list).getByRole("list", { name: "Power rankings" })).getAllByRole(
+      "listitem",
+    );
     expect(rows).toHaveLength(12);
     expect(rows[0].textContent).toContain("1");
     expect(rows[0].textContent).toContain("Return of T Mac");

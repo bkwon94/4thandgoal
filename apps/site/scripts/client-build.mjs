@@ -4,7 +4,15 @@
  * published data and assets into public/.
  * The prebuild step runs it, and the fast check runs it for cpc.
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
@@ -23,7 +31,14 @@ export function clientRoot(env) {
 }
 /* The JSON Schema of the kernel keys, which the league package exports from its pydantic model. "make schema" in
    packages/league/python rewrites it. */
-export const SCHEMA_FILE = join("packages", "league", "python", "src", "league", "client.schema.json");
+export const SCHEMA_FILE = join(
+  "packages",
+  "league",
+  "python",
+  "src",
+  "league",
+  "client.schema.json",
+);
 
 /* The JSON Schema of the package values of the package `name`, which the package exports from its pydantic model.
    "make schema" in packages/<name>/python rewrites it. */
@@ -41,7 +56,8 @@ function ruleLine(error, prefix = []) {
   if (error.keyword === "additionalProperties") {
     return `- ${[...where, error.params.additionalProperty].join(".")}: is not a known key`;
   }
-  if (error.keyword === "required") return `- ${[...where, error.params.missingProperty].join(".")}: is required`;
+  if (error.keyword === "required")
+    return `- ${[...where, error.params.missingProperty].join(".")}: is required`;
   return `- ${where.join(".") || "the file"}: ${error.message}`;
 }
 
@@ -49,7 +65,8 @@ function ruleLine(error, prefix = []) {
    unknown key fails, so a typo never passes as a default. */
 function readChecked(root, slug, name, schema) {
   const file = join(root, "clients", slug, name);
-  if (!existsSync(file)) throw new ClientBuildError(`No ${name} for the client ${slug} at ${file}.`);
+  if (!existsSync(file))
+    throw new ClientBuildError(`No ${name} for the client ${slug} at ${file}.`);
   let values;
   try {
     values = parse(readFileSync(file, "utf8"));
@@ -89,12 +106,20 @@ function tableLines(root, values) {
    [values.<package>] table with the schema of its package. */
 export function readClient(root, slug) {
   const file = join(root, "clients", slug, "client.toml");
-  const values = readChecked(root, slug, "client.toml", JSON.parse(readFileSync(join(root, SCHEMA_FILE), "utf8")));
+  const values = readChecked(
+    root,
+    slug,
+    "client.toml",
+    JSON.parse(readFileSync(join(root, SCHEMA_FILE), "utf8")),
+  );
   // A JSON Schema cannot tie a menu item to the package list, so this rule is code, as in the pydantic model.
   const omitted = ["items", "front_door_items"].flatMap((list) =>
     (values.menu?.[list] ?? [])
       .filter((item) => item.package !== undefined && !values.packages.includes(item.package))
-      .map((item) => `- menu.${list}: The menu item for ${item.package} names a package that is not in the package list.`),
+      .map(
+        (item) =>
+          `- menu.${list}: The menu item for ${item.package} names a package that is not in the package list.`,
+      ),
   );
   const lines = [...omitted, ...tableLines(root, values)];
   if (lines.length > 0) throw new ClientBuildError(`${file} breaks a rule:\n${lines.join("\n")}`);
@@ -132,10 +157,11 @@ function hasFile(dir, test) {
 /* The latest season folder of the published data, or null when it holds none. */
 function latestSeasonDir(publishedDir) {
   if (!existsSync(publishedDir)) return null;
-  const seasons = readdirSync(publishedDir).filter((name) => SEASON.test(name)).sort();
+  const seasons = readdirSync(publishedDir)
+    .filter((name) => SEASON.test(name))
+    .sort();
   return seasons.length > 0 ? join(publishedDir, seasons.at(-1)) : null;
 }
-
 
 /* The route files of each package. A route file re-exports its page from src/app/_routes/, which Next does not route.
    A static export fails on a dynamic route with no params, so a dynamic route needs the published file that gives its
@@ -150,7 +176,13 @@ const ROUTES = {
       needs: (published) => hasFile(published, (path) => path.endsWith("page.json")),
     },
   ],
-  rankings: [{ path: "rankings/page.tsx", source: "@/app/_routes/rankings/page", exports: ["default", "metadata"] }],
+  rankings: [
+    {
+      path: "rankings/page.tsx",
+      source: "@/app/_routes/rankings/page",
+      exports: ["default", "metadata"],
+    },
+  ],
   managers: [
     {
       path: "[season]/managers/page.tsx",
@@ -176,7 +208,13 @@ const ROUTES = {
       needs: (published) => hasFile(published, (path) => path.endsWith("waiver.json")),
     },
   ],
-  analyzer: [{ path: "analyze/page.tsx", source: "@/app/_routes/analyzer/page", exports: ["default", "metadata"] }],
+  analyzer: [
+    {
+      path: "analyze/page.tsx",
+      source: "@/app/_routes/analyzer/page",
+      exports: ["default", "metadata"],
+    },
+  ],
   // The sim page reads the newest week sim file, week-NN/sim.json. The season file of the midseason replay gives no route.
   sim: [
     {
@@ -184,11 +222,14 @@ const ROUTES = {
       source: "@/app/_routes/sim/page",
       exports: ["default", "generateStaticParams", "generateMetadata"],
       dynamic: true,
-      needs: (published) => hasFile(published, (path) => /(^|[\\/])week-\d{2}[\\/]sim\.json$/.test(path)),
+      needs: (published) =>
+        hasFile(published, (path) => /(^|[\\/])week-\d{2}[\\/]sim\.json$/.test(path)),
     },
   ],
   // The egg board renders in the browser from the API, so it needs no published file.
-  eggs: [{ path: "eggs/page.tsx", source: "@/app/_routes/eggs/page", exports: ["default", "metadata"] }],
+  eggs: [
+    { path: "eggs/page.tsx", source: "@/app/_routes/eggs/page", exports: ["default", "metadata"] },
+  ],
   midseason: [
     {
       path: "midseason/[season]/page.tsx",
@@ -203,12 +244,19 @@ const ROUTES = {
 /* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
    The registry imports it only for a package of the list, so the home page of a client that omits the package holds
    none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
-const HOME_TOOLS = { analyzer: "@/app/_routes/analyzer/home", managers: "@/app/_routes/managers/home" };
+const HOME_TOOLS = {
+  analyzer: "@/app/_routes/analyzer/home",
+  managers: "@/app/_routes/managers/home",
+};
 
 /* The hidden route of the front door while the flag front_door of client.toml is off: / stays the home page, and the
    commissioner tests the front door on the live site at /ask/. No menu item and no link reach it, and its page has
    noindex. With the flag on, the front door is at /, so the build writes no /ask/ route. */
-const ASK_ROUTE = { path: "ask/page.tsx", source: "@/app/_routes/ask/page", exports: ["default", "metadata"] };
+const ASK_ROUTE = {
+  path: "ask/page.tsx",
+  source: "@/app/_routes/ask/page",
+  exports: ["default", "metadata"],
+};
 
 /* The part that a package mounts on every page, such as the egg hunt. The registry imports it only for a package of the
    list, so the bundle of a client that omits the package holds none of its code. */
@@ -221,7 +269,10 @@ const BAND_PARTS = { eggs: "@/app/_routes/eggs/band" };
 /* The strip that a package puts under the top band of the home page, such as the egg banner, or the sheet that a
    package opens on the home page, such as the Announcement of the season sim. The registry imports it only for a
    package of the list, so the home page of a client that omits the package holds none. */
-const HOME_BANNERS = { eggs: "@/app/_routes/eggs/home-banner", sim: "@/app/_routes/sim/home-banner" };
+const HOME_BANNERS = {
+  eggs: "@/app/_routes/eggs/home-banner",
+  sim: "@/app/_routes/sim/home-banner",
+};
 
 /* The tile that a package puts on each week page after Standings, such as the Sim tile. The registry imports it only
    for a package of the list, so the week page of a client that omits the package holds none of its code. */
@@ -238,9 +289,14 @@ function headerLine(slug) {
 }
 
 function routeText(slug, route) {
-  const lines = [headerLine(slug), `export { ${route.exports.join(", ")} } from "${route.source}";`];
+  const lines = [
+    headerLine(slug),
+    `export { ${route.exports.join(", ")} } from "${route.source}";`,
+  ];
   if (route.dynamic) {
-    lines.push("// The export is static, so a param with no published file at build time has no page.");
+    lines.push(
+      "// The export is static, so a param with no published file at build time has no page.",
+    );
     lines.push("export const dynamicParams = false;");
   }
   return `${lines.join("\n")}\n`;
@@ -268,14 +324,24 @@ function registryText(slug, values) {
   return [
     headerLine(slug),
     `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines, WeekTile } from "@/lib/client-values";`,
-    ...values.packages.map((name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`),
-    ...lines.map((name) => `import { siteLine as ${name}SiteLine } from "@/app/_routes/${name}/menu";`),
+    ...values.packages.map(
+      (name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`,
+    ),
+    ...lines.map(
+      (name) => `import { siteLine as ${name}SiteLine } from "@/app/_routes/${name}/menu";`,
+    ),
     ...tools.map((name) => `import { HomeTool as ${name}HomeTool } from "${HOME_TOOLS[name]}";`),
-    ...home.map((name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`),
+    ...home.map(
+      (name) => `import { homeSection as ${name}HomeSection } from "@/app/_routes/${name}/home";`,
+    ),
     ...parts.map((name) => `import { PagePart as ${name}PagePart } from "${PAGE_PARTS[name]}";`),
     ...band.map((name) => `import { BandPart as ${name}BandPart } from "${BAND_PARTS[name]}";`),
-    ...banners.map((name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`),
-    ...weekTiles.map((name) => `import { weekTile as ${name}WeekTile } from "${WEEK_TILES[name]}";`),
+    ...banners.map(
+      (name) => `import { HomeBanner as ${name}HomeBanner } from "${HOME_BANNERS[name]}";`,
+    ),
+    ...weekTiles.map(
+      (name) => `import { weekTile as ${name}WeekTile } from "${WEEK_TILES[name]}";`,
+    ),
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
@@ -314,7 +380,10 @@ function registryText(slug, values) {
    menu takes the home page, then the package list in its order, because Brian chose Home as the first item of a default menu.
    With the front door on, the menu takes front_door_items when [menu] gives them. */
 function menuOf(values) {
-  const items = values.menu?.items ?? [{ page: "home" }, ...values.packages.map((name) => ({ package: name }))];
+  const items = values.menu?.items ?? [
+    { page: "home" },
+    ...values.packages.map((name) => ({ package: name })),
+  ];
   return { items: (frontDoorOf(values) && values.menu?.front_door_items) || items };
 }
 
@@ -363,7 +432,8 @@ function copyPublished(published, publicDir) {
   }
   if (!existsSync(published)) return;
   for (const name of readdirSync(published)) {
-    if (SEASON.test(name)) cpSync(join(published, name), join(publicDir, name), { recursive: true });
+    if (SEASON.test(name))
+      cpSync(join(published, name), join(publicDir, name), { recursive: true });
   }
 }
 
@@ -373,7 +443,11 @@ function copyAssets(root, slug, site) {
   const assets = join(root, "clients", slug, "assets");
   const target = join(site, BRAND_DIR);
   rmSync(target, { recursive: true, force: true });
-  const logo = existsSync(assets) ? readdirSync(assets).filter((name) => LOGO.test(name)).sort()[0] : undefined;
+  const logo = existsSync(assets)
+    ? readdirSync(assets)
+        .filter((name) => LOGO.test(name))
+        .sort()[0]
+    : undefined;
   if (logo === undefined) return null;
   mkdirSync(target, { recursive: true });
   cpSync(join(assets, logo), join(target, logo));
@@ -417,11 +491,18 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
       writeFile(join(site, ROUTE_GROUP, route.path), routeText(slug, route));
     }
   }
-  if (!frontDoorOf(values)) writeFile(join(site, ROUTE_GROUP, ASK_ROUTE.path), routeText(slug, ASK_ROUTE));
+  if (!frontDoorOf(values))
+    writeFile(join(site, ROUTE_GROUP, ASK_ROUTE.path), routeText(slug, ASK_ROUTE));
   writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values));
   const logo = copyAssets(root, slug, site);
-  writeFile(join(site, GENERATED_DIR, "client-values.ts"), clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy));
-  writeFile(join(site, GENERATED_DIR, "brand.css"), brandCss(brand, { source: `clients/${slug}/brand.toml` }));
+  writeFile(
+    join(site, GENERATED_DIR, "client-values.ts"),
+    clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy),
+  );
+  writeFile(
+    join(site, GENERATED_DIR, "brand.css"),
+    brandCss(brand, { source: `clients/${slug}/brand.toml` }),
+  );
   copyPublished(published, join(site, "public"));
   const redirects = join(site, "public", "_redirects");
   if (frontDoorOf(values)) writeFile(redirects, REDIRECTS);

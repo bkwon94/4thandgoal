@@ -3,7 +3,7 @@
  * Its badge is the count of eggs left to find, and a tap opens the egg board.
  */
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { board, fakeEggsApi } from "../lib/fixtures/eggs-api";
 import { EggButton, EggButtonScreen } from "./egg-button";
 
@@ -45,7 +45,9 @@ describe("EggButtonScreen", () => {
   });
 
   it("renders nothing while the board loads", () => {
-    const { container } = render(<EggButtonScreen api={fakeEggsApi({ match: false })} href="/eggs/" />);
+    const { container } = render(
+      <EggButtonScreen api={fakeEggsApi({ match: false })} href="/eggs/" />,
+    );
     expect(container.innerHTML).toBe("");
   });
 });

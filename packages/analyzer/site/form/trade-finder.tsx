@@ -20,7 +20,11 @@ import { StageLines } from "./stage-lines";
 import { Button } from "@cpc/design/ui/button";
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { PendingButton } from "@cpc/design/ui/pending-button";
-import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "@cpc/design/ui/segmented-control";
+import {
+  SegmentedControl,
+  SegmentedControlIndicator,
+  SegmentedControlItem,
+} from "@cpc/design/ui/segmented-control";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { EASE_OUT, SMOOTH_OUT } from "@cpc/design/lib/motion";
 import { cn } from "@cpc/design/lib/utils";
@@ -28,7 +32,15 @@ import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import { useRequest } from "./use-request";
 import type { FindResponse, FinderTrade, Lean } from "../lib/analyze-types";
-import { ApiError, type ApiTarget, type FindRequest, type ShortlistTrade, streamFind, toErrorLine, type Team } from "../lib/api";
+import {
+  ApiError,
+  type ApiTarget,
+  type FindRequest,
+  type ShortlistTrade,
+  streamFind,
+  toErrorLine,
+  type Team,
+} from "../lib/api";
 
 // A press can wait on a live fair check while the warm-up of the fair cache runs, and two presses share one Jev
 // budget, so the finder waits much longer than a grade before it gives up.
@@ -62,7 +74,14 @@ type Aim = (typeof AIMS)[number];
    sent so far, the most trades that the pick can keep, and the trades of the Shortlist that the pick weighs. */
 type FindState =
   | { status: "idle" }
-  | { status: "finding"; lines: string[]; read: number[]; trades: FinderTrade[]; most: number; shortlist: ShortlistTrade[] }
+  | {
+      status: "finding";
+      lines: string[];
+      read: number[];
+      trades: FinderTrade[];
+      most: number;
+      shortlist: ShortlistTrade[];
+    }
   | { status: "done"; doc: FindResponse }
   | { status: "error"; message: string };
 
@@ -93,7 +112,12 @@ type TradeFinderProps = {
 };
 
 /* The body of a find: the asker, the partner when one is picked, and the limit when a chip other than Any is picked. */
-export function findBody(season: number, asker: number, partner: number | null, aim: Aim): FindRequest {
+export function findBody(
+  season: number,
+  asker: number,
+  partner: number | null,
+  aim: Aim,
+): FindRequest {
   return {
     season,
     asker,
@@ -130,32 +154,43 @@ function TeamChoice({
   }
   return (
     <>
-      <button
+      <Button
+        variant="plain"
         type="button"
         disabled={disabled}
         onClick={() => setOpen(true)}
-        className="press flex min-h-touch w-full cursor-pointer items-center gap-sp-3 rounded-card bg-chip-dark px-sp-3 py-sp-2 text-left text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60"
+        className="press min-h-touch gap-sp-3 rounded-card bg-chip-dark px-sp-3 py-sp-2 text-on-dark focus-visible:outline-accent flex w-full cursor-pointer items-center text-left focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {picked ? (
           <Avatar src={picked.avatar ?? AVATAR_FALLBACK} />
         ) : (
-          <span aria-hidden="true" className="grid size-avatar flex-none place-items-center rounded-full bg-on-dark text-band">
+          <span
+            aria-hidden="true"
+            className="size-avatar bg-on-dark text-band grid flex-none place-items-center rounded-full"
+          >
             <Users className="size-sp-4" />
           </span>
         )}
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="text-label font-bold tracking-caps text-on-dark-muted uppercase">{label}</span>
-          <b className="truncate text-row leading-tight font-bold">{name}</b>
+          <span className="text-label tracking-caps text-on-dark-muted font-bold uppercase">
+            {label}
+          </span>
+          <b className="text-row truncate leading-tight font-bold">{name}</b>
         </span>
-        <span aria-hidden="true" className="text-meta font-bold text-accent-text">
+        <span aria-hidden="true" className="text-meta text-accent-text font-bold">
           Change
         </span>
-      </button>
+      </Button>
       <Sheet open={open} title={label} onClose={() => setOpen(false)}>
-        <ul aria-label={listName} className="m-0 flex list-none flex-col gap-sp-1 p-0">
+        <ul aria-label={listName} className="gap-sp-1 m-0 flex list-none flex-col p-0">
           {every !== undefined && (
             <li>
-              <TeamRow lit={value === null} onClick={() => pick(null)} name={every} meta={`The search looks at all ${teams.length}`} />
+              <TeamRow
+                lit={value === null}
+                onClick={() => pick(null)}
+                name={every}
+                meta={`The search looks at all ${teams.length}`}
+              />
             </li>
           )}
           {teams.map((team) => (
@@ -175,33 +210,63 @@ function TeamChoice({
   );
 }
 
-function TeamRow({ lit, onClick, name, meta, avatar }: { lit: boolean; onClick: () => void; name: string; meta: string; avatar?: string }) {
+function TeamRow({
+  lit,
+  onClick,
+  name,
+  meta,
+  avatar,
+}: {
+  lit: boolean;
+  onClick: () => void;
+  name: string;
+  meta: string;
+  avatar?: string;
+}) {
   return (
-    <button
+    <Button
+      variant="plain"
       type="button"
       aria-pressed={lit}
       onClick={onClick}
-      className="press flex min-h-touch w-full cursor-pointer items-center gap-sp-3 rounded-card px-sp-3 py-sp-1 text-left text-ink hover:bg-card focus-visible:outline-2 focus-visible:outline-accent aria-pressed:bg-card"
+      className="press min-h-touch gap-sp-3 rounded-card px-sp-3 py-sp-1 text-ink hover:bg-card focus-visible:outline-accent aria-pressed:bg-card flex w-full cursor-pointer items-center text-left focus-visible:outline-2"
     >
       {avatar ? (
         <Avatar src={avatar} />
       ) : (
-        <span aria-hidden="true" className="grid size-avatar flex-none place-items-center rounded-full bg-ink text-page">
+        <span
+          aria-hidden="true"
+          className="size-avatar bg-ink text-page grid flex-none place-items-center rounded-full"
+        >
           <Users className="size-sp-4" />
         </span>
       )}
       <span className="flex min-w-0 flex-col">
-        <b className="truncate text-row leading-tight font-bold">{name}</b>
+        <b className="text-row truncate leading-tight font-bold">{name}</b>
         <span className="text-meta text-mute">{meta}</span>
       </span>
-    </button>
+    </Button>
   );
 }
 
 /* The chips of the position to get, through the segmented control wrapper, so one tap picks one and the pill slides. */
-function PositionChips({ value, onChange, disabled }: { value: Aim; onChange: (aim: Aim) => void; disabled: boolean }) {
+function PositionChips({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: Aim;
+  onChange: (aim: Aim) => void;
+  disabled: boolean;
+}) {
   return (
-    <SegmentedControl<Aim> aria-label="Position" tone="dark" value={value} onValueChange={(next) => next !== null && onChange(next)} disabled={disabled}>
+    <SegmentedControl<Aim>
+      aria-label="Position"
+      tone="dark"
+      value={value}
+      onValueChange={(next) => next !== null && onChange(next)}
+      disabled={disabled}
+    >
       <SegmentedControlIndicator />
       {AIMS.map((aim) => (
         <SegmentedControlItem key={aim} value={aim}>
@@ -226,7 +291,8 @@ function waitLine(step: number, line: string): string {
 /* The line of step 5 that names one Shortlist trade: the players the asker gives, then "for", then the players he gets,
    such as "Weighing Walker for Lawrence, Pollard, Moore". A line too long for a phone takes the last names. */
 export function weighLine(trade: ShortlistTrade): string {
-  const line = (key: "name" | "last") => `Weighing ${trade.gives.map((p) => p[key]).join(", ")} for ${trade.gets.map((p) => p[key]).join(", ")}`;
+  const line = (key: "name" | "last") =>
+    `Weighing ${trade.gives.map((p) => p[key]).join(", ")} for ${trade.gets.map((p) => p[key]).join(", ")}`;
   const full = line("name");
   return full.length <= WEIGH_FIT ? full : line("last");
 }
@@ -251,7 +317,11 @@ function useWaitLine(lines: string[], weighs: string[], landed: boolean): string
     if (held === index && index < lines.length - 1) setIndex(index + 1);
   }, [held, index, lines.length]);
   const line = lines[Math.min(index, lines.length - 1)];
-  const weighing = !landed && weighs.length > 0 && index === lines.length - 1 && line.startsWith(waitLine(FIND_STEPS, ""));
+  const weighing =
+    !landed &&
+    weighs.length > 0 &&
+    index === lines.length - 1 &&
+    line.startsWith(waitLine(FIND_STEPS, ""));
   // The turn of step 5: 0 shows the step line, and turn n shows Shortlist trade n - 1, round the list.
   const [turn, setTurn] = useState(0);
   useEffect(() => {
@@ -269,7 +339,7 @@ function useWaitLine(lines: string[], weighs: string[], landed: boolean): string
    the ease-out, so a burst of reads still reads as a turn. With motion off, the avatar lights at once. */
 function TeamsRead({ teams, read }: { teams: Team[]; read: number[] }) {
   return (
-    <ul aria-hidden="true" className="m-0 flex list-none flex-wrap gap-sp-1 p-0">
+    <ul aria-hidden="true" className="gap-sp-1 m-0 flex list-none flex-wrap p-0">
       {teams.map((team) => {
         const lit = read.includes(team.roster_id);
         return (
@@ -278,7 +348,7 @@ function TeamsRead({ teams, read }: { teams: Team[]; read: number[] }) {
             data-team-read={team.roster_id}
             data-lit={lit}
             className={cn(
-              "rounded-full ring-2 ring-band transition-[opacity,scale] duration-250 ease-[var(--ease-out)] motion-reduce:transition-none",
+              "ring-band rounded-full ring-2 transition-[opacity,scale] duration-250 ease-[var(--ease-out)] motion-reduce:transition-none",
               lit ? "scale-100 opacity-100" : "scale-[0.92] opacity-30",
             )}
           >
@@ -329,7 +399,7 @@ function FindWaitHero({
           <p role="status" className="sr-only">
             {line}
           </p>
-          <div aria-hidden="true" className="flex flex-col gap-sp-5">
+          <div aria-hidden="true" className="gap-sp-5 flex flex-col">
             <StageLines lines={[line]} />
             <TeamsRead teams={teams} read={read} />
           </div>
@@ -342,7 +412,16 @@ function FindWaitHero({
 /* The Lean word leads each card, as on the read. A yes leans in the accent, a gut call in the plain ink. */
 function LeanWord({ lean }: { lean: Lean }) {
   const yes = lean === "Send it" || lean === "Lean yes";
-  return <h3 className={cn("m-0 text-score leading-tight font-black tracking-tight", yes ? "text-accent-ink" : "text-ink")}>{lean}</h3>;
+  return (
+    <h3
+      className={cn(
+        "text-score m-0 leading-tight font-black tracking-tight",
+        yes ? "text-accent-ink" : "text-ink",
+      )}
+    >
+      {lean}
+    </h3>
+  );
 }
 
 /* The Bullets fold under the Case, so the card stays short. One tap opens them. The panel of the shared Collapsible
@@ -351,7 +430,7 @@ function LeanWord({ lean }: { lean: Lean }) {
 function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }) {
   return (
     <Collapsible className="flex flex-col">
-      <CollapsibleTrigger className="press group -mx-sp-2 flex min-h-touch w-fit cursor-pointer items-center gap-sp-1 rounded-pill px-sp-2 text-meta font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent">
+      <CollapsibleTrigger className="press group -mx-sp-2 min-h-touch gap-sp-1 rounded-pill px-sp-2 text-meta text-ink focus-visible:outline-accent flex w-fit cursor-pointer items-center font-bold focus-visible:outline-2">
         Why it works · {trade.bullets.length}
         <ChevronDown
           aria-hidden="true"
@@ -372,7 +451,23 @@ function FoldedBullets({ trade, idBase }: { trade: FinderTrade; idBase: string }
    Bullets. The pick writes no headline, so one voice speaks. After a fallback the trade has no Lean and no Bullet, so
    the card lists its plain fact lines. A card rises in as it lands, as the texts reveal of transitions.dev. Cards that
    land together rise one after another, `delay` seconds apart from the first. With motion off, they show at once. */
-function FinderCard({ trade, asker, index, count, delay, onOpen, disabled }: { trade: FinderTrade; asker: number; index: number; count: number; delay: number; onOpen: () => void; disabled: boolean }) {
+function FinderCard({
+  trade,
+  asker,
+  index,
+  count,
+  delay,
+  onOpen,
+  disabled,
+}: {
+  trade: FinderTrade;
+  asker: number;
+  index: number;
+  count: number;
+  delay: number;
+  onOpen: () => void;
+  disabled: boolean;
+}) {
   const off = useMotionOff();
   const { partner } = ledgerOf(trade, asker);
   return (
@@ -381,29 +476,40 @@ function FinderCard({ trade, asker, index, count, delay, onOpen, disabled }: { t
       initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ duration: 0.5, ease: EASE_OUT, delay }}
-      className="flex flex-col gap-sp-3 rounded-card border border-rule bg-page p-sp-4"
+      className="gap-sp-3 rounded-card border-rule bg-page p-sp-4 flex flex-col border"
     >
-      <div className="flex items-baseline justify-between gap-sp-3">
+      <div className="gap-sp-3 flex items-baseline justify-between">
         {trade.lean !== null ? (
           <LeanWord lean={trade.lean} />
         ) : (
-          <h3 className="m-0 font-mono text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
+          <h3 className="text-meta text-accent-ink m-0 font-mono leading-tight font-bold tracking-wide uppercase">
             Trade {index + 1} of {count}
           </h3>
         )}
-        <span className="min-w-0 truncate text-meta text-mute">With {partner}</span>
+        <span className="text-meta text-mute min-w-0 truncate">With {partner}</span>
       </div>
-      {trade.case !== null && <p className="m-0 line-clamp-3 max-w-measure text-body leading-body text-pretty text-ink-2">{trade.case}</p>}
+      {trade.case !== null && (
+        <p className="max-w-measure text-body leading-body text-ink-2 m-0 line-clamp-3 text-pretty">
+          {trade.case}
+        </p>
+      )}
       <Ledger offer={trade} asker={asker} />
       {trade.bullets.length > 0 && <FoldedBullets trade={trade} idBase={`pick-${index + 1}`} />}
       {trade.fact_lines.length > 0 && (
-        <ul aria-label="Facts" className="m-0 flex max-w-measure list-none flex-col gap-sp-2 p-0 text-meta text-ink-2">
+        <ul
+          aria-label="Facts"
+          className="max-w-measure gap-sp-2 text-meta text-ink-2 m-0 flex list-none flex-col p-0"
+        >
           {trade.fact_lines.map((line) => (
             <li key={line}>{line}</li>
           ))}
         </ul>
       )}
-      <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" disabled={disabled} onClick={onOpen}>
+      <Button
+        className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+        disabled={disabled}
+        onClick={onOpen}
+      >
         See the Full Result
       </Button>
     </motion.article>
@@ -443,7 +549,7 @@ function MoreLine({ left }: { left: number }) {
       initial={off ? false : { opacity: 0, y: 12, filter: "blur(3px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ duration: 0.5, ease: EASE_OUT }}
-      className="m-0 grid min-h-touch items-center text-row font-bold"
+      className="min-h-touch text-row m-0 grid items-center font-bold"
     >
       {/* The key gives each count its own span, so a new count comes in through a small blur in place. The old count
           goes in the same frame, so the line never holds two counts. */}
@@ -453,7 +559,7 @@ function MoreLine({ left }: { left: number }) {
           "col-start-1 row-start-1",
           off
             ? "text-mute"
-            : "bg-clip-text text-transparent [background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%]",
+            : "[background-image:linear-gradient(90deg,var(--color-mute)_0%,var(--color-mute)_40%,var(--color-ink)_50%,var(--color-mute)_60%,var(--color-mute)_100%)] [background-size:400%_100%] bg-clip-text text-transparent",
         )}
         initial={off ? false : { opacity: 0, filter: "blur(2px)", backgroundPosition: "100% 0%" }}
         animate={off ? undefined : { opacity: 1, filter: "blur(0px)", backgroundPosition: "0% 0%" }}
@@ -518,14 +624,20 @@ function FinderResult({
   const count = doc === null ? Math.max(Math.min(most, MAX_PICKS), trades.length) : trades.length;
   if (doc === null && trades.length === 0) return null;
   return (
-    <div className="flex flex-col gap-sp-4 pt-sp-5">
+    <div className="gap-sp-4 pt-sp-5 flex flex-col">
       {/* The pipeline writes the empty line, so the page shows it word for word. */}
-      {doc !== null && doc.empty !== null && <p className="m-0 text-lead font-bold">{doc.empty}</p>}
+      {doc !== null && doc.empty !== null && <p className="text-lead m-0 font-bold">{doc.empty}</p>}
       {doc !== null && doc.fallback && doc.trades.length > 0 && (
-        <p className="m-0 text-lead text-ink-2">The picks did not come through. These are the trades the search kept, with their facts.</p>
+        <p className="text-lead text-ink-2 m-0">
+          The picks did not come through. These are the trades the search kept, with their facts.
+        </p>
       )}
       {trades.length > 0 && (
-        <ol ref={list} aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
+        <ol
+          ref={list}
+          aria-label="Trade ideas"
+          className="gap-sp-4 m-0 flex list-none flex-col p-0"
+        >
           {trades.map((trade, i) => (
             <li key={trade.offer_id} data-offer-id={trade.offer_id} className="scroll-mt-sp-4">
               <FinderCard
@@ -607,7 +719,14 @@ export function TradeFinder({
       timedOut = true;
       controller.abort();
     }, TIMEOUT_MS);
-    setFind({ status: "finding", lines: [waitLine(1, firstLine(partner, partners.length))], read: [], trades: [], most: MAX_PICKS, shortlist: [] });
+    setFind({
+      status: "finding",
+      lines: [waitLine(1, firstLine(partner, partners.length))],
+      read: [],
+      trades: [],
+      most: MAX_PICKS,
+      shortlist: [],
+    });
     // A live line starts a step, so it moves the wait line on. A done line ends the step, and the line holds until
     // the next step starts, because the next live line follows it at once.
     let step = 0;
@@ -617,11 +736,19 @@ export function TradeFinder({
         step += 1;
         const next = waitLine(step, line);
         // The first live line repeats the line that the wait opens with, so it adds no line to the queue.
-        setFind((now) => (now.status === "finding" && now.lines[now.lines.length - 1] !== next ? { ...now, lines: [...now.lines, next] } : now));
+        setFind((now) =>
+          now.status === "finding" && now.lines[now.lines.length - 1] !== next
+            ? { ...now, lines: [...now.lines, next] }
+            : now,
+        );
       },
       onTeam: (rosterId: number) => {
         if (!run.isCurrent()) return;
-        setFind((now) => (now.status === "finding" && !now.read.includes(rosterId) ? { ...now, read: [...now.read, rosterId] } : now));
+        setFind((now) =>
+          now.status === "finding" && !now.read.includes(rosterId)
+            ? { ...now, read: [...now.read, rosterId] }
+            : now,
+        );
       },
       // The Shortlist comes before the pick starts, so step 5 can name each trade it weighs.
       onShortlist: (shortlist: ShortlistTrade[]) => {
@@ -632,7 +759,9 @@ export function TradeFinder({
       onTrade: (_index: number, most: number, trade: FinderTrade) => {
         if (!run.isCurrent()) return;
         setFind((now) =>
-          now.status === "finding" && !now.trades.some((kept) => kept.offer_id === trade.offer_id) ? { ...now, trades: [...now.trades, trade], most } : now,
+          now.status === "finding" && !now.trades.some((kept) => kept.offer_id === trade.offer_id)
+            ? { ...now, trades: [...now.trades, trade], most }
+            : now,
         );
       },
       // The pick states how many trades it keeps before it writes them, and states it again when a trade drops, so the
@@ -649,13 +778,20 @@ export function TradeFinder({
       },
     };
     try {
-      const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim), events, controller.signal);
+      const doc = await streamFind(
+        target,
+        passphrase,
+        findBody(target.season, asker, partner, aim),
+        events,
+        controller.signal,
+      );
       if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
       if (!run.isCurrent()) return;
       if (error instanceof ApiError && error.status === 401) onUnauthorized();
-      else setFind({ status: "error", ...toErrorLine(error, timedOut, "The search took too long.") });
+      else
+        setFind({ status: "error", ...toErrorLine(error, timedOut, "The search took too long.") });
       if (error instanceof ApiError && error.status === 422) onRostersStale?.();
     } finally {
       clearTimeout(timer);
@@ -663,7 +799,7 @@ export function TradeFinder({
   }
 
   const pickers = (
-    <div className="flex flex-col gap-sp-3">
+    <div className="gap-sp-3 flex flex-col">
       {/* A find needs the team that asks, so Your team stays in view and a pick here is the pick of Grade mode too. */}
       <TeamChoice
         label="Your team"
@@ -673,7 +809,15 @@ export function TradeFinder({
         onChange={(rosterId) => rosterId !== null && onAsker(rosterId)}
         disabled={off || teams.length === 0}
       />
-      <TeamChoice label="Trade with" listName="Partners" teams={partners} value={partner} every="Every team" onChange={pickPartner} disabled={off || asker === null} />
+      <TeamChoice
+        label="Trade with"
+        listName="Partners"
+        teams={partners}
+        value={partner}
+        every="Every team"
+        onChange={pickPartner}
+        disabled={off || asker === null}
+      />
       <PositionChips value={aim} onChange={pickAim} disabled={off} />
       {/* The hero shows the error line, so the reader sees why the search stopped where the search started. */}
       {find.status === "error" && (
@@ -687,21 +831,22 @@ export function TradeFinder({
   // Every error shows Try Again in place of the find button, the same as the error box of the trade form.
   const action =
     find.status === "error" ? (
-      <button
-        type="button"
+      // The retry starts a new search, so it is async, as the find button is.
+      <PendingButton
         onClick={submit}
         disabled={locked || asker === null}
-        className="press flex h-touch w-full cursor-pointer items-center justify-center gap-sp-2 rounded-card bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark disabled:cursor-not-allowed disabled:opacity-60"
+        pendingAnnouncement=""
+        className="press h-touch gap-sp-2 rounded-card bg-accent px-sp-4 text-lead text-on-dark focus-visible:outline-on-dark flex w-full cursor-pointer items-center justify-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 data-pending:opacity-80"
       >
         <RotateCcw aria-hidden="true" className="size-sp-4" />
         Try Again
-      </button>
+      </PendingButton>
     ) : (
       <PendingButton
         onClick={submit}
         disabled={locked || asker === null}
         pendingAnnouncement=""
-        className="press flex h-touch w-full cursor-pointer items-center justify-center rounded-card bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-dark disabled:cursor-not-allowed disabled:opacity-60 data-pending:opacity-80"
+        className="press h-touch rounded-card bg-accent px-sp-4 text-lead text-on-dark focus-visible:outline-on-dark flex w-full cursor-pointer items-center justify-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 data-pending:opacity-80"
       >
         Find a Trade
       </PendingButton>
@@ -716,7 +861,8 @@ export function TradeFinder({
         : null;
 
   // The wait shows the teams the search reads: the picked partner, or the eleven other teams.
-  const searched = partner === null ? partners : partners.filter((team) => team.roster_id === partner);
+  const searched =
+    partner === null ? partners : partners.filter((team) => team.roster_id === partner);
 
   return (
     <section aria-label="Trade Ideas" className="flex flex-col">
@@ -731,7 +877,16 @@ export function TradeFinder({
           read={find.read}
         />
       ) : (
-        <Hero label="Trade Ideas" art={<HeroMesh />} eyebrow={eyebrow} toggle={toggle} title="Trade Ideas" meta="Who has a trade for you?" feature={pickers} action={action} />
+        <Hero
+          label="Trade Ideas"
+          art={<HeroMesh />}
+          eyebrow={eyebrow}
+          toggle={toggle}
+          title="Trade Ideas"
+          meta="Who has a trade for you?"
+          feature={pickers}
+          action={action}
+        />
       )}
       {/* One part in one place shows the cards of the stream and then the cards of the document, so React keeps it
           mounted and a card that showed stays where it is. */}

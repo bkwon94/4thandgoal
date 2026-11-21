@@ -35,8 +35,12 @@ const PATTERN = "GNGGNGNGNG";
 
 /* Each name shape takes the side and a counter, and gives a line or null when the side has no player to name. */
 const NAME_SHAPES: ((side: StageSide, round: number) => string | null)[] = [
-  (side, round) => (side.gets.length > 0 ? `Reading ${side.gets[round % side.gets.length].name}'s season` : null),
-  (side, round) => (side.gets.length > 0 ? `Checking ${side.team}'s depth at ${side.gets[round % side.gets.length].position}` : null),
+  (side, round) =>
+    side.gets.length > 0 ? `Reading ${side.gets[round % side.gets.length].name}'s season` : null,
+  (side, round) =>
+    side.gets.length > 0
+      ? `Checking ${side.team}'s depth at ${side.gets[round % side.gets.length].position}`
+      : null,
   (side) => `Weighing what ${side.manager} gives up`,
 ];
 
@@ -45,7 +49,10 @@ const NAME_SHAPES: ((side: StageSide, round: number) => string | null)[] = [
 function namedLines(trade: StageTrade): string[] {
   const lines = new Set<string>();
   for (let k = 0; k < 4 * trade.length * NAME_SHAPES.length; k++) {
-    const line = NAME_SHAPES[k % NAME_SHAPES.length](trade[k % trade.length], Math.floor(k / trade.length));
+    const line = NAME_SHAPES[k % NAME_SHAPES.length](
+      trade[k % trade.length],
+      Math.floor(k / trade.length),
+    );
     if (line) lines.add(line);
   }
   return [...lines];
@@ -56,7 +63,8 @@ export function stageLines(trade: StageTrade): string[] {
   const named = namedLines(trade).slice(0, PATTERN.split("N").length - 1);
   const general = [...GENERAL_LINES];
   const middle = [...PATTERN].map((slot) => {
-    const line = slot === "N" ? (named.shift() ?? general.shift()) : (general.shift() ?? named.shift());
+    const line =
+      slot === "N" ? (named.shift() ?? general.shift()) : (general.shift() ?? named.shift());
     return line ?? "";
   });
   return [FIRST_LINE, ...middle, LAST_LINE];

@@ -1,6 +1,8 @@
 /**
  * The chapter rail: the list of the weekly report's chapters beside the page column from the rail tier.
  * It is the client island of the week page. It links each chapter by its id and marks the chapter in view.
+ * Use it when: a week page needs links to its chapters beside the column.
+ * Do not use it when: the page has no chapters to link.
  */
 "use client";
 
@@ -62,7 +64,7 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
     // The band height token holds that height and grows by the Deadline banner, so the rail never sits under the banner.
     <nav
       aria-label="Chapters"
-      className="sticky top-band-height col-start-1 row-start-1 mr-rail-gap hidden w-rail self-start justify-self-end py-sp-5 rail:block"
+      className="mr-rail-gap w-rail py-sp-5 rail:block top-band-height sticky col-start-1 row-start-1 hidden self-start justify-self-end"
     >
       <ul className="m-0 list-none p-0">
         {chapters.map(({ id, label }) => (
@@ -75,7 +77,7 @@ export function ChapterRail({ chapters }: { chapters: RailChapter[] }) {
               href={`#${id}`}
               aria-current={current === id ? "location" : undefined}
               className={cn(
-                "flex min-h-touch items-center py-sp-1 text-label leading-tight font-bold tracking-wide uppercase transition-colors",
+                "min-h-touch py-sp-1 text-label flex items-center leading-tight font-bold tracking-wide uppercase transition-colors",
                 current === id ? "text-accent-ink" : "text-mute hover-fine:text-ink",
               )}
             >

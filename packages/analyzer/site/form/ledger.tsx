@@ -20,25 +20,40 @@ const EVEN_UNDER = 3;
 export function ledgerOf(offer: Offer, asker: number) {
   const mine = offer.sides.find((side) => side.roster_id === asker) ?? offer.sides[0];
   const theirs = offer.sides.find((side) => side !== mine) ?? offer.sides[1];
-  const total = (rosterId: number) => offer.totals.find((t) => t.roster_id === rosterId)?.trade_value ?? null;
-  return { partner: theirs.team, get: mine.gets, give: mine.gives, getValue: total(theirs.roster_id), giveValue: total(mine.roster_id) };
+  const total = (rosterId: number) =>
+    offer.totals.find((t) => t.roster_id === rosterId)?.trade_value ?? null;
+  return {
+    partner: theirs.team,
+    get: mine.gets,
+    give: mine.gives,
+    getValue: total(theirs.roster_id),
+    giveValue: total(mine.roster_id),
+  };
 }
 
 /* One plain line on the gap of the two totals, as a whole percent of the smaller one, such as "You get 9% more trade
    value" for 68.0 against 62.5. No line when a total is missing or 0, because a percent of nothing says nothing. */
 export function gapLine(giveValue: number | null, getValue: number | null): string | null {
   if (giveValue === null || getValue === null || giveValue <= 0 || getValue <= 0) return null;
-  const more = Math.round((Math.max(giveValue, getValue) / Math.min(giveValue, getValue) - 1) * 100);
+  const more = Math.round(
+    (Math.max(giveValue, getValue) / Math.min(giveValue, getValue) - 1) * 100,
+  );
   if (more < EVEN_UNDER) return "Even in trade value";
-  return getValue > giveValue ? `You get ${more}% more trade value` : `You give ${more}% more trade value`;
+  return getValue > giveValue
+    ? `You get ${more}% more trade value`
+    : `You give ${more}% more trade value`;
 }
 
 /* One player row: the face, the name, then the position, the NFL team, and the rank. The row shows no trade value, so
    the card stays calm. The full result shows each value. */
 function LedgerRow({ player }: { player: Player }) {
   return (
-    <li className="flex min-w-0 items-center gap-sp-2">
-      <Headshot src={player.headshot} lazy className="size-avatar flex-none rounded-full bg-page object-cover object-top outline-1 -outline-offset-1 outline-black/10" />
+    <li className="gap-sp-2 flex min-w-0 items-center">
+      <Headshot
+        src={player.headshot}
+        lazy
+        className="size-avatar bg-page flex-none rounded-full object-cover object-top outline-1 -outline-offset-1 outline-black/10"
+      />
       <span className="flex min-w-0 flex-col">
         <b className="text-row leading-tight font-bold text-pretty">{player.name}</b>
         <span className="text-meta text-mute tabular-nums">
@@ -52,19 +67,37 @@ function LedgerRow({ player }: { player: Player }) {
 
 /* One column: the label with its count, the rows, and the total at the foot. The foot sits at the bottom of the grid
    cell, so the two totals line up when one column has more rows. */
-function LedgerColumn({ label, players, value, lead }: { label: string; players: Player[]; value: number | null; lead: boolean }) {
+function LedgerColumn({
+  label,
+  players,
+  value,
+  lead,
+}: {
+  label: string;
+  players: Player[];
+  value: number | null;
+  lead: boolean;
+}) {
   return (
-    <div className="flex min-w-0 flex-col gap-sp-3">
-      <span className={cn("text-label font-bold tracking-caps uppercase", lead ? "text-accent-ink" : "text-mute")}>
+    <div className="gap-sp-3 flex min-w-0 flex-col">
+      <span
+        className={cn(
+          "text-label tracking-caps font-bold uppercase",
+          lead ? "text-accent-ink" : "text-mute",
+        )}
+      >
         {label} · {players.length}
       </span>
-      <ul aria-label={label} className="m-0 flex list-none flex-col gap-sp-3 p-0">
+      <ul aria-label={label} className="gap-sp-3 m-0 flex list-none flex-col p-0">
         {players.map((player) => (
           <LedgerRow key={player.player_id} player={player} />
         ))}
       </ul>
       {value !== null && (
-        <span data-total className="mt-auto border-t border-divider pt-sp-2 text-meta text-mute tabular-nums">
+        <span
+          data-total
+          className="border-divider pt-sp-2 text-meta text-mute mt-auto border-t tabular-nums"
+        >
           Trade value <b className="text-ink">{value.toFixed(1)}</b>
         </span>
       )}
@@ -77,11 +110,11 @@ export function Ledger({ offer, asker }: { offer: Offer; asker: number }) {
   const view = ledgerOf(offer, asker);
   const gap = gapLine(view.giveValue, view.getValue);
   return (
-    <div className="grid grid-cols-2 gap-x-sp-4 gap-y-sp-3 rounded-card bg-card p-sp-3">
+    <div className="gap-x-sp-4 gap-y-sp-3 rounded-card bg-card p-sp-3 grid grid-cols-2">
       <LedgerColumn label="You get" players={view.get} value={view.getValue} lead />
       <LedgerColumn label="You give" players={view.give} value={view.giveValue} lead={false} />
       {gap !== null && (
-        <p data-gap className="col-span-2 m-0 text-meta font-bold text-ink">
+        <p data-gap className="text-meta text-ink col-span-2 m-0 font-bold">
           {gap}
         </p>
       )}
@@ -99,16 +132,17 @@ function NearRow({ idea, asker }: { idea: NearIdea; asker: number }) {
   const view = ledgerOf(idea, asker);
   const names = (players: Player[]) => players.map((player) => player.name).join(", ");
   return (
-    <li className="flex flex-col gap-sp-1 border-t border-divider py-sp-3 first:border-t-0">
-      <div className="flex items-baseline justify-between gap-sp-3">
+    <li className="gap-sp-1 border-divider py-sp-3 flex flex-col border-t first:border-t-0">
+      <div className="gap-sp-3 flex items-baseline justify-between">
         <b className="text-row leading-tight">{countLine(view.give.length, view.get.length)}</b>
-        <span className="min-w-0 truncate text-meta text-mute">With {view.partner}</span>
+        <span className="text-meta text-mute min-w-0 truncate">With {view.partner}</span>
       </div>
-      <p className="m-0 text-meta text-pretty text-ink-2">
-        <span className="font-bold text-accent-ink">Get</span> {names(view.get)} <span className="text-mute">·</span>{" "}
-        <span className="font-bold">Give</span> {names(view.give)}
+      <p className="text-meta text-ink-2 m-0 text-pretty">
+        <span className="text-accent-ink font-bold">Get</span> {names(view.get)}{" "}
+        <span className="text-mute">·</span> <span className="font-bold">Give</span>{" "}
+        {names(view.give)}
       </p>
-      <p className="m-0 text-meta text-pretty text-mute">{idea.reason}</p>
+      <p className="text-meta text-mute m-0 text-pretty">{idea.reason}</p>
     </li>
   );
 }
@@ -119,8 +153,8 @@ function NearRow({ idea, asker }: { idea: NearIdea; asker: number }) {
 export function NearIdeas({ near, asker }: { near: NearIdea[]; asker: number }) {
   if (near.length === 0) return null;
   return (
-    <Collapsible className="flex flex-col rounded-card border border-rule bg-page px-sp-4 py-sp-1">
-      <CollapsibleTrigger className="press group flex min-h-touch w-full cursor-pointer items-center justify-between gap-sp-2 text-row font-bold text-ink focus-visible:outline-2 focus-visible:outline-accent">
+    <Collapsible className="rounded-card border-rule bg-page px-sp-4 py-sp-1 flex flex-col border">
+      <CollapsibleTrigger className="press group min-h-touch gap-sp-2 text-row text-ink focus-visible:outline-accent flex w-full cursor-pointer items-center justify-between font-bold focus-visible:outline-2">
         Close, but not sent · {near.length}
         <ChevronDown
           aria-hidden="true"
@@ -129,7 +163,7 @@ export function NearIdeas({ near, asker }: { near: NearIdea[]; asker: number }) 
         />
       </CollapsibleTrigger>
       <CollapsiblePanel>
-        <ul className="m-0 list-none p-0 pb-sp-2">
+        <ul className="pb-sp-2 m-0 list-none p-0">
           {near.map((idea) => (
             <NearRow key={idea.offer_id} idea={idea} asker={asker} />
           ))}

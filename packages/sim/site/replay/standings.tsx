@@ -57,29 +57,37 @@ export function Standings({
             data-cut={cut || undefined}
             data-out={out || undefined}
             className={cn(
-              "relative flex items-center gap-sp-2 border-b border-rule-dark py-sp-1 transition-colors duration-500",
+              "gap-sp-2 border-rule-dark py-sp-1 relative flex items-center border-b transition-colors duration-500",
               out ? "text-on-dark-muted" : "text-on-dark",
             )}
           >
-            <span className={cn(CELL, "w-sp-5 text-on-dark-muted")}>{String(row.place).padStart(2, "0")}</span>
+            <span className={cn(CELL, "w-sp-5 text-on-dark-muted")}>
+              {String(row.place).padStart(2, "0")}
+            </span>
             {marks === undefined && <Move move={row.move} />}
-            <span className="min-w-0 flex-1 truncate text-body leading-tight font-semibold">{row.name}</span>
+            <span className="text-body min-w-0 flex-1 truncate leading-tight font-semibold">
+              {row.name}
+            </span>
             {bye && (
               <motion.span
                 {...enter(pace, { x: 16 }, { delay: 0.5 })}
-                className="rounded-report bg-accent px-sp-2 font-mono text-meta font-bold tracking-caps text-white"
+                className="rounded-report bg-accent px-sp-2 text-meta tracking-caps font-mono font-bold text-white"
               >
                 BYE
               </motion.span>
             )}
-            <span className={cn(CELL, "w-sp-6 text-right font-bold")}>{record(row.wins, row.losses)}</span>
-            <span className={cn(CELL, "hidden w-[4.5rem] text-right text-on-dark-2 tablet:inline")}>{oneDecimal(row.points)}</span>
+            <span className={cn(CELL, "w-sp-6 text-right font-bold")}>
+              {record(row.wins, row.losses)}
+            </span>
+            <span className={cn(CELL, "text-on-dark-2 tablet:inline hidden w-[4.5rem] text-right")}>
+              {oneDecimal(row.points)}
+            </span>
             {cut && (
               // The cut line draws under the last seed, from the left.
               <motion.span
                 aria-hidden="true"
                 {...enter(pace, { scaleX: 0 }, { duration: 0.6, delay: 0.3 })}
-                className="absolute inset-x-0 -bottom-px h-0.5 origin-left bg-accent"
+                className="bg-accent absolute inset-x-0 -bottom-px h-0.5 origin-left"
               />
             )}
           </motion.li>

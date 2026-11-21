@@ -15,7 +15,16 @@ import {
   nearestLight,
   sceneLines,
 } from "./scene-math";
-import { type DustPoint, driftAt, dustAt, dustOf, linesAt, phaseAt, scatterOf, settleAt } from "./scene-motion";
+import {
+  type DustPoint,
+  driftAt,
+  dustAt,
+  dustOf,
+  linesAt,
+  phaseAt,
+  scatterOf,
+  settleAt,
+} from "./scene-motion";
 
 /* The three colors that the canvas draws, as the `rgb()` strings that the probe element computes (decision 03). */
 export type SceneColors = { accent: string; onDark: string; muted: string };
@@ -76,7 +85,9 @@ export type SceneParts = {
 
 /* The colors of the probe, read once at mount. The three roles are equal in both themes, so a theme switch keeps them right. */
 function colorsOf(probe: HTMLElement): SceneColors {
-  const [accent, onDark, muted] = Array.from(probe.children).map((child) => getComputedStyle(child).color);
+  const [accent, onDark, muted] = Array.from(probe.children).map(
+    (child) => getComputedStyle(child).color,
+  );
   return { accent, onDark, muted };
 }
 
@@ -97,7 +108,13 @@ type Frame = {
   hintAlpha: number;
 };
 
-function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneColors, font: string, frame: Frame) {
+function paint(
+  ctx: CanvasRenderingContext2D,
+  scene: HeroScene,
+  colors: SceneColors,
+  font: string,
+  frame: Frame,
+) {
   const { box, layout, lights } = frame;
   ctx.clearRect(0, 0, box.width, box.height);
   ctx.font = font;
@@ -115,12 +132,16 @@ function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneCol
     ctx.setLineDash([4, 4]);
     for (const guide of layout.guides) {
       ctx.beginPath();
-      guide.points.forEach((point, index) => (index === 0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y)));
+      guide.points.forEach((point, index) =>
+        index === 0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y),
+      );
       ctx.stroke();
     }
     ctx.setLineDash([]);
     ctx.fillStyle = colors.muted;
-    layout.guideLabels.forEach((rect, index) => ctx.fillText(layout.guides[index].label, rect.x, rect.y + rect.height / 2));
+    layout.guideLabels.forEach((rect, index) =>
+      ctx.fillText(layout.guides[index].label, rect.x, rect.y + rect.height / 2),
+    );
 
     // The thin lines of the star chart, between the lights in x order, drawn from left to right.
     const pairs = sceneLines(scene.lights);
@@ -143,7 +164,12 @@ function paint(ctx: CanvasRenderingContext2D, scene: HeroScene, colors: SceneCol
   scene.lights.forEach((light, index) => {
     const point = lights[index];
     ctx.globalAlpha = light.tone === "dim" ? DIM_ALPHA : 1;
-    ctx.fillStyle = light.tone === "flare" ? colors.accent : light.tone === "bright" ? colors.onDark : colors.muted;
+    ctx.fillStyle =
+      light.tone === "flare"
+        ? colors.accent
+        : light.tone === "bright"
+          ? colors.onDark
+          : colors.muted;
     ctx.shadowBlur = light.tone === "flare" ? 12 : 0;
     ctx.shadowColor = colors.accent;
     ctx.beginPath();
@@ -209,7 +235,10 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
 
   const measure = (text: string): SceneSize => {
     ctx.font = font;
-    return { width: Math.ceil(ctx.measureText(text).width), height: Math.ceil(LABEL_FONT_PX * 1.4) };
+    return {
+      width: Math.ceil(ctx.measureText(text).width),
+      height: Math.ceil(LABEL_FONT_PX * 1.4),
+    };
   };
 
   /* The label that shows: the selected light, or the light at rest. A drift shows no label. */
@@ -239,13 +268,18 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
       box,
       layout,
       lights,
-      dust: settles ? (rest ? dustAt(dust, box, Infinity) : dustAt(dust, box, elapsed)) : dustAt(dust, box, still, Infinity),
+      dust: settles
+        ? rest
+          ? dustAt(dust, box, Infinity)
+          : dustAt(dust, box, elapsed)
+        : dustAt(dust, box, still, Infinity),
       lines: settles ? (rest ? 1 : linesAt(elapsed)) : 0,
       rest: rest && settles,
       shown: shownIndex(),
       selected: rest ? selected : null,
       hint: hint && settles,
-      hintAlpha: hintFadeAt === null ? 1 : Math.max(0, 1 - (performance.now() - hintFadeAt) / HINT_FADE_MS),
+      hintAlpha:
+        hintFadeAt === null ? 1 : Math.max(0, 1 - (performance.now() - hintFadeAt) / HINT_FADE_MS),
     });
   }
 
@@ -258,7 +292,8 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
     mark();
     // At rest the loop stops, so the scene does no work until a tap or a slide (story 38). A fade of the hint is the one
     // exception, and its loop stops when the fade ends.
-    if (state === "settle" || state === "drift" || hintFadeAt !== null) loop = requestAnimationFrame(tick);
+    if (state === "settle" || state === "drift" || hintFadeAt !== null)
+      loop = requestAnimationFrame(tick);
   }
 
   function endHintFade() {
@@ -374,10 +409,14 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
   const size = holder.getBoundingClientRect();
   resize(size.width, size.height);
 
-  const sizes = typeof ResizeObserver === "undefined" ? null : new ResizeObserver((entries) => {
-    const rect = entries.at(-1)?.contentRect;
-    if (rect && (rect.width !== box.width || rect.height !== box.height)) resize(rect.width, rect.height);
-  });
+  const sizes =
+    typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver((entries) => {
+          const rect = entries.at(-1)?.contentRect;
+          if (rect && (rect.width !== box.width || rect.height !== box.height))
+            resize(rect.width, rect.height);
+        });
   sizes?.observe(holder);
 
   // The mono font can load after the first frame. Its real widths then place each label and the mark again.

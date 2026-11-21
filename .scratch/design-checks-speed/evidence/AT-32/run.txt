@@ -1,0 +1,28 @@
+$ gh run list --branch design-checks-speed --workflow check.yml --event push --limit 5 --json databaseId,event,headSha
+[]
+
+$ gh run list --branch design-checks-speed --workflow check.yml --limit 30 --json event --jq "group_by(.event) | map({event: .[0].event, count: length})"
+[{"count":9,"event":"workflow_dispatch"}]
+
+$ gh run view 44873662117 --json event,headBranch,headSha,conclusion
+{"conclusion":"success","event":"workflow_dispatch","headBranch":"design-checks-speed","headSha":"4d5f4d1300e688c11124bb0f2e5f7866a4ecc828"}
+
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507714/logs | grep -n -E "Run make check-site-unit|BUN_TEST_SHARD|BUN_TEST_BASE|bun test --isolate|The run takes|--changed|Ran [0-9]+ tests|==> test"   # job site-unit (1) of run 44873662117
+53:2026-11-21T06:02:48.8608382Z   BUN_TEST_SHARD: 1/1
+54:2026-11-21T06:02:48.8608673Z   BUN_TEST_BASE: 
+211:2026-11-21T06:03:13.6475252Z   BUN_TEST_SHARD: 1/1
+212:2026-11-21T06:03:13.6475376Z   BUN_TEST_BASE: 
+240:2026-11-21T06:03:16.4824088Z   BUN_TEST_SHARD: 1/1
+241:2026-11-21T06:03:16.4824210Z   BUN_TEST_BASE: 
+265:2026-11-21T06:03:20.9603049Z   BUN_TEST_SHARD: 1/1
+266:2026-11-21T06:03:20.9603179Z   BUN_TEST_BASE: 
+282:2026-11-21T06:03:22.5252165Z   BUN_TEST_SHARD: 1/1
+283:2026-11-21T06:03:22.5252312Z   BUN_TEST_BASE: 
+294:2026-11-21T06:03:24.5581499Z ##[group]Run make check-site-unit
+298:2026-11-21T06:03:24.5610226Z   BUN_TEST_SHARD: 1/1
+299:2026-11-21T06:03:24.5610361Z   BUN_TEST_BASE: 
+332:2026-11-21T06:04:32.1969031Z bun test --isolate --parallel=4 --shard=1/1 --timings=bun-test-timings.json
+333:2026-11-21T06:04:32.1969414Z The run takes the full suite.
+5862:2026-11-21T06:04:32.2968920Z (pass) the shard of a bun test run > is no flag when BUN_TEST_SHARD is not set or empty, so a local run takes every file [0.14ms]
+8223:2026-11-21T06:04:32.3413751Z Ran 1954 tests across 203 files. [66.80s]
+8224:2026-11-21T06:04:32.3413822Z ==> test: ok (67.2 s)

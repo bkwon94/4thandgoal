@@ -61,7 +61,11 @@ const matchesAny = (file, globs) => globs.some((glob) => globRegExp(glob).test(f
 
 /* The name, the route, and the globs of each flow of the flow list. The smoke run checks the rest of each flow. */
 export function readFlowGlobs(file) {
-  return JSON.parse(readFileSync(file, "utf8")).map(({ name, route, globs }) => ({ name, route, globs }));
+  return JSON.parse(readFileSync(file, "utf8")).map(({ name, route, globs }) => ({
+    name,
+    route,
+    globs,
+  }));
 }
 
 /*
@@ -70,7 +74,9 @@ export function readFlowGlobs(file) {
  */
 export function pickFlows(flows, files) {
   const shared = files.some((file) => matchesAny(file, SHARED_GLOBS));
-  const picked = flows.filter((flow) => shared || files.some((file) => matchesAny(file, flow.globs)));
+  const picked = flows.filter(
+    (flow) => shared || files.some((file) => matchesAny(file, flow.globs)),
+  );
   const pipelineOnly = files.length > 0 && files.every((file) => matchesAny(file, PIPELINE_GLOBS));
   return { flows: picked.map((flow) => flow.name), pipelineOnly };
 }
@@ -78,15 +84,22 @@ export function pickFlows(flows, files) {
 /* The output of the pick: one flow name per line, or one line that says why the pick is empty. */
 export function describePick(pick) {
   if (pick.flows.length > 0) return pick.flows.join("\n");
-  if (pick.pipelineOnly) return "No flow: the diff touches the pipeline only, and the base and head rebuild covers it.";
+  if (pick.pipelineOnly)
+    return "No flow: the diff touches the pipeline only, and the base and head rebuild covers it.";
   return "No flow: no file of the diff matches a glob of the flow list.";
 }
 
 /* The files of the diff since the merge base of the ref and HEAD: the commits, the changes of the worktree, and the new files. */
 export function diffFiles(base) {
-  const git = (...args) => execFileSync("git", args, { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
+  const git = (...args) =>
+    execFileSync("git", args, { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean);
   const [mergeBase] = git("merge-base", base, "HEAD");
-  return [...new Set([...git("diff", "--name-only", mergeBase), ...git("ls-files", "--others", "--exclude-standard")])];
+  return [
+    ...new Set([
+      ...git("diff", "--name-only", mergeBase),
+      ...git("ls-files", "--others", "--exclude-standard"),
+    ]),
+  ];
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -99,5 +112,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   // Each file named after the options stands in for the diff, so a pick of one file needs no branch.
   const named = args.filter((_, index) => at === -1 || (index !== at && index !== at + 1));
-  console.log(describePick(pickFlows(readFlowGlobs(FLOW_LIST), named.length > 0 ? named : diffFiles(base))));
+  console.log(
+    describePick(pickFlows(readFlowGlobs(FLOW_LIST), named.length > 0 ? named : diffFiles(base))),
+  );
 }

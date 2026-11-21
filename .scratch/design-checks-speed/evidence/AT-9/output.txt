@@ -1,0 +1,19 @@
+$ git ls-files apps/site/src | grep ui-sdk-rule
+exit 1
+
+$ ls apps/site/src/ui-sdk-rule.test.ts
+"apps/site/src/ui-sdk-rule.test.ts": No such file or directory (os error 2)
+exit 2
+
+$ git diff main -- docs/adr/0035*
+diff --git a/docs/adr/0035-each-ui-sdk-part-has-one-wrapper.md b/docs/adr/0035-each-ui-sdk-part-has-one-wrapper.md
+index 8100634c..70a6ec1f 100644
+--- a/docs/adr/0035-each-ui-sdk-part-has-one-wrapper.md
++++ b/docs/adr/0035-each-ui-sdk-part-has-one-wrapper.md
+@@ -7,4 +7,4 @@ ui-sdk renders no styles and offers an optional default look, `web.css`. The loo
+ - Tailwind styles each part on `data-slot`, the state attributes, and the CSS variables. The site loads no `web.css`.
+ - `globals.css` declares `@layer ui-sdk;` above the Tailwind import, so the site styles win over any ui-sdk style.
+ - The `package.json` of the design package alone declares `@ui-sdk/react` and `@ui-sdk/core`, each at one exact version. The site app gets them through its workspace dependency and does not declare them.
+-- The rule test `apps/site/src/ui-sdk-rule.test.ts` fails an import of `@ui-sdk` outside `packages/design/site/ui/`. The failure names the file and the line.
++- The rule `no-restricted-imports` of the Oxlint config `.oxlintrc.json` fails an import of `@ui-sdk` outside `packages/design/site/ui/`. The failure names the file and the line. ADR 0038 moved the rule there from a rule test.
+exit 0

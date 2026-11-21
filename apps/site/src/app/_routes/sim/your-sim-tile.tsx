@@ -19,7 +19,10 @@ export function YourSimTile({ data, href }: { data: SimTileData; href: string })
   const tile = you === undefined || you === null ? null : data.teams[you];
   return (
     // The tile holds its place before the read and fades in after it, so the fact never flashes before the odds.
-    <div data-ready={you !== undefined} className="opacity-0 transition-opacity duration-200 ease-out data-[ready=true]:opacity-100 motion-reduce:transition-none">
+    <div
+      data-ready={you !== undefined}
+      className="opacity-0 transition-opacity duration-200 ease-out data-[ready=true]:opacity-100 motion-reduce:transition-none"
+    >
       <SimTile tile={tile} fact={data.fact} href={href} />
     </div>
   );

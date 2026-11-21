@@ -3,45 +3,50 @@
  * moves, and each change of place or state shows only through a fade. matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest, spyOn } from "bun:test";
 import { weekSim } from "../fixtures/sim";
 import { SimPage } from "../page/sim-page";
 import { replaySeason } from "../replay/season";
 import { Standings } from "./standings";
 import { stepsOf } from "./steps";
 
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
-);
+const matchMediaStub = (query: string) =>
+  ({
+    // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+    matches: query.includes("prefers-reduced-motion"),
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as MediaQueryList;
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  spyOn(globalThis, "matchMedia").mockImplementation(matchMediaStub);
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
   // Framer Motion asks for its next frame once and waits for it, so the frame it asked for under the fake clock runs here.
-  vi.advanceTimersByTime(100);
-  vi.useRealTimers();
-});
-
-afterAll(() => {
-  vi.unstubAllGlobals();
+  jest.advanceTimersByTime(100);
+  jest.useRealTimers();
 });
 
 const YOU = 6;
+
+/* happy-dom has Element.prototype.animate, so Framer Motion runs a fade as a Web Animation and the inline style holds no
+   middle value. Framer Motion checks for the method once per file, so a file that reads the middle values hides it first. */
+const animate = Element.prototype.animate;
+beforeEach(() => {
+  // @ts-expect-error Framer Motion checks for an own property, so only a delete hides it.
+  delete Element.prototype.animate;
+});
+afterEach(() => {
+  Element.prototype.animate = animate;
+});
 
 /* No element of the replay moves: no inline transform holds a translate, a scale, or a rotate. A fade sets only opacity. */
 function expectNoMovement(box: HTMLElement) {
@@ -55,7 +60,7 @@ function expectNoMovement(box: HTMLElement) {
 async function playChecked(ms: number, box: () => HTMLElement) {
   for (const hold of [16, Math.max(0, ms / 2 - 16), ms / 2]) {
     await act(async () => {
-      vi.advanceTimersByTime(hold);
+      jest.advanceTimersByTime(hold);
     });
     expectNoMovement(box());
   }
@@ -104,7 +109,7 @@ async function framesOf<T>(ms: number, read: () => T): Promise<T[]> {
   const out: T[] = [read()];
   for (let t = 0; t < ms; t += 16) {
     await act(async () => {
-      vi.advanceTimersByTime(16);
+      jest.advanceTimersByTime(16);
     });
     out.push(read());
   }
@@ -119,9 +124,21 @@ describe("each change under reduced motion is a fade", () => {
     const at = all.findIndex((rows, i) => i > 0 && orderOf(rows) !== orderOf(all[i - 1]));
     expect(at).toBeGreaterThan(0);
     const [before, after] = [all[at - 1], all[at]];
-    const props = { marks: null, week: null, spots: season.seeds.length, byes: season.byes, yourTeam: YOU, avatars: {}, off: true, cut: false };
+    const props = {
+      marks: null,
+      week: null,
+      spots: season.seeds.length,
+      byes: season.byes,
+      yourTeam: YOU,
+      avatars: {},
+      off: true,
+      cut: false,
+    };
     const { container, rerender } = render(<Standings rows={before} {...props} />);
-    const orderShown = (list: Element) => [...list.querySelectorAll("li[data-roster]")].map((li) => li.getAttribute("data-roster")).join(",");
+    const orderShown = (list: Element) =>
+      [...list.querySelectorAll("li[data-roster]")]
+        .map((li) => li.getAttribute("data-roster"))
+        .join(",");
     const old = orderShown(container.querySelector('ol[aria-label="Standings"]')!);
     rerender(<Standings rows={after} {...props} />);
     // Each frame: the order of each list on the stage, with the opacity it shows.
@@ -144,10 +161,14 @@ describe("each change under reduced motion is a fade", () => {
     render(<SimPage sim={weekSim} you={YOU} random={() => 0} />);
     fireEvent.click(screen.getByRole("button", { name: "Sim the season" }));
     const skip = within(stage()).getByRole("button", { name: "Skip" });
-    for (let i = 0; i < 40 && within(stage()).queryByRole("button", { name: "Skip" }) !== null; i += 1) {
+    for (
+      let i = 0;
+      i < 40 && within(stage()).queryByRole("button", { name: "Skip" }) !== null;
+      i += 1
+    ) {
       await act(async () => {
         fireEvent.click(within(stage()).getByRole("button", { name: "Skip" }));
-        vi.advanceTimersByTime(16);
+        jest.advanceTimersByTime(16);
       });
     }
     const frames = await framesOf(1000, () => {
@@ -169,7 +190,7 @@ describe("each change under reduced motion is a fade", () => {
     for (let i = 0; i < 40 && tab().getAttribute("aria-current") !== "step"; i += 1) {
       await act(async () => {
         fireEvent.click(within(stage()).getByRole("button", { name: "Skip" }));
-        vi.advanceTimersByTime(16);
+        jest.advanceTimersByTime(16);
       });
     }
     // The CSS of a disabled tab sets 0.4, and the reduced-motion rule of the site stops its transition, so the fade

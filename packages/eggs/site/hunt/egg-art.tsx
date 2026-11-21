@@ -10,7 +10,8 @@ import { EGG_MIDDLE, EGG_SIZE, halvesAt, type Crack } from "./crack";
 import type { Slot } from "./slots";
 
 // The outline of the egg. Both halves clip the same art along a zigzag.
-const EGG_PATH = "M90 8 C136 8 168 92 168 138 C168 184 134 212 90 212 C46 212 12 184 12 138 C12 92 44 8 90 8 Z";
+const EGG_PATH =
+  "M90 8 C136 8 168 92 168 138 C168 184 134 212 90 212 C46 212 12 184 12 138 C12 92 44 8 90 8 Z";
 // The halves of an egg at rest, split at the middle of the egg.
 const AT_REST = halvesAt(EGG_MIDDLE.y);
 // The times of the crack, in ms, as the class egg-shake of globals.css plays them. The squash runs first, so the lines
@@ -29,7 +30,11 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
   return (
     <svg
       viewBox={`0 0 ${EGG_SIZE.width} ${EGG_SIZE.height}`}
-      className={cn("relative h-55 w-45 overflow-visible", motion && !crack && "egg-bob", crack && "egg-shake")}
+      className={cn(
+        "relative h-55 w-45 overflow-visible",
+        motion && !crack && "egg-bob",
+        crack && "egg-shake",
+      )}
       aria-hidden="true"
     >
       <defs>
@@ -38,7 +43,7 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
           <use href={`#egg-${id}`} />
         </clipPath>
         <pattern id={`grid-${id}`} width="14" height="14" patternUnits="userSpaceOnUse">
-          <path d="M14 0H0V14" className="fill-none stroke-grid" strokeWidth="1" />
+          <path d="M14 0H0V14" className="stroke-grid fill-none" strokeWidth="1" />
         </pattern>
         <radialGradient id={`glow-${id}`} cx="78%" cy="86%" r="72%">
           <stop offset="0" style={{ stopColor: "var(--color-accent)", stopOpacity: 0.8 }} />
@@ -66,12 +71,28 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
             <rect width={EGG_SIZE.width} height={EGG_SIZE.height} fill={ref("glow")} />
           </g>
           {/* The CPC house: the roof, then a white square and a red square, as in the logo. */}
-          <path d="M64 100 L90 82 L116 100" className="fill-none stroke-on-dark" strokeWidth="4" strokeLinejoin="round" />
+          <path
+            d="M64 100 L90 82 L116 100"
+            className="stroke-on-dark fill-none"
+            strokeWidth="4"
+            strokeLinejoin="round"
+          />
           <path d="M90 82 V102" className="stroke-on-dark" strokeWidth="3" />
           <rect x="67" y="104" width="21" height="21" className="fill-on-dark" />
           <rect x="92" y="104" width="21" height="21" className="fill-accent" />
-          <path d="M50 42 C58 30 70 22 82 19" className="fill-none stroke-on-dark" strokeOpacity=".45" strokeWidth="5" strokeLinecap="round" />
-          <use href={`#egg-${id}`} className="fill-none stroke-accent-text" strokeOpacity=".75" strokeWidth="1.5" />
+          <path
+            d="M50 42 C58 30 70 22 82 19"
+            className="stroke-on-dark fill-none"
+            strokeOpacity=".45"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          <use
+            href={`#egg-${id}`}
+            className="stroke-accent-text fill-none"
+            strokeOpacity=".75"
+            strokeWidth="1.5"
+          />
         </g>
       </defs>
       {/* The whole art shows until the burst, and the two halves show only from the burst (the classes egg-half and
@@ -103,7 +124,7 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
                 key={index}
                 data-testid="egg-crack-line"
                 points={line.points}
-                className="egg-crack fill-none stroke-on-dark"
+                className="egg-crack stroke-on-dark fill-none"
                 strokeWidth="2.4"
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -125,7 +146,13 @@ export function Egg({ crack, motion }: { crack: Crack | null; motion: boolean })
               className="egg-shard fill-chip-dark stroke-accent-text"
               strokeOpacity=".8"
               strokeWidth="1"
-              style={{ "--egg-dx": `${shard.dx}px`, "--egg-dy": `${shard.dy}px`, "--egg-turn": `${shard.turn}deg` } as CSSProperties}
+              style={
+                {
+                  "--egg-dx": `${shard.dx}px`,
+                  "--egg-dy": `${shard.dy}px`,
+                  "--egg-turn": `${shard.turn}deg`,
+                } as CSSProperties
+              }
             />
           ))}
         </>
@@ -169,14 +196,27 @@ export function SlotRow({
   return (
     <div
       aria-hidden="true"
-      className="grid max-w-full gap-sp-2"
+      className="gap-sp-2 grid max-w-full"
       style={{ gridTemplateColumns: `repeat(${slots.length}, minmax(0, ${width}))` }}
     >
       {slots.map((slot, index) => {
-        const box = cn("relative inline-flex w-full items-center justify-center rounded-letter font-mono font-bold", size);
+        const box = cn(
+          "rounded-letter relative inline-flex w-full items-center justify-center font-mono font-bold",
+          size,
+        );
         if (slot.kind === "held") {
           return (
-            <span key={index} className={cn(box, tone === "page" ? (faded ? "bg-mute text-page" : "bg-ink text-page") : "bg-on-dark text-band")}>
+            <span
+              key={index}
+              className={cn(
+                box,
+                tone === "page"
+                  ? faded
+                    ? "bg-mute text-page"
+                    : "bg-ink text-page"
+                  : "bg-on-dark text-band",
+              )}
+            >
               {slot.letter}
             </span>
           );
@@ -184,13 +224,27 @@ export function SlotRow({
         if (slot.kind === "new") {
           if (tone === "page" && !picked) {
             return (
-              <span key={index} className={cn(box, "egg-ghost border-2 border-dashed border-accent text-accent-ink")}>
+              <span
+                key={index}
+                className={cn(
+                  box,
+                  "egg-ghost border-accent text-accent-ink border-2 border-dashed",
+                )}
+              >
                 {slot.letter}
               </span>
             );
           }
           return (
-            <span key={index} className={cn(box, "bg-accent text-on-dark shadow-orb", picked && "egg-beat", landing && "egg-land")}>
+            <span
+              key={index}
+              className={cn(
+                box,
+                "bg-accent text-on-dark shadow-orb",
+                picked && "egg-beat",
+                landing && "egg-land",
+              )}
+            >
               {landing && <span className="egg-burst egg-burst-land" />}
               <span className="relative">{slot.letter}</span>
             </span>
@@ -199,7 +253,11 @@ export function SlotRow({
         return (
           <span
             key={index}
-            className={cn(box, "border-2 border-dashed", tone === "page" ? "border-rule" : "border-rule-dark")}
+            className={cn(
+              box,
+              "border-2 border-dashed",
+              tone === "page" ? "border-rule" : "border-rule-dark",
+            )}
           />
         );
       })}

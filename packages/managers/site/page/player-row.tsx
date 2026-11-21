@@ -36,7 +36,10 @@ export function PlayerRow({
   stable?: string;
 }) {
   return (
-    <li className="flex items-center gap-sp-2 border-t border-rule py-sp-2 tabular-nums first:border-t-0" {...(stable ? stableId(stable) : {})}>
+    <li
+      className="gap-sp-2 border-rule py-sp-2 flex items-center border-t tabular-nums first:border-t-0"
+      {...(stable ? stableId(stable) : {})}
+    >
       {/* The name sits next to the frame, so the frame is decorative. */}
       <PhotoFrame src={photoOf(player)} name={player.name} decorative />
       <span className="flex min-w-0 flex-1 flex-col">
@@ -66,6 +69,6 @@ function Quiet({ children }: { children: ReactNode }) {
 
 /* The list of rows, or one quiet line when the list is empty. */
 export function PlayerRows({ empty, children }: { empty: string; children: ReactNode[] }) {
-  if (children.length === 0) return <div className="m-0 text-body text-mute">{empty}</div>;
-  return <ol className="m-0 list-none p-0 text-row leading-tight">{children}</ol>;
+  if (children.length === 0) return <div className="text-body text-mute m-0">{empty}</div>;
+  return <ol className="text-row m-0 list-none p-0 leading-tight">{children}</ol>;
 }

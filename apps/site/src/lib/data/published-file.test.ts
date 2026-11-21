@@ -2,11 +2,10 @@
  * Tests of the shared read of a published file: a missing file, a file of another schema version, and a good file.
  * Each test writes a real file to a temp folder and reads it with the real schema of the sim file.
  */
-// @vitest-environment node
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { simSchema } from "@cpc/sim/schema/sim";
 import simFixture from "@cpc/sim/fixtures/sim.json";
 import { readPublished } from "./published-file";

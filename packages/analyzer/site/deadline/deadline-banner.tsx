@@ -28,7 +28,12 @@ const PASSED = `${PASSED_TEXT}. Good luck in the playoffs.`;
 /* The banner for the Lock `lock`, in ms since the epoch. The app passes it only for a client with a Lock. It also passes
    the API of the Trade Wire route and the trade links, because the package reads no config. findHref is null while the
    finder flag is off. */
-export function DeadlineBanner({ lock, api, gradeHref, findHref }: { lock: number; api: ApiTarget } & TradeLinks) {
+export function DeadlineBanner({
+  lock,
+  api,
+  gradeHref,
+  findHref,
+}: { lock: number; api: ApiTarget } & TradeLinks) {
   const deadline = useDeadline(lock);
   const ref = useRef<HTMLDivElement>(null);
   const ended = deadline?.phase === "ended";
@@ -41,7 +46,8 @@ export function DeadlineBanner({ lock, api, gradeHref, findHref }: { lock: numbe
     const root = document.documentElement;
     // The box height keeps the fraction of a pixel. offsetHeight rounds it, so the band token would end a fraction short
     // of the real bottom of the band.
-    const measure = () => root.style.setProperty("--deadline-banner-h", `${el.getBoundingClientRect().height}px`);
+    const measure = () =>
+      root.style.setProperty("--deadline-banner-h", `${el.getBoundingClientRect().height}px`);
     measure();
     // A browser with no ResizeObserver, such as jsdom, keeps the first height.
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
@@ -56,7 +62,11 @@ export function DeadlineBanner({ lock, api, gradeHref, findHref }: { lock: numbe
   const phase = deadline?.phase ?? "open";
   return (
     <div ref={ref} data-deadline-banner="" data-phase={phase}>
-      {deadline === null ? <Placeholder /> : <Banner deadline={deadline} api={api} links={{ gradeHref, findHref }} />}
+      {deadline === null ? (
+        <Placeholder />
+      ) : (
+        <Banner deadline={deadline} api={api} links={{ gradeHref, findHref }} />
+      )}
     </div>
   );
 }
@@ -78,7 +88,15 @@ function nameOf(closed: boolean, count: number | null): string {
   return `Open the Trade Wire, ${count} new ${count === 1 ? "trade" : "trades"}`;
 }
 
-function Banner({ deadline, api, links }: { deadline: Deadline; api: ApiTarget; links: TradeLinks }) {
+function Banner({
+  deadline,
+  api,
+  links,
+}: {
+  deadline: Deadline;
+  api: ApiTarget;
+  links: TradeLinks;
+}) {
   const phase = deadline.phase === "ended" ? "closed" : deadline.phase;
   const closed = phase === "closed";
   // The poll stops at the trade deadline. After it the hook reads once more for the final list.
@@ -92,7 +110,7 @@ function Banner({ deadline, api, links }: { deadline: Deadline; api: ApiTarget; 
       <SheetTrigger
         aria-label={name}
         className={cn(
-          "group block w-full cursor-pointer border-0 border-t border-solid p-0 text-left transition-[filter] duration-150 ease-(--ease-out) active:brightness-95 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+          "group focus-visible:outline-accent block w-full cursor-pointer border-0 border-t border-solid p-0 text-left transition-[filter] duration-150 ease-(--ease-out) focus-visible:outline-2 focus-visible:-outline-offset-2 active:brightness-95",
           TONE[phase],
         )}
       >
@@ -123,13 +141,15 @@ function Grid({
     <span
       data-deadline-grid
       className={cn(
-        "mx-auto grid max-w-band grid-cols-[var(--spacing-sp-2)_minmax(0,1fr)_auto] items-center gap-x-sp-2 px-gutter py-sp-2",
+        "max-w-band gap-x-sp-2 px-gutter py-sp-2 mx-auto grid grid-cols-[var(--spacing-sp-2)_minmax(0,1fr)_auto] items-center",
         "transition-transform duration-150 ease-(--ease-out) group-active:scale-[0.98] motion-reduce:transition-none",
         hidden && "invisible",
       )}
     >
       {closed ? (
-        <span className="col-start-2 row-span-2 text-row leading-tight font-bold text-pretty">{PASSED}</span>
+        <span className="text-row col-start-2 row-span-2 leading-tight font-bold text-pretty">
+          {PASSED}
+        </span>
       ) : (
         <>
           {/* The eyebrow takes the meta size, the smallest size of the scale over the floor of 11px for other text at
@@ -137,7 +157,7 @@ function Grid({
           <span
             data-deadline-eyebrow
             className={cn(
-              "col-start-2 row-start-1 font-mono text-meta leading-tight font-bold tracking-caps uppercase",
+              "text-meta tracking-caps col-start-2 row-start-1 font-mono leading-tight font-bold uppercase",
               last ? "deadline-shimmer text-on-dark" : "text-mute",
             )}
           >
@@ -145,18 +165,24 @@ function Grid({
           </span>
           <LiveDot className={cn("col-start-1 row-start-2", last && "bg-on-dark")} />
           {/* A non-breaking space keeps the line height before the first tick. */}
-          <span data-deadline-countdown className="col-start-2 row-start-2 font-mono text-body leading-tight font-bold tabular-nums">
+          <span
+            data-deadline-countdown
+            className="text-body col-start-2 row-start-2 font-mono leading-tight font-bold tabular-nums"
+          >
             {countdown ?? " "}
           </span>
         </>
       )}
-      <span className="col-start-3 row-span-2 row-start-1 flex items-center gap-sp-2 text-row font-bold">
+      <span className="gap-sp-2 text-row col-start-3 row-span-2 row-start-1 flex items-center font-bold">
         Trade Wire
         {/* The count of the trades of the week. With no trade the badge leaves, so the banner never says "0 new". After
             the trade deadline the badge reads Final. The name of the button carries the count, so the badge is hidden
             from a screen reader. */}
         {closed ? (
-          <span aria-hidden="true" className="rounded-pill border border-rule bg-card px-sp-2 py-sp-0 font-mono text-meta text-mute">
+          <span
+            aria-hidden="true"
+            className="rounded-pill border-rule bg-card px-sp-2 py-sp-0 text-meta text-mute border font-mono"
+          >
             Final
           </span>
         ) : (
@@ -165,7 +191,8 @@ function Grid({
               aria-hidden="true"
               data-deadline-badge
               className={cn(
-                "flex items-center gap-[0.25em] rounded-pill px-sp-2 py-sp-0 font-mono text-meta",
+                // oxlint-disable-next-line design/no-arbitrary-value -- the gap before "new" is a quarter of the text size, so it scales with the font in em
+                "rounded-pill px-sp-2 py-sp-0 text-meta flex items-center gap-[0.25em] font-mono",
                 last ? "bg-on-dark text-accent" : "bg-accent text-on-dark",
               )}
             >

@@ -57,7 +57,9 @@ function expectWholePills(pills: Awaited<ReturnType<typeof readPills>>) {
 }
 
 for (const width of [375, 768, 1280]) {
-  test(`the front door shows its 3 Suggestion chips whole at ${width}px (AT-4 of front-door)`, async ({ page }) => {
+  test(`the front door shows its 3 Suggestion chips whole at ${width}px (AT-4 of front-door)`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(`${server.url}${DOOR}`);
     // A first visit asks for Your team. The first team of the sheet works for each client.
@@ -72,18 +74,30 @@ for (const width of [375, 768, 1280]) {
   });
 }
 
-test("the 3 widest chip labels show whole in one row with More at 375px (AT-42)", async ({ page }) => {
+test("the 3 widest chip labels show whole in one row with More at 375px (AT-42)", async ({
+  page,
+}) => {
   // The Suggestions route of the API serves the 3 widest labels as urgent, so they lead the row. The first load finds
   // them in the font of the row, and the reload shows them.
   let widest: string[] = [];
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.route("**/clients/**", () => {});
   await page.route("**/clients/*/suggestions", (route) =>
     route.fulfill({
       status: route.request().method() === "OPTIONS" ? 204 : 200,
-      headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST" },
+      headers: {
+        "access-control-allow-origin": "*",
+        "access-control-allow-headers": "*",
+        "access-control-allow-methods": "POST",
+      },
       contentType: "application/json",
-      body: JSON.stringify({ facts: Object.fromEntries(widest.map((key) => [key, "a fact"])), urgent: widest }),
+      body: JSON.stringify({
+        facts: Object.fromEntries(widest.map((key) => [key, "a fact"])),
+        urgent: widest,
+      }),
     }),
   );
   await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
@@ -92,16 +106,28 @@ test("the 3 widest chip labels show whole in one row with More at 375px (AT-42)"
   await page.getByRole("dialog").getByRole("button").first().click();
   const row = page.getByRole("group", { name: "Suggestions" });
   // "More" has the font of a chip name, so a canvas in that font measures each label.
-  widest = await row.getByRole("button", { name: "More" }).locator("span").first().evaluate(async (more, topics) => {
-    await document.fonts.ready;
-    const canvas = document.createElement("canvas").getContext("2d")!;
-    canvas.font = getComputedStyle(more).font;
-    const width = (text: string) => canvas.measureText(text).width;
-    return [...topics].sort((one, two) => width(two.chip) - width(one.chip)).slice(0, 3).map((topic) => topic.key);
-  }, TOPICS.map(({ key, chip }) => ({ key, chip })));
+  widest = await row
+    .getByRole("button", { name: "More" })
+    .locator("span")
+    .first()
+    .evaluate(
+      async (more, topics) => {
+        await document.fonts.ready;
+        const canvas = document.createElement("canvas").getContext("2d")!;
+        canvas.font = getComputedStyle(more).font;
+        const width = (text: string) => canvas.measureText(text).width;
+        return [...topics]
+          .sort((one, two) => width(two.chip) - width(one.chip))
+          .slice(0, 3)
+          .map((topic) => topic.key);
+      },
+      TOPICS.map(({ key, chip }) => ({ key, chip })),
+    );
   await page.reload();
   const chips = row.getByRole("button").filter({ hasNotText: /^More$/ });
-  await expect(chips).toHaveText(widest.map((key) => TOPICS.find((topic) => topic.key === key)!.chip));
+  await expect(chips).toHaveText(
+    widest.map((key) => TOPICS.find((topic) => topic.key === key)!.chip),
+  );
   // The chips of the day fade out after the picks of the API land, so the row waits until only "More" and 3 chips stay.
   await expect(row.locator("button")).toHaveCount(4);
   await expect(chips.last()).toHaveCSS("opacity", "1");
@@ -115,7 +141,10 @@ const { defaultBrowserType: _browser, ...phone } = devices["iPhone 15"];
    focus. The fake keyboard is 336 px tall, and it closes on blur, as the real one does. A kept passphrase lets a question
    route, so no card of the passphrase takes the focus. The API calls fail, because the run uses no real API. */
 async function fakeKeyboard(page: Page) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript(() => {
     localStorage.setItem("cpc.passphrase", "test");
     const keyboard = () => (document.activeElement?.tagName === "INPUT" ? 336 : 0);
@@ -159,7 +188,9 @@ test.describe("Send on a phone with the keyboard open", () => {
     await expect(field, "Send closes the keyboard").not.toBeFocused();
   });
 
-  test("each tap on a Suggestion chip acts while the field has the focus (ticket 37)", async ({ page }) => {
+  test("each tap on a Suggestion chip acts while the field has the focus (ticket 37)", async ({
+    page,
+  }) => {
     await fakeKeyboard(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
@@ -170,18 +201,30 @@ test.describe("Send on a phone with the keyboard open", () => {
     await field.fill("Who should I start?");
     await page.getByRole("button", { name: "Send" }).tap();
     await expect(page.getByRole("button", { name: "Clear" })).toBeVisible();
-    const chip = row.getByRole("button").filter({ hasNotText: /^More$/ }).first();
+    const chip = row
+      .getByRole("button")
+      .filter({ hasNotText: /^More$/ })
+      .first();
     const name = (await chip.getAttribute("aria-label"))!;
     await field.tap();
     await expect(field).toBeFocused();
     // The first tap shows the fact of the chip in the strip, and the keyboard stays open (decision 02).
     await chip.tap();
-    await expect(chip, "one tap on the chip shows its fact").toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByRole("button", { name: `Open ${name.split(":")[0]}`, exact: true }), "the strip shows").toBeVisible();
+    await expect(chip, "one tap on the chip shows its fact").toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    await expect(
+      page.getByRole("button", { name: `Open ${name.split(":")[0]}`, exact: true }),
+      "the strip shows",
+    ).toBeVisible();
     await expect(field, "the first tap keeps the keyboard").toBeFocused();
     // The second tap opens the Topic. A picked Topic drops off the Suggestions, so the chip is gone when the tap acted.
     await chip.tap();
-    await expect(row.getByRole("button", { name }), "the second tap on the chip picks it").toHaveCount(0);
+    await expect(
+      row.getByRole("button", { name }),
+      "the second tap on the chip picks it",
+    ).toHaveCount(0);
     await expect(field, "a chip closes the keyboard").not.toBeFocused();
   });
 });
@@ -192,17 +235,25 @@ test.describe("the ask box on a phone with the keyboard open", () => {
   /* The space between the foot of the ask box and the top of the fake keyboard, once the glide is still. */
   async function gapOverKeyboard(page: Page) {
     const form = page.getByRole("form", { name: "Ask" });
-    return form.evaluate((element) => Math.round(innerHeight - 336 - element.getBoundingClientRect().bottom));
+    return form.evaluate((element) =>
+      Math.round(innerHeight - 336 - element.getBoundingClientRect().bottom),
+    );
   }
 
-  test("the ask box sits right above the keyboard in the empty Thread and in a Thread with an entry", async ({ page }) => {
+  test("the ask box sits right above the keyboard in the empty Thread and in a Thread with an entry", async ({
+    page,
+  }) => {
     await fakeKeyboard(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
     const field = page.getByRole("textbox", { name: "Ask a question" });
     // The empty Thread holds the ask box at its center. The focus pins it right above the keyboard: the dock pads it by 12 px.
     await field.tap();
-    await expect.poll(() => gapOverKeyboard(page), { message: "the ask box of the empty Thread sits right above the keyboard" }).toBe(12);
+    await expect
+      .poll(() => gapOverKeyboard(page), {
+        message: "the ask box of the empty Thread sits right above the keyboard",
+      })
+      .toBe(12);
     // The blur gives the dock back its place at the center, with the team link under the ask box.
     await field.blur();
     await expect(page.getByRole("button", { name: /Change the team/ })).toBeVisible();
@@ -214,13 +265,22 @@ test.describe("the ask box on a phone with the keyboard open", () => {
     await expect(page.getByRole("button", { name: "Clear" })).toBeVisible();
     await field.tap();
     await expect(field).toBeFocused();
-    await expect.poll(() => gapOverKeyboard(page), { message: "the ask box of the Thread sits right above the keyboard" }).toBe(12);
+    await expect
+      .poll(() => gapOverKeyboard(page), {
+        message: "the ask box of the Thread sits right above the keyboard",
+      })
+      .toBe(12);
   });
 
   /* Chrome on iOS and Android shrinks the layout viewport with the keyboard, and the visual viewport equals it. The
      fake keyboard here is a resize of the window, so the inset of the visual viewport stays 0. */
-  test("the ask box of the empty Thread shows whole when the layout viewport shrinks with the keyboard", async ({ page }) => {
-    await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  test("the ask box of the empty Thread shows whole when the layout viewport shrinks with the keyboard", async ({
+    page,
+  }) => {
+    await page.route(
+      (url) => url.hostname !== "127.0.0.1",
+      (route) => route.abort(),
+    );
     await page.addInitScript(() => localStorage.setItem("cpc.passphrase", "test"));
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(`${server.url}${DOOR}`);
@@ -231,9 +291,14 @@ test.describe("the ask box on a phone with the keyboard open", () => {
     await expect(field).toBeFocused();
     await page.setViewportSize({ width: 375, height: 233 });
     await expect
-      .poll(async () => (await form.boundingBox())!.y + (await form.boundingBox())!.height, { message: "the foot of the ask box is in the shrunk view" })
+      .poll(async () => (await form.boundingBox())!.y + (await form.boundingBox())!.height, {
+        message: "the foot of the ask box is in the shrunk view",
+      })
       .toBeLessThanOrEqual(233);
-    expect((await form.boundingBox())!.y, "the top of the ask box is in the view").toBeGreaterThanOrEqual(0);
+    expect(
+      (await form.boundingBox())!.y,
+      "the top of the ask box is in the view",
+    ).toBeGreaterThanOrEqual(0);
     // The blur and the full size give the dock back its place at the center, with the team link under the ask box.
     await field.blur();
     await page.setViewportSize({ width: 375, height: 812 });

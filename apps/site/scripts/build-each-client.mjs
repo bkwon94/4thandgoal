@@ -17,7 +17,10 @@ for (const slug of slugs) {
   // The floor runs while out/ holds this client, because the next build replaces out/.
   for (const { script, env } of stepsOfClient(slug)) {
     console.log(`==> site ${script}: ${slug}`);
-    const run = spawnSync("pnpm", [script], { stdio: "inherit", env: { ...process.env, ...env, CLIENT: slug } });
+    const run = spawnSync("pnpm", [script], {
+      stdio: "inherit",
+      env: { ...process.env, ...env, CLIENT: slug },
+    });
     if (run.status !== 0) {
       console.error(`The site ${script} of the client ${slug} failed.`);
       process.exit(run.status ?? 1);

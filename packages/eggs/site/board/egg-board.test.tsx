@@ -3,7 +3,7 @@
  * A variant of the fixture gives each other state: a won egg word, an egg word with no letters, a close race, and a tie.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { EggsError, type Board } from "../lib/api";
 import { board, boardWith, fakeEggsApi } from "../lib/fixtures/eggs-api";
 import { EggBoard } from "./egg-board";
@@ -25,11 +25,16 @@ const won: Board = {
           ...word,
           winner: LIL_FRIDGE,
           managers: word.managers.map((manager) =>
-            manager.roster_id === LIL_FRIDGE.roster_id ? { ...manager, letters: ["E", "A", "G", "L", "E", "S"] } : manager,
+            manager.roster_id === LIL_FRIDGE.roster_id
+              ? { ...manager, letters: ["E", "A", "G", "L", "E", "S"] }
+              : manager,
           ),
         },
   ),
-  latest: [{ ...LIL_FRIDGE, letter: "S", word: "EAGLES", claimed_at: "2026-10-19T12:30:00-04:00" }, ...board.latest],
+  latest: [
+    { ...LIL_FRIDGE, letter: "S", word: "EAGLES", claimed_at: "2026-10-19T12:30:00-04:00" },
+    ...board.latest,
+  ],
 };
 
 /* The fixture before the first drop: no egg out, no letter, no claim, and every slot still to drop. */
@@ -37,13 +42,17 @@ const empty: Board = {
   ...board,
   counts: { left: 0, found: 0, to_drop: 54 },
   weeks: board.weeks.map((week) => ({ ...week, slots: week.slots.map(() => "future" as const) })),
-  words: board.words.map((word) => ({ ...word, managers: word.managers.map((manager) => ({ ...manager, letters: [] })) })),
+  words: board.words.map((word) => ({
+    ...word,
+    managers: word.managers.map((manager) => ({ ...manager, letters: [] })),
+  })),
   latest: [],
   last_drop: null,
 };
 
 /* The text of one hero slot of the egg board hero, or null for an absent slot. */
-const slot = (name: string) => screen.getByRole("region", { name: "Egg hunt" }).querySelector(`[data-hero-slot="${name}"]`);
+const slot = (name: string) =>
+  screen.getByRole("region", { name: "Egg hunt" }).querySelector(`[data-hero-slot="${name}"]`);
 
 /* The label and the number of each tile in the stats of the egg board hero. */
 const tiles = () =>
@@ -57,7 +66,9 @@ describe("The hero of the egg board", () => {
     expect(slot("eyebrow")!.textContent).toBe("Egg hunt");
     expect(slot("title")!.textContent).toBe("The Egg Board");
     expect(slot("title")!.tagName).toBe("H1");
-    expect(slot("meta")!.textContent).toBe("$100 in gift cards. Three egg words. First to fill a word wins it.");
+    expect(slot("meta")!.textContent).toBe(
+      "$100 in gift cards. Three egg words. First to fill a word wins it.",
+    );
     const feature = slot("feature") as HTMLElement;
     expect(within(feature).getByRole("list", { name: "The eggs of each week" })).toBeTruthy();
     expect(feature.textContent).toContain("Drops on a later Tuesday");
@@ -66,7 +77,9 @@ describe("The hero of the egg board", () => {
 
   it("shows the counts left to find, found, and to drop as three tiles in the stats", () => {
     render(<EggBoard board={board} now={NOW} />);
-    expect([...tiles()].map((tile) => [tile.children[0].textContent, tile.children[1].textContent])).toEqual([
+    expect(
+      [...tiles()].map((tile) => [tile.children[0].textContent, tile.children[1].textContent]),
+    ).toEqual([
       ["Left to find", "1"],
       ["Found", "1"],
       ["To drop", "52"],
@@ -75,14 +88,20 @@ describe("The hero of the egg board", () => {
 
   it("draws no hero scene", () => {
     render(<EggBoard board={board} now={NOW} />);
-    expect(screen.getByRole("region", { name: "Egg hunt" }).querySelectorAll("canvas")).toHaveLength(0);
+    expect(
+      screen.getByRole("region", { name: "Egg hunt" }).querySelectorAll("canvas"),
+    ).toHaveLength(0);
   });
 
   it("marks the week of the last drop in the grid", () => {
     render(<EggBoard board={board} now={NOW} />);
     const grid = screen.getByRole("list", { name: "The eggs of each week" });
-    const marked = [...within(grid).getAllByRole("listitem")].filter((week) => week.getAttribute("aria-current") === "date");
-    expect(marked.map((week) => week.getAttribute("aria-label"))).toEqual(["Week 9: 1 found, 1 out now, 4 to drop"]);
+    const marked = [...within(grid).getAllByRole("listitem")].filter(
+      (week) => week.getAttribute("aria-current") === "date",
+    );
+    expect(marked.map((week) => week.getAttribute("aria-label"))).toEqual([
+      "Week 9: 1 found, 1 out now, 4 to drop",
+    ]);
   });
 
   it("shows the 54 slots, one column per week from 9 to 17, each found, out, or still to drop", () => {
@@ -100,19 +119,30 @@ describe("The hero of the egg board", () => {
 });
 
 /* The board of AT-22: Lil Fridge holds five letters of EAGLES and two of CORNERSTONE, and no manager holds a letter of LANSDALE. */
-const close = boardWith({ EAGLES: { 3: ["E", "A", "G", "L", "S"] }, CORNERSTONE: { 3: ["C", "O"] } });
+const close = boardWith({
+  EAGLES: { 3: ["E", "A", "G", "L", "S"] },
+  CORNERSTONE: { 3: ["C", "O"] },
+});
 
 const tabNames = () => screen.getAllByRole("tab").map((tab) => tab.textContent);
-const selectedTab = () => screen.getAllByRole("tab").find((tab) => tab.getAttribute("aria-selected") === "true");
+const selectedTab = () =>
+  screen.getAllByRole("tab").find((tab) => tab.getAttribute("aria-selected") === "true");
 const panel = () => screen.getByRole("tabpanel");
 const panelRows = () => within(panel()).queryAllByRole("listitem");
 /* The state of each letter of the giant word of the shown slide: lit, outline, or won. */
 const giant = () =>
-  [...within(panel()).getByRole("heading", { level: 2 }).querySelectorAll("[data-letter]")].map((letter) => letter.getAttribute("data-letter"));
+  [...within(panel()).getByRole("heading", { level: 2 }).querySelectorAll("[data-letter]")].map(
+    (letter) => letter.getAttribute("data-letter"),
+  );
 
 describe("The egg word slider", () => {
   it("shows a tab per egg word in the fixed order, each with the count of its leader", () => {
-    render(<EggBoard board={boardWith({ CORNERSTONE: { 3: ["C", "O"] }, LANSDALE: { 4: ["L"] } })} now={NOW} />);
+    render(
+      <EggBoard
+        board={boardWith({ CORNERSTONE: { 3: ["C", "O"] }, LANSDALE: { 4: ["L"] } })}
+        now={NOW}
+      />,
+    );
     expect(screen.getByRole("tablist", { name: "Egg words" })).toBeTruthy();
     expect(tabNames()).toEqual(["CORNERSTONE 2/11", "LANSDALE 1/8", "EAGLES 0/6"]);
   });
@@ -133,11 +163,11 @@ describe("The egg word slider", () => {
   it("puts the open words closest first and a won word last", () => {
     render(<EggBoard board={won} now={NOW} />);
     const slides = screen.getAllByRole("tabpanel", { hidden: true });
-    expect(slides.map((slide) => within(slide).getByRole("heading", { level: 2, hidden: true }).getAttribute("aria-label"))).toEqual([
-      "CORNERSTONE",
-      "LANSDALE",
-      "EAGLES",
-    ]);
+    expect(
+      slides.map((slide) =>
+        within(slide).getByRole("heading", { level: 2, hidden: true }).getAttribute("aria-label"),
+      ),
+    ).toEqual(["CORNERSTONE", "LANSDALE", "EAGLES"]);
     expect(selectedTab()!.textContent).toBe("CORNERSTONE 1/11");
   });
 
@@ -148,7 +178,21 @@ describe("The egg word slider", () => {
   });
 
   it("names the leader and lists the top 5 with the tiles of each manager", () => {
-    render(<EggBoard board={boardWith({ CORNERSTONE: { 3: ["C", "O", "R", "N"], 1: ["E"], 2: ["S"], 4: ["T"], 5: ["O"], 7: ["R"] } })} now={NOW} />);
+    render(
+      <EggBoard
+        board={boardWith({
+          CORNERSTONE: {
+            3: ["C", "O", "R", "N"],
+            1: ["E"],
+            2: ["S"],
+            4: ["T"],
+            5: ["O"],
+            7: ["R"],
+          },
+        })}
+        now={NOW}
+      />,
+    );
     expect(panel().textContent).toContain("Lil Fridge leads with 4 of 11.");
     expect(panel().textContent).toContain("$50 gift card");
     const top = panelRows();
@@ -163,7 +207,11 @@ describe("The egg word slider", () => {
     expect(top[0].textContent).toContain("Leads");
     expect(top[0].textContent).toContain("4/11");
     // C, O, R, and N fill the first four slots of CORNERSTONE, and the other seven slots stay open.
-    expect(within(top[0]).getAllByTestId("tile").map((tile) => tile.textContent)).toEqual(["C", "O", "R", "N", ...Array(7).fill("")]);
+    expect(
+      within(top[0])
+        .getAllByTestId("tile")
+        .map((tile) => tile.textContent),
+    ).toEqual(["C", "O", "R", "N", ...Array(7).fill("")]);
   });
 
   it("shows all 11 managers after a tap on Show all 11, and the top 5 after a second tap", () => {
@@ -175,15 +223,21 @@ describe("The egg word slider", () => {
   });
 
   it("says that two managers tie, in the order of the rosters", () => {
-    render(<EggBoard board={boardWith({ CORNERSTONE: { 3: ["C", "O"], 1: ["R", "N"] } })} now={NOW} />);
+    render(
+      <EggBoard board={boardWith({ CORNERSTONE: { 3: ["C", "O"], 1: ["R", "N"] } })} now={NOW} />,
+    );
     expect(panel().textContent).toContain("Brock ‘N’ Roll and Lil Fridge tie with 2 of 11.");
     // The giant word lights the letters of the first manager of the ranking.
     expect(giant()).toEqual(["outline", "outline", "lit", "lit", ...Array(7).fill("outline")]);
   });
 
   it("says that three managers tie, in the order of the rosters", () => {
-    render(<EggBoard board={boardWith({ LANSDALE: { 4: ["L"], 2: ["A"], 9: ["N"] } })} now={NOW} />);
-    expect(panel().textContent).toContain("All You Need Is Love, Pukancun on 3, and Maye d'force B with U tie with 1 of 8.");
+    render(
+      <EggBoard board={boardWith({ LANSDALE: { 4: ["L"], 2: ["A"], 9: ["N"] } })} now={NOW} />,
+    );
+    expect(panel().textContent).toContain(
+      "All You Need Is Love, Pukancun on 3, and Maye d'force B with U tie with 1 of 8.",
+    );
   });
 
   it("turns a won word red with every letter lit in red, its winner, and its gift card", () => {
@@ -250,7 +304,11 @@ describe("The motion of the egg word slider", () => {
   const swipe = (dx: number, dy: number) => {
     const start = { clientX: 200, clientY: 300, isPrimary: true, pointerType: "touch" };
     fireEvent.pointerDown(swipeBox(), start);
-    fireEvent.pointerUp(swipeBox(), { ...start, clientX: start.clientX + dx, clientY: start.clientY + dy });
+    fireEvent.pointerUp(swipeBox(), {
+      ...start,
+      clientX: start.clientX + dx,
+      clientY: start.clientY + dy,
+    });
   };
 
   it("moves to the next slide on a swipe to the left, and back on a swipe to the right", () => {
@@ -290,7 +348,11 @@ describe("The motion of the egg word slider", () => {
     expect(roll("EAGLES")).toBe("in");
     expect(roll("CORNERSTONE")).toBe("wait-down");
     fireEvent.click(screen.getByRole("tab", { name: "CORNERSTONE 2/11" }));
-    expect([slide("EAGLES"), slide("CORNERSTONE"), slide("LANSDALE")].map((each) => each.getAttribute("data-rel"))).toEqual(["-1", "0", "1"]);
+    expect(
+      [slide("EAGLES"), slide("CORNERSTONE"), slide("LANSDALE")].map((each) =>
+        each.getAttribute("data-rel"),
+      ),
+    ).toEqual(["-1", "0", "1"]);
     // Only the shown slide is in the accessibility tree. The neighbors roll away blurred, out of reach of a tap.
     expect(slide("EAGLES").getAttribute("aria-hidden")).toBe("true");
     expect(slide("EAGLES").hasAttribute("inert")).toBe(true);
@@ -303,7 +365,9 @@ describe("The motion of the egg word slider", () => {
     expect(roll("LANSDALE")).toBe("wait-down");
     // Each letter knows its place in the word, so the letters roll in one after another.
     const letters = [...slide("CORNERSTONE").querySelectorAll<HTMLElement>("[data-letter]")];
-    expect(letters.map((letter) => letter.style.getPropertyValue("--k"))).toEqual([..."CORNERSTONE"].map((_, index) => String(index)));
+    expect(letters.map((letter) => letter.style.getPropertyValue("--k"))).toEqual(
+      [..."CORNERSTONE"].map((_, index) => String(index)),
+    );
     // A swipe back rolls the other way.
     swipe(120, 0);
     expect(roll("EAGLES")).toBe("in");
@@ -333,11 +397,15 @@ describe("The look of the egg board", () => {
       // band color, and no slot has a plate.
       const boardHero = screen.getByRole("region", { name: "Egg hunt" });
       const slots = [...container.querySelectorAll("[data-hero-slot]")];
-      expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(expect.arrayContaining(["eyebrow", "title", "meta"]));
+      expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(
+        expect.arrayContaining(["eyebrow", "title", "meta"]),
+      );
       for (const slot of slots) expect(boardHero.contains(slot)).toBe(true);
       // The board hero and the frame of the slider each hide the full texture. An oval of the texture sits behind the
       // grid of the board hero only, so each slide keeps its text on a flat color.
-      const heroes = [...container.querySelectorAll("section")].filter((section) => section.querySelector("[data-hero-art]"));
+      const heroes = [...container.querySelectorAll("section")].filter((section) =>
+        section.querySelector("[data-hero-art]"),
+      );
       expect(heroes).toHaveLength(2);
       for (const hero of heroes) expect(hero.classList.contains("egg-hero")).toBe(true);
       expect(boardHero.querySelector(".egg-art-ground")).not.toBeNull();
@@ -353,7 +421,11 @@ describe("The look of the egg board", () => {
     expect(rows.size).toBeGreaterThan(1);
     for (const row of rows) {
       expect(row.classList.contains("grid")).toBe(true);
-      expect(row.style.gridTemplateColumns).toMatch(new RegExp(`^repeat\\(${row.children.length}, minmax\\(0(px)?, var\\(--spacing-letter(-sm)?\\)\\)\\)$`));
+      expect(row.style.gridTemplateColumns).toMatch(
+        new RegExp(
+          `^repeat\\(${row.children.length}, minmax\\(0(px)?, var\\(--spacing-letter(-sm)?\\)\\)\\)$`,
+        ),
+      );
       for (const tile of row.children) expect(tile.classList.contains("w-full")).toBe(true);
     }
   });
@@ -362,7 +434,9 @@ describe("The look of the egg board", () => {
 describe("Latest claims", () => {
   it("shows the manager, the letter, and the egg word of each claim, newest first", () => {
     render(<EggBoard board={won} now={NOW} />);
-    const feed = within(screen.getByRole("region", { name: "Latest claims" })).getAllByRole("listitem");
+    const feed = within(screen.getByRole("region", { name: "Latest claims" })).getAllByRole(
+      "listitem",
+    );
     expect(feed.map((row) => row.querySelector("[data-claim]")!.textContent)).toEqual([
       "Lil Fridge claimed an S and filled EAGLES.",
       "Lil Fridge claimed a C for CORNERSTONE.",
@@ -372,7 +446,9 @@ describe("Latest claims", () => {
 
   it("says that no manager has claimed an egg yet", () => {
     render(<EggBoard board={{ ...board, latest: [] }} now={NOW} />);
-    expect(screen.getByRole("region", { name: "Latest claims" }).textContent).toContain("No claims yet. 1 egg is out there.");
+    expect(screen.getByRole("region", { name: "Latest claims" }).textContent).toContain(
+      "No claims yet. 1 egg is out there.",
+    );
   });
 });
 
@@ -387,7 +463,9 @@ describe("How the hunt works", () => {
     expect(text).toContain("The first manager to claim an egg gets its letter.");
     expect(text).toContain("the letter that the most managers still need");
     expect(text).toContain("A tie goes to the earlier letter. No letter repeats in one drop.");
-    expect(text).toContain("No egg holds the last letter that a leader needs. If that rules out every letter, the egg holds the next letter by need.");
+    expect(text).toContain(
+      "No egg holds the last letter that a leader needs. If that rules out every letter, the egg holds the next letter by need.",
+    );
     expect(text).toContain("CORNERSTONE $50, LANSDALE $30, and EAGLES $20");
     expect(text).toContain("The commissioner places every egg, so the commissioner cannot hunt.");
   });
@@ -403,7 +481,9 @@ describe("An egg word with no letters", () => {
       expect(panel().textContent).toContain("No letters yet. The race is open.");
       expect(panelRows()).toHaveLength(0);
     }
-    expect(screen.getByRole("region", { name: "Latest claims" }).textContent).toContain("No claims yet.");
+    expect(screen.getByRole("region", { name: "Latest claims" }).textContent).toContain(
+      "No claims yet.",
+    );
   });
 });
 
@@ -432,7 +512,9 @@ describe("EggBoardScreen", () => {
   });
 
   it("shows nothing while the board loads", () => {
-    const { container } = render(<EggBoardScreen api={fakeEggsApi({ match: false })} closed={CLOSED} title={TITLE} />);
+    const { container } = render(
+      <EggBoardScreen api={fakeEggsApi({ match: false })} closed={CLOSED} title={TITLE} />,
+    );
     expect(container.innerHTML).toBe("");
   });
 

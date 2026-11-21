@@ -3,7 +3,7 @@
  * They press it from the keyboard and read the attributes a reader and a screen reader get.
  */
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { PendingButton } from "./pending-button";
 
 afterEach(cleanup);

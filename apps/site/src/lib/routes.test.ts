@@ -2,12 +2,10 @@
  * Unit test of the route builders. Each row checks one builder.
  * The app layer calls the builders to make every href.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
+import { resetModules } from "../../test/reset-modules";
 
-afterEach(() => {
-  vi.unstubAllEnvs();
-  vi.resetModules();
-});
+afterEach(resetModules);
 
 type Routes = typeof import("./routes");
 

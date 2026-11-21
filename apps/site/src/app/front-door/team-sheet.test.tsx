@@ -3,7 +3,7 @@
  * A drag down closes the sheet on a change of team, and the sheet of the first visit has no close of any kind.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 import type { DoorTeam } from "@/lib/data/front-door-data";
@@ -38,7 +38,13 @@ describe("the team sheet", () => {
     const closed: string[] = [];
     const picked: number[] = [];
     render(
-      <TeamSheet siteName="Test league" teams={TEAMS} current={1} onPick={(id) => picked.push(id)} onClose={() => closed.push("close")} />,
+      <TeamSheet
+        siteName="Test league"
+        teams={TEAMS}
+        current={1}
+        onPick={(id) => picked.push(id)}
+        onClose={() => closed.push("close")}
+      />,
     );
     await act(async () => dragDown(screen.getByRole("dialog", { name: "Which team is yours?" })));
     await waitFor(() => expect(closed).toEqual(["close"]));

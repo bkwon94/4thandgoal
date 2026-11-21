@@ -2,7 +2,7 @@
  * Tests for the Zod schemas of the sim files, on the real season file of CPC 2026 week 8 and the real week file of
  * CPC 2026 week 10. A change to the shape that the pipeline writes fails here first.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import json from "../fixtures/sim.json";
 import weekJson from "../fixtures/week-sim.json";
 import { simSchema, weekSimSchema } from "./sim";
@@ -42,7 +42,9 @@ describe("the week sim schema", () => {
   });
 
   it("fails on a root-for row with a reason that is not one of the five", () => {
-    const bad = structuredClone(weekJson) as { pages: Record<string, { weeks: { root_for: { reason: string }[] }[] }> };
+    const bad = structuredClone(weekJson) as {
+      pages: Record<string, { weeks: { root_for: { reason: string }[] }[] }>;
+    };
     bad.pages["6"].weeks[0].root_for[0].reason = "Out of nowhere";
     expect(weekSimSchema.safeParse(bad).success).toBe(false);
   });

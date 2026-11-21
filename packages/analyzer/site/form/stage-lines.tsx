@@ -106,7 +106,11 @@ export function StageLines({ lines }: { lines: string[] }) {
         } as CSSProperties)
       : undefined;
   return (
-    <span ref={box} aria-hidden="true" className={`t-think text-body leading-body${off ? " is-still" : ""}`}>
+    <span
+      ref={box}
+      aria-hidden="true"
+      className={`t-think text-body leading-body${off ? " is-still" : ""}`}
+    >
       <span className="t-think-sizer">{longest}</span>
       {leaving && (
         // The outgoing line leaves from the place where it rests, so a long line does not jump back to its start.

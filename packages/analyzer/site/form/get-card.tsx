@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { PlusIcon, XIcon } from "lucide-react";
 import { useId } from "react";
@@ -36,43 +37,71 @@ type GetCardProps = {
 const ICON_BUTTON =
   "press grid size-touch flex-none cursor-pointer place-items-center rounded-pill text-mute hover:text-ink focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40";
 
-export function GetCard({ title, team, rows, canAdd, onAdd, onRemovePlayer, onRemove, locked }: GetCardProps) {
+export function GetCard({
+  title,
+  team,
+  rows,
+  canAdd,
+  onAdd,
+  onRemovePlayer,
+  onRemove,
+  locked,
+}: GetCardProps) {
   const headingId = useId();
   const off = useMotionOff();
   return (
     <section aria-labelledby={headingId} className="min-w-0">
-      <Card className="flex min-w-0 flex-col gap-sp-3">
-        <div className="flex min-h-touch items-center justify-between gap-sp-2">
+      <Card className="gap-sp-3 flex min-w-0 flex-col">
+        <div className="min-h-touch gap-sp-2 flex items-center justify-between">
           <div className="min-w-0">
-            <h3 id={headingId} className="m-0 text-stat leading-stat font-bold">
+            <h3 id={headingId} className="text-stat leading-stat m-0 font-bold">
               {title} gets
             </h3>
-            <span className="block truncate text-meta text-mute">{team ? team.team : "No team yet"}</span>
+            <span className="text-meta text-mute block truncate">
+              {team ? team.team : "No team yet"}
+            </span>
           </div>
           {onRemove && (
-            <button type="button" aria-label={`Remove ${title}`} disabled={locked} onClick={onRemove} className={`${ICON_BUTTON} -mr-sp-2`}>
+            <Button
+              variant="plain"
+              type="button"
+              aria-label={`Remove ${title}`}
+              disabled={locked}
+              onClick={onRemove}
+              className={`${ICON_BUTTON} -mr-sp-2`}
+            >
               <XIcon aria-hidden="true" className="size-sp-5" />
-            </button>
+            </Button>
           )}
         </div>
         {/* The list stays in the page, so the last row can animate out. empty:hidden drops the empty list from the layout. */}
-        <ul aria-label={`Players ${title} gets`} className="relative m-0 flex list-none flex-col gap-sp-1 p-0 empty:hidden">
+        <ul
+          aria-label={`Players ${title} gets`}
+          className="gap-sp-1 relative m-0 flex list-none flex-col p-0 empty:hidden"
+        >
           <AnimatePresence initial={false} mode="popLayout">
             {rows.map(({ player, from }) => (
               <motion.li
                 key={player.player_id}
                 layout={!off}
                 {...enterExit(off)}
-                className="flex min-h-touch items-center gap-sp-3 rounded-tile bg-raised py-sp-1 pl-sp-3 text-ink"
+                className="min-h-touch gap-sp-3 rounded-tile bg-raised py-sp-1 pl-sp-3 text-ink flex items-center"
               >
-                <Headshot src={player.headshot || HEADSHOT_FALLBACK} size="avatar" lazy className="flex-none rounded-full bg-card object-cover object-top" />
+                <Headshot
+                  src={player.headshot || HEADSHOT_FALLBACK}
+                  size="avatar"
+                  lazy
+                  className="bg-card flex-none rounded-full object-cover object-top"
+                />
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <b className="truncate text-row leading-tight font-bold">{player.name}</b>
-                  <span className="truncate text-meta text-mute">
-                    {player.position} {player.nfl_team} · <span className="font-bold text-ink">from {from.team}</span>
+                  <b className="text-row truncate leading-tight font-bold">{player.name}</b>
+                  <span className="text-meta text-mute truncate">
+                    {player.position} {player.nfl_team} ·{" "}
+                    <span className="text-ink font-bold">from {from.team}</span>
                   </span>
                 </span>
-                <button
+                <Button
+                  variant="plain"
                   type="button"
                   aria-label={`Remove ${player.name}`}
                   disabled={locked}
@@ -80,20 +109,21 @@ export function GetCard({ title, team, rows, canAdd, onAdd, onRemovePlayer, onRe
                   className={ICON_BUTTON}
                 >
                   <XIcon aria-hidden="true" className="size-sp-4" />
-                </button>
+                </Button>
               </motion.li>
             ))}
           </AnimatePresence>
         </ul>
-        <button
+        <Button
+          variant="plain"
           type="button"
           disabled={!canAdd || locked}
           onClick={onAdd}
-          className="press flex min-h-touch w-full cursor-pointer items-center justify-center gap-sp-2 rounded-pill border border-dashed border-rule px-sp-4 text-meta font-bold text-ink hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:text-mute"
+          className="press min-h-touch gap-sp-2 rounded-pill border-rule px-sp-4 text-meta text-ink hover:border-accent focus-visible:outline-accent disabled:text-mute flex w-full cursor-pointer items-center justify-center border border-dashed font-bold focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed"
         >
           <PlusIcon aria-hidden="true" className="size-sp-4" />
           Add a player {title} gets
-        </button>
+        </Button>
       </Card>
     </section>
   );

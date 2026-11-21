@@ -6,6 +6,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, frame, motion } from "framer-motion";
 import { type CSSProperties, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -18,7 +19,18 @@ import { type AskTarget, AskError, askPagesOf, askRoute } from "./ask-api";
 import { AskBox } from "./ask-box";
 import { Dock } from "./dock";
 import { turnsBefore } from "./chat-turns";
-import { RETRY_LINE, TRADE_LINES, TRADE_TOPICS, TRADE_TOPIC_OF, type ThreadItem, ideasRequestOf, itemOfError, itemOfRoute, tradePartner, tradeRequestOf } from "./ask-thread";
+import {
+  RETRY_LINE,
+  TRADE_LINES,
+  TRADE_TOPICS,
+  TRADE_TOPIC_OF,
+  type ThreadItem,
+  ideasRequestOf,
+  itemOfError,
+  itemOfRoute,
+  tradePartner,
+  tradeRequestOf,
+} from "./ask-thread";
 import { FreeAnswerCard, FreeAnswerLive } from "./free-answer";
 import { CapCard, MissCard, NoteCard, PendingCard } from "./miss-card";
 import { keepFocus, closeKeyboard } from "./keyboard-tap";
@@ -34,10 +46,25 @@ import { TeamSheet } from "./team-sheet";
 import { Tour } from "./tour";
 import { type Entry, Thread, personalName } from "./thread";
 import { clearThread, getThread, saveThread } from "./thread-store";
-import { type KeyItem, type ServedSuggestions, checkCurrent, fetchSuggestions, shownFacts, staleLine } from "./suggestions-api";
+import {
+  type KeyItem,
+  type ServedSuggestions,
+  checkCurrent,
+  fetchSuggestions,
+  shownFacts,
+  staleLine,
+} from "./suggestions-api";
 import { dayOrder, pickSuggestions, topicName } from "./topics";
 import { TradeCard } from "./trade-answer";
-import { type TradeRead, type TradeRequest, type TradeSteps, addStep, endSteps, noSteps, streamTrade } from "./trade-api";
+import {
+  type TradeRead,
+  type TradeRequest,
+  type TradeSteps,
+  addStep,
+  endSteps,
+  noSteps,
+  streamTrade,
+} from "./trade-api";
 import { getYourTeam, setYourTeam } from "./your-team-store";
 
 /* The two questions the empty screen offers, so a manager sees that the league is fair game, not only Your team. */
@@ -45,7 +72,13 @@ const EXAMPLES = ["who has the best roster", "week 1 results"];
 
 /* The greeting changes with the hour, so the front door reads as a person and not a page. */
 function greeting(hour: number): string {
-  return hour < 5 ? "Late night" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  return hour < 5
+    ? "Late night"
+    : hour < 12
+      ? "Good morning"
+      : hour < 18
+        ? "Good afternoon"
+        : "Good evening";
 }
 
 export function FrontDoor({
@@ -89,14 +122,17 @@ export function FrontDoor({
   const [hour, setHour] = useState<number | null>(null);
   // The live facts and the urgent Topics of Your team from the API, once it answers. Until then, and with no
   // passphrase, the Suggestions come from the facts of the weekly build alone.
-  const [served, setServed] = useState<{ team: number; suggestions: ServedSuggestions } | null>(null);
+  const [served, setServed] = useState<{ team: number; suggestions: ServedSuggestions } | null>(
+    null,
+  );
   // The kept personal and trade Answers whose roster changed, by the key of each, with the time that the API kept it.
   // The API keeps no trade Answer, so its time is null and the trade Answer gives the time of its own read.
   const [stale, setStale] = useState<Record<string, string | null>>({});
   const openedNow = useRef(opened);
   openedNow.current = opened;
   // A kept entry gets a fresh id on load, so a reply of the API never lands on an entry of an earlier visit.
-  const load = (id: number): Entry[] => getThread(id, week).map((item) => ({ ...item, id: nextId.current++ }));
+  const load = (id: number): Entry[] =>
+    getThread(id, week).map((item) => ({ ...item, id: nextId.current++ }));
 
   useEffect(() => {
     const stored = getYourTeam();
@@ -127,7 +163,11 @@ export function FrontDoor({
     const passphrase = getPassphrase();
     if (teamId == null || day === null || !passphrase) return;
     let live = true;
-    fetchSuggestions(askTarget, passphrase, { roster_id: teamId, order: dayOrder(day), opened: openedNow.current })
+    fetchSuggestions(askTarget, passphrase, {
+      roster_id: teamId,
+      order: dayOrder(day),
+      opened: openedNow.current,
+    })
       .then((suggestions) => live && setServed({ team: teamId, suggestions }))
       .catch(() => {});
     return () => {
@@ -140,9 +180,23 @@ export function FrontDoor({
   const kept: KeyItem[] = thread.flatMap((entry): KeyItem[] => {
     if (teamId == null) return [];
     if (entry.kind === "personal" && entry.result)
-      return [{ topic: entry.key, roster_id: teamId, team: entry.team === teamId ? null : entry.team, key: entry.result.key }];
+      return [
+        {
+          topic: entry.key,
+          roster_id: teamId,
+          team: entry.team === teamId ? null : entry.team,
+          key: entry.result.key,
+        },
+      ];
     if (entry.kind === "trade" && entry.answer && entry.read)
-      return [{ topic: TRADE_TOPIC_OF[entry.mode] as KeyItem["topic"], roster_id: teamId, team: tradePartner(entry.answer), key: entry.read.key }];
+      return [
+        {
+          topic: TRADE_TOPIC_OF[entry.mode] as KeyItem["topic"],
+          roster_id: teamId,
+          team: tradePartner(entry.answer),
+          key: entry.read.key,
+        },
+      ];
     return [];
   });
   const keptNow = useRef(kept);
@@ -155,7 +209,11 @@ export function FrontDoor({
     checkCurrent(askTarget, passphrase, keptNow.current)
       .then((states) => {
         if (!live) return;
-        setStale(Object.fromEntries(states.filter((state) => !state.current).map((state) => [state.key, state.kept_at])));
+        setStale(
+          Object.fromEntries(
+            states.filter((state) => !state.current).map((state) => [state.key, state.kept_at]),
+          ),
+        );
       })
       .catch(() => {});
     return () => {
@@ -201,7 +259,8 @@ export function FrontDoor({
     // scroll at that short foot. So the scroll first sets --door-dock to the height of the dock in the same frame.
     const turn = newest.current;
     frame.postRender(() => {
-      if (dock.current) section.current?.style.setProperty("--door-dock", `${dock.current.offsetHeight}px`);
+      if (dock.current)
+        section.current?.style.setProperty("--door-dock", `${dock.current.offsetHeight}px`);
       turn?.scrollIntoView?.({ behavior: off ? "auto" : "smooth", block: "start" });
     });
   }, [thread, off, dockHeight]);
@@ -210,7 +269,10 @@ export function FrontDoor({
   const sheetOpen = teamId === null || picking;
   const mine = team ? (answers[team.id] ?? []) : [];
   const servedNow = served && team && served.team === team.id ? served.suggestions : null;
-  const facts = { ...Object.fromEntries(mine.map((answer) => [answer.topic, answer.fact])), ...servedNow?.facts };
+  const facts = {
+    ...Object.fromEntries(mine.map((answer) => [answer.topic, answer.fact])),
+    ...servedNow?.facts,
+  };
   const picks = day === null ? [] : pickSuggestions(day, facts, opened, servedNow?.urgent ?? []);
   const avatars = Object.fromEntries(teams.map((candidate) => [candidate.id, candidate.avatar]));
   const empty = thread.length === 0;
@@ -229,11 +291,29 @@ export function FrontDoor({
     });
   /* Run a trade Topic in the place of `id`: each step lands as it comes, then the whole Answer. A failure is an error
      line, never an Answer. Past a cap, the cap line takes the place of the Answer, with `closest` as its Topics. */
-  const runTrade = async (id: number, question: string, request: TradeRequest, passphrase: string, closest: string[], append = false) => {
+  const runTrade = async (
+    id: number,
+    question: string,
+    request: TradeRequest,
+    passphrase: string,
+    closest: string[],
+    append = false,
+  ) => {
     let steps: TradeSteps = noSteps;
     let read: TradeRead | undefined;
     const show = (answer: Extract<ThreadItem, { kind: "trade" }>["answer"], first = false) =>
-      put(id, { kind: "trade", mode: request.mode, question, steps: answer ? endSteps(steps) : steps.lines, answer, ...(read ? { read } : {}) }, first && append);
+      put(
+        id,
+        {
+          kind: "trade",
+          mode: request.mode,
+          question,
+          steps: answer ? endSteps(steps) : steps.lines,
+          answer,
+          ...(read ? { read } : {}),
+        },
+        first && append,
+      );
     show(null, true);
     try {
       await streamTrade(askTarget, passphrase, request, {
@@ -251,7 +331,11 @@ export function FrontDoor({
       // A wrong passphrase opens the passphrase modal, and the Topic runs again in its place after a new one.
       if (error instanceof AskError && error.status === 401) {
         put(id, { kind: "pending", question });
-        return askPassphrase(true, id, (fresh) => void runTrade(id, question, request, fresh, closest));
+        return askPassphrase(
+          true,
+          id,
+          (fresh) => void runTrade(id, question, request, fresh, closest),
+        );
       }
       put(id, itemOfError(error, question));
     }
@@ -259,7 +343,11 @@ export function FrontDoor({
   /* Open the passphrase modal before the first action, and run `then` with the new passphrase once the manager
      types it. `waiting` is the id of the question that waits in the Thread, so a close can remove it. A wrong
      passphrase leaves the store. */
-  const askPassphrase = (wrong: boolean, waiting: number | null, then: (passphrase: string) => void) => {
+  const askPassphrase = (
+    wrong: boolean,
+    waiting: number | null,
+    then: (passphrase: string) => void,
+  ) => {
     if (wrong) clearPassphrase();
     afterPassphrase.current = () => then(getPassphrase() ?? "");
     setPassStep({ wrong, waiting });
@@ -289,7 +377,17 @@ export function FrontDoor({
       const partner = owner === team.id ? null : owner;
       // A tapped trade check names no trade, so it opens the Trade page with Your team and the team it is about.
       if (mode === "check") {
-        put(nextId.current++, { kind: "trade", mode, question: name, steps: [], answer: { kind: "form", form: { asker: team.id, partner, gives: [], gets: [] } } }, true);
+        put(
+          nextId.current++,
+          {
+            kind: "trade",
+            mode,
+            question: name,
+            steps: [],
+            answer: { kind: "form", form: { asker: team.id, partner, gives: [], gets: [] } },
+          },
+          true,
+        );
         return;
       }
       const passphrase = getPassphrase() ?? "";
@@ -299,7 +397,14 @@ export function FrontDoor({
       // Topic past the cap stops at the same cap, so the cap line leaves each one out. Sell high speaks to the manager
       // of the roster as "you", so it always reads Your team.
       const closest = picks.filter((pick) => !TRADE_TOPICS[pick]);
-      void runTrade(nextId.current++, name, mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner }, passphrase, closest, true);
+      void runTrade(
+        nextId.current++,
+        name,
+        mode === "sell" ? { mode, roster_id: team.id } : { mode, roster_id: team.id, partner },
+        passphrase,
+        closest,
+        true,
+      );
       return;
     }
     // A personal Topic builds live on the API.
@@ -307,7 +412,11 @@ export function FrontDoor({
       setMoreOpen(false);
       // A personal Topic of Your team drops off the Suggestions until the API serves a new fact for it.
       if (owner === team.id && facts[key]) setOpened(markOpened(team.id, week, key, facts[key]));
-      put(nextId.current++, { kind: "personal", key, team: owner, question: null, result: null }, true);
+      put(
+        nextId.current++,
+        { kind: "personal", key, team: owner, question: null, result: null },
+        true,
+      );
       return;
     }
     const answer = (answers[owner] ?? []).find((candidate) => candidate.topic === key);
@@ -315,7 +424,18 @@ export function FrontDoor({
     if (!answer) {
       // A closest Topic of a miss can be a live Topic, which this build cannot answer yet.
       const name = topicName(key);
-      put(nextId.current++, { kind: "note", question: name, line: `${name} opens here soon.`, topic: null, team: null, retry: false }, true);
+      put(
+        nextId.current++,
+        {
+          kind: "note",
+          question: name,
+          line: `${name} opens here soon.`,
+          topic: null,
+          team: null,
+          retry: false,
+        },
+        true,
+      );
       return;
     }
     // Only a Topic of Your team drops off the Suggestions of Your team.
@@ -324,7 +444,11 @@ export function FrontDoor({
   };
   /* The earlier turns of the Thread before the item of `id`, so a follow-up reads like the whole question. */
   const turnsOf = (id: number) =>
-    turnsBefore(thread, id, answers, (other) => (team && other !== team.id ? teams.find((candidate) => candidate.id === other)?.name : undefined));
+    turnsBefore(thread, id, answers, (other) =>
+      team && other !== team.id
+        ? teams.find((candidate) => candidate.id === other)?.name
+        : undefined,
+    );
   const send = async (id: number, question: string, append = false) => {
     if (!team) return;
     const passphrase = getPassphrase();
@@ -333,16 +457,44 @@ export function FrontDoor({
     if (!passphrase) return askPassphrase(false, id, () => void send(id, question));
     try {
       const turns = turnsOf(id);
-      const route = await askRoute(askTarget, passphrase, { question, roster_id: team.id, week, turns, pages: askPagesOf(pages) });
+      const route = await askRoute(askTarget, passphrase, {
+        question,
+        roster_id: team.id,
+        week,
+        turns,
+        pages: askPagesOf(pages),
+      });
       const mode = route.route === "topic" && route.topic ? TRADE_TOPICS[route.topic] : undefined;
       // A trade Topic needs the trade judge, so the typed question goes on to its route with the team it names.
-      if (mode === "check") return void (await runTrade(id, question, { mode, question, roster_id: team.id }, passphrase, route.closest));
-      if (mode === "sell") return void (await runTrade(id, question, { mode, roster_id: team.id }, passphrase, route.closest));
-      if (mode === "ideas") return void (await runTrade(id, question, ideasRequestOf(route, question, team.id, turns), passphrase, route.closest));
+      if (mode === "check")
+        return void (await runTrade(
+          id,
+          question,
+          { mode, question, roster_id: team.id },
+          passphrase,
+          route.closest,
+        ));
+      if (mode === "sell")
+        return void (await runTrade(
+          id,
+          question,
+          { mode, roster_id: team.id },
+          passphrase,
+          route.closest,
+        ));
+      if (mode === "ideas")
+        return void (await runTrade(
+          id,
+          question,
+          ideasRequestOf(route, question, team.id, turns),
+          passphrase,
+          route.closest,
+        ));
       put(id, itemOfRoute(route, question, team.id, answers));
     } catch (error) {
       // A wrong passphrase opens the passphrase modal, and the question goes again in its place after a new one.
-      if (error instanceof AskError && error.status === 401) return askPassphrase(true, id, () => void send(id, question));
+      if (error instanceof AskError && error.status === 401)
+        return askPassphrase(true, id, () => void send(id, question));
       put(id, itemOfError(error, question));
     }
   };
@@ -368,21 +520,30 @@ export function FrontDoor({
     setMoreOpen(false);
   };
   const changeTeam = team && (
-    <button
+    <Button
+      variant="plain"
       type="button"
       onClick={() => setPicking(true)}
       aria-label={`Your team: ${team.name}. Change the team`}
-      className="press -ml-sp-2 flex min-h-touch min-w-0 items-center gap-sp-2 rounded-pill px-sp-2 text-meta leading-tight text-mute hover-fine:text-ink"
+      className="press -ml-sp-2 min-h-touch gap-sp-2 rounded-pill px-sp-2 text-meta text-mute hover-fine:text-ink flex min-w-0 items-center leading-tight"
     >
       {team.avatar ? (
-        <img src={team.avatar} alt="" width={20} height={20} className="size-sp-5 flex-none rounded-full bg-raised object-cover" />
+        <img
+          src={team.avatar}
+          alt=""
+          width={20}
+          height={20}
+          className="size-sp-5 bg-raised flex-none rounded-full object-cover"
+        />
       ) : (
-        <span aria-hidden className="size-sp-5 flex-none rounded-full bg-raised" />
+        <span aria-hidden className="size-sp-5 bg-raised flex-none rounded-full" />
       )}
       <span className="truncate">{empty ? "Not your team? Change it" : team.name}</span>
       {/* In the Thread header the name alone could read as a label, so a small up-down mark says it opens a choice. */}
-      {!empty && <ChevronsUpDownIcon aria-hidden className="size-sp-4 flex-none" strokeWidth={2.25} />}
-    </button>
+      {!empty && (
+        <ChevronsUpDownIcon aria-hidden className="size-sp-4 flex-none" strokeWidth={2.25} />
+      )}
+    </Button>
   );
 
   return (
@@ -394,39 +555,41 @@ export function FrontDoor({
         ref={section}
         aria-label="Thread"
         style={{ "--door-dock": `${dockHeight}px` } as CSSProperties}
-        className={`mx-auto flex min-h-door-fill w-full max-w-door desktop:min-h-door-fill-desktop flex-col px-gutter ${empty ? "justify-center pt-sp-6 pb-door-lift" : "justify-end pt-sp-2"}`}
+        className={`min-h-door-fill max-w-door desktop:min-h-door-fill-desktop px-gutter mx-auto flex w-full flex-col ${empty ? "pt-sp-6 pb-door-lift justify-center" : "pt-sp-2 justify-end"}`}
       >
         {team && (
-          <div key={team.id} className={`flex flex-col gap-sp-5 ${empty ? "" : "min-h-0 flex-1"}`}>
+          <div key={team.id} className={`gap-sp-5 flex flex-col ${empty ? "" : "min-h-0 flex-1"}`}>
             {empty ? (
-              <motion.div className="flex flex-col gap-sp-2" {...riseIn(off, { text: true })}>
-                <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">
+              <motion.div className="gap-sp-2 flex flex-col" {...riseIn(off, { text: true })}>
+                <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
                   {hour !== null ? `${greeting(hour)} · ` : ""}Week {week}
                 </span>
-                <h1 className="m-0 text-score leading-tight font-bold tracking-tight tablet:text-headline">
-                  <span className="text-mute">Ask about</span> <span className="text-door-name">{team.name}</span>
+                <h1 className="text-score tablet:text-headline m-0 leading-tight font-bold tracking-tight">
+                  <span className="text-mute">Ask about</span>{" "}
+                  <span className="text-door-name">{team.name}</span>
                 </h1>
-                <p className="m-0 text-lead leading-tight text-mute">or any team in the league.</p>
+                <p className="text-lead text-mute m-0 leading-tight">or any team in the league.</p>
                 {/* Each example asks as a typed question does. The press keeps the focus in the field, so one tap works with
                     the keyboard open. The ask runs first, then the keyboard closes and the Answer shows. */}
-                <p className="m-0 flex flex-wrap items-center gap-x-sp-1 text-body leading-tight text-mute">
+                <p className="gap-x-sp-1 text-body text-mute m-0 flex flex-wrap items-center leading-tight">
                   <span>Try</span>
                   {EXAMPLES.map((example, index) => (
                     <Fragment key={example}>
                       {index > 0 && <span>or</span>}
-                      <button
+                      <Button
+                        variant="plain"
                         type="button"
                         onMouseDown={keepFocus}
                         onClick={() => {
                           ask(example);
                           closeKeyboard();
                         }}
-                        className="press inline-flex min-h-touch items-center text-ink underline decoration-door-hair decoration-1 underline-offset-4 transition-colors duration-150 hover-fine:decoration-ink"
+                        className="press min-h-touch text-ink decoration-door-hair hover-fine:decoration-ink inline-flex items-center underline decoration-1 underline-offset-4 transition-colors duration-150"
                       >
                         <span aria-hidden>&ldquo;</span>
                         {example}
                         <span aria-hidden>&rdquo;</span>
-                      </button>
+                      </Button>
                     </Fragment>
                   ))}
                 </p>
@@ -438,16 +601,17 @@ export function FrontDoor({
                     away while the Answers scroll under it. */}
                 <header
                   aria-label="Thread header"
-                  className="sticky top-band-height z-10 -mx-gutter flex min-h-door-head items-center justify-between gap-sp-3 bg-page/90 px-gutter backdrop-blur-md"
+                  className="top-band-height -mx-gutter min-h-door-head gap-sp-3 bg-page/90 px-gutter sticky z-10 flex items-center justify-between backdrop-blur-md"
                 >
                   {changeTeam}
-                  <button
+                  <Button
+                    variant="plain"
                     type="button"
                     onClick={clear}
-                    className="press -mr-sp-2 flex min-h-touch flex-none items-center rounded-pill px-sp-3 text-meta leading-tight font-semibold text-mute hover-fine:text-ink"
+                    className="press -mr-sp-2 min-h-touch rounded-pill px-sp-3 text-meta text-mute hover-fine:text-ink flex flex-none items-center leading-tight font-semibold"
                   >
                     Clear
-                  </button>
+                  </Button>
                 </header>
                 <Thread
                   entries={thread}
@@ -467,19 +631,59 @@ export function FrontDoor({
                         // stale trade Answer gives the time of its own read, because the API keeps no trade Answer.
                         const refresh =
                           since !== undefined && answer && entry.read && passphrase
-                            ? { line: staleLine(since ?? entry.read.at), onRefresh: () => void runTrade(entry.id, entry.question, tradeRequestOf({ ...entry, answer }, team.id), passphrase, picks.filter((pick) => !TRADE_TOPICS[pick])) }
+                            ? {
+                                line: staleLine(since ?? entry.read.at),
+                                onRefresh: () =>
+                                  void runTrade(
+                                    entry.id,
+                                    entry.question,
+                                    tradeRequestOf({ ...entry, answer }, team.id),
+                                    passphrase,
+                                    picks.filter((pick) => !TRADE_TOPICS[pick]),
+                                  ),
+                              }
                             : null;
-                        return <TradeCard ref={ref} question={entry.question} steps={entry.steps} answer={entry.answer} analyze={analyzeHref()} stale={refresh} morph={morph} />;
+                        return (
+                          <TradeCard
+                            ref={ref}
+                            question={entry.question}
+                            steps={entry.steps}
+                            answer={entry.answer}
+                            analyze={analyzeHref()}
+                            stale={refresh}
+                            morph={morph}
+                          />
+                        );
                       }
                       case "miss":
-                        return <MissCard ref={ref} question={entry.question} closest={entry.closest} block={entry.block} avatars={avatars} onPick={(key) => open(key)} />;
+                        return (
+                          <MissCard
+                            ref={ref}
+                            question={entry.question}
+                            closest={entry.closest}
+                            block={entry.block}
+                            avatars={avatars}
+                            onPick={(key) => open(key)}
+                          />
+                        );
                       case "cap":
-                        return <CapCard ref={ref} question={entry.question} line={entry.line} closest={entry.closest} onPick={(key) => open(key)} />;
+                        return (
+                          <CapCard
+                            ref={ref}
+                            question={entry.question}
+                            line={entry.line}
+                            closest={entry.closest}
+                            onPick={(key) => open(key)}
+                          />
+                        );
                       case "free": {
                         // A chip of the team that the question names opens the Topic of that team.
                         const shared = {
                           question: entry.question,
-                          teamName: (id: number | null) => (id !== null && id !== team.id ? teams.find((other) => other.id === id)?.name : undefined),
+                          teamName: (id: number | null) =>
+                            id !== null && id !== team.id
+                              ? teams.find((other) => other.id === id)?.name
+                              : undefined,
                           you: team.name,
                           onPick: (key: string, id: number | null) => open(key, id),
                         };
@@ -491,16 +695,32 @@ export function FrontDoor({
                             target={askTarget}
                             passphrase={getPassphrase() ?? ""}
                             body={{ roster_id: team.id, week, turns: turnsOf(entry.id) }}
-                            onDone={(result) => put(entry.id, { kind: "free", question: entry.question, result })}
-                            onMiss={(closest) => put(entry.id, { kind: "miss", question: entry.question, closest })}
-                            onError={() => put(entry.id, { kind: "note", question: entry.question, line: RETRY_LINE, topic: null, team: null, retry: true })}
+                            onDone={(result) =>
+                              put(entry.id, { kind: "free", question: entry.question, result })
+                            }
+                            onMiss={(closest) =>
+                              put(entry.id, { kind: "miss", question: entry.question, closest })
+                            }
+                            onError={() =>
+                              put(entry.id, {
+                                kind: "note",
+                                question: entry.question,
+                                line: RETRY_LINE,
+                                topic: null,
+                                team: null,
+                                retry: true,
+                              })
+                            }
                             {...shared}
                           />
                         );
                       }
                       case "personal": {
                         // A tapped Topic shows its name, with the team after it when it is not Your team.
-                        const other = entry.team !== team.id ? teams.find((candidate) => candidate.id === entry.team)?.name : undefined;
+                        const other =
+                          entry.team !== team.id
+                            ? teams.find((candidate) => candidate.id === entry.team)?.name
+                            : undefined;
                         const shared = {
                           name: personalName(entry, other),
                           href: personalHrefs[entry.team]?.[entry.key] ?? null,
@@ -513,7 +733,14 @@ export function FrontDoor({
                             ref={ref}
                             result={entry.result}
                             // Refresh streams a fresh Answer in the same place. The roster changed, so its key is new.
-                            stale={since !== undefined ? { line: staleLine(since), onRefresh: () => put(entry.id, { ...entry, result: null }) } : null}
+                            stale={
+                              since !== undefined
+                                ? {
+                                    line: staleLine(since),
+                                    onRefresh: () => put(entry.id, { ...entry, result: null }),
+                                  }
+                                : null
+                            }
                             {...shared}
                           />
                         ) : (
@@ -522,20 +749,57 @@ export function FrontDoor({
                             target={askTarget}
                             passphrase={getPassphrase() ?? ""}
                             // Only a typed question carries the turns and its text. A tapped Topic keeps its kept Answer (AT-8).
-                            body={{ topic: entry.key, roster_id: team.id, team: entry.team === team.id ? null : entry.team, ...(entry.question !== null ? { turns: turnsOf(entry.id), question: entry.question } : {}) }}
+                            body={{
+                              topic: entry.key,
+                              roster_id: team.id,
+                              team: entry.team === team.id ? null : entry.team,
+                              ...(entry.question !== null
+                                ? { turns: turnsOf(entry.id), question: entry.question }
+                                : {}),
+                            }}
                             onDone={(result) => put(entry.id, { ...entry, result })}
-                            onMiss={(closest, block) => put(entry.id, { kind: "miss", question: shared.name, closest, ...(block ? { block } : {}) })}
+                            onMiss={(closest, block) =>
+                              put(entry.id, {
+                                kind: "miss",
+                                question: shared.name,
+                                closest,
+                                ...(block ? { block } : {}),
+                              })
+                            }
                             // Past a cap, the API writes the line and sends the closest Topics of this Topic.
-                            onCap={(cap) => put(entry.id, { kind: "cap", question: shared.name, line: cap.line, closest: cap.closest })}
+                            onCap={(cap) =>
+                              put(entry.id, {
+                                kind: "cap",
+                                question: shared.name,
+                                line: cap.line,
+                                closest: cap.closest,
+                              })
+                            }
                             // A retry sends the name of the Topic through the route, which opens the same Topic again.
-                            onError={() => put(entry.id, { kind: "note", question: shared.name, line: RETRY_LINE, topic: null, team: null, retry: true })}
+                            onError={() =>
+                              put(entry.id, {
+                                kind: "note",
+                                question: shared.name,
+                                line: RETRY_LINE,
+                                topic: null,
+                                team: null,
+                                retry: true,
+                              })
+                            }
                             {...shared}
                           />
                         );
                       }
                       case "site":
                         // The kept item holds only its page key, so the links come from the pages of this build.
-                        return <SiteAnswer ref={ref} question={entry.question} page={entry.page} pages={pages} />;
+                        return (
+                          <SiteAnswer
+                            ref={ref}
+                            question={entry.question}
+                            page={entry.page}
+                            pages={pages}
+                          />
+                        );
                       case "note":
                         return (
                           <NoteCard
@@ -543,9 +807,20 @@ export function FrontDoor({
                             question={entry.question}
                             line={entry.line}
                             topic={entry.topic ?? undefined}
-                            team={entry.team !== null && entry.team !== team.id ? teams.find((other) => other.id === entry.team)?.name : undefined}
+                            team={
+                              entry.team !== null && entry.team !== team.id
+                                ? teams.find((other) => other.id === entry.team)?.name
+                                : undefined
+                            }
                             onPick={(key) => open(key, entry.team)}
-                            action={entry.retry ? { label: "Ask again", onClick: () => void send(entry.id, entry.question) } : undefined}
+                            action={
+                              entry.retry
+                                ? {
+                                    label: "Ask again",
+                                    onClick: () => void send(entry.id, entry.question),
+                                  }
+                                : undefined
+                            }
                           />
                         );
                     }
@@ -557,47 +832,59 @@ export function FrontDoor({
                 while it fades out, and the new dock fades in at the foot. With motion on, the dock keeps one key, so
                 nothing leaves here (ticket 48). */}
             <AnimatePresence initial={false} mode="popLayout">
-            <Dock
-              // The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer,
-              // in one move on the shared layout spring. With motion off, the dock jumps to its place, and only the
-              // fades of its parts run. Only the position animates: the dock changes its height when "More" opens, and a
-              // size animation would stretch the ask box and the chips on the way. With motion off, the dock mounts again
-              // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46). The
-              // old dock fades out over the same moment, so the ask box never drops from full to none in one frame.
-              // In an empty Thread, while the keyboard covers the foot, the dock is fixed on the foot of the visual
-              // viewport: the root holds --spacing-door-foot as the height that the keyboard covers (globals.css). The
-              // same glide carries it there and back, and with motion off it jumps.
-              key={off ? (empty ? "dock-center" : "dock-foot") : "dock"}
-              ref={dock}
-              layout={off ? false : "position"}
-              transition={{ layout: GLIDE }}
-              className={`flex flex-col gap-sp-3 ${pinned ? "fixed inset-x-0 bottom-door-foot z-10 mx-auto w-full max-w-door border-t border-rule bg-page px-gutter py-sp-3" : empty ? "" : "sticky bottom-door-foot z-10 -mx-gutter border-t border-rule bg-page px-gutter pt-sp-3 pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))] desktop:bottom-0"}`}
-              exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
-            >
-              {!missed && (day === null || picks.length > 0 || moreOpen) ? (
-                <motion.div {...riseIn(off, { delay: 0.06 })}>
-                  {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
-                  <Suggestions picks={day === null ? null : picks} facts={{ ...TRADE_LINES, ...PERSONAL_LINES, ...shownFacts(facts, servedNow?.kickoffs ?? {}) }} moreOpen={moreOpen} onMore={setMoreOpen} onPick={(key) => open(key)} askFirst={askFirst} />
-                </motion.div>
-              ) : null}
-              {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad
+              <Dock
+                // The ask box and the chips glide from the center of the empty Thread to the bottom on the first Answer,
+                // in one move on the shared layout spring. With motion off, the dock jumps to its place, and only the
+                // fades of its parts run. Only the position animates: the dock changes its height when "More" opens, and a
+                // size animation would stretch the ask box and the chips on the way. With motion off, the dock mounts again
+                // at its new place, so each part fades in there and the ask box never jumps at full opacity (AT-46). The
+                // old dock fades out over the same moment, so the ask box never drops from full to none in one frame.
+                // In an empty Thread, while the keyboard covers the foot, the dock is fixed on the foot of the visual
+                // viewport: the root holds --spacing-door-foot as the height that the keyboard covers (globals.css). The
+                // same glide carries it there and back, and with motion off it jumps.
+                key={off ? (empty ? "dock-center" : "dock-foot") : "dock"}
+                ref={dock}
+                layout={off ? false : "position"}
+                transition={{ layout: GLIDE }}
+                // oxlint-disable-next-line design/no-arbitrary-value -- the pinned ask box clears the safe-area inset plus one step, a one-off
+                className={`gap-sp-3 flex flex-col ${pinned ? "bottom-door-foot max-w-door border-rule bg-page px-gutter py-sp-3 fixed inset-x-0 z-10 mx-auto w-full border-t" : empty ? "" : "bottom-door-foot -mx-gutter border-rule bg-page px-gutter pt-sp-3 desktop:bottom-0 sticky z-10 border-t pb-[calc(var(--spacing-sp-3)+var(--spacing-door-safe))]"}`}
+                exit={off ? { opacity: 0, transition: fadeIn(FAST) } : undefined}
+              >
+                {!missed && (day === null || picks.length > 0 || moreOpen) ? (
+                  <motion.div {...riseIn(off, { delay: 0.06 })}>
+                    {/* Until the browser reads the day, quiet placeholder chips hold the place of the chips. */}
+                    <Suggestions
+                      picks={day === null ? null : picks}
+                      facts={{
+                        ...TRADE_LINES,
+                        ...PERSONAL_LINES,
+                        ...shownFacts(facts, servedNow?.kickoffs ?? {}),
+                      }}
+                      moreOpen={moreOpen}
+                      onMore={setMoreOpen}
+                      onPick={(key) => open(key)}
+                      askFirst={askFirst}
+                    />
+                  </motion.div>
+                ) : null}
+                {/* The ask box glides on its own box too. The dock changes inside as it glides: the dock gains its top pad
                   and its bleed. The glide of the dock alone puts the ask box
                   about 40 px up and 16 px right at the start, so it would rise before it falls (ticket 46). */}
-              <motion.div
-                {...riseIn(off, { delay: 0.08 })}
-                layout={off ? false : "position"}
-                transition={{ ...riseIn(off, { delay: 0.08 }).transition, layout: GLIDE }}
-              >
-                {/* Send holds busy while a question routes, so a second tap never sends it twice. */}
-                <AskBox onAsk={ask} pending={thread.some((entry) => entry.kind === "pending")} />
-              </motion.div>
-              {/* The team link stays out of a pinned dock, so the ask box sits right on the keyboard. */}
-              {empty && !pinned && (
-                <motion.div className="flex" {...riseIn(off, { delay: 0.16 })}>
-                  {changeTeam}
+                <motion.div
+                  {...riseIn(off, { delay: 0.08 })}
+                  layout={off ? false : "position"}
+                  transition={{ ...riseIn(off, { delay: 0.08 }).transition, layout: GLIDE }}
+                >
+                  {/* Send holds busy while a question routes, so a second tap never sends it twice. */}
+                  <AskBox onAsk={ask} pending={thread.some((entry) => entry.kind === "pending")} />
                 </motion.div>
-              )}
-            </Dock>
+                {/* The team link stays out of a pinned dock, so the ask box sits right on the keyboard. */}
+                {empty && !pinned && (
+                  <motion.div className="flex" {...riseIn(off, { delay: 0.16 })}>
+                    {changeTeam}
+                  </motion.div>
+                )}
+              </Dock>
             </AnimatePresence>
             {/* A pinned dock leaves the flow, so a still box of its height holds its place and the Thread never jumps. */}
             {pinned && <div aria-hidden style={{ height: dockHeight }} className="flex-none" />}
@@ -635,7 +922,8 @@ export function FrontDoor({
               const { waiting } = passStep;
               afterPassphrase.current = null;
               setPassStep(null);
-              if (waiting !== null) setThread((entries) => entries.filter((entry) => entry.id !== waiting));
+              if (waiting !== null)
+                setThread((entries) => entries.filter((entry) => entry.id !== waiting));
             }}
           />
         )}

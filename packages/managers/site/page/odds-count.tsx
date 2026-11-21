@@ -17,7 +17,11 @@ export function OddsCount({ value }: { value: number }) {
   useEffect(() => {
     if (off) return;
     // The count starts on mount only, so a scroll never plays it again. The first frame sets zero.
-    const controls = animate(count, value, { from: 0, duration: DURATION.decision, ease: EASE_OUT });
+    const controls = animate(count, value, {
+      from: 0,
+      duration: DURATION.decision,
+      ease: EASE_OUT,
+    });
     return () => controls.stop();
   }, [off, value, count]);
   return (

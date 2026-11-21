@@ -41,7 +41,7 @@ export function HomeMatchup({
   const [first, second] = pick.sides;
   return (
     // The first sentence sits under the hero, so the hero stays as short as the others (decision 05).
-    <div className="flex flex-col gap-sp-5">
+    <div className="gap-sp-5 flex flex-col">
       <Hero
         label="Matchup of the Week"
         eyebrow={`Week ${twoDigits(week)} // Matchup of the Week`}
@@ -51,17 +51,17 @@ export function HomeMatchup({
         level={2}
         meta={pick.reason}
         feature={
-          <Rise step={1} className="flex flex-col gap-sp-3">
+          <Rise step={1} className="gap-sp-3 flex flex-col">
             <TeamRow side={first} avatars={avatars} lead withTop={false} />
             <TeamRow side={second} avatars={avatars} lead={false} withTop={false} />
           </Rise>
         }
         action={
-          <Rise step={2} className="w-full tablet:w-auto">
+          <Rise step={2} className="tablet:w-auto w-full">
             {/* A full pill and a 44px tap target, in the brand color, as the week button of the 404 page. */}
             <a
               href={href}
-              className="press flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
+              className="press min-h-touch rounded-pill bg-accent px-sp-6 text-body text-on-dark flex items-center justify-center font-bold no-underline"
             >
               {`Read Week ${week}`}
             </a>
@@ -69,7 +69,12 @@ export function HomeMatchup({
         }
       />
       <Rise step={3}>
-        <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", firstSentence(blurb))}>{firstSentence(blurb)}</p>
+        <p
+          className="max-w-measure text-lead leading-body text-ink-2 m-0"
+          {...textId("blurb", firstSentence(blurb))}
+        >
+          {firstSentence(blurb)}
+        </p>
       </Rise>
     </div>
   );

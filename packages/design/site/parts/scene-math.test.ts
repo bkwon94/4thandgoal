@@ -2,7 +2,7 @@
  * Tests for the pure math of the hero scene: the place of each light, the nearest light, the side of a label, and
  * the place of the margin mark. They need no canvas, so they check the numbers that the canvas draws.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   type HeroScene,
   nearestLight,
@@ -45,15 +45,40 @@ describe("placeGuides", () => {
   it("places a guide on the same scale as the lights, so a median line runs at its value", () => {
     const withMedian: HeroScene = {
       ...three,
-      guides: [{ label: "MEDIAN 20", points: [{ x: 0, y: 20 }, { x: 2, y: 20 }] }],
+      guides: [
+        {
+          label: "MEDIAN 20",
+          points: [
+            { x: 0, y: 20 },
+            { x: 2, y: 20 },
+          ],
+        },
+      ],
     };
     expect(placeGuides(withMedian, box)).toEqual([
-      { label: "MEDIAN 20", points: [{ x: 20, y: 100 }, { x: 280, y: 100 }] },
+      {
+        label: "MEDIAN 20",
+        points: [
+          { x: 20, y: 100 },
+          { x: 280, y: 100 },
+        ],
+      },
     ]);
   });
 
   it("widens the scale to hold a guide outside the range of the lights", () => {
-    const withHigh: HeroScene = { ...three, guides: [{ label: "TOP", points: [{ x: 0, y: 50 }, { x: 2, y: 50 }] }] };
+    const withHigh: HeroScene = {
+      ...three,
+      guides: [
+        {
+          label: "TOP",
+          points: [
+            { x: 0, y: 50 },
+            { x: 2, y: 50 },
+          ],
+        },
+      ],
+    };
     expect(placeGuides(withHigh, box)[0].points[0].y).toBe(20);
     expect(placeLights(withHigh, box)[2].y).toBeGreaterThan(20);
   });
@@ -106,16 +131,26 @@ describe("placeMarginMark", () => {
 
   it("moves the mark off a label that covers its first place", () => {
     const free = placeMarginMark(points, margin, size, [], box)!;
-    const cover = { x: free.x - 5, y: free.y - 5, width: free.width + 10, height: free.height + 10 };
+    const cover = {
+      x: free.x - 5,
+      y: free.y - 5,
+      width: free.width + 10,
+      height: free.height + 10,
+    };
     const moved = placeMarginMark(points, margin, size, [cover], box)!;
     expect(moved).not.toEqual(free);
-    const clear = moved.x >= cover.x + cover.width || moved.x + moved.width <= cover.x ||
-      moved.y >= cover.y + cover.height || moved.y + moved.height <= cover.y;
+    const clear =
+      moved.x >= cover.x + cover.width ||
+      moved.x + moved.width <= cover.x ||
+      moved.y >= cover.y + cover.height ||
+      moved.y + moved.height <= cover.y;
     expect(clear).toBe(true);
   });
 
   it("gives no mark when a label covers the whole box", () => {
-    expect(placeMarginMark(points, margin, size, [{ x: 0, y: 0, width: 300, height: 200 }], box)).toBeNull();
+    expect(
+      placeMarginMark(points, margin, size, [{ x: 0, y: 0, width: 300, height: 200 }], box),
+    ).toBeNull();
   });
 });
 

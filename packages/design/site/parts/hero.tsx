@@ -1,6 +1,8 @@
 /**
  * The hero: the one loud surface of a page, with the grid texture, the brand glow, and the four corner brackets.
  * It sits on the band color in both themes, so the hero stays dark in light. The page fills the seven hero slots.
+ * Use it when: a page needs its one loud top surface.
+ * Do not use it when: the page has no hero. Use `WeekLine`.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
@@ -48,8 +50,10 @@ const BRACKETS = [
 ];
 
 /* The fixed style of each text slot. A page cannot pass a class to a slot, so every hero reads as one family. */
-const EYEBROW = "w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
-const TITLE = "m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
+const EYEBROW =
+  "w-fit font-mono text-meta leading-tight font-bold tracking-wide text-accent-text uppercase";
+const TITLE =
+  "m-0 w-fit font-sans text-headline leading-tight font-light tracking-tight text-balance break-words";
 const META = "w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body text-on-dark-2";
 
 /* The slots on a phone stack in one column. From the tablet tier up the hero takes two rows: the eyebrow and the title
@@ -58,7 +62,17 @@ const META = "w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body te
    The title has the priority in the top row: the meta column takes the width of the meta up to 40 percent of the hero,
    so a long meta wraps and the title keeps its width. The action takes the free width of the bottom row, so content
    with no width of its own, such as the share bar, fills it. */
-function Slots({ eyebrow, toggle, title, meta, feature, stats, action, level = 1, scene }: HeroSlots) {
+function Slots({
+  eyebrow,
+  toggle,
+  title,
+  meta,
+  feature,
+  stats,
+  action,
+  level = 1,
+  scene,
+}: HeroSlots) {
   const Heading = level === 1 ? "h1" : "h2";
   const eyebrowSlot = eyebrow !== undefined && (
     <div data-hero-slot="eyebrow" className={EYEBROW}>
@@ -66,23 +80,26 @@ function Slots({ eyebrow, toggle, title, meta, feature, stats, action, level = 1
     </div>
   );
   return (
-    <div className="flex flex-col gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_fit-content(40%)] tablet:gap-x-sp-6">
+    <div className="gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_fit-content(40%)] tablet:gap-x-sp-6 flex flex-col">
       {/* With a toggle, the eyebrow and the toggle take a full row of their own above the title, so the toggle spans the
           hero at each width and the eyebrow still reads first. */}
       {toggle !== undefined && (
-        <div className="flex flex-col gap-sp-3 tablet:col-span-2">
+        <div className="gap-sp-3 tablet:col-span-2 flex flex-col">
           {eyebrowSlot}
           <div data-hero-slot="toggle">{toggle}</div>
         </div>
       )}
-      <div className="flex flex-col gap-sp-2 tablet:col-start-1">
+      <div className="gap-sp-2 tablet:col-start-1 flex flex-col">
         {toggle === undefined && eyebrowSlot}
         <Heading data-hero-slot="title" className={TITLE}>
           {title}
         </Heading>
       </div>
       {meta !== undefined && (
-        <div data-hero-slot="meta" className={cn(META, "tablet:col-start-2 tablet:justify-self-end")}>
+        <div
+          data-hero-slot="meta"
+          className={cn(META, "tablet:col-start-2 tablet:justify-self-end")}
+        >
           {meta}
         </div>
       )}
@@ -100,23 +117,26 @@ function Slots({ eyebrow, toggle, title, meta, feature, stats, action, level = 1
         </div>
       )}
       {(stats !== undefined || action !== undefined) && (
-        <div className="relative flex flex-col gap-sp-6 tablet:col-span-2 tablet:flex-row tablet:items-end tablet:justify-between">
+        <div className="gap-sp-6 tablet:col-span-2 tablet:flex-row tablet:items-end tablet:justify-between relative flex flex-col">
           {/* The faded hairline above the stats, from the tablet tier up only. It sits in the middle of the gap above
               the row and is transparent at both ends. */}
           {stats !== undefined && (
             <div
               aria-hidden="true"
               data-hero-rule
-              className="pointer-events-none absolute inset-x-0 -top-sp-3 hidden h-px bg-linear-to-r from-transparent via-rule-dark to-transparent tablet:block"
+              className="-top-sp-3 via-rule-dark tablet:block pointer-events-none absolute inset-x-0 hidden h-px bg-linear-to-r from-transparent to-transparent"
             />
           )}
           {stats !== undefined && (
-            <div data-hero-slot="stats" className="flex flex-wrap gap-sp-2">
+            <div data-hero-slot="stats" className="gap-sp-2 flex flex-wrap">
               {stats}
             </div>
           )}
           {action !== undefined && (
-            <div data-hero-slot="action" className="flex flex-wrap items-center gap-sp-2 tablet:grow tablet:justify-end">
+            <div
+              data-hero-slot="action"
+              className="gap-sp-2 tablet:grow tablet:justify-end flex flex-wrap items-center"
+            >
               {action}
             </div>
           )}
@@ -135,24 +155,40 @@ function Slots({ eyebrow, toggle, title, meta, feature, stats, action, level = 1
    not a child, so a page can change the ground under the slots and never the slots. The art draws its own grid and glow,
    and it sits in the same layer with the same marker, so the floor still finds the hero and reads its text by pixels.
    The content box carries data-hero-content, so live art can find each text that it must keep clear. */
-export function HeroFrame({ label, className, art, children }: { label: string; className?: string; art?: ReactNode; children: ReactNode }) {
+export function HeroFrame({
+  label,
+  className,
+  art,
+  children,
+}: {
+  label: string;
+  className?: string;
+  art?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <section
       aria-label={label}
       className={cn(
-        "relative overflow-hidden rounded-hero border border-rule-dark bg-band px-hero-x py-hero-y text-on-dark",
+        "rounded-hero border-rule-dark bg-band px-hero-x py-hero-y text-on-dark relative overflow-hidden border",
         className,
       )}
     >
       <div aria-hidden="true">
-        <div data-hero-art="texture" className={cn("pointer-events-none absolute inset-0", art === undefined && "hero-texture")}>
+        <div
+          data-hero-art="texture"
+          className={cn(
+            "pointer-events-none absolute inset-0",
+            art === undefined && "hero-texture",
+          )}
+        >
           {art}
         </div>
         {BRACKETS.map((place) => (
           <span
             key={place}
             data-hero-art="bracket"
-            className={`pointer-events-none absolute size-bracket border-on-dark-muted ${place}`}
+            className={`size-bracket border-on-dark-muted pointer-events-none absolute ${place}`}
           />
         ))}
       </div>

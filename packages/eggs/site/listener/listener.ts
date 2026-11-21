@@ -54,8 +54,15 @@ const END_SLACK_PX = 4;
 function isOpen(element: Element): boolean {
   const on = (name: string) => element.getAttribute(name) === "true";
   const state = element.getAttribute("data-state");
-  return on("aria-expanded") || on("aria-pressed") || on("aria-selected") || on("aria-checked")
-    || element.hasAttribute("open") || state === "open" || state === "on";
+  return (
+    on("aria-expanded") ||
+    on("aria-pressed") ||
+    on("aria-selected") ||
+    on("aria-checked") ||
+    element.hasAttribute("open") ||
+    state === "open" ||
+    state === "on"
+  );
 }
 
 /* The value of a mark on the first element that has it, or null. */
@@ -67,8 +74,12 @@ function mark(root: Document, name: string): string | null {
    the scroll to the end, and the 404 page. A condition with no state on the page stays out, so the body stays short.
    The API checks the clock window and the weekday on its own clock. */
 function conditions(root: Document, scrolledEnd: boolean): Conditions {
-  const state: Conditions = { theme: root.documentElement.classList.contains(DARK_CLASS) ? "dark" : "light" };
-  const open = [...root.querySelectorAll(`[${OPEN_ID}]`)].filter(isOpen).map((element) => element.getAttribute(OPEN_ID)!);
+  const state: Conditions = {
+    theme: root.documentElement.classList.contains(DARK_CLASS) ? "dark" : "light",
+  };
+  const open = [...root.querySelectorAll(`[${OPEN_ID}]`)]
+    .filter(isOpen)
+    .map((element) => element.getAttribute(OPEN_ID)!);
   if (open.length > 0) state.open = [...new Set(open)].sort();
   const champion = mark(root, SIM_CHAMPION);
   if (champion) state.sim_champion = Number(champion);
@@ -86,7 +97,10 @@ function conditions(root: Document, scrolledEnd: boolean): Conditions {
 /* The roster ids of the sides of a trade key such as "3:4046|12:6794", smallest first. An egg names two teams, so any
    trade between those two teams matches, with any players. */
 function teamsOf(key: string): number[] {
-  return key.split("|").map((side) => Number(side.split(":")[0])).sort((a, b) => a - b);
+  return key
+    .split("|")
+    .map((side) => Number(side.split(":")[0]))
+    .sort((a, b) => a - b);
 }
 
 /* The stable id of the element under an event, or null when no element with a stable id holds the event. */
@@ -110,8 +124,10 @@ function selectedWord(root: Document): { id: string; word: string } | null {
   if (!WORD.test(word)) return null;
   const range = selection.getRangeAt(0);
   // A space at an end of the selection already parts the word from the next mark, so only a bare end needs a check.
-  if (text.startsWith(word) && WORD_MARK.test(markAt(range.startContainer, range.startOffset - 1))) return null;
-  if (text.endsWith(word) && WORD_MARK.test(markAt(range.endContainer, range.endOffset))) return null;
+  if (text.startsWith(word) && WORD_MARK.test(markAt(range.startContainer, range.startOffset - 1)))
+    return null;
+  if (text.endsWith(word) && WORD_MARK.test(markAt(range.endContainer, range.endOffset)))
+    return null;
   const node = range.commonAncestorContainer;
   const element = (node instanceof Element ? node : node.parentElement)?.closest(`[${STABLE_ID}]`);
   const id = element?.getAttribute(STABLE_ID);
@@ -147,7 +163,11 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
     const page = ports.page();
     const check: EggCheck = { page, target, action, conditions: conditions(root, endOf === page) };
     const trail = extra.trail ?? [];
-    ports.send({ ...check, ...(trail.length > 0 ? { trail } : {}), ...(extra.word ? { word: extra.word } : {}) });
+    ports.send({
+      ...check,
+      ...(trail.length > 0 ? { trail } : {}),
+      ...(extra.word ? { word: extra.word } : {}),
+    });
   }
 
   function onSelectionSettled() {
@@ -172,7 +192,9 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
       return;
     }
     // Only a double-tap sends a check. A burst of 3 or more taps sends nothing, so a spam of taps finds no egg.
-    const trail = singles.filter((single) => done.at - single.at <= COMBO_MS).map((single) => single.id);
+    const trail = singles
+      .filter((single) => done.at - single.at <= COMBO_MS)
+      .map((single) => single.id);
     singles = [];
     if (done.count !== 2) return;
     // A double-tap carries the single taps before it within the time of a combo, so a tap combo sends one check.
@@ -233,7 +255,8 @@ export function listenForEggs(root: Document, ports: ListenerPorts): () => void 
   function onScroll() {
     const view = root.defaultView;
     if (!view) return;
-    if (view.scrollY + view.innerHeight >= root.documentElement.scrollHeight - END_SLACK_PX) endOf = ports.page();
+    if (view.scrollY + view.innerHeight >= root.documentElement.scrollHeight - END_SLACK_PX)
+      endOf = ports.page();
   }
 
   root.addEventListener("pointerdown", onDown);

@@ -5,7 +5,7 @@
  * in the ask box (ticket 37).
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { Suggestions } from "./suggestions";
 
 afterEach(() => cleanup());
@@ -28,8 +28,15 @@ describe("Suggestions", () => {
   });
 
   it("shows the whole fact and Open on the first tap, and opens the Topic on the second tap (AT-43)", () => {
-    const onPick = vi.fn();
-    render(<Suggestions picks={["week_recap", "power_rankings"]} {...props} facts={FACTS} onPick={onPick} />);
+    const onPick = mock();
+    render(
+      <Suggestions
+        picks={["week_recap", "power_rankings"]}
+        {...props}
+        facts={FACTS}
+        onPick={onPick}
+      />,
+    );
     expect(screen.queryByRole("button", { name: "Open Week recap" })).toBeNull();
     const chip = screen.getByRole("button", { name: /^Week recap/ });
     fireEvent.click(chip);
@@ -45,22 +52,32 @@ describe("Suggestions", () => {
   });
 
   it("opens the Topic on a tap on the strip", () => {
-    const onPick = vi.fn();
+    const onPick = mock();
     render(<Suggestions picks={["week_recap"]} {...props} facts={FACTS} onPick={onPick} />);
     fireEvent.click(screen.getByRole("button", { name: /^Week recap/ }));
     fireEvent.click(screen.getByRole("button", { name: "Open Week recap" }));
-    expect(onPick).toHaveBeenCalledExactlyOnceWith("week_recap");
+    expect(onPick).toHaveBeenCalledTimes(1);
+    expect(onPick).toHaveBeenCalledWith("week_recap");
   });
 
   it("moves the strip to the fact of another chip on its tap, and opens no Topic (AT-44)", async () => {
-    const onPick = vi.fn();
-    render(<Suggestions picks={["week_recap", "power_rankings"]} {...props} facts={FACTS} onPick={onPick} />);
+    const onPick = mock();
+    render(
+      <Suggestions
+        picks={["week_recap", "power_rankings"]}
+        {...props}
+        facts={FACTS}
+        onPick={onPick}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: /^Week recap/ }));
     const rankings = screen.getByRole("button", { name: /^Power rankings/ });
     fireEvent.click(rankings);
     expect(onPick).not.toHaveBeenCalled();
     expect(rankings.getAttribute("aria-expanded")).toBe("true");
-    expect(screen.getByRole("button", { name: /^Week recap/ }).getAttribute("aria-expanded")).toBe("false");
+    expect(screen.getByRole("button", { name: /^Week recap/ }).getAttribute("aria-expanded")).toBe(
+      "false",
+    );
     const strip = screen.getByRole("button", { name: "Open Power rankings" });
     await waitFor(() => expect(strip.textContent).not.toContain("You scored"));
     expect(strip.textContent).toContain("6th, down 5");
@@ -72,7 +89,9 @@ describe("Suggestions", () => {
     expect(screen.getByRole("button", { name: "Open Week recap" })).toBeTruthy();
     rerender(<Suggestions picks={["week_recap"]} {...props} facts={FACTS} moreOpen />);
     // The strip fades out on --duration-quick, then leaves.
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Open Week recap" })).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Open Week recap" })).toBeNull(),
+    );
   });
 
   it("shows 3 quiet placeholder chips, hidden from a screen reader, while the picks are not in", () => {
@@ -86,7 +105,9 @@ describe("Suggestions", () => {
   });
 
   it("shows no placeholder once the picks land", () => {
-    render(<Suggestions picks={["week_recap"]} {...props} facts={{ week_recap: "You won by 12" }} />);
+    render(
+      <Suggestions picks={["week_recap"]} {...props} facts={{ week_recap: "You won by 12" }} />,
+    );
     const group = screen.getByRole("group", { name: "Suggestions" });
     expect(group.querySelectorAll("[data-placeholder]")).toHaveLength(0);
     expect(group.getAttribute("aria-busy")).toBeNull();
@@ -95,33 +116,61 @@ describe("Suggestions", () => {
   /* A press that takes the focus blurs the ask box. The keyboard closes, the dock moves, and the click lands on the page,
      so the first tap would do nothing (ticket 37). fireEvent returns false when a handler cancels the default. */
   it("keeps the focus in the ask box while the thumb presses a chip, More, or a row of More", () => {
-    render(<Suggestions picks={["week_recap"]} {...props} moreOpen facts={{ week_recap: "You won by 12" }} />);
+    render(
+      <Suggestions
+        picks={["week_recap"]}
+        {...props}
+        moreOpen
+        facts={{ week_recap: "You won by 12" }}
+      />,
+    );
     const group = screen.getByRole("group", { name: "Suggestions" });
-    expect(fireEvent.mouseDown(within(group).getByRole("button", { name: /You won by 12/ }))).toBe(false);
+    expect(fireEvent.mouseDown(within(group).getByRole("button", { name: /You won by 12/ }))).toBe(
+      false,
+    );
     expect(fireEvent.mouseDown(within(group).getByRole("button", { name: "More" }))).toBe(false);
     const list = screen.getByRole("list", { name: "All Topics" });
-    expect(fireEvent.mouseDown(within(list).getByRole("button", { name: /You won by 12/ }))).toBe(false);
+    expect(fireEvent.mouseDown(within(list).getByRole("button", { name: /You won by 12/ }))).toBe(
+      false,
+    );
   });
 
   it("closes the keyboard after a row of More or the second tap on a chip acts", () => {
-    const onPick = vi.fn();
+    const onPick = mock();
     const { rerender } = render(
       <>
         <input aria-label="Ask a question" />
-        <Suggestions picks={["week_recap"]} {...props} moreOpen onPick={onPick} facts={{ week_recap: "You won by 12" }} />
+        <Suggestions
+          picks={["week_recap"]}
+          {...props}
+          moreOpen
+          onPick={onPick}
+          facts={{ week_recap: "You won by 12" }}
+        />
       </>,
     );
     const field = screen.getByRole("textbox");
     field.focus();
-    fireEvent.click(within(screen.getByRole("list", { name: "All Topics" })).getByRole("button", { name: /You won by 12/ }));
+    fireEvent.click(
+      within(screen.getByRole("list", { name: "All Topics" })).getByRole("button", {
+        name: /You won by 12/,
+      }),
+    );
     expect(document.activeElement, "the field gives up the focus").not.toBe(field);
     rerender(
       <>
         <input aria-label="Ask a question" />
-        <Suggestions picks={["week_recap"]} {...props} onPick={onPick} facts={{ week_recap: "You won by 12" }} />
+        <Suggestions
+          picks={["week_recap"]}
+          {...props}
+          onPick={onPick}
+          facts={{ week_recap: "You won by 12" }}
+        />
       </>,
     );
-    const chip = within(screen.getByRole("group", { name: "Suggestions" })).getByRole("button", { name: /You won by 12/ });
+    const chip = within(screen.getByRole("group", { name: "Suggestions" })).getByRole("button", {
+      name: /You won by 12/,
+    });
     field.focus();
     fireEvent.click(chip);
     // The first tap only shows the fact, so the keyboard stays open, as it does for More.

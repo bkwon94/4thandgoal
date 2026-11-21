@@ -16,15 +16,44 @@ const OUT = join(process.cwd(), "out");
 // CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The recorded find answer of a real press for Bo Girds with the RB chip on the local API, week 11 of cpc: 4 picks of
 // two shapes, and 3 near ideas.
-const FIND = readFileSync(join(process.cwd(), "..", "..", "packages", "analyzer", "site", "lib", "fixtures", "find-response-bo-girds-rb.json"), "utf8");
+const FIND = readFileSync(
+  join(
+    process.cwd(),
+    "..",
+    "..",
+    "packages",
+    "analyzer",
+    "site",
+    "lib",
+    "fixtures",
+    "find-response-bo-girds-rb.json",
+  ),
+  "utf8",
+);
 const DOC = JSON.parse(FIND) as {
   trade_pair: { asker: { roster_id: number } };
-  trades: { sides: { roster_id: number; team: string; gives: { player_id: string; name: string; position: string; nfl_team: string; headshot: string }[] }[] }[];
+  trades: {
+    sides: {
+      roster_id: number;
+      team: string;
+      gives: {
+        player_id: string;
+        name: string;
+        position: string;
+        nfl_team: string;
+        headshot: string;
+      }[];
+    }[];
+  }[];
   near: { sides: { roster_id: number; gives: { name: string }[] }[] }[];
 };
 // The find stream of the API: the document of the fixture in its answer part, as one event stream.
 const FIND_STREAM = `data: ${JSON.stringify({ type: "data-answer", data: { kind: "find", document: DOC } })}\n\ndata: [DONE]\n\n`;
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "GET, POST",
+};
 const ASKER = DOC.trade_pair.asker.roster_id;
 
 // The browser of a file is set at its top, because a group cannot pick the browser. Safari runs on WebKit.
@@ -43,12 +72,22 @@ const VIEWPORTS = [
 
 /* The teams of the find answer: the asker and each partner, each with the players it gives in the answer. */
 function teamsOfFind() {
-  const teams = new Map<number, { roster_id: number; team: string; manager: string; avatar: null; players: unknown[] }>();
+  const teams = new Map<
+    number,
+    { roster_id: number; team: string; manager: string; avatar: null; players: unknown[] }
+  >();
   for (const trade of DOC.trades)
     for (const side of trade.sides) {
-      const team = teams.get(side.roster_id) ?? { roster_id: side.roster_id, team: side.team, manager: side.team, avatar: null, players: [] };
+      const team = teams.get(side.roster_id) ?? {
+        roster_id: side.roster_id,
+        team: side.team,
+        manager: side.team,
+        avatar: null,
+        players: [],
+      };
       for (const { player_id, name, position, nfl_team, headshot } of side.gives)
-        if (!team.players.some((p) => (p as { player_id: string }).player_id === player_id)) team.players.push({ player_id, name, position, nfl_team, headshot });
+        if (!team.players.some((p) => (p as { player_id: string }).player_id === player_id))
+          team.players.push({ player_id, name, position, nfl_team, headshot });
       teams.set(side.roster_id, team);
     }
   return JSON.stringify({ teams: [...teams.values()] });
@@ -64,7 +103,11 @@ test.afterAll(async () => {
 
 /* The short name of a player as the API sends it: the last word that is not a suffix, such as "Walker". */
 const SUFFIXES = new Set(["jr.", "sr.", "ii", "iii", "iv"]);
-const lastOf = (name: string) => name.split(" ").filter((word) => !SUFFIXES.has(word.toLowerCase())).at(-1) ?? name;
+const lastOf = (name: string) =>
+  name
+    .split(" ")
+    .filter((word) => !SUFFIXES.has(word.toLowerCase()))
+    .at(-1) ?? name;
 /* The Shortlist of the press: each trade and each near idea of the fixture was a Shortlist trade, from the side of the
    asker, the players he gives, then the players he gets. */
 const SHORTLIST = [...DOC.trades, ...DOC.near].map((item, i) => ({
@@ -75,7 +118,8 @@ const SHORTLIST = [...DOC.trades, ...DOC.near].map((item, i) => ({
 /* The parts of a find before the pick sends its first trade: steps 1 to 4 with their done lines, the Shortlist, and
    the live line of step 5. They go out with the response, as the API sends them in about the first 5 s. */
 // The search reads each team of the find answer but the asker, as the teams route of the test lists them.
-const PARTNERS = new Set(DOC.trades.flatMap((trade) => trade.sides.map((side) => side.roster_id))).size - 1;
+const PARTNERS =
+  new Set(DOC.trades.flatMap((trade) => trade.sides.map((side) => side.roster_id))).size - 1;
 const LEAD = [
   [`Reading ${PARTNERS} teams`, true],
   [`Read ${PARTNERS} teams`, false],
@@ -108,38 +152,62 @@ const STREAMED = [
 /* A find stream that the test feeds one part at a time. The browser fetch of the find stream gets a held body, and
    window.__sendNext sends the next part, so the test reads the page between two parts. Every other request goes on. */
 async function holdFindStream(page: Page) {
-  await page.addInitScript(([lead, parts]) => {
-    const realFetch = window.fetch.bind(window);
-    window.fetch = async (input, init) => {
-      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-      if (!url.includes("/find-stream")) return realFetch(input, init);
-      let controller!: ReadableStreamDefaultController<Uint8Array>;
-      const body = new ReadableStream<Uint8Array>({
-        start: (c) => {
-          controller = c;
-          for (const part of lead) c.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`));
-        },
-      });
-      const left = [...parts];
-      (window as unknown as { __sendNext: () => number }).__sendNext = () => {
-        controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(left.shift())}\n\n`));
-        if (left.length === 0) controller.close();
-        return left.length;
-      };
-      return new Response(body, { status: 200, headers: { "content-type": "text/event-stream" } });
-    };
-  }, [LEAD_PARTS, STREAMED] as const);
+  await page.addInitScript(
+    ([lead, parts]) => {
+      const realFetch = window.fetch.bind(window);
+      // Bun types fetch with a preconnect property, so the stand-in casts to the type of fetch.
+      window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+        if (!url.includes("/find-stream")) return realFetch(input, init);
+        let controller!: ReadableStreamDefaultController<Uint8Array>;
+        const body = new ReadableStream<Uint8Array>({
+          start: (c) => {
+            controller = c;
+            for (const part of lead)
+              c.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`));
+          },
+        });
+        const left = [...parts];
+        (window as unknown as { __sendNext: () => number }).__sendNext = () => {
+          controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(left.shift())}\n\n`));
+          if (left.length === 0) controller.close();
+          return left.length;
+        };
+        return new Response(body, {
+          status: 200,
+          headers: { "content-type": "text/event-stream" },
+        });
+      }) as typeof fetch;
+    },
+    [LEAD_PARTS, STREAMED] as const,
+  );
 }
 
 /* Opens the analyzer in Find mode with the asker as Your team, taps Find, and waits for the cards. With `streamed`,
    the find stream is held, so no card shows until the test sends its part. */
 async function openFinder(page: Page, theme: Theme, streamed = false, clock = false) {
-  await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
+  await page.route(
+    (url) => !["127.0.0.1", "localhost"].includes(url.hostname),
+    (route) => route.abort(),
+  );
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
-    if (request.url().includes("/find-stream")) return route.fulfill({ status: 200, headers: CORS, contentType: "text/event-stream", body: FIND_STREAM });
-    if (request.url().includes("/teams")) return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body: teamsOfFind() });
+    if (request.url().includes("/find-stream"))
+      return route.fulfill({
+        status: 200,
+        headers: CORS,
+        contentType: "text/event-stream",
+        body: FIND_STREAM,
+      });
+    if (request.url().includes("/teams"))
+      return route.fulfill({
+        status: 200,
+        headers: CORS,
+        contentType: "application/json",
+        body: teamsOfFind(),
+      });
     return route.abort();
   });
   await page.addInitScript((asker) => {
@@ -149,12 +217,10 @@ async function openFinder(page: Page, theme: Theme, streamed = false, clock = fa
   if (streamed) await holdFindStream(page);
   await openPage(page, `${server.url}/analyze/?mode=find`, theme);
   // The fixed clock starts after the page settles, so the settle wait of openPage runs on the real clock.
-  // A clock that runs on its own would move the lines while the test reads them, so it stands still until runFor.
-  if (clock) {
-    const now = Date.now();
-    await page.clock.install({ time: now });
-    await page.clock.pauseAt(now + 1000);
-  }
+  // A clock that runs on its own would move the lines while the test reads them, so it stands still until fastForward.
+  // pauseAt alone installs the clock at time 0 and then jumps it forward to now, so its target is never in the past.
+  // An install at now, then a pauseAt at a later time, races the clock: a slow runner can pass the target between the two calls.
+  if (clock) await page.clock.pauseAt(Date.now());
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();
@@ -165,22 +231,36 @@ async function openFinder(page: Page, theme: Theme, streamed = false, clock = fa
    content that the reader scrolls past, so the scan hides each one for its run. */
 async function expectNoOverlap(page: Page) {
   await page.evaluate(() => {
-    for (const el of document.querySelectorAll<HTMLElement>("body *")) if (["fixed", "sticky"].includes(getComputedStyle(el).position)) el.style.visibility = "hidden";
+    for (const el of document.querySelectorAll<HTMLElement>("body *"))
+      if (["fixed", "sticky"].includes(getComputedStyle(el).position))
+        el.style.visibility = "hidden";
   });
   expect(await findOverlap(page)).toBeNull();
   await page.evaluate(() => {
-    for (const el of document.querySelectorAll<HTMLElement>("body *")) if (el.style.visibility === "hidden") el.style.visibility = "";
+    for (const el of document.querySelectorAll<HTMLElement>("body *"))
+      if (el.style.visibility === "hidden") el.style.visibility = "";
   });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
 }
 
 /* The fixed and sticky parts of the page that show and cover a part of the screen. */
 async function fixedBars(page: Page) {
   return page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>("body *")]
-      .filter((el) => ["fixed", "sticky"].includes(getComputedStyle(el).position) && el.checkVisibility({ opacityProperty: true, visibilityProperty: true }))
-      .map((el) => ({ name: el.getAttribute("aria-label") ?? el.tagName.toLowerCase(), ...el.getBoundingClientRect().toJSON() }))
-      .filter((box) => box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight),
+      .filter(
+        (el) =>
+          ["fixed", "sticky"].includes(getComputedStyle(el).position) &&
+          el.checkVisibility({ opacityProperty: true, visibilityProperty: true }),
+      )
+      .map((el) => ({
+        name: el.getAttribute("aria-label") ?? el.tagName.toLowerCase(),
+        ...el.getBoundingClientRect().toJSON(),
+      }))
+      .filter(
+        (box) => box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight,
+      ),
   );
 }
 
@@ -190,7 +270,9 @@ for (const viewport of VIEWPORTS) {
     for (const theme of ["light", "dark"] as const) {
       // It streams the trades one part at a time. Each card shows as its part comes, with the count line, and the
       // first card scrolls into view.
-      test(`each card shows as its trade part comes, with the count line under the cards, ${theme} (AT-72)`, async ({ page }, info) => {
+      test(`each card shows as its trade part comes, with the count line under the cards, ${theme} (AT-72)`, async ({
+        page,
+      }, info) => {
         await openFinder(page, theme, true);
         const cards = page.getByRole("article");
         const more = page.getByText(/^Writing \d+ more trades?$/);
@@ -198,11 +280,16 @@ for (const viewport of VIEWPORTS) {
         await expect(cards).toHaveCount(0);
         const count = DOC.trades.length;
         for (let shown = 1; shown <= count; shown++) {
-          await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
+          await page.evaluate(() =>
+            (window as unknown as { __sendNext: () => number }).__sendNext(),
+          );
           await expect(cards).toHaveCount(shown);
           // The count comes from the pick before the first card, so the line counts only the trades that still come.
           const left = MOST - shown;
-          if (left > 0) await expect(more).toHaveText(`Writing ${left} more ${left === 1 ? "trade" : "trades"}`);
+          if (left > 0)
+            await expect(more).toHaveText(
+              `Writing ${left} more ${left === 1 ? "trade" : "trades"}`,
+            );
           else await expect(more).toHaveCount(0);
           await expect(cards.first()).toHaveAttribute("aria-label", `Trade 1 of ${MOST}`);
           // The wait stays while the cards come, and the near fold waits for the end.
@@ -210,13 +297,18 @@ for (const viewport of VIEWPORTS) {
           await expect(page.getByRole("button", { name: /Close, but not sent/ })).toHaveCount(0);
           if (shown === 1) {
             // The first card lands in view on its own, so the reader sees it with no scroll of his own.
-            await expect.poll(async () => {
-              const box = (await cards.first().boundingBox())!;
-              return box.y >= 0 && box.y < viewport.use.viewport.height / 2;
-            }).toBe(true);
+            await expect
+              .poll(async () => {
+                const box = (await cards.first().boundingBox())!;
+                return box.y >= 0 && box.y < viewport.use.viewport.height / 2;
+              })
+              .toBe(true);
             await page.screenshot({ path: info.outputPath(`stream-first-card-view-${theme}.png`) });
             await expectNoOverlap(page);
-            await page.screenshot({ path: info.outputPath(`stream-first-card-${theme}.png`), fullPage: true });
+            await page.screenshot({
+              path: info.outputPath(`stream-first-card-${theme}.png`),
+              fullPage: true,
+            });
           }
         }
         // The pick has no more trades, so the count line goes under the last card before the answer comes.
@@ -225,21 +317,37 @@ for (const viewport of VIEWPORTS) {
         await expect(cards.last()).toHaveAttribute("aria-label", `Trade ${count} of ${count}`);
         await expect(page.getByRole("region", { name: "Finding Trades" })).toBeVisible();
         await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
-        await expect(page.getByRole("button", { name: `Close, but not sent · ${DOC.near.length}` })).toBeVisible();
+        await expect(
+          page.getByRole("button", { name: `Close, but not sent · ${DOC.near.length}` }),
+        ).toBeVisible();
         await expect(cards).toHaveCount(count);
-        await expect(cards.first().getByRole("button", { name: "See the Full Result" })).toBeEnabled();
+        await expect(
+          cards.first().getByRole("button", { name: "See the Full Result" }),
+        ).toBeEnabled();
         await expectNoOverlap(page);
-        await page.screenshot({ path: info.outputPath(`stream-last-card-${theme}.png`), fullPage: true });
+        await page.screenshot({
+          path: info.outputPath(`stream-last-card-${theme}.png`),
+          fullPage: true,
+        });
       });
 
       // A card opens its Full Result with a pushed entry, so the back gesture returns to the same cards and the near
       // fold, and the card that opened sits in view.
-      test(`back from a Full Result returns to the cards, the near fold, and the opened card, ${theme}`, async ({ page }, info) => {
-        test.skip(!["iPhone 15 390x660", "desktop 1280x800"].includes(viewport.name), "the phone and the desktop only");
+      test(`back from a Full Result returns to the cards, the near fold, and the opened card, ${theme}`, async ({
+        page,
+      }, info) => {
+        test.skip(
+          !["iPhone 15 390x660", "desktop 1280x800"].includes(viewport.name),
+          "the phone and the desktop only",
+        );
         await openFinder(page, theme, true);
         const cards = page.getByRole("article");
         // Each part comes at the call: the trades, the end of the picks, and the answer.
-        while ((await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext())) > 0);
+        while (
+          (await page.evaluate(() =>
+            (window as unknown as { __sendNext: () => number }).__sendNext(),
+          )) > 0
+        );
         const fold = page.getByRole("button", { name: `Close, but not sent · ${DOC.near.length}` });
         await expect(fold).toBeVisible();
         await expect(cards).toHaveCount(DOC.trades.length);
@@ -256,12 +364,17 @@ for (const viewport of VIEWPORTS) {
         // The opened card is in view after the scroll, and the page holds the address of Find.
         // A page with little content under the last card cannot scroll the card to the top edge. Then the page sits at its
         // end, and the whole card shows under the top edge by the part that the end of the page cuts off.
-        await expect.poll(async () => {
-          const box = (await last.boundingBox())!;
-          const height = viewport.use.viewport.height;
-          const atEnd = await page.evaluate(() => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 1);
-          return box.y < height && box.y + box.height > 0 && (box.y >= 0 || atEnd);
-        }).toBe(true);
+        await expect
+          .poll(async () => {
+            const box = (await last.boundingBox())!;
+            const height = viewport.use.viewport.height;
+            const atEnd = await page.evaluate(
+              () =>
+                window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 1,
+            );
+            return box.y < height && box.y + box.height > 0 && (box.y >= 0 || atEnd);
+          })
+          .toBe(true);
         expect(page.url()).toContain("mode=find");
         await page.screenshot({ path: info.outputPath(`back-to-cards-${theme}.png`) });
         await expectNoOverlap(page);
@@ -274,7 +387,9 @@ for (const viewport of VIEWPORTS) {
 
       for (const motion of ["no-preference", "reduce"] as const) {
         // On a fixed clock, step 5 names each Shortlist trade in turn on one line of the wait.
-        test(`step 5 names each Shortlist trade on one line, motion ${motion}, ${theme} (AT-36, AT-73)`, async ({ page }, info) => {
+        test(`step 5 names each Shortlist trade on one line, motion ${motion}, ${theme} (AT-36, AT-73)`, async ({
+          page,
+        }, info) => {
           await page.emulateMedia({ reducedMotion: motion });
           await openFinder(page, theme, true, true);
           const status = page.getByRole("status");
@@ -282,7 +397,12 @@ for (const viewport of VIEWPORTS) {
           // of the moving mesh back to back, and a CI runner draws the canvas on its CPU, so one 1.4 s run took 38 s.
           // The stream sends steps 1 to 4 at once, and each line still holds 1.5 s on the screen, then gives way.
           await expect(status).toHaveText(`1 of 5 · Reading ${PARTNERS} teams`);
-          for (const line of ["2 of 5 · Matching trade value", "3 of 5 · Checking 4,667 trades for fairness", "4 of 5 · Checking 77 against both lineups", "5 of 5 · Picking the best 5"]) {
+          for (const line of [
+            "2 of 5 · Matching trade value",
+            "3 of 5 · Checking 4,667 trades for fairness",
+            "4 of 5 · Checking 77 against both lineups",
+            "5 of 5 · Picking the best 5",
+          ]) {
             await page.clock.fastForward(1400);
             await expect(status).not.toHaveText(line);
             await page.clock.fastForward(100);
@@ -311,12 +431,23 @@ for (const viewport of VIEWPORTS) {
             const fit = await think.evaluate((box) => {
               const line = box.querySelectorAll<HTMLElement>(".t-think-text");
               const live = line[line.length - 1];
-              return { room: box.clientWidth, width: live.scrollWidth, scrolls: live.classList.contains("is-scroll"), height: live.getBoundingClientRect().height, lineHeight: parseFloat(getComputedStyle(live).lineHeight) };
+              return {
+                room: box.clientWidth,
+                width: live.scrollWidth,
+                scrolls: live.classList.contains("is-scroll"),
+                height: live.getBoundingClientRect().height,
+                lineHeight: parseFloat(getComputedStyle(live).lineHeight),
+              };
             });
-            const full = [...item.gives, ...item.gets].every((player) => text.includes(player.name));
-            if (full) expect(fit.width, `"${text}" fits the line`).toBeLessThanOrEqual(fit.room + 1);
+            const full = [...item.gives, ...item.gets].every((player) =>
+              text.includes(player.name),
+            );
+            if (full)
+              expect(fit.width, `"${text}" fits the line`).toBeLessThanOrEqual(fit.room + 1);
             if (motion === "no-preference") {
-              expect(fit.width <= fit.room + 1 || fit.scrolls, `"${text}" fits or scrolls`).toBe(true);
+              expect(fit.width <= fit.room + 1 || fit.scrolls, `"${text}" fits or scrolls`).toBe(
+                true,
+              );
               expect(fit.height, `"${text}" sits on one line`).toBeLessThan(fit.lineHeight * 1.5);
             }
             fits.push(`${fit.width}/${fit.room}${fit.scrolls ? " scrolls" : ""}`);
@@ -325,12 +456,18 @@ for (const viewport of VIEWPORTS) {
               // The swap of the line ends after its release timer, so the shot waits for the line to rest. It stays
               // well inside the hold of 3 s, so the next turn still reads the next line.
               await page.clock.fastForward(400);
-              await page.screenshot({ path: info.outputPath(`step-5-line-${turn + 1}-${theme}.png`) });
+              await page.screenshot({
+                path: info.outputPath(`step-5-line-${turn + 1}-${theme}.png`),
+              });
             }
           }
-          console.log(`${viewport.name} ${theme} ${motion}: ${seen.map((text, i) => `${text} [${fits[i]}]`).join(" | ")}`);
+          console.log(
+            `${viewport.name} ${theme} ${motion}: ${seen.map((text, i) => `${text} [${fits[i]}]`).join(" | ")}`,
+          );
           // The first card stops the lines: the wait goes back to the step line and holds.
-          await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
+          await page.evaluate(() =>
+            (window as unknown as { __sendNext: () => number }).__sendNext(),
+          );
           await expect(page.getByRole("article")).toHaveCount(1);
           await expect(status).toHaveText("5 of 5 · Picking the best 5");
           await page.clock.fastForward(9000);
@@ -340,7 +477,9 @@ for (const viewport of VIEWPORTS) {
 
       // It checks the columns of each shape, the gap line, the fold, no text overlap, no sideways scroll, and no fixed
       // bar over content.
-      test(`the Ledger cards and the near fold, with no overlap and no fixed bar over content, ${theme} (AT-65, AT-66, AT-67)`, async ({ page }, info) => {
+      test(`the Ledger cards and the near fold, with no overlap and no fixed bar over content, ${theme} (AT-65, AT-66, AT-67)`, async ({
+        page,
+      }, info) => {
         await openFinder(page, theme);
         const cards = page.getByRole("article");
         // Each card is a Ledger: the two columns with their counts, a total under each, and the gap line.
@@ -350,7 +489,9 @@ for (const viewport of VIEWPORTS) {
           const give = (await card.getByText(/^You give · \d$/).textContent())!.split("· ")[1];
           shapes.add(`${give}-for-${get}`);
           await expect(card.locator("[data-total]")).toHaveCount(2);
-          await expect(card.locator("[data-gap]")).toHaveText(/^(You get \d+% more trade value|You give \d+% more trade value|Even in trade value)$/);
+          await expect(card.locator("[data-gap]")).toHaveText(
+            /^(You get \d+% more trade value|You give \d+% more trade value|Even in trade value)$/,
+          );
         }
         console.log(`${viewport.name} ${theme}: shapes ${[...shapes].join(", ")}`);
         expect(shapes.size, "the picks hold at least two shapes").toBeGreaterThanOrEqual(2);
@@ -361,25 +502,39 @@ for (const viewport of VIEWPORTS) {
         await expect(fold).toHaveAttribute("aria-expanded", "false");
         await fold.click();
         await expect(fold).toHaveAttribute("aria-expanded", "true");
-        await page.screenshot({ path: info.outputPath(`ledger-near-open-${theme}.png`), fullPage: true });
+        await page.screenshot({
+          path: info.outputPath(`ledger-near-open-${theme}.png`),
+          fullPage: true,
+        });
 
         // No text of the page overlaps another, and the page never scrolls sideways. A fixed or sticky bar sits over
         // content that the reader scrolls past, so the text scan hides each one, and the check below covers the bars.
         const hidden = await page.evaluate(() => {
-          const bars = [...document.querySelectorAll<HTMLElement>("body *")].filter((el) => ["fixed", "sticky"].includes(getComputedStyle(el).position));
+          const bars = [...document.querySelectorAll<HTMLElement>("body *")].filter((el) =>
+            ["fixed", "sticky"].includes(getComputedStyle(el).position),
+          );
           for (const bar of bars) bar.style.visibility = "hidden";
           return bars.length;
         });
-        console.log(`${viewport.name} ${theme}: the text scan hides ${hidden} fixed or sticky parts`);
+        console.log(
+          `${viewport.name} ${theme}: the text scan hides ${hidden} fixed or sticky parts`,
+        );
         expect(await findOverlap(page)).toBeNull();
         await page.evaluate(() => {
-          for (const el of document.querySelectorAll<HTMLElement>("body *")) if (el.style.visibility === "hidden") el.style.visibility = "";
+          for (const el of document.querySelectorAll<HTMLElement>("body *"))
+            if (el.style.visibility === "hidden") el.style.visibility = "";
         });
-        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+        expect(
+          await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+        ).toBe(true);
 
         // At the end of the page, no fixed bar covers the last card, the fold, or the open ideas.
         await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-        const parts = [cards.last(), fold, page.getByRole("button", { name: /Close, but not sent/ }).locator("xpath=../..")];
+        const parts = [
+          cards.last(),
+          fold,
+          page.getByRole("button", { name: /Close, but not sent/ }).locator("xpath=../.."),
+        ];
         for (const bar of await fixedBars(page)) {
           for (const part of parts) {
             const box = (await part.boundingBox())!;
@@ -390,7 +545,10 @@ for (const viewport of VIEWPORTS) {
             const down = Math.min(bottom, bar.bottom) - Math.max(top, bar.top);
             // A bar at the top of the screen sits over content that scrolled up past it, which the reader can scroll back.
             if (bar.top < 1) continue;
-            expect(across > 0 && down > 0, `the fixed part ${bar.name} covers a part of the result`).toBe(false);
+            expect(
+              across > 0 && down > 0,
+              `the fixed part ${bar.name} covers a part of the result`,
+            ).toBe(false);
           }
         }
       });

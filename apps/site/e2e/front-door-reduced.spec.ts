@@ -26,7 +26,9 @@ test.afterAll(async () => {
 
 test.use({ viewport: { width: 375, height: 812 }, reducedMotion: "reduce" });
 
-test("under reduced motion the ask box fades on the first question, with no jump of its opacity (ticket 48)", async ({ page }) => {
+test("under reduced motion the ask box fades on the first question, with no jump of its opacity (ticket 48)", async ({
+  page,
+}) => {
   await openDoor(page, `${server.url}${DOOR}`);
   // The entrance of the empty Thread settles first, so each sample is the change of the send.
   await page.waitForTimeout(800);
@@ -35,12 +37,16 @@ test("under reduced motion the ask box fades on the first question, with no jump
   await startSamples(page, () => {
     const seen = [...document.querySelectorAll('form[aria-label="Ask"]')].map((form) => {
       let opacity = 1;
-      for (let node: Element | null = form; node; node = node.parentElement) opacity *= Number(getComputedStyle(node).opacity);
+      for (let node: Element | null = form; node; node = node.parentElement)
+        opacity *= Number(getComputedStyle(node).opacity);
       return Math.round(opacity * 100) / 100;
     });
-    const filters = [...document.querySelectorAll("section[aria-label='Thread'] *")].filter((node) => !["none", ""].includes(getComputedStyle(node).filter)).length;
+    const filters = [...document.querySelectorAll("section[aria-label='Thread'] *")].filter(
+      (node) => !["none", ""].includes(getComputedStyle(node).filter),
+    ).length;
     const moves = [...document.querySelectorAll('form[aria-label="Ask"]')].filter((form) => {
-      for (let node: Element | null = form; node; node = node.parentElement) if (!["none", ""].includes(getComputedStyle(node).transform)) return true;
+      for (let node: Element | null = form; node; node = node.parentElement)
+        if (!["none", ""].includes(getComputedStyle(node).transform)) return true;
       return false;
     }).length;
     return { opacity: Math.max(0, ...seen), filters, moves };
@@ -49,9 +55,15 @@ test("under reduced motion the ask box fades on the first question, with no jump
   await expect(page.getByRole("article", { name: "week 1 results" })).toBeVisible();
   const samples = await samplesWhenStill<{ opacity: number; filters: number; moves: number }>(page);
   const opacities = samples.map((sample) => sample.opacity);
-  const jumps = opacities.flatMap((opacity, index) => (index > 0 && opacities[index - 1] - opacity > 0.5 ? [`${opacities[index - 1]} to ${opacity}`] : []));
+  const jumps = opacities.flatMap((opacity, index) =>
+    index > 0 && opacities[index - 1] - opacity > 0.5
+      ? [`${opacities[index - 1]} to ${opacity}`]
+      : [],
+  );
   expect(jumps, `the opacity of the ask box: ${opacities.join(", ")}`).toEqual([]);
   expect(opacities.at(-1), "the ask box shows at the end").toBe(1);
-  expect(Math.max(...samples.map((sample) => sample.filters)), "no part of the Thread blurs").toBe(0);
+  expect(Math.max(...samples.map((sample) => sample.filters)), "no part of the Thread blurs").toBe(
+    0,
+  );
   expect(Math.max(...samples.map((sample) => sample.moves)), "the ask box never glides").toBe(0);
 });

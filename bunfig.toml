@@ -1,0 +1,5 @@
+# The settings of "bun fmt". The width matches the longest lines of the site code.
+# sortTailwindcss gives each class list one order in every file.
+[fmt]
+printWidth = 100
+sortTailwindcss = true

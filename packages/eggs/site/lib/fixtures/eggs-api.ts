@@ -32,7 +32,10 @@ export function boardWith(held: Record<string, Record<number, string[]>>): Board
     ...board,
     words: board.words.map((word) => ({
       ...word,
-      managers: word.managers.map((manager) => ({ ...manager, letters: held[word.word]?.[manager.roster_id] ?? [] })),
+      managers: word.managers.map((manager) => ({
+        ...manager,
+        letters: held[word.word]?.[manager.roster_id] ?? [],
+      })),
     })),
   };
 }
@@ -44,7 +47,11 @@ function fills(letters: string[], word: string): boolean {
 
 /* The fake answers each check with `answer`, and each claim with the letter of the check in the egg word.
    The claim answer adds the letter to the letters of the roster on `state`, and names the winner when they fill the word. */
-export function fakeEggsApi(answer: CheckAnswer, failures: FakeFailures = {}, state: Board = board): FakeEggsApi {
+export function fakeEggsApi(
+  answer: CheckAnswer,
+  failures: FakeFailures = {},
+  state: Board = board,
+): FakeEggsApi {
   const checks: EggCheck[] = [];
   const claims: EggClaim[] = [];
   return {
@@ -62,7 +69,8 @@ export function fakeEggsApi(answer: CheckAnswer, failures: FakeFailures = {}, st
       const letter = answer.match ? answer.letter : "";
       const letters = Object.fromEntries(
         state.words.map((word) => {
-          const held = word.managers.find((manager) => manager.roster_id === claim.roster_id)?.letters ?? [];
+          const held =
+            word.managers.find((manager) => manager.roster_id === claim.roster_id)?.letters ?? [];
           return [word.word, word.word === claim.word ? [...held, letter] : held];
         }),
       );
@@ -73,7 +81,8 @@ export function fakeEggsApi(answer: CheckAnswer, failures: FakeFailures = {}, st
         roster_id: claim.roster_id,
         word: claim.word,
         letters,
-        winner: won && claim.word !== null ? { roster_id: claim.roster_id, word: claim.word } : null,
+        winner:
+          won && claim.word !== null ? { roster_id: claim.roster_id, word: claim.word } : null,
       };
     },
     board: async () => {

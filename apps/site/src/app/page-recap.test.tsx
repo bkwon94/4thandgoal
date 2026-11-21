@@ -6,7 +6,8 @@ import { cpSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import { stubGlobal } from "../../test/stubs";
 
 /* Bo Girds, the team of the acceptance tests of the recap card, in each league. */
 const BO_GIRDS = { cpc: 6, norcal: 7 } as const;
@@ -15,7 +16,10 @@ type League = keyof typeof BO_GIRDS;
 const roots: string[] = [];
 
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 404 })));
+  stubGlobal(
+    "fetch",
+    mock(async () => new Response("", { status: 404 })),
+  );
 });
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
    action. */
@@ -25,8 +29,6 @@ afterEach(() => {
   cleanup();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 /* The front door over week 9 of one league, with Bo Girds as Your team. */
@@ -34,10 +36,11 @@ async function doorOf(league: League) {
   const root = mkdtempSync(join(tmpdir(), "front-door-recap-"));
   roots.push(root);
   // The path comes from this file and not from the working folder, because the test points the working folder at root.
-  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), { recursive: true });
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  cpSync(join(__dirname, "..", "fixtures", "recap", league, "public"), join(root, "public"), {
+    recursive: true,
+  });
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }
@@ -74,7 +77,9 @@ describe("the recap card", () => {
     expect(card.textContent).toContain("Kenneth Walker III");
     expect(card.textContent).toContain("34.3");
     expect(card.textContent).toContain("Proj 20.07");
-    expect(card.textContent).toContain("Bo Girds held the lead over Teehee from Thursday all the way to Monday");
+    expect(card.textContent).toContain(
+      "Bo Girds held the lead over Teehee from Thursday all the way to Monday",
+    );
   });
 
   it("shows the score against kaiedmonds and no median tick in norcal (AT-23)", async () => {

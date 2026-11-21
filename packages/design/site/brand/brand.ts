@@ -5,7 +5,16 @@
 
 /* The roles that each set must give. `raised` is the surface one step up from the card, such as the open row of the menu sheet.
    `grid` is the line color of the grid texture of the hero. */
-export const BASE_ROLES = ["accent", "band", "page", "card", "raised", "text", "muted", "grid"] as const;
+export const BASE_ROLES = [
+  "accent",
+  "band",
+  "page",
+  "card",
+  "raised",
+  "text",
+  "muted",
+  "grid",
+] as const;
 export type BaseRole = (typeof BASE_ROLES)[number];
 
 /* The roles that derive from the base roles. A brand can override each one under [light.derived] or [dark.derived]. */
@@ -40,7 +49,9 @@ export type Mix = { mix: Role; percent: number; over: Role | "transparent" };
 /* The value of a derived role: a hex, the value of a second role, or a mix. */
 export type Formula = Hex | { role: Role } | Mix;
 
-export type ColorSet = Record<BaseRole, Hex> & { derived?: Partial<Record<DerivedRole, Hex | Mix>> };
+export type ColorSet = Record<BaseRole, Hex> & {
+  derived?: Partial<Record<DerivedRole, Hex | Mix>>;
+};
 
 /* The values of brand.toml, after the check: the light and the dark set. The fonts and the radii belong to the look,
    in the global CSS of the site, so no brand sets them (ADR 0024). */
@@ -59,7 +70,10 @@ const TOKEN: Record<Role, string> = {
   text: "ink",
   muted: "mute",
   grid: "grid",
-  ...(Object.fromEntries(DERIVED_ROLES.map((role) => [role, role.replaceAll("_", "-")])) as Record<DerivedRole, string>),
+  ...(Object.fromEntries(DERIVED_ROLES.map((role) => [role, role.replaceAll("_", "-")])) as Record<
+    DerivedRole,
+    string
+  >),
 };
 
 /* The formula of each derived role, for a brand with no override. `on_dark` is not here, because its formula reads the
@@ -114,7 +128,9 @@ function cssValue(formula: Formula): string {
 /* The color declarations of one set: one CSS custom property per role. */
 function colorLines(brand: BrandFile, name: SetName): string[] {
   const formulas = formulasOf(brand, name);
-  return [...BASE_ROLES, ...DERIVED_ROLES].map((role) => `    --color-${TOKEN[role]}: ${cssValue(formulas[role])};`);
+  return [...BASE_ROLES, ...DERIVED_ROLES].map(
+    (role) => `    --color-${TOKEN[role]}: ${cssValue(formulas[role])};`,
+  );
 }
 
 /*
@@ -162,7 +178,8 @@ export function colorsOf(brand: BrandFile, name: SetName): Record<Role, Rgba> {
     const a = colorOf(formula.mix);
     const b = colorOf(formula.over);
     const alpha = a[3] * p + b[3] * (1 - p);
-    const channel = (i: number) => (alpha === 0 ? 0 : (a[i] * a[3] * p + b[i] * b[3] * (1 - p)) / alpha);
+    const channel = (i: number) =>
+      alpha === 0 ? 0 : (a[i] * a[3] * p + b[i] * b[3] * (1 - p)) / alpha;
     return [channel(0), channel(1), channel(2), alpha];
   };
   for (const role of [...BASE_ROLES, ...DERIVED_ROLES]) colorOf(role);
@@ -212,9 +229,16 @@ export const TEXT_PAIRS: [text: Role, surface: Role][] = [
 ];
 
 /* The ratio of each text pair of one set, in the order of TEXT_PAIRS. */
-export function textPairsOf(brand: BrandFile, name: SetName): { text: Role; surface: Role; ratio: number }[] {
+export function textPairsOf(
+  brand: BrandFile,
+  name: SetName,
+): { text: Role; surface: Role; ratio: number }[] {
   const colors = colorsOf(brand, name);
-  return TEXT_PAIRS.map(([text, surface]) => ({ text, surface, ratio: contrastRatio(colors[text], colors[surface]) }));
+  return TEXT_PAIRS.map(([text, surface]) => ({
+    text,
+    surface,
+    ratio: contrastRatio(colors[text], colors[surface]),
+  }));
 }
 
 const HEX = { type: "string", pattern: "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" };

@@ -4,7 +4,7 @@
  * They read what a reader sees by role and name, not the class names.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import type { Brand, SiteMenu } from "./nav";
 import { TopBand } from "./top-band";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
@@ -51,31 +51,34 @@ function current(element: HTMLElement) {
 
 const pillBar = () => screen.getByRole("navigation", { name: "Site menu" });
 
-/* jsdom has no matchMedia, and Framer Motion reads it. The stub matches no query. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
+/* Framer Motion reads matchMedia. The stub matches no query, so each test sees a phone with motion on. The preload
+   restores each spy after each test, so each test sets the stub again. */
+const noMatch = (query: string) =>
+  ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }) as unknown as MediaQueryList;
+
+beforeEach(() => {
+  spyOn(window, "matchMedia").mockImplementation(noMatch);
+});
 
 afterEach(() => cleanup());
-afterAll(() => vi.unstubAllGlobals());
 
 describe("TopBand", () => {
   it("shows the brand mark as the home link, named by the title", () => {
     renderBand("/");
     const home = within(screen.getByRole("banner")).getByRole("link", { name: TITLE });
     expect(home.getAttribute("href")).toBe("/");
-    expect(within(home).getByRole("presentation", { hidden: true }).getAttribute("src")).toBe("/brand/logo.png");
+    expect(within(home).getByRole("presentation", { hidden: true }).getAttribute("src")).toBe(
+      "/brand/logo.png",
+    );
   });
 
   it("shows the title as the brand mark when the brand has no logo", () => {
@@ -85,7 +88,15 @@ describe("TopBand", () => {
   });
 
   it("holds the strip of the app under the row of the band, inside the banner, so it stays on screen too", () => {
-    render(<TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" strip={<button type="button">Open the Trade Wire</button>} />);
+    render(
+      <TopBand
+        title={TITLE}
+        brand={BRAND}
+        menu={MENU}
+        pageHref="/"
+        strip={<button type="button">Open the Trade Wire</button>}
+      />,
+    );
     const band = screen.getByRole("banner");
     const strip = within(band).getByRole("button", { name: "Open the Trade Wire" });
     const theme = within(band).getByRole("button", { name: /Switch to (light|dark) theme/ });
@@ -95,18 +106,34 @@ describe("TopBand", () => {
 
   it("holds the theme button in the banner", () => {
     renderBand("/");
-    expect(within(screen.getByRole("banner")).getByRole("button", { name: /Switch to (light|dark) theme/ })).toBeTruthy();
+    expect(
+      within(screen.getByRole("banner")).getByRole("button", {
+        name: /Switch to (light|dark) theme/,
+      }),
+    ).toBeTruthy();
   });
 
   it("holds the actions of the app just before the theme button, and the sheet keeps its five items", () => {
-    render(<TopBand title={TITLE} brand={BRAND} menu={MENU} pageHref="/" actions={<a href="/eggs/">Egg board</a>} />);
+    render(
+      <TopBand
+        title={TITLE}
+        brand={BRAND}
+        menu={MENU}
+        pageHref="/"
+        actions={<a href="/eggs/">Egg board</a>}
+      />,
+    );
     const band = screen.getByRole("banner");
     const action = within(band).getByRole("link", { name: "Egg board" });
     const theme = within(band).getByRole("button", { name: /Switch to (light|dark) theme/ });
     expect(action.compareDocumentPosition(theme) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(action.parentElement).toBe(theme.parentElement);
     fireEvent.click(menuButton());
-    expect(within(sheet()).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""))).toHaveLength(5);
+    expect(
+      within(sheet())
+        .getAllByRole("link")
+        .filter((link) => !/^WK /.test(link.textContent ?? "")),
+    ).toHaveLength(5);
   });
 });
 
@@ -140,9 +167,15 @@ describe("The menu sheet of every page (AT-9)", () => {
       { kind: "midseason", label: "Midseason Report", short: "Report", href: "/midseason/2026/" },
     ];
     renderBand("/", { ...MENU, items });
-    expect(within(pillBar()).getAllByRole("link").map((link) => link.textContent)).toContain("Midseason Report");
+    expect(
+      within(pillBar())
+        .getAllByRole("link")
+        .map((link) => link.textContent),
+    ).toContain("Midseason Report");
     fireEvent.click(menuButton());
-    const rows = within(sheet()).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""));
+    const rows = within(sheet())
+      .getAllByRole("link")
+      .filter((link) => !/^WK /.test(link.textContent ?? ""));
     expect(rows).toHaveLength(5);
     expect(rows.map((row) => row.textContent).join()).not.toContain("Midseason");
   });
@@ -208,13 +241,16 @@ function renderDoorBand(pageHref = "/", menu: SiteMenu = MENU) {
   render(doorBand(pageHref, menu));
 }
 
-const menuButton = () => within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
+const menuButton = () =>
+  within(screen.getByRole("banner")).getByRole("button", { name: /^(Open|Close) the menu$/ });
 const sheet = () => screen.getByRole("navigation", { name: "Pages" });
 
 describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () => {
   it("shows the menu button, and no dock, on a page that passes no sheet", () => {
     renderBand("/rankings/");
-    expect(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" })).toBeTruthy();
+    expect(
+      within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }),
+    ).toBeTruthy();
     expect(screen.queryByRole("navigation", { name: "Bottom menu", hidden: true })).toBeNull();
   });
 
@@ -242,7 +278,9 @@ describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () 
   it("opens the sheet with one row per page, each with an icon, its name, and its note, and a check on the open page", () => {
     renderDoorBand("/");
     fireEvent.click(menuButton());
-    const rows = within(sheet()).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""));
+    const rows = within(sheet())
+      .getAllByRole("link")
+      .filter((link) => !/^WK /.test(link.textContent ?? ""));
     expect(rows.map((row) => [row.textContent, row.getAttribute("href")])).toEqual([
       ["HomeAsk about your team", "/"],
       ["Week 8Scores and recaps", "/2026/week-08/"],
@@ -252,8 +290,14 @@ describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () 
     ]);
     for (const row of rows) expect(row.querySelector("svg")).not.toBeNull();
     expect(current(sheet())).toEqual(["HomeAsk about your team"]);
-    expect(within(sheet()).getByRole("link", { current: "page" }).querySelector("[data-check]")).not.toBeNull();
-    expect(within(sheet()).getAllByRole("link").filter((link) => link.querySelector("[data-check]"))).toHaveLength(1);
+    expect(
+      within(sheet()).getByRole("link", { current: "page" }).querySelector("[data-check]"),
+    ).not.toBeNull();
+    expect(
+      within(sheet())
+        .getAllByRole("link")
+        .filter((link) => link.querySelector("[data-check]")),
+    ).toHaveLength(1);
   });
 
   it("turns the button into the close button while the sheet is open", () => {
@@ -280,7 +324,11 @@ describe("The menu sheet and the top band of the front door (AT-45, AT-47)", () 
   it("opens the latest report from the week row, and lists each older week under Past weeks", () => {
     renderDoorBand("/");
     fireEvent.click(menuButton());
-    expect(within(sheet()).getByRole("link", { name: /^Week 8/ }).getAttribute("href")).toBe("/2026/week-08/");
+    expect(
+      within(sheet())
+        .getByRole("link", { name: /^Week 8/ })
+        .getAttribute("href"),
+    ).toBe("/2026/week-08/");
     const past = within(sheet()).getByRole("button", { name: "Past weeks" });
     expect(past.getAttribute("aria-expanded")).toBe("false");
     expect(within(sheet()).queryByRole("link", { name: "WK 07" })).toBeNull();
@@ -361,7 +409,9 @@ describe("The menu sheet closes three ways and keeps the focus in (AT-46)", () =
     fireEvent.click(menuButton());
     const dialog = screen.getByRole("dialog", { name: "Pages" });
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
-    const rows = within(dialog).getAllByRole("link").filter((link) => !/^WK /.test(link.textContent ?? ""));
+    const rows = within(dialog)
+      .getAllByRole("link")
+      .filter((link) => !/^WK /.test(link.textContent ?? ""));
     const last = rows[rows.length - 1];
     last.focus();
     fireEvent.keyDown(last, { key: "Tab" });
@@ -382,9 +432,10 @@ describe("The menu sheet closes at the desktop tier", () => {
       addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
       removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
     };
-    const fallback = window.matchMedia;
     // The same breakpoint as the desktop variant, --breakpoint-desktop in globals.css.
-    vi.stubGlobal("matchMedia", (query: string) => (query === "(min-width: 64rem)" ? desktop : fallback(query)));
+    spyOn(window, "matchMedia").mockImplementation((query: string) =>
+      query === "(min-width: 64rem)" ? (desktop as unknown as MediaQueryList) : noMatch(query),
+    );
     try {
       renderDoorBand();
       fireEvent.click(menuButton());
@@ -396,7 +447,7 @@ describe("The menu sheet closes at the desktop tier", () => {
       await waitFor(() => expect(screen.queryByRole("dialog", { name: "Pages" })).toBeNull());
       expect(menuButton().getAttribute("aria-expanded")).toBe("false");
     } finally {
-      vi.stubGlobal("matchMedia", fallback);
+      spyOn(window, "matchMedia").mockImplementation(noMatch);
     }
   });
 });

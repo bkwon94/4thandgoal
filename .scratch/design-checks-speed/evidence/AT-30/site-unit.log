@@ -1,0 +1,426 @@
+﻿2026-11-21T15:47:31.7569685Z Current runner version: '2.338.2'
+2026-11-21T15:47:31.7597312Z ##[group]Runner Image Provisioner
+2026-11-21T15:47:31.7598265Z Hosted Compute Agent
+2026-11-21T15:47:31.7599296Z Version: 20261111.635
+2026-11-21T15:47:31.7600087Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-21T15:47:31.7600973Z Build Date: 2026-11-11T01:49:01Z
+2026-11-21T15:47:31.7602012Z Worker ID: {5c67c2be-f031-4c4c-b544-5c26fb957d40}
+2026-11-21T15:47:31.7602916Z Region: eastus2
+2026-11-21T15:47:31.7603711Z Cloud: Azure
+2026-11-21T15:47:31.7604369Z ##[endgroup]
+2026-11-21T15:47:31.7606000Z ##[group]Operating System
+2026-11-21T15:47:31.7607069Z Ubuntu
+2026-11-21T15:47:31.7607717Z 26.04.1
+2026-11-21T15:47:31.7608450Z LTS
+2026-11-21T15:47:31.7609304Z ##[endgroup]
+2026-11-21T15:47:31.7609978Z ##[group]Runner Image
+2026-11-21T15:47:31.7610880Z Image: ubuntu-26.04
+2026-11-21T15:47:31.7611595Z Version: 20261116.202.1
+2026-11-21T15:47:31.7613138Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-21T15:47:31.7615060Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-21T15:47:31.7616300Z ##[endgroup]
+2026-11-21T15:47:31.7617571Z ##[group]GITHUB_TOKEN Permissions
+2026-11-21T15:47:31.7621124Z Contents: read
+2026-11-21T15:47:31.7621853Z Metadata: read
+2026-11-21T15:47:31.7622746Z ##[endgroup]
+2026-11-21T15:47:31.7625332Z Secret source: Actions
+2026-11-21T15:47:31.7626437Z Cache mode: write
+2026-11-21T15:47:31.7627195Z Prepare workflow directory
+2026-11-21T15:47:31.8269477Z Prepare all required actions
+2026-11-21T15:47:31.8325537Z Getting action download info
+2026-11-21T15:47:32.0244983Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-21T15:47:32.1249835Z Download action repository 'pnpm/action-setup@v6' (SHA:73e46992e05b19abd31f2f3c20e0e7370d762115)
+2026-11-21T15:47:32.2728329Z Download action repository 'actions/setup-node@v7' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-21T15:47:32.3977735Z Download action repository 'oven-sh/setup-bun@v2' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-11-21T15:47:32.6203547Z Complete job name: site-unit (1)
+2026-11-21T15:47:32.6853157Z ##[group]Run actions/checkout@v7
+2026-11-21T15:47:32.6853895Z with:
+2026-11-21T15:47:32.6854270Z   fetch-depth: 2
+2026-11-21T15:47:32.6854667Z   repository: bkwon94/4thandgoal
+2026-11-21T15:47:32.6857773Z   token: ***
+2026-11-21T15:47:32.6858157Z   ssh-strict: true
+2026-11-21T15:47:32.6858543Z   ssh-user: git
+2026-11-21T15:47:32.6858926Z   persist-credentials: true
+2026-11-21T15:47:32.6859501Z   clean: true
+2026-11-21T15:47:32.6859903Z   sparse-checkout-cone-mode: true
+2026-11-21T15:47:32.6860353Z   fetch-tags: false
+2026-11-21T15:47:32.6860736Z   show-progress: true
+2026-11-21T15:47:32.6861128Z   lfs: false
+2026-11-21T15:47:32.6861502Z   submodules: false
+2026-11-21T15:47:32.6861910Z   set-safe-directory: true
+2026-11-21T15:47:32.6862343Z   allow-unsafe-pr-checkout: false
+2026-11-21T15:47:32.6862989Z env:
+2026-11-21T15:47:32.6863342Z   BUN_TEST_SHARD: 1/1
+2026-11-21T15:47:32.6863746Z   BUN_TEST_BASE: HEAD^1
+2026-11-21T15:47:32.6864146Z ##[endgroup]
+2026-11-21T15:47:32.9348310Z Syncing repository: bkwon94/4thandgoal
+2026-11-21T15:47:32.9350224Z ##[group]Getting Git version info
+2026-11-21T15:47:32.9350928Z Working directory is '/home/runner/work/4thandgoal/4thandgoal'
+2026-11-21T15:47:32.9351831Z [command]/usr/bin/git version
+2026-11-21T15:47:32.9368044Z git version 2.56.1
+2026-11-21T15:47:32.9430808Z ##[endgroup]
+2026-11-21T15:47:32.9435270Z Temporarily overriding HOME='/home/runner/work/_temp/f52fdc5e-ce34-494e-bbea-f9ffc6f8e7b7' before making global git config changes
+2026-11-21T15:47:32.9436489Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T15:47:32.9437508Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/4thandgoal/4thandgoal
+2026-11-21T15:47:32.9464679Z Deleting the contents of '/home/runner/work/4thandgoal/4thandgoal'
+2026-11-21T15:47:32.9467403Z ##[group]Determining repository object format
+2026-11-21T15:47:32.9468874Z ##[endgroup]
+2026-11-21T15:47:32.9470155Z ##[group]Initializing the repository
+2026-11-21T15:47:32.9473020Z [command]/usr/bin/git init /home/runner/work/4thandgoal/4thandgoal
+2026-11-21T15:47:32.9559482Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-21T15:47:32.9560564Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-21T15:47:32.9561375Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-21T15:47:32.9562016Z hint: call:
+2026-11-21T15:47:32.9562418Z hint:
+2026-11-21T15:47:32.9562887Z hint: 	git config --global init.defaultBranch <name>
+2026-11-21T15:47:32.9563429Z hint:
+2026-11-21T15:47:32.9563949Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-21T15:47:32.9564760Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-21T15:47:32.9565440Z hint:
+2026-11-21T15:47:32.9565800Z hint: 	git branch -m <name>
+2026-11-21T15:47:32.9566215Z hint:
+2026-11-21T15:47:32.9566769Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-21T15:47:32.9569644Z Initialized empty Git repository in /home/runner/work/4thandgoal/4thandgoal/.git/
+2026-11-21T15:47:32.9579639Z [command]/usr/bin/git remote add origin https://github.com/bkwon94/4thandgoal
+2026-11-21T15:47:32.9629340Z ##[endgroup]
+2026-11-21T15:47:32.9630453Z ##[group]Disabling automatic garbage collection
+2026-11-21T15:47:32.9633792Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-21T15:47:32.9665138Z ##[endgroup]
+2026-11-21T15:47:32.9666606Z ##[group]Setting up auth
+2026-11-21T15:47:32.9667367Z Removing SSH command configuration
+2026-11-21T15:47:32.9668979Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T15:47:32.9700232Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T15:47:33.0093715Z Removing HTTP extra header
+2026-11-21T15:47:33.0098457Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T15:47:33.0125666Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T15:47:33.0357217Z Removing includeIf entries pointing to credentials config files
+2026-11-21T15:47:33.0361652Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T15:47:33.0435040Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T15:47:33.0626939Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-21T15:47:33.0658605Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git.path /home/runner/work/_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:47:33.0686227Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:47:33.0717320Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:47:33.0745905Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:47:33.0777081Z ##[endgroup]
+2026-11-21T15:47:33.0778162Z ##[group]Fetching the repository
+2026-11-21T15:47:33.0780599Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin +d4c535f84d857fd2eb6e6335d51d7232769e4cbc:refs/remotes/pull/86/merge
+2026-11-21T15:47:56.5037951Z From https://github.com/bkwon94/4thandgoal
+2026-11-21T15:47:56.5038675Z  * [new ref]         d4c535f84d857fd2eb6e6335d51d7232769e4cbc -> pull/86/merge
+2026-11-21T15:47:56.5042513Z ##[endgroup]
+2026-11-21T15:47:56.5043108Z ##[group]Determining the checkout info
+2026-11-21T15:47:56.5043934Z ##[endgroup]
+2026-11-21T15:47:56.5048547Z [command]/usr/bin/git sparse-checkout disable
+2026-11-21T15:47:56.5098742Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-21T15:47:56.5125996Z ##[group]Checking out the ref
+2026-11-21T15:47:56.5129271Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/86/merge
+2026-11-21T15:47:57.5369257Z Updating files:  20% (2019/9894)
+2026-11-21T15:47:57.5683922Z Updating files:  21% (2078/9894)
+2026-11-21T15:47:57.5887993Z Updating files:  22% (2177/9894)
+2026-11-21T15:47:57.6248992Z Updating files:  23% (2276/9894)
+2026-11-21T15:47:57.6590717Z Updating files:  24% (2375/9894)
+2026-11-21T15:47:57.6790618Z Updating files:  25% (2474/9894)
+2026-11-21T15:47:57.6846941Z Updating files:  26% (2573/9894)
+2026-11-21T15:47:57.7052858Z Updating files:  27% (2672/9894)
+2026-11-21T15:47:57.7232620Z Updating files:  28% (2771/9894)
+2026-11-21T15:47:57.7463201Z Updating files:  29% (2870/9894)
+2026-11-21T15:47:57.7783456Z Updating files:  30% (2969/9894)
+2026-11-21T15:47:57.7938092Z Updating files:  31% (3068/9894)
+2026-11-21T15:47:57.8084179Z Updating files:  32% (3167/9894)
+2026-11-21T15:47:57.8225186Z Updating files:  33% (3266/9894)
+2026-11-21T15:47:57.8472405Z Updating files:  34% (3364/9894)
+2026-11-21T15:47:57.8757402Z Updating files:  35% (3463/9894)
+2026-11-21T15:47:57.9154398Z Updating files:  36% (3562/9894)
+2026-11-21T15:47:57.9437777Z Updating files:  37% (3661/9894)
+2026-11-21T15:47:57.9840059Z Updating files:  38% (3760/9894)
+2026-11-21T15:47:58.0025378Z Updating files:  39% (3859/9894)
+2026-11-21T15:47:58.0249021Z Updating files:  40% (3958/9894)
+2026-11-21T15:47:58.0404782Z Updating files:  41% (4057/9894)
+2026-11-21T15:47:58.0693597Z Updating files:  42% (4156/9894)
+2026-11-21T15:47:58.0859341Z Updating files:  43% (4255/9894)
+2026-11-21T15:47:58.0988075Z Updating files:  44% (4354/9894)
+2026-11-21T15:47:58.1036580Z Updating files:  45% (4453/9894)
+2026-11-21T15:47:58.1389606Z Updating files:  46% (4552/9894)
+2026-11-21T15:47:58.1828589Z Updating files:  47% (4651/9894)
+2026-11-21T15:47:58.2181887Z Updating files:  48% (4750/9894)
+2026-11-21T15:47:58.3318647Z Updating files:  49% (4849/9894)
+2026-11-21T15:47:58.4408914Z Updating files:  50% (4947/9894)
+2026-11-21T15:47:58.4959635Z Updating files:  51% (5046/9894)
+2026-11-21T15:47:58.5013882Z Updating files:  52% (5145/9894)
+2026-11-21T15:47:58.5057859Z Updating files:  53% (5244/9894)
+2026-11-21T15:47:58.5118716Z Updating files:  54% (5343/9894)
+2026-11-21T15:47:58.5246867Z Updating files:  55% (5442/9894)
+2026-11-21T15:47:58.5706234Z Updating files:  55% (5464/9894)
+2026-11-21T15:47:58.6197812Z Updating files:  56% (5541/9894)
+2026-11-21T15:47:58.6925165Z Updating files:  57% (5640/9894)
+2026-11-21T15:47:58.7512945Z Updating files:  58% (5739/9894)
+2026-11-21T15:47:58.9149779Z Updating files:  59% (5838/9894)
+2026-11-21T15:47:59.0056359Z Updating files:  60% (5937/9894)
+2026-11-21T15:47:59.0280974Z Updating files:  61% (6036/9894)
+2026-11-21T15:47:59.0436619Z Updating files:  62% (6135/9894)
+2026-11-21T15:47:59.0776761Z Updating files:  63% (6234/9894)
+2026-11-21T15:47:59.1177197Z Updating files:  64% (6333/9894)
+2026-11-21T15:47:59.1620332Z Updating files:  65% (6432/9894)
+2026-11-21T15:47:59.2141759Z Updating files:  66% (6531/9894)
+2026-11-21T15:47:59.2662495Z Updating files:  67% (6629/9894)
+2026-11-21T15:47:59.3010924Z Updating files:  68% (6728/9894)
+2026-11-21T15:47:59.3430852Z Updating files:  69% (6827/9894)
+2026-11-21T15:47:59.3652852Z Updating files:  70% (6926/9894)
+2026-11-21T15:47:59.3871982Z Updating files:  71% (7025/9894)
+2026-11-21T15:47:59.5277251Z Updating files:  72% (7124/9894)
+2026-11-21T15:47:59.5981371Z Updating files:  73% (7223/9894)
+2026-11-21T15:47:59.6068910Z Updating files:  74% (7322/9894)
+2026-11-21T15:47:59.6143292Z Updating files:  75% (7421/9894)
+2026-11-21T15:47:59.6262127Z Updating files:  76% (7520/9894)
+2026-11-21T15:47:59.6555094Z Updating files:  77% (7619/9894)
+2026-11-21T15:47:59.6694343Z Updating files:  78% (7718/9894)
+2026-11-21T15:47:59.6756399Z Updating files:  79% (7817/9894)
+2026-11-21T15:47:59.6799813Z Updating files:  80% (7916/9894)
+2026-11-21T15:47:59.6850199Z Updating files:  81% (8015/9894)
+2026-11-21T15:47:59.6948504Z Updating files:  82% (8114/9894)
+2026-11-21T15:47:59.7035517Z Updating files:  83% (8213/9894)
+2026-11-21T15:47:59.7115825Z Updating files:  84% (8311/9894)
+2026-11-21T15:47:59.8611092Z Updating files:  85% (8410/9894)
+2026-11-21T15:47:59.9549442Z Updating files:  86% (8509/9894)
+2026-11-21T15:47:59.9626433Z Updating files:  87% (8608/9894)
+2026-11-21T15:47:59.9726420Z Updating files:  88% (8707/9894)
+2026-11-21T15:48:00.0136250Z Updating files:  89% (8806/9894)
+2026-11-21T15:48:00.0936066Z Updating files:  90% (8905/9894)
+2026-11-21T15:48:00.1001178Z Updating files:  91% (9004/9894)
+2026-11-21T15:48:00.1055787Z Updating files:  92% (9103/9894)
+2026-11-21T15:48:00.1095801Z Updating files:  93% (9202/9894)
+2026-11-21T15:48:00.1140254Z Updating files:  94% (9301/9894)
+2026-11-21T15:48:00.1184683Z Updating files:  95% (9400/9894)
+2026-11-21T15:48:00.1227144Z Updating files:  96% (9499/9894)
+2026-11-21T15:48:00.1288167Z Updating files:  97% (9598/9894)
+2026-11-21T15:48:00.1332180Z Updating files:  98% (9697/9894)
+2026-11-21T15:48:00.1384555Z Updating files:  99% (9796/9894)
+2026-11-21T15:48:00.1385253Z Updating files: 100% (9894/9894)
+2026-11-21T15:48:00.1385569Z Updating files: 100% (9894/9894), done.
+2026-11-21T15:48:00.1465889Z Note: switching to 'refs/remotes/pull/86/merge'.
+2026-11-21T15:48:00.1466205Z 
+2026-11-21T15:48:00.1466442Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-21T15:48:00.1468468Z changes and commit them, and you can discard any commits you make in this
+2026-11-21T15:48:00.1469029Z state without impacting any branches by switching back to a branch.
+2026-11-21T15:48:00.1469472Z 
+2026-11-21T15:48:00.1469623Z If you want to create a new branch to retain commits you create, you may
+2026-11-21T15:48:00.1469980Z do so (now or later) by using -c with the switch command. Example:
+2026-11-21T15:48:00.1470189Z 
+2026-11-21T15:48:00.1470279Z   git switch -c <new-branch-name>
+2026-11-21T15:48:00.1470422Z 
+2026-11-21T15:48:00.1470510Z Or undo this operation with:
+2026-11-21T15:48:00.1470634Z 
+2026-11-21T15:48:00.1470710Z   git switch -
+2026-11-21T15:48:00.1470807Z 
+2026-11-21T15:48:00.1470980Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-21T15:48:00.1471211Z 
+2026-11-21T15:48:00.1471473Z HEAD is now at d4c535f Merge 79396d752aa978a13805854a55a94a245a73f539 into 4d5f4d1300e688c11124bb0f2e5f7866a4ecc828
+2026-11-21T15:48:00.1604397Z ##[endgroup]
+2026-11-21T15:48:00.1647871Z [command]/usr/bin/git log -1 --format=%H
+2026-11-21T15:48:00.1672196Z d4c535f84d857fd2eb6e6335d51d7232769e4cbc
+2026-11-21T15:48:00.1879536Z ##[group]Run pnpm/action-setup@v6
+2026-11-21T15:48:00.1879779Z with:
+2026-11-21T15:48:00.1879969Z   package_json_file: apps/site/package.json
+2026-11-21T15:48:00.1880196Z   dest: ~/setup-pnpm
+2026-11-21T15:48:00.1880374Z   run_install: null
+2026-11-21T15:48:00.1880544Z   cache: false
+2026-11-21T15:48:00.1880723Z   cache_dependency_path: pnpm-lock.yaml
+2026-11-21T15:48:00.1880936Z   standalone: false
+2026-11-21T15:48:00.1881107Z env:
+2026-11-21T15:48:00.1881265Z   BUN_TEST_SHARD: 1/1
+2026-11-21T15:48:00.1881441Z   BUN_TEST_BASE: HEAD^1
+2026-11-21T15:48:00.1881613Z ##[endgroup]
+2026-11-21T15:48:00.3096811Z ##[group]Running self-installer...
+2026-11-21T15:48:01.4446390Z 
+2026-11-21T15:48:01.4446943Z added 1 package, and audited 2 packages in 845ms
+2026-11-21T15:48:01.4447635Z 
+2026-11-21T15:48:01.4447774Z 1 package is looking for funding
+2026-11-21T15:48:01.4448114Z   run `npm fund` for details
+2026-11-21T15:48:01.4455168Z 
+2026-11-21T15:48:01.4455421Z found 0 vulnerabilities
+2026-11-21T15:48:02.0357709Z Checking for updates...
+2026-11-21T15:48:02.3480779Z Switching pnpm from v11.28.10 to v10.12.4...
+2026-11-21T15:48:02.7838048Z .../v11/950-1a1fecb0dd4-b6bcc6d423ac363a | Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-11-21T15:48:02.7858240Z .../v11/950-1a1fecb0dd4-b6bcc6d423ac363a |   +1 +
+2026-11-21T15:48:03.0267637Z .../v11/950-1a1fecb0dd4-b6bcc6d423ac363a | Progress: resolved 1, reused 0, downloaded 1, added 1, done
+2026-11-21T15:48:03.3618695Z [WARN] Detected a pnpm v10 installation layout at PNPM_HOME. The pnpm shims at PNPM_HOME have been refreshed so the new version is active, but pnpm v11 expects bins in PNPM_HOME/bin. Run "pnpm setup" to migrate your PATH to the v11 layout.
+2026-11-21T15:48:03.3655430Z Successfully updated pnpm to v10.12.4
+2026-11-21T15:48:03.3964081Z ##[endgroup]
+2026-11-21T15:48:03.3964438Z Installation Completed!
+2026-11-21T15:48:03.4110495Z ##[group]Run actions/setup-node@v7
+2026-11-21T15:48:03.4110716Z with:
+2026-11-21T15:48:03.4110887Z   node-version: 22
+2026-11-21T15:48:03.4111055Z   cache: pnpm
+2026-11-21T15:48:03.4111239Z   cache-dependency-path: pnpm-lock.yaml
+2026-11-21T15:48:03.4111469Z   check-latest: false
+2026-11-21T15:48:03.4113229Z   token: ***
+2026-11-21T15:48:03.4113415Z   package-manager-cache: true
+2026-11-21T15:48:03.4113612Z env:
+2026-11-21T15:48:03.4113773Z   BUN_TEST_SHARD: 1/1
+2026-11-21T15:48:03.4113952Z   BUN_TEST_BASE: HEAD^1
+2026-11-21T15:48:03.4114168Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-11-21T15:48:03.4114418Z ##[endgroup]
+2026-11-21T15:48:03.5174041Z Found in cache @ /opt/hostedtoolcache/node/22.23.5/x64
+2026-11-21T15:48:03.6112331Z ##[group]Environment details
+2026-11-21T15:48:03.8967527Z node: v22.23.5
+2026-11-21T15:48:03.8967751Z npm: 10.9.9
+2026-11-21T15:48:03.8967953Z yarn: 1.22.22
+2026-11-21T15:48:03.8968907Z ##[endgroup]
+2026-11-21T15:48:03.8983703Z [command]/home/runner/setup-pnpm/node_modules/.bin/bin/pnpm store path --silent
+2026-11-21T15:48:04.1889884Z /home/runner/setup-pnpm/node_modules/.bin/store/v10
+2026-11-21T15:48:04.2692761Z Cache hit for: node-cache-Linux-x64-pnpm-37d18179766e26f6f70e6a77aa8734eef664a65afcc87af0b6dd761cb083395e
+2026-11-21T15:48:05.0901689Z Received 208830302 of 208830302 (100.0%), 263.8 MBs/sec
+2026-11-21T15:48:05.0902344Z Cache Size: ~199 MB (208830302 B)
+2026-11-21T15:48:05.0956043Z [command]/usr/bin/tar -xf /home/runner/work/_temp/7158fdab-4461-485c-8f45-2a4345b87f12/cache.tzst -P -C /home/runner/work/4thandgoal/4thandgoal --use-compress-program unzstd
+2026-11-21T15:48:06.8920174Z Cache restored successfully
+2026-11-21T15:48:06.9007669Z Cache restored from key: node-cache-Linux-x64-pnpm-37d18179766e26f6f70e6a77aa8734eef664a65afcc87af0b6dd761cb083395e
+2026-11-21T15:48:06.9418774Z ##[group]Run oven-sh/setup-bun@v2
+2026-11-21T15:48:06.9419279Z with:
+2026-11-21T15:48:06.9419531Z   bun-version-file: .bun-version
+2026-11-21T15:48:06.9419839Z   no-cache: false
+2026-11-21T15:48:06.9422701Z   token: ***
+2026-11-21T15:48:06.9422930Z env:
+2026-11-21T15:48:06.9423160Z   BUN_TEST_SHARD: 1/1
+2026-11-21T15:48:06.9423419Z   BUN_TEST_BASE: HEAD^1
+2026-11-21T15:48:06.9423755Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-11-21T15:48:06.9424136Z ##[endgroup]
+2026-11-21T15:48:07.1855889Z Obtained version 1.4.5 from .bun-version
+2026-11-21T15:48:07.2659041Z Cache hit for: bun-bt+R5Jfb45wKToWjz8t3UoJqeBk=
+2026-11-21T15:48:07.7029403Z Received 49962226 of 49962226 (100.0%), 131.6 MBs/sec
+2026-11-21T15:48:07.7032617Z Cache Size: ~48 MB (49962226 B)
+2026-11-21T15:48:07.7054593Z [command]/usr/bin/tar -xf /home/runner/work/_temp/66618007-cf7c-4763-a1ef-9198b4807db9/cache.tzst -P -C /home/runner/work/4thandgoal/4thandgoal --use-compress-program unzstd
+2026-11-21T15:48:07.8573305Z Cache restored successfully
+2026-11-21T15:48:07.8601176Z [command]/home/runner/.bun/bin/bun --revision
+2026-11-21T15:48:07.8663477Z 1.4.5+a7733435c
+2026-11-21T15:48:07.8681104Z Using a cached version of Bun: 1.4.5+a7733435c
+2026-11-21T15:48:07.8947326Z ##[group]Run pnpm install --frozen-lockfile
+2026-11-21T15:48:07.8947691Z [36;1mpnpm install --frozen-lockfile[0m
+2026-11-21T15:48:07.8985344Z shell: /usr/bin/bash -e {0}
+2026-11-21T15:48:07.8985581Z env:
+2026-11-21T15:48:07.8985754Z   BUN_TEST_SHARD: 1/1
+2026-11-21T15:48:07.8985955Z   BUN_TEST_BASE: HEAD^1
+2026-11-21T15:48:07.8986204Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-11-21T15:48:07.8986458Z ##[endgroup]
+2026-11-21T15:48:08.2067177Z Scope: all 11 workspace projects
+2026-11-21T15:48:08.2955955Z Lockfile is up to date, resolution step is skipped
+2026-11-21T15:48:08.3270222Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-11-21T15:48:08.4050069Z Packages: +399
+2026-11-21T15:48:08.4050636Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-11-21T15:48:09.3271120Z Progress: resolved 399, reused 399, downloaded 0, added 309
+2026-11-21T15:48:09.7105075Z Progress: resolved 399, reused 399, downloaded 0, added 399, done
+2026-11-21T15:48:10.0521430Z Done in 2s using pnpm v10.12.4
+2026-11-21T15:48:10.0840181Z ##[group]Run make check-site-unit
+2026-11-21T15:48:10.0840612Z [36;1mmake check-site-unit[0m
+2026-11-21T15:48:10.0879498Z shell: /usr/bin/bash -e {0}
+2026-11-21T15:48:10.0879825Z env:
+2026-11-21T15:48:10.0880077Z   BUN_TEST_SHARD: 1/1
+2026-11-21T15:48:10.0880375Z   BUN_TEST_BASE: HEAD^1
+2026-11-21T15:48:10.0880734Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-11-21T15:48:10.0881142Z ##[endgroup]
+2026-11-21T15:48:10.1180973Z ==> site: check:fast
+2026-11-21T15:48:10.3351429Z 
+2026-11-21T15:48:10.3360318Z > 4thandgoal-site@0.1.0 check:fast /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-21T15:48:10.3370603Z > CLIENT=cpc node scripts/client-build.mjs && python3 -B ../../scripts/parallel.py lint 'pnpm lint' fmt 'pnpm fmt:check' typecheck 'pnpm typecheck' test 'pnpm test:bun'
+2026-11-21T15:48:10.3371107Z 
+2026-11-21T15:48:11.6161303Z 
+2026-11-21T15:48:11.6190838Z > 4thandgoal-site@0.1.0 fmt:check /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-21T15:48:11.6201320Z > cd ../.. && bun fmt --no-script --check --no-error-on-unmatched-pattern --ignore-pattern apps/site/next-env.d.ts ${FMT_FILES:-'apps/site/**/*.{ts,tsx,mjs,mts,css}' 'packages/*/site/**/*.{ts,tsx,css}' packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+2026-11-21T15:48:11.6229521Z 
+2026-11-21T15:48:11.6259627Z All 634 files are formatted.
+2026-11-21T15:48:11.6280972Z ==> fmt: ok (1.0 s)
+2026-11-21T15:48:12.1876493Z 
+2026-11-21T15:48:12.1970565Z > 4thandgoal-site@0.1.0 lint /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-21T15:48:12.2091043Z > cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+2026-11-21T15:48:12.2092129Z 
+2026-11-21T15:48:12.2119767Z Found 0 warnings and 0 errors.
+2026-11-21T15:48:12.2129968Z Finished in 963ms on 632 files with 5 rules using 4 threads.
+2026-11-21T15:48:12.2130652Z ==> lint: ok (1.5 s)
+2026-11-21T15:48:13.0640000Z 
+2026-11-21T15:48:13.0641048Z > 4thandgoal-site@0.1.0 typecheck /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-21T15:48:13.0641893Z > next typegen && bun check --no-script
+2026-11-21T15:48:13.0642253Z 
+2026-11-21T15:48:13.0642688Z Generating route types...
+2026-11-21T15:48:13.0643378Z ✓ Types generated successfully
+2026-11-21T15:48:13.0643919Z ✓ No type errors in 613 files [1093.87ms]
+2026-11-21T15:48:13.0644398Z ==> typecheck: ok (2.4 s)
+2026-11-21T15:48:14.3230169Z 
+2026-11-21T15:48:14.3231093Z > 4thandgoal-site@0.1.0 test:bun /home/runner/work/4thandgoal/4thandgoal/apps/site
+2026-11-21T15:48:14.3231694Z > node scripts/bun-test.mjs
+2026-11-21T15:48:14.3231895Z 
+2026-11-21T15:48:14.3232380Z bun test --isolate --parallel=4 --shard=1/1 --timings=bun-test-timings.json --changed=HEAD^1
+2026-11-21T15:48:14.3233631Z The run takes only the tests that the diff since HEAD^1 can reach.
+2026-11-21T15:48:14.3234130Z bun test v1.4.5 (a7733435c) 4x PARALLEL
+2026-11-21T15:48:14.3234638Z --changed: 5 changed files, running 1/203 test files
+2026-11-21T15:48:14.3235073Z --shard=1/1: running 1/1 test file
+2026-11-21T15:48:14.3235285Z 
+2026-11-21T15:48:14.3235841Z ##[group]../../packages/rankings/site/chapters/power-rankings.test.tsx:
+2026-11-21T15:48:14.3236767Z (pass) The hero > fills the slots: the week, the team at rank 1, its record and movement, then the three tiles [278.63ms]
+2026-11-21T15:48:14.3237585Z (pass) The hero > names the team at rank 1 in the level one heading [63.04ms]
+2026-11-21T15:48:14.3238435Z (pass) The hero > shows the blurb of rank 1 as a paragraph directly under the hero, outside its frame [72.91ms]
+2026-11-21T15:48:14.3239529Z (pass) The hero > follows the chosen week, with a dash in each tile for a week with no odds [51.32ms]
+2026-11-21T15:48:14.3240703Z (pass) The hero > keeps the static grid, the glow, and the brackets in the hero, and draws no scene on the page (AT-35, AT-44) [21.00ms]
+2026-11-21T15:48:14.3242005Z (pass) The ladder > shows one card for each team after rank 1, in rank order [51.05ms]
+2026-11-21T15:48:14.3243134Z (pass) The ladder > shows the rank large in its panel, the avatar, the name, the record with the movement, and the playoff chip with a bar [49.81ms]
+2026-11-21T15:48:14.3244277Z (pass) The ladder > shows In and a full bar for a clinched team, and Out and an empty bar for a team that is out [34.94ms]
+2026-11-21T15:48:14.3245112Z (pass) The ladder > shows a dash and no bar for a team with no odds [39.00ms]
+2026-11-21T15:48:14.3245927Z (pass) The ladder > puts the note on the four parts after the last card [36.25ms]
+2026-11-21T15:48:14.3246746Z (pass) The ladder > never shows a sum, a ratio, or a decimal on a card [37.98ms]
+2026-11-21T15:48:14.3247867Z (pass) The manager link of rank 1 > puts a Manager page link to the rank-1 team in the action slot of the hero (AT-45) [24.49ms]
+2026-11-21T15:48:14.3249207Z (pass) The manager link of rank 1 > follows the chosen week, so the link names the rank-1 team of that week [31.31ms]
+2026-11-21T15:48:14.3250251Z (pass) The manager link of rank 1 > shows no link and no action slot when the season has no managers file [17.56ms]
+2026-11-21T15:48:14.3251356Z (pass) An open card > opens the chips, the blurb, and the manager link on a tap, then closes on a second tap [512.70ms]
+2026-11-21T15:48:14.3252269Z (pass) An open card > shows no manager link when the season has no managers file [42.13ms]
+2026-11-21T15:48:14.3253114Z (pass) An open card > opens a card with no blurb to the overview line and the chips only [40.90ms]
+2026-11-21T15:48:14.3253871Z (pass) An open card > closes every card when the week changes [97.08ms]
+2026-11-21T15:48:14.3254674Z (pass) The week chips > shows one chip per week in the file, with the last week chosen on load [15.35ms]
+2026-11-21T15:48:14.3255585Z (pass) The week chips > puts the chips after the hero and before the first card [29.69ms]
+2026-11-21T15:48:14.3256542Z (pass) The week chips > shows the cards of a week on a chip click, marks the chip, and sets the hash [56.32ms]
+2026-11-21T15:48:14.3257326Z (pass) The week chips > picks the week that the hash names on load [26.93ms]
+2026-11-21T15:48:14.3258252Z (pass) The week chips > picks the last week when the hash names no week in the file [18.10ms]
+2026-11-21T15:48:14.3258990Z (pass) Movement > shows a dash for no change [0.61ms]
+2026-11-21T15:48:14.3259853Z (pass) Movement > shows a drawn down arrow with the count, and no arrow glyph [0.60ms]
+2026-11-21T15:48:14.3260189Z 
+2026-11-21T15:48:14.3260476Z ##[endgroup]
+2026-11-21T15:48:14.3260617Z 
+2026-11-21T15:48:14.3260728Z  25 pass
+2026-11-21T15:48:14.3260947Z  0 fail
+2026-11-21T15:48:14.3261189Z  113 expect() calls
+2026-11-21T15:48:14.3261500Z Ran 25 tests across 1 file. [2.80s]
+2026-11-21T15:48:14.3261815Z ==> test: ok (3.7 s)
+2026-11-21T15:48:14.3445527Z Post job cleanup.
+2026-11-21T15:48:14.4847925Z Post job cleanup.
+2026-11-21T15:48:14.5827928Z Cache hit occurred on the primary key node-cache-Linux-x64-pnpm-37d18179766e26f6f70e6a77aa8734eef664a65afcc87af0b6dd761cb083395e, not saving cache.
+2026-11-21T15:48:14.5927624Z Post job cleanup.
+2026-11-21T15:48:14.7101349Z Pruning is unnecessary.
+2026-11-21T15:48:14.7267487Z Post job cleanup.
+2026-11-21T15:48:14.8000989Z [command]/usr/bin/git version
+2026-11-21T15:48:14.8039832Z git version 2.56.1
+2026-11-21T15:48:14.8071307Z Temporarily overriding HOME='/home/runner/work/_temp/51294a73-c743-4e42-8729-d682a24a76e3' before making global git config changes
+2026-11-21T15:48:14.8072349Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T15:48:14.8075564Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/4thandgoal/4thandgoal
+2026-11-21T15:48:14.8105458Z Removing SSH command configuration
+2026-11-21T15:48:14.8112284Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T15:48:14.8143162Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T15:48:14.8420032Z Removing HTTP extra header
+2026-11-21T15:48:14.8421638Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T15:48:14.8460381Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T15:48:14.8813492Z Removing includeIf entries pointing to credentials config files
+2026-11-21T15:48:14.8814390Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T15:48:14.8833677Z includeif.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git.path
+2026-11-21T15:48:14.8834802Z includeif.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git/worktrees/*.path
+2026-11-21T15:48:14.8835691Z includeif.gitdir:/github/workspace/.git.path
+2026-11-21T15:48:14.8836401Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-21T15:48:14.8840600Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git.path
+2026-11-21T15:48:14.8861777Z /home/runner/work/_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:48:14.8870029Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-c1beca60\-a49a\-47db\-88d2\-a7daf223c185\.config
+2026-11-21T15:48:14.8906469Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git/worktrees/*.path
+2026-11-21T15:48:14.8928521Z /home/runner/work/_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:48:14.8937075Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/4thandgoal/4thandgoal/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-c1beca60\-a49a\-47db\-88d2\-a7daf223c185\.config
+2026-11-21T15:48:14.8966732Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-21T15:48:14.8987714Z /github/runner_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:48:14.8994793Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-c1beca60\-a49a\-47db\-88d2\-a7daf223c185\.config
+2026-11-21T15:48:14.9028058Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-21T15:48:14.9049966Z /github/runner_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config
+2026-11-21T15:48:14.9057245Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-c1beca60\-a49a\-47db\-88d2\-a7daf223c185\.config
+2026-11-21T15:48:14.9090365Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T15:48:14.9352312Z Removing credentials config '/home/runner/work/_temp/git-credentials-c1beca60-a49a-47db-88d2-a7daf223c185.config'
+2026-11-21T15:48:14.9493083Z Cleaning up orphan processes

@@ -4,6 +4,7 @@ They give tests the path to the recorded Sleeper data and the saved week data.
 The `week_8` fixture builds the bundle of week 8 from them.
 """
 import json
+import os
 import re
 import shutil
 from datetime import date, datetime
@@ -13,6 +14,8 @@ from zoneinfo import ZoneInfo
 import pytest
 from cpc import cpc_client
 from fakes import FakeWriter, no_news
+from shard import ENV as SHARD_ENV
+from shard import in_shard, shard_of_env
 
 from league.chart import match_chart
 from league.history import load_history
@@ -28,6 +31,26 @@ from league.trades import default_cutoff, trades_for_week
 CLIENT = cpc_client()
 
 ET = ZoneInfo("America/New_York")
+
+_SHARD = pytest.StashKey[tuple[int, int] | None]()
+
+
+def pytest_configure(config):
+    """Stop a bad PYTEST_SHARD at the start, where pytest prints the message. A stop at collection exits with no text."""
+    config.stash[_SHARD] = shard_of_env(os.environ.get(SHARD_ENV))
+
+
+# trylast puts the split after the -m filter, so the shards split only the tests that run, and their sizes differ by 1.
+@pytest.hookimpl(trylast=True)
+def pytest_collection_modifyitems(config, items):
+    """Keep only the tests of the shard that PYTEST_SHARD names, such as "1/2". CI runs the parallel tests in a matrix
+    of shards. No value keeps every test, so a local run and "make check" run each test once."""
+    shard = config.stash[_SHARD]
+    if shard is None:
+        return
+    keep = in_shard([item.nodeid for item in items], shard)
+    config.hook.pytest_deselected(items=[item for item in items if item.nodeid not in keep])
+    items[:] = [item for item in items if item.nodeid in keep]
 
 
 def build_bundle(*args, **kwargs):

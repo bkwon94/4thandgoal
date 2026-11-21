@@ -2,10 +2,9 @@
  * The contrast test of the brands (AT-17). It reads each brand.toml under clients/ and lists each text pair of each set.
  * Each pair must reach 4.5 to 1 (WCAG AA). Each brand gives both sets, so each pair runs in the light and the dark set.
  */
-// @vitest-environment node
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { setsOf, TEXT_PAIRS, textPairsOf } from "@cpc/design/brand/brand.ts";
 import { readBrand, REPO_ROOT } from "./client-build.mjs";
 
@@ -59,10 +58,13 @@ describe("the contrast of each text pair of each brand (AT-17)", () => {
     "accent_text on band",
   ];
 
-  it.each(slugs)("holds the pairs of the look and the hero pairs of %s in the light and the dark set", (slug) => {
-    const lines = pairLines(REPO_ROOT, slug).map(({ line }) => line.replace(/ [0-9.]+$/, ""));
-    for (const set of ["light", "dark"]) {
-      for (const pair of LOOK_PAIRS) expect(lines).toContain(`${slug} ${set}: ${pair}`);
-    }
-  });
+  it.each(slugs)(
+    "holds the pairs of the look and the hero pairs of %s in the light and the dark set",
+    (slug) => {
+      const lines = pairLines(REPO_ROOT, slug).map(({ line }) => line.replace(/ [0-9.]+$/, ""));
+      for (const set of ["light", "dark"]) {
+        for (const pair of LOOK_PAIRS) expect(lines).toContain(`${slug} ${set}: ${pair}`);
+      }
+    },
+  );
 });

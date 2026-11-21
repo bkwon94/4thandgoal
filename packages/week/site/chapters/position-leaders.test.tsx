@@ -3,7 +3,7 @@
  * They check what a reader sees and the chip state, not the class names.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { week8 } from "../fixtures/week-page";
 import { PositionLeaders } from "./position-leaders";
 
@@ -12,7 +12,13 @@ afterEach(() => {
 });
 
 function renderLeaders(leaders = week8.leaders) {
-  render(<PositionLeaders leaders={leaders} headshots={week8.headshots} blurb={week8.blurbs.position_leaders} />);
+  render(
+    <PositionLeaders
+      leaders={leaders}
+      headshots={week8.headshots}
+      blurb={week8.blurbs.position_leaders}
+    />,
+  );
   return screen.getByRole("region", { name: "Position leaders" });
 }
 
@@ -24,7 +30,8 @@ function names(chapter: HTMLElement) {
 }
 
 /* The chip of a position. */
-const chip = (chapter: HTMLElement, position: string) => within(chapter).getByRole("button", { name: position });
+const chip = (chapter: HTMLElement, position: string) =>
+  within(chapter).getByRole("button", { name: position });
 
 describe("PositionLeaders", () => {
   it("shows a chip for each position, with QB chosen first", () => {
@@ -32,7 +39,13 @@ describe("PositionLeaders", () => {
     expect(chapter.id).toBe("leaders");
     const chips = within(chapter).getAllByRole("button");
     expect(chips.map((button) => button.textContent)).toEqual(["QB", "RB", "WR", "TE", "DEF"]);
-    expect(chips.map((button) => button.getAttribute("aria-pressed"))).toEqual(["true", "false", "false", "false", "false"]);
+    expect(chips.map((button) => button.getAttribute("aria-pressed"))).toEqual([
+      "true",
+      "false",
+      "false",
+      "false",
+      "false",
+    ]);
     expect(names(chapter)).toEqual(["Joe Burrow", "Kirk Cousins", "Josh Allen"]);
   });
 
@@ -47,14 +60,18 @@ describe("PositionLeaders", () => {
   it("shows the rank, the fantasy team, and the points of each row", () => {
     const chapter = renderLeaders();
     fireEvent.click(chip(chapter, "WR"));
-    const first = within(within(chapter).getByRole("list", { name: "WR leaders" })).getAllByRole("listitem")[0];
+    const first = within(within(chapter).getByRole("list", { name: "WR leaders" })).getAllByRole(
+      "listitem",
+    )[0];
     expect(first.textContent).toBe("1Tee HigginsTeehee32.5");
   });
 
   it("shows each player in a round photo frame, and the initials of a player with no headshot (AT-33)", () => {
     const chapter = renderLeaders();
     fireEvent.click(chip(chapter, "DEF"));
-    expect(within(chapter).getByRole("img", { name: "Jacksonville Jaguars" }).getAttribute("src")).toBe("headshots/JAX.png");
+    expect(
+      within(chapter).getByRole("img", { name: "Jacksonville Jaguars" }).getAttribute("src"),
+    ).toBe("headshots/JAX.png");
     cleanup();
     render(<PositionLeaders leaders={week8.leaders} headshots={{}} />);
     expect(screen.getByRole("img", { name: "Joe Burrow" }).textContent).toBe("JB");
@@ -73,13 +90,14 @@ describe("PositionLeaders", () => {
   /* The prose under the list, or null when the chapter shows none. */
   const prose = (chapter: HTMLElement) => chapter.querySelector("p")?.textContent ?? null;
   /* The top player of a position in the week 8 data. */
-  const top = (position: string) => week8.leaders.find((board) => board.position === position)!.rows[0].player;
+  const top = (position: string) =>
+    week8.leaders.find((board) => board.position === position)!.rows[0].player;
 
   it("shows the sentences of the blurb on the chosen position as prose, so QB first shows the QB text", () => {
     const chapter = renderLeaders();
     expect(chapter.querySelector("p")?.tagName).toBe("P");
     expect(prose(chapter)).toContain(top("QB"));
-    expect(week8.blurbs.position_leaders).toContain(prose(chapter));
+    expect(week8.blurbs.position_leaders).toContain(prose(chapter)!);
     expect(prose(chapter)).not.toContain(top("TE"));
   });
 

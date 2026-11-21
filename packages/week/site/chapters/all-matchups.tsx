@@ -17,14 +17,32 @@ import { gameId } from "./next-week";
 import { openId, stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* One team of a card. The card is one button, so the name is plain text. A long name cuts at the end of its row. */
-function TeamRow({ side, avatars, lead }: { side: MatchupSide; avatars: AvatarMap; lead: boolean }) {
+function TeamRow({
+  side,
+  avatars,
+  lead,
+}: {
+  side: MatchupSide;
+  avatars: AvatarMap;
+  lead: boolean;
+}) {
   return (
-    <span className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-sp-3">
+    <span className="gap-sp-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
       <Avatar src={avatarSrc(avatars, side.team.roster_id)} />
-      <span className={cn("truncate text-body leading-tight", lead ? "font-bold text-ink" : "text-ink-2")}>
+      <span
+        className={cn(
+          "text-body truncate leading-tight",
+          lead ? "text-ink font-bold" : "text-ink-2",
+        )}
+      >
         {side.team.name}
       </span>
-      <span className={cn("font-mono text-body tabular-nums", lead ? "font-bold text-ink" : "text-mute")}>
+      <span
+        className={cn(
+          "text-body font-mono tabular-nums",
+          lead ? "text-ink font-bold" : "text-mute",
+        )}
+      >
         {num(side.score)}
       </span>
     </span>
@@ -56,7 +74,15 @@ function chipsOf(matchup: Matchup, avatars: AvatarMap) {
 }
 
 /* One game on the Open card. The closed card is the scoreboard, and the open panel holds the chips, the recap, and one link. */
-function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatars: AvatarMap; managersHref: string | null }) {
+function GameCard({
+  matchup,
+  avatars,
+  managersHref,
+}: {
+  matchup: Matchup;
+  avatars: AvatarMap;
+  managersHref: string | null;
+}) {
   // The JSON puts the winner first. A tie has no winner, and the first side still leads the card.
   const [first, second] = matchup.sides;
   const href = managerHrefOrNull(managersHref, first.team.roster_id);
@@ -81,7 +107,11 @@ function GameCard({ matchup, avatars, managersHref }: { matchup: Matchup; avatar
         chips={chipsOf(matchup, avatars)}
         text={matchup.recap}
         // One link per recap: the manager page of the team that leads the card.
-        action={href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${first.team.name}` }}
+        action={
+          href === null
+            ? null
+            : { href, label: "Manager page", hiddenLabel: ` of ${first.team.name}` }
+        }
       />
     </li>
   );
@@ -104,9 +134,14 @@ export function AllMatchups({
   return (
     <WeekChapter id="matchups" title="Every game" note="Tap for the recap">
       {/* Two cards per row from the tablet tier, so the twelve teams fit in less scroll. */}
-      <ul className="m-0 grid grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-2">
+      <ul className="gap-sp-2 tablet:grid-cols-2 m-0 grid grid-cols-1 p-0">
         {games.map((matchup) => (
-          <GameCard key={matchup.id} matchup={matchup} avatars={avatars} managersHref={managersHref} />
+          <GameCard
+            key={matchup.id}
+            matchup={matchup}
+            avatars={avatars}
+            managersHref={managersHref}
+          />
         ))}
       </ul>
     </WeekChapter>

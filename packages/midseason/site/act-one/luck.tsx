@@ -9,7 +9,13 @@ import { ReportCard } from "../report/report-card";
 import { fullRecord, signedTwo, teamScore } from "../report/numbers";
 import { ReportChapter } from "../report/report-chapter";
 import { WordTag } from "../report/word-tag";
-import type { BestAndWorst, LuckChapter, LuckExample, SwapEnd, TeamLuck } from "../schema/midseason-types";
+import type {
+  BestAndWorst,
+  LuckChapter,
+  LuckExample,
+  SwapEnd,
+  TeamLuck,
+} from "../schema/midseason-types";
 import { stableId, textId } from "@cpc/design/lib/stable-id";
 
 /* The label of the All-play wins. The page never says "All-play", because readers do not know the term (decision ticket 16). */
@@ -20,15 +26,19 @@ const EVEN_GAP = 0.5;
 /* At this gap or more, either way, the word of the luck takes the accent color, the lines of decision ticket 06. */
 const LOUD_GAP = 1.5;
 
-const luckWord = (luck: number) => (Math.abs(luck) < EVEN_GAP ? "even" : luck > 0 ? "lucky" : "unlucky");
+const luckWord = (luck: number) =>
+  Math.abs(luck) < EVEN_GAP ? "even" : luck > 0 ? "lucky" : "unlucky";
 
-const HEAD = "px-sp-2 py-sp-2 text-left font-mono text-meta font-bold tracking-caps text-mute uppercase";
+const HEAD =
+  "px-sp-2 py-sp-2 text-left font-mono text-meta font-bold tracking-caps text-mute uppercase";
 const CELL = "px-sp-2 py-sp-2 font-mono text-body tabular-nums whitespace-nowrap";
 
 /* The team column stays in place while a phone scrolls the luck table, so each row keeps its name. A long name wraps on a phone. */
-const LUCK_TEAM = "sticky left-0 z-10 max-w-[9rem] bg-card md:max-w-none px-sp-2 py-sp-2 text-left text-body leading-tight font-semibold";
+const LUCK_TEAM =
+  "sticky left-0 z-10 max-w-[9rem] bg-card md:max-w-none px-sp-2 py-sp-2 text-left text-body leading-tight font-semibold";
 
-const closeText = (team: TeamLuck) => fullRecord(team.close_wins, team.close_losses, team.close_ties);
+const closeText = (team: TeamLuck) =>
+  fullRecord(team.close_wins, team.close_losses, team.close_ties);
 
 /* A count with a half, such as 9 or 8.5 teams outscored. */
 const half = (x: number) => (Number.isInteger(x) ? String(x) : x.toFixed(1));
@@ -58,17 +68,19 @@ function LuckCard({ example, weeks }: { example: LuckExample; weeks: number }) {
   ];
   return (
     <ReportCard>
-      <section aria-labelledby="luck-card-0" className="flex flex-col gap-sp-3 p-sp-4">
+      <section aria-labelledby="luck-card-0" className="gap-sp-3 p-sp-4 flex flex-col">
         {steps.map((step, index) => (
-          <div key={step.title} className="flex gap-sp-3">
-            <span aria-hidden className="font-mono text-meta font-bold text-mute tabular-nums">
+          <div key={step.title} className="gap-sp-3 flex">
+            <span aria-hidden className="text-meta text-mute font-mono font-bold tabular-nums">
               {index + 1}
             </span>
-            <div className="flex flex-col gap-sp-1">
-              <h5 id={`luck-card-${index}`} className="m-0 text-body leading-tight font-bold">
+            <div className="gap-sp-1 flex flex-col">
+              <h5 id={`luck-card-${index}`} className="text-body m-0 leading-tight font-bold">
                 {step.title}
               </h5>
-              <p className="m-0 max-w-measure text-lead text-ink-2" {...textId("blurb", step.text)}>{step.text}</p>
+              <p className="max-w-measure text-lead text-ink-2 m-0" {...textId("blurb", step.text)}>
+                {step.text}
+              </p>
             </div>
           </div>
         ))}
@@ -82,33 +94,53 @@ function LuckTable({ teams }: { teams: TeamLuck[] }) {
     <ReportCard className="overflow-x-auto p-0">
       <table aria-label="Schedule luck" className="w-full border-collapse">
         <thead>
-          <tr className="border-b border-rule">
-            <th scope="col" className={cn(HEAD, "sticky left-0 z-10 bg-card")}>Team</th>
-            <th scope="col" className={cn(HEAD, "text-right")}>Real wins</th>
-            <th scope="col" className={cn(HEAD, "text-right")}>{EVERYONE}</th>
-            <th scope="col" className={cn(HEAD, "text-right")}>Luck (gap)</th>
-            <th scope="col" className={cn(HEAD, "text-right")}>PA</th>
-            <th scope="col" className={cn(HEAD, "text-right")}>Close</th>
+          <tr className="border-rule border-b">
+            <th scope="col" className={cn(HEAD, "bg-card sticky left-0 z-10")}>
+              Team
+            </th>
+            <th scope="col" className={cn(HEAD, "text-right")}>
+              Real wins
+            </th>
+            <th scope="col" className={cn(HEAD, "text-right")}>
+              {EVERYONE}
+            </th>
+            <th scope="col" className={cn(HEAD, "text-right")}>
+              Luck (gap)
+            </th>
+            <th scope="col" className={cn(HEAD, "text-right")}>
+              PA
+            </th>
+            <th scope="col" className={cn(HEAD, "text-right")}>
+              Close
+            </th>
           </tr>
         </thead>
         <tbody>
           {teams.map((team) => (
-            <tr key={team.roster_id} className="border-b border-rule last:border-b-0">
+            <tr key={team.roster_id} className="border-rule border-b last:border-b-0">
               <th scope="row" className={LUCK_TEAM}>
                 {team.name}
               </th>
               <td className={cn(CELL, "text-right")}>{num(team.head_to_head_wins)}</td>
               <td className={cn(CELL, "text-right")}>{team.all_play_wins.toFixed(2)}</td>
               {/* The stable id derives from the roster, so the egg listener can name the cell. Every row has one. */}
-              <td data-luck {...stableId("luck", team.roster_id)} className={cn(CELL, "text-right font-bold")}>
+              <td
+                data-luck
+                {...stableId("luck", team.roster_id)}
+                className={cn(CELL, "text-right font-bold")}
+              >
                 <span className="block">{signedTwo(team.schedule_luck)}</span>
                 {/* The word sits under the number. */}
-                <WordTag tone={Math.abs(team.schedule_luck) >= LOUD_GAP ? "accent" : "mute"} className="ml-0 block">
+                <WordTag
+                  tone={Math.abs(team.schedule_luck) >= LOUD_GAP ? "accent" : "mute"}
+                  className="ml-0 block"
+                >
                   {luckWord(team.schedule_luck)}
                 </WordTag>
               </td>
-              <td className={cn(CELL, "text-right text-ink-2")}>
-                {Math.round(team.points_against)} <span className="text-meta text-mute">#{team.points_against_rank}</span>
+              <td className={cn(CELL, "text-ink-2 text-right")}>
+                {Math.round(team.points_against)}{" "}
+                <span className="text-meta text-mute">#{team.points_against_rank}</span>
               </td>
               <td className={cn(CELL, "text-right")}>{closeText(team)}</td>
             </tr>
@@ -133,21 +165,39 @@ const change = (end: SwapEnd) => (end.change === 0 ? "same" : gap(end.change));
 const LABEL = "font-mono text-meta font-bold tracking-caps text-mute uppercase";
 
 /* One line of a swap row: the label and the record, then the rest of the line for a best or a worst. */
-function SwapLine({ label, record, children }: { label: string; record: BestAndWorst["real"]; children?: ReactNode }) {
+function SwapLine({
+  label,
+  record,
+  children,
+}: {
+  label: string;
+  record: BestAndWorst["real"];
+  children?: ReactNode;
+}) {
   return (
-    <div className="m-0 text-body leading-tight">
+    <div className="text-body m-0 leading-tight">
       <span className={LABEL}>{label}</span>{" "}
-      <span className="font-mono font-bold tabular-nums">{fullRecord(record.wins, record.losses, record.ties)}</span>
+      <span className="font-mono font-bold tabular-nums">
+        {fullRecord(record.wins, record.losses, record.ties)}
+      </span>
       {children}
     </div>
   );
 }
 
-function SwapEndLine({ label, end, names }: { label: string; end: SwapEnd; names: Map<number, string> }) {
+function SwapEndLine({
+  label,
+  end,
+  names,
+}: {
+  label: string;
+  end: SwapEnd;
+  names: Map<number, string>;
+}) {
   return (
     <SwapLine label={label} record={end}>
       <span className="text-ink-2"> on the schedule of {scheduleNames(end, names)}</span>
-      <span className="ml-sp-2 font-mono text-meta text-mute tabular-nums">{change(end)}</span>
+      <span className="ml-sp-2 text-meta text-mute font-mono tabular-nums">{change(end)}</span>
     </SwapLine>
   );
 }
@@ -158,8 +208,11 @@ function SwapRows({ rows }: { rows: BestAndWorst[] }) {
   return (
     <ul aria-label="Schedule swap" className="m-0 flex list-none flex-col p-0">
       {rows.map((row) => (
-        <li key={row.roster_id} className="flex flex-col gap-sp-1 border-b border-rule py-sp-3 last:border-b-0">
-          <h5 className="m-0 text-body leading-tight font-semibold">{row.name}</h5>
+        <li
+          key={row.roster_id}
+          className="gap-sp-1 border-rule py-sp-3 flex flex-col border-b last:border-b-0"
+        >
+          <h5 className="text-body m-0 leading-tight font-semibold">{row.name}</h5>
           <SwapLine label="Real" record={row.real} />
           <SwapEndLine label="Best" end={row.best} names={names} />
           <SwapEndLine label="Worst" end={row.worst} names={names} />
@@ -180,11 +233,11 @@ export function Luck({ chapter }: { chapter: LuckChapter }) {
       {example && <LuckCard example={example} weeks={weeks} />}
       <LuckTable teams={teams} />
       <p className={NOTE}>
-        These count the {weeks} head-to-head games only.{medians > 0 && " The median game is out."} Luck is real wins
-        minus wins if you played everyone.
+        These count the {weeks} head-to-head games only.{medians > 0 && " The median game is out."}{" "}
+        Luck is real wins minus wins if you played everyone.
       </p>
-      <h4 className="m-0 mt-sp-3 text-body leading-tight font-bold">The Schedule Swap</h4>
-      <p className="m-0 max-w-measure text-lead text-ink-2">
+      <h4 className="mt-sp-3 text-body m-0 leading-tight font-bold">The Schedule Swap</h4>
+      <p className="max-w-measure text-lead text-ink-2 m-0">
         Each row puts your scores against another team's schedule. Here is your best and your worst.
       </p>
       <p className={NOTE}>

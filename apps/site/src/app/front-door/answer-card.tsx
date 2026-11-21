@@ -17,29 +17,43 @@ import { TextBlock } from "./text-block";
 
 export const AnswerCard = forwardRef<
   HTMLElement,
-  { name: string; answer: DoorAnswer; team: number; avatars: Record<number, string | null>; morph?: string; live?: LiveSource }
+  {
+    name: string;
+    answer: DoorAnswer;
+    team: number;
+    avatars: Record<number, string | null>;
+    morph?: string;
+    live?: LiveSource;
+  }
 >(function AnswerCard({ name, answer, team, avatars, morph, live }, ref) {
-    const off = useMotionOff();
-    // Your next matchup swaps the card of the weekly build for the live card of the API when it comes. The text and the
-    // link stay from topics.json.
-    const card = useLiveMatchup(live, answer.topic, team);
-    // A tapped Suggestion shares its id with the question, so the chip morphs into the question on the shared layout
-    // spring. The question then only fades, because the morph is its move. With motion off it only fades in.
-    const shared = bubbleIn(off, morph);
-    return (
-      <article ref={ref} aria-label={name} className="flex scroll-mt-door-under-head flex-col gap-sp-3">
-        {/* The tap reads as the manager's question, on the right as in a chat. */}
-        <motion.p className="m-0 max-w-[85%] self-end rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body leading-tight font-semibold text-card" {...shared}>
-          {name}
-        </motion.p>
-        <AnswerBody
-          answer={card ? { ...answer, block: card } : answer}
-          avatars={avatars}
-          asOf={card?.read_at ? readTimeLine(card.read_at) : undefined}
-          swap={card?.read_at}
-        />
-      </article>
-    );
+  const off = useMotionOff();
+  // Your next matchup swaps the card of the weekly build for the live card of the API when it comes. The text and the
+  // link stay from topics.json.
+  const card = useLiveMatchup(live, answer.topic, team);
+  // A tapped Suggestion shares its id with the question, so the chip morphs into the question on the shared layout
+  // spring. The question then only fades, because the morph is its move. With motion off it only fades in.
+  const shared = bubbleIn(off, morph);
+  return (
+    <article
+      ref={ref}
+      aria-label={name}
+      className="scroll-mt-door-under-head gap-sp-3 flex flex-col"
+    >
+      {/* The tap reads as the manager's question, on the right as in a chat. */}
+      <motion.p
+        className="rounded-hero rounded-br-letter bg-ink px-sp-4 py-sp-2 text-body text-card m-0 max-w-[85%] self-end leading-tight font-semibold"
+        {...shared}
+      >
+        {name}
+      </motion.p>
+      <AnswerBody
+        answer={card ? { ...answer, block: card } : answer}
+        avatars={avatars}
+        asOf={card?.read_at ? readTimeLine(card.read_at) : undefined}
+        swap={card?.read_at}
+      />
+    </article>
+  );
 });
 
 /* The data block, the text, and the link of one Answer, on a card that settles in. A live Answer puts its streamed
@@ -68,7 +82,7 @@ export function AnswerBody({
   return (
     /* The data block settles from a soft blur at 0.98 (decision 07). With motion off, it only fades in. */
     <motion.div
-      className="door-sheen flex flex-col gap-sp-4 rounded-card border border-door-hair bg-card p-sp-4"
+      className="door-sheen gap-sp-4 rounded-card border-door-hair bg-card p-sp-4 flex flex-col border"
       initial={off ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: "blur(6px)" }}
       animate={off ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={fadeIn(SLOW, 0.08)}
@@ -78,7 +92,13 @@ export function AnswerBody({
         // parts. With motion off it only fades. The first block shows as it is, because the card itself settles in.
         <motion.div
           key={swap ?? "first"}
-          initial={swap === undefined ? false : off ? { opacity: 0.4 } : { opacity: 0.4, filter: "blur(2px)" }}
+          initial={
+            swap === undefined
+              ? false
+              : off
+                ? { opacity: 0.4 }
+                : { opacity: 0.4, filter: "blur(2px)" }
+          }
           animate={off ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)" }}
           transition={fadeIn(FAST)}
         >
@@ -88,20 +108,28 @@ export function AnswerBody({
       {stats.length > 0 && (
         // Each stat takes the width of its own value, so three short stats share one row on a phone and a long value
         // such as "12th of 12" wraps to the next row whole.
-        <dl className="m-0 flex flex-wrap gap-x-sp-6 gap-y-sp-3">
+        <dl className="gap-x-sp-6 gap-y-sp-3 m-0 flex flex-wrap">
           {stats.map((stat) => (
-            <div key={stat.label} className="flex min-w-0 flex-col gap-sp-1">
-              <dt className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">{stat.label}</dt>
-              <dd className="m-0 text-stat leading-tight font-bold whitespace-nowrap tabular-nums">{stat.value}</dd>
+            <div key={stat.label} className="gap-sp-1 flex min-w-0 flex-col">
+              <dt className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+                {stat.label}
+              </dt>
+              <dd className="text-stat m-0 leading-tight font-bold whitespace-nowrap tabular-nums">
+                {stat.value}
+              </dd>
             </div>
           ))}
         </dl>
       )}
-      {asOf && <p className="m-0 font-mono text-meta leading-tight text-mute">{asOf}</p>}
+      {asOf && <p className="text-meta text-mute m-0 font-mono leading-tight">{asOf}</p>}
       {rows.length > 0 && (
-        <ul className="m-0 flex list-none flex-col border-t border-rule p-0">
+        <ul className="border-rule m-0 flex list-none flex-col border-t p-0">
           {rows.map((row, index) => (
-            <AnswerRow key={`${row.label}-${index}`} row={row} avatar={row.roster_id === null ? undefined : avatars[row.roster_id]} />
+            <AnswerRow
+              key={`${row.label}-${index}`}
+              row={row}
+              avatar={row.roster_id === null ? undefined : avatars[row.roster_id]}
+            />
           ))}
         </ul>
       )}
@@ -115,7 +143,7 @@ export function AnswerBody({
       {answer.href !== null && (
         <motion.a
           href={answer.href}
-          className="press group -mx-sp-2 flex min-h-touch items-center gap-sp-2 self-start rounded-pill px-sp-2 text-body leading-tight font-semibold text-accent-ink no-underline"
+          className="press group -mx-sp-2 min-h-touch gap-sp-2 rounded-pill px-sp-2 text-body text-accent-ink flex items-center self-start leading-tight font-semibold no-underline"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={fadeIn(VERY_SLOW, 0.3)}
@@ -123,7 +151,7 @@ export function AnswerBody({
           <span>Read the full report</span>
           <ArrowRightIcon
             aria-hidden
-            className="size-sp-4 transition-transform duration-150 ease-out group-hover:translate-x-sp-0 motion-reduce:transition-none"
+            className="size-sp-4 group-hover:translate-x-sp-0 transition-transform duration-150 ease-out motion-reduce:transition-none"
             strokeWidth={2.25}
           />
         </motion.a>
@@ -135,19 +163,40 @@ export function AnswerBody({
 /* One line of the data block. The line of Your team carries the ink, so it stands out from the lines around it. */
 function AnswerRow({ row, avatar }: { row: TopicRow; avatar: string | null | undefined }) {
   return (
-    <li className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 border-b border-rule py-sp-2 last:border-b-0 ${row.you ? "" : "text-ink-2"}`}>
+    <li
+      className={`gap-x-sp-3 border-rule py-sp-2 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center border-b last:border-b-0 ${row.you ? "" : "text-ink-2"}`}
+    >
       {avatar === undefined ? (
-        <span aria-hidden className={`h-sp-5 w-sp-1 rounded-pill ${row.you ? "bg-accent" : "bg-rule"}`} />
+        <span
+          aria-hidden
+          className={`h-sp-5 w-sp-1 rounded-pill ${row.you ? "bg-accent" : "bg-rule"}`}
+        />
       ) : avatar ? (
-        <img src={avatar} alt="" width={24} height={24} className={`size-sp-6 flex-none rounded-full bg-raised object-cover ${row.you ? "ring-2 ring-accent" : ""}`} />
+        <img
+          src={avatar}
+          alt=""
+          width={24}
+          height={24}
+          className={`size-sp-6 bg-raised flex-none rounded-full object-cover ${row.you ? "ring-accent ring-2" : ""}`}
+        />
       ) : (
-        <span aria-hidden className="size-sp-6 flex-none rounded-full bg-raised" />
+        <span aria-hidden className="size-sp-6 bg-raised flex-none rounded-full" />
       )}
       <span className="flex min-w-0 flex-col">
-        <span className={`truncate text-row leading-tight ${row.you ? "font-bold text-ink" : "font-semibold"}`}>{row.label}</span>
-        {row.note && <span className="truncate font-mono text-meta leading-tight text-mute">{row.note}</span>}
+        <span
+          className={`text-row truncate leading-tight ${row.you ? "text-ink font-bold" : "font-semibold"}`}
+        >
+          {row.label}
+        </span>
+        {row.note && (
+          <span className="text-meta text-mute truncate font-mono leading-tight">{row.note}</span>
+        )}
       </span>
-      <span className={`font-mono text-row leading-tight tabular-nums ${row.you ? "font-bold text-ink" : ""}`}>{row.value}</span>
+      <span
+        className={`text-row font-mono leading-tight tabular-nums ${row.you ? "text-ink font-bold" : ""}`}
+      >
+        {row.value}
+      </span>
     </li>
   );
 }

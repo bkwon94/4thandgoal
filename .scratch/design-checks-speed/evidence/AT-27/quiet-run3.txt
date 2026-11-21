@@ -1,0 +1,5 @@
+2026-11-21 11:09:54 check 1: pgrep -fl 'vitest|bun test|check-fast|pytest' shows nothing
+2026-11-21 11:10:24 check 2: pgrep -fl 'vitest|bun test|check-fast|pytest' shows nothing
+2026-11-21 11:10:54 check 3: pgrep -fl 'vitest|bun test|check-fast|pytest' shows nothing
+# uptime at start: 11:10  up 105 days, 23:48, 21 users, load averages: 1.97 4.53 4.78
+# both commits done 11:12:07

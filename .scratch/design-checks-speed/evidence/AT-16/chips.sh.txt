@@ -1,0 +1,26 @@
+# chips.sh: the script that took the main shots, the hover shots of both branches, and the computed fills
+#!/bin/bash
+# Usage: chips.sh <base url> <out dir> <prefix>. Takes the chip shots and reads the computed fills of one Tool tile.
+# The agent-browser session must already hold the kept thread of "what tools are there" for this origin.
+BASE=$1; OUT=$2; P=$3
+TILE='[...document.querySelectorAll("article a")].find(e=>e.textContent.includes("Season Sim"))'
+JS_REST="(()=>{const a=$TILE;a.scrollIntoView({block:'center'});const i=a.querySelector('span.rounded-full');return JSON.stringify({tile_rest:getComputedStyle(a).backgroundColor,icon_chosen:getComputedStyle(i).backgroundColor,tile_class:a.className,hover_fine:matchMedia('(hover: hover) and (pointer: fine)').matches})})()"
+JS_HOVER="(()=>{const a=$TILE;return JSON.stringify({tile_hover:getComputedStyle(a).backgroundColor,matches_hover:a.matches(':hover')})})()"
+for W in 375 768 1280; do for T in light dark; do
+  agent-browser set viewport $W 900 >/dev/null
+  agent-browser open "$BASE/" >/dev/null
+  agent-browser eval "localStorage.setItem('cpc.theme','$T')" >/dev/null
+  agent-browser reload >/dev/null; agent-browser wait 1500 >/dev/null
+  agent-browser wait 'article' >/dev/null
+  agent-browser eval "window.scrollTo(0, document.body.scrollHeight)" >/dev/null; agent-browser wait 1500 >/dev/null
+  agent-browser eval "window.scrollTo(0, 0)" >/dev/null; agent-browser wait 800 >/dev/null
+  agent-browser screenshot "$OUT/${P}$W-$T.png" --full >/dev/null
+  R=$(agent-browser eval "$JS_REST")
+  agent-browser mouse move 2 2 >/dev/null; agent-browser wait 300 >/dev/null
+  agent-browser hover 'article ul li a' >/dev/null; agent-browser wait 600 >/dev/null
+  H=$(agent-browser eval "$JS_HOVER")
+  agent-browser screenshot "$OUT/${P}hover-$W-$T.png" >/dev/null
+  agent-browser mouse move 2 2 >/dev/null
+  echo "$P$W $T rest+chosen: $R"
+  echo "$P$W $T hover: $H"
+done; done

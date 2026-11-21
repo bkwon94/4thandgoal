@@ -49,7 +49,15 @@ function deadlineEyebrow(deadline: Deadline | null): ReactNode {
 
 /* The API target, the finder flag, and the Lock come from the page, so the analyzer and the form under it import no
    config. A client with no Lock has no Deadline week. The Lock is in epoch milliseconds. */
-export function Analyzer({ target, finderOn, lock }: { target: ApiTarget; finderOn: boolean; lock?: number | null }) {
+export function Analyzer({
+  target,
+  finderOn,
+  lock,
+}: {
+  target: ApiTarget;
+  finderOn: boolean;
+  lock?: number | null;
+}) {
   // Undefined until the effect reads storage. Local storage does not exist during the static build.
   const [passphrase, setPassphraseState] = useState<string | null | undefined>(undefined);
   const [authError, setAuthError] = useState<string | undefined>();
@@ -157,7 +165,7 @@ export function Analyzer({ target, finderOn, lock }: { target: ApiTarget; finder
     <>
       <PassphraseDialog open={passphrase === null} error={authError} onSubmit={handleSubmit} />
       {teams.status === "loading" && (
-        <p role="status" className="mt-sp-4 mb-0 text-lead text-mute">
+        <p role="status" className="mt-sp-4 text-lead text-mute mb-0">
           Loading the teams…
         </p>
       )}
@@ -167,9 +175,12 @@ export function Analyzer({ target, finderOn, lock }: { target: ApiTarget; finder
         </div>
       )}
       {teams.status === "failed" && (
-        <div className="mt-sp-4 flex flex-col gap-sp-3">
+        <div className="mt-sp-4 gap-sp-3 flex flex-col">
           <ErrorLine>The API did not answer. Try again.</ErrorLine>
-          <Button className="press h-touch w-full rounded-card px-sp-4 text-lead font-bold" onClick={() => setAttempt((n) => n + 1)}>
+          <Button
+            className="press h-touch rounded-card px-sp-4 text-lead w-full font-bold"
+            onClick={() => setAttempt((n) => n + 1)}
+          >
             Try Again
           </Button>
         </div>

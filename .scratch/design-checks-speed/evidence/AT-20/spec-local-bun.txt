@@ -1,0 +1,13 @@
+# Local run on the Spec worktree, head 2108f8bc, 2026-11-21.
+$ cd apps/site && node scripts/bun-test.mjs --reporter=junit --reporter-outfile=<scratch>/spec-junit.xml
+bun test --isolate --parallel=10 --reporter=junit --reporter-outfile=<scratch>/spec-junit.xml
+The run takes the full suite.
+bun test v1.4.5 (a7733435c) 10x PARALLEL
+...
+
+ 1954 pass
+ 0 fail
+ 54118 expect() calls
+Ran 1954 tests across 203 files. [67.78s]
+$ python3: count the <testcase> and <skipped> elements of spec-junit.xml
+testcase elements: 1954 files: 203 skipped: 0

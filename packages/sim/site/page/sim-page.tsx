@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, RotateCcw, Shuffle } from "lucide-react";
 import { useState } from "react";
@@ -29,7 +30,8 @@ export type Avatars = Record<string, string>;
 const ENTER = { duration: 0.25, ease: [0.22, 1, 0.36, 1] } as const;
 
 /* The line of the set results, such as "Wk 11 win, beat median · Wk 12 lose". */
-const setText = (set: SetResult[]) => set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
+const setText = (set: SetResult[]) =>
+  set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
 
 /* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it. */
 export function SimPage({
@@ -45,7 +47,8 @@ export function SimPage({
   whatIf?: WhatIfApi;
   random?: () => number;
 }) {
-  if (sim.pages[you].playoffs) return <PlayoffSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
+  if (sim.pages[you].playoffs)
+    return <PlayoffSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
   return <RegularSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
 }
 
@@ -73,23 +76,28 @@ function PlayoffSimPage({
   const name = nameOf(sim, you);
   const live = playoffs.alive && playoffs.champion === null;
   const game = playoffs.game;
-  const chosen = game === null ? null : (what.set.find((result) => result.week === game.week) ?? null);
+  const chosen =
+    game === null ? null : (what.set.find((result) => result.week === game.week) ?? null);
   const [replay, setReplay] = useState<StageAsk | null>(null);
   return (
-    <div className="flex flex-col gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
-      <section aria-label="Your team" aria-busy={what.pending} className="flex w-full flex-col gap-sp-3">
-        <div className="flex items-center gap-sp-3">
+    <div className="gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
+      <section
+        aria-label="Your team"
+        aria-busy={what.pending}
+        className="gap-sp-3 flex w-full flex-col"
+      >
+        <div className="gap-sp-3 flex items-center">
           <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
           <div className="min-w-0 flex-1">
-            <h1 className="m-0 text-stat leading-tight font-bold text-balance">{name}</h1>
-            <p className="m-0 text-meta text-pretty text-mute tabular-nums">{`${recordText(file.record)} · ${seasonLine(playoffs, you)}`}</p>
+            <h1 className="text-stat m-0 leading-tight font-bold text-balance">{name}</h1>
+            <p className="text-meta text-mute m-0 text-pretty tabular-nums">{`${recordText(file.record)} · ${seasonLine(playoffs, you)}`}</p>
           </div>
           {live && (
             <div className="flex flex-none flex-col items-end">
               <SoftText
                 text={oddsText(shown.title)}
                 className={cn(
-                  "justify-items-end font-mono text-score leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
+                  "text-score justify-items-end font-mono leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
                   what.pending && "opacity-50",
                 )}
               />
@@ -99,7 +107,7 @@ function PlayoffSimPage({
         </div>
         <SetLine set={what.set} onReset={what.reset} />
         {what.down && (
-          <p role="status" className="m-0 text-meta text-pretty text-mute">
+          <p role="status" className="text-meta text-mute m-0 text-pretty">
             The What-if is not available now.
           </p>
         )}
@@ -109,9 +117,15 @@ function PlayoffSimPage({
         you={you}
         avatars={avatars}
         shown={shown}
-        whatIf={{ chosen, title: what.runs === null ? null : shown.title, onChoose: (choice) => game !== null && what.choose(game.week, choice) }}
+        whatIf={{
+          chosen,
+          title: what.runs === null ? null : shown.title,
+          onChoose: (choice) => game !== null && what.choose(game.week, choice),
+        }}
       />
-      {playoffs.champion === null && <SimButtons week={null} waiting={what.pending} onAsk={setReplay} />}
+      {playoffs.champion === null && (
+        <SimButtons week={null} waiting={what.pending} onAsk={setReplay} />
+      )}
       {replay !== null && (
         <SimStage
           sim={sim}
@@ -147,32 +161,42 @@ function RegularSimPage({
   const items: WeekItem[] = [...file.weeks.map((week) => week.week), PLAYOFFS];
   // The side the open page came from: 1 from the right for a later item, -1 from the left, and 0 for the first page,
   // which shows at rest.
-  const [{ open, side }, setView] = useState<{ open: WeekItem; side: number }>({ open: items[0], side: 0 });
+  const [{ open, side }, setView] = useState<{ open: WeekItem; side: number }>({
+    open: items[0],
+    side: 0,
+  });
   const off = useMotionOff();
   const [replay, setReplay] = useState<StageAsk | null>(null);
 
   const openItem = (item: WeekItem) => {
     setView((was) =>
-      item === was.open ? was : { open: item, side: items.indexOf(item) > items.indexOf(was.open) ? 1 : -1 },
+      item === was.open
+        ? was
+        : { open: item, side: items.indexOf(item) > items.indexOf(was.open) ? 1 : -1 },
     );
   };
   const week = typeof open === "number" ? what.weekOf(open) : undefined;
-  const chosen = typeof open === "number" ? what.set.find((result) => result.week === open) : undefined;
+  const chosen =
+    typeof open === "number" ? what.set.find((result) => result.week === open) : undefined;
 
   return (
-    <div className="flex flex-col gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
-      <section aria-label="Your team" aria-busy={what.pending} className="flex w-full flex-col gap-sp-3">
-        <div className="flex items-center gap-sp-3">
+    <div className="gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
+      <section
+        aria-label="Your team"
+        aria-busy={what.pending}
+        className="gap-sp-3 flex w-full flex-col"
+      >
+        <div className="gap-sp-3 flex items-center">
           <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
           <div className="min-w-0 flex-1">
-            <h1 className="m-0 text-stat leading-tight font-bold text-balance">{name}</h1>
-            <p className="m-0 text-meta text-mute tabular-nums">{`${recordText(file.record)} · ${file.weeks_left} weeks left`}</p>
+            <h1 className="text-stat m-0 leading-tight font-bold text-balance">{name}</h1>
+            <p className="text-meta text-mute m-0 tabular-nums">{`${recordText(file.record)} · ${file.weeks_left} weeks left`}</p>
           </div>
           <div className="flex flex-none flex-col items-end">
             <SoftText
               text={oddsText(page.playoff)}
               className={cn(
-                "justify-items-end font-mono text-score leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
+                "text-score justify-items-end font-mono leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
                 what.pending && "opacity-50",
               )}
             />
@@ -182,32 +206,65 @@ function RegularSimPage({
         <LadderSheet
           page={page}
           medianGame={sim.parameters.median_game}
-          sentence={<SoftText text={page.sentence} className={cn("transition-opacity duration-150 ease-out", what.pending && "opacity-50")} />}
+          sentence={
+            <SoftText
+              text={page.sentence}
+              className={cn(
+                "transition-opacity duration-150 ease-out",
+                what.pending && "opacity-50",
+              )}
+            />
+          }
         />
         <SetLine set={what.set} onReset={what.reset} />
         {what.down && (
-          <p role="status" className="m-0 text-meta text-pretty text-mute">
+          <p role="status" className="text-meta text-mute m-0 text-pretty">
             The What-if is not available now.
           </p>
         )}
       </section>
 
-      <WeekSwitch items={items} open={open} onOpen={openItem} setWeeks={what.set.map((result) => result.week)} />
+      <WeekSwitch
+        items={items}
+        open={open}
+        onOpen={openItem}
+        setWeeks={what.set.map((result) => result.week)}
+      />
 
       <motion.div
         key={String(open)}
-        initial={side === 0 ? false : off ? { opacity: 0 } : { opacity: 0, x: side * 8, filter: "blur(3px)" }}
+        initial={
+          side === 0
+            ? false
+            : off
+              ? { opacity: 0 }
+              : { opacity: 0, x: side * 8, filter: "blur(3px)" }
+        }
         animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
         transition={off ? { duration: 0.15 } : ENTER}
       >
         {week !== undefined ? (
-          <WeekPage sim={sim} week={week} chosen={chosen ?? null} onChoose={(choice) => what.choose(week.week, choice)} />
+          <WeekPage
+            sim={sim}
+            week={week}
+            chosen={chosen ?? null}
+            onChoose={(choice) => what.choose(week.week, choice)}
+          />
         ) : (
-          <PlayoffsPage sim={sim} page={page} team={(what.runs?.teams ?? sim.teams)[you]} onOpen={openItem} />
+          <PlayoffsPage
+            sim={sim}
+            page={page}
+            team={(what.runs?.teams ?? sim.teams)[you]}
+            onOpen={openItem}
+          />
         )}
       </motion.div>
 
-      <SimButtons week={typeof open === "number" ? open : null} waiting={what.pending} onAsk={setReplay} />
+      <SimButtons
+        week={typeof open === "number" ? open : null}
+        waiting={what.pending}
+        onAsk={setReplay}
+      />
       {replay !== null && (
         <SimStage
           sim={sim}
@@ -225,24 +282,44 @@ function RegularSimPage({
 
 /* The two buttons of the replay, in the flow under the week page and never fixed over content. The Playoffs page and
    the playoff weeks have only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
-function SimButtons({ week, waiting, onAsk }: { week: number | null; waiting: boolean; onAsk: (ask: StageAsk) => void }) {
+function SimButtons({
+  week,
+  waiting,
+  onAsk,
+}: {
+  week: number | null;
+  waiting: boolean;
+  onAsk: (ask: StageAsk) => void;
+}) {
   const base = cn(
     PRESS,
-    "flex min-h-touch flex-1 items-center justify-center gap-sp-2 rounded-report px-sp-3 text-body font-bold",
+    "min-h-touch gap-sp-2 rounded-report px-sp-3 text-body flex flex-1 items-center justify-center font-bold",
     "transition-opacity duration-150 ease-out disabled:opacity-50",
   );
   return (
-    <div className="flex w-full gap-sp-2">
+    <div className="gap-sp-2 flex w-full">
       {week !== null && (
-        <button type="button" disabled={waiting} onClick={() => onAsk({ mode: "week", week })} className={cn(base, "border border-ink bg-page text-ink hover-fine:bg-card")}>
+        <Button
+          variant="plain"
+          type="button"
+          disabled={waiting}
+          onClick={() => onAsk({ mode: "week", week })}
+          className={cn(base, "border-ink bg-page text-ink hover-fine:bg-card border")}
+        >
           <Play aria-hidden className="size-4" />
           {`Sim week ${week}`}
-        </button>
+        </Button>
       )}
-      <button type="button" disabled={waiting} onClick={() => onAsk({ mode: "season" })} className={cn(base, "bg-accent text-on-dark hover-fine:opacity-90")}>
+      <Button
+        variant="plain"
+        type="button"
+        disabled={waiting}
+        onClick={() => onAsk({ mode: "season" })}
+        className={cn(base, "bg-accent text-on-dark hover-fine:opacity-90")}
+      >
         <Shuffle aria-hidden className="size-4" />
         Sim the season
-      </button>
+      </Button>
     </div>
   );
 }
@@ -258,26 +335,31 @@ function SetLine({ set, onReset }: { set: SetResult[]; onReset: () => void }) {
           aria-label="What-if"
           initial={off ? { opacity: 0 } : { opacity: 0, height: 0 }}
           animate={off ? { opacity: 1 } : { opacity: 1, height: "auto" }}
-          exit={off ? { opacity: 0, transition: { duration: 0.1 } } : { opacity: 0, height: 0, transition: { duration: 0.15, ease: [0.22, 1, 0.36, 1] } }}
+          exit={
+            off
+              ? { opacity: 0, transition: { duration: 0.1 } }
+              : { opacity: 0, height: 0, transition: { duration: 0.15, ease: [0.22, 1, 0.36, 1] } }
+          }
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           className="overflow-hidden"
         >
-          <div className="flex min-h-touch items-center gap-sp-2 rounded-report bg-card pl-sp-3">
-            <p className="m-0 min-w-0 flex-1 py-sp-2 text-meta text-pretty">
+          <div className="min-h-touch gap-sp-2 rounded-report bg-card pl-sp-3 flex items-center">
+            <p className="py-sp-2 text-meta m-0 min-w-0 flex-1 text-pretty">
               <span className="font-bold">What-if: </span>
               {setText(set)}
             </p>
-            <button
+            <Button
+              variant="plain"
               type="button"
               onClick={onReset}
               className={cn(
                 PRESS,
-                "flex min-h-touch flex-none items-center gap-sp-1 rounded-report px-sp-3 text-meta font-bold text-ink hover-fine:text-accent-ink",
+                "min-h-touch gap-sp-1 rounded-report px-sp-3 text-meta text-ink hover-fine:text-accent-ink flex flex-none items-center font-bold",
               )}
             >
               <RotateCcw aria-hidden className="size-4" />
               Reset
-            </button>
+            </Button>
           </div>
         </motion.section>
       )}

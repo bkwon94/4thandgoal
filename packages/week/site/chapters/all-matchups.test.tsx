@@ -3,7 +3,7 @@
  * They check what a reader sees and the button state.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { AllMatchups } from "./all-matchups";
 import { avatarSrc } from "@cpc/league/images";
 import { week8 } from "../fixtures/week-page";
@@ -13,7 +13,9 @@ afterEach(() => {
 });
 
 function renderGames(managersHref: string | null = "/2026/managers/") {
-  render(<AllMatchups matchups={week8.matchups} avatars={week8.avatars} managersHref={managersHref} />);
+  render(
+    <AllMatchups matchups={week8.matchups} avatars={week8.avatars} managersHref={managersHref} />,
+  );
   return screen.getByRole("region", { name: "Every game" });
 }
 
@@ -48,9 +50,12 @@ describe("AllMatchups", () => {
       "Return of T Mac",
       "The Blue Tent",
     ]);
-    for (const button of within(chapter).getAllByRole("button")) expect(button.getAttribute("aria-expanded")).toBe("false");
+    for (const button of within(chapter).getAllByRole("button"))
+      expect(button.getAttribute("aria-expanded")).toBe("false");
     // Each card has a chevron toggle under it, bound to the same panel as its head.
-    expect(within(chapter).getAllByRole("button", { name: "Show the details" })).toHaveLength(buttons.length);
+    expect(within(chapter).getAllByRole("button", { name: "Show the details" })).toHaveLength(
+      buttons.length,
+    );
   });
 
   it("gives each game an id with the roster ids of its two teams, lower first, so a link reaches one game", () => {
@@ -75,7 +80,9 @@ describe("AllMatchups", () => {
     const panel = panelOf(gameOf("All You Need Is Love"));
     expect(panel.getAttribute("hidden")).toBe("until-found");
     expect(panel.hasAttribute("inert")).toBe(false);
-    const game = week8.matchups.find((matchup) => matchup.sides[0].team.name === "All You Need Is Love")!;
+    const game = week8.matchups.find(
+      (matchup) => matchup.sides[0].team.name === "All You Need Is Love",
+    )!;
     expect(panel.textContent).toContain(game.recap!);
   });
 
@@ -85,11 +92,19 @@ describe("AllMatchups", () => {
     fireEvent.click(button);
     const panel = panelOf(button);
     const chips = within(panel).getAllByRole("listitem");
-    expect(chips.map((chip) => chip.textContent)).toEqual(["Best J. Burrow 42.48", "Best J. Jacobs 20.2", "Records 11-5 · 6-10"]);
+    expect(chips.map((chip) => chip.textContent)).toEqual([
+      "Best J. Burrow 42.48",
+      "Best J. Jacobs 20.2",
+      "Records 11-5 · 6-10",
+    ]);
     // Each best-player chip starts with the avatar of its team.
     const [winner, loser] = week8.matchups.find((matchup) => matchup.id === 4)!.sides;
-    expect(chips[0].querySelector("img")?.getAttribute("src")).toBe(avatarSrc(week8.avatars, winner.team.roster_id));
-    expect(chips[1].querySelector("img")?.getAttribute("src")).toBe(avatarSrc(week8.avatars, loser.team.roster_id));
+    expect(chips[0].querySelector("img")?.getAttribute("src")).toBe(
+      avatarSrc(week8.avatars, winner.team.roster_id),
+    );
+    expect(chips[1].querySelector("img")?.getAttribute("src")).toBe(
+      avatarSrc(week8.avatars, loser.team.roster_id),
+    );
     expect(chips[2].querySelector("img")).toBeNull();
     // The margin line is gone, because the scores and the share bar show it.
     expect(within(panel).queryByText(/^Won by/)).toBeNull();

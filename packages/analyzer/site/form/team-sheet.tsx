@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import type { Team } from "../lib/api";
@@ -23,23 +24,26 @@ type TeamSheetProps = {
 export function TeamSheet({ open, title, teams, taken, onPick, onClose }: TeamSheetProps) {
   return (
     <Sheet open={open} title={title} onClose={onClose}>
-      <ul aria-label="Teams" className="m-0 flex list-none flex-col gap-sp-1 p-0">
+      <ul aria-label="Teams" className="gap-sp-1 m-0 flex list-none flex-col p-0">
         {teams.map((team) => {
           const inTrade = taken.includes(team.roster_id);
           return (
             <li key={team.roster_id}>
-              <button
+              <Button
+                variant="plain"
                 type="button"
                 disabled={inTrade}
                 onClick={() => onPick(team.roster_id)}
-                className="press flex min-h-touch w-full cursor-pointer items-center gap-sp-3 rounded-card px-sp-3 py-sp-1 text-left text-ink hover:bg-card focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+                className="press min-h-touch gap-sp-3 rounded-card px-sp-3 py-sp-1 text-ink hover:bg-card focus-visible:outline-accent flex w-full cursor-pointer items-center text-left focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Avatar src={team.avatar ?? AVATAR_FALLBACK} />
                 <span className="flex min-w-0 flex-col">
-                  <b className="truncate text-row leading-tight font-bold">{team.team}</b>
-                  <span className="text-meta text-mute">{inTrade ? "In the trade" : team.manager}</span>
+                  <b className="text-row truncate leading-tight font-bold">{team.team}</b>
+                  <span className="text-meta text-mute">
+                    {inTrade ? "In the trade" : team.manager}
+                  </span>
                 </span>
-              </button>
+              </Button>
             </li>
           );
         })}

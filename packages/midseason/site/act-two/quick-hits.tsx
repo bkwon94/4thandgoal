@@ -10,7 +10,7 @@ import { Lineup } from "./lineup";
 export function QuickHits({ chapter }: { chapter: QuickHitsChapter }) {
   return (
     <ReportChapter id={chapter.key} title={chapter.title}>
-      <div className="flex flex-col gap-sp-5">
+      <div className="gap-sp-5 flex flex-col">
         {chapter.chapters.map((part) =>
           part.key === "lineup" ? (
             <Lineup key={part.key} chapter={part} level={4} />

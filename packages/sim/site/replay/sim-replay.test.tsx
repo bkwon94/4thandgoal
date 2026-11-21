@@ -3,7 +3,7 @@
  * a press during a run starts a clean run, the odds of all runs show, and no control picks a winner. The clock is fake.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest, spyOn } from "bun:test";
 import { oneDecimal } from "@cpc/design/format/format";
 import { sim } from "../fixtures/sim";
 import { beatsOf } from "./beats";
@@ -11,12 +11,12 @@ import { replaySeason } from "./season";
 import { SimReplay } from "./sim-replay";
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 /* A pick that plays the given runs in order, so a test knows each run. */
@@ -30,7 +30,7 @@ function playBeats(run: number, from: number, count: number) {
   const beats = beatsOf(replaySeason(sim, run));
   for (const beat of beats.slice(from, from + count)) {
     act(() => {
-      vi.advanceTimersByTime(beat.ms);
+      jest.advanceTimersByTime(beat.ms);
     });
   }
 }
@@ -49,12 +49,11 @@ describe("the sim replay", () => {
     expect(rows).toHaveLength(12);
     const fridge = rows.find((row) => row.textContent?.includes("Lil Fridge"))!;
     const t = sim.teams[3];
-    expect(within(fridge).getAllByRole("cell").map((cell) => cell.textContent)).toEqual([
-      `${t.playoff}%`,
-      `${t.bye}%`,
-      `${t.title}%`,
-      "–",
-    ]);
+    expect(
+      within(fridge)
+        .getAllByRole("cell")
+        .map((cell) => cell.textContent),
+    ).toEqual([`${t.playoff}%`, `${t.bye}%`, `${t.title}%`, "–"]);
   });
 
   it("plays a run: a lower third each week, the PLAYOFFS wipe, the final standings, the bracket, and the champion", () => {
@@ -72,9 +71,11 @@ describe("the sim replay", () => {
     playBeats(0, 0, 5);
     expect(within(stage()).getByRole("group", { name: "Week 14 final" })).toBeTruthy();
     const order = within(stage()).getByRole("list", { name: "Standings" });
-    expect(within(order).getAllByRole("listitem").map((row) => row.dataset.roster)).toEqual(
-      season.weeks[5].standings.map((row) => String(row.roster_id)),
-    );
+    expect(
+      within(order)
+        .getAllByRole("listitem")
+        .map((row) => row.dataset.roster),
+    ).toEqual(season.weeks[5].standings.map((row) => String(row.roster_id)));
 
     // After week 14: the red PLAYOFFS wipe, then the final standings with the byes and the cut under seed 6.
     playBeats(0, 5, 1);
@@ -83,7 +84,9 @@ describe("the sim replay", () => {
     expect(within(stage()).queryByText("PLAYOFFS")).toBeNull();
     const final = within(stage()).getByRole("list", { name: "Final standings" });
     const rows = within(final).getAllByRole("listitem");
-    expect(rows.filter((row) => within(row).queryByText("BYE")).map((row) => row.dataset.roster)).toEqual(["3", "8"]);
+    expect(
+      rows.filter((row) => within(row).queryByText("BYE")).map((row) => row.dataset.roster),
+    ).toEqual(["3", "8"]);
     expect(rows[5].dataset.cut).toBe("true");
     expect(rows.slice(6).every((row) => row.dataset.out === "true")).toBe(true);
 
@@ -110,7 +113,9 @@ describe("the sim replay", () => {
     press();
     playBeats(0, 0, 6);
     const odds = screen.getByRole("table", { name: "The Odds of All 10,000 Runs" });
-    const fridge = within(odds).getAllByRole("row").find((row) => row.textContent?.includes("Lil Fridge"))!;
+    const fridge = within(odds)
+      .getAllByRole("row")
+      .find((row) => row.textContent?.includes("Lil Fridge"))!;
     expect(within(fridge).getAllByRole("cell").at(-1)!.textContent).toBe("1");
   });
 
@@ -122,11 +127,11 @@ describe("the sim replay", () => {
     const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     expect(card.textContent).toContain("Wins the title in 14.4% of all 10,000 runs");
     const bracket = within(stage()).getByRole("list", { name: "Bracket" });
-    expect(within(bracket).getAllByRole("listitem").map((round) => round.getAttribute("aria-label"))).toEqual([
-      "Round 1, week 15",
-      "Semifinal, week 16",
-      "Final, week 17",
-    ]);
+    expect(
+      within(bracket)
+        .getAllByRole("listitem")
+        .map((round) => round.getAttribute("aria-label")),
+    ).toEqual(["Round 1, week 15", "Semifinal, week 16", "Final, week 17"]);
     const final = within(bracket).getByRole("listitem", { name: "Final, week 17" });
     expect(within(final).getByRole("group").dataset.winner).toBe("3");
     // The card sits in the flow of the stage, before the bracket, so it covers no part of the bracket.
@@ -151,22 +156,23 @@ describe("the sim replay", () => {
   });
 
   it("plays a random run of the 200 when no pick is given", () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    spyOn(Math, "random").mockReturnValue(0.5);
     render(<SimReplay sim={sim} />);
     press();
     fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));
     const card = within(stage()).getByRole("group", { name: "Champion of This Run" });
     expect(card.textContent).toContain(replaySeason(sim, 100).champion.name);
-    vi.restoreAllMocks();
   });
 
   it("has no control to pick the winner of a game at any beat", () => {
     render(<SimReplay sim={sim} pick={picks(0)} />);
     const allowed = new Set(["Sim the season", "Skip to the end"]);
     const controls = () =>
-      [...document.querySelectorAll("button, a, input, select, [role=button], [role=radio], [role=checkbox]")].map(
-        (control) => control.textContent,
-      );
+      [
+        ...document.querySelectorAll(
+          "button, a, input, select, [role=button], [role=radio], [role=checkbox]",
+        ),
+      ].map((control) => control.textContent);
     expect(controls().every((name) => allowed.has(name ?? ""))).toBe(true);
     press();
     for (let beat = 0; beat < 14; beat++) {
@@ -191,7 +197,10 @@ describe("the sim replay", () => {
 
   it("gives each standings row, each bracket chip, and the trophy a stable id from the data, never from the frame", () => {
     const { container } = render(<SimReplay sim={sim} pick={picks(0)} />);
-    const ids = () => [...container.querySelectorAll("[data-stable-id]")].map((element) => element.getAttribute("data-stable-id"));
+    const ids = () =>
+      [...container.querySelectorAll("[data-stable-id]")].map((element) =>
+        element.getAttribute("data-stable-id"),
+      );
     expect(ids().filter((id) => id!.startsWith("sim-row-"))).toHaveLength(12);
     press();
     fireEvent.click(screen.getByRole("button", { name: "Skip to the end" }));

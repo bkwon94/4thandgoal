@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { useState } from "react";
 import { Rise } from "@cpc/design/parts/rise";
 import type { Board, EggsApi } from "../lib/api";
@@ -44,9 +45,20 @@ export function dropLine(drop: NonNullable<Board["last_drop"]>, left: number, no
 /* The small egg of the banner: the black shell with the red zigzag of the CPC egg. */
 function EggMark() {
   return (
-    <svg viewBox="0 0 22 28" aria-hidden="true" className="relative h-sp-5 w-sp-4 flex-none">
-      <path d="M11 1.5c5 0 9.5 9 9.5 15a9.5 9.5 0 0 1-19 0c0-6 4.5-15 9.5-15z" className="fill-card-band stroke-accent-text" strokeWidth={1.8} />
-      <path d="M4 16l3.5-2.4 3.5 2.4 3.5-2.4 3.5 2.4" fill="none" className="stroke-accent" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 22 28" aria-hidden="true" className="h-sp-5 w-sp-4 relative flex-none">
+      <path
+        d="M11 1.5c5 0 9.5 9 9.5 15a9.5 9.5 0 0 1-19 0c0-6 4.5-15 9.5-15z"
+        className="fill-card-band stroke-accent-text"
+        strokeWidth={1.8}
+      />
+      <path
+        d="M4 16l3.5-2.4 3.5 2.4 3.5-2.4 3.5 2.4"
+        fill="none"
+        className="stroke-accent"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -73,35 +85,57 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
     <Rise>
       <section
         aria-label="Egg drop"
-        className="hero-texture relative flex min-h-banner items-center gap-sp-2 overflow-hidden border-b border-rule-dark bg-band py-sp-1 pl-gutter text-on-dark"
+        className="hero-texture min-h-banner gap-sp-2 border-rule-dark bg-band py-sp-1 pl-gutter text-on-dark relative flex items-center overflow-hidden border-b"
       >
         <EggMark />
         {/* The glow stays low in the corner, off the line, so the line needs no plate (ADR 0036).
             The line wraps and the strip grows past its least height, so a narrow phone shows the whole line. */}
-        <span data-banner-line className="relative min-w-0 flex-1 text-body leading-tight text-pretty">
-          <b className="font-mono font-bold text-accent-text">{line.count}</b> <b className="font-bold">{line.what}</b>
+        <span
+          data-banner-line
+          className="text-body relative min-w-0 flex-1 leading-tight text-pretty"
+        >
+          <b className="text-accent-text font-mono font-bold">{line.count}</b>{" "}
+          <b className="font-bold">{line.what}</b>
           <span className="text-on-dark-muted"> · </span>
           <b className="font-mono font-bold">{line.left}</b> left
         </span>
         <a
           href={href}
-          className="press relative flex min-h-touch flex-none items-center gap-sp-1 text-body font-bold text-on-dark no-underline"
+          className="press min-h-touch gap-sp-1 text-body text-on-dark relative flex flex-none items-center font-bold no-underline"
         >
           Egg board
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="size-sp-4" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="size-sp-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </a>
-        <button
+        <Button
+          variant="plain"
           type="button"
           aria-label="Hide the banner"
           onClick={hide}
-          className="press relative flex size-touch flex-none cursor-pointer items-center justify-center border-0 bg-transparent text-on-dark-muted"
+          className="press size-touch text-on-dark-muted relative flex flex-none cursor-pointer items-center justify-center border-0 bg-transparent"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="size-sp-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="size-sp-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+          >
             <path d="M18 6 6 18M6 6l12 12" />
           </svg>
-        </button>
+        </Button>
       </section>
     </Rise>
   );
