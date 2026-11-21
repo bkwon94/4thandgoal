@@ -229,7 +229,7 @@ def limit_lines(read: ReadLimit) -> list[str]:
     return lines
 
 
-def ideas_player(gives: Pick, gets: Pick) -> tuple[Pick, str] | None:
+def ideas_player(gives: Pick, gets: Pick) -> tuple[Pick, Literal["gives", "gets"]] | None:
     """The player of trade ideas from the two picks of one Jev request, and his side: "gives" or "gets".
 
     Exactly one sure side names the player and the direction. Two sure sides or none name no one player, so the
