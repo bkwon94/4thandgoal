@@ -581,7 +581,7 @@ export function TradeFinder({
   const [block, setBlock] = useState<{ asker: number | null; blockIds: string[] }>({ asker, blockIds: [] });
   // A new asker resets the block in the same render, so a block player of the old team never comes back with that team.
   if (block.asker !== asker) setBlock({ asker, blockIds: [] });
-  const blockIds = block.asker === asker ? block.blockIds : [];
+  const { blockIds } = block;
   // A late answer for an old partner must not overwrite the state of a new one.
   const request = useRequest();
 
