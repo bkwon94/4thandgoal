@@ -8,7 +8,7 @@ Spec: `.scratch/trade-block/PRD.md`. Acceptance tests AT-2, AT-9, AT-11, and AT-
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] When the block is not empty, the tier of `varied` for the players that the asker gives counts only block players.
 - [x] The user message of the pick names the block players, and the prompt holds the rule that a block player with a fair Shortlist offer gets at least one pick.
