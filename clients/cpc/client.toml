@@ -19,7 +19,7 @@ chart = "1QB0.5PPR4pt"
 # midseason takes its default roast, "savage", so the file has no [values.midseason]. sim has no values.
 
 [values.analyzer]
-finder = false
+finder = true
 # The Lock: the time when Sleeper closes trades, an estimate for the end of the Monday night games of week 11. The
 # site shows Deadline week until one day after it. Quote it, with its UTC offset.
 lock = "2026-11-24T00:00:00-05:00"
