@@ -16,7 +16,6 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
 | `site-pages` | site | 09 the home page test reads a class name | none | |
 | `tone` | pipeline | 10 remove-names-is-case-sensitive | | |
-| `trade-block` | both | 01 The Trade block on the find route | none | |
 | `week-8-fixes` | pipeline | 08 the-scoring-component-fact-names-the-component | | |
 
 ## Holds
