@@ -1,16 +1,15 @@
-# AT-49 on 98d79f98: 11 asks for trade ideas for Bo Girds on the front door of cpc, each in a fresh browser context (no cookie, no storage, no cache), by Brian's choice against a LOCAL API, not a deploy.
-# Runs 1 to 3 and the first run 4 ran on evidence API 1, after the press tests of the round, with its result cache emptied before each ask. The first run 4 met the grade cap of the API (20 grades per address per day), so the agent stopped API 1.
-# Runs 4 to 10 ran on evidence API 2, a fresh start of the same app (warm-up line in warm-up-api-2.txt); run 4 is the first press of that process. The result cache was emptied before each ask.
-# The reader taps More, then the Trade ideas Topic.
+# AT-49 on 2e9f0f85: 10 asks for trade ideas for Bo Girds on the front door of cpc, each in a fresh browser context (no cookie, no storage, no cache), against one fresh local evidence API of the spec branch.
+# The API: the real app of app_from_env from a detached worktree of 2e9f0f85, started 2026-11-20 18:39:58, live Sleeper, Jev, and Claude; its warm-up line and its TypeSafe answer counts are in warm-up.txt.
+# The limit check before the runs: GRADES_PER_DAY = 20 grades per address per day and GRADES_PER_MINUTE = 5 (packages/analyzer/python/src/analyzer/tunables.py), counted in memory by the process; the front door cap is 25 Answers per team per day (apps/api/src/cornerstone_api/caps.py), in a fresh ask folder. The 10 asks are the first 10 grades of this process, and each ask takes more than 12 s, so all 10 fit.
+# The result cache of the API (every file under results/, results/cpc/ too) was emptied before each ask. The fair cache of the warm-up stays, as in production. The reader taps More, then the Trade ideas Topic.
 
-run 1 (375-light): trade ideas answer 58.3 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=51.0s cost=$0.1565 claude_calls=1 
-run 2 (375-dark): trade ideas answer 45.6 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=39.1s cost=$0.1409 claude_calls=1 
-run 3 (768-light): trade ideas answer 67.3 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=61.0s cost=$0.1533 claude_calls=1 
-run 4 on API 1 (768-dark): timeout 201 s, retry lines 0, 'Trade stream failed' lines: 1, press line: Press of find for cpc: time=3.5s cost=$0.0000 claude_calls=0 
-run 4 (768-dark): trade ideas answer 67.4 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=59.7s cost=$0.1433 claude_calls=1 
-run 5 (1280-light): trade ideas answer 47.8 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=42.5s cost=$0.1442 claude_calls=1 
-run 6 (1280-dark): trade ideas answer 70.5 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=43.8s cost=$0.1552 claude_calls=2 
-run 7 (390-light): trade ideas answer 46.2 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=40.9s cost=$0.1403 claude_calls=1 
-run 8 (390-light): trade ideas answer 78 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=71.5s cost=$0.1392 claude_calls=1 
-run 9 (390-light): trade ideas answer 52 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=47.0s cost=$0.1483 claude_calls=1 
-run 10 (390-light): trade ideas answer 56.5 s, retry lines 0, 'Trade stream failed' lines: 0, press line: Press of find for cpc: time=49.0s cost=$0.1522 claude_calls=1 
+run 1 (375-light) started 18:47:12, files in the result cache after the clear: 0: trade ideas answer 57.3 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=51.4s cost=$0.1380 claude_calls=1 
+run 2 (375-dark) started 18:48:21, files in the result cache after the clear: 0: trade ideas answer 50.2 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=45.5s cost=$0.1572 claude_calls=2 
+run 3 (768-light) started 18:49:20, files in the result cache after the clear: 0: trade ideas answer 52.8 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=48.6s cost=$0.1516 claude_calls=1 
+run 4 (768-dark) started 18:50:23, files in the result cache after the clear: 0: trade ideas answer 43.6 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=38.5s cost=$0.1365 claude_calls=1 
+run 5 (1280-light) started 18:51:16, files in the result cache after the clear: 0: trade ideas answer 44.9 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=40.9s cost=$0.1404 claude_calls=1 
+run 6 (1280-dark) started 18:52:10, files in the result cache after the clear: 0: trade ideas answer 43.1 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=38.7s cost=$0.1374 claude_calls=1 
+run 7 (390-light) started 18:53:03, files in the result cache after the clear: 0: trade ideas answer 49.6 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=45.6s cost=$0.1478 claude_calls=1 
+run 8 (390-light) started 18:54:02, files in the result cache after the clear: 0: trade ideas answer 45.5 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=39.9s cost=$0.1406 claude_calls=1 
+run 9 (390-light) started 18:54:57, files in the result cache after the clear: 0: trade ideas answer 47 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=42.9s cost=$0.1427 claude_calls=1 
+run 10 (390-light) started 18:55:53, files in the result cache after the clear: 0: trade ideas answer 41.6 s, retry lines 0, 'Trade stream failed' lines: 0, 429 lines: 0, press line: Press of find for cpc: time=37.5s cost=$0.1393 claude_calls=1 

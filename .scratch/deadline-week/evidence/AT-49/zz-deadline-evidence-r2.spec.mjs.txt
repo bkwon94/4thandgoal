@@ -1,0 +1,315 @@
+/**
+ * Evidence instrument of round 2 of deadline-week (AT-36, AT-49, AT-72, AT-73), cut from instrument/zz-deadline-evidence.spec.mjs: WebKit, a fixed clock, the Trade Wire route served from the recorded
+ * Sleeper answer of trade W, and the real local API for every other call. It records measures and shots per AT-<n>.
+ */
+import { devices, expect, test } from "@playwright/test";
+import { appendFileSync, createReadStream, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { createServer } from "node:http";
+import { extname, join, normalize } from "node:path";
+
+const E = process.env.EVIDENCE_DIR;
+const PHASE = process.env.PHASE; // off | on | lock | norcal
+const OUT = process.env.SITE_OUT;
+const SITE_PORT = Number(process.env.SITE_PORT);
+const SITE = `http://127.0.0.1:${SITE_PORT}`;
+const CACHE = process.env.RESULT_CACHE ?? "";
+const ONLY = (process.env.ONLY ?? "").split(",").filter(Boolean);
+
+const OPEN = "2026-11-21T09:55:00-05:00";
+const LAST_HOURS = "2026-11-23T21:18:50-05:00";
+const CLOSED = "2026-11-24T00:00:01-05:00";
+const ENDED = "2026-11-25T00:00:01-05:00";
+const TRADE_W = "1424578776058155008";
+const OTHER = "1425209111854747648";
+const fixture = (name) => JSON.parse(readFileSync(join(E, "fixtures", `${name}.json`), "utf8"));
+
+const COMBOS = [375, 768, 1280].flatMap((width) => ["light", "dark"].map((theme) => ({ width, theme })));
+const { defaultBrowserType: _b, ...IPHONE } = devices["iPhone 15"];
+const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST, OPTIONS" };
+
+test.use({ browserName: "webkit" });
+test.describe.configure({ mode: "parallel" });
+
+const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2", ".ico": "image/x-icon", ".txt": "text/plain; charset=utf-8" };
+// The export is served by serve.mjs on SITE_PORT, one process for all workers. A missing path gets 404.html with 404.
+
+function dir(at) {
+  const d = join(E, at);
+  mkdirSync(d, { recursive: true });
+  return d;
+}
+function note(at, file, value) {
+  appendFileSync(join(dir(at), file), `${typeof value === "string" ? value : JSON.stringify(value)}\n`);
+}
+function fresh(at, file) {
+  writeFileSync(join(dir(at), file), "");
+}
+const shotPath = (at, name, c) => join(dir(at), `${name ? `${name}-` : ""}${c.width}-${c.theme}.png`);
+
+/* The Trade Wire route of the page answers from `source()`, which gives the status and the body. Each call is logged. */
+async function serveWire(page, source, log = []) {
+  await page.route(/\/deadline\/trades/, async (route) => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    const { status, body } = source();
+    log.push({ at: new Date().toISOString(), ms: Date.now(), status, trades: body?.trades?.length ?? null });
+    return route.fulfill({ status, headers: CORS, contentType: "application/json", body: JSON.stringify(body ?? {}) });
+  });
+  return log;
+}
+const wireOf = (name) => () => ({ status: 200, body: fixture(name) });
+
+async function newPage(browser, c, extra = {}) {
+  const context = await browser.newContext({ viewport: { width: c.width, height: 900 }, reducedMotion: "no-preference", ...extra });
+  return context.newPage();
+}
+
+/* Opens `path` at the clock `time` in the theme of `c`. `ticks` lets the fake clock run with real time after the load. */
+async function open(page, c, { time, path = "/", ticks = false, wire = "wire-w", passphrase = "localtest" } = {}) {
+  if (wire !== null) await serveWire(page, typeof wire === "function" ? wire : wireOf(wire));
+  if (time) {
+    if (ticks) await page.clock.install({ time: new Date(time) });
+    else await page.clock.setFixedTime(new Date(time));
+  }
+  await page.addInitScript(
+    ({ theme, passphrase }) => {
+      localStorage.setItem("cpc.theme", theme);
+      if (passphrase) localStorage.setItem("cpc.passphrase", passphrase);
+      localStorage.setItem("cpc.your-team", "6");
+      localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
+      localStorage.setItem("cpc.tour-seen", "1");
+    },
+    { theme: c.theme, passphrase },
+  );
+  await page.goto(`${SITE}${path}`);
+  await page.locator("header").first().waitFor();
+  await page.waitForTimeout(600);
+}
+
+const banner = (page) => page.locator("[data-deadline-banner]");
+
+async function openSheet(page) {
+  await page.locator("[data-deadline-countdown], [data-deadline-banner] button").first().click();
+  await page.locator("[data-wire-sheet]").waitFor();
+  await page.waitForTimeout(900);
+}
+
+/* The fit of the banner: the sideways scroll, the band row, and the banner box. */
+async function fit(page) {
+  return page.evaluate(() => {
+    const header = document.querySelector("header");
+    const strip = document.querySelector("[data-deadline-banner]");
+    const row = header?.firstElementChild?.getBoundingClientRect();
+    const box = strip?.getBoundingClientRect();
+    const overlap = !!(row && box && box.top < row.bottom - 0.5);
+    return {
+      viewport: [window.innerWidth, window.innerHeight],
+      sidewaysScroll: document.documentElement.scrollWidth - window.innerWidth,
+      bandRowBottom: row?.bottom ?? null,
+      bannerTop: box?.top ?? null,
+      bannerBottom: box?.bottom ?? null,
+      headerBottom: header?.getBoundingClientRect().bottom ?? null,
+      bannerOverlapsBandRow: overlap,
+      bannerPresent: !!strip,
+    };
+  });
+}
+
+/* The iPhone 15 check at 390 by 660 in WebKit, with the same opening as the test. */
+async function iphone(browser, at, opts, after) {
+  const context = await browser.newContext({ ...IPHONE, viewport: { width: 390, height: 660 } });
+  const page = await context.newPage();
+  await open(page, { width: 390, theme: "light" }, opts);
+  if (after) await after(page);
+  const result = await fit(page);
+  writeFileSync(join(dir(at), "iphone-15-390x660.json"), JSON.stringify({ device: "iPhone 15 (WebKit) at 390x660", ...result }, null, 1));
+  await context.close();
+}
+
+function want(at) {
+  return ONLY.length === 0 || ONLY.includes(at);
+}
+
+
+/* ---------- phase on: the finder flag on, in a local build only ---------- */
+const HELD = new Set();
+async function holdFind(page, onBody) {
+  await page.route(/\/find-stream/, async (route) => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
+    onBody?.(route.request().postData());
+    HELD.add(route); // never answered, so the wait goes on
+  });
+}
+const modeItem = (page, label) => page.locator('[aria-label="Mode"]').getByText(label, { exact: true });
+
+async function findReady(page) {
+  await page.getByRole("button", { name: "Find a Trade" }).waitFor({ timeout: 30_000 });
+  await expect(page.getByRole("button", { name: "Find a Trade" })).toBeEnabled({ timeout: 30_000 });
+}
+
+/* Every file under the result cache, at any depth, so each press makes a real search and a real pick call. */
+function clearResults() {
+  const walk = (d) => { for (const f of existsSync(d) ? readdirSync(d) : []) { const p = join(d, f); if (statSync(p).isDirectory()) walk(p); else rmSync(p); } };
+  walk(CACHE);
+}
+
+/* ---------- phase on: the finder flag on, in a local build only ---------- */
+/* AT-36, AT-72, and AT-73: one real press per size and theme against the local API, with the result cache emptied
+   first. The page clock runs in real time, because the wait lines hold by real time. Round 2 records the
+   data-trades-count part, the count line at each card, and the start of step 5 and the end of the pick. */
+test.describe("on", () => {
+  test.skip(PHASE !== "on", "phase on");
+  test("AT-36 and AT-72 and AT-73", async ({ browser }) => {
+    test.setTimeout(2_400_000);
+    for (const at of ["AT-36", "AT-72", "AT-73"]) fresh(at, "measure.jsonl");
+    for (const c of COMBOS) {
+      clearResults();
+      note("AT-36", "cache-cleared.txt", `${new Date().toISOString()} ${c.width}-${c.theme}: files under the result cache after the clear: ${(function count(d) { return existsSync(d) ? readdirSync(d).reduce((n, f) => n + (statSync(join(d, f)).isDirectory() ? count(join(d, f)) : 1), 0) : 0; })(CACHE)}`);
+      const page = await newPage(browser, c);
+      await page.addInitScript(() => {
+        window.__chunks = [];
+        window.__lines = [];
+        window.__cards = [];
+        const real = window.fetch;
+        window.fetch = async (...args) => {
+          const response = await real(...args);
+          const url = String(args[0]?.url ?? args[0]);
+          if (url.includes("/find-stream")) {
+            const reader = response.clone().body.getReader();
+            const dec = new TextDecoder();
+            (async () => {
+              for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                window.__chunks.push([Math.round(performance.now()), dec.decode(value)]);
+              }
+            })();
+          }
+          return response;
+        };
+        new MutationObserver(() => {
+          const status = document.querySelector('section[aria-label="Finding Trades"] [role=status]');
+          const text = status?.textContent ?? null;
+          const last = window.__lines[window.__lines.length - 1];
+          if (text !== null && (!last || last[1] !== text)) window.__lines.push([Math.round(performance.now()), text]);
+          const cards = [...document.querySelectorAll('ol[aria-label="Trade ideas"] article')];
+          const more = [...document.querySelectorAll("p[aria-live=polite]")].map((p) => p.textContent).find((t) => /^Writing \d+ more/.test(t ?? "")) ?? null;
+          const ready = [...document.querySelectorAll('ol[aria-label="Trade ideas"] article button')].some((b) => b.textContent.trim() === "See the Full Result" && !b.disabled);
+          const prev = window.__cards[window.__cards.length - 1];
+          if (cards.length > 0 && (!prev || prev[1] !== cards.length || prev[2] !== more || prev[4] !== ready)) window.__cards.push([Math.round(performance.now()), cards.length, more, cards.map((a) => a.getAttribute("aria-label")), ready]);
+        }).observe(document, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["disabled"] });
+      });
+      await open(page, c, { path: "/analyze/?mode=find" });
+      await findReady(page);
+      const tap = await page.evaluate(() => Math.round(performance.now()));
+      const tapWall = new Date().toISOString();
+      await page.getByRole("button", { name: "Find a Trade" }).click();
+      const status = page.locator('section[aria-label="Finding Trades"] [role=status]');
+      await status.waitFor();
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: shotPath("AT-36", "line-1", c) });
+      await page.waitForFunction(() => /^[3-5] of 5/.test(document.querySelector('section[aria-label="Finding Trades"] [role=status]')?.textContent ?? ""), null, { timeout: 120_000 });
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: shotPath("AT-36", "line-2", c) });
+      if (c.width === 375 && c.theme === "light") writeFileSync(join(dir("AT-36"), "stagelines-dom.html"), await page.locator('section[aria-label="Finding Trades"]').evaluate((el) => el.querySelector(".t-think")?.closest("[aria-hidden]")?.outerHTML ?? el.outerHTML));
+      // AT-73: two step 5 lines that name a Shortlist trade, at 375 px. A step 5 line is a status line with no "N of 5".
+      const weigh = () => page.evaluate(() => { const t = document.querySelector('section[aria-label="Finding Trades"] [role=status]')?.textContent ?? ""; return /^\d of 5/.test(t) || t === "" ? null : t; });
+      if (c.width === 375) {
+        let first = null;
+        for (const until = Date.now() + 120_000; Date.now() < until && !first; await page.waitForTimeout(100)) {
+          first = await weigh().catch(() => null);
+          if ((await page.locator('ol[aria-label="Trade ideas"] article').count()) > 0) break;
+        }
+        if (first) {
+          await page.waitForTimeout(500);
+          await page.screenshot({ path: shotPath("AT-73", "step5-line-1", c) });
+          let second = null;
+          for (const until = Date.now() + 10_000; Date.now() < until; await page.waitForTimeout(100)) {
+            const t = await weigh().catch(() => null);
+            if (t && t !== first) { second = t; break; }
+            if ((await page.locator('ol[aria-label="Trade ideas"] article').count()) > 0) break;
+          }
+          if (second) {
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: shotPath("AT-73", "step5-line-2", c) });
+          }
+        }
+      }
+      // AT-72: the shot after the first card, while the stream still writes.
+      const cardsLoc = page.locator('ol[aria-label="Trade ideas"] article');
+      await cardsLoc.first().or(page.getByText(/no trade/i)).first().waitFor({ timeout: 200_000 });
+      await page.waitForTimeout(700);
+      await page.screenshot({ path: shotPath("AT-72", "first-card", c), fullPage: true });
+      // The document lands when the button of each card is on.
+      await expect(page.getByRole("button", { name: "See the Full Result" }).first()).toBeEnabled({ timeout: 200_000 }).catch(() => undefined);
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: shotPath("AT-72", "last-card", c), fullPage: true });
+      const chunks = await page.evaluate(() => window.__chunks);
+      const lines = await page.evaluate(() => window.__lines);
+      const cardLog = await page.evaluate(() => window.__cards);
+      const sec = (t) => +((t - tap) / 1000).toFixed(2);
+      writeFileSync(join(dir("AT-36"), `stream-${c.width}-${c.theme}.txt`), `# tap at ${tapWall}; each line: seconds from the tap, then the stream line\n` + chunks.map(([t, s]) => s.split("\n").filter(Boolean).map((l) => `${((t - tap) / 1000).toFixed(2)} s  ${l}`).join("\n")).join("\n"));
+      const events = chunks.flatMap(([t, s]) => s.split("\n").filter((l) => l.startsWith("data: {")).map((l) => [sec(t), JSON.parse(l.slice(6))]));
+      const lineTimes = lines.map(([t, text]) => [sec(t), text]);
+      const held = lineTimes.map(([t, text], i) => (i === 0 || lineTimes[i - 1][1] !== text ? { from: t, text } : null)).filter(Boolean).map((x, i, all) => ({ ...x, until: all[i + 1]?.from ?? null, heldSeconds: all[i + 1] ? +(all[i + 1].from - x.from).toFixed(2) : null }));
+      note("AT-36", "measure.jsonl", { ...c, tapAt: tapWall, stepEventsWithSecondsFromTap: events.filter(([, e]) => e.type === "data-step").map(([t, e]) => [t, e.data.line, e.data.live]), lineTextWithSecondsFromTap: held });
+      const shortlist = events.find(([, e]) => e.type === "data-shortlist");
+      const cardsInDom = cardLog.map(([t, n, more, labels, ready]) => ({ t: sec(t), cards: n, countLine: more, labels, buttonsOn: ready }));
+      note("AT-72", "measure.jsonl", { ...c, tapAt: tapWall, tradeEventsWithSecondsFromTap: events.filter(([, e]) => ["data-trades-count", "data-trade", "data-trades-done", "data-answer"].includes(e.type)).map(([t, e]) => e.type === "data-trade" ? [t, e.type, { index: e.data.index, most: e.data.most, offer_id: e.data.trade.offer_id }] : e.type === "data-trades-count" ? [t, e.type, e.data] : [t, e.type]), cardsInDomWithSecondsFromTap: cardsInDom, picksInAnswer: (() => { const a = events.find(([, e]) => e.type === "data-answer"); return a ? (a[1].data.document?.trades ?? a[1].data.document?.picks ?? []).length : null; })() });
+      // AT-73: step 5 starts when its step line first shows on the page; the pick ends when the first card shows.
+      const step5Event = events.find(([, e]) => e.type === "data-step" && /^Picking the best/.test(e.data.line));
+      const step5Shown = held.find((x) => /^5 of 5/.test(x.text));
+      const firstCard = cardsInDom.find((x) => x.cards > 0);
+      const step5Lines = held.filter((x) => step5Shown && x.from >= step5Shown.from && (!firstCard || x.from < firstCard.t));
+      note("AT-73", "measure.jsonl", { ...c, tapAt: tapWall, shortlistEvent: shortlist ? [shortlist[0], shortlist[1].data] : null, step5StreamEventSecondsFromTap: step5Event ? step5Event[0] : null, step5LineShownSecondsFromTap: step5Shown ? step5Shown.from : null, firstCardSecondsFromTap: firstCard ? firstCard.t : null, pickSecondsFromStep5LineToFirstCard: step5Shown && firstCard ? +(firstCard.t - step5Shown.from).toFixed(2) : null, tradeLinesBeforeFirstCard: step5Lines.filter((x) => !/^\d of 5/.test(x.text)).length, step5LinesWithSecondsFromTap: held.filter((x) => !/^\d of 5/.test(x.text) || /^5 of 5/.test(x.text)) });
+      await page.context().close();
+    }
+  });
+});
+
+test.describe("at49", () => {
+  test.skip(PHASE !== "at49", "phase at49");
+  test("AT-49 run", async ({ browser }) => {
+    test.setTimeout(240_000);
+    const run = process.env.RUN;
+    const [width, theme] = (process.env.COMBO ?? "390-light").split("-");
+    const c = { width: Number(width), theme };
+    // A fresh context: no cookie, no session storage, no cache. The stored team and passphrase skip the two first-visit sheets.
+    const context = await browser.newContext(c.width === 390 ? { ...IPHONE, viewport: { width: 390, height: 660 } } : { viewport: { width: c.width, height: 900 } });
+    const page = await context.newPage();
+    const requests = [];
+    page.on("response", (r) => { if (!r.url().startsWith(SITE)) requests.push({ ms: Date.now(), status: r.status(), method: r.request().method(), url: r.url() }); });
+    await open(page, c, { wire: null });
+    await page.getByRole("button", { name: "More" }).click();
+    await page.waitForTimeout(800);
+    // The Topic button of Trade ideas: its name starts with the Topic name. A first tap on a row chip shows its fact
+    // strip, and the strip button "Open Trade ideas" opens the Topic.
+    const chip = page.getByRole("button", { name: /^Trade ideas/ }).first();
+    const chipName = await chip.getAttribute("aria-label", { timeout: 10_000 }).catch(() => null) ?? (await chip.innerText({ timeout: 5000 }));
+    const asked = Date.now();
+    await chip.click({ timeout: 10_000 });
+    await page.waitForTimeout(600);
+    const strip = page.getByRole("button", { name: "Open Trade ideas" });
+    if (await strip.isVisible().catch(() => false)) await strip.click();
+    const retry = page.getByText("The question did not go through. Ask again.");
+    const settled = page.locator('[role=article] [role=status]', { hasText: /Checked|Settled|Done/ });
+    const cards = page.getByRole("article", { name: "Trade ideas" }).getByRole("region", { name: "Trade ideas" });
+    // Poll both ends each 250 ms, so no long wait stays open after the answer.
+    let outcome = "timeout";
+    for (const until = Date.now() + 200_000; Date.now() < until; await page.waitForTimeout(250)) {
+      if ((await retry.count()) > 0) { outcome = "retry line"; break; }
+      if ((await cards.count()) > 0) { outcome = "trade ideas answer"; break; }
+    }
+    const answered = Date.now();
+    console.log(`answered: ${outcome}`);
+    await new Promise((done) => setTimeout(done, 2500));
+    const result = { run, combo: process.env.COMBO, chip: chipName, askedAt: new Date(asked).toISOString(), secondsToAnswer: +((answered - asked) / 1000).toFixed(1), outcome, retryLineCount: await retry.count(), articleText: (await page.getByRole("article", { name: "Trade ideas" }).first().innerText({ timeout: 5000 }).catch(() => "")).slice(0, 1500), apiResponses: requests };
+    writeFileSync(join(dir("AT-49"), `run-${run}.json`), JSON.stringify(result, null, 1));
+    // The answer sits at the end of the Thread, so a viewport shot after a scroll to the end shows it.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight)).catch(() => undefined);
+    await page.waitForTimeout(500);
+    const shot = process.env.COMBO !== "390-light" ? shotPath("AT-49", "answer", c) : join(dir("AT-49"), `run-${run}-390x660.png`);
+    await page.screenshot({ path: shot, fullPage: true, timeout: 30_000 }).catch((e) => writeFileSync(`${shot}.error.txt`, String(e).slice(0, 300)));
+    await context.close();
+  });
+});
+

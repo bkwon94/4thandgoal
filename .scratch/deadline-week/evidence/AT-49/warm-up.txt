@@ -1,0 +1,17 @@
+# The evidence API of this round: the real app of app_from_env with the tap AT-41/evidence_tap.py.txt, from a detached worktree of 2e9f0f85, live Sleeper, live Jev, and live Claude from ~/.secrets in the same shell, rate limit 600 a minute, no fair cache file at start. API start 2026-11-20 18:39:58.
+# TypeSafe answers in the API log up to the warm-up end line (line 2519): 1042 answered 200, 0 answered another status, 0 lines 'The Jev request ... failed'. The end line counts each question as asked, failed or not.
+INFO:     Started server process [27197]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8391 (Press CTRL+C to quit)
+INFO:     league.past_seasons: Downloading the past season file of 2023
+INFO:     league.past_seasons: Downloading the past season file of 2023
+INFO:     league.past_seasons: Downloading the past season file of 2024
+INFO:     league.past_seasons: Downloading the past season file of 2024
+INFO:     league.past_seasons: Downloading the past season file of 2025
+INFO:     league.past_seasons: Downloading the past season file of 2025
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13118 output_tokens=5427 model=claude-opus-5-5 effort=high time=36.0s
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=13118 output_tokens=5414 model=claude-opus-5-5 effort=high time=35.9s
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams, 0 answers loaded from the file
+INFO:     facts.writer: ChartRead call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=14156 output_tokens=5426 model=claude-opus-5-5 effort=high time=35.9s
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc ended: 98424 questions, 98424 asked, 0 held, about 30180179 tokens, $1.2676, 350.1s

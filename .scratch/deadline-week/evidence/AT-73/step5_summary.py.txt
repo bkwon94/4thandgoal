@@ -1,0 +1,31 @@
+"""
+Writes AT-73/step5-summary.txt from AT-73/measure.jsonl of round 2: for each press, the time step 5 started, the time
+the pick ended (first card), and each step 5 line with its time and the number of the Shortlist trade it names.
+"""
+import json
+import sys
+from pathlib import Path
+
+E = Path(sys.argv[1])
+out = ["# Derived by step5_summary.py.txt from AT-73/measure.jsonl. Times are seconds from the tap.", ""]
+for line in (E / "AT-73/measure.jsonl").read_text().splitlines():
+    d = json.loads(line)
+    trades = d["shortlistEvent"][1]["trades"]
+    names = {}
+    for n, trade in enumerate(trades, 1):
+        for key in ("name", "last"):
+            names[f"Weighing {', '.join(p[key] for p in trade['gives'])} for {', '.join(p[key] for p in trade['gets'])}"] = n
+    event, first_card = d["step5StreamEventSecondsFromTap"], d["firstCardSecondsFromTap"]
+    out.append(f"== {d['width']} {d['theme']}, tap at {d['tapAt']}")
+    out.append(f"step 5 started: stream event 'Picking the best 5' at {event} s; its line '5 of 5 · Picking the best 5' shows at {d['step5LineShownSecondsFromTap']} s")
+    out.append(f"pick ended (first card in the DOM): {first_card} s; pick from the step 5 stream event: {round(first_card - event, 2) if event is not None and first_card is not None else None} s; from the step 5 line: {d['pickSecondsFromStep5LineToFirstCard']} s")
+    out.append(f"Shortlist of the press: {len(trades)} trades, sent at {d['shortlistEvent'][0]} s")
+    trade_lines = 0
+    for x in d["step5LinesWithSecondsFromTap"]:
+        where = f"Shortlist trade {names[x['text']]}" if x["text"] in names else ("step line" if x["text"].startswith("5 of 5") else "NOT IN THE SHORTLIST")
+        if x["text"] in names and (first_card is None or x["from"] < first_card):
+            trade_lines += 1
+        out.append(f"  {x['from']:>6} s  held {x['heldSeconds']} s  {x['text']}  [{where}]")
+    out.append(f"trade lines before the first card: {trade_lines}")
+    out.append("")
+(E / "AT-73/step5-summary.txt").write_text("\n".join(out))

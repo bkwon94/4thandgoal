@@ -211,3 +211,31 @@ Question: the facts
 Probability: 0.84
 Reason: No file may show this fact of the Then line: "That offer gets the fact "fills the weak slot QB, and the partner can spare him", and the count of offers stays the same." (shown at 0.16).
 Action: disagree: after one new recording the flag stays; output.txt asserts the fact for the slot of each listed player with equal counts, and the live Shortlist dumps hold a QB Spares yes on each offer (98d79f98).
+
+## AT-36, question (b)
+
+Question: motion
+Probability: 0.80
+Reason: The Then line may ask for motion (at 0.82), and the files hold no video, no timed frames, and no log of animation values (a log at 0.03).
+Action: disagree: the Then line asks for line timing, and measure.jsonl lineTextWithSecondsFromTap logs each line with its start and hold in seconds.
+
+## AT-36, question (d)
+
+Question: the Observation
+Probability: 0.78
+Reason: No file may show this sentence of the Observation: "The stream sent the live lines of steps 2 to 4 within 0.19 s and step 5 at 5.24 to 5.82 s (`stepEventsWithSecondsFromTap` and the stream files), so each line waits for the hold of the line before it." (shown at 0.19, a result of the Then line at 0.96).
+Action: disagree: stepEventsWithSecondsFromTap of each press has the step 2 to 4 live lines within 0.19 s and step 5 at 5.24 to 5.82 s.
+
+## AT-72, question (b)
+
+Question: motion
+Probability: 0.86
+Reason: The Then line may ask for motion (at 0.89), and the files hold no video, no timed frames, and no log of animation values (a log at 0.03).
+Action: disagree: the Then line asks for order and timing, and cardsInDomWithSecondsFromTap and tradeEventsWithSecondsFromTap log each card and part with times.
+
+## AT-73, question (b)
+
+Question: motion
+Probability: 0.89
+Reason: The Then line may ask for motion (at 0.92), and the files hold no video, no timed frames, and no log of animation values (a log at 0.03).
+Action: disagree: the Then line asks for line timing, and step5LinesWithSecondsFromTap and step5-summary.txt log each step 5 line with its start and hold.

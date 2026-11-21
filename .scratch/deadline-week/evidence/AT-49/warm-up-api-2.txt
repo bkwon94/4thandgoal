@@ -1,2 +1,0 @@
-INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams
-INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc ended: 105876 questions, 105876 asked, 0 held, about 32474697 tokens, $1.3639, 382.0s
