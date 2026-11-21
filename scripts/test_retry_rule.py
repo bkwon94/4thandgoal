@@ -47,14 +47,42 @@ class TheRetryRule(unittest.TestCase):
         self.write("apps/pipeline/pyproject.toml", 'dev = ["pytest-rerunfailures>=14"]\n')
         self.assertEqual(len(check_retries(self.root)), 1)
 
-    def test_a_vitest_retry_fails(self):
-        self.write("apps/site/vitest.config.mts", "export default { test: { retry: 2 } };\n")
+    def test_a_bunfig_retry_above_zero_fails(self):
+        self.write("apps/site/bunfig.toml", "[test]\nretry = 2\n")
         offenses = check_retries(self.root)
         self.assertEqual(len(offenses), 1)
-        self.assertIn("vitest.config.mts", offenses[0])
+        self.assertIn("apps/site/bunfig.toml", offenses[0])
 
-    def test_a_vitest_retry_of_zero_passes(self):
-        self.write("apps/site/vitest.config.mts", "export default { test: { retry: 0 } };\n")
+    def test_a_bunfig_retry_of_zero_passes(self):
+        self.write("apps/site/bunfig.toml", "[test]\nretry = 0\npreload = []\n")
+        self.assertEqual(check_retries(self.root), [])
+
+    def test_a_retry_flag_in_bun_test_mjs_fails(self):
+        self.write("apps/site/scripts/bun-test.mjs", 'const args = ["test", "--retry=2"];\n')
+        offenses = check_retries(self.root)
+        self.assertEqual(len(offenses), 1)
+        self.assertIn("bun-test.mjs", offenses[0])
+
+    def test_a_retry_flag_in_a_package_script_fails(self):
+        self.write("apps/site/package.json", '{"scripts": {"test:bun": "bun test --retry 3"}}\n')
+        self.assertEqual(len(check_retries(self.root)), 1)
+
+    def test_a_package_script_without_a_retry_flag_passes(self):
+        self.write("apps/site/package.json", '{"scripts": {"test:bun": "bun test --isolate"}}\n')
+        self.assertEqual(check_retries(self.root), [])
+
+    def test_a_per_test_retry_option_in_a_site_test_fails(self):
+        self.write("apps/site/src/a.test.ts", 'test("x", () => {}, { retry: 2 });\n')
+        offenses = check_retries(self.root)
+        self.assertEqual(len(offenses), 1)
+        self.assertIn("a.test.ts", offenses[0])
+
+    def test_a_per_test_retry_option_in_a_package_site_test_fails(self):
+        self.write("packages/design/site/a.test.tsx", 'test("x", () => {}, { retry: 1 });\n')
+        self.assertEqual(len(check_retries(self.root)), 1)
+
+    def test_a_per_test_retry_option_of_zero_passes(self):
+        self.write("apps/site/src/a.test.ts", 'test("x", () => {}, { retry: 0 });\n')
         self.assertEqual(check_retries(self.root), [])
 
     def test_a_folder_of_dependencies_is_skipped(self):
