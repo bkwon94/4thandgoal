@@ -8,7 +8,7 @@ Spec: `.scratch/trade-block/PRD.md`. Acceptance tests AT-1, AT-3, AT-4, AT-5, AT
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The find request takes an optional `trade_block` of 0 to 3 ids, and an empty or missing block keeps every offer as now.
 - [x] The route rejects 4 ids, a repeated id, and a player of another roster with a 422 and a plain reason.
