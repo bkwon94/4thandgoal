@@ -10,7 +10,7 @@ Spec: `.scratch/trade-block/PRD.md`. Acceptance tests AT-28 and AT-29.
 
 **Status:** ready-for-agent
 
-- [ ] A "gives" ask sends `trade_block` with the one player id and no anchor.
-- [ ] A "gets" ask sends the anchor with the side "gets" and no `trade_block`.
-- [ ] The side "gives" of the anchor retires from the find route, and no caller sends it.
-- [ ] `make check-fast` passes, and the full API suite passes at the merge.
+- [x] A "gives" ask sends `trade_block` with the one player id and no anchor.
+- [x] A "gets" ask sends the anchor with the side "gets" and no `trade_block`.
+- [x] The side "gives" of the anchor retires from the find route, and no caller sends it.
+- [x] `make check-fast` passes, and the full API suite passes at the merge.

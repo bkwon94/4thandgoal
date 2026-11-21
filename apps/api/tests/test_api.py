@@ -2035,6 +2035,15 @@ def test_a_find_with_an_empty_trade_block_is_the_plain_find(settings, sources):
     assert len(picker.calls) == 1
 
 
+def test_find_takes_no_anchor_on_the_side_gives(settings, sources):
+    # A player that the asker gives goes on the Trade block, so the anchor holds only the side "gets".
+    snapshot = _here(sources, settings).snapshot(2026)
+    mine = min(snapshot.rosters[2])
+    response = _find_client(settings, sources).post(
+        "/find", json={"season": 2026, "asker": 2, "anchor": {"player_id": mine, "side": "gives"}}, headers=HEADERS)
+    assert response.status_code == 422
+
+
 def _other_roster_player(snapshot) -> str:
     return next(pid for pid in snapshot.rosters[3] if snapshot.players[pid].position in ("RB", "WR"))
 
