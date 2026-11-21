@@ -8,7 +8,7 @@ Spec: `.scratch/trade-block/PRD.md`. Acceptance tests AT-28 and AT-29.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A "gives" ask sends `trade_block` with the one player id and no anchor.
 - [x] A "gets" ask sends the anchor with the side "gets" and no `trade_block`.
