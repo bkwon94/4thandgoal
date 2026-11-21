@@ -194,9 +194,17 @@ jobs:
       - name: Run the browser half of the site check
         run: make check-site-browser
 
+  # The parallel pipeline tests run in a matrix of 2 shards, and PYTEST_SHARD of apps/pipeline/tests/shard.py picks the tests
+  # of each shard. With 1 job the test step took 387 to 414 s, above the limit of 360 s. Shard 1 also runs lint and typecheck,
+  # about 5 s, so no job runs them twice. "make check-pipeline-parallel" runs the whole half in one run.
   pipeline-parallel:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
@@ -215,8 +223,9 @@ jobs:
       - name: Install the Python dependencies
         run: uv sync --locked --exact --package cornerstone
 
-      - name: Run the parallel half of the pipeline check
-        run: make check-pipeline-parallel
+      # The Makefile names the shard count of each target, so the matrix list above and the targets must match.
+      - name: Run one shard of the parallel half of the pipeline check
+        run: make check-pipeline-parallel-${{ matrix.shard }}
 
   # The serial tests measure wall time, so they run alone in their own job.
   pipeline-serial:

@@ -2,7 +2,7 @@
 # Run "make help" to list the targets.
 
 .DEFAULT_GOAL := help
-.PHONY: help check check-fast check-scripts check-site check-site-unit check-site-browser check-pipeline check-pipeline-parallel check-pipeline-serial check-api check-packages
+.PHONY: help check check-fast check-scripts check-site check-site-unit check-site-browser check-pipeline check-pipeline-parallel check-pipeline-parallel-1 check-pipeline-parallel-2 check-pipeline-serial check-api check-packages
 
 # The command of each app, per target. Each app owns its rules, so the root only calls them.
 site-check = pnpm --dir apps/site check
@@ -17,6 +17,8 @@ site-check-fast = $(if $(filter 1,$(STAGED)),BUN_TEST_WORKERS=$(HOOK_TEST_WORKER
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 pipeline-check-parallel = make -C apps/pipeline check-parallel
+pipeline-check-parallel-1 = make -C apps/pipeline check-parallel-1
+pipeline-check-parallel-2 = make -C apps/pipeline check-parallel-2
 pipeline-check-serial = make -C apps/pipeline check-serial
 api-check = make -C apps/api check
 api-check-fast = make -C apps/api check-fast
@@ -62,7 +64,7 @@ FMT_FILES = $(if $(filter 1,$(STAGED)),$(shell git diff --cached --name-only --d
 PACKAGES = $(if $(SELECTION),$(filter-out $(ALL_APPS),$(CHANGED)),$(notdir $(wildcard packages/*)))
 
 help: ## List the targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
+	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-14s %s\n", $$1, $$2}'
 
 # The local full run and the prek hook run these targets. set -e stops the run at the first failure.
 # Usage: make check [BASE=origin/main]
@@ -102,6 +104,13 @@ check-pipeline: ## Run the full check of the pipeline
 # CI splits the full check of the pipeline into two jobs that run at the same time. "make check-pipeline" runs both halves.
 check-pipeline-parallel: ## Run the parallel half of the pipeline check: lint, typecheck, and the parallel tests
 	@echo "==> pipeline: check-parallel"; $(pipeline-check-parallel)
+
+# CI splits the parallel half again into 2 shard jobs. Shard 1 also runs lint and typecheck. Together they run the parallel half.
+check-pipeline-parallel-1: ## Run lint, typecheck, and shard 1 of 2 of the parallel pipeline tests
+	@echo "==> pipeline: check-parallel-1"; $(pipeline-check-parallel-1)
+
+check-pipeline-parallel-2: ## Run shard 2 of 2 of the parallel pipeline tests
+	@echo "==> pipeline: check-parallel-2"; $(pipeline-check-parallel-2)
 
 check-pipeline-serial: ## Run the serial half of the pipeline check: the tests that measure wall time
 	@echo "==> pipeline: check-serial"; $(pipeline-check-serial)
