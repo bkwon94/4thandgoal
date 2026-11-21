@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { resetModules } from "./reset-modules";
 
-// A module that reads the env once, when it loads, as the data readers read the working folder.
+// A module that reads the env once, when it loads, as a module does that sets a constant from an env value at its top level.
 const folder = mkdtempSync(join(tmpdir(), "reset-modules-"));
 const reader = join(folder, "reader.ts");
 writeFileSync(reader, 'export const seen = process.env.RESET_MODULES_VALUE ?? "unset";\n');
