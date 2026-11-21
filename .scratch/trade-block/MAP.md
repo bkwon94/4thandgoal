@@ -15,10 +15,10 @@ One spec adds the Trade block to Find mode of the analyzer. The manager adds up 
 - The Trade block, "Trade with", and the position chips combine. Each one is a hard rule, and the empty list is a real answer. Brian, in the Stage 1 grill.
 - The Trade block holds at most 3 players. Brian, in the Stage 1 grill.
 - The "gives" ask of the front door chat becomes a Trade block of one player. The "gets" ask stays as it is now. Brian, in the Stage 1 grill.
+- The picker is a roster strip of headshots under "Your team". A pick gets a ring and moves to the front, and a tap takes it off. `decisions/01-prototype-block-picker-look.md`.
 
 ## NOT YET SPECIFIED
 
-- What is the look and the place of the Trade block picker in the Find hero? `decisions/01-prototype-block-picker-look.md`.
 - Which players does the picker list? `decisions/02-spec-players-the-picker-lists.md`.
 - How do the cards spread across the block players, and what does the Advisor pick get told about the block? `decisions/03-spec-card-spread-and-pick.md`.
 - How long does the block live? `decisions/04-spec-block-lifetime.md`.
