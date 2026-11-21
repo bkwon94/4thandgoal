@@ -111,14 +111,11 @@ function norcalMenu(): { packages: PackageName[]; items: MenuItem[] } {
 describe("the list view of NorCal (AT-13)", () => {
   it("holds only the pages of the NorCal Menu, plus its report and its sim, and each link opens a NorCal page", async () => {
     readFixtureSite("norcal");
-    // The readers of public/ read the working folder when they load, so reset them to read the NorCal data.
-    const { sitePages: pagesOf } = await import("./site-pages");
-    const { menuLinks: links, siteLines: lines } = await import("@/generated/registry");
-    const { SiteAnswer: Answer } = await import("./front-door/site-answer");
+    // The readers of public/ read the working folder on each call, so they read the NorCal data.
     const { packages, items: menu } = norcalMenu();
-    const pages = pagesOf(menu, links, lines, packages);
+    const pages = sitePages(menu, menuLinks, siteLines, packages);
     const { container } = render(
-      <Answer question="what tools are there" page="all" pages={pages} />,
+      <SiteAnswer question="what tools are there" page="all" pages={pages} />,
     );
     const hrefs = (group: string) =>
       within(within(container).getByRole("list", { name: group }))

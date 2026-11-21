@@ -372,7 +372,7 @@ async function homeOfClient(
     }
   }
   spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them to pick up the temp folder.
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return (await import("./front-door/door-page")).default;
 }
 

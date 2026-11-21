@@ -11,8 +11,8 @@ import { weekPageJson } from "@/fixtures/week-page-json";
 const roots: string[] = [];
 
 /* A temp public/ folder with the week pages of 2026 from week 6 to `latest`, and the midseason file and the sim file
-   when each is given. The latest week holds the given avatars. The readers read the working folder when they load, so the module cache resets, and the next
-   import of a route or a part reads the temp folder. */
+   when each is given. The latest week holds the given avatars. The readers read the working folder on each call, so each
+   route or part reads the temp folder after this call. */
 export function publicOver({
   latest = 8,
   report,

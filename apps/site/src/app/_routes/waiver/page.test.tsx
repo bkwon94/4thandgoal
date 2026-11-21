@@ -29,7 +29,7 @@ async function routeOver() {
   }
   writeFileSync(join(root, "public", "2026", "week-06", "waiver.json"), JSON.stringify(fixture));
   spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./page");
 }
 

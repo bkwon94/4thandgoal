@@ -33,9 +33,8 @@ import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
 // The jsdom stand-ins that the Drawer of the team sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The import
-   of cpc-site runs first, because the week reader takes its folder when it loads. Each test sets the folder again,
-   because the file puts the real folder back after each test. */
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The readers
+   read the working folder on each call. Each test sets the folder, because the file puts the real folder back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 afterEach(restoreFixtureSite);
 

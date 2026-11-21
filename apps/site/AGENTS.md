@@ -38,7 +38,7 @@ Each site test runs on `bun test` with happy-dom (ADR 0038). No test runs on Vit
 3. In a test of a package, use `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
 4. Restore nothing by hand. The preload restores each spy and each stub after each test.
 5. Put each spy and each stub in `beforeEach`. The restore after the first test removes a spy or a stub at the top level of a file.
-6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env or `process.cwd` value when it loads. Then import the module again.
+6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env value when it loads, such as `src/lib/config.ts`. Then import the module again. The readers of `src/lib/data/` read `process.cwd` on each call, so a spy on it needs no reset.
 7. Use an import with a side effect that runs first, such as `@/fixtures/cpc-site`, for a setup that must run before the other imports. Bun has no `vi.hoisted`.
 8. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
 9. Run `pnpm test:bun` in full before the merge.

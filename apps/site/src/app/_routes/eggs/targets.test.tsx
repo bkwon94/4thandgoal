@@ -240,7 +240,7 @@ const MANAGERS = JSON.parse(readFileSync(fixturePublished("cpc", "2026", "manage
 describe("the targets of a manager page", () => {
   it("gives each result chip, odds tile, roster row, move row, and best add row a stable id", async () => {
     const manager = MANAGERS.managers.find((entry: { roster_id: number }) => entry.roster_id === 3);
-    // The readers read the working folder when they load, so they load again after the temp folder of a report test.
+    // The readers read the working folder on each call, so the page reads the fixed cpc copy, also after a report test.
     const { default: ManagerPage } = await import("../managers/manager-page");
     render(await ManagerPage({ params: Promise.resolve({ season: "2026", roster: "3" }) }));
     expect(idsOf("result")).toHaveLength(manager.weeks.length);
