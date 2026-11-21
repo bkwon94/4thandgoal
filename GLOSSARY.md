@@ -597,8 +597,9 @@ one of them. The block is empty until the manager adds a player, and an empty bl
 _Avoid_: anchor (on the page), shop list, picks
 
 **Partner filter**:
-The first step of the finder with no picked partner: the Spares tree on both sides of each pair. It stops no
-partner. Its answers become reasons on the pick sheet. A search with one picked partner or with an anchor skips it.
+The first step of the finder: the Spares tree on both sides of each pair, once per partner. It runs with every
+partner or with one picked partner, and with an anchor or a Trade block too. It stops no partner. Its answers become
+reasons on the pick sheet.
 _Avoid_: prefilter, screen
 
 **Target**:

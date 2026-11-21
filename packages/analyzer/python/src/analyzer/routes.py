@@ -297,6 +297,8 @@ class FindRequest(BaseModel):
     The partner is optional. With no partner, the search runs over every other team of the league.
     The anchor is optional too. With an anchor, each offer holds that one player on his side.
     The limit is optional too. With a limit, no offer breaks it.
+    The Trade block is optional too: 0 to TRADE_BLOCK_MOST players of the asker's roster. With a block, each offer
+    sends at least one of them. An empty block and a missing block mean the same thing: no rule.
     """
 
     season: int
@@ -304,6 +306,24 @@ class FindRequest(BaseModel):
     partner: int | None = None
     anchor: Anchor | None = None
     limit: Limit | None = None
+    trade_block: list[str] = []
+
+
+# The most players on a Trade block. The picker of the site holds the same limit.
+TRADE_BLOCK_MOST = 3
+
+
+def _block_problem(pair: FindRequest, snapshot: Snapshot) -> str | None:
+    """The plain reason that the Trade block of the request is bad, or None when it is good. The page never sends a
+    bad block, so a bad block comes from a broken client, and the route stops it before the search."""
+    block = pair.trade_block
+    if len(block) > TRADE_BLOCK_MOST:
+        return f"Your trade block holds at most {TRADE_BLOCK_MOST} players."
+    if len(set(block)) != len(block):
+        return "Your trade block names one player twice."
+    if any(pid not in snapshot.rosters[pair.asker] for pid in block):
+        return "Your trade block holds a player who is not on your roster."
+    return None
 
 
 def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
@@ -447,20 +467,25 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
         served.teams_cache.clear(pair.season)
         # The same words as check_trade, so the form shows one message for a roster that is gone.
         raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
+    problem = _block_problem(pair, snapshot)
+    if problem is not None:
+        raise HTTPException(status_code=422, detail={"message": problem})
     # A press with rosters or a chart week that the fair warm-up has not seen wakes it, so the other pairs warm too.
     request.app.state.fair_warmer.check(snapshot)
     cache = served.cache
-    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor, pair.limit)
+    key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor, pair.limit, pair.trade_block)
     cached = cache.get(key)
     if cached is not None:
         return cached
     # The count comes after the cache, because a cached repeat runs no finder and makes no Claude call.
     _count_grade(request, served)
     # The search gets the anchor keyword only with an anchor, as it gets the stage, so a search with no anchor runs
-    # as it always has. The limit keyword goes the same way.
+    # as it always has. The limit keyword and the trade_block keyword go the same way.
     anchored = {} if pair.anchor is None else {"anchor": pair.anchor}
     if pair.limit is not None:
         anchored["limit"] = pair.limit
+    if pair.trade_block:
+        anchored["trade_block"] = pair.trade_block
     staged = {} if stage is None else {"stage": stage}
     # The search gets the read keyword only from a stream, as it gets the stage.
     reads = {} if read is None else {"read": read}

@@ -27,7 +27,7 @@ from fastapi.testclient import TestClient
 from analyzer.advisor import AdvisorOut, read_trade
 from analyzer.cache import ResultCache, cache_key, finder_cache_key
 from analyzer.finder_pick import LABELS, NO_OFFER, SAME_FACT, FinderPickOut, PickOut, pick_trades
-from analyzer.finder_search import search
+from analyzer.finder_search import chart_value, in_pool, search
 from analyzer.ratelimit import GradeLimiter, seconds_to_midnight
 from analyzer.trade import ProposedTrade
 from analyzer.trade_news import NewsFeed
@@ -2009,6 +2009,54 @@ def test_find_with_the_same_roster_twice_or_a_roster_not_in_the_league_is_422(se
     assert not (settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).exists()
 
 
+def test_a_find_with_a_trade_block_sends_a_block_player_in_each_offer_and_trade(settings, sources):
+    picker = StubPicker()
+    client = _find_client(settings, sources, picker)
+    # The week 9 chart gives the values of the Value screen, so the block player is a pool player with a value.
+    snapshot = _here(with_week_9_chart(sources), settings).snapshot(2026)
+    block = [max(pid for pid in snapshot.rosters[2]
+                 if in_pool(snapshot, pid, 2) and chart_value(snapshot, pid) is not None)]
+    response = client.post("/find", json={"season": 2026, "asker": 2, "trade_block": block}, headers=HEADERS)
+    assert response.status_code == 200
+    shortlist = picker.shortlists[-1]
+    assert shortlist.offers and all(block[0] in trade.sides[0].player_ids for trade in shortlist.offers)
+    # The offer id names the asker's side first, such as "2:7569+8148-3:10236", so each trade shows what 2 sends.
+    trades = response.json()["trades"]
+    assert trades and all(block[0] in item["offer_id"].split("-")[0].split(":")[1].split("+") for item in trades)
+
+
+def test_a_find_with_an_empty_trade_block_is_the_plain_find(settings, sources):
+    picker = StubPicker()
+    client = _find_client(settings, sources, picker)
+    first = client.post("/find", json={"season": 2026, "asker": 2, "trade_block": []}, headers=HEADERS).json()
+    # The empty block shares the key of the plain find, so the plain find is a cached repeat.
+    assert client.post("/find", json={"season": 2026, "asker": 2}, headers=HEADERS).json() == first
+    assert len(picker.calls) == 1
+
+
+def _other_roster_player(snapshot) -> str:
+    return next(pid for pid in snapshot.rosters[3] if snapshot.players[pid].position in ("RB", "WR"))
+
+
+@pytest.mark.parametrize("bad, message", [
+    ("four", "Your trade block holds at most 3 players."),
+    ("repeat", "Your trade block names one player twice."),
+    ("other", "Your trade block holds a player who is not on your roster."),
+])
+def test_find_with_a_bad_trade_block_is_422_with_a_plain_reason(settings, sources, bad, message):
+    snapshot = _here(sources, settings).snapshot(2026)
+    mine = sorted(pid for pid in snapshot.rosters[2] if snapshot.players[pid].position in ("RB", "WR"))
+    block = {"four": mine[:4], "repeat": [mine[0], mine[0]], "other": [mine[0], _other_roster_player(snapshot)]}[bad]
+    assert len(set(mine[:4])) == 4
+    response = _find_client(settings, sources).post(
+        "/find", json={"season": 2026, "asker": 2, "trade_block": block}, headers=HEADERS)
+    assert response.status_code == 422
+    assert response.json() == {"detail": {"message": message}}
+    # A bad block runs no search, so it costs no grade.
+    assert not (settings.result_cache_dir / "cpc" / GRADE_COUNTS_FILE).exists()
+    print(f"{bad}: {response.status_code} {message}")
+
+
 def test_the_sixth_find_in_a_minute_is_429_with_the_minute_text(settings, sources):
     from analyzer.tunables import GRADES_PER_MINUTE
 
@@ -2060,6 +2108,26 @@ def test_the_find_cache_key_is_the_ordered_pair_and_the_chart_week(settings, sou
     assert finder_cache_key(2026, 2, 3, _with_as_of(snapshot, chart_week=7)) != key
     # A finder key never equals the key of a trade in the shared result directory.
     assert key != cache_key(ProposedTrade.model_validate(TRADE), snapshot)
+
+
+def _block_pair(snapshot) -> tuple[str, str]:
+    """Two players of roster 2 with a chart value, so each can be on a Trade block of a find of roster 2."""
+    first, second = sorted(pid for pid in snapshot.rosters[2] if snapshot.players[pid].position in ("RB", "WR"))[:2]
+    return first, second
+
+
+def test_the_find_cache_key_holds_the_sorted_trade_block(settings, sources):
+    snapshot = _here(sources, settings).snapshot(2026)
+    first, second = _block_pair(snapshot)
+    plain = finder_cache_key(2026, 2, None, snapshot)
+    # An empty block and a missing block are the same search, so they share one key.
+    assert finder_cache_key(2026, 2, None, snapshot, trade_block=[]) == plain
+    # A search with a block never serves the plain list.
+    assert finder_cache_key(2026, 2, None, snapshot, trade_block=[first]) != plain
+    # The order of the taps is not part of the search, so two orders give one key.
+    assert finder_cache_key(2026, 2, None, snapshot, trade_block=[first, second]) == finder_cache_key(
+        2026, 2, None, snapshot, trade_block=[second, first])
+    print(f"plain {plain[:12]}, block {finder_cache_key(2026, 2, None, snapshot, trade_block=[first])[:12]}")
 
 
 def test_the_find_cache_key_changes_with_the_document_version(settings, sources, monkeypatch):

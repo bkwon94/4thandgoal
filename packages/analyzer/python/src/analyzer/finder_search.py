@@ -221,6 +221,12 @@ def _holds(trade: ProposedTrade, anchor: Anchor) -> bool:
     return anchor.player_id in trade.sides[0 if anchor.side == "gives" else 1].player_ids
 
 
+def _sends_block(trade: ProposedTrade, trade_block: list[str] | None) -> bool:
+    """True when the asker's side sends at least one player of the Trade block. An empty or missing block keeps every
+    trade."""
+    return not trade_block or any(pid in trade_block for pid in trade.sides[0].player_ids)
+
+
 def chart_value(snapshot: Snapshot, pid: str) -> float | None:
     """The week's trade chart value of the player, or None when the chart has no value for him or the week has no
     chart."""
@@ -257,12 +263,14 @@ def _value_pool(snapshot: Snapshot, roster_id: int, asker: int, limit: Limit | N
 
 
 def value_offers(asker: int, partner: int, snapshot: Snapshot, anchor: Anchor | None = None,
-                 limit: Limit | None = None) -> list[ProposedTrade]:
+                 limit: Limit | None = None, trade_block: list[str] | None = None) -> list[ProposedTrade]:
     """Every trade of the SHAPES between the asker and the partner that passes the Value screen, with the asker's side
     first, in the order of SHAPES.
 
     No cap follows the screen (decision 14). The hard rules hold too: an anchor sits on his side of each offer, each
     offer keeps the limit of the manager, and an offer that makes a player a handcuff on the roster that gets him drops.
+    With a `trade_block`, the asker's side of each offer sends at least one block player. A block player who fails the
+    pool rules is in no pool, so he enters no offer and raises no error.
     """
     values = {pid: chart_value(snapshot, pid) or 0.0 for rid in (asker, partner)
               for pid in _value_pool(snapshot, rid, asker, limit)}
@@ -277,7 +285,7 @@ def value_offers(asker: int, partner: int, snapshot: Snapshot, anchor: Anchor | 
                          TradeSide(roster_id=partner, gives=[GivenPlayer(player_id=pid, to=asker) for pid in gets]))
                 trade = ProposedTrade(season=snapshot.season, asker=asker, sides=sides)
                 if ((anchor is None or _holds(trade, anchor)) and _within(trade, snapshot, limit)
-                        and not trade_handcuffs(trade, snapshot)):
+                        and _sends_block(trade, trade_block) and not trade_handcuffs(trade, snapshot)):
                     offers.append(trade)
     return offers
 
@@ -665,13 +673,14 @@ def _no_read(roster_id: int) -> None:
 
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
            stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None,
-           read: Callable[[int], None] = _no_read, fair_cache: FairCache | None = None) -> Shortlist:
+           read: Callable[[int], None] = _no_read, fair_cache: FairCache | None = None,
+           trade_block: list[str] | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner reads: the Spares tree of `spares_tree.py` on both sides of each pair. It stops no partner and
        builds no offer, because the Value screen is the one source of offers (decision 15). A "yes" for a player that
        the asker gets becomes a pick sheet fact of each offer that brings him (decision 16). It runs once per pair, with
-       one picked partner and with an anchor too.
+       one picked partner and with an anchor or a Trade block too.
     2. The Value offers: `value_offers` builds every trade of the SHAPES with each partner that passes the Value screen
        and the hard rules (decision 14, ADR 0038). No cap follows the screen.
     3. Step 1, the fair check: Jev asks the fair Noul of each Value offer once in each side order, and code takes the
@@ -688,6 +697,9 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     his roster, because only that roster can give him.
     With a `limit`, no offer sends a player that the manager keeps, and each offer brings back the position that he
     aims at (a hard rule, because the manager set it).
+    With a `trade_block` of the asker's players, each offer sends at least one of them (a hard rule, because the
+    manager set it). An empty or missing block keeps every offer. A block player who fails the pool rules enters no
+    offer, and the search goes on for the other block players.
     `stage` gets a live line as each of four steps starts and a done line as it ends: the teams read, the Value offers,
     the fair check, and the shortlist. The lines of the Value offers and the fair check carry their counts. The lines name no inner tool, because the site shows them. The default drops
     them. `read` gets the roster id of each partner as the first step reads it, so the site can light each team in
@@ -697,11 +709,12 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     waves = waves or JevWaves(jev)
     # The press is live on the pacer for its whole search, so the warm-up of the fair cache waits (decision 19).
     with waves.pacer.press():
-        return _search(asker, partner, snapshot, waves, stage, anchor, limit, read, fair_cache)
+        return _search(asker, partner, snapshot, waves, stage, anchor, limit, read, fair_cache, trade_block)
 
 
 def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves, stage: Stage, anchor: Anchor | None,
-            limit: Limit | None, read: Callable[[int], None], fair_cache: FairCache | None) -> Shortlist:
+            limit: Limit | None, read: Callable[[int], None], fair_cache: FairCache | None,
+            trade_block: list[str] | None) -> Shortlist:
     """The body of `search`, while the press is live on the pacer."""
     if anchor is not None and anchor.side == "gets":
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
@@ -713,7 +726,7 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
     # The players of each partner with a Spares tree "yes", by player id, each with the weak slot of the asker that he
     # fills. They become pick sheet facts and never stop an offer (decision 16).
     spare_yes: dict[int, dict[str, str]] = {}
-    # The Spares tree runs once per pair, with one picked partner and with an anchor too. It builds no offer and stops
+    # The Spares tree runs once per pair, with one picked partner and with an anchor or a Trade block too. It builds no offer and stops
     # no partner, so its "yes" answers are only pick sheet facts (decision 15).
     spares = {rid: pair_spares(snapshot, asker, rid) for rid in partners}
     requests = {str(rid): pair_request(snapshot, asker, rid, spares[rid]) for rid in partners}
@@ -747,7 +760,7 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
     stage("Matching trade value", live=True)
 
     # The Value screen builds the offers of every partner. The Spares tree stops no partner (decision 15).
-    offers_by_partner = {rid: value_offers(asker, rid, snapshot, anchor, limit) for rid in partners}
+    offers_by_partner = {rid: value_offers(asker, rid, snapshot, anchor, limit, trade_block) for rid in partners}
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     _log_shapes(snapshot, asker, offers)
     stage(f"Matched {_trades(len(offers))} by trade value")
