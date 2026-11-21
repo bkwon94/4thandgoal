@@ -578,10 +578,10 @@ export function TradeFinder({
   const [find, setFind] = useState<FindState>({ status: "idle" });
   // The Trade block holds player ids of one asker. The page state alone keeps it, so a reload clears it. The block
   // keeps its asker, so a change of Your team reads as an empty block and the strip never sends another roster.
-  const [block, setBlock] = useState<{ asker: number | null; picks: string[] }>({ asker, picks: [] });
-  // A new asker resets the block in the same render, so a pick of the old team never comes back with that team.
-  if (block.asker !== asker) setBlock({ asker, picks: [] });
-  const picks = block.asker === asker ? block.picks : [];
+  const [block, setBlock] = useState<{ asker: number | null; blockIds: string[] }>({ asker, blockIds: [] });
+  // A new asker resets the block in the same render, so a block player of the old team never comes back with that team.
+  if (block.asker !== asker) setBlock({ asker, blockIds: [] });
+  const blockIds = block.asker === asker ? block.blockIds : [];
   // A late answer for an old partner must not overwrite the state of a new one.
   const request = useRequest();
 
@@ -608,9 +608,9 @@ export function TradeFinder({
   }
 
   // A new block makes the old cards stale too, so a change clears them, as a new partner or chip does.
-  function pickBlock(next: string[]) {
+  function changeBlock(next: string[]) {
     request.drop();
-    setBlock({ asker, picks: next });
+    setBlock({ asker, blockIds: next });
     setFind({ status: "idle" });
   }
 
@@ -665,7 +665,7 @@ export function TradeFinder({
       },
     };
     try {
-      const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim, picks), events, controller.signal);
+      const doc = await streamFind(target, passphrase, findBody(target.season, asker, partner, aim, blockIds), events, controller.signal);
       if (run.isCurrent()) setFind({ status: "done", doc });
     } catch (error) {
       // An abort from unmount must not set state on a gone component.
@@ -690,7 +690,7 @@ export function TradeFinder({
         disabled={off || teams.length === 0}
       />
       {asker !== null && (
-        <TradeBlock players={teams.find((team) => team.roster_id === asker)?.players ?? []} picks={picks} onPicks={pickBlock} disabled={off} />
+        <TradeBlock players={teams.find((team) => team.roster_id === asker)?.players ?? []} blockIds={blockIds} onBlockChange={changeBlock} disabled={off} />
       )}
       <TeamChoice label="Trade with" listName="Partners" teams={partners} value={partner} every="Every team" onChange={pickPartner} disabled={off || asker === null} />
       <PositionChips value={aim} onChange={pickAim} disabled={off} />

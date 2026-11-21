@@ -1,6 +1,6 @@
 /**
  * The Trade block strip of Find mode: one row of the asker's QB, RB, WR, and TE, where a tap puts a player on the
- * block or takes him off, up to 3. The picks lead the strip in the order of the taps. The finder holds the picks.
+ * block or takes him off, up to 3. The block players lead the strip in the order of the taps. The finder holds the block.
  */
 "use client";
 
@@ -48,15 +48,15 @@ function lastName(name: string): string {
 
 export function TradeBlock({
   players,
-  picks,
-  onPicks,
+  blockIds,
+  onBlockChange,
   disabled,
 }: {
   // The whole roster of the asker. The strip lists only its QB, RB, WR, and TE.
   players: TeamPlayer[];
   // The player ids on the block, in the order of the taps.
-  picks: string[];
-  onPicks: (picks: string[]) => void;
+  blockIds: string[];
+  onBlockChange: (blockIds: string[]) => void;
   disabled: boolean;
 }) {
   const off = useMotionOff();
@@ -65,15 +65,15 @@ export function TradeBlock({
   // It counts each refused tap, so each one replays the shake of the reason line. 0 means no refused tap.
   const [refused, setRefused] = useState(0);
   const roster = blockRoster(players);
-  const full = picks.length >= BLOCK_MAX;
-  const picked = picks.flatMap((id) => roster.filter((player) => player.player_id === id));
-  // The picks lead in the order of the taps, then the rest of the roster in its own order.
-  const order = [...picked, ...roster.filter((player) => !picks.includes(player.player_id))];
-  // A new pick sets it, so the commit of that pick scrolls the strip back to its start.
+  const full = blockIds.length >= BLOCK_MAX;
+  const onBlock = blockIds.flatMap((id) => roster.filter((player) => player.player_id === id));
+  // The block players lead in the order of the taps, then the rest of the roster in its own order.
+  const order = [...onBlock, ...roster.filter((player) => !blockIds.includes(player.player_id))];
+  // A new block player sets it, so the commit of that tap scrolls the strip back to its start.
   const pinned = useRef(false);
 
   // The strip scrolls back after Framer Motion has read the old place of each item and before it reads the new one.
-  // So each item glides from where the reader saw it, and the pick never jumps the other way under the thumb, as it
+  // So each item glides from where the reader saw it, and the player never jumps the other way under the thumb, as it
   // does when a smooth scroll runs under the spring. The scroll itself is instant: the spring of each item is the motion.
   useLayoutEffect(() => {
     if (!pinned.current || !viewport.current) return;
@@ -81,17 +81,17 @@ export function TradeBlock({
     viewport.current.style.scrollBehavior = "auto";
     viewport.current.scrollLeft = 0;
     viewport.current.style.scrollBehavior = "";
-  }, [picks]);
+  }, [blockIds]);
 
   function change(next: string[]) {
-    const added = next.find((id) => !picks.includes(id));
+    const added = next.find((id) => !blockIds.includes(id));
     if (added === undefined) {
       setRefused(0);
-      onPicks(picks.filter((id) => next.includes(id)));
+      onBlockChange(blockIds.filter((id) => next.includes(id)));
       return;
     }
     if (full) {
-      // A refused 4th tap shows the 3 picks it names, so the strip scrolls back to its start. Nothing moves in the
+      // A refused 4th tap shows the 3 players it names, so the strip scrolls back to its start. Nothing moves in the
       // strip, so the viewport scrolls smoothly unless motion is off, through its class.
       if (viewport.current) viewport.current.scrollLeft = 0;
       setRefused((count) => count + 1);
@@ -99,7 +99,7 @@ export function TradeBlock({
     }
     setRefused(0);
     pinned.current = true;
-    onPicks([...picks, added]);
+    onBlockChange([...blockIds, added]);
   }
 
   return (
@@ -114,7 +114,7 @@ export function TradeBlock({
             full ? "bg-chip-dark text-on-dark" : "text-on-dark-muted",
           )}
         >
-          {picks.length} of {BLOCK_MAX}
+          {blockIds.length} of {BLOCK_MAX}
         </span>
       </div>
       {/* The strip runs to the edges of the hero. The mask fades both ends, so a cut headshot says "scroll for more".
@@ -125,9 +125,9 @@ export function TradeBlock({
           className="overscroll-x-contain motion-safe:scroll-smooth [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-sp-4),black_calc(100%-var(--spacing-sp-6)*2),transparent)] [&::-webkit-scrollbar]:hidden"
         >
           <ScrollAreaContent className="w-max">
-            <ToggleGroup multiple aria-label="Trade block" value={picks} onValueChange={change} disabled={disabled} className="flex gap-sp-2 px-hero-x py-sp-1">
+            <ToggleGroup multiple aria-label="Trade block" value={blockIds} onValueChange={change} disabled={disabled} className="flex gap-sp-2 px-hero-x py-sp-1">
               {order.map((player) => {
-                const on = picks.includes(player.player_id);
+                const on = blockIds.includes(player.player_id);
                 return (
                   <motion.div key={player.player_id} layout={off ? false : "position"} transition={PIN_SPRING} className="flex-none">
                     <Toggle
@@ -185,7 +185,7 @@ export function TradeBlock({
             {BLOCK_FULL}
           </motion.p>
         )}
-        {picks.length === 0 && <p className="m-0 text-meta leading-tight text-pretty text-on-dark-2">{BLOCK_EMPTY}</p>}
+        {blockIds.length === 0 && <p className="m-0 text-meta leading-tight text-pretty text-on-dark-2">{BLOCK_EMPTY}</p>}
       </div>
     </div>
   );
