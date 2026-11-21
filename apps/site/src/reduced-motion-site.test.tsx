@@ -3,7 +3,6 @@
  * The pages come from the real Menu of the cpc build, and the fold opens with no height move and only a fade.
  */
 import { fireEvent, render, waitFor, within } from "@testing-library/react";
-import "@/fixtures/cpc-site";
 import { beforeEach, describe, expect, it } from "bun:test";
 import { stubGlobal } from "../test/stubs";
 import { readFixtureSite } from "@/fixtures/sites";

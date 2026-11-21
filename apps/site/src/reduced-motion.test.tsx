@@ -5,7 +5,6 @@
  * jsdom ignores opacity, so this test proves the text is present. The browser capture 12-week-off-390.png proves no motion.
  */
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import "@/fixtures/cpc-site";
 import { beforeEach, describe, expect, it, mock, onTestFinished } from "bun:test";
 import { stubGlobal } from "../test/stubs";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";

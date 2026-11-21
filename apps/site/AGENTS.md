@@ -39,9 +39,8 @@ Each site test runs on `bun test` with happy-dom (ADR 0038). No test runs on Vit
 4. Restore nothing by hand. The preload restores each spy and each stub after each test.
 5. Put each spy and each stub in `beforeEach`. The restore after the first test removes a spy or a stub at the top level of a file.
 6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env value when it loads, such as `src/lib/config.ts`. Then import the module again. The readers of `src/lib/data/` read `process.cwd` on each call, so a spy on it needs no reset.
-7. Use an import with a side effect that runs first, such as `@/fixtures/cpc-site`, for a setup that must run before the other imports. Bun has no `vi.hoisted`.
-8. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
-9. Run `pnpm test:bun` in full before the merge.
+7. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
+8. Run `pnpm test:bun` in full before the merge.
 
 The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. If a test needs a real jsdom feature, the ticket names it for Brian.
 
