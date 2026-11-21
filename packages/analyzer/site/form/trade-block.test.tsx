@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, findResponse, teamBoGirds } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
+import { lastName } from "./trade-block";
 import { TradeFinder } from "./trade-finder";
 
 /* Bo Girds is roster 6. Two more teams give the strip another roster for a team change and a partner to pick. */
@@ -95,7 +96,7 @@ describe("Trade block", () => {
     // Each item shows the headshot, the last name, and the position.
     const walker = toggle("Kenneth Walker III, RB");
     expect(walker.querySelector("img")?.getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/8151.jpg");
-    expect(walker.textContent).toBe("Walker IIIRB");
+    expect(walker.textContent).toBe("WalkerRB");
   });
 
   it("puts a tapped player on the block with a ring and a check at the front, and a second tap takes him off", () => {
@@ -225,5 +226,18 @@ describe("Trade block", () => {
     renderFinder(6);
     fireEvent.click(toggle("Kenneth Walker III, RB"));
     expect(document.body.textContent).not.toMatch(/anchor/i);
+  });
+});
+
+describe("lastName", () => {
+  it("drops a name suffix", () => {
+    expect(lastName("Kenneth Walker III")).toBe("Walker");
+    expect(lastName("Mike Washington Jr.")).toBe("Washington");
+    expect(lastName("Mike Washington Jr")).toBe("Washington");
+  });
+
+  it("keeps a name with no suffix", () => {
+    expect(lastName("Josh Allen")).toBe("Allen");
+    expect(lastName("Amon-Ra St. Brown")).toBe("St. Brown");
   });
 });

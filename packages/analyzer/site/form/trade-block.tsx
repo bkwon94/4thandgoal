@@ -40,10 +40,13 @@ export function blockRoster(players: TeamPlayer[]): TeamPlayer[] {
     .sort((a, b) => POSITIONS.indexOf(a.position) - POSITIONS.indexOf(b.position) || a.name.localeCompare(b.name));
 }
 
+/* A name suffix is no part of a last name, so "Kenneth Walker III" gives "Walker". */
+const SUFFIX = /\s+(?:Jr|Sr)\.?$|\s+(?:II|III|IV|V)\.?$/;
+
 /* The last name of a player, so a headshot of 64 px holds his name below it. */
-function lastName(name: string): string {
-  const parts = name.split(" ");
-  return parts.length > 1 ? parts.slice(1).join(" ") : name;
+export function lastName(name: string): string {
+  const parts = name.replace(SUFFIX, "").split(" ");
+  return parts.length > 1 ? parts.slice(1).join(" ") : parts[0];
 }
 
 export function TradeBlock({
