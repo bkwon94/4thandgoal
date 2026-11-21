@@ -1,5 +1,5 @@
 ACCEPTANCE.md: d06fbfc95198e8d3f1683ba959cb8ea47aba8041
-EVIDENCE.md: d788f8c5ec0c348e179831e6bae8b2c59a672388
+EVIDENCE.md: ce5cca8734113a30baf07e492ad8c0486aab9b87
 
 Test verdicts
 AT-1: PASS
@@ -14,7 +14,7 @@ AT-9: PASS
 AT-10: PASS
 AT-11: PASS
 AT-12: PASS
-AT-13: FAIL The Then line says the config names no source file of the site, but `evidence/AT-13/output.txt` shows the ignore pattern `apps/site/src/app/(client)/**` in the site source tree, and no file shows that this folder is build output, a test fixture, or a generated file.
+AT-13: BLOCKED The Then line says the config ignores only build output, test fixtures, and generated files, but the files give no proof for `apps/site/public/**`, and generated.txt filters `apps/site/public/` out of its `git ls-files` count, so tracked files there stay unchecked.
 AT-14: PASS
 AT-15: PASS
 AT-16: PASS
