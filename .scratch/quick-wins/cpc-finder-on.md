@@ -27,7 +27,7 @@ Green: at `3f4e0e33`, `cd apps/site && pnpm exec vitest run scripts/client-steps
  Test Files  1 passed (1)
       Tests  3 passed (3)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
