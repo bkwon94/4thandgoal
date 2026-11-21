@@ -42,7 +42,7 @@ export default defineConfig({
       grep: /@timing/,
       fullyParallel: false,
     },
-    // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
+    // The project "grade-bar" runs on the export of each client with the finder on, and checks the place of the grade bar.
     // It also checks the Ledger cards and the near fold of the Finder, and the Trade block strip, on the same export.
     { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "finder-ledger.spec.ts", "trade-block.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.

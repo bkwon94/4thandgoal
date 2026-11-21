@@ -56,7 +56,7 @@ def test_the_cpc_client_reads_the_values_of_the_spec():
     assert values.usage_code == "cpcfantasy"
     assert values.seasons[2026].provider == "sleeper"
     assert values.seasons[2026].league_id == "1386167364424318976"
-    assert values.package(AnalyzerValues).finder is False
+    assert values.package(AnalyzerValues).finder is True
     assert values.package(LeagueValues).chart == "1QB0.5PPR4pt"
     assert [item.package or item.page for item in values.menu.items] == [
         "home", "week", "rankings", "sim", "midseason", "managers", "analyzer"]
@@ -108,7 +108,7 @@ def test_a_lock_with_no_utc_offset_fails(tmp_path):
 
 def test_an_unknown_key_fails_with_the_key_and_the_file(tmp_path):
     # AT-20: a typo never passes as a default.
-    folder = _copy(tmp_path, "finder = false", "finder = false\nfinderr = true")
+    folder = _copy(tmp_path, "finder = true", "finder = true\nfinderr = true")
     with pytest.raises(ClientError) as err:
         read_client_values(folder, VALUE_MODELS)
     assert "- values.analyzer.finderr: is not a known key" in str(err.value)

@@ -12,7 +12,7 @@ import { serveDir } from "./serve";
 import { findOverlap } from "./smoke";
 
 const OUT = join(process.cwd(), "out");
-// Run it on the export of NorCal built against the local API URL, as the grade-bar project does:
+// Run it on the export of a client with the finder on, built against the local API URL, as the grade-bar project does:
 // CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The recorded find answer of a real press for Bo Girds with the RB chip on the local API, week 11 of cpc: 4 picks of
 // two shapes, and 3 near ideas.
@@ -254,9 +254,13 @@ for (const viewport of VIEWPORTS) {
         await expect(fold).toBeVisible();
         await expect(page.getByRole("region", { name: "The Read" })).toHaveCount(0);
         // The opened card is in view after the scroll, and the page holds the address of Find.
+        // A page with little content under the last card cannot scroll the card to the top edge. Then the page sits at its
+        // end, and the whole card shows under the top edge by the part that the end of the page cuts off.
         await expect.poll(async () => {
           const box = (await last.boundingBox())!;
-          return box.y >= 0 && box.y < viewport.use.viewport.height;
+          const height = viewport.use.viewport.height;
+          const atEnd = await page.evaluate(() => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 1);
+          return box.y < height && box.y + box.height > 0 && (box.y >= 0 || atEnd);
         }).toBe(true);
         expect(page.url()).toContain("mode=find");
         await page.screenshot({ path: info.outputPath(`back-to-cards-${theme}.png`) });
