@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-26 and AT-27.
 
 **Blocked by:** 03 and 13
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] Two full runs of `make check-fast` on the quiet laptop each take 97 s or less and exit 0.
 - [x] Two commits in two worktrees at the same time both pass the hook, with no 5 s timeout.
