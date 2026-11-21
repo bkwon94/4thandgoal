@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-19, AT-20, AT-2
 
 **Blocked by:** 09, 10, 11, and 12
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The site unit check runs `bun test` and exits 0.
 - [x] No `package.json` names `vitest`, and the Vitest config does not exist.
