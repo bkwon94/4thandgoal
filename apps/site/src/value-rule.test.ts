@@ -17,6 +17,8 @@ describe("the value rule", () => {
     expect(output).toContain("color.tsx:6:");
     // The message names the fix, so an agent needs no search.
     expect(output).toContain("Use a role token or a scale step");
+    // Oxlint prints the rule name, so the message does not start with it again.
+    expect(output).not.toContain("design/no-arbitrary-value: `");
   });
 
   it("fails an arbitrary spacing value in a cn(...) call, at the line of the class", () => {

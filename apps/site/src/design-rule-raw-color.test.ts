@@ -15,6 +15,8 @@ describe("the raw color rule", () => {
     expect(output).toContain("colored.tsx:7:");
     expect(output).toContain("colored.tsx:8:");
     expect(output.match(/design\(no-raw-color\)/g)).toHaveLength(3);
+    // The message names the file of the role tokens, so an agent needs no search.
+    expect(output).toContain("Use a role token of apps/site/src/app/globals.css");
   });
 
   it("passes a file with no color literal", () => {

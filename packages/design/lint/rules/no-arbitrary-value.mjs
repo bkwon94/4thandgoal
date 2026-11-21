@@ -101,7 +101,7 @@ export default {
     docs: { description: "Fail an arbitrary Tailwind value in the color and spacing groups." },
     messages: {
       arbitrary:
-        "design/no-arbitrary-value: `{{name}}` is an arbitrary value in the color and spacing groups. Use a role token or a scale step of apps/site/src/app/globals.css. For a true one-off, put `// oxlint-disable-next-line design/no-arbitrary-value -- <reason>` on the line above.",
+        "`{{name}}` is an arbitrary value in the color and spacing groups. Use a role token or a scale step of apps/site/src/app/globals.css. For a true one-off, put `// oxlint-disable-next-line design/no-arbitrary-value -- <reason>` on the line above.",
     },
   },
   create(context) {
