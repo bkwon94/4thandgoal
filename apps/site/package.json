@@ -29,7 +29,7 @@
     "check:open-card": "playwright test --project=open-card",
     "check": "pnpm check:fast && pnpm check:browser",
     "check:browser": "pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
-    "check:fast": "pnpm lint && pnpm fmt:check && CLIENT=cpc node scripts/client-build.mjs && pnpm typecheck && pnpm test:bun",
+    "check:fast": "CLIENT=cpc node scripts/client-build.mjs && python3 -B ../../scripts/parallel.py lint 'pnpm lint' fmt 'pnpm fmt:check' typecheck 'pnpm typecheck' test 'pnpm test:bun'",
     "hook:install": "prek install"
   },
   "dependencies": {

@@ -322,7 +322,9 @@ class TheSiteTestSelection(unittest.TestCase):
             make_env = {key: value for key, value in env.items() if key not in ("MAKEFLAGS", "MFLAGS", "MAKELEVEL")}
             plan = subprocess.check_output(["make", "-n", "check-fast", "STAGED=1"], cwd=root, env=make_env, text=True)
             line = next(line for line in plan.splitlines() if "check:fast" in line)
-            command = line[line.index("LINT_FILES="):]
+            # The site command is one quoted lane of scripts/parallel.py on the line.
+            lane = next(word for word in shlex.split(line) if "check:fast" in word)
+            command = lane[lane.index("LINT_FILES="):]
             probe = command.replace("pnpm --dir apps/site check:fast", "git diff --name-only HEAD")
             self.assertNotEqual(command, probe)
             hook_env = {**env, "GIT_DIR": str(root / ".git"), "GIT_INDEX_FILE": str(root / ".git/index")}

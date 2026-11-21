@@ -10,7 +10,10 @@ site-check = pnpm --dir apps/site check
 # A git hook sets GIT_DIR and GIT_INDEX_FILE and no GIT_WORK_TREE, so git takes the folder of the command as the top of the
 # work tree. A site test that runs git from apps/site, such as the tracker rule test, would read apps/site as the top. The
 # env -u calls make git find the work tree from the folder, as it does outside a hook.
-site-check-fast = LINT_FILES="$(LINT_FILES)" FMT_FILES="$(FMT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
+# The hook caps the worker processes of `bun test` at HOOK_TEST_WORKERS. Two commits at the same time then leave each site
+# test enough CPU for its 5 s timeout. A run with no STAGED uses one worker per CPU core.
+HOOK_TEST_WORKERS = 3
+site-check-fast = $(if $(filter 1,$(STAGED)),BUN_TEST_WORKERS=$(HOOK_TEST_WORKERS) )LINT_FILES="$(LINT_FILES)" FMT_FILES="$(FMT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
 pipeline-check-fast = make -C apps/pipeline check-fast
 pipeline-check-parallel = make -C apps/pipeline check-parallel
@@ -42,6 +45,13 @@ else
 CHANGED = $(if $(BASE),$(shell python3 -B scripts/changed_apps.py $(BASE)))
 endif
 APPS = $(if $(SELECTION),$(filter $(ALL_APPS),$(CHANGED)),$(ALL_APPS))
+PY_APPS = $(filter-out site,$(APPS))
+# The lanes of check-fast. Each lane is one shell command.
+scripts-lane = echo "==> scripts: check-fast"; $(scripts-check)
+site-lane = echo "==> site: check-fast"; $(site-check-fast)
+python-lane = set -e; $(foreach app,$(PY_APPS),echo "==> $(app): check-fast"; $($(app)-check-fast); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check-fast"; $(call package-check,$(pkg),check-fast))
+# Quote one command as one shell word: wrap it in single quotes, and write each single quote in it as '\''.
+quote = '$(subst ','\'',$(1))'
 # The hook lints only the staged site files, as paths from the repo root. LINT_FILES is empty without STAGED=1, and the
 # lint script of the site then lints all site code. The paths leave out packages/design/lint/fixtures/, which break the
 # rules on purpose for the rule test.
@@ -62,10 +72,12 @@ check: ## Run the full check of every app and package (BASE=<ref> runs only the 
 	$(if $(strip $(APPS) $(PACKAGES)),$(foreach app,$(APPS),echo "==> $(app): check"; $($(app)-check); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check"; $(call package-check,$(pkg),check)),echo "No app or package changed since $(BASE). Nothing to run.")
 
 # The hook calls this target with STAGED=1. Install the hook one time per clone with "prek install".
+# Three lanes run at the same time through scripts/parallel.py: the root scripts, the site, and the Python members. The
+# Python members stay in one lane, one after another, because two "uv run --exact --package" runs in one checkout break
+# each other. Each lane prints its output as one block when it ends. The lanes sit on one line, so "make -n" shows the
+# whole plan and runs nothing.
 check-fast: ## Run fast checks (BASE=<ref> selects changes since the merge base, STAGED=1 selects the commit index)
-	@set -e; \
-	echo "==> scripts: check-fast"; $(scripts-check); \
-	$(if $(strip $(APPS) $(PACKAGES)),$(foreach app,$(APPS),echo "==> $(app): check-fast"; $($(app)-check-fast); )$(foreach pkg,$(PACKAGES),echo "==> packages/$(pkg): check-fast"; $(call package-check,$(pkg),check-fast)),echo "$(if $(filter 1,$(STAGED)),No app or package has staged changes.,No app or package changed since $(BASE).) Nothing to run.")
+	@$(if $(strip $(APPS) $(PACKAGES)),,echo "$(if $(filter 1,$(STAGED)),No app or package has staged changes.,No app or package changed since $(BASE).) Nothing to run."; )python3 -B scripts/parallel.py scripts $(call quote,$(scripts-lane))$(if $(filter site,$(APPS)), site $(call quote,$(site-lane)))$(if $(strip $(PY_APPS) $(PACKAGES)), python $(call quote,$(python-lane)))
 
 # One target per member, for the CI job of that member. Each one runs the full check of its member and ignores BASE,
 # because CI always runs every member. "make check" runs the same commands in sequence.
