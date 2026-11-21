@@ -8,7 +8,7 @@ Spec: `.scratch/trade-block/PRD.md`. Acceptance tests AT-24, AT-25, AT-26, and A
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A pick moves to the front with a spring of 0.4 s and no bounce, and at once with reduced motion on.
 - [x] Each item reads as a toggle with the player name, the position, and the pressed state.
