@@ -17,24 +17,18 @@ import {
   spyOn,
 } from "bun:test";
 import { stubPhone } from "../../test/phone";
-import {
-  type FixtureClient,
-  fixturePublished,
-  readFixtureSite,
-  restoreFixtureSite,
-} from "@/fixtures/sites";
+import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the folder, and restoreFixtureSite puts the real one back after each test. */
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 
 /* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
 beforeEach(stubPhone);
-afterEach(restoreFixtureSite);
 /* Each action of the front door needs the league passphrase, so each test keeps one, as a manager does after the first
    action. */
 beforeEach(() => localStorage.setItem("cpc.passphrase", "cornerstone-test"));

@@ -3,6 +3,7 @@
  * A test reads this copy in place of public/ or clients/<slug>/published/, so a weekly publish never changes what a test sees.
  */
 import { join } from "node:path";
+import { spyOn } from "bun:test";
 
 /* The clients that the copy holds. */
 export type FixtureClient = "cpc" | "norcal";
@@ -20,17 +21,8 @@ export function fixturePublished(slug: FixtureClient, ...path: string[]): string
   return join(SITES, slug, "public", ...path);
 }
 
-/* The real working folder function, kept from the first load of this module. */
-const realCwd = process.cwd;
-
 /* Points the working folder at the fixed site folder of one client, so each reader of public/ reads the fixed copy.
-   It sets `process.cwd` itself and no spy, because the preload restores each spy after each test, and `@/fixtures/cpc-site`
-   sets it once for a whole file. A test file that calls it in `beforeEach` calls `restoreFixtureSite` after each test. */
+   It is a spy, so the preload puts the real working folder back after each test. A test file calls it in `beforeEach`. */
 export function readFixtureSite(slug: FixtureClient = "cpc"): void {
-  process.cwd = () => fixtureSite(slug);
-}
-
-/* Puts the real working folder function back. */
-export function restoreFixtureSite(): void {
-  process.cwd = realCwd;
+  spyOn(process, "cwd").mockReturnValue(fixtureSite(slug));
 }

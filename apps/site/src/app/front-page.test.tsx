@@ -8,12 +8,7 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import {
-  type FixtureClient,
-  fixturePublished,
-  readFixtureSite,
-  restoreFixtureSite,
-} from "@/fixtures/sites";
+import { type FixtureClient, fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
 import { week8 } from "@cpc/week/fixtures/week-page";
@@ -21,9 +16,8 @@ import { season } from "@/lib/config";
 import HomePage from "./front-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the folder, and restoreFixtureSite puts the real one back after each test. */
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 /* The temp public/ folders that homeOver made, so each test removes its own folder. */
 const roots: string[] = [];

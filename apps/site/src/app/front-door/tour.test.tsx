@@ -6,7 +6,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testi
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { stubPhone } from "../../../test/phone";
 import { stubGlobal } from "../../../test/stubs";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import { StopCard, StopCardContent, StopCardTitle } from "@cpc/design/ui/stop-card";
 import HomePage from "./door-page";
 import { STOPS, dismissStep } from "./tour";
@@ -18,7 +18,6 @@ beforeEach(() => readFixtureSite("cpc"));
 
 /* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
 beforeEach(stubPhone);
-afterEach(restoreFixtureSite);
 
 const BO_GIRDS = "6";
 

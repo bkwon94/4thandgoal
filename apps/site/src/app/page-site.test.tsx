@@ -5,14 +5,13 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, to week 8, so a weekly publish never changes these tests. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const fetchStub = mock();

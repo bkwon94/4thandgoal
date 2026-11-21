@@ -8,16 +8,15 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { stubGlobal } from "../../../../test/stubs";
-import { fixturePublished, readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 import { YOUR_TEAM_KEY } from "@cpc/analyzer/lib/your-team";
 import WeekPage from "./page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the folder, and restoreFixtureSite puts the real one back after each test. */
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 /* The hero and the eight chapters in the order of the spec (decision 05): the id each one sets and the words of its heading.
    The hero holds the level 1 heading of the page, and each chapter opens with a level 2 heading. */

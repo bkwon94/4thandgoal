@@ -7,13 +7,12 @@ import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the folder, and restoreFixtureSite puts the real one back after each test. */
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const BO_GIRDS = 6;

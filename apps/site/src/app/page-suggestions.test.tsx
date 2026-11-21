@@ -16,15 +16,14 @@ import {
   setSystemTime,
 } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
 import { TOPICS, dayOrder } from "./front-door/topics";
 import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the folder, and restoreFixtureSite puts the real one back after each test. */
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 /* The tests of a stale Answer wait up to 8 s for a stream on a loaded CPU, so each test of the file gets 15 s. */
 setDefaultTimeout(15_000);

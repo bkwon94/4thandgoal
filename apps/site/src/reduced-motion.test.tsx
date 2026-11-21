@@ -6,7 +6,7 @@
  */
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@/fixtures/cpc-site";
-import { afterEach, beforeEach, describe, expect, it, mock, onTestFinished } from "bun:test";
+import { beforeEach, describe, expect, it, mock, onTestFinished } from "bun:test";
 import { stubGlobal } from "../test/stubs";
 import { apiTarget, analyzeResponse as fixtureJson } from "@cpc/analyzer/lib/fixtures/api";
 import HomePage from "@/app/front-door/door-page";
@@ -29,14 +29,13 @@ import { WarChest } from "@cpc/waiver/war-chest";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import { week6, week8 } from "@cpc/week/fixtures/week-page";
 import { AllMatchups } from "@cpc/week/chapters/all-matchups";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 // The jsdom stand-ins that the Drawer of the team sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The readers
-   read the working folder on each call. Each test sets the folder, because the file puts the real folder back after each test. */
+   read the working folder on each call. Each test sets the folder, because the preload puts the real folder back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 /* The stub of matchMedia lasts for one test, so each test sets it before Framer Motion reads it. */
 beforeEach(() =>

@@ -4,16 +4,15 @@
  */
 import { fireEvent, render, waitFor, within } from "@testing-library/react";
 import "@/fixtures/cpc-site";
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { stubGlobal } from "../test/stubs";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import { SiteAnswer } from "@/app/front-door/site-answer";
 import { clientSitePages } from "@/app/site-pages";
 // The jsdom stand-ins that a ui-sdk part needs, such as the running animations of the fold.
 import "@cpc/design/ui/sheet-jsdom";
 
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 /* matchMedia is a stub that matches the reduced-motion query. Framer Motion reads it when the first part mounts. */
 beforeEach(() =>
