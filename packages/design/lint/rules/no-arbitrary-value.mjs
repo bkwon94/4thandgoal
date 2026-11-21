@@ -1,5 +1,5 @@
 /**
- * The value rule: it fails an arbitrary Tailwind value in the color and spacing groups, such as `bg-[color-mix(...)]`.
+ * The value rule: it fails an arbitrary color or spacing value, such as `bg-[...]`, in a className, a cn(...), or a template.
  * Variants, layout values, and motion values stay allowed (decision 03 of design-checks-speed, ADR 0038).
  */
 
@@ -70,6 +70,30 @@ function utilityOf(className) {
   return className.slice(start);
 }
 
+/* A test may set an arbitrary value to check a part, so a test file is exempt, as in the element rule. */
+function isTestFile(filename) {
+  return /\.(test|spec)\.[cm]?[jt]sx?$/.test(filename.replaceAll("\\", "/"));
+}
+
+/* A string holds classes when it sits in a `className` prop, such as `contentClassName`, or in a `cn(...)` call, at any
+   depth, so a ternary or a `&&` inside them counts. Any other plain string is not a class string, so it passes. */
+function inClassPlace(node) {
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent.type === "JSXAttribute") {
+      const name = parent.name.type === "JSXIdentifier" ? parent.name.name : "";
+      return name === "className" || name.endsWith("ClassName");
+    }
+    if (
+      parent.type === "CallExpression" &&
+      parent.callee.type === "Identifier" &&
+      parent.callee.name === "cn"
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /* Each class of a string, with its offset in the string. */
 function* classesOf(text) {
   for (const match of text.matchAll(/\S+/g)) yield { name: match[0], offset: match.index };
@@ -81,10 +105,11 @@ export default {
     docs: { description: "Fail an arbitrary Tailwind value in the color and spacing groups." },
     messages: {
       arbitrary:
-        "design/no-arbitrary-value: `{{name}}` is an arbitrary value in the color and spacing groups. Use a role token or a scale step of apps/site/src/app/globals.css. For a true one-off, put `// oxlint-disable-next-line design/no-arbitrary-value -- <reason>` on the line above.",
+        "`{{name}}` is an arbitrary value in the color and spacing groups. Use a role token or a scale step of apps/site/src/app/globals.css. For a true one-off, put `// oxlint-disable-next-line design/no-arbitrary-value -- <reason>` on the line above.",
     },
   },
   create(context) {
+    if (isTestFile(context.filename)) return {};
     const sourceCode = context.sourceCode;
 
     /* The raw text starts at the node, so an offset in the raw text gives the line of the class itself. A string with an
@@ -98,14 +123,17 @@ export default {
           continue;
         }
         const base = node.range[0] + index + offset;
-        const loc = { start: sourceCode.getLocFromIndex(base), end: sourceCode.getLocFromIndex(base + name.length) };
+        const loc = {
+          start: sourceCode.getLocFromIndex(base),
+          end: sourceCode.getLocFromIndex(base + name.length),
+        };
         context.report({ node, loc, messageId: "arbitrary", data: { name } });
       }
     }
 
     return {
       Literal(node) {
-        if (typeof node.value === "string") check(node, node.value);
+        if (typeof node.value === "string" && inClassPlace(node)) check(node, node.value);
       },
       TemplateElement(node) {
         check(node, node.value.raw);

@@ -2,22 +2,12 @@
  * Runs the real Oxlint config of the repo root on the fixtures of the value rule, one fixture per case.
  * Each case checks the exit code of the lint and the rule name and the line in its output (ADR 0038).
  */
-import { spawnSync } from "node:child_process";
-import { join } from "node:path";
 import { describe, expect, it } from "bun:test";
+import { lintFixture } from "./design-rule-lint";
 
-/* pnpm runs the site tests from apps/site, and Oxlint takes no path with "..", so the lint runs from the repo root. */
-const ROOT_DIR = join(process.cwd(), "..", "..");
-const OXLINT = join(process.cwd(), "node_modules", ".bin", "oxlint");
 const RULE = "design(no-arbitrary-value)";
 
-function lint(fixture: string): { status: number | null; output: string } {
-  const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/no-arbitrary-value/${fixture}`], {
-    cwd: ROOT_DIR,
-    encoding: "utf8",
-  });
-  return { status: run.status, output: run.stdout + run.stderr };
-}
+const lint = (fixture: string) => lintFixture(`no-arbitrary-value/${fixture}`);
 
 describe("the value rule", () => {
   it("fails an arbitrary color value in a className, at the line of the class", () => {
@@ -27,6 +17,8 @@ describe("the value rule", () => {
     expect(output).toContain("color.tsx:6:");
     // The message names the fix, so an agent needs no search.
     expect(output).toContain("Use a role token or a scale step");
+    // Oxlint prints the rule name, so the message does not start with it again.
+    expect(output).not.toContain("design/no-arbitrary-value: `");
   });
 
   it("fails an arbitrary spacing value in a cn(...) call, at the line of the class", () => {
@@ -41,6 +33,18 @@ describe("the value rule", () => {
     expect(status).not.toBe(0);
     expect(output).toContain(RULE);
     expect(output).toContain("template.tsx:7:");
+  });
+
+  it("passes an arbitrary color value in a test file", () => {
+    const { status, output } = lint("color.test.tsx");
+    expect(output).not.toContain(RULE);
+    expect(status).toBe(0);
+  });
+
+  it("passes an arbitrary value in a plain string outside a class string", () => {
+    const { status, output } = lint("plain-string.tsx");
+    expect(output).not.toContain(RULE);
+    expect(status).toBe(0);
   });
 
   it("passes a variant, a layout value, and a motion value", () => {

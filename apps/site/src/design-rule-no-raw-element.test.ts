@@ -2,21 +2,10 @@
  * Runs the real Oxlint config of the repo root on the fixtures of the element rule design(no-raw-element).
  * Each case checks the exit code of the lint and the rule name, the line, and the wrapper in its output (ADR 0035, ADR 0038).
  */
-import { spawnSync } from "node:child_process";
-import { join } from "node:path";
 import { describe, expect, it } from "bun:test";
+import { lintFixture } from "./design-rule-lint";
 
-/* pnpm runs the site tests from apps/site, and Oxlint takes no path with "..", so the lint runs from the repo root. */
-const ROOT_DIR = join(process.cwd(), "..", "..");
-const OXLINT = join(process.cwd(), "node_modules", ".bin", "oxlint");
-
-function lint(fixture: string): { status: number | null; output: string } {
-  const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/no-raw-element/${fixture}`], {
-    cwd: ROOT_DIR,
-    encoding: "utf8",
-  });
-  return { status: run.status, output: run.stdout + run.stderr };
-}
+const lint = (fixture: string) => lintFixture(`no-raw-element/${fixture}`);
 
 describe("the element rule", () => {
   it("fails a raw button outside the ui folder, at its line, and names the wrapper", () => {
@@ -24,8 +13,12 @@ describe("the element rule", () => {
     expect(status).not.toBe(0);
     expect(output).toContain("design(no-raw-element)");
     expect(output).toContain("raw-button.tsx:6:");
-    expect(output).toContain("PendingButton");
-    expect(output).toContain("packages/design/site/ui/pending-button.tsx");
+    // The rule cannot tell a sync action from an async one, so the message names both wrappers.
+    expect(output).toContain("`Button` from packages/design/site/ui/button.tsx");
+    expect(output).toContain('`variant="plain"` keeps your own classes');
+    expect(output).toContain(
+      "`PendingButton` from packages/design/site/ui/pending-button.tsx for an async action",
+    );
   });
 
   it("fails a raw dialog outside the ui folder, at its line, and names the wrapper", () => {
