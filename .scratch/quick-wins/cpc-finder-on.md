@@ -31,9 +31,10 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: pending
+Smoke: flow `Analyzer` on cpc. "Smoke run: 1 flow, 1 passed, 0 failed". Shots in `.scratch/quick-wins/cpc-finder-on/smoke/`.
 
 ## Comments
 
 Grade-bar run on cpc at `d0d53fac`: `cd apps/site && CLIENT=cpc NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build && CLIENT=cpc pnpm check:export && CLIENT=cpc pnpm check:grade-bar-export`. Result: check:export passed; 38 passed, 4 skipped.
 The first run failed 2 tests: the back check of `finder-ledger.spec.ts` on the iPhone, light and dark. The cpc page has little content under the last card, so the page ends with the card top 20 px above the screen. NorCal has more content under it. The spec held a NorCal-only assumption (`box.y >= 0`). The check now also accepts a page at its end. NorCal still passes: 38 passed, 4 skipped.
+The first two smoke runs were red. Run 1 had no API keys in the shell, so the grade failed with status 500. Run 2 had the keys, but the fair warm-up of cpc started with 0 cached answers and held the grade past 120 s. One warm-up run filled `data/cache/fair/cpc.json` for $1.27, and run 3 passed.
