@@ -97,8 +97,8 @@ Observation: Both searches of `apps/site/src` and `packages/*/site`, outside `/u
 
 App: site
 Then: the config ignores only build output, test fixtures, and generated files, and names no source file of the site. Each ignore comment has a reason on the same line.
-Files: `evidence/AT-13/output.txt`
-Observation: The `ignorePatterns` of `.oxlintrc.json` hold `**/.next/**`, `**/out/**`, `apps/site/public/**`, `apps/site/test-results/**`, `apps/site/src/generated/**`, `apps/site/src/app/(client)/**`, and `apps/site/next-env.d.ts`. The search finds 24 `oxlint-disable-next-line design/no-arbitrary-value` comments, and 0 of them have no ` -- <reason>` on the same line.
+Files: `evidence/AT-13/output.txt`, `evidence/AT-13/generated.txt`
+Observation: The `ignorePatterns` of `.oxlintrc.json` hold `**/.next/**`, `**/out/**`, `apps/site/public/**`, `apps/site/test-results/**`, `apps/site/src/generated/**`, `apps/site/src/app/(client)/**`, and `apps/site/next-env.d.ts`. The search finds 24 `oxlint-disable-next-line design/no-arbitrary-value` comments, and 0 of them have no ` -- <reason>` on the same line. `generated.txt` shows where each pattern comes from: `apps/site/src/app/(client)/` and `apps/site/src/generated/` are folders that `apps/site/scripts/client-build.mjs` empties and writes on each build (lines 139 to 141 and 486 to 495), the root `.gitignore` lists both under "The client build of the site writes these", and git tracks 0 files in either; `apps/site/test-results/` is git-ignored; `apps/site/next-env.d.ts` is the file that Next.js writes, with the line "This file should not be edited".
 
 ## AT-14: The hook blocks a commit with a raw button
 
