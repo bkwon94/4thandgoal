@@ -8,9 +8,16 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-26, AT-28, AT-31, AT-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] The switch is the wrapper of the ui-sdk SegmentedControl, and its two halves differ in width by 1 px or less.
 - [x] A link with the Find mode opens the analyzer in Find mode, and a link with the Grade mode opens Grade mode.
 - [x] The chip "RB" sends `aim_position` "RB", the same value as the typed question "trade ideas for an RB".
 - [x] The eyebrow reads the countdown during Deadline week and the passed line after the Lock.
+
+## Comments
+
+The merge: `a21b7239` merged `deadline-week-05` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/05-the-analyzer-switch-and-find-mode.md.
+Closes with the squash merge of the spec PR.

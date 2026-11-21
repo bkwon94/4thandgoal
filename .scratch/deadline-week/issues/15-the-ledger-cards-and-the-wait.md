@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-36, AT-38, AT-65, AT-
 
 **Blocked by:** 14
 
-**Status:** in-review
+**Status:** done
 
 - [ ] A real press for Bo Girds on the local API shows Ledger cards of three different shapes, at 375, 768, and 1280 px, in both themes.
 - [x] A card with totals of 68.0 and 62.5 shows "You get 9% more trade value".
@@ -19,3 +19,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-36, AT-38, AT-65, AT-
 ## Comments
 
 - 2026-11-20: Brian changed AT-65 to three different shapes, because the gain check drops every 1-for-1, 2-for-1, and 3-for-1 offer of Bo Girds. The evidence stage proves box 1.
+
+The merge: `deadline-week-15` merged into `deadline-week` as a fast-forward before `5c36b807` on 2026-11-20; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/15-the-ledger-cards-and-the-wait.md.
+Closes with the squash merge of the spec PR.

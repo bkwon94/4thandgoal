@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 19. Acceptance tests AT-55 to AT
 
 **Blocked by:** 13
 
-**Status:** in-review
+**Status:** done
 
 - [x] A real test shows that the mean of the two side orders does not move when the labels `asker` and `partner` swap, or the fair state names no asker.
 - [x] A test shows that a press of team A and a press of team B read the same cached answers for the offers between them.
@@ -19,3 +19,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Decision 19. Acceptance tests AT-55 to AT
 ## Comments
 
 - Brian chose CPC only on 2026-11-20, because a warm-up of CPC costs about $1.46 per deploy and Norcal adds $1.72.
+
+The merge: `deadline-week-16` merged into `deadline-week` as a fast-forward before `ca56f5e3` on 2026-11-20; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/16-the-fair-answers-warm-before-a-press.md.
+Closes with the squash merge of the spec PR.

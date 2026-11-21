@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-43, AT-45, AT-46, AT-
 
 **Blocked by:** 12
 
-**Status:** in-review
+**Status:** done
 
 - [x] A real press for Bo Girds sends at most three offers per partner and shape direction to step 2, no more than 231, each among the three highest fair means of its group.
 - [x] Tests with fixed answers show that a gain of 0.2 drops an offer, 0.5 keeps it, a failed call raises an error, and need answers of 0.1 on both sides drop nothing.
@@ -19,3 +19,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-43, AT-45, AT-46, AT-
 ## Comments
 
 - 2026-11-20: Brian chose the top 3 offers of each partner and shape direction for step 2, because the gain check left the Shortlist thin.
+
+The merge: `deadline-week-13` merged into `deadline-week` as a fast-forward before `268e92a8` on 2026-11-20; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/13-step-two-and-the-spread.md.
+Closes with the squash merge of the spec PR.

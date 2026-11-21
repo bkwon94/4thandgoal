@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-46, AT-47, AT-51, and
 
 **Blocked by:** 08
 
-**Status:** in-review
+**Status:** done
 
 - [ ] A real press for Bo Girds and every team shows neither of the two bad trades on the Shortlist or among the 3 trades.
 - [ ] The list of about 30 lines goes to Brian, and his marks are saved as Backtest marks.
@@ -23,3 +23,8 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-46, AT-47, AT-51, and
 - So "Zay Flowers for Jared Goff" now raises the lineup of Bo Girds from 114.8 to 119.4 points a week. Jev gives its gain 0.97, and the offer stays on the Shortlist.
 - "Kenneth Walker III for Patrick Mahomes" drops: the lineup goes from 114.8 to 110.2, and Jev gives its gain 0.04.
 - Backtest mark 2 is wrong for this reason. Brian decides: keep mark 2 as a "drop", change it to "keep", or remove it. A code change that drops it would cut a trade that the lineup points call a gain.
+
+The merge: `77425cee` merged `deadline-week-09` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/09-the-gain-check-and-the-backtest.md.
+Closes with the squash merge of the spec PR.

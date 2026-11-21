@@ -8,9 +8,16 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-13, AT-14, AT-15, AT-
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A route test with a recorded Sleeper answer shows trade W of week 9 with both teams, the players, the positions, and $5 of FAAB to roster 8.
 - [x] A route test shows only `complete` trades of the leg, newest first.
 - [x] Two calls within 5 s make one Sleeper read, and a call after 5 s makes a second.
 - [x] A call with no passphrase answers 401, and 40 calls from one IP in 60 s all answer 200.
+
+## Comments
+
+The merge: `322975e8` merged `deadline-week-02` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/02-the-trade-wire-route.md.
+Closes with the squash merge of the spec PR.

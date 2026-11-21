@@ -8,9 +8,16 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-12, AT-32, AT-36, AT-
 
 **Blocked by:** 05, 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] The wait shows one real step at a time in `StageLines`, and each line holds until the next step ends.
 - [x] A tap on a card makes no analyze request, and the analyzer shows the read of the card.
 - [x] The switch stays on Find during a wait.
 - [ ] The text of each page, in each state of Deadline week, has none of the banned words of AT-12.
+
+## Comments
+
+The merge: `d008b926` merged `deadline-week-07` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/07-the-finder-wait-and-the-trade-cards.md.
+Closes with the squash merge of the spec PR.

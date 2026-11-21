@@ -8,9 +8,16 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-42, AT-43, AT-44, and
 
 **Blocked by:** 06
 
-**Status:** in-review
+**Status:** done
 
 - [x] A test on fixed rosters lists no starter whose only backup is Out, and lists each listed player with a backup who can play now.
 - [x] A test with fixed Jev answers of 0.2, 0.5, and a failed call shows a stop, a pass, and an error.
 - [x] A real press for Bo Girds with Teehee (roster 12) logs no Partner filter step and holds 2 or more offers.
 - [x] The Shortlist of a real press repeats no player of the asker and no partner before each one with an offer shows once.
+
+## Comments
+
+The merge: `cb9145af` merged `deadline-week-08` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/08-the-spares-tree-on-both-sides.md.
+Closes with the squash merge of the spec PR.

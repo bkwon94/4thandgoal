@@ -8,7 +8,7 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] One pure function of the time and the Lock gives the state (open, last hours, closed, ended) and the countdown text, with tests at the edges: 3 h before, the Lock, and one day after.
 - [x] The Deadline banner shows on each CPC page in both themes, with equal top and bottom padding and one left edge for both lines.
@@ -16,3 +16,10 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 - [x] Norcal shows no Deadline banner.
 - [x] The WebKit check passes at 390 by 660, 810 by 980, 1080 by 740, and 1280 by 800, with no horizontal scroll and no overlap.
 - [x] The front door Tour still shows in full, with no overlap by the Deadline banner, on the first visit.
+
+## Comments
+
+The merge: `840f6546` merged `deadline-week-01` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/01-the-lock-and-the-deadline-banner.md.
+Closes with the squash merge of the spec PR.

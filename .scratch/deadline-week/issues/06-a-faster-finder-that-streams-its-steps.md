@@ -8,8 +8,15 @@ Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-41.
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [ ] Three real presses for Bo Girds (roster 6) and every team on the week 11 snapshot each end in 30 s or less, with one pick call and no id retry in the log.
 - [x] A route test shows the step lines in order and the Lean and the Case sent with each trade.
 - [x] Only Send it, Lean yes, and Gut call come back as trades.
+
+## Comments
+
+The merge: `1bf1616b` merged `deadline-week-06` into `deadline-week` on 2026-11-19; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/06-a-faster-finder-that-streams-its-steps.md.
+Closes with the squash merge of the spec PR.
