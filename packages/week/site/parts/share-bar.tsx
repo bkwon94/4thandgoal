@@ -1,6 +1,8 @@
 /**
  * The share bar of a game: the share of the points of the lead side, as a pill bar with a meter role.
  * The hero tone sits in the hero, and the page tone sits on a card. The fill grows once through the shared bar fill.
+ * Use it when: a game needs the split of its points between the two sides.
+ * Do not use it when: the bar shows one value at its percent. Use `BarFill`.
  */
 import { cn } from "@cpc/design/lib/utils";
 import { BarFill } from "@cpc/design/parts/bar-fill";

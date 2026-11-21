@@ -1,6 +1,8 @@
 /**
  * A chapter of the week page in the look: a region named by its level 2 heading, with an optional mono note beside it.
  * The chapter rises in once as it enters the view, so the long scroll feels alive without a wait.
+ * Use it when: one topic of a page in the look needs a chapter with a heading that the chapter rail links to.
+ * Do not use it when: the section needs the brand black or no heading. Use `Chapter`.
  */
 import type { ReactNode } from "react";
 import { DURATION, RISE_EASE } from "@cpc/design/lib/motion";
