@@ -722,7 +722,7 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
             limit: Limit | None, read: Callable[[int], None], fair_cache: FairCache | None,
             trade_block: list[str] | None) -> Shortlist:
     """The body of `search`, while the press is live on the pacer."""
-    if anchor is not None and anchor.side == "gets":
+    if anchor is not None:
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
         partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)

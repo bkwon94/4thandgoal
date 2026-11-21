@@ -864,6 +864,15 @@ def test_the_pick_names_the_trade_block_and_its_prompt_holds_the_block_rule(snap
     print(f"The rule of the prompt: {rule}")
 
 
+def test_the_block_line_of_the_pick_joins_three_names_with_commas_and_a_last_and(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair), trade_block=[COLLINS, WILLIAMS, WARREN])
+    _, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
+    a, b, c = (snap.players[pid].name for pid in (COLLINS, WILLIAMS, WARREN))
+    block_line = f"The Trade block: {a}, {b}, and {c}."
+    assert block_line in user.splitlines()
+    print(f"The block line of the user message: {block_line}")
+
+
 def test_the_pick_of_a_search_with_no_block_names_no_trade_block(snap):
     found = search(ASKER, PARTNER, snap, FakeJev())
     _, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
