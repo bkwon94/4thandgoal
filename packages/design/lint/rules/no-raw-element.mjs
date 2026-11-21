@@ -3,9 +3,11 @@
  * The ui folder holds the wrappers, so each button and dialog keeps the look, the focus ring, and the focus trap of its wrapper.
  */
 
-/* Each raw element maps to the wrapper of the ui folder that replaces it. */
+/* Each raw element maps to the wrapper of the ui folder that replaces it. The rule cannot tell a sync action from an
+   async one, so the button text names both wrappers. */
 const WRAPPERS = {
-  button: "PendingButton from packages/design/site/ui/pending-button.tsx",
+  button:
+    '`Button` from packages/design/site/ui/button.tsx (`variant="plain"` keeps your own classes), or `PendingButton` from packages/design/site/ui/pending-button.tsx for an async action',
   dialog: "Dialog from packages/design/site/ui/dialog.tsx",
 };
 
