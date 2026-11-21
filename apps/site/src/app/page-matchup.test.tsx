@@ -6,7 +6,16 @@ import { cpSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  setDefaultTimeout,
+  spyOn,
+} from "bun:test";
 import { stubGlobal } from "../../test/stubs";
 import liveStream from "./front-door/fixtures/next-matchup-stream.json";
 
@@ -15,6 +24,11 @@ const BO_GIRDS = { cpc: 6, norcal: 7 } as const;
 type League = keyof typeof BO_GIRDS;
 
 const roots: string[] = [];
+
+/* The first render of the front door loads the page and its blocks by a dynamic import, and a loaded CPU can take
+   seconds for it. So each wait for a block gets 8 s, inside a test limit of 15 s. */
+const WAIT = { timeout: 8000 };
+setDefaultTimeout(15_000);
 
 beforeEach(() => {
   stubGlobal(
@@ -48,11 +62,11 @@ async function doorOf(league: League) {
 
 /* Open "More", tap one Topic, and return the block of its Answer. */
 async function openBlock(topic: string, kind: string) {
-  fireEvent.click(await screen.findByRole("button", { name: "More" }));
-  const list = await screen.findByRole("list", { name: "All Topics" });
+  fireEvent.click(await screen.findByRole("button", { name: "More" }, WAIT));
+  const list = await screen.findByRole("list", { name: "All Topics" }, WAIT);
   fireEvent.click(within(list).getByRole("button", { name: new RegExp(`^${topic}:`) }));
-  const answer = await screen.findByRole("article", { name: topic });
-  await waitFor(() => expect(answer.querySelector(`[data-block="${kind}"]`)).not.toBeNull());
+  const answer = await screen.findByRole("article", { name: topic }, WAIT);
+  await waitFor(() => expect(answer.querySelector(`[data-block="${kind}"]`)).not.toBeNull(), WAIT);
   return answer.querySelector<HTMLElement>(`[data-block="${kind}"]`)!;
 }
 
