@@ -1,5 +1,5 @@
 ACCEPTANCE.md: d06fbfc95198e8d3f1683ba959cb8ea47aba8041
-EVIDENCE.md: ce5cca8734113a30baf07e492ad8c0486aab9b87
+EVIDENCE.md: e23dc099a99d0035f5380e229f232a0db66aa0f6
 
 Test verdicts
 AT-1: PASS
@@ -14,7 +14,7 @@ AT-9: PASS
 AT-10: PASS
 AT-11: PASS
 AT-12: PASS
-AT-13: BLOCKED The Then line says the config ignores only build output, test fixtures, and generated files, but the files give no proof for `apps/site/public/**`, and generated.txt filters `apps/site/public/` out of its `git ls-files` count, so tracked files there stay unchecked.
+AT-13: PASS
 AT-14: PASS
 AT-15: PASS
 AT-16: PASS
