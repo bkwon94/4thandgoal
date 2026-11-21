@@ -72,7 +72,7 @@ include = ["src/cornerstone_api/app.py", "src/cornerstone_api/refresh.py", "src/
            "src/cornerstone_api/answer_store.py", "src/cornerstone_api/chat_turns.py",
            "src/cornerstone_api/waiver_targets.py", "src/cornerstone_api/sources.py",
            "src/cornerstone_api/game_lock.py", "src/cornerstone_api/week_lineup.py", "src/cornerstone_api/start_sit.py",
-           "src/cornerstone_api/what_if.py"]
+           "src/cornerstone_api/what_if.py", "src/cornerstone_api/fair_warm.py"]
 
 [tool.uv.build-backend]
 module-name = "cornerstone_api"

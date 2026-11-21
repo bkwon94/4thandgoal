@@ -73,11 +73,20 @@ export function useAnswerStream<V extends FreeView>({
   const { messages, sendMessage, status, error } = useChat({ transport });
   const sent = useRef(false);
   const ended = useRef(false);
+  // True once the send of this mount ends. A send that ends with no assistant message ends the card in an error.
+  const [sendEnded, setSendEnded] = useState(false);
   useEffect(() => {
-    // The strict mode of React mounts twice in development, and one question or tap makes one request.
+    // The strict mode of React mounts twice in development, and one question or tap makes one live request.
     if (sent.current) return;
     sent.current = true;
-    void sendMessage({ text });
+    let live = true;
+    void sendMessage({ text }).then(() => live && setSendEnded(true));
+    return () => {
+      // The unmount of the strict mode stops the chat of useChat, and that stop drops a send that has not reached
+      // fetch yet. So the next mount sends again, or the card waits forever with no request.
+      live = false;
+      sent.current = false;
+    };
   }, [sendMessage, text]);
   const message = messages.findLast((candidate) => candidate.role === "assistant");
   const raw = read(message);
@@ -108,8 +117,12 @@ export function useAnswerStream<V extends FreeView>({
       // The stream runs, or a held state or the fades of "Checked" still show.
     } else if (sent.current && settle(view)) {
       ended.current = true;
-    } else if (messages.length > 1 && raw.check !== "checked") {
-      // A stream that ends with no check is an error, never a pass.
+    } else if (
+      (messages.length > 1 && raw.check !== "checked") ||
+      (sendEnded && message === undefined)
+    ) {
+      // A stream that ends with no check is an error, never a pass. A send that ends with no assistant message, such
+      // as an empty stream, is an error too, so the card never waits forever.
       ended.current = true;
       onError();
     }

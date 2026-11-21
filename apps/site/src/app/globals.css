@@ -454,11 +454,12 @@
       --text-headline: 46px;
     }
   }
-  /* The top band is sticky over the top of the viewport: one 44px row and 8px above and below at every tier.
-     The padding keeps a focused element or an anchor target clear of it. */
+  /* The top band is sticky over the top of the viewport: one 44px row and 8px above and below at every tier, and the
+     Deadline banner during Deadline week. The padding keeps a focused element or an anchor target clear of it. It reads
+     the band height token less its 1px rule, so it grows with the banner. */
   html {
     @apply font-sans;
-    scroll-padding-top: calc(var(--spacing-touch) + 2 * var(--spacing-sp-2));
+    scroll-padding-top: calc(var(--spacing-band-height) - 1px);
   }
   /* The viewport covers the whole screen (viewport-fit=cover), so a phone on its side puts its notch over the page.
      The body keeps the side safe areas free, and each is 0 on a screen with no notch. */
@@ -1845,5 +1846,62 @@ html:not([data-hydrated]) [data-draw] {
 @media (prefers-reduced-motion: reduce) {
   .stream-word {
     animation-name: stream-word-fade;
+  }
+}
+
+/* The Deadline banner sits in the top band during Deadline week, so the band grows by its height. Each page that sizes
+   itself under the band, such as the front door, reads the band height token. The banner measures itself into
+   --deadline-banner-h. */
+:root:has([data-deadline-banner]) {
+  --spacing-band-height: calc(
+    var(--spacing-touch) + 2 * var(--spacing-sp-2) + 1px + var(--deadline-banner-h, 0px)
+  );
+}
+/* The shimmer of the last hours, as recipe 15 of transitions.dev: one band of full color sweeps the muted label each 2 s.
+   The colors come from the text color, so the label keeps the theme tokens. */
+.deadline-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklab, currentColor 70%, transparent) 0%,
+    color-mix(in oklab, currentColor 70%, transparent) 40%,
+    currentColor 50%,
+    color-mix(in oklab, currentColor 70%, transparent) 60%,
+    color-mix(in oklab, currentColor 70%, transparent) 100%
+  );
+  background-size: 400% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: t-think-shimmer 2000ms linear infinite;
+}
+/* The live dot: a soft ring grows and fades from the dot. */
+.deadline-live::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: inherit;
+  animation: deadline-ping 1400ms var(--ease-out) infinite;
+}
+@keyframes deadline-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+/* Under reduced motion the banner stays still: no shimmer, no ring, and the label keeps its plain color. */
+@media (prefers-reduced-motion: reduce) {
+  .deadline-shimmer {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+  .deadline-live::after {
+    animation: none;
+    opacity: 0;
   }
 }

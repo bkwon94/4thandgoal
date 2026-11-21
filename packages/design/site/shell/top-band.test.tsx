@@ -87,6 +87,23 @@ describe("TopBand", () => {
     expect(within(home).queryByRole("presentation", { hidden: true })).toBeNull();
   });
 
+  it("holds the strip of the app under the row of the band, inside the banner, so it stays on screen too", () => {
+    render(
+      <TopBand
+        title={TITLE}
+        brand={BRAND}
+        menu={MENU}
+        pageHref="/"
+        strip={<button type="button">Open the Trade Wire</button>}
+      />,
+    );
+    const band = screen.getByRole("banner");
+    const strip = within(band).getByRole("button", { name: "Open the Trade Wire" });
+    const theme = within(band).getByRole("button", { name: /Switch to (light|dark) theme/ });
+    expect(theme.compareDocumentPosition(strip) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(strip.parentElement).toBe(band);
+  });
+
   it("holds the theme button in the banner", () => {
     renderBand("/");
     expect(

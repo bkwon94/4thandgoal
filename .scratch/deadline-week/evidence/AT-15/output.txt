@@ -1,0 +1,13 @@
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:8391/clients/cpc/deadline/trades   # at 0.44 s, 16:18:01, status 200
+# log lines after this call (the Jev and warm-up lines of the worker are cut):
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795209480545620000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51301 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:8391/clients/cpc/deadline/trades   # at 2.22 s, 16:18:02, status 200
+# log lines after this call (the Jev and warm-up lines of the worker are cut):
+INFO:     127.0.0.1:51330 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:8391/clients/cpc/deadline/trades   # at 6.32 s, 16:18:07, status 200
+# log lines after this call (the Jev and warm-up lines of the worker are cut):
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11?t=1795209486384562000 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:51390 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK

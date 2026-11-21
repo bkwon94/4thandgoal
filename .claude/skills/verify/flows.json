@@ -3,11 +3,12 @@
     "name": "Front door",
     "globs": ["apps/site/src/app/page.tsx", "apps/site/src/app/front-page.tsx", "apps/site/src/app/home-*.tsx", "apps/site/src/app/front-door/**", "apps/site/src/app/_routes/ask/**", "apps/api/**"],
     "route": "/",
-    "expected": "The team pick, then the h1 \"Ask about <team>\" and the topic chips. The question \"who has the best roster\" gets one free answer of Claude, marked Checked.",
+    "expected": "The team pick, then the first-visit Tour at Stop 1, which the reader skips, then the h1 \"Ask about <team>\" and the topic chips. The question \"who has the best roster\" gets one free answer of Claude, marked Checked.",
     "claude": true,
     "layout": true,
     "steps": [
       { "click": "role=dialog[name=\"Which team is yours?\"] >> role=button" },
+      { "click": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]" },
       { "expect": "h1 >> text=/^Ask about /" },
       { "expect": "role=group[name=\"Suggestions\"]" },
       { "click": "role=button[name=\"who has the best roster\"]" },
@@ -21,11 +22,12 @@
     "name": "Passphrase",
     "globs": ["apps/site/src/app/front-door/passphrase-sheet.tsx", "apps/site/src/app/front-door/keyboard-tap.ts", "apps/site/src/app/front-door/ask-box.tsx"],
     "route": "/",
-    "expected": "A question with no kept passphrase opens the sheet, and the field \"League passphrase\" has the focus, above the keyboard.",
+    "expected": "After the team pick and a Skip of the first-visit Tour, a question with no kept passphrase opens the sheet, and the field \"League passphrase\" has the focus, above the keyboard.",
     "claude": false,
     "layout": false,
     "steps": [
       { "click": "role=dialog[name=\"Which team is yours?\"] >> role=button" },
+      { "click": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]" },
       { "click": "role=button[name=\"who has the best roster\"]" },
       { "expect": "role=dialog[name=\"What is the league passphrase?\"]" },
       { "expect": "input[aria-label=\"League passphrase\"]:focus" }

@@ -10,6 +10,7 @@ from league.league_settings import DEFAULT_POINTS_KEY
 from league.models import (
     DraftPick,
     Drop,
+    FaabTransfer,
     Matchup,
     Move,
     PastWeek,
@@ -218,15 +219,24 @@ def parse_drops(transactions: list[RawTransaction]) -> list[Drop]:
     ]
 
 
+def _accepted(transaction: RawTransaction) -> datetime | None:
+    """The aware time that Sleeper accepted a complete trade, from `status_updated`, the milliseconds of its last
+    status change. The field stays an extra of `RawTransaction`, because the feed and the waiver rules read it there."""
+    epoch_ms = (transaction.model_extra or {}).get("status_updated")
+    return None if epoch_ms is None else datetime.fromtimestamp(epoch_ms / 1000, tz=UTC)
+
+
 def parse_trades(transactions: list[RawTransaction]) -> list[Trade]:
     return [
         Trade(
             transaction_id=t.transaction_id,
             created=datetime.fromtimestamp(t.created / 1000, tz=UTC),
+            accepted=_accepted(t),
             roster_ids=t.roster_ids,
             adds=t.adds or {},
             drops=t.drops or {},
             draft_picks=[DraftPick(**pick) for pick in t.draft_picks or []],
+            faab=[FaabTransfer(**transfer) for transfer in t.waiver_budget or []],
         )
         for t in transactions
         if t.type == "trade" and t.status == "complete"

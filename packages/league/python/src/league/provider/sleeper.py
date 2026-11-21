@@ -5,7 +5,7 @@ It writes one raw JSON file per endpoint and reads them back.
 import json
 import logging
 import time
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -280,6 +280,29 @@ def fetch_live_raw(
         data = _league_raw(client, league, season, week, players_cache,
                            {"state": state, "rosters": rosters, "stats": stats})
     return RawWeek.model_validate(data), fetched
+
+
+def week_of(moment: datetime, season_start: date) -> int:
+    """The NFL week of `moment`. Week 1 starts on `season_start`, the Thursday of the first game, and each week runs
+    from a Thursday to the next Wednesday. The date of `moment` is the date in its own UTC offset."""
+    return (moment.date() - season_start).days // 7 + 1
+
+
+def fetch_current_transactions(
+        league_id: str, transport: httpx.BaseTransport | None = None, *, until: datetime | None = None,
+) -> tuple[int, list[RawTransaction]]:
+    """The leg that Sleeper is in, and the transactions of that leg read now. With `until`, the leg is at most the week
+    of `until`, so a list of the week of the Lock stays on that week after Sleeper moves to the next leg.
+
+    The read has a query string, so the Sleeper CDN cache, which keeps a plain read up to 5 minutes, does not serve it.
+    """
+    with httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport) as client:
+        state = _get(client, f"{OFFICIAL_URL}/state/nfl")
+        leg = int(state["leg"])
+        if until is not None:
+            leg = min(leg, week_of(until, date.fromisoformat(state["season_start_date"])))
+        answer = _get(client, f"{OFFICIAL_URL}/league/{league_id}/transactions/{leg}", {"t": time.time_ns()})
+    return leg, [RawTransaction.model_validate(each) for each in answer]
 
 
 def fetch_past_week(

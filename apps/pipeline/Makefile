@@ -14,7 +14,7 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings help install test test-parallel test-serial golden lint typecheck rules check check-parallel check-serial check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
+.PHONY: need-week need-client need-main settings spares-list backtest help install test test-parallel test-serial golden lint typecheck rules check check-parallel check-serial check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
@@ -107,6 +107,15 @@ midseason-publish: need-client need-week ## Check the midseason draft, then comm
 
 settings: need-client ## Print the League settings and the derived sizes of a season (CLIENT required)
 	$(RUN) cornerstone settings --client $(CLIENT) --season $(SEASON)
+
+# The two commands of the Finder backtest call the live Jev on the live week, so make check-fast never runs them.
+# TYPESAFE_API_KEY must be set. The marks file holds Brian's Backtest marks (decision 05).
+MARKS ?= ../../.scratch/deadline-week/backtest-marks.json
+spares-list: need-client ## Print about 30 Spares tree stops and passes of the live week for Brian to mark (CLIENT required)
+	$(RUN) cornerstone spares-list --client $(CLIENT) --season $(SEASON)
+
+backtest: need-client ## Check each Backtest mark against the tree with the live Jev (CLIENT required, MARKS optional)
+	$(RUN) cornerstone backtest --client $(CLIENT) --season $(SEASON) --marks $(MARKS)
 
 # The commissioner key of the client comes from the env CORNERSTONE_COMMISSIONER_KEY_<SLUG>, such as ..._CPC. The API
 # base URL is CORNERSTONE_API_URL. It defaults to the live API, the same default as egg-drop (eggs.keys.API_URL).

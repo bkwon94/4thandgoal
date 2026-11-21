@@ -17,6 +17,8 @@ _pipeline = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_pipeline)
 
 chart_week6 = _pipeline.chart_week6
+chart_week9 = _pipeline.chart_week9
+pacer_clock = _pipeline.pacer_clock
 fixture_history_root = _pipeline.fixture_history_root
 fixture_nflverse_dir = _pipeline.fixture_nflverse_dir
 fixture_raw_dir = _pipeline.fixture_raw_dir

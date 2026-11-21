@@ -1,0 +1,3 @@
+# Control: the same API counts the teams route; 35 quick calls show where the limit of 30 starts.
+$ for i in $(seq 1 35); do curl -s -o /dev/null -w '%{http_code} ' -H 'X-League-Passphrase: localtest' http://127.0.0.1:8394/clients/cpc/teams; done
+422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 422 429 429 429 429 429 

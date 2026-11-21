@@ -1,0 +1,23 @@
+"""AT-43: read each Shortlist of AT-41 in its order and mark what each offer brings: a new player of Bo Girds, a new partner, or neither."""
+import re, sys
+press = None; rows = {}
+for line in open(sys.argv[1]):
+    m = re.match(r"===== press (\d+)", line)
+    if m: press = int(m.group(1)); rows[press] = []; continue
+    m = re.match(r"shortlist: (.*?)  \[6:([\d+]+)-(\d+):([\d+]+)\] score=([\d.]+)", line)
+    if m: rows[press].append((m.group(1), m.group(2), int(m.group(3)), float(m.group(5))))
+for p, offers in rows.items():
+    print(f"===== press {p}: {len(offers)} offers, in Shortlist order (the order of varied(), as the log prints it)")
+    seen_pl, seen_pa = set(), set(); last_new = -1; first_neither = None
+    best_pl = {}; best_pa = {}
+    for (_, pl, pa, sc) in offers:
+        best_pl[pl] = max(best_pl.get(pl, 0), sc); best_pa[pa] = max(best_pa.get(pa, 0), sc)
+    for i, (text, pl, pa, sc) in enumerate(offers, 1):
+        tags = []
+        if pl not in seen_pl: tags.append("first offer of this player" + (" (his best score)" if sc == best_pl[pl] else f" (his best score is {best_pl[pl]})"))
+        if pa not in seen_pa: tags.append("first offer of this partner" + (" (its best score)" if sc == best_pa[pa] else f" (its best score is {best_pa[pa]})"))
+        if tags: last_new = i
+        elif first_neither is None: first_neither = i
+        seen_pl.add(pl); seen_pa.add(pa)
+        print(f"{i:2d}. score {sc:.3f}  {text}  -> {'; '.join(tags) if tags else 'a further form: player and partner already shown'}")
+    print(f"   last offer that brings a new player or partner: #{last_new}; first further form: #{first_neither}")

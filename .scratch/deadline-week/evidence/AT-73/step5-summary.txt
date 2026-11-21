@@ -1,0 +1,110 @@
+# Derived by step5_summary.py.txt from AT-73/measure.jsonl. Times are seconds from the tap.
+
+== 375 light, tap at 2026-11-21T00:04:12.681Z
+step 5 started: stream event 'Picking the best 5' at 5.24 s; its line '5 of 5 · Picking the best 5' shows at 7.07 s
+pick ended (first card in the DOM): 36.02 s; pick from the step 5 stream event: 30.78 s; from the step 5 line: 28.95 s
+Shortlist of the press: 10 trades, sent at 5.14 s
+    7.07 s  held 1.5 s  5 of 5 · Picking the best 5  [step line]
+    8.57 s  held 3 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   11.57 s  held 3 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   14.57 s  held 3 s  Weighing Washington for McConkey, Fannin, Mahomes  [Shortlist trade 3]
+   17.57 s  held 3 s  Weighing Corum for Shough, Waddle  [Shortlist trade 4]
+   20.57 s  held 3 s  Weighing Golden for Pickens, Dell, Stroud  [Shortlist trade 5]
+   23.57 s  held 3.01 s  Weighing Williams for Williams, Diggs  [Shortlist trade 6]
+   26.58 s  held 3 s  Weighing Williams for Odunze, Love  [Shortlist trade 7]
+   29.58 s  held 3 s  Weighing Washington for Odunze, Shough, Hockenson  [Shortlist trade 8]
+   32.58 s  held 3 s  Weighing Williams, Flowers for Hockenson, Love, Warren  [Shortlist trade 9]
+   35.58 s  held 0.44 s  Weighing Flowers for Douglas, Dell, Stroud  [Shortlist trade 10]
+   36.02 s  held None s  5 of 5 · Picking the best 5  [step line]
+trade lines before the first card: 10
+
+== 375 dark, tap at 2026-11-21T00:04:59.957Z
+step 5 started: stream event 'Picking the best 5' at 5.32 s; its line '5 of 5 · Picking the best 5' shows at 7.07 s
+pick ended (first card in the DOM): 36.13 s; pick from the step 5 stream event: 30.81 s; from the step 5 line: 29.06 s
+Shortlist of the press: 10 trades, sent at 5.22 s
+    7.07 s  held 1.51 s  5 of 5 · Picking the best 5  [step line]
+    8.58 s  held 3 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   11.58 s  held 3 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   14.58 s  held 3 s  Weighing Washington for McConkey, Fannin, Mahomes  [Shortlist trade 3]
+   17.58 s  held 3 s  Weighing Corum for Shough, Waddle  [Shortlist trade 4]
+   20.58 s  held 3.01 s  Weighing Golden for Pickens, Dell, Stroud  [Shortlist trade 5]
+   23.59 s  held 3 s  Weighing Williams for Williams, Diggs  [Shortlist trade 6]
+   26.59 s  held 3 s  Weighing Williams for Odunze, Love  [Shortlist trade 7]
+   29.59 s  held 3.01 s  Weighing Washington for Odunze, Shough, Hockenson  [Shortlist trade 8]
+    32.6 s  held 3 s  Weighing Williams, Flowers for Hockenson, Love, Warren  [Shortlist trade 9]
+    35.6 s  held 0.53 s  Weighing Flowers for Douglas, Dell, Stroud  [Shortlist trade 10]
+   36.13 s  held None s  5 of 5 · Picking the best 5  [step line]
+trade lines before the first card: 10
+
+== 768 light, tap at 2026-11-21T00:05:45.835Z
+step 5 started: stream event 'Picking the best 5' at 5.7 s; its line '5 of 5 · Picking the best 5' shows at 7.28 s
+pick ended (first card in the DOM): 31.94 s; pick from the step 5 stream event: 26.24 s; from the step 5 line: 24.66 s
+Shortlist of the press: 10 trades, sent at 5.55 s
+    7.28 s  held 1.5 s  5 of 5 · Picking the best 5  [step line]
+    8.78 s  held 3.01 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   11.79 s  held 3 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   14.79 s  held 3 s  Weighing Washington for McConkey, Fannin, Mahomes  [Shortlist trade 3]
+   17.79 s  held 3 s  Weighing Corum for Shough, Waddle  [Shortlist trade 4]
+   20.79 s  held 3 s  Weighing Golden for Pickens, Dell, Stroud  [Shortlist trade 5]
+   23.79 s  held 3.01 s  Weighing Williams for Williams, Diggs  [Shortlist trade 6]
+    26.8 s  held 3 s  Weighing Williams for Odunze, Love  [Shortlist trade 7]
+    29.8 s  held 2.14 s  Weighing Washington for Odunze, Shough, Hockenson  [Shortlist trade 8]
+   31.94 s  held None s  5 of 5 · Picking the best 5  [step line]
+trade lines before the first card: 8
+
+== 768 dark, tap at 2026-11-21T00:06:28.190Z
+step 5 started: stream event 'Picking the best 5' at 5.33 s; its line '5 of 5 · Picking the best 5' shows at 7.13 s
+pick ended (first card in the DOM): 34.21 s; pick from the step 5 stream event: 28.88 s; from the step 5 line: 27.08 s
+Shortlist of the press: 10 trades, sent at 5.22 s
+    7.13 s  held 1.5 s  5 of 5 · Picking the best 5  [step line]
+    8.63 s  held 3.01 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   11.64 s  held 3 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   14.64 s  held 3 s  Weighing Washington for McConkey, Fannin, Mahomes  [Shortlist trade 3]
+   17.64 s  held 3 s  Weighing Corum for Shough, Waddle  [Shortlist trade 4]
+   20.64 s  held 3.01 s  Weighing Golden for Pickens, Dell, Stroud  [Shortlist trade 5]
+   23.65 s  held 3 s  Weighing Williams for Williams, Diggs  [Shortlist trade 6]
+   26.65 s  held 3 s  Weighing Williams for Odunze, Love  [Shortlist trade 7]
+   29.65 s  held 3 s  Weighing Washington for Odunze, Shough, Hockenson  [Shortlist trade 8]
+   32.65 s  held 1.56 s  Weighing Williams, Flowers for Hockenson, Love, Warren  [Shortlist trade 9]
+   34.21 s  held None s  5 of 5 · Picking the best 5  [step line]
+trade lines before the first card: 9
+
+== 1280 light, tap at 2026-11-21T00:07:11.823Z
+step 5 started: stream event 'Picking the best 5' at 5.82 s; its line '5 of 5 · Picking the best 5' shows at 7.34 s
+pick ended (first card in the DOM): 43.27 s; pick from the step 5 stream event: 37.45 s; from the step 5 line: 35.93 s
+Shortlist of the press: 10 trades, sent at 5.67 s
+    7.34 s  held 1.5 s  5 of 5 · Picking the best 5  [step line]
+    8.84 s  held 3 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   11.84 s  held 3.01 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   14.85 s  held 3 s  Weighing Washington for McConkey, Fannin, Mahomes  [Shortlist trade 3]
+   17.85 s  held 3 s  Weighing Corum for Shough, Waddle  [Shortlist trade 4]
+   20.85 s  held 3 s  Weighing Golden for Pickens, Dell, Stroud  [Shortlist trade 5]
+   23.85 s  held 3.01 s  Weighing Williams for Williams, Diggs  [Shortlist trade 6]
+   26.86 s  held 3 s  Weighing Williams for Odunze, Love  [Shortlist trade 7]
+   29.86 s  held 3 s  Weighing Washington for Odunze, Shough, Hockenson  [Shortlist trade 8]
+   32.86 s  held 3 s  Weighing Williams, Flowers for Hockenson, Love, Warren  [Shortlist trade 9]
+   35.86 s  held 3 s  Weighing Flowers for Douglas, Dell, Stroud  [Shortlist trade 10]
+   38.86 s  held 3 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   41.86 s  held 1.41 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   43.27 s  held None s  5 of 5 · Picking the best 5  [step line]
+trade lines before the first card: 12
+
+== 1280 dark, tap at 2026-11-21T00:08:04.794Z
+step 5 started: stream event 'Picking the best 5' at 5.5 s; its line '5 of 5 · Picking the best 5' shows at 7.24 s
+pick ended (first card in the DOM): 42.53 s; pick from the step 5 stream event: 37.03 s; from the step 5 line: 35.29 s
+Shortlist of the press: 10 trades, sent at 5.31 s
+    7.24 s  held 1.5 s  5 of 5 · Picking the best 5  [step line]
+    8.74 s  held 3.01 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   11.75 s  held 3 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   14.75 s  held 3 s  Weighing Washington for McConkey, Fannin, Mahomes  [Shortlist trade 3]
+   17.75 s  held 3.01 s  Weighing Corum for Shough, Waddle  [Shortlist trade 4]
+   20.76 s  held 3 s  Weighing Golden for Pickens, Dell, Stroud  [Shortlist trade 5]
+   23.76 s  held 3 s  Weighing Williams for Williams, Diggs  [Shortlist trade 6]
+   26.76 s  held 3 s  Weighing Williams for Odunze, Love  [Shortlist trade 7]
+   29.76 s  held 3 s  Weighing Washington for Odunze, Shough, Hockenson  [Shortlist trade 8]
+   32.76 s  held 3 s  Weighing Williams, Flowers for Hockenson, Love, Warren  [Shortlist trade 9]
+   35.76 s  held 3.01 s  Weighing Flowers for Douglas, Dell, Stroud  [Shortlist trade 10]
+   38.77 s  held 3 s  Weighing Corum, Flowers for Flournoy, Goff, Hall  [Shortlist trade 1]
+   41.77 s  held 0.76 s  Weighing Corum for McConkey, Mahomes  [Shortlist trade 2]
+   42.53 s  held None s  5 of 5 · Picking the best 5  [step line]
+trade lines before the first card: 12

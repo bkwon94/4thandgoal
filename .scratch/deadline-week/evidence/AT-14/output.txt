@@ -1,0 +1,5 @@
+$ curl -s -H 'X-League-Passphrase: localtest' http://127.0.0.1:8391/clients/cpc/deadline/trades   # 2026-11-20 16:17:43, the evidence API of this round (real app, detached worktree of 98d79f98)
+{
+    "leg": 11,
+    "trades": []
+}

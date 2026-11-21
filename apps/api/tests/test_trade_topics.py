@@ -2,14 +2,21 @@
 Tests for the trade Topics of the front door, the trade check and trade ideas, at the route seam with FakeJev.
 The Advisor runs for real with the stub Claude calls of test_api, so the sheet, the guards, and the stages run.
 """
+import contextlib
 import dataclasses
 import functools
 import json
+import logging
+import re
 import shutil
+import socket
+import threading
+import time
 from pathlib import Path
 
 import pytest
 import test_api
+import uvicorn
 from fakes import NEWS_RECORDED, FakeJev, recorded_news
 from fastapi.testclient import TestClient
 from test_api import CLIENT, HEADERS, StubAdvisor, StubPicker, StubRepair, _cpc, _here
@@ -45,7 +52,13 @@ from league.provider.sleeper import load_raw
 # The fixtures of the analyzer tests: the repo with the week 6 history, its settings, and the recorded sources.
 repo = test_api.repo
 settings = test_api.settings
-sources = test_api.sources
+
+
+@pytest.fixture
+def sources(fixture_raw_dir, chart_week9):
+    """The recorded sources with the week 9 chart. The week 6 chart holds only 25 values, too few for the Value screen
+    of the Finder to build offers for each team."""
+    return test_api.recorded_sources(fixture_raw_dir, chart_week9)
 
 CHECK = "/clients/cpc/trade-check"
 IDEAS = "/clients/cpc/trade-ideas"
@@ -327,16 +340,16 @@ def test_trade_ideas_run_in_a_client_with_the_finder_off_and_give_the_find_docum
     assert answer["kind"] == "ideas"
     document = answer["document"]
     assert document["trade_pair"]["asker"]["roster_id"] == LIL_FRIDGE
-    assert 1 <= len(document["trades"]) <= 3
+    assert 1 <= len(document["trades"]) <= 5
     assert all(trade["sides"][0]["roster_id"] == LIL_FRIDGE for trade in document["trades"])
 
 
 def test_the_steps_of_trade_ideas_count_the_offers_before_the_whole_answer(api):
-    # AT-28: plain steps such as "Weighed 6 offers" show before the Answer.
+    # AT-28: plain steps such as "Matched 4,667 trades by trade value" show before the Answer.
     parts = _parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS))
     lines = [step["line"] for step in _of(parts, "data-step")]
-    assert any(line.startswith("Checked 11 teams") for line in lines)
-    assert any(line.startswith("Weighed ") and line.endswith(" offers") for line in lines)
+    assert "Read 11 teams" in lines
+    assert any(re.fullmatch(r"Matched [\d,]+ trades by trade value", line) for line in lines)
     kinds = [part["type"] for part in parts]
     assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
 
@@ -569,10 +582,12 @@ def live_then_done(steps: list[dict]) -> list[str]:
 
 def test_each_stage_of_trade_ideas_sends_a_live_line_then_its_done_line(api):
     steps = _of(_ideas(api), "data-step")
-    assert [step["line"] for step in steps if step["live"]] == [
-        "Checking 11 teams for a fit", "Building offers", "Weighing the offers", "Picking the best offers"]
+    live = [step["line"] for step in steps if step["live"]]
+    assert live == ["Reading 11 teams", "Matching trade value", live[2], live[3], "Picking the best 5"]
+    assert re.fullmatch(r"Checking [\d,]+ trades for fairness", live[2])
+    assert re.fullmatch(r"Checking ([\d,]+|one trade|no trades) against both lineups", live[3])
     done = live_then_done(steps)
-    assert done[0] == "Checked 11 teams for a fit" and done[-1] == "Picked the best 3"
+    assert done[0] == "Read 11 teams" and done[-1] == "Picked the best 3"
 
 
 def test_each_stage_of_a_trade_check_sends_a_live_line_then_its_done_line(api):
@@ -673,7 +688,8 @@ def test_a_trade_check_sends_the_trade_card_with_the_lean_the_case_and_the_point
 
 
 def test_trade_ideas_send_one_trade_card_with_a_row_per_offer(api):
-    # AT-33: one card, one offer per pick, each with its partner, its headline as the gist, and the points of each side.
+    # AT-33: one card, one offer per pick, each with its partner, the swap as the gist, the Lean and the Case of the
+    # pick, and the points of each side.
     [answer] = _of(_parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS)), "data-answer")
     document, block = answer["document"], answer["block"]
     assert block["kind"] == "trade"
@@ -681,9 +697,391 @@ def test_trade_ideas_send_one_trade_card_with_a_row_per_offer(api):
     for offer, trade in zip(block["offers"], document["trades"], strict=True):
         partner = next(side for side in trade["sides"] if side["roster_id"] != LIL_FRIDGE)
         assert offer["partner"] == partner["team"]
-        assert offer["gist"] == trade["headline"]
-        assert offer["lean"] is None and offer["bullets"] == trade["bullets"][:2]
+        gives = ", ".join(p["name"] for p in trade["sides"][0]["gives"])
+        assert offer["gist"].startswith(f"{gives} for ")
+        assert offer["lean"] == trade["lean"] and offer["case"] == trade["case"]
+        assert offer["bullets"] == trade["bullets"][:2]
         assert offer["sides"][0]["yours"] and offer["sides"][0]["roster_id"] == LIL_FRIDGE
         for side in offer["sides"]:
             assert side["gets"] and side["total"] == round(sum(p["points"] for p in side["gets"]), 2)
             assert all(p["points"] > 0 for p in side["gets"])
+
+
+# The find stream of the analyzer page: the same stream as trade ideas, for the body of the plain find route.
+FIND_STREAM = "/clients/cpc/find-stream"
+
+
+def _find_stream(api, **body):
+    return _parts(api.post(FIND_STREAM, json={"season": 2026, "asker": BO_GIRDS, **body}, headers=HEADERS))
+
+
+def test_the_find_stream_sends_one_step_line_as_each_of_the_five_steps_ends(api):
+    # AT-41 and ticket 12: "Read 11 teams", "Matched 4,667 trades by trade value", "Checked 4,667 trades for
+    # fairness", "Made a shortlist of 9", "Picked the best 3".
+    parts = _find_stream(api)
+    done = live_then_done(_of(parts, "data-step"))
+    assert done[0] == "Read 11 teams"
+    matched = re.fullmatch(r"Matched ([\d,]+) trades by trade value", done[1])
+    assert matched, done
+    # Step 1 checks each Value offer for fairness, so both lines carry the same count.
+    assert done[2] == f"Checked {matched[1]} trades for fairness", done
+    assert re.fullmatch(r"Made a shortlist of \d+", done[3]), done
+    assert done[4:] == ["Picked the best 3"]
+    kinds = [part["type"] for part in parts]
+    assert kinds.index("data-answer") > max(i for i, kind in enumerate(kinds) if kind == "data-step")
+
+
+def test_the_find_stream_reports_each_team_as_it_is_read_before_the_read_step_ends(api):
+    # AT-37: the avatars light up in turn, in the order of the stream.
+    parts = _find_stream(api)
+    teams = [part["data"]["roster_id"] for part in parts if part["type"] == "data-team"]
+    assert sorted(teams) == [rid for rid in range(1, 13) if rid != BO_GIRDS]
+    kinds = [(part["type"], part.get("data", {}).get("line")) for part in parts]
+    read_done = kinds.index(("data-step", "Read 11 teams"))
+    assert max(i for i, (kind, _) in enumerate(kinds) if kind == "data-team") < read_done
+
+
+def test_the_find_stream_reports_the_one_partner_it_reads(api):
+    teams = [part["data"]["roster_id"] for part in _find_stream(api, partner=LIL_FRIDGE) if part["type"] == "data-team"]
+    assert teams == [LIL_FRIDGE]
+
+
+def test_the_find_stream_sends_each_trade_as_its_own_part_before_the_answer(api):
+    # AT-72 and decision 20: each trade part holds the same fields as its trade in the Answer, in the pick order.
+    parts = _find_stream(api)
+    trades = _of(parts, "data-trade")
+    [answer] = _of(parts, "data-answer")
+    assert len(trades) == 3
+    assert [part["trade"] for part in trades] == answer["document"]["trades"]
+    assert [part["index"] for part in trades] == [0, 1, 2]
+    # The pick states that it keeps 3, so the site counts the trades still to come from 3, not from 5.
+    assert {part["most"] for part in trades} == {3}
+    kinds = [part["type"] for part in parts]
+    assert max(i for i, kind in enumerate(kinds) if kind == "data-trade") < kinds.index("data-answer")
+    # The last step line, "Picked the best 3", comes after the trades, so the wait line holds until the last card.
+    assert max(i for i, kind in enumerate(kinds) if kind == "data-trade") < len(kinds) - 1 - kinds[::-1].index(
+        "data-step")
+
+
+def test_the_find_stream_sends_the_count_of_the_pick_before_the_first_trade(api):
+    # V1 and AT-72: the count line shows the real count from the first card, so the count part comes first.
+    parts = _find_stream(api)
+    kinds = [part["type"] for part in parts]
+    assert [part["count"] for part in _of(parts, "data-trades-count")] == [3]
+    assert kinds.index("data-trades-count") < kinds.index("data-trade")
+    assert kinds.index("data-trades-count") > kinds.index("data-shortlist")
+
+
+def test_trade_ideas_of_the_front_door_send_no_count_part(api):
+    # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
+    assert _of(_ideas(api), "data-trades-count") == []
+
+
+def test_the_find_stream_says_the_pick_has_no_more_trades_before_the_pick_ends(api):
+    # Ticket 17: the site drops the count line when the pick has no more trades, so the part comes after the last
+    # trade and before the done line of step 5, which waits for the end of the call.
+    parts = _find_stream(api)
+    kinds = [(part["type"], part.get("data", {}).get("line")) for part in parts]
+    [end] = [i for i, (kind, _) in enumerate(kinds) if kind == "data-trades-done"]
+    assert max(i for i, (kind, _) in enumerate(kinds) if kind == "data-trade") < end
+    assert end < kinds.index(("data-step", "Picked the best 3"))
+
+
+def test_the_find_stream_sends_the_shortlist_by_player_names_before_step_5(api):
+    # AT-73 and decision 20: step 5 names the trades it weighs, so the stream sends each Shortlist trade by its players.
+    parts = _find_stream(api)
+    [shortlist] = _of(parts, "data-shortlist")
+    done = live_then_done(_of(parts, "data-step"))
+    count = int(re.fullmatch(r"Made a shortlist of (\d+)", done[3])[1])
+    assert len(shortlist["trades"]) == count > 0
+    # The part comes before the live line of step 5, so the wait has the trades when step 5 starts.
+    kinds = [(part["type"], part.get("data", {}).get("line")) for part in parts]
+    assert kinds.index(("data-shortlist", None)) < kinds.index(("data-step", "Picking the best 5"))
+    # Each trade the pick sends is a Shortlist trade, with the same players: what the asker gives, then gets.
+    [answer] = _of(parts, "data-answer")
+    by_id = {item["offer_id"]: item for item in shortlist["trades"]}
+    for trade in answer["document"]["trades"]:
+        item = by_id[trade["offer_id"]]
+        asker_side = trade["sides"][0]
+        assert asker_side["roster_id"] == BO_GIRDS
+        assert [p["name"] for p in item["gives"]] == [p["name"] for p in asker_side["gives"]]
+        assert [p["name"] for p in item["gets"]] == [p["name"] for p in asker_side["gets"]]
+    # Each player carries a short name for a narrow screen: his last name, never a suffix such as "III".
+    for item in shortlist["trades"]:
+        for player in item["gives"] + item["gets"]:
+            assert player["last"] in player["name"].split() or player["last"] == player["name"], player
+            assert player["last"].lower() not in {"jr.", "sr.", "ii", "iii", "iv"}, player
+
+
+def test_trade_ideas_of_the_front_door_send_no_shortlist_part(api):
+    # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
+    assert _of(_ideas(api), "data-shortlist") == []
+
+
+def test_trade_ideas_of_the_front_door_send_no_trade_part(api):
+    # The front door reads only the Answer of trade ideas, so its stream keeps the parts it had.
+    parts = _ideas(api)
+    assert _of(parts, "data-trade") == []
+    assert _of(parts, "data-trades-done") == []
+
+
+def test_a_trade_of_the_find_stream_holds_no_headline(api):
+    [answer] = _of(_find_stream(api), "data-answer")
+    assert all("headline" not in trade for trade in answer["document"]["trades"])
+
+
+def test_the_step_lines_of_a_find_with_one_partner_name_the_team_it_read(api):
+    done = live_then_done(_of(_find_stream(api, partner=LIL_FRIDGE), "data-step"))
+    assert done[0] == "Read Lil Fridge"
+
+
+def test_the_step_lines_of_the_find_stream_name_no_inner_tool(api):
+    lines = [step["line"].lower() for step in _of(_find_stream(api), "data-step")]
+    assert lines and not [line for line in lines for word in INNER_NAMES if word in line]
+
+
+def test_the_find_stream_sends_the_lean_and_the_case_with_each_trade(api):
+    [answer] = _of(_find_stream(api), "data-answer")
+    assert answer["kind"] == "find"
+    trades = answer["document"]["trades"]
+    assert len(trades) == 3
+    for trade in trades:
+        assert trade["lean"] in ("Send it", "Lean yes", "Gut call")
+        assert trade["case"] == test_api.PICK_CASE
+        assert trade["bullets"]
+
+
+# The time after which the client of AT-48 cuts the stream, and the most time that a log line may take to show.
+CUT_SECONDS = 5
+LOG_WAIT_SECONDS = 5
+# The most time that the client of AT-48 waits for the pick stage. A loaded machine can take more than CUT_SECONDS to
+# reach it, because the search runs first.
+STAGE_WAIT_SECONDS = 30
+# The step line that the held pick sends before it holds, so the client knows that the stream stands on the pick stage.
+HELD_LINE = "The pick holds for the test"
+
+
+class HeldPick:
+    """A Finder pick that holds until the test lets it go, so the stream stays open on its pick stage. It sends the
+    step HELD_LINE first, so a client can wait for the pick stage and not for a fixed time."""
+
+    def __init__(self, pick):
+        self.pick = pick
+        self.go = threading.Event()
+
+    def __call__(self, *args, stage, **kwargs):
+        stage(HELD_LINE)
+        self.go.wait(timeout=30)
+        return self.pick(*args, stage=stage, **kwargs)
+
+
+@contextlib.contextmanager
+def _served(app):
+    """The app on a real uvicorn server on a free local port, so a client can cut a stream as a browser does."""
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_config=None, lifespan="off"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    while not server.started:
+        time.sleep(0.05)
+    try:
+        yield port
+    finally:
+        server.should_exit = True
+        thread.join(timeout=10)
+
+
+def _read_then_cut(port: int, path: str, body: dict, seconds: float, until: str) -> tuple[str, float]:
+    """Post `body` to `path` on a raw socket, read what comes for `seconds` and until the text `until` comes, then close
+    the socket, as a browser that drops the stream does. The text that came before the cut, and the seconds from the
+    send to the cut. The wait for `until` stops after STAGE_WAIT_SECONDS, so a stream that never sends it still ends."""
+    payload = json.dumps(body).encode()
+    head = (f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
+            f"X-League-Passphrase: {HEADERS['X-League-Passphrase']}\r\nContent-Length: {len(payload)}\r\n\r\n")
+    received = b""
+    with socket.create_connection(("127.0.0.1", port)) as client:
+        sent = time.monotonic()
+        client.sendall(head.encode() + payload)
+        end, last = sent + seconds, sent + STAGE_WAIT_SECONDS
+        while (left := (end if until.encode() in received else last) - time.monotonic()) > 0:
+            client.settimeout(left)
+            try:
+                chunk = client.recv(65536)
+            except TimeoutError:
+                break
+            if not chunk:
+                break
+            received += chunk
+        cut = time.monotonic() - sent
+    return received.decode(errors="replace"), cut
+
+
+def _failed_lines(caplog) -> list[str]:
+    return [record.getMessage() for record in caplog.records if record.getMessage().startswith("Trade stream failed")]
+
+
+def _wait_for_line(caplog) -> list[str]:
+    end = time.monotonic() + LOG_WAIT_SECONDS
+    while not _failed_lines(caplog) and time.monotonic() < end:
+        time.sleep(0.05)
+    return _failed_lines(caplog)
+
+
+def test_a_stream_that_the_client_cuts_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev,
+                                                                                              caplog):
+    # AT-48: the client cuts the trade ideas stream after 5 s, while the pick stage works. The client waits for the
+    # step of the held pick before the cut, because a loaded machine can still run the search at 5 s.
+    caplog.set_level(logging.INFO)
+    news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    held = HeldPick(functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair()))
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                     finder_search=functools.partial(search, jev=jev), finder_pick=held)
+    with _served(app) as port:
+        try:
+            received, cut = _read_then_cut(port, IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, CUT_SECONDS,
+                                           HELD_LINE)
+            _wait_for_line(caplog)
+        finally:
+            held.go.set()
+        # The press ends after the cut, and its end logs no second line.
+        time.sleep(1)
+        lines = _failed_lines(caplog)
+    steps = [json.loads(line.removeprefix("data: "))["data"]["line"] for line in received.split("\n")
+             if line.startswith('data: {"type": "data-step"')]
+    assert len(lines) == 1, lines
+    [line] = lines
+    assert "topic=trade_ideas" in line
+    assert "cause=client-cut" in line
+    assert steps[-1] == HELD_LINE
+    assert f'stage="{steps[-1]}"' in line
+    seconds = float(re.search(r"seconds=([0-9.]+)", line).group(1))
+    # The stream starts after the team read of the route, a moment after the client sends, so its count runs a bit short.
+    assert cut - 2 <= seconds <= cut + 1
+
+
+def test_a_press_that_fails_logs_one_line_with_its_cause_its_stage_and_its_seconds(settings, sources, jev, caplog):
+    # A press that raises ends the stream with the retry line, and the API logs why, at which stage, and when.
+    caplog.set_level(logging.INFO)
+
+    def broken_pick(*args, **kwargs):
+        raise TimeoutError("the pick call took too long")
+
+    app = create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                     finder_search=functools.partial(search, jev=jev), finder_pick=broken_pick)
+    parts = _parts(TestClient(app).post(IDEAS, json={"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, headers=HEADERS))
+    [error] = _of(parts, "data-error")
+    assert error["status"] == 500
+    lines = _failed_lines(caplog)
+    assert len(lines) == 1, lines
+    [line] = lines
+    assert "topic=trade_ideas" in line
+    assert "cause=TimeoutError" in line
+    assert f'stage="{_of(parts, "data-step")[-1]["line"]}"' in line
+    assert re.search(r"seconds=[0-9]+\.[0-9]", line)
+
+
+class DeferredPick:
+    """A Finder pick that hands the route one more log-only check, `job`, next to its own checks."""
+
+    def __init__(self, pick, job):
+        self.pick = pick
+        self.job = job
+
+    def __call__(self, *args, defer, **kwargs):
+        picks = self.pick(*args, defer=defer, **kwargs)
+        defer(self.job)
+        return picks
+
+
+def _deferred_app(settings, sources, jev, job):
+    news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
+    pick = functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair())
+    return create_app(settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+                      finder_search=functools.partial(search, jev=jev), finder_pick=DeferredPick(pick, job))
+
+
+@pytest.mark.parametrize(("path", "body"), [
+    (IDEAS, {"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}),
+    (FIND_STREAM, {"season": 2026, "asker": BO_GIRDS, "partner": LIL_FRIDGE}),
+])
+def test_the_stream_ends_right_after_the_answer_and_the_log_only_checks_run_after_it(settings, sources, jev, path,
+                                                                                     body):
+    # The spec: the log-only Jev checks run after the Answer goes out. A check that holds keeps no stream open.
+    release, ran = threading.Event(), threading.Event()
+
+    def held_check():
+        release.wait(timeout=10)
+        ran.set()
+
+    client = TestClient(_deferred_app(settings, sources, jev, held_check))
+    try:
+        response = client.post(path, json=body, headers=HEADERS)
+        assert not ran.is_set()
+    finally:
+        release.set()
+    assert [part["type"] for part in _parts(response)][-2:] == ["data-answer", "finish"]
+    assert response.text.endswith("data: [DONE]\n\n")
+    assert ran.wait(timeout=10)
+
+
+def test_a_log_only_check_that_fails_logs_and_never_reaches_the_client(settings, sources, jev, caplog):
+    # A deferred check may raise more than JevError. The manager still gets the Answer and no error part after it.
+    caplog.set_level(logging.INFO)
+    failed = threading.Event()
+
+    def broken_check():
+        failed.set()
+        raise ValueError("the check broke")
+
+    client = TestClient(_deferred_app(settings, sources, jev, broken_check))
+    parts = _parts(client.post(IDEAS, json={"roster_id": BO_GIRDS, "partner": LIL_FRIDGE}, headers=HEADERS))
+    assert failed.wait(timeout=10)
+    end = time.monotonic() + LOG_WAIT_SECONDS
+    while "A log-only Jev check failed" not in caplog.text and time.monotonic() < end:
+        time.sleep(0.05)
+    assert [part["type"] for part in parts][-2:] == ["data-answer", "finish"]
+    assert not _of(parts, "data-error")
+    assert "A log-only Jev check failed after the Answer went out" in caplog.text
+    assert not _failed_lines(caplog)
+
+
+def _read_to_done(port: int, path: str, body: dict, seconds: float) -> str:
+    """Post `body` to `path` on a raw socket and read until the end mark of the stream, or for `seconds`, then close
+    the socket, as the find stream of the site does after the Answer. The text that came before the close."""
+    payload = json.dumps(body).encode()
+    head = (f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Type: application/json\r\n"
+            f"X-League-Passphrase: {HEADERS['X-League-Passphrase']}\r\nContent-Length: {len(payload)}\r\n\r\n")
+    received = b""
+    with socket.create_connection(("127.0.0.1", port)) as client:
+        client.sendall(head.encode() + payload)
+        end = time.monotonic() + seconds
+        while b"data: [DONE]" not in received and (left := end - time.monotonic()) > 0:
+            client.settimeout(left)
+            try:
+                chunk = client.recv(65536)
+            except TimeoutError:
+                break
+            if not chunk:
+                break
+            received += chunk
+    return received.decode(errors="replace")
+
+
+def test_a_client_that_closes_after_the_answer_logs_no_cut(settings, sources, jev, caplog):
+    # A page that leaves after the Answer is no failed stream, even while a log-only check still runs.
+    caplog.set_level(logging.INFO)
+    release = threading.Event()
+    app = _deferred_app(settings, sources, jev, lambda: release.wait(timeout=30))
+    with _served(app) as port:
+        try:
+            received = _read_to_done(port, FIND_STREAM, {"season": 2026, "asker": BO_GIRDS, "partner": LIL_FRIDGE},
+                                     CUT_SECONDS)
+            time.sleep(1)
+            lines = _failed_lines(caplog)
+        finally:
+            release.set()
+    assert '"type": "data-answer"' in received
+    assert "data: [DONE]" in received
+    assert not lines, lines

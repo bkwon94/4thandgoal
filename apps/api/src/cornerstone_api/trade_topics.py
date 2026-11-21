@@ -8,10 +8,12 @@ import json
 import logging
 import queue
 import threading
-from collections.abc import Callable, Iterator
+import time
+from collections.abc import AsyncIterator, Callable
 from dataclasses import asdict, dataclass
 from typing import Literal
 
+import anyio
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -66,6 +68,8 @@ STREAM_HEADERS = {"x-vercel-ai-ui-message-stream": "v1", "Cache-Control": "no-ca
 
 # One part of the stream: its type, such as "data-step", and its data.
 Emit = Callable[[str, dict], None]
+# The hand-off of one log-only Jev check, to run after the stream ends.
+Defer = Callable[[Callable[[], None]], None]
 
 TradeTopic = Literal["trade_check", "trade_ideas", "sell_high"]
 
@@ -262,37 +266,78 @@ def _part(kind: str, data: dict | None = None) -> str:
     return f"data: {json.dumps(body)}\n\n"
 
 
-def stream(work: Callable[[Emit], None]) -> StreamingResponse:
+def _failed(topic: TradeTopic, cause: str, stage: str, started: float) -> str:
+    """The one log line of a failed stream: its Topic, its cause, its last stage, and the seconds since its start."""
+    return f'Trade stream failed: topic={topic} cause={cause} stage="{stage}" seconds={time.monotonic() - started:.1f}'
+
+
+def _run_later(jobs: list[Callable[[], None]]) -> None:
+    """Run the log-only Jev checks of a press after its stream ends. A failed check only logs, because the stream is
+    closed and the manager has the Answer already, so it sends no part and logs no failed stream."""
+    for job in jobs:
+        try:
+            job()
+        except Exception:
+            logger.exception("A log-only Jev check failed after the Answer went out")
+
+
+def stream(topic: TradeTopic, work: Callable[[Emit, Defer], None]) -> StreamingResponse:
     """The event stream of one press: `work` runs in its own thread and emits each part as it comes, so each stage of
-    the Advisor reaches the site before the whole Answer. A failed press ends the stream with one error part."""
+    the Advisor reaches the site before the whole Answer. A failed press ends the stream with one error part.
+
+    `work` hands each log-only Jev check of its press to `defer`, one shared list of the stream. The checks run in the
+    same thread after the stream ends, so the stream closes right after the Answer, and a client that reads to the end
+    never sees a cut. The thread, not a background task of the response, runs them, because the response skips its
+    background task after a cut.
+
+    A failed stream logs one line with its cause, its last stage, and its seconds since the start, so a failure that a
+    manager sees has its cause in the log (decision 06). A press that raises names its error. A client that drops the
+    stream before its end, such as a phone that loses the page, is the cause `client-cut`. The press goes on after a
+    cut, so its Answer goes to the cache and a retry reads it.
+    """
     parts: queue.Queue[str | None] = queue.Queue()
+    started = time.monotonic()
+    # The last step line, or "start" before the first step, so the log line says where the stream stood.
+    stage = ["start"]
 
     def emit(kind: str, data: dict) -> None:
+        if kind == "data-step":
+            stage[0] = data["line"]
         parts.put(_part(kind, data))
 
     def run() -> None:
+        later: list[Callable[[], None]] = []
         try:
-            work(emit)
+            work(emit, later.append)
         except HTTPException as error:
+            logger.warning(_failed(topic, f"HTTPException-{error.status_code}", stage[0], started))
             emit("data-error", {"status": error.status_code, "line": _line(error)})
         except JevError as error:
-            logger.warning("The player pick of a trade check failed (%s)", type(error).__name__)
+            logger.warning(_failed(topic, type(error).__name__, stage[0], started))
             emit("data-error", {"status": 503, "line": RETRY_LINE})
-        except Exception:
-            logger.exception("A trade press of the front door failed")
+        except Exception as error:
+            logger.exception(_failed(topic, type(error).__name__, stage[0], started))
             emit("data-error", {"status": 500, "line": RETRY_LINE})
         finally:
             parts.put(None)
+        _run_later(later)
 
     # The copy of the context carries the press meter, so the cost line of the press counts each Claude call.
     threading.Thread(target=contextvars.copy_context().run, args=(run,), name="trade-press", daemon=True).start()
 
-    def events() -> Iterator[str]:
-        yield _part("start")
-        while (part := parts.get()) is not None:
-            yield part
-        yield _part("finish")
-        yield "data: [DONE]\n\n"
+    async def events() -> AsyncIterator[str]:
+        ended = False
+        try:
+            yield _part("start")
+            # The wait for a part leaves its thread on a cut, so the cut ends the stream at once and logs its line.
+            while (part := await anyio.to_thread.run_sync(parts.get, abandon_on_cancel=True)) is not None:
+                yield part
+            yield _part("finish")
+            yield "data: [DONE]\n\n"
+            ended = True
+        finally:
+            if not ended:
+                logger.warning(_failed(topic, "client-cut", stage[0], started))
 
     return StreamingResponse(events(), media_type="text/event-stream", headers=STREAM_HEADERS)
 
@@ -360,7 +405,7 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
     teams = _teams(asker, served, body.roster_id)
     question = body.question.strip()
 
-    def work(emit: Emit) -> None:
+    def work(emit: Emit, defer: Defer) -> None:
         gives, gets, answers = pick_players(asker.jev, question, teams, body.roster_id)
         emit("data-picks", {"model": answers.model, "gives": {**asdict(gives), "sure": gives.sure},
                             "gets": {**asdict(gets), "sure": gets.sure}})
@@ -384,7 +429,7 @@ def trade_check(request: Request, body: TradeCheckRequest, asker: ClientAsker,
             emit("data-answer", {"kind": "check", "document": document,
                                  "block": check_block(document, _points(asker, served))})
 
-    return stream(work)
+    return stream("trade_check", work)
 
 
 class TradeIdeasRequest(BaseModel):
@@ -410,7 +455,7 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
     """
     teams = _teams(asker, served, body.roster_id)
 
-    def work(emit: Emit) -> None:
+    def work(emit: Emit, defer: Defer) -> None:
         step = _step(emit)
         anchor, partner, limit = None, body.partner, None
         if body.question is not None:
@@ -436,14 +481,53 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
             for line in [] if limit is None else limit_lines(read):
                 step(line)
         pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor, limit=limit)
+        # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
         document = capped_press(asker, body.roster_id, emit,
-                                lambda: analyzer_routes.find_trades(request, pair, served, step))
+                                lambda: analyzer_routes.find_trades(request, pair, served, step, defer=defer))
         if document is not None:
             _send_key(asker, served, emit, "trade_ideas", body.roster_id, partner)
             emit("data-answer", {"kind": "ideas", "document": document,
                                  "block": ideas_block(document, _points(asker, served))})
 
-    return stream(work)
+    return stream("trade_ideas", work)
+
+
+@router.post("/find-stream")
+def find_stream(request: Request, pair: FindRequest, served: ServedClient) -> StreamingResponse:
+    """The find press of the analyzer page as a stream: one step line as each step of the search ends, then the
+    finder document. It is the stream of trade ideas, so the analyzer page and the front door read one protocol.
+    A team part goes out with the roster id of each team as the first step reads it, so the avatars light in turn.
+    A trade part goes out with each trade of the pick as soon as it stands, with its index in the pick order, the most
+    trades that the pick can keep, and the fields of a trade of the document, so each card shows in turn (decision 20).
+    A Shortlist part goes out before the pick with each trade of the Shortlist by the names of its players, so the wait
+    of step 5 names the trade that the pick weighs (decision 20). A trades-done part goes out once when the pick has no
+    more trades, so the site drops the count line when the pick keeps fewer than it can. A trades-count part goes out
+    with the count of trades that the pick keeps, as soon as the pick states it and before the first trade, and again
+    each time a drop changes it, so the count line shows the real count from the first card. The Answer holds the
+    whole document, and it stays the truth.
+
+    It counts one grade, as the plain find route does, and the caps of the front door do not apply.
+    """
+
+    def work(emit: Emit, defer: Defer) -> None:
+        sent = [0]
+
+        def trade(item: dict, most: int) -> None:
+            # The index is the place of the trade in the pick order, and `most` is the most trades that the pick can
+            # keep, so the site counts the trades still to come.
+            emit("data-trade", {"index": sent[0], "most": most, "trade": item})
+            sent[0] += 1
+
+        # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
+        document = analyzer_routes.find_trades(request, pair, served, _step(emit), defer=defer,
+                                               read=lambda roster_id: emit("data-team", {"roster_id": roster_id}),
+                                               trade=trade,
+                                               weigh=lambda trades: emit("data-shortlist", {"trades": trades}),
+                                               trades_done=lambda: emit("data-trades-done", {}),
+                                               trades_count=lambda count: emit("data-trades-count", {"count": count}))
+        emit("data-answer", {"kind": "find", "document": document})
+
+    return stream("trade_ideas", work)
 
 
 class SellHighRequest(BaseModel):
@@ -458,7 +542,7 @@ def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, serve
     Advisor picks the players of the roster to sell from their facts side by side, and writes why."""
     _teams(asker, served, body.roster_id)
 
-    def work(emit: Emit) -> None:
+    def work(emit: Emit, defer: Defer) -> None:
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.sell_high_press(request, asker.season, body.roster_id, served,
                                                                         _step(emit)))
@@ -467,4 +551,4 @@ def sell_high(request: Request, body: SellHighRequest, asker: ClientAsker, serve
             emit("data-block", sell_list(document))
             emit("data-answer", {"kind": "sell", "document": document})
 
-    return stream(work)
+    return stream("sell_high", work)

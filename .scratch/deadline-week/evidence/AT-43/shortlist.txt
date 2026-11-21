@@ -1,0 +1,39 @@
+== press 1 (evidence/AT-41/press-1-shortlist.json)
+n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)
+1 | 1-for-2 | To Infinity and Bijan | Blake Corum | Ladd McConkey + Patrick Mahomes | 0.970 | shape=1-for-2 (best 0.970), partner=To Infinity and Bijan (best 0.970), gives=Blake Corum (best 0.970)
+2 | 2-for-3 | To Infinity and Bijan | Matthew Golden + Parker Washington | Malik Nabers + KC Concepcion Jr. + Jared Goff | 0.970 | shape=2-for-3 (best 0.970), gives=Matthew Golden (best 0.970), gives=Parker Washington (best 0.970)
+3 | 1-for-3 | Teehee | Kenneth Walker III | Sam LaPorta + Bhayshul Tuten + Trevor Lawrence | 0.970 | shape=1-for-3 (best 0.970), partner=Teehee (best 0.970), gives=Kenneth Walker III (best 0.970)
+4 | 1-for-2 | Return of T Mac | Blake Corum | Tyler Shough + Jaylen Waddle | 0.970 | partner=Return of T Mac (best 0.970)
+5 | 1-for-3 | Unsolicited Dak Picks | Zay Flowers | Caleb Douglas + Tank Dell + C.J. Stroud | 0.970 | partner=Unsolicited Dak Picks (best 0.970), gives=Zay Flowers (best 0.970)
+6 | 2-for-3 | Lil Fridge | Kenneth Walker III + Zay Flowers | Caleb Williams + Travis Kelce + Christian McCaffrey | 0.960 | partner=Lil Fridge (best 0.960)
+7 | 2-for-3 | Return of T Mac | Kyren Williams + Zay Flowers | T.J. Hockenson + Jordan Love + Jaylen Warren | 0.970 | gives=Kyren Williams (best 0.970)
+8 | 1-for-2 | Return of T Mac | Kyren Williams | Rome Odunze + Jordan Love | 0.970 | none new: a further form
+9 | 1-for-3 | Teehee | Kenneth Walker III | DJ Moore + Tony Pollard + Trevor Lawrence | 0.970 | none new: a further form
+10 | 1-for-2 | Return of T Mac | Kenneth Walker III | Tyler Shough + Bijan Robinson | 0.970 | none new: a further form
+rated offers (step 2 less gain drops): 16; shape directions among them: ['1-for-2', '1-for-3', '2-for-3']
+== press 2 (evidence/AT-41/press-2-shortlist.json)
+n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)
+1 | 1-for-2 | To Infinity and Bijan | Blake Corum | Ladd McConkey + Patrick Mahomes | 0.970 | shape=1-for-2 (best 0.970), partner=To Infinity and Bijan (best 0.970), gives=Blake Corum (best 0.970)
+2 | 2-for-3 | To Infinity and Bijan | Matthew Golden + Parker Washington | Malik Nabers + KC Concepcion Jr. + Jared Goff | 0.970 | shape=2-for-3 (best 0.970), gives=Matthew Golden (best 0.970), gives=Parker Washington (best 0.970)
+3 | 1-for-3 | Teehee | Kenneth Walker III | Sam LaPorta + Bhayshul Tuten + Trevor Lawrence | 0.970 | shape=1-for-3 (best 0.970), partner=Teehee (best 0.970), gives=Kenneth Walker III (best 0.970)
+4 | 1-for-2 | Return of T Mac | Blake Corum | Tyler Shough + Jaylen Waddle | 0.970 | partner=Return of T Mac (best 0.970)
+5 | 1-for-3 | Unsolicited Dak Picks | Zay Flowers | Caleb Douglas + Tank Dell + C.J. Stroud | 0.970 | partner=Unsolicited Dak Picks (best 0.970), gives=Zay Flowers (best 0.970)
+6 | 2-for-3 | Lil Fridge | Kenneth Walker III + Zay Flowers | Caleb Williams + Travis Kelce + Christian McCaffrey | 0.960 | partner=Lil Fridge (best 0.960)
+7 | 2-for-3 | Return of T Mac | Kyren Williams + Zay Flowers | T.J. Hockenson + Jordan Love + Jaylen Warren | 0.970 | gives=Kyren Williams (best 0.970)
+8 | 1-for-2 | Return of T Mac | Kyren Williams | Rome Odunze + Jordan Love | 0.970 | none new: a further form
+9 | 1-for-3 | Teehee | Kenneth Walker III | DJ Moore + Tony Pollard + Trevor Lawrence | 0.970 | none new: a further form
+10 | 1-for-2 | Return of T Mac | Kenneth Walker III | Tyler Shough + Bijan Robinson | 0.970 | none new: a further form
+rated offers (step 2 less gain drops): 16; shape directions among them: ['1-for-2', '1-for-3', '2-for-3']
+== press 3 (evidence/AT-41/press-3-shortlist.json)
+n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)
+1 | 1-for-2 | To Infinity and Bijan | Blake Corum | Ladd McConkey + Patrick Mahomes | 0.970 | shape=1-for-2 (best 0.970), partner=To Infinity and Bijan (best 0.970), gives=Blake Corum (best 0.970)
+2 | 2-for-3 | To Infinity and Bijan | Matthew Golden + Parker Washington | Malik Nabers + KC Concepcion Jr. + Jared Goff | 0.970 | shape=2-for-3 (best 0.970), gives=Matthew Golden (best 0.970), gives=Parker Washington (best 0.970)
+3 | 1-for-3 | Teehee | Kenneth Walker III | Sam LaPorta + Bhayshul Tuten + Trevor Lawrence | 0.970 | shape=1-for-3 (best 0.970), partner=Teehee (best 0.970), gives=Kenneth Walker III (best 0.970)
+4 | 1-for-2 | Return of T Mac | Blake Corum | Tyler Shough + Jaylen Waddle | 0.970 | partner=Return of T Mac (best 0.970)
+5 | 1-for-3 | Unsolicited Dak Picks | Zay Flowers | Caleb Douglas + Tank Dell + C.J. Stroud | 0.970 | partner=Unsolicited Dak Picks (best 0.970), gives=Zay Flowers (best 0.970)
+6 | 2-for-3 | Lil Fridge | Kenneth Walker III + Zay Flowers | Caleb Williams + Travis Kelce + Christian McCaffrey | 0.960 | partner=Lil Fridge (best 0.960)
+7 | 2-for-3 | Return of T Mac | Kyren Williams + Zay Flowers | T.J. Hockenson + Jordan Love + Jaylen Warren | 0.970 | gives=Kyren Williams (best 0.970)
+8 | 1-for-2 | Return of T Mac | Kyren Williams | Rome Odunze + Jordan Love | 0.970 | none new: a further form
+9 | 1-for-3 | Teehee | Kenneth Walker III | DJ Moore + Tony Pollard + Trevor Lawrence | 0.970 | none new: a further form
+10 | 1-for-2 | Return of T Mac | Kenneth Walker III | Tyler Shough + Bijan Robinson | 0.970 | none new: a further form
+rated offers (step 2 less gain drops): 16; shape directions among them: ['1-for-2', '1-for-3', '2-for-3']

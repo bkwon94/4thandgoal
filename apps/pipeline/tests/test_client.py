@@ -4,8 +4,10 @@ and the exported JSON Schemas. Each bad file fails with a plain message that nam
 """
 import json
 import shutil
+from datetime import datetime
 from pathlib import Path
 from typing import get_args
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -87,6 +89,21 @@ def test_a_client_with_no_chart_value_has_no_chart(tmp_path):
     # The default of the league package is no chart, and then each chart value is 0.
     folder = _copy(tmp_path, '[values.league]\nchart = "1QB0.5PPR4pt"\n', "")
     assert read_client_values(folder, VALUE_MODELS).package(LeagueValues).chart is None
+
+
+def test_the_lock_of_cpc_is_00_00_eastern_on_tue_2026_11_24_and_norcal_has_none():
+    # AT-50: the Lock is one value in the client config. Norcal has no Lock, so it has no Deadline week.
+    lock = read_client_values(CPC, VALUE_MODELS).package(AnalyzerValues).lock
+    assert lock == datetime(2026, 11, 24, 0, 0, tzinfo=ZoneInfo("America/New_York"))
+    assert read_client_values(ROOT / "clients" / "norcal", VALUE_MODELS).package(AnalyzerValues).lock is None
+
+
+def test_a_lock_with_no_utc_offset_fails(tmp_path):
+    # A time with no offset could be any timezone, so the check asks for the offset.
+    folder = _copy(tmp_path, 'lock = "2026-11-24T00:00:00-05:00"', 'lock = "2026-11-24T00:00:00"')
+    with pytest.raises(ClientError) as err:
+        read_client_values(folder, VALUE_MODELS)
+    assert "values.analyzer.lock" in str(err.value)
 
 
 def test_an_unknown_key_fails_with_the_key_and_the_file(tmp_path):

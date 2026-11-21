@@ -18,6 +18,9 @@ ALLOW: dict[tuple[str, str], str] = {
     ("src/cornerstone_api/app.py",
      f"except Exception as error:  # {MARKER}: BLE001 - the app keeps running after a failed refresh"):
         "the app keeps running after a failed refresh",
+    ("src/cornerstone_api/fair_warm.py",
+     f"except Exception as error:  # {MARKER}: BLE001 - the worker keeps running after a failed warm-up"):
+        "the worker keeps running after a failed warm-up, because a press asks each missing answer live",
     ("src/cornerstone_api/sources.py",
      f"read_chart: ChartReader = partial(chart_values, read=claude_reader(parse_call))  # {MARKER}: RUF009"):
         "one shared partial holds no state that a call changes",

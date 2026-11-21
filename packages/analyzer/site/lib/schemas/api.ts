@@ -1,5 +1,5 @@
 /**
- * The Zod schemas of the site API responses for the teams, analyze, and find calls.
+ * The Zod schemas of the site API responses for the teams, analyze, find, and Trade Wire calls.
  * They follow the fixtures at .scratch/site-react/fixtures/analyze-response.json and find-response.json.
  */
 import { z } from "zod";
@@ -131,14 +131,27 @@ export const analyzeResponseSchema = z.object({
   stale: z.array(z.string()),
 });
 
+/* The trade value total of one side of a finder offer: the sum of the week's chart values of the players that the side
+   gives, to one decimal. Null for a week with no chart. The Ledger card shows it under each column (decision 17). */
+export const tradeTotalSchema = z.object({
+  roster_id: z.number(),
+  trade_value: z.number().nullable(),
+});
+
 /* One trade of the finder. The sides share the analyze document's side shape, and the Bullets share its Bullet shape,
-   so the site renders a side and a row one way. A pick has a headline and 2 to 4 Bullets, and no fact line.
-   After a fallback, the headline is null, no Bullet stands, and fact_lines holds plain facts of the offer. */
+   so the site renders a side and a row one way. A pick has the Lean, the Case, and 2 to 4 Bullets, and no fact line.
+   After a fallback, the Lean and the Case are null, no Bullet stands, and fact_lines holds plain facts of the offer. */
 export const finderTradeSchema = z.object({
   // The id of the offer on the shortlist, such as "2:10213-10:10235". The card keys on it.
   offer_id: z.string(),
   sides: z.array(tradeSideSchema),
-  headline: z.string().nullable(),
+  // The trade value total of each side, in the order of the sides. The key is required, so a trade Answer kept in the
+  // browser before the totals fails the parse and drops on a reload.
+  totals: z.array(tradeTotalSchema),
+  // The Lean of the pick for the asker: Send it, Lean yes, or Gut call. The read of the analyzer uses the same scale.
+  lean: leanSchema.nullable(),
+  // The Case under the Lean: at most 3 sentences, the condition first.
+  case: z.string().nullable(),
   bullets: z.array(bulletSchema),
   fact_lines: z.array(z.string()),
 });
@@ -148,6 +161,7 @@ export const finderTradeSchema = z.object({
 export const nearIdeaSchema = z.object({
   offer_id: z.string(),
   sides: z.array(tradeSideSchema),
+  totals: z.array(tradeTotalSchema),
   reason: z.string(),
 });
 
@@ -159,7 +173,7 @@ export const findResponseSchema = z.object({
     // Null for a find with no partner. Each trade then names its own partner in its sides.
     partner: z.object({ roster_id: z.number(), team: z.string() }).nullable(),
   }),
-  // Up to three picks, best first. After a fallback, every offer of the shortlist, in its order.
+  // Up to five picks, best first. After a fallback, every offer of the shortlist, in its order.
   trades: z.array(finderTradeSchema),
   // Up to three near ideas, best first. With no pick, at least one when the search built an offer. The key is
   // required, so a trade Answer kept in the browser before the near ideas fails the parse and drops on a reload.
@@ -167,8 +181,31 @@ export const findResponseSchema = z.object({
   // The plain line for an empty list, or null when the list has a trade. The page shows it as the pipeline writes it.
   empty: z.string().nullable(),
   as_of: asOfSchema,
-  // True when the pick call failed twice, so the trades are the shortlist with fact lines and no headline.
+  // True when the pick call failed twice, so the trades are the shortlist with fact lines and no Lean.
   fallback: z.boolean(),
   missing: z.array(z.string()),
   stale: z.array(z.string()),
+});
+
+/* One side of a trade of the Trade Wire: the team, its avatar, the players it gets, and the FAAB it gets. Sleeper may
+   give a team no avatar. */
+export const wireSideSchema = z.object({
+  roster_id: z.number(),
+  team: z.string(),
+  avatar: z.string().nullable(),
+  players: z.array(z.object({ player_id: z.string(), name: z.string(), position: z.string() })),
+  faab: z.number(),
+});
+
+/* One accepted trade of the Trade Wire, with the time Sleeper accepted it. */
+export const wireTradeSchema = z.object({
+  transaction_id: z.string(),
+  accepted_at: z.string(),
+  teams: z.array(wireSideSchema),
+});
+
+/* The answer of the Trade Wire route: the accepted trades of the current leg, newest first. */
+export const tradeWireResponseSchema = z.object({
+  leg: z.number(),
+  trades: z.array(wireTradeSchema),
 });

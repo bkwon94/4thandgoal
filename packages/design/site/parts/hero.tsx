@@ -1,6 +1,6 @@
 /**
  * The hero: the one loud surface of a page, with the grid texture, the brand glow, and the four corner brackets.
- * It sits on the band color in both themes, so the hero stays dark in light. The page fills the six hero slots.
+ * It sits on the band color in both themes, so the hero stays dark in light. The page fills the seven hero slots.
  * Use it when: a page needs its one loud top surface.
  * Do not use it when: the page has no hero. Use `WeekLine`.
  */
@@ -9,11 +9,14 @@ import { cn } from "../lib/utils";
 import { HeroSceneCanvas } from "./hero-scene";
 import type { HeroScene } from "./scene-math";
 
-/* The six hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap.
+/* The seven hero slots, in the slot order. Only the title is required. An absent slot renders no element and no gap.
    Hero takes no children, so a page cannot pass free content and every hero keeps the one structure. */
 type HeroSlots = {
   // The small uppercase line above the title, such as "7-9 · 9th of 12".
   eyebrow?: ReactNode;
+  // A control across the full width of the hero, under the eyebrow and above the title, such as the switch of the
+  // analyzer between its two modes.
+  toggle?: ReactNode;
   title: ReactNode;
   // One or two lines next to the title, such as the owner or the reason of a verdict.
   meta?: ReactNode;
@@ -59,16 +62,35 @@ const META = "w-fit max-w-measure tablet:max-w-[24rem] text-lead leading-body te
    The title has the priority in the top row: the meta column takes the width of the meta up to 40 percent of the hero,
    so a long meta wraps and the title keeps its width. The action takes the free width of the bottom row, so content
    with no width of its own, such as the share bar, fills it. */
-function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene }: HeroSlots) {
+function Slots({
+  eyebrow,
+  toggle,
+  title,
+  meta,
+  feature,
+  stats,
+  action,
+  level = 1,
+  scene,
+}: HeroSlots) {
   const Heading = level === 1 ? "h1" : "h2";
+  const eyebrowSlot = eyebrow !== undefined && (
+    <div data-hero-slot="eyebrow" className={EYEBROW}>
+      {eyebrow}
+    </div>
+  );
   return (
     <div className="gap-sp-6 tablet:grid tablet:grid-cols-[minmax(0,1fr)_fit-content(40%)] tablet:gap-x-sp-6 flex flex-col">
+      {/* With a toggle, the eyebrow and the toggle take a full row of their own above the title, so the toggle spans the
+          hero at each width and the eyebrow still reads first. */}
+      {toggle !== undefined && (
+        <div className="gap-sp-3 tablet:col-span-2 flex flex-col">
+          {eyebrowSlot}
+          <div data-hero-slot="toggle">{toggle}</div>
+        </div>
+      )}
       <div className="gap-sp-2 tablet:col-start-1 flex flex-col">
-        {eyebrow !== undefined && (
-          <div data-hero-slot="eyebrow" className={EYEBROW}>
-            {eyebrow}
-          </div>
-        )}
+        {toggle === undefined && eyebrowSlot}
         <Heading data-hero-slot="title" className={TITLE}>
           {title}
         </Heading>
@@ -128,7 +150,7 @@ function Slots({ eyebrow, title, meta, feature, stats, action, level = 1, scene 
    text, so the text needs no plate (ADR 0036), and the pixel scan of the floor checks its contrast.
    The art layer comes first in the markup and the content box is relative, so the content paints over the art.
    The frame takes free content for the parts of the egg hunt only: the find card, the end card, and the egg word slider.
-   Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its six slots.
+   Each has its own tuned layout over the ground of the egg hunt. Every other hero uses Hero and its seven slots.
    `art` replaces the static texture with live art that the page gives, such as the mesh of the analyzer. It is a prop and
    not a child, so a page can change the ground under the slots and never the slots. The art draws its own grid and glow,
    and it sits in the same layer with the same marker, so the floor still finds the hero and reads its text by pixels.

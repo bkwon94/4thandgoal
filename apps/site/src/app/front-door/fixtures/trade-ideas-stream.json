@@ -100,7 +100,18 @@
         ]
        }
       ],
-      "headline": "Sell Henry while his season rank still looks good and get Higgins, a WR6 with a steady role.",
+      "totals": [
+       {
+        "roster_id": 3,
+        "trade_value": null
+       },
+       {
+        "roster_id": 12,
+        "trade_value": null
+       }
+      ],
+      "lean": null,
+      "case": null,
       "bullets": [
        {
         "text": "Henry is RB11 on the season but only RB46 over the last four weeks, so you sell him at his season-long standing while his recent form has dipped.",
@@ -189,7 +200,18 @@
         ]
        }
       ],
-      "headline": "Henry for St. Brown turns a cooling back into a WR8 with a big target share, if you trust the passing game.",
+      "totals": [
+       {
+        "roster_id": 3,
+        "trade_value": null
+       },
+       {
+        "roster_id": 12,
+        "trade_value": null
+       }
+      ],
+      "lean": null,
+      "case": null,
       "bullets": [
        {
         "text": "Henry is RB11 on the season but RB46 over the last four weeks, so you sell him before the slump drags his price down further.",

@@ -1,0 +1,24 @@
+"""AT-44 on the live week 11 of cpc: each player that spare_list lists has a backup at his position who can cover now."""
+from pathlib import Path
+from cornerstone import cli
+from analyzer.spares_tree import can_cover, spare_list
+from league.client import load_client
+from league.paths import provider_cache_dir
+from league.provider.sleeper import SleeperProvider
+
+root = cli.find_root(Path.cwd())
+provider = SleeperProvider(provider_cache_dir(cli.nfl_dir(root)))
+client = load_client(root, "cpc", 2026, provider.fetch_settings, cli.VALUE_MODELS)
+snap = cli._live_snapshot(client, 2026, provider)
+print(f"live snapshot of cpc: season 2026, week {snap.week}")
+pairs = [(g, r) for g in snap.rosters for r in snap.rosters if g != r]
+listed = bad = 0
+for giver, receiver in pairs:
+    for spare in spare_list(snap, giver, receiver):
+        listed += 1
+        pos = snap.players[spare.player_id].position
+        backups = [pid for pid in snap.rosters[giver] if pid != spare.player_id and snap.players[pid].position == pos and can_cover(snap, pid)]
+        if not backups:
+            bad += 1
+            print(f"NO COVER: {snap.players[spare.player_id].name} ({pos}) of roster {giver} for roster {receiver}")
+print(f"pairs: {len(pairs)}, listed players over all pairs: {listed}, listed with no backup who can cover now: {bad}")

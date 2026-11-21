@@ -9,6 +9,7 @@ import { TopBand } from "@cpc/design/shell/top-band";
 import { apiTarget, finderOn } from "@/lib/config";
 import { analyzeHref } from "@/lib/routes";
 import { shellProps, pageTitle } from "@/app/shell-props";
+import { clientValues } from "@/generated/client-values";
 
 export const metadata: Metadata = {
   title: pageTitle(undefined, "Trade Analyzer"),
@@ -19,7 +20,7 @@ export default function AnalyzePage() {
     <>
       <TopBand {...shellProps()} pageHref={analyzeHref()} />
       <main className="max-w-page px-gutter pt-sp-6 pb-sp-6 mx-auto w-full">
-        <Analyzer target={apiTarget} finderOn={finderOn} />
+        <Analyzer target={apiTarget} finderOn={finderOn} lock={clientValues.lock} />
       </main>
     </>
   );

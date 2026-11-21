@@ -171,7 +171,8 @@ const offer = (n: number) => ({
     side(1, "Bo Girds", [`Give ${n}`], [`Get ${n}`]),
     side(2, "Lil Fridge", [`Get ${n}`], [`Give ${n}`]),
   ],
-  headline: null,
+  lean: null,
+  case: null,
   bullets: [],
   fact_lines: [],
 });

@@ -11,20 +11,21 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Annotated, Protocol
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from analyzer.advisor import AdvisorFailed, TradeRead
 from analyzer.cache import ResultCache, TeamsCache, cache_key, finder_cache_key, sell_high_cache_key
 from analyzer.errors import season_in_progress
-from analyzer.finder_pick import FinderPicks
-from analyzer.finder_search import Anchor, Limit, Shortlist
+from analyzer.finder_pick import Defer, FinderPick, FinderPicks
+from analyzer.finder_search import Anchor, Limit, Shortlist, chart_value
 from analyzer.ratelimit import GradeLimiter, request_address
 from analyzer.sell_high import SellHigh, SellHighFailed
 from analyzer.stage import Stage
 from analyzer.trade import ProposedTrade, TradeInputError, check_trade
 from analyzer.trade_facts import shown_ranks
 from analyzer.week_line import week_lines
+from facts.names import NAME_SUFFIXES, last_name
 from facts.writer import metered_press
 from league.client import Client
 from league.player_ids import headshot_url, is_def
@@ -315,28 +316,69 @@ def _team(snapshot: Snapshot, roster_id: int | None) -> dict | None:
     return {"roster_id": roster_id, "team": snapshot.teams[roster_id].name}
 
 
+def _totals(trade: ProposedTrade, snapshot: Snapshot) -> list[dict]:
+    """The trade value total of each side, in the order of the sides: the sum of the week's chart values of the players
+    that the side gives, to one decimal. The Ledger card shows it under each column, so the site needs no second call
+    (decision 17). A player with no chart value counts as 0, and a week with no chart gives None."""
+    return [{"roster_id": side.roster_id,
+             "trade_value": None if snapshot.chart is None else round(
+                 sum(chart_value(snapshot, pid) or 0.0 for pid in side.player_ids), 1)}
+            for side in trade.sides]
+
+
+def finder_trade(pick: FinderPick, snapshot: Snapshot) -> dict:
+    """One trade of the finder document: its offer id, its sides, the totals, the Lean, the Case, the Bullets, and the
+    fact lines. The find stream sends each trade in this shape as soon as it stands, so a card shows before the end."""
+    return {
+        "offer_id": pick.offer.offer_id,
+        "sides": _echoed_sides(pick.offer.trade, snapshot),
+        "totals": _totals(pick.offer.trade, snapshot),
+        "lean": pick.lean,
+        "case": pick.case,
+        "bullets": [bullet.model_dump() for bullet in pick.bullets],
+        "fact_lines": pick.fact_lines,
+    }
+
+
+def _short_name(name: str) -> str:
+    """The short name of a player for a narrow wait line: his last name, such as "Walker" for "Kenneth Walker III".
+
+    The last name of the facts helper keeps a particle, such as "St. Brown". It skips a short or odd last word, so the
+    short name then falls back to the last word that is not a suffix, and to the full name when no such word is left.
+    """
+    words = [word for word in name.split() if word.lower() not in NAME_SUFFIXES]
+    return last_name(name) or (words[-1] if words else name)
+
+
+def shortlist_trades(shortlist: Shortlist, snapshot: Snapshot) -> list[dict]:
+    """Each trade of the Shortlist by the names of its players, from the side of the asker: the players he gives, then
+    the players he gets. Each player has his full name and a short name, so the wait of step 5 can name the trade that
+    the pick weighs and still fit one line on a phone (decision 20)."""
+
+    def named(pids: list[str]) -> list[dict]:
+        return [{"name": snapshot.players[pid].name, "last": _short_name(snapshot.players[pid].name)} for pid in pids]
+
+    return [{"offer_id": offer.offer_id,
+             "gives": named(offer.trade.sides[0].player_ids),
+             "gets": named(offer.trade.gets(shortlist.asker))}
+            for offer in shortlist.shortlist]
+
+
 def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -> dict:
     """The finder result the site renders: the season, the two teams, the trades, and the as-of stamps.
 
-    Each trade holds its offer id, its sides, the headline, and the Bullets of the Advisor. Each near idea holds its
-    offer id, its sides, and the reason it fell short. A Bullet has the shape of
+    Each trade holds its offer id, its sides, the trade value total of each side, and the read of the Advisor: the
+    Lean, the Case, and the Bullets. Each near idea holds its offer id, its sides, the totals, and the reason it fell
+    short. Each player of a side carries his position, his NFL team, and his Season rank. A Bullet has the shape of
     the analyze document, so the site renders the rows one way. After a fallback, each trade of the shortlist has no
-    headline and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the press, so
-    the page needs no words of its own. No trade holds a score.
+    Lean, no Case, and no Bullet, and its fact lines hold plain facts. An empty list carries the plain line of the
+    press, so the page needs no words of its own. No trade holds a score.
     """
-    trades = [
-        {
-            "offer_id": pick.offer.offer_id,
-            "sides": _echoed_sides(pick.offer.trade, snapshot),
-            "headline": pick.headline,
-            "bullets": [bullet.model_dump() for bullet in pick.bullets],
-            "fact_lines": pick.fact_lines,
-        }
-        for pick in picks.picks
-    ]
+    trades = [finder_trade(pick, snapshot) for pick in picks.picks]
     # The offers that the pick weighed and would not send, each with the reason it fell short. An idea is an idea, so
     # a list with offers always shows one, even when no pick stands.
-    near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot), "reason": idea.reason}
+    near = [{"offer_id": idea.offer.offer_id, "sides": _echoed_sides(idea.offer.trade, snapshot),
+             "totals": _totals(idea.offer.trade, snapshot), "reason": idea.reason}
             for idea in picks.near]
     return {
         # The site calls the analyze route per card, and that route needs the season with the pair and the sides.
@@ -346,6 +388,8 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
         "near": near,
         # The key is always there, so the document keeps one shape with a list and without one.
         "empty": None if trades else picks.none_line,
+        # Why the pick kept fewer than 5 trades, or None. The site does not show it; it is for the log and a review.
+        "short_line": picks.short_line,
         "as_of": _as_of(snapshot),
         "fallback": picks.fallback,
         "missing": list(snapshot.missing),
@@ -354,25 +398,44 @@ def finder_document(pair: FindRequest, snapshot: Snapshot, picks: FinderPicks) -
 
 
 @router.post("/find")
-def find(request: Request, pair: FindRequest, served: ServedClient) -> dict:
+def find(request: Request, pair: FindRequest, served: ServedClient, background: BackgroundTasks) -> dict:
     """Search for trades of the asker on the live snapshot, with the picked partner or every other team.
 
-    The Jev search makes the shortlist, and the Advisor picks up to 3 trades of it, each with a headline and Bullets.
+    The Jev search makes the shortlist, and the Advisor picks up to 5 trades of it, each with a Lean, a Case, and
+    Bullets. The log-only Jev checks run after the document goes out.
     """
-    return find_trades(request, pair, served)
+    return find_trades(request, pair, served, defer=background.add_task)
 
 
-def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None) -> dict:
-    """The find press of the route, for the route and for the trade ideas of the front door.
+def find_trades(request: Request, pair: FindRequest, served: Served, stage: Stage | None = None,
+                defer: Defer | None = None, read: Callable[[int], None] | None = None,
+                trade: Callable[[dict, int], None] | None = None,
+                weigh: Callable[[list[dict]], None] | None = None,
+                trades_done: Callable[[], None] | None = None,
+                trades_count: Callable[[int], None] | None = None) -> dict:
+    """The find press of the route, for the route, the find stream, and the trade ideas of the front door.
 
     With `stage`, the search and the pick get it and send a plain line at each stage. With none, they get no stage
-    keyword and send no line, because the plain route streams no step.
+    keyword and send no line, because the plain route streams no step. With `defer`, the pick hands it the log-only
+    Jev checks, so the caller runs them after its Answer goes out. With `read`, the search hands it the roster id of
+    each team as it reads it, so a stream can report each team in turn. With `trade`, the pick streams, and `trade` gets
+    each trade in the shape of the document as soon as it stands, with the most trades that the pick can keep, so a
+    stream can show each card in turn and count the trades still to come (decision 20). With `weigh`, the press hands
+    it the trades of the Shortlist by the names of their players before the pick starts, so the wait of step 5 can name
+    each trade that the pick weighs (decision 20). With `trades_done` and `trade`, the pick tells it once when it has no
+    more trades, so the stream can drop the count of the trades still to come before the document goes out. With
+    `trades_count` and `trade`, the pick tells it the count of trades that it keeps as soon as the streamed count
+    closes, and again each time the count changes, so the count line shows the real count from the first card.
+    A cached repeat sends no trade and no Shortlist, because its document comes at once.
     """
     with _press_log("find", served):
-        return _find(request, pair, served, stage)
+        return _find(request, pair, served, stage, defer, read, trade, weigh, trades_done, trades_count)
 
 
-def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None) -> dict:
+def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | None, defer: Defer | None,
+          read: Callable[[int], None] | None, trade: Callable[[dict, int], None] | None,
+          weigh: Callable[[list[dict]], None] | None, trades_done: Callable[[], None] | None,
+          trades_count: Callable[[int], None] | None) -> dict:
     # The same roster twice needs no snapshot, so it fails before the load runs. The teams cache stays.
     if pair.asker == pair.partner:
         raise HTTPException(status_code=422, detail={"message": "Pick two different teams."})
@@ -384,6 +447,8 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
         served.teams_cache.clear(pair.season)
         # The same words as check_trade, so the form shows one message for a roster that is gone.
         raise HTTPException(status_code=422, detail={"message": f"Roster {gone[0]} is not in the league"})
+    # A press with rosters or a chart week that the fair warm-up has not seen wakes it, so the other pairs warm too.
+    request.app.state.fair_warmer.check(snapshot)
     cache = served.cache
     key = finder_cache_key(pair.season, pair.asker, pair.partner, snapshot, pair.anchor, pair.limit)
     cached = cache.get(key)
@@ -396,12 +461,21 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     anchored = {} if pair.anchor is None else {"anchor": pair.anchor}
     if pair.limit is not None:
         anchored["limit"] = pair.limit
-    if stage is None:
-        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **anchored)
-        picks = request.app.state.finder_pick(shortlist, snapshot)
-    else:
-        shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, stage=stage, **anchored)
-        picks = request.app.state.finder_pick(shortlist, snapshot, stage=stage)
+    staged = {} if stage is None else {"stage": stage}
+    # The search gets the read keyword only from a stream, as it gets the stage.
+    reads = {} if read is None else {"read": read}
+    deferred = {} if defer is None else {"defer": defer}
+    # The pick gets the on_pick keyword only from a stream that sends each trade, as it gets the stage.
+    if trade is not None:
+        deferred["on_pick"] = lambda pick, most: trade(finder_trade(pick, snapshot), most)
+        if trades_done is not None:
+            deferred["on_picks_end"] = trades_done
+        if trades_count is not None:
+            deferred["on_picks_count"] = trades_count
+    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored, **reads)
+    if weigh is not None and shortlist.shortlist:
+        weigh(shortlist_trades(shortlist, snapshot))
+    picks = request.app.state.finder_pick(shortlist, snapshot, **staged, **deferred)
     document = finder_document(pair, snapshot, picks)
     # A fallback is not stored, so the next request of the same pair tries the Claude call again.
     if not picks.fallback:

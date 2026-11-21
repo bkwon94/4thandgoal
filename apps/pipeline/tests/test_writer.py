@@ -273,7 +273,7 @@ def test_writer_has_no_trade_recap_rule(fixture_raw_dir):
     assert "Put at most two numbers in a sentence." in system and "Write every number as digits" in system
 
 
-def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True, on_usage=None):
+def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True, on_usage=None, output_tokens=0):
     """A ClaudeWriter over a stub client, and the dict of the keyword arguments of its last request."""
     from facts.writer import ClaudeWriter
 
@@ -286,6 +286,7 @@ def _stub_writer(stop_reason="end_turn", parsed_output="parsed", has_usage=True,
                 "cache_creation_input_tokens": 0,
                 "cache_read_input_tokens": 0,
                 "input_tokens": 1,
+                "output_tokens": output_tokens,
             })
             return type("Response", (), {
                 "stop_reason": stop_reason,
@@ -364,6 +365,53 @@ def test_the_finder_pick_call_runs_on_sonnet_and_the_read_call_on_opus():
     assert sent["output_config"] == {"effort": "medium"}
 
 
+def _streamed_writer(chunks):
+    """A ClaudeWriter over a stub client whose stream gives `chunks` of text, and the dict of its request keywords."""
+    from facts.writer import ClaudeWriter
+
+    sent = {}
+    usage = type("Usage", (), {"cache_creation_input_tokens": 0, "cache_read_input_tokens": 0, "input_tokens": 1,
+                               "output_tokens": 5})
+
+    class Stream:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def __iter__(self):
+            snapshot = ""
+            for chunk in chunks:
+                snapshot += chunk
+                yield type("TextEvent", (), {"type": "text", "text": chunk, "snapshot": snapshot})()
+
+        def get_final_message(self):
+            return type("Response", (), {"stop_reason": "end_turn", "parsed_output": "parsed", "usage": usage})()
+
+    class Messages:
+        def stream(self, **kwargs):
+            sent.update(kwargs)
+            return Stream()
+
+    return ClaudeWriter(client=type("Client", (), {"messages": Messages()})()), sent
+
+
+def test_the_finder_pick_call_with_on_text_streams_the_text_as_it_grows():
+    # Decision 20: the pick streams its answer, so each trade card can show as soon as it stands.
+    from analyzer.finder_pick import FinderPickOut
+    from facts.writer import finder_pick_call
+
+    writer, sent = _streamed_writer(['{"pi', 'cks": [', ']}'])
+    texts = []
+    assert finder_pick_call("finder system", "user text", FinderPickOut, writer=writer,
+                            on_text=texts.append) == "parsed"
+    assert texts == ['{"pi', '{"picks": [', '{"picks": []}']
+    assert sent["model"] == "claude-sonnet-5-5"
+    assert sent["output_config"] == {"effort": "medium"}
+    assert sent["output_format"] is FinderPickOut
+
+
 def test_the_finder_repair_call_runs_on_sonnet_at_low_effort():
     # A repair fixes the text of one pick on one sheet, so it is a small call. Low effort keeps it short, so the
     # repairs of a press stay within the time and the cost of AT-33.
@@ -390,18 +438,20 @@ def test_the_advisor_read_uses_the_analyzer_call_and_the_finder_pick_its_own_cal
     assert inspect.signature(pick_trades).parameters["repair_call"].default is finder_repair_call
 
 
-def test_parse_call_logs_the_kind_and_the_three_usage_counts(caplog):
+def test_parse_call_logs_the_kind_the_usage_counts_the_model_the_effort_and_the_time(caplog):
     import logging
+    import re
 
     from facts.writer import parse_call
 
-    writer, _ = _stub_writer()
+    writer, _ = _stub_writer(output_tokens=7)
     with caplog.at_level(logging.INFO, logger="facts.writer"):
-        parse_call("user text", WriterOut, "system text", writer=writer)
-    assert (
-        "WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0"
-        " input_tokens=1"
-    ) in caplog.messages
+        parse_call("user text", WriterOut, "system text", writer=writer, effort="medium", model="claude-sonnet-5-5")
+    # The output tokens and the time show where a slow call spends its time.
+    [line] = [message for message in caplog.messages if message.startswith("WriterOut call:")]
+    assert re.fullmatch(
+        r"WriterOut call: cache_creation_input_tokens=0 cache_read_input_tokens=0 input_tokens=1 output_tokens=7"
+        r" model=claude-sonnet-5-5 effort=medium time=\d+\.\ds", line)
 
 
 def test_parse_call_skips_the_log_line_when_the_response_has_no_usage(caplog):

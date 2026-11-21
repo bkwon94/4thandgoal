@@ -176,8 +176,11 @@ describe("the personal Topics of Lil Fridge", () => {
     const first = render(<HomePage />);
     await tapInMore("Weak spots");
     await articleWith("Weak spots", "Checked");
-    // The Thread keeps the Answer once the stream ends, a render after the mark shows "Checked".
-    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("no true holes"));
+    // The Thread keeps the Answer once the stream ends, a render after the mark shows "Checked". A loaded CPU can take
+    // seconds for that render, so the wait gets 8 s, as each wait for an Answer does.
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("no true holes"), {
+      timeout: 8000,
+    });
     first.unmount();
     render(<HomePage />);
     const kept = await articleWith("Weak spots", "Your team has no true holes.");

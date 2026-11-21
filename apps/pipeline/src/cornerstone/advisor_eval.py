@@ -355,7 +355,7 @@ def _find_one(
             "shortlist": [{"offer_id": offer.offer_id, "score": offer.score, "fair": offer.fair,
                            "trade": _trade_names(offer.trade, snapshot)} for offer in shortlist.shortlist],
             "picks": [{"offer_id": pick.offer.offer_id, "trade": _trade_names(pick.offer.trade, snapshot),
-                       "headline": pick.headline, "bullets": [b.model_dump() for b in pick.bullets],
+                       "lean": pick.lean, "case": pick.case, "bullets": [b.model_dump() for b in pick.bullets],
                        "fact_lines": pick.fact_lines} for pick in picks.picks],
             "near": [{"offer_id": idea.offer.offer_id, "trade": _trade_names(idea.offer.trade, snapshot),
                       "reason": idea.reason} for idea in picks.near],

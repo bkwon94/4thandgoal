@@ -326,6 +326,27 @@ test("the flow list of the verify skill reads clean, and the Week report opens t
   expect(report?.steps.some((step) => "expect" in step)).toBe(true);
 });
 
+/*
+ * A first-visit reader picks a team, and then the first-visit Tour shows about 0.9 s later, before the reader taps anything.
+ * A flow that taps a Topic at once beats the Tour, and the Tour then opens later, over the answer, on its dim. So each
+ * flow of the front door skips the Tour right after the team pick, as a first-visit reader does.
+ */
+test("each flow of the front door skips the first-visit Tour right after the team pick", () => {
+  const flows = readFlows(
+    join(process.cwd(), "..", "..", ".claude", "skills", "verify", "flows.json"),
+  );
+  const pick = { click: 'role=dialog[name="Which team is yours?"] >> role=button' };
+  const skip = { click: 'role=dialog[name="Suggestions"] >> role=button[name="Skip"]' };
+  const door = flows.filter((flow) =>
+    flow.steps.some((step) => JSON.stringify(step) === JSON.stringify(pick)),
+  );
+  expect(door.map((flow) => flow.name)).toEqual(["Front door", "Passphrase"]);
+  for (const flow of door) {
+    const at = flow.steps.findIndex((step) => JSON.stringify(step) === JSON.stringify(pick));
+    expect(flow.steps[at + 1], flow.name).toEqual(skip);
+  }
+});
+
 test("added steps go after the steps of their flow, and a name with no picked flow stops the run", () => {
   const { dir } = site({});
   mkdirSync(dir, { recursive: true });

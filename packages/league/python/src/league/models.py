@@ -111,15 +111,25 @@ class ChartRead(BaseModel):
     rows: list[ChartRow]
 
 
+class FaabTransfer(BaseModel):
+    """FAAB that one roster sends to another in a trade."""
+    amount: int
+    sender: int
+    receiver: int
+
+
 class Trade(BaseModel):
     transaction_id: str
     # The aware time of Sleeper's epoch milliseconds.
     created: datetime
+    # The aware time that Sleeper accepted the trade. A saved trade from before the field has none.
+    accepted: datetime | None = None
     roster_ids: list[int]
     # Player id to the roster that got him, and player id to the roster that gave him.
     adds: dict[str, int]
     drops: dict[str, int]
     draft_picks: list[DraftPick]
+    faab: list[FaabTransfer] = []
 
 
 class PastWeek(BaseModel):

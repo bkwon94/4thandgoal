@@ -213,6 +213,8 @@ for (const entry of FULL_FLOOR_PAGES) {
         if (targets.exempt.length === 0) console.log(`${label}: exempt links inside prose: none`);
         for (const link of targets.exempt)
           console.log(`${label}: exempt link inside prose: ${link}`);
+        // Each skipped form proxy prints too, with the size of the control that takes its tap.
+        for (const proxy of targets.proxies) console.log(`${label}: skipped form proxy: ${proxy}`);
         failures.push(
           ...targets.failures,
           ...(await scanContrastInSteps(page, typeof entry === "string" ? undefined : entry.scope)),

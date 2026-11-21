@@ -1,0 +1,15 @@
+"""One find press of the local API stream route, with the arrival time of each stream line. Args: base URL, JSON body, out file."""
+import sys, time, urllib.request
+base, body, out = sys.argv[1], sys.argv[2], sys.argv[3]
+req = urllib.request.Request(base + "/find-stream", data=body.encode(), method="POST",
+                             headers={"X-League-Passphrase": "localtest", "Content-Type": "application/json"})
+start = time.time()
+with urllib.request.urlopen(req, timeout=240) as resp, open(out, "w") as f:
+    f.write(f"$ POST {base}/find-stream {body}   (started {time.strftime('%H:%M:%S')})\n")
+    for raw in resp:
+        line = raw.decode().rstrip("\n")
+        if line:
+            f.write(f"{time.time() - start:6.2f} s  {line}\n")
+    total = time.time() - start
+    f.write(f"# wall time: {total:.2f} s\n")
+print(f"{total:.2f}")

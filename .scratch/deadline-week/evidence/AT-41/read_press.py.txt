@@ -1,0 +1,115 @@
+"""Read one press: the Shortlist dump of the evidence tap and the stream file. It prints the facts of AT-43, AT-46,
+AT-55 to AT-57, AT-60, AT-69, and AT-70. Args: shortlist dump, stream file, check (none|anchor:<pid>|aim:<pos>)."""
+import json, sys
+from collections import defaultdict
+dump, stream, check = sys.argv[1], sys.argv[2], (sys.argv[3] if len(sys.argv) > 3 else "none")
+d = json.load(open(dump))
+players, teams, sl = d["players"], {int(k): v for k, v in d["teams"].items()}, d["shortlist"]
+asker = sl["asker"]
+def oid(t): return "-".join(f"{s['roster_id']}:{'+'.join(sorted(s['player_ids']))}" for s in t["sides"])
+def shape(t): return f"{len(t['sides'][0]['player_ids'])}-for-{len(t['sides'][1]['player_ids'])}"
+def names(ids): return " + ".join(players.get(i, {}).get("name", i) for i in ids)
+def words(t): return f"{teams[t['sides'][0]['roster_id']]} gives {names(t['sides'][0]['player_ids'])}; {teams[t['sides'][1]['roster_id']]} gives {names(t['sides'][1]['player_ids'])}"
+# Each side lists its given players as {"player_id", "to"}. The read adds "player_ids", as ProposedTrade names them.
+def norm(t):
+    for side in t["sides"]:
+        side["player_ids"] = [g["player_id"] for g in side["gives"]]
+    return t
+for t in sl["offers"]: norm(t)
+for o in sl["shortlist"] + sl["dropped"]: norm(o["trade"])
+offers = sl["offers"]
+print(f"# press: {json.dumps(d['press'])}")
+print(f"# Value offers: {len(offers)}")
+SH = ["1-for-1", "2-for-1", "1-for-2", "3-for-1", "1-for-3", "3-for-2", "2-for-3"]
+counts = {s: 0 for s in SH}
+for t in offers: counts[shape(t)] += 1
+print("## AT-55 Value offers per shape direction: " + ", ".join(f"{k}={v}" for k, v in counts.items()))
+# AT-56: band.
+out_band, checked = [], 0
+for t in offers:
+    a = [players[p]["chart_value"] for p in t["sides"][0]["player_ids"]]
+    b = [players[p]["chart_value"] for p in t["sides"][1]["player_ids"]]
+    checked += 1
+    sa, sb = sum(a), sum(b)
+    if len(a) == len(b):
+        ok = max(sa, sb) <= 1.10 * min(sa, sb) + 1e-9
+    else:
+        more, less = (sa, sb) if len(a) > len(b) else (sb, sa)
+        ok = less <= more + 1e-9 and more <= 1.25 * less + 1e-9
+    if not ok: out_band.append((oid(t), sa, sb))
+ratios = []
+for t in offers:
+    a = sum(players[p]["chart_value"] for p in t["sides"][0]["player_ids"]); b = sum(players[p]["chart_value"] for p in t["sides"][1]["player_ids"])
+    la, lb = len(t["sides"][0]["player_ids"]), len(t["sides"][1]["player_ids"])
+    ratios.append(max(a, b) / min(a, b) if la == lb else ((a / b) if la > lb else (b / a)))
+print(f"## AT-56 offers checked: {checked}; outside the band: {len(out_band)} {out_band[:5]}")
+print(f"   ratio of the side with more players to the other (1-for-1: larger to smaller): min {min(ratios):.4f}, max {max(ratios):.4f}")
+# AT-57: filler and Herbert.
+low = min(((players[p]["chart_value"], players[p]["name"], oid(t)) for t in offers for s in t["sides"] if len(s["player_ids"]) > 1 for p in s["player_ids"]), default=None)
+print(f"## AT-57 lowest chart value on a side of 2 or 3 players: {low}")
+none_val = [p for t in offers for s in t["sides"] for p in s["player_ids"] if players[p]["chart_value"] is None]
+print(f"   players with no chart value in a Value offer: {len(none_val)}")
+herb = [oid(t) for t in offers if any(players[p]["name"] == "Justin Herbert" for s in t["sides"] for p in s["player_ids"])]
+print(f"   Value offers that hold Justin Herbert: {len(herb)} {herb[:3]}")
+# AT-60: step 2.
+fair = sl["fair_means"]; unfair = set(sl["unfair"]); step2 = sl["step_two"]
+groups = defaultdict(list)
+for t in offers:
+    if oid(t) in unfair: continue
+    groups[(t["sides"][1]["roster_id"], shape(t))].append((fair.get(oid(t)), oid(t)))
+s2g = defaultdict(list)
+byid = {oid(t): t for t in offers}
+for i in step2: s2g[(byid[i]["sides"][1]["roster_id"], shape(byid[i]))].append(i)
+print(f"## AT-60 fair step: {len(offers)} checked, {len(unfair)} dropped (mean below 0.25), {len(offers)-len(fair)} with no answer")
+print(f"   step 2 offers: {len(step2)}; groups with an offer after step 1: {len(groups)}; most per group in step 2: {max((len(v) for v in s2g.values()), default=0)}")
+bad = []
+for g, ids in sorted(s2g.items()):
+    ranked = sorted(groups[g], key=lambda x: (-(x[0] if x[0] is not None else 0.5), x[1]))
+    top3 = [r[0] for r in ranked[:3]]
+    for i in ids:
+        f = fair.get(i)
+        third = top3[-1] if top3 else None
+        if f is None or (third is not None and f < third - 1e-12): bad.append(i)
+    print(f"   group {teams[g[0]]} {g[1]}: {len(groups[g])} offers after step 1; fair means of the group, highest first: {[round(r[0],3) if r[0] is not None else None for r in ranked[:6]]}{' ...' if len(ranked)>6 else ''}; step 2: " + "; ".join(f"{i} fair={fair.get(i):.3f} ({names(byid[i]['sides'][0]['player_ids'])} for {names(byid[i]['sides'][1]['player_ids'])})" for i in ids))
+missing = [g for g in groups if g not in s2g]
+print(f"   step 2 offers outside the 3 highest fair means of their group: {len(bad)} {bad}; groups with no step 2 offer: {len(missing)}")
+# AT-43: Shortlist.
+print("## AT-43 Shortlist in order (shape direction, partner, players of the asker, fair mean):")
+for n, o in enumerate(sl["shortlist"], 1):
+    t = o["trade"]
+    print(f"   {n}. {shape(t)} | {teams[t['sides'][1]['roster_id']]} | asker gives {names(t['sides'][0]['player_ids'])} | gets {names(t['sides'][1]['player_ids'])} | fair={o['fair']:.3f} gains={o['gains']} needs={o['needs']}")
+print("## gain drops (offer, gains):")
+for o in sl["dropped"]:
+    print(f"   {words(o['trade'])} | gains={o['gains']} fair={o['fair']:.3f}")
+# The trades of the answer.
+answer = None
+for l in open(stream):
+    if '"data-answer"' in l:
+        answer = json.loads(l.split("data: ", 1)[1])["data"]["document"]
+if answer:
+    print(f"## AT-70 the picks of the answer: {len(answer['trades'])}")
+    for t in answer["trades"]:
+        s = t["sides"]
+        print(f"   {len(s[0]['gives'])}-for-{len(s[0]['gets'])} | partner {s[1]['team']} | {s[0]['team']} gives {' + '.join(p['name'] for p in s[0]['gives'])}; gets {' + '.join(p['name'] for p in s[0]['gets'])} | {t.get('lean')} | {t.get('offer_id')}")
+    print(f"   shapes: {len({(len(t['sides'][0]['gives']), len(t['sides'][0]['gets'])) for t in answer['trades']})}, partners: {len({t['sides'][1]['team'] for t in answer['trades']})}")
+    print(f"   near: {len(answer.get('near') or [])}")
+    for t in answer.get("near") or []:
+        s = t["sides"]; print(f"   near: {s[0]['team']} gives {' + '.join(p['name'] for p in s[0]['gives'])}; gets {' + '.join(p['name'] for p in s[0]['gets'])} | {t.get('reason')}")
+# AT-46.
+def has(t, give, get):
+    g = [players.get(p, {}).get("name") for p in t["sides"][0]["player_ids"]]; r = [players.get(p, {}).get("name") for p in t["sides"][1]["player_ids"]]
+    return g == [give] and r == [get]
+for give, get in (("Kenneth Walker III", "Patrick Mahomes"), ("Zay Flowers", "Jared Goff")):
+    inv = [oid(t) for t in offers if has(t, give, get)]
+    on_sl = [o["offer_id"] for o in sl["shortlist"] if has(o["trade"], give, get)]
+    dr = [(o["offer_id"], o["gains"]) for o in sl["dropped"] if has(o["trade"], give, get)]
+    inans = [t["offer_id"] for t in (answer or {}).get("trades", []) if [p["name"] for p in t["sides"][0]["gives"]] == [give] and [p["name"] for p in t["sides"][0]["gets"]] == [get]]
+    print(f"## AT-46 {give} for {get}: Value offers {inv}, fair mean {[round(fair[i],3) if i in fair else None for i in inv]}, unfair {[i in unfair for i in inv]}, in step 2 {[i in step2 for i in inv]}, on the Shortlist {on_sl}, gain drop {dr}, among the trades {inans}")
+if check.startswith("anchor:"):
+    pid = check.split(":")[1]
+    miss = [oid(t) for t in offers if not any(pid in s["player_ids"] for s in t["sides"])]
+    print(f"## AT-69 anchor {players.get(pid,{}).get('name', pid)}: {len(offers)} Value offers, {len(offers)-len(miss)} hold him, {len(miss)} do not {miss[:5]}")
+if check.startswith("aim:"):
+    pos = check.split(":")[1]
+    miss = [oid(t) for t in offers if not any(players[p]["position"] == pos for p in t["sides"][1]["player_ids"])]
+    print(f"## AT-69 aim {pos}: {len(offers)} Value offers, {len(offers)-len(miss)} bring the asker a {pos}, {len(miss)} do not {miss[:5]}")

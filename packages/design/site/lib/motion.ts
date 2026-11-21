@@ -7,6 +7,10 @@ import { type TargetAndTransition, type Transition } from "framer-motion";
 /* The brand ease-out from --ease-out in globals.css. Framer Motion needs the curve as numbers, not as a CSS value. */
 export const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
+/* The smooth-out ease of transitions.dev, for a panel that opens, a chevron that flips, and a change of position.
+   It starts fast and settles long, so use it for a move that the reader asked for. Use EASE_OUT for a plain fade. */
+export const SMOOTH_OUT = [0.22, 1, 0.36, 1] as const;
+
 /* The curve of the rise of the look (ADR 0024). It starts fast and settles long, so the content lands softly.
    --ease-rise in globals.css holds the same curve for the CSS motion of the hero. */
 export const RISE_EASE = [0.16, 1, 0.3, 1] as const;

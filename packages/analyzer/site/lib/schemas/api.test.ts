@@ -1,16 +1,18 @@
 /**
- * Parses the two API fixtures with the response schemas.
+ * Parses the API fixtures with the response schemas.
  * A fixture that drifts from its schema fails here, and the message names the bad field.
  */
 import { describe, expect, it } from "bun:test";
 import analyzeJson from "../fixtures/analyze-response.json";
 import findJson from "../fixtures/find-response.json";
+import findBoGirdsJson from "../fixtures/find-response-bo-girds-rb.json";
 import { analyzeResponseSchema, findResponseSchema, teamsResponseSchema } from "./api";
 
 // The raw JSON of each fixture, before a parse. A copy per call, so a test that changes a body leaves the next test as it was.
 const FIXTURES: Record<string, unknown> = {
   "analyze-response.json": analyzeJson,
   "find-response.json": findJson,
+  "find-response-bo-girds-rb.json": findBoGirdsJson,
 };
 
 function fixture(name: string): unknown {
@@ -35,6 +37,36 @@ describe("API response schemas", () => {
   it("rejects a find document with no near key, so an Answer kept before the near ideas drops", () => {
     const body = fixture("find-response.json") as Record<string, unknown>;
     delete body.near;
+    expect(findResponseSchema.safeParse(body).success).toBe(false);
+  });
+
+  it("parses the trade value totals of each trade and near idea, in side order", () => {
+    const parsed = findResponseSchema.parse(fixture("find-response.json"));
+    expect(parsed.trades[1].totals).toEqual([
+      { roster_id: 2, trade_value: 26.5 },
+      { roster_id: 10, trade_value: 17.0 },
+    ]);
+    expect(parsed.near[0].totals.map((total) => total.roster_id)).toEqual([2, 10]);
+  });
+
+  it("parses the recorded find answer of a real press for Bo Girds, with the totals of each pick and near idea", () => {
+    const parsed = findResponseSchema.parse(fixture("find-response-bo-girds-rb.json"));
+    expect(parsed.trades.length).toBeGreaterThan(0);
+    for (const offer of [...parsed.trades, ...parsed.near])
+      expect(offer.totals.map((t) => t.roster_id)).toEqual(offer.sides.map((s) => s.roster_id));
+  });
+
+  it("accepts a null trade value total, for a week with no chart", () => {
+    const body = fixture("find-response.json") as {
+      trades: { totals: { trade_value: number | null }[] }[];
+    };
+    body.trades[0].totals[0].trade_value = null;
+    expect(findResponseSchema.safeParse(body).success).toBe(true);
+  });
+
+  it("rejects a find trade with no totals, so an Answer kept before the totals drops", () => {
+    const body = fixture("find-response.json") as { trades: Record<string, unknown>[] };
+    delete body.trades[0].totals;
     expect(findResponseSchema.safeParse(body).success).toBe(false);
   });
 

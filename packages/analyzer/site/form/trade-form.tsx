@@ -1,13 +1,14 @@
 /**
  * The trade form, the Stack: the hero, the teams row, one card for each side that says what it gets, the sheets, and the grade bar.
- * It owns the trade and the grade state, and it posts the trade to the analyze route with the finder and the result after it.
+ * It owns the trade and the grade state, and it posts the trade to the analyze route. With the finder on, the switch of the
+ * hero moves between Grade a trade and Find a trade, and Find mode takes the place of the hero and the form.
  */
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
-import { CircleAlertIcon } from "lucide-react";
+import { ArrowLeftIcon, CircleAlertIcon } from "lucide-react";
 import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { Hero } from "@cpc/design/parts/hero";
@@ -21,13 +22,17 @@ import { StageLines } from "./stage-lines";
 import { PlayerSheet } from "./player-sheet";
 import { TeamSheet } from "./team-sheet";
 import { TeamsRow } from "./teams-row";
+import { ModeSwitch } from "./mode-switch";
 import { TradeFinder } from "./trade-finder";
 import { TradeOnStage, type StageSide } from "./trade-on-stage";
 import { Button } from "@cpc/design/ui/button";
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
 import { stageLines, type StageTrade } from "../lib/stage-lines";
-import type { AnalyzeResponse, FinderTrade } from "../lib/analyze-types";
+import type { AnalyzeResponse, FindResponse, FinderTrade } from "../lib/analyze-types";
+import { finderRead } from "../lib/finder-read";
+import type { AnalyzerMode } from "../lib/mode";
 import { ApiError, type ApiTarget, postAnalyze, toErrorLine, type Team } from "../lib/api";
 import {
   analyzeRequest,
@@ -70,9 +75,16 @@ type TradeFormProps = {
   /* The page places the parts, so it can put its own lines, such as a failed fetch, between the hero and the form.
      The form keeps the grade state, so it hands the parts out and does not lift the state. */
   children?: (parts: FormParts) => ReactNode;
+  // The half of the switch on the screen. The page owns it, because the address of the page names it. Find needs the
+  // finder flag, so with the flag off the form shows Grade and no switch.
+  mode?: AnalyzerMode;
+  // A card that opens its Full Result asks for a "push", so the back gesture returns to the cards.
+  onModeChange?: (mode: AnalyzerMode, how?: "push") => void;
+  // The eyebrow of the hero in both modes, such as the countdown to the trade deadline. With none, it names the tool.
+  eyebrow?: ReactNode;
 };
 
-/* The hero, the form with the finder, and the result of a done grade. */
+/* The hero, the form, and the result of a done grade. In Find mode the hero holds Find and its cards, and the form hides. */
 type FormParts = { hero: ReactNode; form: ReactNode; result: ReactNode };
 
 /* With no layout from the page, the parts follow in order. */
@@ -91,14 +103,25 @@ type TradeToGrade = { sides: Sides; season: number };
 type OpenSheet =
   { kind: "team"; slot: number } | { kind: "add" } | { kind: "players"; side: number } | null;
 
-/* The hero while the grade runs, in the hero slots: Live, the title, the line, and the wait as the feature.
+/* The hero while the grade runs, in the hero slots: the eyebrow and the locked switch of the page, the title, the line,
+   and the wait as the feature. The Find wait shows the same eyebrow and switch, so the two waits read as one.
    The read that replaces it opens with a level-two heading, so this title is level two too. The stage lines run under
    the title, in a part of their own. A screen reader skips them. The page holds one status, the pending announcement
    "Grading the trade" of the grade button, so the hero holds none, and a screen reader hears one message. The trade stays
    on the stage, and the mesh weighs each side in turn under it, so the wait shows what the grade does. The drive starts
    with the hero, so the mesh moves on the first frame after the tap. The trade is read once, because the grade locks
    the form. With motion off, the mesh stays still and flat. */
-function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }) {
+function GradingHero({
+  trade,
+  stage,
+  eyebrow,
+  toggle,
+}: {
+  trade: StageTrade;
+  stage: StageSide[];
+  eyebrow: ReactNode;
+  toggle?: ReactNode;
+}) {
   const [lines] = useState(() => stageLines(trade));
   const [drive] = useState(() => waitDrive(performance.now()));
   return (
@@ -106,7 +129,8 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
       label="Grading the Trade"
       art={<HeroMesh drive={drive} />}
       level={2}
-      eyebrow="Live"
+      eyebrow={eyebrow}
+      toggle={toggle}
       title="Grading the Trade"
       meta="This can take up to a minute."
       feature={
@@ -124,17 +148,26 @@ function GradingHero({ trade, stage }: { trade: StageTrade; stage: StageSide[] }
   );
 }
 
-/* The hero of the page, in the hero slots: the name of the tool as the eyebrow, the title, and the question of the Stack as the meta line.
+/* The hero of the page, in the hero slots: the name of the tool or the deadline as the eyebrow, the switch, the title, and the question of the Stack as the meta line.
    Its ground is the mesh, calm and flat in idle, with no scene. Once a player is in the Stack, the trade shows on the
    stage as the feature, one row per side with a count of its players. The cards of the Stack below show each player, so
    the stage waits for the grade to show the faces. The grading hero and the read take its place while a grade runs and under a result. */
-function TitleHero({ stage }: { stage: StageSide[] }) {
+function TitleHero({
+  stage,
+  eyebrow,
+  toggle,
+}: {
+  stage: StageSide[];
+  eyebrow: ReactNode;
+  toggle?: ReactNode;
+}) {
   const hasPlayer = stage.some((side) => side.players.length > 0);
   return (
     <Hero
       label="Trade Analyzer"
       art={<HeroMesh />}
-      eyebrow="Trade Analyzer"
+      eyebrow={eyebrow}
+      toggle={toggle}
       title="Trade Analyzer"
       meta={<Rise step={1}>Who gets what?</Rise>}
       feature={hasPlayer ? <TradeOnStage sides={stage} show="count" /> : undefined}
@@ -151,12 +184,22 @@ export function TradeForm({
   onRostersStale,
   prefill = null,
   children = stackParts,
+  mode = "grade",
+  onModeChange,
+  eyebrow = "Trade Analyzer",
 }: TradeFormProps) {
   const [sides, setSides] = useState<Sides>(EMPTY_SIDES);
   // The id of the next added side. EMPTY_SIDES holds ids 0 and 1, and an id is never reused, so a key never repeats.
   const nextSideId = useRef(EMPTY_SIDES.length);
   const [sheet, setSheet] = useState<OpenSheet>(null);
   const [grade, setGrade] = useState<GradeState>({ status: "idle" });
+  // A search of Find mode runs, so the switch stays on Find until it ends.
+  const [finding, setFinding] = useState(false);
+  // The mode of the last render. The switch of a new hero starts from it, so its pill slides from the old half.
+  const shownMode = useRef(mode);
+  useEffect(() => {
+    shownMode.current = mode;
+  }, [mode]);
   // The sheet edits a draft while the result stays in place. Cancel restores the trade that produced that result.
   const [editing, setEditing] = useState(false);
   const savedSides = useRef<Sides>(sides);
@@ -166,6 +209,15 @@ export function TradeForm({
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollToResult = useRef(false);
   const off = useMotionOff();
+  // The Full Result of a finder card shows a way back to the cards. A trade that the reader built or graded shows none.
+  const [fromCard, setFromCard] = useState(false);
+  // The offer of the card that opened, so the page returns to that card when the cards show again.
+  const openedOffer = useRef<string | null>(null);
+  const finderRef = useRef<HTMLDivElement>(null);
+  // The finder mounts when Find first shows, and then stays mounted. Its cards and its near fold are state of the
+  // finder, so a Full Result that unmounted it would lose them, and the back gesture would return to an empty finder.
+  // Keeping it mounted and hidden is plainer than lifting its result up, and a plain switch keeps the cards too.
+  const [finderKept, setFinderKept] = useState(false);
 
   // A link fills the Stack once, when the page reads its query. A later change of the trade is the reader's own.
   useEffect(() => {
@@ -178,6 +230,17 @@ export function TradeForm({
     scrollToResult.current = false;
     resultRef.current?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
   }, [grade.status, off]);
+
+  // The cards show again after a back from a Full Result, so the page goes to the card that opened.
+  useEffect(() => {
+    if (!(finderOn && mode === "find") || openedOffer.current === null) return;
+    const offer = openedOffer.current;
+    openedOffer.current = null;
+    const card = [
+      ...(finderRef.current?.querySelectorAll<HTMLElement>("[data-offer-id]") ?? []),
+    ].find((el) => el.dataset.offerId === offer);
+    card?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
+  }, [finderOn, mode, off]);
 
   /* Edit keeps the result in place and saves the trade for each way out without a submit. */
   function edit() {
@@ -205,13 +268,13 @@ export function TradeForm({
   // A link can fill a whole trade before the rosters arrive. The stage and the stage lines read the teams, so a grade
   // that starts before them shows an empty stage and names "Your Team" in place of a manager. The bar waits for the teams.
   const ready = teams.length > 0 && everySideTrades(sides);
-  // The finder grades two sides, so it hides once the trade has a third side.
-  const twoSides = sides.length === 2;
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
-  // The form hides while the grade runs and under a result, so the hero and the read lead the page. The stage of the
-  // hero shows the trade, so no line repeats it.
-  const formHidden = grading || grade.status === "done";
+  const findMode = finderOn && mode === "find";
+  if (findMode && !finderKept) setFinderKept(true);
+  // The form hides while the grade runs, under a result, and in Find mode, so the hero and the read lead the page. The
+  // stage of the hero shows the trade, so no line repeats it.
+  const formHidden = grading || grade.status === "done" || findMode;
   // With no teams yet, no slot and no picker has anything to show.
   const locked = grading || teams.length === 0;
   const teamSheet = teamSheetOf(sheet);
@@ -224,7 +287,10 @@ export function TradeForm({
   function changeTrade(update: (current: Sides) => Sides) {
     request.drop();
     setSides(update);
-    if (!editing) setGrade({ status: "idle" });
+    if (!editing) {
+      setGrade({ status: "idle" });
+      setFromCard(false);
+    }
   }
 
   /* A new team for a side takes the old roster out of the trade, so each get from that side drops. The players the side
@@ -303,12 +369,13 @@ export function TradeForm({
   }
 
   /* A finder card opens its full result here, so the form shows the picks of the trade and the result matches them.
-     The form already owns the grade, so the card reuses this submit and needs no query or route of its own. */
-  function openTrade(trade: FinderTrade, tradeSeason: number) {
+     The find sent the read of each pick, so the card shows that read with no second grade. A trade of a fallback has
+     no read, so it reuses this submit and needs no query or route of its own. */
+  function openTrade(trade: FinderTrade, find: FindResponse) {
     const partner = trade.sides.find((side) => side.roster_id !== asker);
     const own = trade.sides.find((side) => side.roster_id === asker);
     if (asker === null || !own || !partner) return;
-    // The finder shows only at two sides, so the card fills the two sides that are there.
+    // A finder trade has two sides, so the card fills the first two sides, and a third side leaves the trade.
     const [mine, theirs] = sides;
     const toGets = (side: { gives: { player_id: string }[] }, fromSide: number) =>
       side.gives.map((p) => ({ playerId: p.player_id, fromSide }));
@@ -317,9 +384,24 @@ export function TradeForm({
       { id: theirs.id, rosterId: partner.roster_id, gets: toGets(own, mine.id) },
     ];
     setSides(next);
+    // The grade of a card shows in Grade mode, so the address and the switch name the mode of the result. The push
+    // gives the back gesture an entry to leave, and it returns to the cards.
+    onModeChange?.("grade", "push");
+    openedOffer.current = trade.offer_id;
+    setFromCard(true);
+    const read = finderRead(trade, find);
+    if (read !== null) {
+      // A late answer of an earlier grade must not replace the read of the card.
+      request.drop();
+      setEditing(false);
+      setSheet(null);
+      scrollToResult.current = true;
+      setGrade({ status: "done", doc: read });
+      return;
+    }
     // The new picks are not in state until the next render, so the submit gets them as an argument.
     // The season is the one of the finder document, so the grade matches the trade the card shows.
-    submit({ sides: next, season: tradeSeason });
+    submit({ sides: next, season: find.season });
   }
 
   // The trade comes from the state by default. A finder card passes its own, because its picks land in state one render later.
@@ -331,6 +413,8 @@ export function TradeForm({
     const { controller } = run;
     // Only a finder card passes a trade, and only that path scrolls to the result.
     scrollToResult.current = trade !== undefined;
+    // A grade that the reader starts is not the card any more, so the way back to the cards goes.
+    if (trade === undefined) setFromCard(false);
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
@@ -491,29 +575,9 @@ export function TradeForm({
       {/* The page keeps its form while a grade runs, so the pending button stays mounted. */}
       <div>
         <div hidden={formHidden}>{!editing && stack}</div>
-        {grade.status !== "done" && gradeBar}
+        {grade.status !== "done" && !findMode && gradeBar}
       </div>
-      <div hidden={formHidden}>
-        {/* The finder needs the asker, so it shows once the asker is picked. The key resets the partner and the cards when the asker changes.
-            The finder grades two sides, so it hides at three or four. */}
-        {/* The finder is off by default because the page felt crowded. */}
-        {finderOn && myTeam && twoSides && (
-          <div className="mt-sp-6">
-            <TradeFinder
-              key={myTeam.roster_id}
-              teams={teams}
-              target={target}
-              asker={myTeam.roster_id}
-              passphrase={passphrase}
-              onUnauthorized={onUnauthorized}
-              onRostersStale={onRostersStale}
-              onOpen={openTrade}
-              locked={grading}
-            />
-          </div>
-        )}
-        {!editing && pickers}
-      </div>
+      <div hidden={formHidden}>{!editing && pickers}</div>
       <Sheet
         open={editing}
         title="Edit the trade"
@@ -541,8 +605,20 @@ export function TradeForm({
   /* The analyze document names each team but carries no avatar, so the result reads the avatars of the teams of the league. */
   const avatars = new Map(teams.map((team) => [team.roster_id, team.avatar]));
 
-  const result = grade.status === "done" && (
+  // The result waits behind the cards, so a back from a Full Result shows the cards and no result under them.
+  const result = grade.status === "done" && !findMode && (
     <div ref={resultRef}>
+      {fromCard && (
+        <PendingButton
+          // The same step as the back gesture. The popstate of the browser returns the page to the cards.
+          onClick={() => window.history.back()}
+          pendingAnnouncement=""
+          className="press mt-sp-4 min-h-touch gap-sp-2 rounded-pill px-sp-2 text-meta text-accent-ink focus-visible:outline-accent flex cursor-pointer items-center font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
+        >
+          <ArrowLeftIcon aria-hidden="true" className="size-sp-4" />
+          Back to trade ideas
+        </PendingButton>
+      )}
       <AnalyzeResult doc={grade.doc} avatars={avatars} onEdit={edit} />
     </div>
   );
@@ -566,8 +642,18 @@ export function TradeForm({
     return [{ id: side.id, team: team.team, avatar: team.avatar, players }];
   });
 
-  // Under a result the read is the hero, so the form puts no hero of its own above it.
-  const hero = grading ? (
+  // The switch shows only with the finder on. A wait locks it, so a wait always ends in the mode that started it.
+  const toggle = finderOn ? (
+    <ModeSwitch
+      value={mode}
+      from={shownMode.current}
+      onChange={(next) => onModeChange?.(next)}
+      disabled={grading || finding}
+    />
+  ) : undefined;
+
+  // Under a result the read is the hero, so the form puts no hero of its own above it. In Find mode the finder is the hero.
+  const gradeHero = findMode ? null : grading ? (
     <GradingHero
       trade={sideViews.map(({ index, team, rows }) => ({
         team: team?.team ?? SIDE_TITLES[index],
@@ -575,9 +661,36 @@ export function TradeForm({
         gets: rows.map((row) => ({ name: row.player.name, position: row.player.position })),
       }))}
       stage={stage}
+      eyebrow={eyebrow}
+      toggle={toggle}
     />
   ) : formHidden ? null : (
-    <TitleHero stage={stage} />
+    <TitleHero stage={stage} eyebrow={eyebrow} toggle={toggle} />
+  );
+
+  const hero = (
+    <>
+      {finderKept && (
+        <div ref={finderRef} hidden={!findMode}>
+          {/* The key resets the partner, the chip, and the cards when the asker changes. */}
+          <TradeFinder
+            key={myTeam?.roster_id ?? "none"}
+            teams={teams}
+            target={target}
+            asker={myTeam?.roster_id ?? null}
+            onAsker={(rosterId) => pickTeam(0, rosterId)}
+            passphrase={passphrase}
+            onUnauthorized={onUnauthorized}
+            onRostersStale={onRostersStale}
+            onOpen={openTrade}
+            onFindingChange={setFinding}
+            eyebrow={eyebrow}
+            toggle={toggle}
+          />
+        </div>
+      )}
+      {gradeHero}
+    </>
   );
 
   return children({ hero, form, result });

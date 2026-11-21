@@ -119,6 +119,8 @@ describe("MidseasonScreen", () => {
     renderReport();
     const rail = screen.getByRole("navigation", { name: "Chapters" });
     expect(rail.className).toContain("sticky");
+    // The rail reads the band height token, so it follows the band when the Deadline banner grows it.
+    expect(rail.className).toContain("top-band-height");
     const links = within(rail).getAllByRole("link");
     expect(links.map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
       ["How We Got Here", "#how-we-got-here"],

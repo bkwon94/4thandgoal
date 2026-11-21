@@ -245,7 +245,7 @@ function CheckBody({ doc, analyze }: { doc: AnalyzeResponse; analyze: string }) 
   );
 }
 
-/* One offer of the trade ideas: the headline, what Your team gives and gets, and its Bullets. */
+/* One offer of the trade ideas: what Your team gives and gets, and its Bullets. */
 function Offer({
   trade,
   asker,
@@ -272,10 +272,6 @@ function Offer({
       {...riseIn(off, { delay: 0.12 + index * 0.08 })}
     >
       {partner && <Caps>With {partner.team}</Caps>}
-      {/* The headline leads, because it is the reason to send the offer. The trade itself follows as a plain line. */}
-      {trade.headline && (
-        <p className="text-body leading-body text-ink m-0 font-semibold">{trade.headline}</p>
-      )}
       <p className="text-body text-ink-2 m-0 leading-tight">
         You give <span className="text-ink font-semibold">{names(mine.gives)}</span> and get{" "}
         <span className="text-ink font-semibold">{names(mine.gets)}</span>.

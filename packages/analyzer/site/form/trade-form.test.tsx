@@ -3,11 +3,13 @@
  * fetch is a test stub, and each test reads the screen. A test opens a sheet with a click on its button.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, analyzeResponse as fixtureJson } from "../lib/fixtures/api";
 import { findResponse as findJson } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
+import type { AnalyzerMode } from "../lib/mode";
 import {
   addPlayer,
   chooseTeam,
@@ -168,6 +170,23 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
 });
+
+/* A find stream that sends the first step and the document, then ends, as the find stream of the API does. */
+function findStream(doc: unknown) {
+  const encoded = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`);
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(
+        encoded({ type: "data-step", data: { line: "Reading their roster", live: true } }),
+      );
+      controller.enqueue(encoded({ type: "data-answer", data: { kind: "find", document: doc } }));
+      controller.close();
+    },
+  });
+  fetchStub.mockResolvedValueOnce(
+    new Response(body, { headers: { "content-type": "text/event-stream" } }),
+  );
+}
 
 describe("TradeForm", () => {
   it("edits the captured trade in a sheet, restores it on Cancel, and submits changed picks", async () => {
@@ -623,13 +642,13 @@ describe("TradeForm", () => {
     expect(rows[0].querySelector("img")?.getAttribute("src")).toBe("https://cdn.test/ana.png");
   });
 
-  it("puts the grading hero in the slots: Live, the title, the line, and the loading state", async () => {
+  it("puts the grading hero in the slots: the eyebrow of the page, the title, the line, and the loading state", async () => {
     fetchStub.mockReturnValueOnce(new Promise(() => {}));
     await pickTrade(TRADE);
     fireEvent.click(submit());
     const hero = await screen.findByRole("region", { name: "Grading the Trade" });
     expect(slotsOf(hero)).toEqual(["eyebrow", "title", "meta", "feature"]);
-    expect(slotText(hero, "eyebrow")).toBe("Live");
+    expect(slotText(hero, "eyebrow")).toBe("Trade Analyzer");
     expect(within(hero).getByRole("heading", { level: 2 }).textContent).toBe("Grading the Trade");
     expect(slotText(hero, "meta")).toBe("This can take up to a minute.");
     const feature = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
@@ -1168,7 +1187,8 @@ describe("TradeForm with three or four sides", () => {
   });
 });
 
-/* The finder cards hand their trade to the form. Each fixture finder trade is between roster 2 and one partner, so these tests render those teams. */
+/* The finder cards hand their trade to the form. Each fixture finder trade is between roster 2 and one partner, so these tests render those teams.
+   The page owns the mode of the switch, so the tests hold it in a small parent, as the page does. */
 describe("TradeForm with the finder", () => {
   afterEach(() => {
     finderOn = false;
@@ -1199,97 +1219,135 @@ describe("TradeForm with the finder", () => {
     },
   ];
 
+  function WithModes() {
+    const [mode, setMode] = useState<AnalyzerMode>("grade");
+    return (
+      <TradeForm
+        teams={pairTeams}
+        target={apiTarget}
+        finderOn={finderOn}
+        passphrase="localtest"
+        onUnauthorized={onUnauthorized}
+        mode={mode}
+        onModeChange={setMode}
+      />
+    );
+  }
+
+  const modeHalf = (name: string) =>
+    within(screen.getByRole("radiogroup", { name: "Mode" })).getByRole("radio", { name });
+  const partnerButton = () => screen.getByRole("button", { name: /Trade with/ });
+
+  /* Taps "Find a trade" on the switch and waits for the Find hero. */
+  async function toFind() {
+    fireEvent.click(modeHalf("Find a trade"));
+    await screen.findByRole("heading", { level: 1, name: "Trade Ideas" });
+    // The pill of the new hero moves to Find one frame after the swap.
+    await waitFor(() => expect(modeHalf("Find a trade").getAttribute("aria-checked")).toBe("true"));
+  }
+
+  /* Picks the fixture partner in the sheet of Find and waits for the sheet to close. */
+  async function pickPartner() {
+    fireEvent.click(partnerButton());
+    const rows = within(await screen.findByRole("list", { name: "Partners" })).getAllByRole(
+      "button",
+    );
+    fireEvent.click(rows.find((row) => partnerRow.test(row.textContent ?? "")) as HTMLElement);
+    await waitFor(() => expect(screen.queryByRole("list", { name: "Partners" })).toBeNull());
+  }
+
   beforeEach(() => {
     cleanup();
     finderOn = true;
-    render(
-      <TradeForm
-        teams={pairTeams}
-        target={apiTarget}
-        finderOn={finderOn}
-        passphrase="localtest"
-        onUnauthorized={onUnauthorized}
-      />,
-    );
+    render(<WithModes />);
   });
 
-  it("shows the finder when the flag is on", async () => {
+  it("shows the switch on Grade a trade when the flag is on", () => {
+    expect(modeHalf("Grade a trade").getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+  });
+
+  it("puts Find in the hero in place of the form, with no finder under the cards", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
-    expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Trade with/ })).toBeNull();
+    await toFind();
+    expect(partnerButton()).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Grade the Trade" })).toBeNull();
+    fireEvent.click(modeHalf("Grade a trade"));
+    expect(await screen.findByRole("heading", { level: 1, name: "Trade Analyzer" })).toBeTruthy();
+    expect(card("Your Team")).toBeTruthy();
   });
 
-  it("titles the finder in title case and puts it after the cards", async () => {
-    await pickTeam("Your Team", "All You Need Is Love");
-    const heading = screen.getByRole("heading", { level: 2, name: "Find a Trade" });
-    expect(
-      card("Team Two").compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-  });
-
-  it("hides the finder when the flag is off, with my team picked", async () => {
+  it("shows no switch when the flag is off", async () => {
     finderOn = false;
     cleanup();
-    render(
-      <TradeForm
-        teams={pairTeams}
-        target={apiTarget}
-        finderOn={finderOn}
-        passphrase="localtest"
-        onUnauthorized={onUnauthorized}
-      />,
-    );
+    render(<WithModes />);
     await pickTeam("Your Team", "All You Need Is Love");
-    expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
+    expect(screen.queryByRole("radiogroup", { name: "Mode" })).toBeNull();
   });
 
-  it("hides the finder once the trade has a third side, and shows it again at two", async () => {
+  it("keeps Find on with a third side in Grade mode", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
     await pickTeam("Team Two", partnerName);
     await addTeam("Third Wheel");
-    expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Remove Team Three" }));
-    await waitFor(() => expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy());
+    await toFind();
+    expect(
+      (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+    ).toBe(false);
   });
 
-  it("shows no finder until my team is picked", async () => {
-    expect(screen.queryByRole("group", { name: "Trade Partner" })).toBeNull();
-    await pickTeam("Your Team", "All You Need Is Love");
-    expect(screen.getByRole("group", { name: "Trade Partner" })).toBeTruthy();
-  });
-
-  /* Finds with the fixture partner and taps "See the Full Result" on a card. */
-  async function openCard(finderDoc: unknown, index: number) {
-    await pickTeam("Your Team", "All You Need Is Love");
-    answer(200, finderDoc);
+  it("keeps Find off until my team is picked, and Your team of Find picks the team of Grade", async () => {
+    await toFind();
+    expect(
+      (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
+    const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
     fireEvent.click(
-      within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", {
-        name: partnerRow,
-      }),
+      rows.find((row) => row.textContent?.includes("All You Need Is Love")) as HTMLElement,
     );
+    await waitFor(() =>
+      expect(
+        (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
+      ).toBe(false),
+    );
+    fireEvent.click(modeHalf("Grade a trade"));
+    await waitFor(() =>
+      expect(slot("Your Team").getAttribute("aria-label")).toContain("All You Need Is Love"),
+    );
+  });
+
+  /* Finds with the fixture partner and taps "See the Full Result" on a card. A card with a read shows it at once. A
+     card of a fallback has no read, so the form grades it, and the analyze route answers with the analyze fixture. */
+  async function openCard(finderDoc: typeof findJson, index: number) {
+    await pickTeam("Your Team", "All You Need Is Love");
+    await toFind();
+    await pickPartner();
+    findStream(finderDoc);
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     const cards = await screen.findAllByRole("article");
-    answer(200, fixtureJson);
+    const lean = finderDoc.trades[index].lean;
+    if (lean === null) answer(200, fixtureJson);
     fireEvent.click(within(cards[index]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
+    await screen.findByRole("heading", { level: 2, name: lean ?? "Lean yes" });
   }
 
   it("resets the partner and the cards when my team changes", async () => {
     await pickTeam("Your Team", "All You Need Is Love");
-    answer(200, findJson);
-    fireEvent.click(
-      within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", {
-        name: partnerRow,
-      }),
-    );
+    await toFind();
+    await pickPartner();
+    findStream(findJson);
     fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
     await screen.findAllByRole("article");
 
-    await pickTeam("Your Team", partnerName);
+    fireEvent.click(screen.getByRole("button", { name: /Your team/ }));
+    const rows = within(await screen.findByRole("list", { name: "Teams" })).getAllByRole("button");
+    fireEvent.click(rows.find((row) => partnerRow.test(row.textContent ?? "")) as HTMLElement);
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /Your team/ }).textContent).toContain(partnerName),
+    );
     expect(screen.queryAllByRole("article")).toHaveLength(0);
-    const partners = within(screen.getByRole("group", { name: "Trade Partner" })).getAllByRole(
-      "radio",
-    ) as HTMLInputElement[];
-    expect(partners.every((p) => !p.checked)).toBe(true);
+    expect(partnerButton().textContent).toContain("Every team");
     // With no partner, the search runs over every other team, so Find stays on.
     expect(
       (screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled,
@@ -1305,47 +1363,35 @@ describe("TradeForm with the finder", () => {
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
   });
 
-  it("grades the trade of a card with the season of the finder document", async () => {
+  it("grades a card of a fallback, which has no read, with the season of the finder document", async () => {
     Element.prototype.scrollIntoView = mock();
-    await openCard({ ...findJson, season: 2025 }, 1);
-    expect(JSON.parse(fetchStub.mock.calls[1][1].body).season).toBe(2025);
-  });
-
-  it("grades the trade of a card through the analyze route and shows the full result", async () => {
-    Element.prototype.scrollIntoView = mock();
-    await pickTeam("Your Team", "All You Need Is Love");
-    answer(200, findJson);
-    fireEvent.click(
-      within(screen.getByRole("group", { name: "Trade Partner" })).getByRole("radio", {
-        name: partnerRow,
-      }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
-    const cards = await screen.findAllByRole("article");
-    expect(cards).toHaveLength(3);
-
-    answer(200, fixtureJson);
-    fireEvent.click(within(cards[1]).getByRole("button", { name: "See the Full Result" }));
-    await screen.findByRole("heading", { level: 2, name: "Lean yes" });
-
+    const trades = findJson.trades.map((trade) => ({
+      ...trade,
+      lean: null,
+      case: null,
+      bullets: [],
+      fact_lines: ["A fact."],
+    }));
+    await openCard({ ...findJson, season: 2025, fallback: true, trades }, 1);
     const [url, init] = fetchStub.mock.calls[1];
     expect(url).toBe("https://api.example.test/clients/cpc/analyze");
-    const [mine, theirs] = findJson.trades[1].sides;
-    expect(JSON.parse(init.body)).toEqual({
-      season: 2026,
-      asker: 2,
-      sides: [
-        {
-          roster_id: 2,
-          gives: mine.gives.map((p) => ({ player_id: p.player_id, to: theirs.roster_id })),
-        },
-        {
-          roster_id: theirs.roster_id,
-          gives: theirs.gives.map((p) => ({ player_id: p.player_id, to: 2 })),
-        },
-      ],
-    });
-    // The form shows the trade of the card, so the picks match the result.
+    expect(JSON.parse(init.body).season).toBe(2025);
+  });
+
+  it("opens the trade of a card with the read of the find, with no analyze request, and the form holds the trade", async () => {
+    Element.prototype.scrollIntoView = mock();
+    await openCard(findJson, 1);
+    const trade = findJson.trades[1];
+    const read = screen.getByRole("region", { name: "The Read" });
+    expect(read.textContent).toContain(trade.case!);
+    // The find stream is the one request. The read comes with the find.
+    expect(fetchStub.mock.calls.map(([url]) => url)).toEqual([
+      "https://api.example.test/clients/cpc/find-stream",
+    ]);
+    // The read of a card shows in Grade mode, so Find leaves the page.
+    expect(screen.queryByRole("heading", { name: "Trade Ideas" })).toBeNull();
+    // The form shows the trade of the card, so the picks match the read, and an edit grades it again.
+    const [mine, theirs] = trade.sides;
     edit();
     expect(slot("Team Two").getAttribute("aria-label")).toContain(partnerName);
     expect(
@@ -1354,5 +1400,25 @@ describe("TradeForm with the finder", () => {
     expect(
       within(card("Your Team")).getByRole("button", { name: `Remove ${theirs.gives[0].name}` }),
     ).toBeTruthy();
+  });
+
+  it("locks the switch in the grade wait and shows the eyebrow of the page, not Live", async () => {
+    fetchStub.mockReturnValueOnce(new Promise(() => {}));
+    // Each player of the asker shows in each fixture trade, so the trade goes with the third team, whose one player is plain.
+    await pickTeam("Your Team", "Third Wheel");
+    await pickTeam("Team Two", partnerName);
+    await pickPlayers("Your Team", partnerName, first.sides[1].gives[0].name);
+    await pickPlayers("Team Two", "Third Wheel", "Tess One");
+    fireEvent.click(screen.getByRole("button", { name: "Grade the Trade" }));
+    const hero = await screen.findByRole("region", { name: "Grading the Trade" });
+    expect(slotText(hero, "eyebrow")).toBe("Trade Analyzer");
+    const toggle = within(hero).getByRole("radiogroup", { name: "Mode" });
+    expect(
+      within(toggle).getByRole("radio", { name: "Grade a trade" }).getAttribute("aria-checked"),
+    ).toBe("true");
+    expect(
+      within(toggle).getByRole("radio", { name: "Find a trade" }).hasAttribute("disabled") ||
+        toggle.getAttribute("aria-disabled") === "true",
+    ).toBe(true);
   });
 });
