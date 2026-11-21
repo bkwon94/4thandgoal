@@ -19,7 +19,7 @@ import type { TeamPlayer } from "../lib/api";
 export const BLOCK_MAX = 3;
 
 // The reason line of a 4th tap. It names the rule and the way out, in plain words.
-const BLOCK_FULL = "Your block holds 3 players. Take one off to add another.";
+const BLOCK_FULL = `Your block holds ${BLOCK_MAX} players. Take one off to add another.`;
 // The line of an empty block. The empty block sets no rule, so the search may send any player.
 const BLOCK_EMPTY = "No one on the block. The search can offer any of your players.";
 
