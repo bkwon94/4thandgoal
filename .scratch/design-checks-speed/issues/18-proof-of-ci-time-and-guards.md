@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-11, AT-28, AT-3
 
 **Blocked by:** 04, 05, 06, 07, 14, 15, 16, and 17
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The median of 3 full CI runs of the spec branch is 360 s or less, and no job takes more than 360 s.
 - [x] The lint of all site code exits 0.
