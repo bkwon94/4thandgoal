@@ -81,6 +81,48 @@ const strip = (page: Page) => page.getByRole("group", { name: "Trade block" });
 const toggle = (page: Page, name: string) => strip(page).getByRole("button", { name, exact: true });
 
 /*
+ * The glide runs on the clock of the page, and the samples read that clock too. A loaded runner drops
+ * frames, so a sample by the wall clock can miss the glide. This init script gives the page a clock of frames:
+ * `performance.now` and the time of each frame move by exactly `ms` per frame, whatever the real time between frames.
+ * So the test sees the same frames on a fast Mac and on a loaded runner. The callbacks of one frame share one
+ * timestamp, so the clock moves once per frame. It is the clock of `front-door-tour-motion.spec.ts`.
+ */
+async function frameClock(page: Page, ms = 1000 / 60) {
+  await page.addInitScript((step) => {
+    const raf = window.requestAnimationFrame.bind(window);
+    const start = performance.now();
+    let frames = 0;
+    let last = -1;
+    Object.defineProperty(performance, "now", { configurable: true, value: () => start + frames * step });
+    window.requestAnimationFrame = (callback) =>
+      raf((time) => {
+        if (time !== last) {
+          last = time;
+          frames += 1;
+        }
+        callback(performance.now());
+      });
+  }, ms);
+}
+
+/*
+ * Keeps each Web Animation that the page starts through `Element.animate` in `window.recorded`. Framer Motion runs the
+ * shake of the reason line as a Web Animation, so the test can find it and set its time.
+ */
+async function recordAnimations(page: Page) {
+  await page.addInitScript(() => {
+    const recorded: Animation[] = [];
+    (window as unknown as { recorded: Animation[] }).recorded = recorded;
+    const animate = Element.prototype.animate;
+    Element.prototype.animate = function (this: Element, ...args: Parameters<Element["animate"]>) {
+      const animation = animate.apply(this, args);
+      recorded.push(animation);
+      return animation;
+    };
+  });
+}
+
+/*
  * Taps a player of the strip in the page, then reads the left edge of his toggle and of the first place of the strip on
  * each frame after the tap, for `ms`. The click runs in the page, so the first sample is the first frame after the tap.
  */
@@ -166,6 +208,7 @@ for (const viewport of VIEWPORTS) {
     test.describe("motion on", () => {
       test.use({ reducedMotion: "no-preference" });
       test("a pick moves to the front with a spring of 0.4 s and no bounce", async ({ page }) => {
+        await frameClock(page);
         await openFind(page, "light");
         const before = (await toggle(page, WALKER).boundingBox())!.x;
         const frames = await framesAfterTap(page, WALKER, 800);
@@ -216,27 +259,68 @@ for (const viewport of VIEWPORTS) {
       test.describe(`reason line, motion ${motion}`, () => {
         test.use({ reducedMotion: motion });
         test(`a refused 4th tap ${motion === "reduce" ? "shows the reason with no shake" : "shakes the reason line each time"}`, async ({ page }) => {
+          await recordAnimations(page);
           await openFind(page, "light");
           for (const name of [WALKER, FLOWERS, "Blake Corum, RB"]) await toggle(page, name).click();
-          const shifts = async () =>
+          const reason = page.getByText(/^Your block holds 3 players/);
+          // The animations of the reason line that started after the mark `from`, as an index of the record.
+          const shakesSince = (from: number) =>
             page.evaluate(
-              () =>
-                new Promise<number[]>((done) => {
-                  const group = document.querySelector('[role="group"][aria-label="Trade block"]') as HTMLElement;
-                  (group.querySelector('[aria-label="Lamar Jackson, QB"]') as HTMLElement).click();
-                  const seen: number[] = [];
-                  const start = performance.now();
-                  const read = () => {
-                    const line = [...document.querySelectorAll("p")].find((p) => p.textContent?.startsWith("Your block holds 3 players"));
-                    if (line) seen.push(Math.round(line.getBoundingClientRect().left * 10) / 10);
-                    if (performance.now() - start < 600) requestAnimationFrame(read);
-                    else done(seen);
-                  };
-                  requestAnimationFrame(read);
-                }),
+              (first) =>
+                (window as unknown as { recorded: Animation[] }).recorded
+                  .slice(first)
+                  .filter((animation) => ((animation.effect as KeyframeEffect).target as Element | null)?.textContent?.startsWith("Your block holds 3 players")).length,
+              from,
             );
           for (const tap of [1, 2]) {
-            const seen = await shifts();
+            const from = await page.evaluate(() => (window as unknown as { recorded: Animation[] }).recorded.length);
+            await toggle(page, "Lamar Jackson, QB").click();
+            await expect(reason).toBeVisible();
+            let seen: number[];
+            if (motion === "reduce") {
+              // With motion off the line holds still on each frame for 600 ms, and no animation starts on it.
+              seen = await page.evaluate(
+                () =>
+                  new Promise<number[]>((done) => {
+                    const line = [...document.querySelectorAll("p")].find((p) => p.textContent?.startsWith("Your block holds 3 players"))!;
+                    const seen: number[] = [];
+                    const start = performance.now();
+                    const read = () => {
+                      seen.push(Math.round(line.getBoundingClientRect().left * 10) / 10);
+                      if (performance.now() - start < 600) requestAnimationFrame(read);
+                      else done(seen);
+                    };
+                    requestAnimationFrame(read);
+                  }),
+              );
+              expect(await shakesSince(from)).toBe(0);
+            } else {
+              /* The shake is a Web Animation that Framer Motion starts on the line. The test pauses each animation that
+                 started on the line after the tap, sets its time frame by frame, every 1000/60 ms from the start to the
+                 end, and reads the place of the line at each time. Framer Motion can start more than one, so the test
+                 keeps the samples of the animation that moves the line the most. So the samples do not hang on the
+                 speed of the machine, and each tap must start its own shake. */
+              await expect.poll(() => shakesSince(from)).toBeGreaterThanOrEqual(1);
+              seen = await page.evaluate((first) => {
+                const shakes = (window as unknown as { recorded: Animation[] }).recorded
+                  .slice(first)
+                  .filter((animation) => ((animation.effect as KeyframeEffect).target as Element | null)?.textContent?.startsWith("Your block holds 3 players"));
+                const runs = shakes.map((shake) => {
+                  const line = (shake.effect as KeyframeEffect).target as Element;
+                  const end = Number(shake.effect!.getComputedTiming().endTime);
+                  const run: number[] = [];
+                  shake.pause();
+                  for (let t = 0; t <= end; t += 1000 / 60) {
+                    shake.currentTime = t;
+                    run.push(Math.round(line.getBoundingClientRect().left * 10) / 10);
+                  }
+                  shake.finish();
+                  return run;
+                });
+                const spread = (run: number[]) => Math.max(...run) - Math.min(...run);
+                return runs.reduce((best, run) => (spread(run) > spread(best) ? run : best));
+              }, from);
+            }
             const spread = Math.max(...seen) - Math.min(...seen);
             console.log(`${viewport.name} motion ${motion}: refused tap ${tap}, the reason line moves ${spread} px across ${seen.length} frames`);
             expect(seen.length).toBeGreaterThan(0);
