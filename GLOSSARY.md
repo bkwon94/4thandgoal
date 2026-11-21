@@ -73,7 +73,11 @@ _Avoid_: Dropdown, chooser, selector, list
 
 **Swap card**:
 The chapter of the result that shows what every side gives and gets.
-_Avoid_: Trade summary, exchange, ledger
+_Avoid_: Trade summary, exchange, ledger, Ledger card
+
+**Ledger card**:
+The Finder trade card. It shows one offer in two columns, "You get" and "You give". Each player row shows the name, the position, the NFL team, and the rank. Under each column sits its trade value total. One gap line under the totals reads, for example, "You get 9% more trade value". It is not the ledger of the Managers index.
+_Avoid_: Swap card, offer card
 
 **Manager page**:
 The page for one team of the league, for one season, with its grade, odds, moves, and performers.
@@ -84,7 +88,7 @@ The page that lists the twelve teams of a season and links to each manager page.
 _Avoid_: Roster list, team list, directory
 
 **Hero**:
-The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. It holds its content in the six hero slots. On a manager page it holds the avatar, the team name, the grade, and the record.
+The loud top surface of each page, with the grid texture and the brand glow. It stays dark in both themes. It holds its content in the seven hero slots. On a manager page it holds the avatar, the team name, the grade, and the record.
 _Avoid_: Header, banner, masthead, title block
 
 **Hero slot**:
@@ -149,7 +153,7 @@ The glow around the grade button of the Stack. It brightens with each passed che
 _Avoid_: Progress glow, submit glow, pulse
 
 **Index list**:
-The ledger of the Managers index: one row per team in power rank order, with the place, the avatar, the team name, and the playoff odds. The chips All, In, Bubble, and Out filter the rows by race group. On a phone and a tablet a tap opens a row in place. On desktop the ledger sits beside a sticky stage, the hero of the page.
+The ledger of the Managers index, not the Ledger card: one row per team in power rank order, with the place, the avatar, the team name, and the playoff odds. The chips All, In, Bubble, and Out filter the rows by race group. On a phone and a tablet a tap opens a row in place. On desktop the ledger sits beside a sticky stage, the hero of the page.
 _Avoid_: Manager cards, roster table, team list
 
 **Race group**:
@@ -579,8 +583,8 @@ two states: fair and lopsided. A lopsided trade names the side that gives more.
 _Avoid_: balance, even trade
 
 **Finder**:
-The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. The
-partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
+The search for trades the asker could send. It looks at every partner, or at one partner the asker picks. With
+no picked partner, the partner filter runs first. For each partner that passes, Jev picks the targets on each side, code builds
 every one-for-one, two-for-one, and one-for-two trade from the targets only, and Jev makes the shortlist. The Advisor then
 picks up to three trades from the shortlist that are good for both, and writes why each one works. The trades share no player. A
 handcuff, a player out with no return week, and an unlisted player are never in a trade. The chart lists no
@@ -588,36 +592,81 @@ kicker and no defense, so they are always unlisted.
 _Avoid_: suggested trades, counters (a counter changes one trade for one side)
 
 **Partner filter**:
-The first step of the finder: four Jev questions for each partner. Does he have a player at the asker's need
-who would start for the asker? Can he give that player up with no hole in his lineup? Does the asker have a
-player at his need who would start for him? Can the asker give that player up with no hole? Code counts the
-depth, and only a partner with four yes answers goes on. With no partner left, the finder says so plainly.
+The first step of the finder with no picked partner: the Spares tree on both sides of each pair. It stops no
+partner. Its answers become reasons on the pick sheet. A search with one picked partner or with an anchor skips it.
 _Avoid_: prefilter, screen
 
 **Target**:
-A player of one side of the finder that Jev judges the other side would want. The finder builds its trades from
-the targets only.
+A retired word of the finder. The finder has no targets step, because the Value screen is the one source of
+offers. Say Value offer.
 _Avoid_: candidate, pick
 
 **Offer**:
-A trade that the finder builds from the targets of both sides, before Jev makes the shortlist. It has one player or two on each side. In code it is a `ProposedTrade`, and it has an `offer_id`.
+A trade that the finder builds before Jev makes the shortlist. It comes from the Value screen only. Each side gives one to three players. In code it is a `ProposedTrade`, and it has an `offer_id`.
 _Avoid_: proposal, option
 
+**Shape**:
+How many players each side of a trade gives, such as 1-for-1, 2-for-1, 3-for-1, or 3-for-2. A shape counts in both directions.
+_Avoid_: format, trade type, size
+
+**Value screen**:
+The one cut of the finder by math. It keeps a trade only when the sums of the trade chart values of the two sides sit close together, before Jev reads it. The side that gets more players must get the larger sum.
+_Avoid_: value filter, band, fair filter
+
+**Value offer**:
+An Offer that the Value screen gives. Each Offer is a Value offer.
+_Avoid_: value pair, value trade, math offer
+
+**Fair cache**:
+The fair answers of the Value offers in the memory of the API process. The key is the client, the season, the chart
+week, and the player ids of each side in the side order. One answer serves a press of either team (decision 19).
+_Avoid_: prefetch store, fair store
+
+**Fair warm-up**:
+The worker of the API that fills the Fair cache for every team pair before a press. It asks only the keys that the
+cache does not hold, and it waits while a press is live.
+_Avoid_: prewarm, prefetch
+
 **Shortlist**:
-The trades of the finder that pass the Jev questions, for the Advisor to read.
+The trades of the finder that pass the Jev questions, for the Advisor to read. It holds 10 offers. The best offer of
+each shape direction comes first, then the best of each partner, then the best of each player that the asker gives.
+The rest follow by the fair mean.
 _Avoid_: candidates, top trades
+
+**Jev tree**:
+A decision in code whose inputs are tiny Jev questions. Jev gives each judgment, and code combines the answers into
+the result. Jev never makes the decision itself. Each tree has a backtest.
+_Avoid_: classifier, Jev decision
+
+**Spares tree**:
+The Jev tree that says if a team can spare a player at a weak starting slot of another team. Code lists the players
+at those positions who have a backup above the line who can play now. A player who is Out is never cover. Jev asks of each one if he would start over the weak starter,
+with the chart values as facts. It gives reasons, not a gate: a "yes" for a player that the asker gets becomes a
+pick sheet fact of each offer that brings him, and it drops no offer.
+_Avoid_: spares question, spares gate
+
+**Backtest**:
+The run of a Jev tree on every Backtest mark, to count the right answers. A change to a tree merges only if no mark
+that it got right breaks and the count does not drop.
+_Avoid_: eval, regression run
+
+**Backtest mark**:
+One answer of a Jev tree that Brian marked wrong, with the right answer. It comes from his pass over a run of the
+tree, or from a bad Finder trade traced to the Jev answer that let it through.
+_Avoid_: case (that is the Case of the Advisor), label, test case
 
 **Finder document**:
 The answer of the find route that the site renders: the season, the two teams, the as-of stamps, and up to
-three trades. Each trade holds its offer id, its two sides, the headline, and the Bullets of the Advisor. When the
-Advisor fails twice, each trade of the shortlist has no headline and no Bullet, its fact lines hold plain facts, and
-the document flags the fallback. An empty list carries a plain line that says why no trade works.
+three trades. Each trade holds its offer id, its two sides, and the read of the Advisor: the Lean, the Case, and the
+Bullets, in the same shape as the analyzer. A trade opens in the analyzer with that read, so no second grade runs. The
+Finder shows no trade with the Lean "Lean no" or "Pass". When the Advisor fails twice, each trade of the shortlist has
+no Lean, no Case, and no Bullet, its fact lines hold plain facts, and the document flags the fallback. An empty list carries a plain line that says why no trade works.
 _Avoid_: finder result, suggestions
 
 **Inner word**:
 A word of the code that a manager does not use: "trade value", "highest-value", "best lineup", "the line",
 "hole", "return bet", "one step", "no step", "takes RB", "takes WR", "takes TE", "takes QB", and "sits on the
-bench". No bullet and no case holds one. "The better player" replaces "the highest-value player". "Star",
+bench". No bullet and no case holds one. The Ledger card is the one place that shows "trade value". "The better player" replaces "the highest-value player". "Star",
 "opportunity", and "win-now move" are words a manager uses, so they are not inner words.
 _Avoid_: banned word (alone)
 
@@ -654,7 +703,7 @@ _Avoid_: missing, late
 
 **Trade value**:
 A player's worth on the half-PPR redraft trade value chart for the week of the trade. It is a fact the
-Advisor weighs, and the words never appear on a page.
+Advisor weighs. The words show on a page in one place: the two totals and the gap line of the Ledger card.
 _Avoid_: value (alone), chart value, price
 
 **Chart week**:
@@ -1198,6 +1247,22 @@ _Avoid_: Finder (that is the trade code of the analyzer), winner, claimer
 **Egg board**:
 The page of the site that shows the letters of each manager in each egg word, the count of eggs left, and the winner of each egg word. It never shows where an egg hides.
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
+
+**Deadline week**:
+The event of the trade deadline on the site of one client. It runs from its deploy until one day after the Lock, then it turns off by itself.
+_Avoid_: Deadline event, trade week, promo
+
+**Lock**:
+The time when Sleeper closes trades for the season, as one value in the client config. The Deadline banner counts down to it. Code and config say Lock; site copy says "trade deadline".
+_Avoid_: Deadline (alone), cutoff, close
+
+**Deadline banner**:
+The slim strip under the top band of each page during Deadline week. It counts down to the Lock with a tilde for the estimate, and a tap anywhere on it opens the Trade Wire. After the Lock it says that the trade deadline has passed.
+_Avoid_: Banner (alone), countdown bar, alert, announcement
+
+**Trade Wire**:
+The live list of the trades that Sleeper accepts in the league during Deadline week, newest first, in a sheet that the Deadline banner opens.
+_Avoid_: Feed, ticker, transaction history (that is the list of the weekly build)
 
 **Egg banner**:
 The slim strip under the top band of the home page that shows the count of eggs of the last egg drop, its day, and the count of eggs left to find. It links to the egg board and names no spot.

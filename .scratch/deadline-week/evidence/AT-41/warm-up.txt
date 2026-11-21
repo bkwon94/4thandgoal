@@ -1,0 +1,7 @@
+# The evidence API: the real app of app_from_env with the tap evidence_tap.py.txt, run from a detached worktree of 98d79f98, live Sleeper, live Jev (TYPESAFE_API_KEY), live Claude (ANTHROPIC_API_KEY), from ~/.secrets in the same shell.
+# API start 16:10:42; the presses start after the warm-up line below.
+INFO:     Started server process [34937]
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc ended: 105876 questions, 105876 asked, 0 held, about 32474697 tokens, $1.3639, 375.1s
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc ended: 105876 questions, 0 asked, 105876 held, about 0 tokens, $0.0000, 4.0s

@@ -208,7 +208,7 @@ function CheckBody({ doc, analyze }: { doc: AnalyzeResponse; analyze: string }) 
   );
 }
 
-/* One offer of the trade ideas: the headline, what Your team gives and gets, and its Bullets. */
+/* One offer of the trade ideas: what Your team gives and gets, and its Bullets. */
 function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: number; analyze: string; index: number }) {
   const off = useMotionOff();
   const mine = trade.sides.find((side) => side.roster_id === asker) ?? trade.sides[0];
@@ -222,8 +222,6 @@ function Offer({ trade, asker, analyze, index }: { trade: FinderTrade; asker: nu
   return (
     <motion.li className="flex flex-col gap-sp-2 border-t border-rule pt-sp-3 first:border-t-0 first:pt-0" {...riseIn(off, { delay: 0.12 + index * 0.08 })}>
       {partner && <Caps>With {partner.team}</Caps>}
-      {/* The headline leads, because it is the reason to send the offer. The trade itself follows as a plain line. */}
-      {trade.headline && <p className="m-0 text-body leading-body font-semibold text-ink">{trade.headline}</p>}
       <p className="m-0 text-body leading-tight text-ink-2">
         You give <span className="font-semibold text-ink">{names(mine.gives)}</span> and get{" "}
         <span className="font-semibold text-ink">{names(mine.gets)}</span>.

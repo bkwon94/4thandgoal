@@ -1,0 +1,42 @@
+--- visible text (body.innerText) ---
+CORNERSTONE FANTASY FOOTBALL LEAGUE
+TRADE DEADLINE
+~2h 41m 10s
+Trade Wire
+1
+new
+GOOD EVENING · WEEK 10
+Ask about Bo Girds
+
+or any team in the league.
+
+Try
+“
+who has the best roster
+”
+or
+“
+week 1 results
+”
+
+More
+Next game
+Playoffs
+Ranks
+Not your team? Change it
+--- accessible names (aria-label, alt, title, placeholder) ---
+
+Site menu
+Show the tour
+Switch to dark theme
+Open the menu
+Open the Trade Wire, 1 new trade
+Thread
+Suggestions
+Your next matchup: Next: Maye d'force B with U, 12-8
+Playoff race: 57% playoff odds
+Power rankings: 8th, down 4
+Ask
+Ask a question | Ask about your team or the league
+Send
+Your team: Bo Girds. Change the team

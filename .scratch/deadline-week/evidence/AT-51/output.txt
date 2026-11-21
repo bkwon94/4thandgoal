@@ -1,0 +1,2 @@
+$ git show 98d79f98:clients/cpc/client.toml | grep -n '^finder'
+22:finder = false

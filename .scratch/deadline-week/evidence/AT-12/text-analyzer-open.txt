@@ -1,0 +1,42 @@
+--- visible text (body.innerText) ---
+CORNERSTONE FANTASY FOOTBALL LEAGUE
+TRADE DEADLINE
+~2d 14h 05m
+Trade Wire
+1
+new
+TRADE DEADLINE ~2d 14h 05m
+Trade Analyzer
+Who gets what?
+
+Loading the teams…
+
+1
+Your Team
+2
+Team Two
+2 of 4
+Your Team gets
+No team yet
+Add a player Your Team gets
+Team Two gets
+No team yet
+Add a player Team Two gets
+
+Each team gives and gets at least one player.
+
+Grade the Trade
+--- accessible names (aria-label, alt, title, placeholder) ---
+
+Site menu
+Switch to dark theme
+Open the menu
+Open the Trade Wire, 1 new trade
+Trade Analyzer
+Who gets what
+Teams in the trade
+Pick Your Team
+Pick Team Two
+Add a team
+Players Your Team gets
+Players Team Two gets

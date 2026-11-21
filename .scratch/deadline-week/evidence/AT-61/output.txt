@@ -1,0 +1,35 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_finder_search.py -k spares_tree_yes_is_a_pick_sheet_fact_and_changes_no_count   # in a detached worktree of 98d79f98, UV_PROJECT_ENVIRONMENT=<worktree>/.venv-tests, 2026-11-20 16:14
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-tests/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 50 items / 49 deselected / 1 selected
+
+tests/test_finder_search.py::test_a_spares_tree_yes_is_a_pick_sheet_fact_and_changes_no_count_and_no_order PASSED [100%]
+
+======================= 1 passed, 49 deselected in 2.75s =======================
+
+# The source of each test that ran, at 98d79f98 (1 tests):
+
+# apps/pipeline/tests/test_finder_search.py
+def test_a_spares_tree_yes_is_a_pick_sheet_fact_and_changes_no_count_and_no_order(snap):
+    listed, yes = _spares_press(snap, 0.9)
+    _, no = _spares_press(snap, 0.1)
+    # The Spares tree builds no offer, drops no offer, and changes no order (decision 16).
+    assert [offer_id(t) for t in yes.offers] == [offer_id(t) for t in no.offers]
+    assert yes.step_two == no.step_two
+    assert [o.offer_id for o in yes.shortlist] == [o.offer_id for o in no.shortlist]
+    with_spares = [offer for offer in yes.shortlist if offer.spares]
+    assert with_spares and not any(offer.spares for offer in no.shortlist)
+    asker = snap.teams[ASKER].name
+    for offer in with_spares:
+        partner = snap.teams[offer.trade.sides[1].roster_id].name
+        texts = [fact.text for fact in offer_sheet(offer, snap, NewsFeed(fetch=no_news)).values()]
+        for pid, slot in offer.spares.items():
+            assert pid in offer.trade.sides[1].player_ids and slot == listed[pid].slot
+            name = snap.players[pid].name
+            assert f"For {asker}, {name} fills the weak slot {slot}, and {partner} can spare him." in texts
+    for offer in no.shortlist:
+        texts = [fact.text for fact in offer_sheet(offer, snap, NewsFeed(fetch=no_news)).values()]
+        assert not any("can spare him" in text for text in texts)

@@ -3,12 +3,16 @@ Tests for the Sleeper adapter of the provider port: the cache dir it takes in it
 of the projections ahead. Each test passes an httpx.MockTransport, so no test calls the network (ADR 0015).
 """
 import json
+from datetime import UTC, date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import httpx
 
+from league.parse import parse_trades
 from league.provider.base import Provider
-from league.provider.sleeper import SleeperProvider
+from league.provider.raw import RawTransaction
+from league.provider.sleeper import SleeperProvider, fetch_current_transactions, week_of
 
 PLAYERS = {"4046": {"position": "QB", "team": "BUF"}}
 
@@ -84,3 +88,35 @@ def test_the_draft_fetch_gives_the_draft_type_and_each_pick_with_its_price_and_s
         (CPC_DRAFT / "picks.json").read_text())
     assert json.loads((tmp_path / "draft" / "draft.json").read_text())["type"] == "auction"
     assert calls == [f"/v1/league/{CPC_LEAGUE_ID}", f"/v1/draft/{CPC_DRAFT_ID}", f"/v1/draft/{CPC_DRAFT_ID}/picks"]
+
+
+def test_the_current_transactions_read_the_leg_of_the_state_with_a_query_string_that_skips_the_cdn_cache():
+    urls: list[httpx.URL] = []
+    trade = json.loads(Path(__file__).parents[4].joinpath(
+        "apps/api/tests/fixtures/trade-wire/cpc-week-9-transactions.json").read_text())
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        urls.append(request.url)
+        return httpx.Response(200, json={"leg": 9} if request.url.path.endswith("/state/nfl") else trade)
+
+    leg, transactions = fetch_current_transactions("123", httpx.MockTransport(handler))
+    assert leg == 9 and len(transactions) == len(trade)
+    assert urls[1].path == "/v1/league/123/transactions/9" and "t" in urls[1].params
+
+
+def test_a_transaction_keeps_status_updated_as_an_extra_and_the_trade_takes_its_accept_time_from_it():
+    # The move feed and the waiver rules read `status_updated` from the extras, so a declared field would hide it.
+    trade = json.loads(Path(__file__).parents[4].joinpath(
+        "apps/api/tests/fixtures/trade-wire/cpc-week-9-transactions.json").read_text())
+    raw = [RawTransaction.model_validate(each) for each in trade]
+    assert [(each.model_extra or {}).get("status_updated") for each in raw] == [each["status_updated"] for each in trade]
+    sent = {each["transaction_id"]: each["status_updated"] for each in trade}
+    trades = parse_trades(raw)
+    assert trades and all(
+        each.accepted == datetime.fromtimestamp(sent[each.transaction_id] / 1000, tz=UTC) for each in trades)
+
+
+def test_the_lock_at_00_00_eastern_on_2026_11_24_falls_in_week_11():
+    # Week 1 of 2026 starts on Thursday 2026-09-10, so the Monday night games of week 11 end on 2026-11-24.
+    lock = datetime(2026, 11, 24, 0, 0, tzinfo=ZoneInfo("America/New_York"))
+    assert week_of(lock, date(2026, 9, 10)) == 11

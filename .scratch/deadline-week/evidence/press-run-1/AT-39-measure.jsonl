@@ -1,0 +1,6 @@
+{"width":375,"theme":"light","url":"http://127.0.0.1:8392/analyze/?mode=grade","apiRequestsAfterTap":[],"analyzeRequests":0,"tapError":null,"modeSwitch":null,"heroTitles":["Lean yes"]}
+{"width":375,"theme":"dark","url":"http://127.0.0.1:8392/analyze/?mode=grade","apiRequestsAfterTap":[],"analyzeRequests":0,"tapError":null,"modeSwitch":null,"heroTitles":["Lean yes"]}
+{"width":768,"theme":"light","url":"http://127.0.0.1:8392/analyze/?mode=grade","apiRequestsAfterTap":[],"analyzeRequests":0,"tapError":null,"modeSwitch":null,"heroTitles":["Lean yes"]}
+{"width":768,"theme":"dark","url":"http://127.0.0.1:8392/analyze/?mode=grade","apiRequestsAfterTap":[{"ms":1795210831342,"method":"GET","url":"http://127.0.0.1:8391/clients/cpc/deadline/trades","msAfterTap":846}],"analyzeRequests":0,"tapError":null,"modeSwitch":null,"heroTitles":["Lean yes"]}
+{"width":1280,"theme":"light","url":"http://127.0.0.1:8392/analyze/?mode=grade","apiRequestsAfterTap":[],"analyzeRequests":0,"tapError":null,"modeSwitch":null,"heroTitles":["Send it"]}
+{"width":1280,"theme":"dark","url":"http://127.0.0.1:8392/analyze/?mode=grade","apiRequestsAfterTap":[{"ms":1795210984305,"method":"GET","url":"http://127.0.0.1:8391/clients/cpc/deadline/trades","msAfterTap":116}],"analyzeRequests":0,"tapError":null,"modeSwitch":null,"heroTitles":["Lean yes"]}

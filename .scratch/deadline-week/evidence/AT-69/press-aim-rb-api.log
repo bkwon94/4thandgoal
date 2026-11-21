@@ -1,0 +1,251 @@
+# The API log of press-aim-rb: lines 4758 to 5261 of the log of the evidence API. The lines of each Jev and Sleeper HTTP request (29 TypeSafe POST lines) and the step 2 offer lines 'Finder offer' are cut here; the step 2 offers are in the Shortlist dump.
+INFO:     127.0.0.1:53197 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 1 (spares tree): 10 requests, about 14000 tokens
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: stopped on partner; partner gives no one; asker gives Chris Rodriguez Jr.=0.72, Blake Corum=0.84, Kyren Williams=0.90, Kenneth Walker III=0.92, Tyjae Spears=0.77
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: stopped on partner; partner gives no one; asker gives Chris Rodriguez Jr.=0.83, Blake Corum=0.87, Kyren Williams=0.90, Kenneth Walker III=0.91, Tyjae Spears=0.86
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Caleb Williams=0.92, Bryce Young=0.90; asker gives Chris Rodriguez Jr.=0.17, Blake Corum=0.90, Matthew Golden=0.83, Chimere Dike=0.07, Antonio Williams=0.11, Kyren Williams=0.92, Kenneth Walker III=0.93, Parker Washington=0.89, Tyjae Spears=0.28, Zay Flowers=0.93
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with NFC Least: stopped on partner; partner gives no one; asker gives Chris Rodriguez Jr.=0.78, Blake Corum=0.16, Kyren Williams=0.23, Kenneth Walker III=0.88, Tyjae Spears=0.80
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: stopped on partner; partner gives no one; asker gives Matthew Golden=0.77, Chimere Dike=0.14, Antonio Williams=0.10, Parker Washington=0.79, Zay Flowers=0.85
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Jared Goff=0.88, Patrick Mahomes=0.94; asker gives Chris Rodriguez Jr.=0.08, Blake Corum=0.83, Matthew Golden=0.72, Chimere Dike=0.09, Antonio Williams=0.07, Kyren Williams=0.86, Kenneth Walker III=0.91, Parker Washington=0.89, Tyjae Spears=0.12, Zay Flowers=0.91
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Tyler Shough=0.87, Jordan Love=0.92; asker gives Matthew Golden=0.80, Chimere Dike=0.18, Antonio Williams=0.11, Parker Washington=0.78, Zay Flowers=0.89
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: stopped on partner; partner gives no one; asker gives Matthew Golden=0.90, Chimere Dike=0.47, Antonio Williams=0.17, Parker Washington=0.89, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on partner, asker; partner gives no one; asker gives no one
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Dak Prescott=0.91, C.J. Stroud=0.93; asker gives Chris Rodriguez Jr.=0.18, Blake Corum=0.86, Matthew Golden=0.82, Chimere Dike=0.09, Antonio Williams=0.13, Kyren Williams=0.89, Kenneth Walker III=0.92, Parker Washington=0.88, Tyjae Spears=0.24, Zay Flowers=0.91
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bo Nix=0.91, Trevor Lawrence=0.91; asker gives no one
+INFO:     analyzer.finder_search: Finder Value offers of Bo Girds: 3830; 1-for-1=19, 2-for-1=51, 1-for-2=199, 3-for-1=31, 1-for-3=416, 3-for-2=707, 2-for-3=2407
+INFO:     analyzer.finder_search: Finder fair answers of Bo Girds: 7660 questions, 7660 from the cache, 0 asked live
+INFO:     analyzer.finder_search: Finder fair step of Bo Girds: checked 3830, dropped 907, no answer 0
+INFO:     analyzer.finder_search: Finder step 2 of Bo Girds: 178 offers, the 3 best of each partner and shape direction
+INFO:     analyzer.jev_waves: Jev wave 2 (shortlist): 7 requests, about 89229 tokens
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 4 requests, about 57246 tokens
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9487-1:11584: gains={6: 0.04, 1: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9997-1:11584: gains={6: 0.04, 1: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-1:11584: gains={6: 0.05, 1: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-1:10229+13286: gains={6: 0.04, 1: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-1:13286+8183: gains={6: 0.98, 1: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-1:7543+8183: gains={6: 0.97, 1: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-1:11584: gains={6: 0.02, 1: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-1:10229+13286+2216: gains={6: 0.05, 1: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-1:13281+13286+2216: gains={6: 0.05, 1: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-1:13281+2216+7543: gains={6: 0.04, 1: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-1:10229+11584: gains={6: 0.03, 1: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150+9997-1:10229+11584: gains={6: 0.03, 1: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150+9997-1:11584+8183: gains={6: 0.04, 1: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130-1:10229+13286+7543: gains={6: 0.03, 1: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130-1:13286+7543+8183: gains={6: 0.05, 1: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150-1:10229+13286+2216: gains={6: 0.03, 1: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-2:12527: gains={6: 0.04, 2: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-2:8144+9753: gains={6: 0.06, 2: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-2:10213+9753: gains={6: 0.03, 2: 0.78}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-2:10213+12527: gains={6: 0.06, 2: 0.84}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-2:10213+12517+12527: gains={6: 0.05, 2: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-2:10213+12527+6770: gains={6: 0.98, 2: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-2:12517+12527+8144: gains={6: 0.04, 2: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12501+8150-2:12527+7564: gains={6: 0.05, 2: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+8150-2:12527+6770: gains={6: 0.04, 2: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150+9487-2:7564+9753: gains={6: 0.03, 2: 0.83}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12501-2:12517+8144+9753: gains={6: 0.04, 2: 0.84}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130-2:10213+12517+9753: gains={6: 0.04, 2: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150-2:10213+12517+12527: gains={6: 0.04, 2: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-3:3198: gains={6: 0.97, 3: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-3:4034: gains={6: 0.04, 3: 0.76}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-3:3198: gains={6: 0.98, 3: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8150-3:4034: gains={6: 0.06, 3: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9487-3:4034: gains={6: 0.92, 3: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-3:11560+3198: gains={6: 0.98, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-3:2449+3198: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9487-3:4034: gains={6: 0.03, 3: 0.83}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150+9997-3:4034: gains={6: 0.03, 3: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-3:4034: gains={6: 0.03, 3: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-3:11560+3198+5947: gains={6: 0.98, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-3:1466+3198+5947: gains={6: 0.96, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150+9487-3:1466+4034: gains={6: 0.08, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150+9487-3:4034+5947: gains={6: 0.04, 3: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8150+8151-3:4034+9488: gains={6: 0.04, 3: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9997-3:11560+1466+3198: gains={6: 0.98, 3: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-3:2449+3198+5947: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586-4:4866: gains={6: 0.04, 4: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-4:9224: gains={6: 0.04, 4: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:12481: gains={6: 0.04, 4: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-4:5892+7525: gains={6: 0.08, 4: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-4:12481+12518: gains={6: 0.03, 4: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:1166+4866: gains={6: 0.98, 4: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-4:11625+12518+9224: gains={6: 0.04, 4: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-4:11625+12518+5892: gains={6: 0.03, 4: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-4:12481+7525+8148: gains={6: 0.03, 4: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-4:12481+9224: gains={6: 0.02, 4: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12501-4:12481+4866+7525: gains={6: 0.09, 4: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130-4:1166+5892+8148: gains={6: 0.04, 4: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487-4:1166+12481+4866: gains={6: 0.98, 4: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9487-5:8138: gains={6: 0.04, 5: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9997-5:7594: gains={6: 0.04, 5: 0.84}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-5:7594: gains={6: 0.06, 5: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-5:12514+7594: gains={6: 0.04, 5: 0.79}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-5:13346+8138: gains={6: 0.04, 5: 0.82}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-5:5846+8138: gains={6: 0.04, 5: 0.82}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+8150-5:8138: gains={6: 0.03, 5: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-5:7594: gains={6: 0.03, 5: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-5:8138: gains={6: 0.03, 5: 0.85}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-5:13346+5846+7594: gains={6: 0.04, 5: 0.79}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8151+9997-5:7594+8138: gains={6: 0.04, 5: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8150+9997-5:4984+7594: gains={6: 0.98, 5: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9487+9997-5:4984+7594: gains={6: 0.97, 5: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8151-5:13346+4984+8138: gains={6: 0.98, 5: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+8151-5:4217+5846+8138: gains={6: 0.03, 5: 0.81}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151+9997-5:4217+5846+7594: gains={6: 0.03, 5: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:8155: gains={6: 0.06, 7: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586-7:11576+11783: gains={6: 0.04, 7: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130-7:11576+4046: gains={6: 0.04, 7: 0.76}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:12506+7611: gains={6: 0.03, 7: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-7:11576+3163+8155: gains={6: 0.98, 7: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+8150-7:11632+7611: gains={6: 0.03, 7: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-7:11576+11632: gains={6: 0.02, 7: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-7:11632+7611: gains={6: 0.04, 7: 0.83}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487-7:12506+7611+8155: gains={6: 0.05, 7: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-7:11576+11783+8155: gains={6: 0.04, 7: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150-7:12506+7611+8155: gains={6: 0.03, 7: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-8:8228: gains={6: 0.97, 8: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12501-8:9509: gains={6: 0.04, 8: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130-8:8228: gains={6: 0.03, 8: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130-8:9509: gains={6: 0.04, 8: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-8:7526+8228: gains={6: 0.93, 8: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-8:5844+9509: gains={6: 0.04, 8: 0.8}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+8150-8:9509: gains={6: 0.03, 8: 0.85}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9487-8:9509: gains={6: 0.03, 8: 0.85}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-8:9509: gains={6: 0.03, 8: 0.85}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-8:12545+5844+8228: gains={6: 0.98, 8: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-8:12545+8228+9484: gains={6: 0.98, 8: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-8:11620+13279+8228: gains={6: 0.04, 8: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+8150-8:12545+9509: gains={6: 0.05, 8: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130+9487-8:8228+9509: gains={6: 0.03, 8: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8151-8:11620+9484+9509: gains={6: 0.04, 8: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9997-8:7526+8228+9484: gains={6: 0.05, 8: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-9:6790: gains={6: 0.97, 9: 0.1}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-9:13345: gains={6: 0.04, 9: 0.81}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-9:13345: gains={6: 0.04, 9: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150-9:6790: gains={6: 0.04, 9: 0.8}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487-9:6790: gains={6: 0.07, 9: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9487-9:9221: gains={6: 0.98, 9: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586-9:13294+13337: gains={6: 0.04, 9: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-9:6790+8131: gains={6: 0.03, 9: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-9:13337+8131: gains={6: 0.96, 9: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-9:9221: gains={6: 0.97, 9: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150+9997-9:9221: gains={6: 0.03, 9: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487+9997-9:9221: gains={6: 0.04, 9: 0.1}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-9:11646+13294+13345: gains={6: 0.03, 9: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-9:11646+13294+13337: gains={6: 0.04, 9: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-9:11646+13294+13337: gains={6: 0.03, 9: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9487-9:6790+8131: gains={6: 0.06, 9: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130+8150-9:6790+6794: gains={6: 0.03, 9: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487+9997-9:13345+6794: gains={6: 0.03, 9: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8151-9:13337+13345+6790: gains={6: 0.03, 9: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487-9:11646+13294+13345: gains={6: 0.03, 9: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487-9:11646+13337+13345: gains={6: 0.03, 9: 0.97}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487-10:7588: gains={6: 0.04, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150-10:7588: gains={6: 0.03, 10: 0.64}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487-10:7588: gains={6: 0.04, 10: 0.72}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-10:12512+8112: gains={6: 0.05, 10: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:12512+12534: gains={6: 0.98, 10: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:12512+1479: gains={6: 0.05, 10: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150-10:12534+13274+13276: gains={6: 0.08, 10: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-10:11566+13276+7588: gains={6: 0.97, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-10:11566+12534+13276: gains={6: 0.98, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-10:12512+7588: gains={6: 0.03, 10: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150+9487-10:7588+8112: gains={6: 0.03, 10: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150+9487-10:7569+7588: gains={6: 0.03, 10: 0.76}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8150-10:12512+13276+7588: gains={6: 0.04, 10: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8151-10:13274+7569+7588: gains={6: 0.02, 10: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151+9997-10:5872+7569+7588: gains={6: 0.04, 10: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586-11:12495: gains={6: 0.05, 11: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586-11:5850: gains={6: 0.97, 11: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-11:6813: gains={6: 0.06, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-11:6813: gains={6: 0.03, 11: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-11:6813: gains={6: 0.03, 11: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-11:12495+9500: gains={6: 0.03, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-11:12495+9502: gains={6: 0.03, 11: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-11:5850+9502: gains={6: 0.08, 11: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-11:12495+13296+5850: gains={6: 0.04, 11: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9487-11:6813+8137: gains={6: 0.05, 11: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-11:5850+6813: gains={6: 0.03, 11: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150+9997-11:6813+8137: gains={6: 0.05, 11: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8151-11:12495+6813+8137: gains={6: 0.04, 11: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8151-11:5850+6813+8137: gains={6: 0.04, 11: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-11:12495+13296+5850: gains={6: 0.03, 11: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-12:12490: gains={6: 0.97, 12: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-12:5967: gains={6: 0.98, 12: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150-12:12490: gains={6: 0.04, 12: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-12:12490: gains={6: 0.04, 12: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-12:12490: gains={6: 0.03, 12: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-12:12490+5967: gains={6: 0.04, 12: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:8151-12:12490+8146: gains={6: 0.03, 12: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487-12:12507+7523: gains={6: 0.98, 12: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501-12:10859+12507+5967: gains={6: 0.06, 12: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+8150-12:12490+8146: gains={6: 0.03, 12: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8150+9997-12:12490+12519: gains={6: 0.04, 12: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+8150+9487-12:5967+6801: gains={6: 0.03, 12: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12501-12:10236+12490+12507: gains={6: 0.05, 12: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8150-12:10236+12490+4983: gains={6: 0.04, 12: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:8150+9487-12:12507+12519+7523: gains={6: 0.98, 12: 0.12}
+INFO:     analyzer.finder_search: Finder shortlist 6:8150+9997-8:5844+6804+8228: score=0.970 fair=0.97 needs={6: 0.79, 8: 0.62} gains={6: 0.98, 8: 0.9}
+INFO:     analyzer.finder_search: Finder shortlist 6:8151-12:10859+12490+7523: score=0.970 fair=0.97 needs={6: 0.69, 12: 0.2} gains={6: 0.97, 12: 0.96}
+INFO:     analyzer.finder_search: Finder shortlist 6:8151-8:12545+9509: score=0.970 fair=0.97 needs={6: 0.76, 8: 0.22} gains={6: 0.98, 8: 0.7}
+INFO:     analyzer.finder_search: Finder shortlist 6:11586+9487+9997-8:6804+9509: score=0.950 fair=0.95 needs={6: 0.84, 8: 0.52} gains={6: 0.98, 8: 0.87}
+INFO:     analyzer.finder_search: Finder shortlist 6:12501-7:11783+4046+8155: score=0.960 fair=0.96 needs={6: 0.82, 7: 0.52} gains={6: 0.98, 7: 0.95}
+INFO:     analyzer.finder_search: Finder shortlist 6:8151+9997-3:11560+1466+4034: score=0.960 fair=0.96 needs={6: 0.86, 3: 0.53} gains={6: 0.98, 3: 0.95}
+INFO:     analyzer.finder_search: Finder shortlist 6:12501-11:12495+5850+9758: score=0.870 fair=0.87 needs={6: 0.75, 11: 0.69} gains={6: 0.98, 11: 0.96}
+INFO:     analyzer.finder_search: Finder shortlist 6:9487-7:11635+4046+7611: score=0.960 fair=0.96 needs={6: 0.84, 7: 0.47} gains={6: 0.98, 7: 0.94}
+INFO:     analyzer.finder_search: Finder shortlist 6:8151-12:4983+5967+7523: score=0.970 fair=0.97 needs={6: 0.74, 12: 0.19} gains={6: 0.96, 12: 0.96}
+INFO:     analyzer.finder_search: Finder shortlist 6:8151-11:12495+3294+6813: score=0.815 fair=0.81 needs={6: 0.62, 11: 0.75} gains={6: 0.98, 11: 0.97}
+INFO:     analyzer.trade_news: News of player 8151 from the cache
+INFO:     analyzer.trade_news: News of player 12545 from the cache
+INFO:     analyzer.trade_news: News of player 9509 from the cache
+INFO:     analyzer.trade_news: News of player 9487 from the cache
+INFO:     analyzer.trade_news: News of player 8150 from the cache
+INFO:     analyzer.trade_news: News of player 11635 from the cache
+INFO:     analyzer.trade_news: News of player 9997 from the cache
+INFO:     analyzer.trade_news: News of player 8151 from the cache
+INFO:     analyzer.trade_news: News of player 12501 from the cache
+INFO:     analyzer.trade_news: News of player 4046 from the cache
+INFO:     analyzer.trade_news: News of player 5844 from the cache
+INFO:     analyzer.trade_news: News of player 4983 from the cache
+INFO:     analyzer.trade_news: News of player 8151 from the cache
+INFO:     analyzer.trade_news: News of player 11586 from the cache
+INFO:     analyzer.trade_news: News of player 12501 from the cache
+INFO:     analyzer.trade_news: News of player 6804 from the cache
+INFO:     analyzer.trade_news: News of player 5967 from the cache
+INFO:     analyzer.trade_news: News of player 10859 from the cache
+INFO:     analyzer.trade_news: News of player 8151 from the cache
+INFO:     analyzer.trade_news: News of player 9487 from the cache
+INFO:     analyzer.trade_news: News of player 8228 from the cache
+INFO:     analyzer.trade_news: News of player 7523 from the cache
+INFO:     analyzer.trade_news: News of player 12490 from the cache
+INFO:     analyzer.trade_news: News of player 8151 from the cache
+INFO:     analyzer.trade_news: News of player 9997 from the cache
+INFO:     analyzer.trade_news: News of player 7523 from the cache
+INFO:     analyzer.trade_news: News of player 6804 from the cache
+INFO:     analyzer.trade_news: News of player 9997 from the cache
+INFO:     analyzer.trade_news: News of player 9509 from the cache
+INFO:     analyzer.trade_news: News of player 11560 from the cache
+INFO:     analyzer.trade_news: News of player 1466 from the cache
+INFO:     analyzer.trade_news: News of player 4034 from the cache
+INFO:     analyzer.trade_news: News fetch of player 11783: 5 items
+INFO:     analyzer.trade_news: News of player 4046 from the cache
+INFO:     analyzer.trade_news: News fetch of player 7611: 5 items
+INFO:     analyzer.trade_news: News fetch of player 12495: 5 items
+INFO:     analyzer.trade_news: News of player 12495 from the cache
+INFO:     analyzer.trade_news: News fetch of player 8155: 5 items
+INFO:     analyzer.trade_news: News fetch of player 3294: 5 items
+INFO:     analyzer.trade_news: News fetch of player 5850: 5 items
+INFO:     analyzer.trade_news: News of player 9758 from the cache
+INFO:     analyzer.trade_news: News fetch of player 6813: 5 items
+INFO:     facts.writer: FinderPickOut stream: first text at 26.3s
+INFO:     facts.writer: FinderPickOut call: cache_creation_input_tokens=0 cache_read_input_tokens=4104 input_tokens=52685 output_tokens=4717 model=claude-sonnet-5-5 effort=medium time=35.0s
+INFO:     analyzer.routes: Press of find for cpc: time=42.1s cost=$0.1530 claude_calls=1
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=1141 faithful.6.1=0.44 unsure faithful.6.2=0.12 no faithful.6.3=0.73 yes rumor.6.3=0.18 no faithful.6.4=0.5 unsure
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=761 faithful.6.1=0.04 no faithful.6.2=0.71 yes faithful.6.3=0.05 no
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=802 faithful.6.1=0.78 yes faithful.6.2=0.54 unsure faithful.6.3=0.03 no
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=823 faithful.6.1=0.72 yes faithful.6.2=0.72 yes faithful.6.3=0.39 unsure
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=811 faithful.6.1=0.81 yes faithful.6.2=0.51 unsure faithful.6.3=0.74 yes
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=445 faithful.6.1=0.12 no
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=443 faithful.6.1=0.07 no
+INFO:     analyzer.read_jev_check: Jev checks of the read, log only: model=jev-1.14.0 input_tokens=435 faithful.6.1=0.1 no

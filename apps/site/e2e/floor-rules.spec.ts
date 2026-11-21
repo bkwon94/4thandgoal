@@ -44,6 +44,36 @@ test("a link or button under 44px fails, and a link inside prose is exempt and l
   expect(scan.exempt).toEqual([expect.stringMatching(/a\.inline "manager page"/)]);
 });
 
+/*
+ * The form proxy as ui-sdk renders it for a segmented control item, a switch, or a checkbox: a native input of 1px right
+ * after its control, with aria-hidden, tabindex -1, and no pointer events. The style is the hiddenInputStyle of ui-sdk.
+ */
+const PROXY_STYLE =
+  "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;opacity:0;pointer-events:none";
+const proxy = (value: string) => `<input type="radio" aria-hidden="true" tabindex="-1" style="${PROXY_STYLE}" value="${value}">`;
+
+test("a form proxy input after a control of 44px is skipped and listed, and the floor still fails a small control or a plain hidden input", async ({
+  page,
+}) => {
+  await page.setViewportSize(PHONE);
+  await page.setContent(`<main><div role="radiogroup" style="position:relative;display:flex">
+      <button class="big" role="radio" aria-checked="true" style="width:148px;height:44px">Grade a trade</button>${proxy("grade")}
+      <button class="small" role="radio" aria-checked="false" style="width:148px;height:30px">Find a trade</button>${proxy("find")}
+    </div>
+    <input class="lone" aria-hidden="true" tabindex="-1" style="${PROXY_STYLE}" value="lone">
+    <button class="pair" style="width:60px;height:44px">Go</button><input class="tappable" aria-hidden="true" tabindex="-1" style="width:1px;height:1px">
+  </main>`);
+  const scan = await scanTargets(page);
+  expect(scan.proxies).toEqual([expect.stringMatching(/input "" is the form proxy of button\.big "Grade a trade" at 148x44px/)]);
+  expect(scan.failures).toEqual([
+    expect.stringMatching(/button\.small "Find a trade" is 148x30px/),
+    expect.stringMatching(/^input "" is 1x1px/),
+    expect.stringMatching(/^input\.lone "" is 1x1px/),
+    expect.stringMatching(/^input\.tappable "" is \d+x\d+px/),
+  ]);
+  expect(scan.exempt).toEqual([]);
+});
+
 test("a sideways scroll at 390px fails and names the widest element, and a box that scrolls itself passes", async ({ page }) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<body style="margin:0">

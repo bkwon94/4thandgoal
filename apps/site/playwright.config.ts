@@ -5,7 +5,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // The specs of the floor. The projects "floor" and "floor-timing" split them by the tag @timing.
-const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts", "menu-sheet.spec.ts"];
+const FLOOR_SPECS = ["floor.spec.ts", "scene.spec.ts", "manager-scene.spec.ts", "page-scenes.spec.ts", "front-door*.spec.ts", "analyzer-stage.spec.ts", "menu-sheet.spec.ts", "deadline-banner.spec.ts"];
 
 export default defineConfig({
   testDir: "e2e",
@@ -43,8 +43,8 @@ export default defineConfig({
       fullyParallel: false,
     },
     // The project "grade-bar" builds the export of NorCal, the client with the finder on, and checks the place of the grade bar.
-    // It also checks the headshot frames of the analyzer result on the same export.
-    { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "analyze-headshot.spec.ts"] },
+    // It also checks the Ledger cards and the near fold of the Finder on the same export.
+    { name: "grade-bar", testMatch: ["grade-bar.spec.ts", "finder-ledger.spec.ts"] },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },
     // The smoke run of the verify skill drives each picked flow in WebKit and Chromium, with motion on, against its own

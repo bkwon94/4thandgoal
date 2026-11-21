@@ -20,6 +20,9 @@ export type ClientValues = {
   usageCode: string | null;
   // The trade finder of the analyzer.
   finder: boolean;
+  // The Lock of [values.analyzer], in ms since the epoch: the time when Sleeper closes trades. With none, the client has
+  // no Deadline week.
+  lock: number | null;
   // The front door at /, from front_door of client.toml. Off, / is the home page and the front door sits at /ask/.
   frontDoor: boolean;
   // The menu of [menu] in client.toml. The client build fills the items from the package list when client.toml gives none.

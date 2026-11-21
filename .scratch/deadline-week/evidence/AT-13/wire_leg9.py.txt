@@ -1,0 +1,29 @@
+"""
+A uvicorn factory for evidence AT-13: the real API app, with the Trade Wire read pinned to Sleeper leg 9 of the league.
+It reads Sleeper live with a query string, and saves the raw Sleeper answer to the path in WIRE_RAW_OUT.
+"""
+import dataclasses
+import json
+import os
+import time
+
+import httpx
+
+from cornerstone_api.app import app_from_env
+from league.provider.raw import RawTransaction
+
+LEG = 9
+
+
+def _leg9(league_id: str, *, until=None):
+    url = f"https://api.sleeper.app/v1/league/{league_id}/transactions/{LEG}"
+    answer = httpx.get(url, params={"t": time.time_ns()}, timeout=20).raise_for_status().json()
+    with open(os.environ["WIRE_RAW_OUT"], "w") as out:
+        json.dump(answer, out, indent=1)
+    return LEG, [RawTransaction.model_validate(each) for each in answer]
+
+
+def app():
+    built = app_from_env()
+    built.state.sources["cpc"] = dataclasses.replace(built.state.sources["cpc"], fetch_transactions=_leg9)
+    return built

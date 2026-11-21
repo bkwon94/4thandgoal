@@ -14,8 +14,9 @@ import pytest
 from cpc import cpc_client
 from fakes import FakeWriter, no_news
 
+from league.chart import match_chart
 from league.history import load_history
-from league.models import ChartValues, InjuryPlay, NflverseWeek
+from league.models import ChartRead, ChartValues, InjuryPlay, NflverseWeek, week_lines
 from league.nflverse import nflverse_week
 from league.parse import parse_trades, parse_week
 from league.paths import chart_read, history_root, week_dir
@@ -95,6 +96,32 @@ def no_typesafe_key(request, monkeypatch):
         monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
 
 
+class _PacerClock:
+    """A clock that moves only when the pacer sleeps. It moves by the time of the sleep, so the pacer keeps each limit of
+    a second, and a test waits no real second for it."""
+
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.now += seconds
+
+
+@pytest.fixture(autouse=True)
+def pacer_clock(monkeypatch):
+    """The one pacer of the process runs on a test clock. A Finder press of a test sends thousands of Value offers to
+    a FakeJev, and the real clock would wait about one second per request of 64k tokens."""
+    from analyzer.jev_waves import PACER
+
+    clock = _PacerClock()
+    monkeypatch.setattr(PACER, "clock", clock)
+    monkeypatch.setattr(PACER, "sleep", clock.sleep)
+    monkeypatch.setattr(PACER, "_sent", [])
+
+
 @pytest.fixture
 def free_agent_raw_dir(tmp_path, fixture_raw_dir) -> Path:
     """A copy of the week 6 raw folder with FREE_AGENTS in its players file."""
@@ -152,6 +179,15 @@ def tbundle(fixture_raw_dir, fixture_history_root):
 def chart_week6() -> ChartValues:
     path = Path(__file__).parent / "fixtures" / "charts" / "week-06.json"
     return ChartValues.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def chart_week9(fixture_raw_dir) -> ChartValues:
+    """The real read of the week 9 chart, matched to the week 6 league players as the CLI does. The week 6 chart holds
+    only 25 values, too few for the Value screen of the Finder to build each shape."""
+    read = ChartRead.model_validate_json((Path(__file__).parent / "fixtures" / "charts" / "read-week-09.json")
+                                         .read_text(encoding="utf-8"))
+    return match_chart(read, week_lines(parse_week(load_raw(fixture_raw_dir))))
 
 
 @pytest.fixture

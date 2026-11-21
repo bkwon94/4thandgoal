@@ -1,0 +1,26 @@
+# 15: The Ledger cards, the near fold, and the new wait
+
+Spec: `.scratch/deadline-week/PRD.md`. Acceptance tests AT-36, AT-38, AT-65, AT-66, AT-67, and AT-68.
+
+**App:** site
+
+**What to build:** Each Finder trade lands as the Ledger card of prototype 17 (branch `deadline-week-17-proto`, `c403b55f`). The card has "You get · N" and "You give · N" columns, a row per player with the position, the NFL team, and the rank, no trade value on a row, and a trade value total under each column. One plain line under the totals states the gap, such as "You get 9% more trade value". The Lean, the Case of up to 3 lines, the folded Bullets, and "See the Full Result" stay. Up to 5 cards show, then "Close, but not sent · N", folded, with up to 3 near ideas. The wait shows the new lines with the real counts of the press, each with the "n of 5 ·" prefix: "Reading 11 teams", "Matching trade value", "Checking N trades for fairness", "Checking N against both lineups", and "Picking the best 5". The meta line "This can take about 25 seconds." goes, and no copy states a time. Site copy names no internal tool. Use the design bar of the repo: transitions-dev, apple-design, critique, and polish.
+
+**Blocked by:** 14
+
+**Status:** done
+
+- [ ] A real press for Bo Girds on the local API shows Ledger cards of three different shapes, at 375, 768, and 1280 px, in both themes.
+- [x] A card with totals of 68.0 and 62.5 shows "You get 9% more trade value".
+- [x] Up to 5 cards show, then the "Close, but not sent" fold with up to 3 near ideas.
+- [x] The wait shows each new line with the real counts, one at a time, and no count of seconds or minutes.
+- [x] Playwright WebKit at 390x660 finds no text overlap and no fixed bar over content.
+
+## Comments
+
+- 2026-11-20: Brian changed AT-65 to three different shapes, because the gain check drops every 1-for-1, 2-for-1, and 3-for-1 offer of Bo Girds. The evidence stage proves box 1.
+
+The merge: `deadline-week-15` merged into `deadline-week` as a fast-forward before `5c36b807` on 2026-11-20; review fixes and the Judge fix round followed on the same branch.
+The proof: `make check-fast` passed at each merge, and the Judge gave PASS to all 72 tests, AT-1 to AT-73 with AT-42 retired, after one fix round.
+Read at least 5 files: AGENTS.md, .scratch/deadline-week/PRD.md, .scratch/deadline-week/ACCEPTANCE.md, docs/agents/issue-tracker.md, .scratch/deadline-week/issues/15-the-ledger-cards-and-the-wait.md.
+Closes with the squash merge of the spec PR.

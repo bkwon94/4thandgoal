@@ -189,6 +189,8 @@ for (const entry of FULL_FLOOR_PAGES) {
         // Each exempt link prints, so a reader of the log sees each link that the tap floor skips. A page with none says so.
         if (targets.exempt.length === 0) console.log(`${label}: exempt links inside prose: none`);
         for (const link of targets.exempt) console.log(`${label}: exempt link inside prose: ${link}`);
+        // Each skipped form proxy prints too, with the size of the control that takes its tap.
+        for (const proxy of targets.proxies) console.log(`${label}: skipped form proxy: ${proxy}`);
         failures.push(...targets.failures, ...(await scanContrastInSteps(page, typeof entry === "string" ? undefined : entry.scope)));
         expect(failures, `${label} breaks the readability floor`).toEqual([]);
       });

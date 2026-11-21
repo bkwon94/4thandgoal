@@ -1,6 +1,6 @@
 /**
  * The analyzer result from one analyze document, in one column: the trade on the stage, the Lean on its scale, the Case, the fairness line, and one tab per side.
- * It arrives in a staged reveal of about 1 s over the mesh. The trade finder shows SwapCard and reuses AsOfLine. No letter grade shows anywhere.
+ * It arrives in a staged reveal of about 1 s over the mesh. The trade finder reuses AsOfLine. No letter grade shows anywhere.
  */
 "use client";
 
@@ -459,7 +459,8 @@ function SideRead({ side }: { side: Side }) {
     <div>
       <BulletRows bullets={side.bullets} idBase={side.roster_id} />
 
-      <WeekLines side={side} />
+      {/* The read of a finder card has no Week line, so it shows no empty box. */}
+      {side.week_lines.length > 0 && <WeekLines side={side} />}
     </div>
   );
 }
@@ -605,10 +606,16 @@ export default function AnalyzeResult({
       <div className={cn("t-skel", cardsShown && "is-revealed")}>
       <CardsSkeleton />
       <div className="t-skel-content tablet:flex tablet:flex-col tablet:gap-card-gap">
-      {/* One tab per team. joinSides puts the asker first, so the tab of the asker opens first. */}
+      {/* One tab per team with a read. joinSides puts the asker first, so the tab of the asker opens first. The read of a
+          finder card speaks to the asker only, so the other team has no tab, and the stage still shows it. */}
       <Chapter>
         <SidesHeader onEdit={onEdit} />
-        <SideTabs label="The sides" tabs={sides.map((side) => ({ key: side.roster_id, label: side.team, panel: <SideRead side={side} /> }))} />
+        <SideTabs
+          label="The sides"
+          tabs={sides
+            .filter((side) => side.bullets.length > 0 || side.week_lines.length > 0)
+            .map((side) => ({ key: side.roster_id, label: side.team, panel: <SideRead side={side} /> }))}
+        />
       </Chapter>
 
       {/* The API returns no counters yet. The slot holds their place under the sides. */}

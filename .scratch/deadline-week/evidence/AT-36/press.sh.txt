@@ -1,0 +1,7 @@
+#!/bin/zsh
+# The six Finder presses of AT-36, AT-72, and AT-73 in round 2: serves out-on (the finder flag on, a local build only) on
+# 127.0.0.1:8392, runs the "on" phase of zz-deadline-evidence-r2.spec.mjs against the evidence API at 127.0.0.1:8391.
+node <scratch>/r2/serve.mjs <scratch>/r2/out-on 8392 & SRV=$!
+sleep 1
+cd $W/apps/site && EVIDENCE_DIR=$W/.scratch/deadline-week/evidence PHASE=on SITE_OUT=<scratch>/r2/out-on SITE_PORT=8392 RESULT_CACHE=<scratch>/r2/api-run/results pnpm exec playwright test -c <scratch>/r2/pw.config.mjs
+kill $SRV

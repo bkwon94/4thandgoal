@@ -1,0 +1,12 @@
+$ cd apps/pipeline && uv run --exact --package cornerstone pytest -v tests/test_finder_search.py -k varied_puts_the_best or more_best_offers_than_it_keeps   # in a detached worktree of 98d79f98, UV_PROJECT_ENVIRONMENT=<worktree>/.venv-tests, 2026-11-20 16:14
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/.venv-tests/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/b1fe7598-196c-4509-9a0a-e6d97ba68115/scratchpad/deadline-week-flags/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 50 items / 48 deselected / 2 selected
+
+tests/test_finder_search.py::test_varied_puts_the_best_of_each_shape_then_partner_then_player_first_and_the_rest_by_fair_mean PASSED [ 50%]
+tests/test_finder_search.py::test_a_list_with_more_best_offers_than_it_keeps_holds_only_best_offers_by_score PASSED [100%]
+
+======================= 2 passed, 48 deselected in 0.07s =======================

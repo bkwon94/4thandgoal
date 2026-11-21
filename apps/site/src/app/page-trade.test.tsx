@@ -159,7 +159,7 @@ describe("the trade ideas of Lil Fridge", () => {
     expect(offers).toHaveLength(2);
     expect(ideas.textContent).toContain("You give Derrick Henry and get Tee Higgins.");
     expect(ideas.textContent).toContain("With Teehee");
-    // Each offer leads with its headline and shows its top 2 Bullets. The Trade page holds the rest.
+    // Each offer shows its top 2 Bullets. The Trade page holds the rest.
     expect(ideas.textContent).toContain("St. Brown is WR8 at 15.6 points per game");
     expect(ideas.querySelectorAll("[data-bullet-text]")).toHaveLength(4);
   });
@@ -239,9 +239,9 @@ describe("the trade ideas of Lil Fridge", () => {
   /* The ideas stream with the offers of the fixture moved to near ideas, each with a reason, so no offer is a pick. */
   function nearStream(picks: number) {
     const parts = structuredClone(ideasStream) as typeof ideasStream;
-    const answer = parts.find((part) => part.type === "data-answer") as unknown as { data: { document: Record<string, unknown> & { trades: { offer_id: string; sides: unknown[] }[] } } };
+    const answer = parts.find((part) => part.type === "data-answer") as unknown as { data: { document: Record<string, unknown> & { trades: { offer_id: string; sides: unknown[]; totals: unknown[] }[] } } };
     const doc = answer.data.document;
-    doc.near = doc.trades.slice(picks).map((trade, i) => ({ offer_id: trade.offer_id, sides: trade.sides, reason: `Reason ${i + 1}: you give up your RB for a WR you do not need.` }));
+    doc.near = doc.trades.slice(picks).map((trade, i) => ({ offer_id: trade.offer_id, sides: trade.sides, totals: trade.totals, reason: `Reason ${i + 1}: you give up your RB for a WR you do not need.` }));
     doc.trades = doc.trades.slice(0, picks);
     doc.empty = picks === 0 ? "No offer on the list helps your lineup enough to send." : null;
     return parts;

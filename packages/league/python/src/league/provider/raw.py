@@ -107,6 +107,8 @@ class RawTransaction(_Raw):
     settings: TransactionSettings | None = None
     # The DraftPick domain model checks each pick, so the raw pick stays a dict.
     draft_picks: list[dict] | None = None
+    # The FAAB of a trade: each entry has the amount, the sender roster id, and the receiver roster id.
+    waiver_budget: list[dict] | None = None
 
 
 class RawProjection(_Raw):

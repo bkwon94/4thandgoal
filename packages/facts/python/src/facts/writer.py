@@ -5,6 +5,7 @@ The template blurb is the safe fallback when the writer fails twice.
 import logging
 import re
 import threading
+import time
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -192,9 +193,13 @@ class ClaudeWriter:
     def parse(
         self, content: str | list[dict], output_model: type[BaseModel], system: str | None = None,
         cache_ttl: str | None = None, effort: str = "high", tools: list[dict] | None = None,
-        model: str | None = None,
+        model: str | None = None, on_text: Callable[[str], None] | None = None,
     ) -> BaseModel:
-        """The Claude call of `Writer.parse`. The docstring of the protocol in claude_port.py gives the arguments."""
+        """The Claude call of `Writer.parse`. The docstring of the protocol in claude_port.py gives the arguments.
+
+        With `on_text`, the call streams, and `on_text` gets the whole text of the answer so far after each text delta.
+        The Finder pick reads it to send each trade as soon as it stands (decision 20). The parsed output is the same.
+        """
         # One client per writer: it holds the connection pool. The first call makes it, so an import needs no API key.
         if self._client is None:
             self._client = anthropic.Anthropic()
@@ -211,25 +216,40 @@ class ClaudeWriter:
         if tools is not None:
             extra["tools"] = tools
         model = MODEL if model is None else model
-        response = self._client.messages.parse(
-            model=model,
-            max_tokens=16000,
-            messages=[{"role": "user", "content": content}],
-            output_format=output_model,
-            output_config={"effort": effort},
-            **extra,
-        )
+        start = time.monotonic()
+        request = dict(model=model, max_tokens=16000, messages=[{"role": "user", "content": content}],
+                       output_format=output_model, output_config={"effort": effort}, **extra)
+        if on_text is None:
+            response = self._client.messages.parse(**request)
+        else:
+            first_text = None
+            with self._client.messages.stream(**request) as stream:
+                for event in stream:
+                    if event.type == "text":
+                        if first_text is None:
+                            first_text = time.monotonic() - start
+                        on_text(event.snapshot)
+                response = stream.get_final_message()
+            # The model can think before it writes, so the time of the first text shows when a stream can start to
+            # send. A long wait here is the thinking, not the text.
+            if first_text is not None:
+                log.info("%s stream: first text at %.1fs", output_model.__name__, first_text)
         # A cache read of zero on a repeat call shows a cold or unstable prefix.
         usage = response.usage
         # A response with no usage skips the log line. The parsed output still counts.
         if usage is not None:
+            # The output tokens, the model, the effort, and the time show where a slow call spends its time.
             log.info(
                 "%s call: cache_creation_input_tokens=%s cache_read_input_tokens=%s"
-                " input_tokens=%s",
+                " input_tokens=%s output_tokens=%s model=%s effort=%s time=%.1fs",
                 output_model.__name__,
                 usage.cache_creation_input_tokens,
                 usage.cache_read_input_tokens,
                 usage.input_tokens,
+                getattr(usage, "output_tokens", None),
+                model,
+                effort,
+                time.monotonic() - start,
             )
             if self._on_usage is not None:
                 self._on_usage(usage)
@@ -274,9 +294,18 @@ def analyzer_call(
 
 
 def finder_pick_call(
-    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None
+    system: str, user: str, output_model: type[BaseModel], *, writer: Writer | None = None,
+    on_text: Callable[[str], None] | None = None,
 ) -> BaseModel:
-    """The Claude call of the Finder pick. It is `analyzer_call` on FINDER_PICK_MODEL at FINDER_PICK_EFFORT."""
+    """The Claude call of the Finder pick. It is `analyzer_call` on FINDER_PICK_MODEL at FINDER_PICK_EFFORT.
+
+    With `on_text`, the call streams its answer on a ClaudeWriter, and `on_text` gets the text as it grows. The Writer
+    port has no stream, so a fake writer answers with no text and the pick checks the whole answer at the end.
+    """
+    chosen = WRITER if writer is None else writer
+    if on_text is not None and isinstance(chosen, ClaudeWriter):
+        return chosen.parse(user, output_model, system, ANALYZER_CACHE_TTL, FINDER_PICK_EFFORT,
+                            model=FINDER_PICK_MODEL, on_text=on_text)
     return parse_call(
         user, output_model, system, cache_ttl=ANALYZER_CACHE_TTL, effort=FINDER_PICK_EFFORT, writer=writer,
         model=FINDER_PICK_MODEL,

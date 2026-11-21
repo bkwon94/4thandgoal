@@ -1,0 +1,22 @@
+#!/bin/zsh
+# AT-49 of round 2: 10 fresh asks for trade ideas on the front door of cpc, each in a fresh browser context, against one
+# fresh evidence API, with its result cache emptied before each ask. The API log of each run is its segment.
+unset -f node npm npx nvm 2>/dev/null; export PATH=$HOME/.nvm/versions/node/v24.15.0/bin:$PATH
+R2=<scratch>/r2
+W=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/deadline-week
+E=$W/.scratch/deadline-week/evidence
+node $R2/serve.mjs $R2/out-off 8392 & SRV=$!
+sleep 1
+COMBOS=(375-light 375-dark 768-light 768-dark 1280-light 1280-dark 390-light 390-light 390-light 390-light)
+for n in $(seq 1 10); do
+  find $R2/api-run/results -type f -delete
+  left=$(find $R2/api-run/results -type f | wc -l | tr -d ' ')
+  a=$(wc -l < $R2/api-main.log)
+  start=$(date '+%H:%M:%S')
+  (cd $W/apps/site && EVIDENCE_DIR=$E PHASE=at49 RUN=$n COMBO=${COMBOS[$n]} SITE_OUT=$R2/out-off SITE_PORT=8392 pnpm exec playwright test -c $R2/pw.config.mjs > $R2/at49-run-$n.log 2>&1)
+  sleep 3
+  b=$(wc -l < $R2/api-main.log)
+  { echo "# The API log of AT-49 run $n: lines $((a+1)) to $b of the log of the evidence API, with the Jev and Sleeper HTTP request lines cut."; sed -n "$((a+1)),${b}p" $R2/api-main.log | grep -v "typesafe_sdk\|httpx"; } > $E/AT-49/api-run-$n.log
+  echo "run $n (${COMBOS[$n]}) started $start, files in the result cache after the clear: $left: $(python3 -c "import json;d=json.load(open('$E/AT-49/run-$n.json'));print(d['outcome'], d['secondsToAnswer'], 's, retry lines', d['retryLineCount'])" 2>&1), 'Trade stream failed' lines: $(grep -c 'Trade stream failed' $E/AT-49/api-run-$n.log), 429 lines: $(grep -c ' 429' $E/AT-49/api-run-$n.log), press line: $(grep 'Press of' $E/AT-49/api-run-$n.log | sed 's/.*Press of/Press of/' | tr '\n' ' ')" >> $E/AT-49/runs.txt
+done
+kill $SRV

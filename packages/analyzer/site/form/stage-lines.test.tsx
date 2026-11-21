@@ -151,6 +151,33 @@ describe("StageLines", () => {
     });
   });
 
+  describe("with a list of one line", () => {
+    it("holds the line past 2.5 s until the caller sends the next line", () => {
+      const { container } = render(<StageLines lines={["1 of 5 · Reading every team"]} />);
+      act(() => void vi.advanceTimersByTime(20_000));
+      expect(shown(container)).toBe("1 of 5 · Reading every team");
+      expect(container.querySelector(".t-think-text.is-exit")).toBeNull();
+    });
+
+    it("swaps to the next line with the same motion as a timed line", () => {
+      const { container, rerender } = render(<StageLines lines={["1 of 5 · Reading every team"]} />);
+      rerender(<StageLines lines={["2 of 5 · Looking for players who fit"]} />);
+      // The old line leaves and the new line starts in its enter state, as a timed swap does.
+      expect(container.querySelector(".t-think-text.is-exit")?.textContent).toBe("1 of 5 · Reading every team");
+      expect(live(container).textContent).toBe("2 of 5 · Looking for players who fit");
+      expect(live(container).classList.contains("is-enter-start")).toBe(true);
+      act(() => void vi.advanceTimersByTime(250));
+      expect(container.querySelector(".t-think-text.is-exit")).toBeNull();
+      expect(live(container).classList.contains("is-enter-start")).toBe(false);
+    });
+
+    it("does not swap when the caller sends the same line again", () => {
+      const { container, rerender } = render(<StageLines lines={["1 of 5 · Reading every team"]} />);
+      rerender(<StageLines lines={["1 of 5 · Reading every team"]} />);
+      expect(container.querySelector(".t-think-text.is-exit")).toBeNull();
+    });
+  });
+
   it("shimmers the line with motion on", () => {
     const { container } = render(<StageLines lines={LINES} />);
     expect(container.querySelector(".t-think-text.is-still")).toBeNull();

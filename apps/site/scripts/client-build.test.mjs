@@ -223,7 +223,7 @@ describe("the client build", () => {
     const omitted = tempRepo(
       CPC_TOML.replace('"analyzer", ', "")
         .replaceAll('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
-        .replace("[values.analyzer]\nfinder = false\n", ""),
+        .replace(/\[values\.analyzer\]\n(?:.*\n)*?lock = .*\n/, ""),
     );
     buildClient(omitted);
     const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
@@ -332,6 +332,20 @@ describe("the client build", () => {
     expect(text).toContain('"finder": false');
     expect(text).toContain('"usageCode": "cpcfantasy"');
     expect(text).toContain('"season": 2026');
+  });
+
+  it("writes the Lock of client.toml into the client values as ms since the epoch, or null with none (AT-50)", () => {
+    const repo = tempRepo();
+    buildClient(repo);
+    expect(clientValuesOf(repo.site).lock).toBe(Date.parse("2026-11-24T05:00:00Z"));
+    const none = tempRepo(CPC_TOML.replace(/lock = .*\n/, ""));
+    buildClient(none);
+    expect(clientValuesOf(none.site).lock).toBeNull();
+  });
+
+  it("fails on a Lock with no UTC offset and names the key", () => {
+    const repo = tempRepo(CPC_TOML.replace(/lock = .*\n/, 'lock = "2026-11-24T00:00:00"\n'));
+    expect(() => buildClient(repo)).toThrow("- values.analyzer.lock:");
   });
 
   it("writes the menu items of client.toml into the client values", () => {

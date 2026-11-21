@@ -1,0 +1,22 @@
+"""AT-43: for each Shortlist offer in order, the keys it is the first of (shape direction, partner, each player that Bo
+Girds gives), and the best fair mean of each such key among the offers that passed step 2 (step 2 offers less the gain
+drops). Args: the Shortlist dump of a press."""
+import json, sys
+d = json.load(open(sys.argv[1])); sl = d["shortlist"]; players = d["players"]; teams = {int(k): v for k, v in d["teams"].items()}
+def pids(side): return [g["player_id"] for g in side["gives"]]
+def oid(t): return "-".join(f"{s['roster_id']}:{'+'.join(sorted(pids(s)))}" for s in t["sides"])
+def shape(t): return f"{len(t['sides'][0]['gives'])}-for-{len(t['sides'][1]['gives'])}"
+def keys(t): return [("shape", shape(t)), ("partner", teams[t["sides"][1]["roster_id"]])] + [("gives", players[p]["name"]) for p in pids(t["sides"][0])]
+byid = {oid(t): t for t in sl["offers"]}
+dropped = {o["offer_id"] for o in sl["dropped"]}
+rated = [i for i in sl["step_two"] if i not in dropped]
+best = {}
+for i in rated:
+    for k in keys(byid[i]): best[k] = max(best.get(k, 0), sl["fair_means"][i])
+seen = set()
+print("n | shape | partner | Bo Girds gives | gets | fair | first of (key: best fair of that key among rated offers)")
+for n, o in enumerate(sl["shortlist"], 1):
+    t = o["trade"]; ks = keys(t); new = [k for k in ks if k not in seen]; seen.update(ks)
+    gets = " + ".join(players[p]["name"] for p in pids(t["sides"][1]))
+    print(f"{n} | {shape(t)} | {teams[t['sides'][1]['roster_id']]} | {' + '.join(players[p]['name'] for p in pids(t['sides'][0]))} | {gets} | {o['fair']:.3f} | " + (", ".join(f"{a}={b} (best {best[(a,b)]:.3f})" for a, b in new) or "none new: a further form"))
+print(f"rated offers (step 2 less gain drops): {len(rated)}; shape directions among them: {sorted({shape(byid[i]) for i in rated})}")

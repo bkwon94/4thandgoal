@@ -1,0 +1,8 @@
+$ git show main:apps/site/package.json | grep '"next"'   # main = 1fc0a06e
+    "next": "^16.4.5",
+$ git show 98d79f98:apps/site/package.json | grep '"next"'
+    "next": "^16.4.5",
+$ git diff main...98d79f98 -- apps/site/package.json pnpm-lock.yaml | grep -c 'next@\|"next"'
+0
+$ grep '"version"' apps/site/node_modules/next/package.json   # in the Spec worktree
+  "version": "16.4.5",

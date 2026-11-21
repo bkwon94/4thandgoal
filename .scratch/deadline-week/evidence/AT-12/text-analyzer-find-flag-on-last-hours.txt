@@ -1,0 +1,43 @@
+--- visible text (body.innerText) ---
+CORNERSTONE FANTASY FOOTBALL LEAGUE
+TRADE DEADLINE
+~2h 41m 10s
+Trade Wire
+1
+new
+TRADE DEADLINE ~2h 41m 10s
+Grade a trade
+Find a trade
+Trade Ideas
+Who has a trade for you?
+YOUR TEAM
+Bo Girds
+Change
+TRADE WITH
+Every team
+Change
+Any
+RB
+WR
+TE
+QB
+Find a Trade
+--- accessible names (aria-label, alt, title, placeholder) ---
+
+Site menu
+Switch to dark theme
+Open the menu
+Open the Trade Wire, 1 new trade
+Trade Ideas
+Trade Ideas
+Mode
+
+Position
+Who gets what
+Teams in the trade
+Your Team: Bo Girds. Change the team
+
+Pick Team Two
+Add a team
+Players Your Team gets
+Players Team Two gets

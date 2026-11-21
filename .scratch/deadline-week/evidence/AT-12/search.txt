@@ -1,0 +1,15 @@
+text-front-door-open.txt: 0 hits
+text-sheet-open.txt: 0 hits
+text-analyzer-open.txt: 0 hits
+text-front-door-last-hours.txt: 0 hits
+text-sheet-last-hours.txt: 0 hits
+text-analyzer-last-hours.txt: 0 hits
+text-front-door-closed.txt: 0 hits
+text-sheet-closed.txt: 0 hits
+text-analyzer-closed.txt: 0 hits
+text-analyzer-find-flag-on-open.txt: 0 hits
+text-sheet-find-flag-on-open.txt: 0 hits
+text-analyzer-find-flag-on-last-hours.txt: 0 hits
+text-sheet-find-flag-on-last-hours.txt: 0 hits
+text-analyzer-find-flag-on-closed.txt: 0 hits
+text-sheet-find-flag-on-closed.txt: 0 hits

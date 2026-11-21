@@ -323,6 +323,12 @@ function frontDoorOf(values) {
   return values.front_door ?? false;
 }
 
+/* The Lock of [values.analyzer] in ms since the epoch, or null when the client has none. */
+function lockOf(values) {
+  const lock = values.values?.analyzer?.lock;
+  return lock === undefined ? null : Date.parse(lock);
+}
+
 /* The values of the client that the site reads. The site season is the latest season of the client. */
 function clientValuesText(slug, values, brand, copy) {
   const seasons = Object.keys(values.seasons).map(Number);
@@ -332,6 +338,8 @@ function clientValuesText(slug, values, brand, copy) {
     season: Math.max(...seasons),
     usageCode: values.usage_code ?? null,
     finder: values.values?.analyzer?.finder ?? false,
+    // The Lock as ms since the epoch, so the site compares it with Date.now(). The schema asks for a UTC offset.
+    lock: lockOf(values),
     frontDoor: frontDoorOf(values),
     menu: menuOf(values),
     brand,

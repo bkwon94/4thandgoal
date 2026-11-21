@@ -1,11 +1,24 @@
 {
   "additionalProperties": false,
-  "description": "The package values of analyzer. The finder is off by default.",
+  "description": "The package values of analyzer. The finder is off by default, and a client has no Lock by default.",
   "properties": {
     "finder": {
       "default": false,
       "title": "Finder",
       "type": "boolean"
+    },
+    "lock": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2})$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lock"
     }
   },
   "title": "AnalyzerValues",
