@@ -1,5 +1,5 @@
-ACCEPTANCE.md: 7fc8535c4f9efe807ac24eab082fbf5ea4ca4ae1
-EVIDENCE.md: e46e32ea70bf051999507c273108434852d4450a
+ACCEPTANCE.md: b8457cdef943495d46146837f0ea750f2a06cd94
+EVIDENCE.md: 5621e96e41569026216640352be570f1844d00e3
 
 Test verdicts
 AT-1: PASS
@@ -37,7 +37,7 @@ AT-32: PASS
 AT-33: PASS
 AT-34: PASS
 AT-35: PASS
-AT-36: FAIL Then line "step 5 changes its line as AT-73 says": in the 768 dark press (AT-36/measure.jsonl) step 5 shows only one trade line, "Weighing Corum for McConkey, Mahomes", before the first card ends it.
+AT-36: PASS
 AT-37: PASS
 AT-38: PASS
 AT-39: PASS
@@ -49,7 +49,7 @@ AT-45: PASS
 AT-46: PASS
 AT-47: PASS
 AT-48: PASS
-AT-49: FAIL Given line names the deployed API of the spec branch, but runs.txt shows a local API, and one of 11 asks (run-4-api-1.json) failed with a 429 and was replaced.
+AT-49: PASS
 AT-50: PASS
 AT-51: PASS
 AT-52: PASS
@@ -72,5 +72,5 @@ AT-68: PASS
 AT-69: PASS
 AT-70: PASS
 AT-71: PASS
-AT-72: FAIL Then line "counts the trades still to come": in the 768 dark press the line reads "Writing 2 more trades" over 3 cards (first-card-768-dark.png, measure.jsonl), but only 1 more card came.
-AT-73: FAIL Then line "at least 3 lines": in the 768 dark press step5LinesWithSecondsFromTap holds only one trade line, "Weighing Corum for McConkey, Mahomes".
+AT-72: PASS
+AT-73: PASS
