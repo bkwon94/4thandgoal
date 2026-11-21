@@ -43,8 +43,10 @@ describe("the type check script", () => {
     const run = spawnSync("pnpm", ["run", "typecheck", "-p", scratch], {
       cwd: site,
       encoding: "utf8",
+      // The CI format of `bun check` prints a GitHub annotation, and the test reads the plain format. The plain format reads `bad.ts(2,7)`. The format of an AI agent session reads `file="bad.ts" line="2"`.
+      env: { ...process.env, GITHUB_ACTIONS: undefined },
     });
     expect(run.status).not.toBe(0);
-    expect(run.stdout + run.stderr).toMatch(/file="[^"]*bad\.ts" line="2"/);
+    expect(run.stdout + run.stderr).toMatch(/bad\.ts\(2,\d+\)|file="[^"]*bad\.ts" line="2"/);
   }, 120_000);
 });
