@@ -294,6 +294,8 @@ for (const viewport of VIEWPORTS) {
       test("a pick from the scrolled end glides back to the front with no jump", async ({
         page,
       }) => {
+        // The glide runs on a clock of frames, so a loaded runner that drops frames still sees each frame of it.
+        await frameClock(page);
         await openFind(page, "light");
         const tight = await page.evaluate(() => {
           const area = document
