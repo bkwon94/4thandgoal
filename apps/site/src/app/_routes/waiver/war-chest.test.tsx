@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { week6 } from "@cpc/week/fixtures/week-page";
 import { TeamPicker } from "@cpc/analyzer/form/team-picker";
 import type { WaiverBoard, WaiverPlayer } from "@cpc/waiver/types";
@@ -17,11 +17,17 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 function renderBoard(board: WaiverBoard = waiver) {
-  render(<WarChest board={board} teams={week6.teams} avatars={{ "4": "/2026/week-06/avatars/4.jpg" }} TeamPicker={TeamPicker} />);
+  render(
+    <WarChest
+      board={board}
+      teams={week6.teams}
+      avatars={{ "4": "/2026/week-06/avatars/4.jpg" }}
+      TeamPicker={TeamPicker}
+    />,
+  );
 }
 
 function rowsOf(name: string) {
@@ -40,9 +46,20 @@ describe("the budget ring", () => {
   it("shows twelve budgets in budget order, largest first", () => {
     renderBoard();
     const rows = rowsOf("Budgets");
-    expect(rows.map((row) => row.textContent?.match(/\$(\d+)/)?.[1])).toEqual(
-      ["90", "82", "72", "69", "67", "65", "61", "58", "51", "25", "19", "9"],
-    );
+    expect(rows.map((row) => row.textContent?.match(/\$(\d+)/)?.[1])).toEqual([
+      "90",
+      "82",
+      "72",
+      "69",
+      "67",
+      "65",
+      "61",
+      "58",
+      "51",
+      "25",
+      "19",
+      "9",
+    ]);
   });
 
   it("names the team and shows its avatar, with no bar in red when no team is picked", () => {
@@ -60,7 +77,13 @@ describe("the bucket tabs", () => {
   it("shows one short tab per bucket in the file", () => {
     renderBoard();
     const tabs = within(screen.getByRole("group", { name: "Buckets" })).getAllByRole("button");
-    expect(tabs.map((tab) => tab.textContent)).toEqual(["Best", "Trending", "Sneaky", "Stash", "Drops"]);
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      "Best",
+      "Trending",
+      "Sneaky",
+      "Stash",
+      "Drops",
+    ]);
     expect(tabs[0].getAttribute("aria-pressed")).toBe("true");
   });
 
@@ -70,10 +93,11 @@ describe("the bucket tabs", () => {
     expect(within(sheet()).getByRole("heading", { name: "Courtland Sutton" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stash" }));
     expect(screen.getByRole("button", { name: "Stash" }).getAttribute("aria-pressed")).toBe("true");
-    expect(within(field()).getAllByRole("button").map((orb) => orb.getAttribute("aria-label"))).toEqual([
-      "Mark Andrews, $8",
-      "Audric Estime, $6",
-    ]);
+    expect(
+      within(field())
+        .getAllByRole("button")
+        .map((orb) => orb.getAttribute("aria-label")),
+    ).toEqual(["Mark Andrews, $8", "Audric Estime, $6"]);
     // Courtland Sutton is not a stash, and the sheet still holds him.
     expect(within(sheet()).getByRole("heading", { name: "Courtland Sutton" })).toBeTruthy();
   });
@@ -127,11 +151,15 @@ describe("the sheet", () => {
     expect(open.getByRole("heading", { name: "Najee Harris" })).toBeTruthy();
     const facts = within(open.getByRole("list", { name: "Facts" })).getAllByRole("listitem");
     expect(facts).toHaveLength(3);
-    expect(facts[0].textContent).toBe("Najee Harris played 71% of snaps and took 6 targets last week, up from 48% and 3");
+    expect(facts[0].textContent).toBe(
+      "Najee Harris played 71% of snaps and took 6 targets last week, up from 48% and 3",
+    );
     const links = within(open.getByRole("list", { name: "Claims" })).getAllByRole("link");
     expect(links).toHaveLength(2);
     expect(links[0].textContent).toBe("Najee Harris took the lead role in practice this week.");
-    expect(links[0].getAttribute("href")).toBe("https://sports.yahoo.com/fantasy/najee-harris-waiver");
+    expect(links[0].getAttribute("href")).toBe(
+      "https://sports.yahoo.com/fantasy/najee-harris-waiver",
+    );
     expect(open.getByText("Yahoo Fantasy · Backs the board")).toBeTruthy();
     expect(open.getByText("ESPN · Disputes the board")).toBeTruthy();
     expect(open.getByText("$14")).toBeTruthy();
@@ -206,7 +234,10 @@ describe("the drops bucket", () => {
   it("names the holder on a drops row after the top six", () => {
     // Seven drops, so the seventh goes in the list. Each copy gets its own id, so the keys stay unique.
     const ekeler = waiver.buckets.drops[0];
-    const drops: WaiverPlayer[] = Array.from({ length: 7 }, (_, index) => ({ ...ekeler, player_id: `${ekeler.player_id}-${index}` }));
+    const drops: WaiverPlayer[] = Array.from({ length: 7 }, (_, index) => ({
+      ...ekeler,
+      player_id: `${ekeler.player_id}-${index}`,
+    }));
     renderBoard({ ...waiver, buckets: { ...waiver.buckets, drops } });
     fireEvent.click(screen.getByRole("button", { name: "Drops" }));
     const rows = rowsOf("Also");
@@ -278,11 +309,15 @@ describe("the team pick", () => {
     const ring = within(rowsOf("Budgets")[2]);
     expect(ring.getByText("Lil Fridge")).toBeTruthy();
     expect(chip()!.querySelector("img")?.getAttribute("src")).toBe("/images/avatar-default.svg");
-    expect(rowsOf("Budgets")[2].querySelector("img")?.getAttribute("src")).toBe("/images/avatar-default.svg");
+    expect(rowsOf("Budgets")[2].querySelector("img")?.getAttribute("src")).toBe(
+      "/images/avatar-default.svg",
+    );
   });
 
   it("holds an empty slot of the chip height until it reads storage", () => {
-    const markup = renderToString(<WarChest board={waiver} teams={week6.teams} avatars={{}} TeamPicker={TeamPicker} />);
+    const markup = renderToString(
+      <WarChest board={waiver} teams={week6.teams} avatars={{}} TeamPicker={TeamPicker} />,
+    );
     expect(markup).toContain("h-pick-chip");
     expect(markup).not.toContain('name="Your team"');
   });
@@ -300,10 +335,10 @@ describe("the team pick across visits", () => {
   });
 
   it("keeps the page working for the visit when storage throws", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("blocked");
     });
     renderBoard();
@@ -381,7 +416,9 @@ describe("the Change link", () => {
 
 describe("the drops bucket with a pick", () => {
   function dropNames() {
-    return within(field()).getAllByRole("button").map((orb) => orb.getAttribute("aria-label"));
+    return within(field())
+      .getAllByRole("button")
+      .map((orb) => orb.getAttribute("aria-label"));
   }
 
   it("lists the viewer's own drop candidates first", () => {

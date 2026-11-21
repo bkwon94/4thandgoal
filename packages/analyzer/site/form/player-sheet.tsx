@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { Headshot } from "@cpc/league/headshot";
@@ -39,7 +40,15 @@ const PILL =
 const PILL_ON = "border-accent bg-accent text-on-dark";
 const PILL_OFF = "border-rule bg-card text-ink hover:bg-raised";
 
-export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, onClose }: PlayerSheetProps) {
+export function PlayerSheet({
+  open,
+  title,
+  sources,
+  gets,
+  elsewhere,
+  onToggle,
+  onClose,
+}: PlayerSheetProps) {
   const [tab, setTab] = useState(0);
   const [query, setQuery] = useState("");
   const [position, setPosition] = useState<Position>("All");
@@ -47,9 +56,12 @@ export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, o
   const source = sources[tab] ?? sources[0];
   const needle = query.trim().toLowerCase();
   const players = (source?.team.players ?? []).filter(
-    (p) => (position === "All" || p.position === position) && (needle === "" || p.name.toLowerCase().includes(needle)),
+    (p) =>
+      (position === "All" || p.position === position) &&
+      (needle === "" || p.name.toLowerCase().includes(needle)),
   );
-  const checked = (playerId: string) => gets.some((get) => get.playerId === playerId && get.fromSide === source?.sideId);
+  const checked = (playerId: string) =>
+    gets.some((get) => get.playerId === playerId && get.fromSide === source?.sideId);
 
   return (
     <Sheet
@@ -57,18 +69,20 @@ export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, o
       title={`${title} gets`}
       onClose={onClose}
       footer={
-        <button
+        <Button
+          variant="plain"
           type="button"
           onClick={onClose}
-          className="press min-h-touch w-full cursor-pointer rounded-pill bg-accent px-sp-4 text-lead font-bold text-on-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="press min-h-touch rounded-pill bg-accent px-sp-4 text-lead text-on-dark focus-visible:outline-accent w-full cursor-pointer font-bold focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           Done{gets.length > 0 ? ` · ${gets.length}` : ""}
-        </button>
+        </Button>
       }
     >
-      <div role="tablist" aria-label="From team" className="flex gap-sp-2 overflow-x-auto">
+      <div role="tablist" aria-label="From team" className="gap-sp-2 flex overflow-x-auto">
         {sources.map((s, index) => (
-          <button
+          <Button
+            variant="plain"
             key={s.sideId}
             type="button"
             role="tab"
@@ -77,7 +91,7 @@ export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, o
             className={cn(PILL, "max-w-full truncate", s === source ? PILL_ON : PILL_OFF)}
           >
             {s.team.team}
-          </button>
+          </Button>
         ))}
       </div>
       <input
@@ -86,11 +100,12 @@ export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, o
         placeholder="Search players"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        className="min-h-touch w-full rounded-card border border-rule bg-card px-sp-3 text-lead text-ink placeholder:text-mute focus-visible:outline-2 focus-visible:outline-accent"
+        className="min-h-touch rounded-card border-rule bg-card px-sp-3 text-lead text-ink placeholder:text-mute focus-visible:outline-accent w-full border focus-visible:outline-2"
       />
-      <div role="group" aria-label="Position" className="flex flex-wrap gap-sp-2">
+      <div role="group" aria-label="Position" className="gap-sp-2 flex flex-wrap">
         {POSITIONS.map((p) => (
-          <button
+          <Button
+            variant="plain"
             key={p}
             type="button"
             aria-pressed={p === position}
@@ -98,29 +113,40 @@ export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, o
             className={cn(PILL, p === position ? PILL_ON : PILL_OFF)}
           >
             {p}
-          </button>
+          </Button>
         ))}
       </div>
-      <ul aria-label={source ? `Players of ${source.team.team}` : "Players"} className="m-0 flex list-none flex-col gap-sp-1 p-0">
+      <ul
+        aria-label={source ? `Players of ${source.team.team}` : "Players"}
+        className="gap-sp-1 m-0 flex list-none flex-col p-0"
+      >
         {players.map((player) => {
           const on = checked(player.player_id);
           const goesTo = elsewhere.get(player.player_id);
           return (
             <li key={player.player_id}>
-              <button
+              <Button
+                variant="plain"
                 type="button"
                 role="checkbox"
                 aria-checked={on}
                 disabled={goesTo !== undefined}
-                onClick={() => source && onToggle({ playerId: player.player_id, fromSide: source.sideId })}
+                onClick={() =>
+                  source && onToggle({ playerId: player.player_id, fromSide: source.sideId })
+                }
                 className={cn(
-                  "press flex min-h-touch w-full cursor-pointer items-center gap-sp-3 rounded-card border px-sp-3 py-sp-1 text-left text-ink focus-visible:outline-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40",
-                  on ? "border-accent bg-card" : "border-transparent hover:bg-card",
+                  "press min-h-touch gap-sp-3 rounded-card px-sp-3 py-sp-1 text-ink focus-visible:outline-accent flex w-full cursor-pointer items-center border text-left focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-40",
+                  on ? "border-accent bg-card" : "hover:bg-card border-transparent",
                 )}
               >
-                <Headshot src={player.headshot || HEADSHOT_FALLBACK} size="avatar" lazy className="flex-none rounded-full bg-raised object-cover object-top" />
+                <Headshot
+                  src={player.headshot || HEADSHOT_FALLBACK}
+                  size="avatar"
+                  lazy
+                  className="bg-raised flex-none rounded-full object-cover object-top"
+                />
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <b className="truncate text-row leading-tight font-bold">{player.name}</b>
+                  <b className="text-row truncate leading-tight font-bold">{player.name}</b>
                   <span className="text-meta text-mute">
                     {player.position} {player.nfl_team}
                     {goesTo !== undefined && ` · to ${goesTo}`}
@@ -129,18 +155,18 @@ export function PlayerSheet({ open, title, sources, gets, elsewhere, onToggle, o
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "grid size-sp-6 flex-none place-items-center rounded-full border",
+                    "size-sp-6 grid flex-none place-items-center rounded-full border",
                     on ? "border-accent bg-accent text-on-dark" : "border-rule",
                   )}
                 >
                   {on && <CheckIcon className="size-sp-4" />}
                 </span>
-              </button>
+              </Button>
             </li>
           );
         })}
       </ul>
-      {players.length === 0 && <p className="m-0 text-lead text-mute">No player matches.</p>}
+      {players.length === 0 && <p className="text-lead text-mute m-0">No player matches.</p>}
     </Sheet>
   );
 }

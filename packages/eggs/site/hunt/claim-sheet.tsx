@@ -4,9 +4,17 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { Label } from "@cpc/design/parts/label";
-import { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
+import {
+  Sheet,
+  SheetBackdrop,
+  SheetClose,
+  SheetContent,
+  SheetGrip,
+  SheetTitle,
+} from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import { EggsError, type Board, type ClaimAnswer, type EggsApi } from "../lib/api";
@@ -40,7 +48,10 @@ function stubLabel(
   if (team === null) return { label: "Pick your team", locked: true };
   if (!block && word === null) return { label: "Pick an egg word", locked: true };
   if (!passphrase) return { label: "Enter the passphrase", locked: true };
-  return { label: block ? `Tear to claim ${letter} as a block` : `Tear to claim ${letter} for ${word}`, locked: false };
+  return {
+    label: block ? `Tear to claim ${letter} as a block` : `Tear to claim ${letter} for ${word}`,
+    locked: false,
+  };
 }
 
 /* True when the manager can put the letter in the word: the word has no winner and a free slot for the letter. */
@@ -48,7 +59,14 @@ function fits(word: Word, team: number, letter: string): boolean {
   return word.winner === null && hasOpenSlot(word.word, heldLetters(word, team), letter);
 }
 
-export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onClose }: ClaimSheetProps) {
+export function ClaimSheet({
+  api,
+  letter,
+  token,
+  onClaimed,
+  onClaimedFirst,
+  onClose,
+}: ClaimSheetProps) {
   const [board, setBoard] = useState<Board | null>(null);
   const [team, setTeam] = useState<number | null>(null);
   const [word, setWord] = useState<string | null>(null);
@@ -62,9 +80,12 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
   const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
   const asked = useRef(false);
 
-  useEffect(() => () => {
-    if (hold.current !== null) clearTimeout(hold.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (hold.current !== null) clearTimeout(hold.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     api.board().then(setBoard, () => setError("The egg board did not load. Try again."));
@@ -72,7 +93,8 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
 
   const manager = board?.managers.find((each) => each.roster_id === team) ?? null;
   // A letter that fits no egg word of the manager can only be a block.
-  const block = board !== null && team !== null && !board.words.some((each) => fits(each, team, letter));
+  const block =
+    board !== null && team !== null && !board.words.some((each) => fits(each, team, letter));
   const passphrase = stored ?? typed.trim();
   const { label, locked } = stubLabel(letter, team, word, block, passphrase);
   const ready = !locked && send === "idle";
@@ -106,7 +128,11 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
         hold.current = setTimeout(onClaimedFirst, STAMP_MS);
       } else {
         // A refusal of the API is a 422 that names its reason, so the sheet shows the reason.
-        setError(failure instanceof EggsError ? failure.message : "The claim did not go through. Try again.");
+        setError(
+          failure instanceof EggsError
+            ? failure.message
+            : "The claim did not go through. Try again.",
+        );
         setSend("idle");
       }
     }
@@ -128,38 +154,48 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
       <SheetBackdrop />
       {/* The Drawer owns the slide, the drag, the dim, the focus trap, and the fade under reduced motion. The sheet is a
           bottom sheet at every tier, so the tablet tier keeps the same edge and a max width. */}
-      <SheetContent className="mx-auto flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-hero border border-b-0 border-rule">
+      <SheetContent className="rounded-t-hero border-rule mx-auto flex max-h-[92dvh] w-full max-w-lg flex-col border border-b-0">
         {/* The grip says "sheet" to a thumb. A drag down on the sheet closes it. */}
         <SheetGrip className="mt-sp-3 h-sp-1 w-sp-6" />
         {/* The body scrolls when its content is taller than the sheet. Each part with no content of its own to hold its
             height takes flex-none, or the column shrinks it: the hero, whose overflow-hidden lets it shrink. */}
-        <div className="flex min-h-0 flex-1 flex-col gap-sp-5 overflow-y-auto overscroll-contain px-gutter pt-sp-3 pb-sp-6">
-          <div className="egg-up relative flex flex-none items-center gap-sp-3 overflow-hidden rounded-tile border border-rule-dark bg-band p-sp-3 text-on-dark">
+        <div className="gap-sp-5 px-gutter pt-sp-3 pb-sp-6 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+          <div className="egg-up gap-sp-3 rounded-tile border-rule-dark bg-band p-sp-3 text-on-dark relative flex flex-none items-center overflow-hidden border">
             <span className="relative flex-none">
               {/* The ground reaches the edges of the hero on the left, top, and bottom. On the right it stops at the edge of
                   the tile, so the full gap lies between the ground and the title. */}
               <ArtGround inset="-inset-y-sp-3 -left-sp-3 right-0" />
               {/* The tile is taller than the glyph box of the letter at the largest headline size, 46px, so axe can read its contrast. */}
-              <span className="relative flex size-16 items-center justify-center rounded-letter bg-accent font-mono text-headline font-bold text-on-dark shadow-orb">
+              <span className="rounded-letter bg-accent text-headline text-on-dark shadow-orb relative flex size-16 items-center justify-center font-mono font-bold">
                 {letter}
               </span>
             </span>
-            <div className="flex min-w-0 flex-col gap-sp-1">
-              <Label dark className="mb-0 text-meta">
+            <div className="gap-sp-1 flex min-w-0 flex-col">
+              <Label dark className="text-meta mb-0">
                 Claim
               </Label>
               {/* Each line is its own element. axe reads the page under the sheet at each line of an element, and a line
                   that wraps sits over two parts of the page, so axe then cannot read its contrast. The break leaves room
                   for a wide letter in the narrow column at 340px. */}
-              <SheetTitle id="egg-claim-title" className="m-0 text-stat leading-tight font-bold">
-                <span className="block">{`Put ${letter} in`}</span> <span className="block">an egg word.</span>
+              <SheetTitle id="egg-claim-title" className="text-stat m-0 leading-tight font-bold">
+                <span className="block">{`Put ${letter} in`}</span>{" "}
+                <span className="block">an egg word.</span>
               </SheetTitle>
             </div>
             <SheetClose
               aria-label="Close"
-              className="press ml-auto flex size-touch flex-none items-center justify-center self-start rounded-pill bg-band text-on-dark-muted"
+              className="press size-touch rounded-pill bg-band text-on-dark-muted ml-auto flex flex-none items-center justify-center self-start"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
                 <path d="M18 6 6 18M6 6l12 12" />
               </svg>
             </SheetClose>
@@ -168,37 +204,53 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
           <section className="egg-up egg-up-1 flex flex-col">
             <Label className="text-meta">1 · Who are you?</Label>
             {manager === null ? (
-              <div role="group" aria-label="Your team" className="flex flex-wrap gap-sp-2">
+              <div role="group" aria-label="Your team" className="gap-sp-2 flex flex-wrap">
                 {board?.managers.map((each) => (
-                  <button
+                  <Button
+                    variant="plain"
                     key={each.roster_id}
                     type="button"
                     onClick={() => pickTeam(each.roster_id)}
-                    className="press min-h-touch rounded-pill border border-rule bg-card px-sp-4 text-body font-bold text-ink"
+                    className="press min-h-touch rounded-pill border-rule bg-card px-sp-4 text-body text-ink border font-bold"
                   >
                     {each.team}
-                  </button>
+                  </Button>
                 ))}
               </div>
             ) : (
-              <div className="egg-pop flex flex-wrap items-center gap-sp-2">
-                <span className="inline-flex min-h-touch items-center gap-sp-2 rounded-pill bg-ink px-sp-4 text-body font-bold text-page">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <div className="egg-pop gap-sp-2 flex flex-wrap items-center">
+                <span className="min-h-touch gap-sp-2 rounded-pill bg-ink px-sp-4 text-body text-page inline-flex items-center font-bold">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                   {manager.team}
                 </span>
-                <button type="button" onClick={() => pickTeam(null)} className="press min-h-touch px-sp-3 text-body font-bold text-accent-ink">
+                <Button
+                  variant="plain"
+                  type="button"
+                  onClick={() => pickTeam(null)}
+                  className="press min-h-touch px-sp-3 text-body text-accent-ink font-bold"
+                >
                   Change
-                </button>
+                </Button>
               </div>
             )}
           </section>
 
           {board !== null && team !== null && (
-            <section className="flex flex-col gap-sp-3">
-              <Label className="egg-up mb-0 text-meta">2 · Where does {letter} go?</Label>
-              <div role="group" aria-label="Egg word" className="flex flex-col gap-sp-3">
+            <section className="gap-sp-3 flex flex-col">
+              <Label className="egg-up text-meta mb-0">2 · Where does {letter} go?</Label>
+              <div role="group" aria-label="Egg word" className="gap-sp-3 flex flex-col">
                 {board.words.map((each, index) => (
                   <WordCard
                     key={each.word}
@@ -212,13 +264,17 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
                 ))}
               </div>
               {block && (
-                <div className="egg-up egg-up-4 flex items-center gap-sp-3 rounded-card border-2 border-dashed border-accent bg-card p-sp-4">
-                  <span className="flex size-11 flex-none items-center justify-center rounded-letter border-2 border-dashed border-accent font-mono text-score font-bold text-accent-ink">
+                <div className="egg-up egg-up-4 gap-sp-3 rounded-card border-accent bg-card p-sp-4 flex items-center border-2 border-dashed">
+                  <span className="rounded-letter border-accent text-score text-accent-ink flex size-11 flex-none items-center justify-center border-2 border-dashed font-mono font-bold">
                     {letter}
                   </span>
-                  <div className="flex flex-col gap-sp-0">
-                    <span className="text-body font-bold">{letter} fits none of your egg words.</span>
-                    <span className="text-meta text-ink-2">Claim it as a block. Then no other manager can put it in a word.</span>
+                  <div className="gap-sp-0 flex flex-col">
+                    <span className="text-body font-bold">
+                      {letter} fits none of your egg words.
+                    </span>
+                    <span className="text-meta text-ink-2">
+                      Claim it as a block. Then no other manager can put it in a word.
+                    </span>
                   </div>
                 </div>
               )}
@@ -227,7 +283,7 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
 
           {stored === null && (
             <label className="flex flex-col">
-              <span className="mb-sp-3 text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">
+              <span className="mb-sp-3 text-meta text-accent-ink leading-tight font-bold tracking-wide uppercase">
                 3 · League passphrase
               </span>
               <input
@@ -235,14 +291,18 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
                 autoComplete="off"
                 value={typed}
                 onChange={(event) => setTyped(event.target.value)}
-                className="min-h-touch rounded-tile border border-rule bg-card px-sp-4 text-lead text-ink"
+                className="min-h-touch rounded-tile border-rule bg-card px-sp-4 text-lead text-ink border"
               />
             </label>
           )}
 
-          {error && <p role="alert" className="text-lead text-accent-ink">{error}</p>}
+          {error && (
+            <p role="alert" className="text-lead text-accent-ink">
+              {error}
+            </p>
+          )}
 
-          <div className="flex flex-col gap-sp-2">
+          <div className="gap-sp-2 flex flex-col">
             <ClaimTicket
               letter={letter}
               word={block ? null : word}
@@ -256,12 +316,12 @@ export function ClaimSheet({ api, letter, token, onClaimed, onClaimedFirst, onCl
             />
             {/* Each sentence is its own line. A line that wraps sits over two parts of the page under the sheet, and axe then
                 cannot read its contrast. */}
-            <span className="text-center text-meta text-mute">
+            <span className="text-meta text-mute text-center">
               <span className="block">The first claim wins the egg.</span>
               <span className="block">The commissioner can undo a claim.</span>
             </span>
           </div>
-          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );
@@ -297,40 +357,59 @@ function WordCard({
   // The card takes its name from the text it shows, so the name holds each visible word (WCAG 2.5.3). The slot row is
   // aria-hidden, as the count says the same.
   return (
-    <button
+    <Button
+      variant="plain"
       type="button"
       aria-pressed={picked}
       disabled={!open}
       onClick={onPick}
       className={cn(
-        "press egg-up flex w-full flex-col gap-sp-3 rounded-card border p-sp-4 text-left text-ink",
+        "press egg-up gap-sp-3 rounded-card p-sp-4 text-ink flex w-full flex-col border text-left",
         `egg-up-${Math.min(step, 4)}`,
-        picked ? "border-accent bg-raised ring-4 ring-accent-glow" : open ? "border-rule bg-card" : "border-dashed border-rule bg-raised text-mute",
+        picked
+          ? "border-accent bg-raised ring-accent-glow ring-4"
+          : open
+            ? "border-rule bg-card"
+            : "border-rule bg-raised text-mute border-dashed",
       )}
     >
-      <span className="flex w-full items-baseline gap-sp-2">
-        <span className="text-body font-bold tracking-wide">
-          {word.word}
-        </span>{" "}
+      <span className="gap-sp-2 flex w-full items-baseline">
+        <span className="text-body font-bold tracking-wide">{word.word}</span>{" "}
         {/* The spaces between the parts of the row keep the words of the name apart. A flex row shows no space. */}
-        <span className={cn("rounded-pill border border-rule px-sp-2 font-mono text-meta font-bold", open ? "text-ink-2" : "text-mute")}>
+        <span
+          className={cn(
+            "rounded-pill border-rule px-sp-2 text-meta border font-mono font-bold",
+            open ? "text-ink-2" : "text-mute",
+          )}
+        >
           ${word.prize}
         </span>{" "}
-        <span className={cn("ml-auto font-mono text-row font-bold", picked ? "text-accent-ink" : open ? "text-ink" : "text-mute")}>
+        <span
+          className={cn(
+            "text-row ml-auto font-mono font-bold",
+            picked ? "text-accent-ink" : open ? "text-ink" : "text-mute",
+          )}
+        >
           {shown}
           <span className="text-mute">/{word.word.length}</span>
         </span>
       </span>
-      <SlotRow slots={slotsOf(word.word, held, open ? letter : null)} tone="page" picked={picked} faded={!open} />
-      <span className="block h-1 w-full overflow-hidden rounded-pill bg-raised">
+      <SlotRow
+        slots={slotsOf(word.word, held, open ? letter : null)}
+        tone="page"
+        picked={picked}
+        faded={!open}
+      />
+      <span className="rounded-pill bg-raised block h-1 w-full overflow-hidden">
         <span
-          className={cn("block h-full rounded-pill transition-[width] duration-500 ease-rise", picked ? "bg-accent" : open ? "bg-ink" : "bg-mute")}
+          className={cn(
+            "rounded-pill ease-rise block h-full transition-[width] duration-500",
+            picked ? "bg-accent" : open ? "bg-ink" : "bg-mute",
+          )}
           style={{ width: `${Math.round((shown / word.word.length) * 100)}%` }}
         />
       </span>
-      <span className="text-meta text-mute">
-        {note}
-      </span>
-    </button>
+      <span className="text-meta text-mute">{note}</span>
+    </Button>
   );
 }

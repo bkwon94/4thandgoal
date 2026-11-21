@@ -1,6 +1,8 @@
 /**
  * The small red tag that follows a label. It ports the .tag rule of the source stylesheet.
  * It sits to the right of the label or on its own line.
+ * Use it when: a small red tag follows a label.
+ * Do not use it when: the text is a note under a number. Use the note of `Tile`.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";
@@ -10,7 +12,7 @@ export function Tag({ children, className }: { children: ReactNode; className?: 
   return (
     <span
       className={cn(
-        "ml-sp-2 inline-block rounded-sm bg-accent px-sp-2 py-sp-0 align-middle text-label font-bold tracking-caps text-on-dark uppercase",
+        "ml-sp-2 bg-accent px-sp-2 py-sp-0 text-label tracking-caps text-on-dark inline-block rounded-sm align-middle font-bold uppercase",
         className,
       )}
     >

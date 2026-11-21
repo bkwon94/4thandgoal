@@ -3,7 +3,7 @@
  * Each test renders the hook and reads only the run that start gives back.
  */
 import { cleanup, renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { useRequest } from "./use-request";
 
 afterEach(() => {

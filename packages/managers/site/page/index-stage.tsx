@@ -29,13 +29,17 @@ function StageHero({ row, teams }: { row: IndexRow; teams: number }) {
       // A break anywhere lets the name wrap inside its column.
       title={<span className="[overflow-wrap:anywhere]">{row.name}</span>}
       meta={row.facts}
-      feature={row.grade ? <GradeDial parts={row.grade.parts} teams={teams} size="small" tone="hero" /> : undefined}
+      feature={
+        row.grade ? (
+          <GradeDial parts={row.grade.parts} teams={teams} size="small" tone="hero" />
+        ) : undefined
+      }
       stats={<Tile tone="hero" label="Grade" value={row.grade ? row.grade.letter : "—"} />}
       action={
         // A full pill and a 44px tap target in the brand color, as the manager link of the rankings hero.
         <a
           href={row.href}
-          className="press inline-flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
+          className="press min-h-touch rounded-pill bg-accent px-sp-6 text-body text-on-dark inline-flex items-center justify-center font-bold no-underline"
         >
           Manager page
           <span className="sr-only">{` of ${row.name}`}</span>
@@ -63,7 +67,10 @@ export function IndexStage({ row, teams }: { row: IndexRow; teams: number }) {
       return;
     }
     setLayers((now) => [...now.slice(-2), { row, key }]);
-    const timer = setTimeout(() => setLayers((now) => now.filter((layer) => layer.key >= key)), SWAP_MS + 50);
+    const timer = setTimeout(
+      () => setLayers((now) => now.filter((layer) => layer.key >= key)),
+      SWAP_MS + 50,
+    );
     return () => clearTimeout(timer);
     // The effect runs on a new row only. The layers it reads are the layers of the render of that row.
   }, [row.id, off]);

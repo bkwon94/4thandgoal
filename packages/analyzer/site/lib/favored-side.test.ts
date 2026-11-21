@@ -2,7 +2,7 @@
  * Tests for the favored side of a grade: the side that the mesh flashes and dips toward at the reveal.
  * Each input is a real analyze fixture, and the expected side comes from the rule of the spec, not from the code.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { analyzeResponse, analyzeResponseThree, analyzeResponseTradeA } from "./fixtures/api";
 import type { AnalyzeResponse, Lean } from "./analyze-types";
 import { favoredSide } from "./favored-side";

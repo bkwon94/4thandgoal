@@ -6,35 +6,56 @@ import { copyFileSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  onTestFinished,
+  setDefaultTimeout,
+  spyOn,
+} from "bun:test";
+import { stubGlobal } from "../../test/stubs";
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
+import { clientValues } from "@/generated/client-values";
+import { loadFrontDoor } from "@/lib/data/front-door-data";
 import { FIXING_LINE } from "./front-door/free-answer";
 import { MISS_LEAD } from "./front-door/miss-card";
 import HomePage from "./front-door/door-page";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The path to "Checked" holds "Checking" for HOLD_MS after the stream, and a loaded CPU can take seconds for the
+   renders before it. So each wait for an Answer gets 8 s, inside a test limit of 15 s. */
+setDefaultTimeout(15_000);
+
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
 const BO_GIRDS = 6;
-const fetchStub = vi.fn();
+const fetchStub = mock();
 const streams: (() => Response)[] = [];
 
 // The path comes from this file and not from the working folder, because the tests point the working folder at the fixed copy.
-const recorded = (name: string) => readFileSync(join(__dirname, "..", "fixtures", "personal-answer", `${name}.sse`), "utf8");
-const personalCalls = () => fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/personal"));
+const recorded = (name: string) =>
+  readFileSync(join(__dirname, "..", "fixtures", "personal-answer", `${name}.sse`), "utf8");
+const personalCalls = () =>
+  fetchStub.mock.calls.filter(([url]) => String(url).endsWith("/personal"));
 
 function sse(body: ReadableStream<Uint8Array> | string): Response {
-  return new Response(body, { headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" } });
+  return new Response(body, {
+    headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+  });
 }
 
 /* A recorded stream that holds back every line from the first text part on, until the test calls `release`. */
 function heldStream(name: string) {
-  const lines = recorded(name).split("\n\n").filter((line) => line.trim() !== "");
+  const lines = recorded(name)
+    .split("\n\n")
+    .filter((line) => line.trim() !== "");
   const at = lines.findIndex((line) => line.includes('"text-start"'));
   const encoder = new TextEncoder();
   let release = () => {};
@@ -59,16 +80,19 @@ async function tapInMore(name: string) {
 }
 
 async function articleWith(name: string, text: string) {
-  await waitFor(() => expect(screen.getByRole("article", { name }).textContent).toContain(text), { timeout: 3000 });
+  await waitFor(() => expect(screen.getByRole("article", { name }).textContent).toContain(text), {
+    timeout: 8000,
+  });
   return screen.getByRole("article", { name });
 }
 
 beforeEach(() => {
   fetchStub.mockImplementation(async (url: string) => {
-    if (String(url).endsWith("/personal")) return streams.shift()?.() ?? new Response("", { status: 500 });
+    if (String(url).endsWith("/personal"))
+      return streams.shift()?.() ?? new Response("", { status: 500 });
     return new Response("", { status: 404 });
   });
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
   localStorage.setItem("cpc.your-team", String(LIL_FRIDGE));
   localStorage.setItem("cpc.passphrase", PASSPHRASE);
 });
@@ -78,8 +102,6 @@ afterEach(() => {
   localStorage.clear();
   fetchStub.mockReset();
   streams.length = 0;
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
 });
 
 describe("the personal Topics of Lil Fridge", () => {
@@ -91,7 +113,11 @@ describe("the personal Topics of Lil Fridge", () => {
     const [url, init] = personalCalls()[0];
     expect(url).toMatch(/\/clients\/cpc\/personal$/);
     expect(new Headers(init.headers).get("X-League-Passphrase")).toBe(PASSPHRASE);
-    expect(JSON.parse(init.body)).toMatchObject({ topic: "weak_spots", roster_id: LIL_FRIDGE, team: null });
+    expect(JSON.parse(init.body)).toMatchObject({
+      topic: "weak_spots",
+      roster_id: LIL_FRIDGE,
+      team: null,
+    });
     // A tap sends no typed question, so the API may serve its kept Answer.
     expect(JSON.parse(init.body)).not.toHaveProperty("question");
   });
@@ -112,7 +138,11 @@ describe("the personal Topics of Lil Fridge", () => {
     // The text sits under the data block in the card.
     const text = answer.textContent ?? "";
     expect(text.indexOf("Weakest spot")).toBeLessThan(text.indexOf("Your team has no true holes"));
-    expect(within(answer).getByRole("link", { name: /Read the full report/ }).getAttribute("href")).toBe(`/2026/managers/${LIL_FRIDGE}/`);
+    expect(
+      within(answer)
+        .getByRole("link", { name: /Read the full report/ })
+        .getAttribute("href"),
+    ).toBe(`/2026/managers/${LIL_FRIDGE}/`);
   });
 
   it("shows the first line as a live step before the data block lands", async () => {
@@ -120,7 +150,9 @@ describe("the personal Topics of Lil Fridge", () => {
     render(<HomePage />);
     await tapInMore("Weak spots");
     const answer = await articleWith("Weak spots", "Reading the league…");
-    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole("listitem");
+    const [step] = within(within(answer).getByRole("list", { name: "Steps" })).getAllByRole(
+      "listitem",
+    );
     expect(step.getAttribute("data-state")).toBe("live");
   });
 
@@ -144,8 +176,11 @@ describe("the personal Topics of Lil Fridge", () => {
     const first = render(<HomePage />);
     await tapInMore("Weak spots");
     await articleWith("Weak spots", "Checked");
-    // The Thread keeps the Answer once the stream ends, a render after the mark shows "Checked".
-    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("no true holes"));
+    // The Thread keeps the Answer once the stream ends, a render after the mark shows "Checked". A loaded CPU can take
+    // seconds for that render, so the wait gets 8 s, as each wait for an Answer does.
+    await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("no true holes"), {
+      timeout: 8000,
+    });
     first.unmount();
     render(<HomePage />);
     const kept = await articleWith("Weak spots", "Your team has no true holes.");
@@ -157,7 +192,8 @@ describe("the personal Topics of Lil Fridge", () => {
     // A kept Answer never streams: no word plays its blur, and no "Checking" mark shows (AT-8).
     let streamed = false;
     const observer = new MutationObserver(() => {
-      if (document.body.textContent?.includes("Checking") || document.querySelector(".stream-word")) streamed = true;
+      if (document.body.textContent?.includes("Checking") || document.querySelector(".stream-word"))
+        streamed = true;
     });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     onTestFinished(() => observer.disconnect());
@@ -202,7 +238,8 @@ describe("the personal Topics of Lil Fridge", () => {
     const observer = new MutationObserver(() => {
       const text = document.body.textContent ?? "";
       if (text.includes("Your weakest part is Season Production")) seen.failed = true;
-      if (text.includes("Your worst part is Season Production") && !text.includes("Checked")) seen.early = true;
+      if (text.includes("Your worst part is Season Production") && !text.includes("Checked"))
+        seen.early = true;
     });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     onTestFinished(() => observer.disconnect());
@@ -218,8 +255,14 @@ describe("the personal Topics of Lil Fridge", () => {
     render(<HomePage />);
     await tapInMore("Weak spots");
     const miss = await articleWith("Weak spots", MISS_LEAD);
-    const chips = within(within(miss).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
-    expect(chips.map((chip) => chip.textContent)).toEqual(["How you stack up", "Waiver targets", "Trade ideas"]);
+    const chips = within(within(miss).getByRole("group", { name: "Closest Topics" })).getAllByRole(
+      "button",
+    );
+    expect(chips.map((chip) => chip.textContent)).toEqual([
+      "How you stack up",
+      "Waiver targets",
+      "Trade ideas",
+    ]);
   });
 
   it("keeps the data block of an honest miss, with the miss line in the place of the text (H17)", async () => {
@@ -249,8 +292,14 @@ describe("the personal Topics of Lil Fridge", () => {
     const cap = await articleWith("How you stack up", "That's 25 questions today.");
     expect(cap.textContent).toContain("Ask again tomorrow.");
     expect(cap.textContent).not.toContain("Checked");
-    const chips = within(within(cap).getByRole("group", { name: "Closest Topics" })).getAllByRole("button");
-    expect(chips.map((chip) => chip.textContent)).toEqual(["Weak spots", "Power rankings", "Your season"]);
+    const chips = within(within(cap).getByRole("group", { name: "Closest Topics" })).getAllByRole(
+      "button",
+    );
+    expect(chips.map((chip) => chip.textContent)).toEqual([
+      "Weak spots",
+      "Power rankings",
+      "Your season",
+    ]);
     expect(screen.queryByRole("group", { name: "Suggestions" })).toBeNull();
     // The cap item stays in the Thread, so a reload shows the line again with no new stream.
     await waitFor(() => expect(localStorage.getItem("cpc.thread")).toContain("questions today"));
@@ -277,7 +326,9 @@ describe("the personal Topics of Lil Fridge", () => {
     const [first, second] = within(list).getAllByRole("listitem");
     const toggle = within(first).getByRole("button", { name: /J\.J\. McCarthy/ });
     for (const part of ["QB · NYG", "16.9", "QB slot"]) expect(toggle.textContent).toContain(part);
-    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).textContent).toContain("Bench");
+    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).textContent).toContain(
+      "Bench",
+    );
     // The row starts closed, so the why waits in place under it.
     const panel = document.getElementById(toggle.getAttribute("aria-controls") ?? "")!;
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
@@ -285,21 +336,29 @@ describe("the personal Topics of Lil Fridge", () => {
     fireEvent.click(toggle);
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
     await waitFor(() => expect(panel.hasAttribute("hidden")).toBe(false));
-    expect(panel.textContent).toContain("Projects 16.9 this week, over Malik Willis at 16.8 in your QB slot.");
-    expect(within(second).getByRole("button", { name: /Shedeur Sanders/ }).getAttribute("aria-expanded")).toBe("false");
+    expect(panel.textContent).toContain(
+      "Projects 16.9 this week, over Malik Willis at 16.8 in your QB slot.",
+    );
+    expect(
+      within(second)
+        .getByRole("button", { name: /Shedeur Sanders/ })
+        .getAttribute("aria-expanded"),
+    ).toBe("false");
     // The list holds the why, so no stats and no rows show with it.
     expect(answer.textContent).not.toContain("Free agents read");
   });
 
   it("never names an inner tool, a rival, or the commissioner by name in the cards", async () => {
-    for (const name of ["weak-spots", "stack-up-fixed", "waiver-targets"]) streams.push(() => sse(recorded(name)));
+    for (const name of ["weak-spots", "stack-up-fixed", "waiver-targets"])
+      streams.push(() => sse(recorded(name)));
     render(<HomePage />);
     for (const name of ["Weak spots", "How you stack up", "Waiver targets"]) {
       await tapInMore(name);
       await articleWith(name, "Checked");
     }
     const text = (screen.getByRole("region", { name: "Thread" }).textContent ?? "").toLowerCase();
-    for (const word of ["jev", "advisor", "finder", "rival", "brian"]) expect(text).not.toContain(word);
+    for (const word of ["jev", "advisor", "finder", "rival", "brian"])
+      expect(text).not.toContain(word);
     // Three streams play one after another, each with its held "Checking" and fixing line, so the test takes longer.
   }, 15000);
 });
@@ -310,23 +369,24 @@ describe("the links of the personal Topics", () => {
     const root = mkdtempSync(join(tmpdir(), "front-door-personal-"));
     const from = fixturePublished("cpc", "2026");
     mkdirSync(join(root, "public", "2026", "week-08"), { recursive: true });
-    for (const file of ["page.json", "topics.json"]) copyFileSync(join(from, "week-08", file), join(root, "public", "2026", "week-08", file));
+    for (const file of ["page.json", "topics.json"])
+      copyFileSync(join(from, "week-08", file), join(root, "public", "2026", "week-08", file));
     copyFileSync(join(from, "managers.json"), join(root, "public", "2026", "managers.json"));
-    vi.spyOn(process, "cwd").mockReturnValue(root);
-    // The readers read the working folder when they load, so reset them.
-    vi.resetModules();
-    return import("@/lib/data/front-door-data");
+    // The readers read the working folder on each call. The preload restores the spy after the test.
+    spyOn(process, "cwd").mockReturnValue(root);
+    return { loadFrontDoor };
   }
 
   /* The client values of the build, with the package list set by the test. The fixed copy of cpc holds a waiver file,
      so only the package list tells whether the client has the waiver page. */
   async function dataWithPackages(packages: string[]) {
-    readFixtureSite("cpc");
-    vi.resetModules();
-    const values = await import("../generated/client-values");
-    vi.doMock("../generated/client-values", () => ({ clientValues: { ...values.clientValues, packages } }));
-    onTestFinished(() => vi.doUnmock("../generated/client-values"));
-    return import("@/lib/data/front-door-data");
+    // The reader reads the package list on each call, so the test sets it and puts the built list back at the end.
+    const built = clientValues.packages;
+    clientValues.packages = packages as typeof built;
+    onTestFinished(() => {
+      clientValues.packages = built;
+    });
+    return { loadFrontDoor };
   }
 
   it("give waiver targets the waiver page when the client takes the waiver package and the week has its file", async () => {
@@ -341,7 +401,9 @@ describe("the links of the personal Topics", () => {
   it("give waiver targets no link when the client omits the waiver package, even with a waiver file", async () => {
     const { loadFrontDoor } = await dataWithPackages(["week", "managers"]);
     expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].waiver_targets).toBeNull();
-    expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(`/2026/managers/${LIL_FRIDGE}/`);
+    expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(
+      `/2026/managers/${LIL_FRIDGE}/`,
+    );
   });
 
   it("give the manager Topics no link when the client omits the managers package, even with a managers file", async () => {
@@ -355,13 +417,16 @@ describe("the links of the personal Topics", () => {
   it("give waiver targets no link when the client publishes no waiver file", async () => {
     const { loadFrontDoor } = await dataWithoutWaiver();
     expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].waiver_targets).toBeNull();
-    expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(`/2026/managers/${LIL_FRIDGE}/`);
+    expect(loadFrontDoor()?.personalHrefs[LIL_FRIDGE].weak_spots).toBe(
+      `/2026/managers/${LIL_FRIDGE}/`,
+    );
   });
 });
 
 /* Start or sit plays the stream of the API test over the live Sleeper week 10 of cpc, recorded on 2026-11-12. */
 describe("Start or sit", () => {
-  const rowsOf = (answer: HTMLElement) => within(within(answer).getByRole("list", { name: "Week 10 lineup" })).getAllByRole("listitem");
+  const rowsOf = (answer: HTMLElement) =>
+    within(within(answer).getByRole("list", { name: "Week 10 lineup" })).getAllByRole("listitem");
 
   it("shows the lineup of Bo Girds in the Sleeper order with the team, the opponent, the kickoff, and the projection (AT-1)", async () => {
     streams.push(() => sse(recorded("start-sit")));
@@ -371,8 +436,22 @@ describe("Start or sit", () => {
     expect(JSON.parse(personalCalls()[0][1].body)).toMatchObject({ topic: "start_sit" });
     const answer = await articleWith("Start or sit", "Week 10 lineup");
     const rows = rowsOf(answer);
-    expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual(["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "DEF"]);
-    const kickoff = new Intl.DateTimeFormat(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }).format(new Date(1794792000000));
+    expect(rows.map((row) => row.getAttribute("data-slot"))).toEqual([
+      "QB",
+      "RB",
+      "RB",
+      "WR",
+      "WR",
+      "TE",
+      "FLEX",
+      "FLEX",
+      "DEF",
+    ]);
+    const kickoff = new Intl.DateTimeFormat(undefined, {
+      weekday: "short",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(1794792000000));
     expect(rows[0].textContent).toBe(`QBAaron RodgersPIT vs CIN· ${kickoff}17.5`);
     // With no Swap, the header shows the total by projection, with no toggle.
     expect(answer.textContent).toContain("By projection 121.7");
@@ -398,7 +477,9 @@ describe("Start or sit", () => {
     expect(buttons[0].textContent).toContain("Jared Goff");
     const detail = document.getElementById(buttons[0].getAttribute("aria-controls") ?? "");
     expect(detail?.getAttribute("aria-hidden")).toBe("false");
-    expect(detail?.textContent).toBe("Chest · No practice report yetStart J. Goff if he is active. If he is ruled out, start P. Mahomes.");
+    expect(detail?.textContent).toBe(
+      "Chest · No practice report yetStart J. Goff if he is active. If he is ruled out, start P. Mahomes.",
+    );
   });
 
   it("opens a closed row in place, so the rows above it keep their order and their state (AT-9)", async () => {
@@ -410,18 +491,26 @@ describe("Start or sit", () => {
     const [closed] = within(answer).getAllByRole("button", { expanded: false });
     const row = closed.closest("li");
     const above = rowsOf(answer).slice(0, rowsOf(answer).indexOf(row as HTMLElement));
-    const aboveState = above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null);
+    const aboveState = above.map(
+      (item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null,
+    );
     fireEvent.click(closed);
     expect(closed.getAttribute("aria-expanded")).toBe("true");
     // The detail opens inside its own row, under its line, so no row above it changes.
     expect(row?.lastElementChild?.getAttribute("aria-hidden")).toBe("false");
     expect(rowsOf(answer).map((item) => item.textContent)).toEqual(before);
-    expect(above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null)).toEqual(aboveState);
+    expect(
+      above.map((item) => item.querySelector("button")?.getAttribute("aria-expanded") ?? null),
+    ).toEqual(aboveState);
   });
 
   /* The total that the header shows now. The rolling digits are hidden from the reader of the screen, so the value is
      on the label of the total. */
-  const totalOf = (answer: HTMLElement) => within(answer).getByRole("group", { name: "Lineup total" }).querySelector("[data-total]")?.getAttribute("data-total");
+  const totalOf = (answer: HTMLElement) =>
+    within(answer)
+      .getByRole("group", { name: "Lineup total" })
+      .querySelector("[data-total]")
+      ?.getAttribute("data-total");
 
   it("reads each Swap row as Swap over the benched starter, struck through, with the first Swap open with its reason (AT-4)", async () => {
     streams.push(() => sse(recorded("start-sit-swap")));
@@ -437,14 +526,17 @@ describe("Start or sit", () => {
     // The first row with a Swap or a Q opens on arrival, and only that one.
     const open = within(answer).getAllByRole("button", { expanded: true });
     expect(open).toHaveLength(1);
-    expect(open[0].closest("li")).toBe(washington);
+    expect(open[0].closest<HTMLElement>("li")).toBe(washington);
     // The reason comes with the block after the check, and the open row shows it.
     await waitFor(() => {
       const detail = document.getElementById(open[0].getAttribute("aria-controls") ?? "");
-      expect(detail?.textContent).toContain("Mike Washington Jr. starts over Kyren Williams, because his role is larger this week.");
+      expect(detail?.textContent).toContain(
+        "Mike Washington Jr. starts over Kyren Williams, because his role is larger this week.",
+      );
     });
     const text = (screen.getByRole("region", { name: "Thread" }).textContent ?? "").toLowerCase();
-    for (const word of ["jev", "advisor", "finder", "brian", "front door"]) expect(text).not.toContain(word);
+    for (const word of ["jev", "advisor", "finder", "brian", "front door"])
+      expect(text).not.toContain(word);
   });
 
   it("toggles the total between By projection and With 2 Swaps, and the Swap total is the sum of the rows (AT-11)", async () => {
@@ -458,7 +550,11 @@ describe("Start or sit", () => {
     // The lineup shows the Swaps, so the total with the Swaps shows first.
     expect(swaps.getAttribute("aria-pressed")).toBe("true");
     expect(totalOf(answer)).toBe("104.7");
-    const sum = rowsOf(answer).reduce((total, row) => total + Number(row.querySelector("[data-projection]")?.getAttribute("data-projection")), 0);
+    const sum = rowsOf(answer).reduce(
+      (total, row) =>
+        total + Number(row.querySelector("[data-projection]")?.getAttribute("data-projection")),
+      0,
+    );
     expect(sum.toFixed(1)).toBe("104.7");
     fireEvent.click(projection);
     expect(projection.getAttribute("aria-pressed")).toBe("true");

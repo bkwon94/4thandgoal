@@ -3,7 +3,7 @@
  * Each test fires real pointer events on the page and reads what the hunt sent through the one fake of the port.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { TAP_GAP_MS } from "../listener/listener";
 import { EggsError, type Board } from "../lib/api";
@@ -14,20 +14,26 @@ import { CRACK_MS } from "./find-card";
 
 const MATCH = { match: true as const, claimed: false as const, letter: "C", token: "t1" };
 
-/* Fake timers replace the clock, so a wait of TAP_GAP_MS or CRACK_MS costs no real time. The clock also moves with
-   real time, so the polls of findBy and waitFor still end. */
+/* Fake timers replace the clock, so a wait of TAP_GAP_MS or CRACK_MS costs no real time. */
 beforeEach(() => {
-  vi.useFakeTimers({ shouldAdvanceTime: true });
+  jest.useFakeTimers();
+  // happy-dom opens at about:blank, so the page path reads "blank" until the test gives the page an address.
+  (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(
+    "http://localhost:3000/",
+  );
   localStorage.clear();
   document.documentElement.classList.remove("dark");
 });
 
 afterEach(() => {
+  // A timer that a test leaves pending, such as the spring of a stub, stalls the polls of the next test under Bun.
+  // The run ends it inside the test that started it.
+  act(() => void jest.runOnlyPendingTimers());
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
-const wait = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms));
+const wait = (ms: number) => act(async () => void jest.advanceTimersByTime(ms));
 
 /* Three fast taps on the Luck cell of Lil Fridge, then the end of the run. The board loads first, because the
    listener starts only when the board names a drop. */
@@ -65,7 +71,8 @@ async function openSheet(api: ReturnType<typeof fakeEggsApi>, letter = "C") {
 }
 
 // The card of an egg word: its name starts with the word, then the gift card, the count, and the note.
-const wordCard = (word: string) => screen.getByRole("button", { name: new RegExp(`^${word} `) }) as HTMLButtonElement;
+const wordCard = (word: string) =>
+  screen.getByRole("button", { name: new RegExp(`^${word} `) }) as HTMLButtonElement;
 
 /* The egg on the screen: 180 by 220 px, the size of the art, with its top left at (100, 200).
    jsdom lays out no page, so the test gives the egg the box that a browser gives it. */
@@ -73,7 +80,13 @@ const EGG_BOX = { left: 100, top: 200, width: 180, height: 220 };
 
 async function findEgg() {
   const egg = await screen.findByRole("button", { name: "Crack the egg" });
-  egg.getBoundingClientRect = () => DOMRect.fromRect({ x: EGG_BOX.left, y: EGG_BOX.top, width: EGG_BOX.width, height: EGG_BOX.height });
+  egg.getBoundingClientRect = () =>
+    DOMRect.fromRect({
+      x: EGG_BOX.left,
+      y: EGG_BOX.top,
+      width: EGG_BOX.width,
+      height: EGG_BOX.height,
+    });
   return egg;
 }
 
@@ -87,9 +100,11 @@ function tapEgg(egg: HTMLElement, x: number, y: number) {
 
 /* Each crack line on the egg, as its list of points in the units of the egg art. */
 function crackLines() {
-  return screen.getAllByTestId("egg-crack-line").map((line) =>
-    (line.getAttribute("points") ?? "").split(" ").map((pair) => pair.split(",").map(Number)),
-  );
+  return screen
+    .getAllByTestId("egg-crack-line")
+    .map((line) =>
+      (line.getAttribute("points") ?? "").split(" ").map((pair) => pair.split(",").map(Number)),
+    );
 }
 
 const ticket = () => screen.getByRole("group", { name: "Claim ticket" });
@@ -109,12 +124,23 @@ const STUB_BOX = { left: 250, top: 600, width: 96, height: 144 };
 /* A pointer drag on the stub from its middle, by dx and dy px in ten steps. The drag holds at its end with no release. */
 function dragStub(name: string, dx: number, dy = 0) {
   const shown = stub(name);
-  shown.getBoundingClientRect = () => DOMRect.fromRect({ x: STUB_BOX.left, y: STUB_BOX.top, width: STUB_BOX.width, height: STUB_BOX.height });
+  shown.getBoundingClientRect = () =>
+    DOMRect.fromRect({
+      x: STUB_BOX.left,
+      y: STUB_BOX.top,
+      width: STUB_BOX.width,
+      height: STUB_BOX.height,
+    });
   const x = STUB_BOX.left + STUB_BOX.width / 2;
   const y = STUB_BOX.top + STUB_BOX.height / 2;
   fireEvent.pointerDown(shown, { clientX: x, clientY: y, pointerId: 1, isPrimary: true });
   for (let step = 1; step <= 10; step += 1) {
-    fireEvent.pointerMove(shown, { clientX: x + (dx * step) / 10, clientY: y + (dy * step) / 10, pointerId: 1, isPrimary: true });
+    fireEvent.pointerMove(shown, {
+      clientX: x + (dx * step) / 10,
+      clientY: y + (dy * step) / 10,
+      pointerId: 1,
+      isPrimary: true,
+    });
   }
   return { shown, at: { clientX: x + dx, clientY: y + dy, pointerId: 1, isPrimary: true } };
 }
@@ -127,7 +153,9 @@ function release({ shown, at }: ReturnType<typeof dragStub>) {
 
 /* The count of popped holes, and whether they run from the top hole down with no gap. */
 function poppedHoles() {
-  const holes = [...ticket().querySelectorAll("[data-popped]")].map((hole) => hole.getAttribute("data-popped") === "true");
+  const holes = [...ticket().querySelectorAll("[data-popped]")].map(
+    (hole) => hole.getAttribute("data-popped") === "true",
+  );
   const count = holes.filter(Boolean).length;
   return { count, fromTop: holes.slice(0, count).every(Boolean) };
 }
@@ -184,7 +212,8 @@ describe("EggHunt", () => {
     await doubleTap();
     tapEgg(await findEgg(), 90, 130);
     // The part sets the start of each line and of the glow in --egg-delay, and each line draws over --egg-draw.
-    const ms = (element: HTMLElement, name: string) => parseFloat(element.style.getPropertyValue(name));
+    const ms = (element: HTMLElement, name: string) =>
+      parseFloat(element.style.getPropertyValue(name));
     const glow = screen.getByTestId("egg-glow");
     expect(ms(glow, "--egg-delay")).toBeGreaterThanOrEqual(150);
     const lines = screen.getAllByTestId("egg-crack-line");
@@ -307,8 +336,16 @@ describe("EggHunt", () => {
   it("names each egg word card by the text it shows, so the name a voice user reads out matches the card", async () => {
     await openSheet(fakeEggsApi(MATCH));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
-    expect(screen.getByRole("button", { name: "CORNERSTONE $50 0/11 Lil Fridge leads with 1 of 11" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "EAGLES $20 0/6 No open C in this word." })).toBeTruthy();
+    // happy-dom puts a space before the "/" of the count where a browser puts none, so the match drops that space.
+    const named = (name: string) => (computed: string) => computed.replace(" /", "/") === name;
+    expect(
+      screen.getByRole("button", {
+        name: named("CORNERSTONE $50 0/11 Lil Fridge leads with 1 of 11"),
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: named("EAGLES $20 0/6 No open C in this word.") }),
+    ).toBeTruthy();
   });
 
   it("sets the title of the sheet as one element per line, so axe reads each line over one part of the page", async () => {
@@ -335,7 +372,9 @@ describe("EggHunt", () => {
   });
 
   it("fades and disables an egg word where the manager holds the letter already", async () => {
-    await openSheet(fakeEggsApi(MATCH, {}, boardWith({ CORNERSTONE: { 2: ["C"] }, LANSDALE: { 2: [] } })));
+    await openSheet(
+      fakeEggsApi(MATCH, {}, boardWith({ CORNERSTONE: { 2: ["C"] }, LANSDALE: { 2: [] } })),
+    );
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     expect(wordCard("CORNERSTONE").disabled).toBe(true);
     expect(wordCard("CORNERSTONE").textContent).toContain("1/11");
@@ -344,7 +383,9 @@ describe("EggHunt", () => {
   it("fades and disables an egg word with a winner", async () => {
     const won: Board = boardWith({});
     won.words = won.words.map((word) =>
-      word.word === "CORNERSTONE" ? { ...word, winner: { roster_id: 5, team: "London Cooking" } } : word,
+      word.word === "CORNERSTONE"
+        ? { ...word, winner: { roster_id: 5, team: "London Cooking" } }
+        : word,
     );
     await openSheet(fakeEggsApi(MATCH, {}, won));
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
@@ -358,7 +399,9 @@ describe("EggHunt", () => {
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
     expect(stub("Enter the passphrase")).toBeTruthy();
-    fireEvent.change(screen.getByLabelText(/league passphrase/i), { target: { value: PASSPHRASE } });
+    fireEvent.change(screen.getByLabelText(/league passphrase/i), {
+      target: { value: PASSPHRASE },
+    });
     await tap("Tear to claim C for CORNERSTONE");
     await wait(STAMP_MS);
     const card = await screen.findByRole("dialog", { name: "C goes to CORNERSTONE." });
@@ -368,11 +411,17 @@ describe("EggHunt", () => {
     expect(card.textContent).toContain("All You Need Is Love");
     // The red C tile drops into its slot.
     expect(card.querySelector(".egg-land")?.textContent).toBe("C");
-    expect(screen.getByRole("link", { name: "See the egg board" }).getAttribute("href")).toBe("/eggs/");
+    expect(screen.getByRole("link", { name: "See the egg board" }).getAttribute("href")).toBe(
+      "/eggs/",
+    );
   });
 
   it("says the gift card is the manager's when the claim fills the egg word", async () => {
-    const api = fakeEggsApi({ ...MATCH, letter: "S" }, {}, boardWith({ EAGLES: { 3: ["E", "A", "G", "L", "E"] } }));
+    const api = fakeEggsApi(
+      { ...MATCH, letter: "S" },
+      {},
+      boardWith({ EAGLES: { 3: ["E", "A", "G", "L", "E"] } }),
+    );
     localStorage.setItem("cpc.passphrase", PASSPHRASE);
     await openSheet(api, "S");
     fireEvent.click(screen.getByRole("button", { name: "Lil Fridge" }));
@@ -390,7 +439,9 @@ describe("EggHunt", () => {
     await openSheet(api);
     // Lil Fridge holds the one C of CORNERSTONE, and the other egg words hold no C.
     fireEvent.click(screen.getByRole("button", { name: "Lil Fridge" }));
-    expect(screen.getByText("C fits none of your egg words.").closest(".border-dashed")).toBeTruthy();
+    expect(
+      screen.getByText("C fits none of your egg words.").closest(".border-dashed"),
+    ).toBeTruthy();
     await tap("Tear to claim C as a block");
     await wait(STAMP_MS);
     const card = await screen.findByRole("dialog", { name: "You hold C as a block." });
@@ -421,18 +472,24 @@ describe("EggHunt", () => {
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
     await tap("Tear to claim C for CORNERSTONE");
-    expect(await screen.findByText("The passphrase is wrong. Ask a league member for it.")).toBeTruthy();
+    expect(
+      await screen.findByText("The passphrase is wrong. Ask a league member for it."),
+    ).toBeTruthy();
     expect(screen.getByLabelText(/league passphrase/i)).toBeTruthy();
   });
 
   it("shows the hero card of another manager first on a 409 of the claim", async () => {
     localStorage.setItem("cpc.passphrase", PASSPHRASE);
-    await openSheet(fakeEggsApi(MATCH, { claim: new EggsError(409, "Another manager claimed first.") }));
+    await openSheet(
+      fakeEggsApi(MATCH, { claim: new EggsError(409, "Another manager claimed first.") }),
+    );
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
     await tap("Tear to claim C for CORNERSTONE");
     await wait(STAMP_MS);
-    expect(await screen.findByRole("dialog", { name: "Another manager claimed first." })).toBeTruthy();
+    expect(
+      await screen.findByRole("dialog", { name: "Another manager claimed first." }),
+    ).toBeTruthy();
   });
 
   it("shows the reason of a refusal on the sheet", async () => {
@@ -510,9 +567,13 @@ describe("EggHunt", () => {
     fireEvent.click(screen.getByRole("button", { name: "All You Need Is Love" }));
     fireEvent.click(wordCard("CORNERSTONE"));
     await tap("Tear to claim C for CORNERSTONE");
-    expect(screen.getByRole("alert").textContent).toBe("The passphrase is wrong. Ask a league member for it.");
+    expect(screen.getByRole("alert").textContent).toBe(
+      "The passphrase is wrong. Ask a league member for it.",
+    );
     expect(stub("Enter the passphrase").getAttribute("aria-hidden")).toBeNull();
-    fireEvent.change(screen.getByLabelText(/league passphrase/i), { target: { value: PASSPHRASE } });
+    fireEvent.change(screen.getByLabelText(/league passphrase/i), {
+      target: { value: PASSPHRASE },
+    });
     await tap("Tear to claim C for CORNERSTONE");
     expect(within(ticket()).getByText("CLAIMED")).toBeTruthy();
     expect(api.claims).toHaveLength(1);

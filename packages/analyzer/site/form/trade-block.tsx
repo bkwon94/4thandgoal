@@ -37,7 +37,11 @@ const PIN_SPRING = { type: "spring", duration: 0.4, bounce: 0 } as const;
 export function blockRoster(players: TeamPlayer[]): TeamPlayer[] {
   return players
     .filter((player) => POSITIONS.includes(player.position))
-    .sort((a, b) => POSITIONS.indexOf(a.position) - POSITIONS.indexOf(b.position) || a.name.localeCompare(b.name));
+    .sort(
+      (a, b) =>
+        POSITIONS.indexOf(a.position) - POSITIONS.indexOf(b.position) ||
+        a.name.localeCompare(b.name),
+    );
 }
 
 /* A name suffix is no part of a last name, so "Kenneth Walker III" gives "Walker". */
@@ -106,14 +110,14 @@ export function TradeBlock({
   }
 
   return (
-    <div className="flex flex-col gap-sp-2">
-      <div className="flex items-baseline justify-between gap-sp-3 px-sp-1">
-        <span className="text-label font-bold tracking-caps text-on-dark-muted uppercase">
+    <div className="gap-sp-2 flex flex-col">
+      <div className="gap-sp-3 px-sp-1 flex items-baseline justify-between">
+        <span className="text-label tracking-caps text-on-dark-muted font-bold uppercase">
           {full ? "Trade block · tap a pick to take it off" : "Trade block · tap to add"}
         </span>
         <span
           className={cn(
-            "flex-none rounded-pill px-sp-2 py-sp-0 text-meta font-bold tabular-nums transition-[background-color,color] duration-150 ease-out",
+            "rounded-pill px-sp-2 py-sp-0 text-meta flex-none font-bold tabular-nums transition-[background-color,color] duration-150 ease-out",
             full ? "bg-chip-dark text-on-dark" : "text-on-dark-muted",
           )}
         >
@@ -125,26 +129,43 @@ export function TradeBlock({
       <ScrollArea className="-mx-hero-x">
         <ScrollAreaViewport
           ref={viewport}
-          className="overscroll-x-contain motion-safe:scroll-smooth [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-sp-4),black_calc(100%-var(--spacing-sp-6)*2),transparent)] [&::-webkit-scrollbar]:hidden"
+          className="overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-sp-4),black_calc(100%-var(--spacing-sp-6)*2),transparent)] motion-safe:scroll-smooth [&::-webkit-scrollbar]:hidden"
         >
           <ScrollAreaContent className="w-max">
-            <ToggleGroup multiple aria-label="Trade block" value={blockIds} onValueChange={change} disabled={disabled} className="flex gap-sp-2 px-hero-x py-sp-1">
+            <ToggleGroup
+              multiple
+              aria-label="Trade block"
+              value={blockIds}
+              onValueChange={change}
+              disabled={disabled}
+              className="gap-sp-2 px-hero-x py-sp-1 flex"
+            >
               {order.map((player) => {
                 const on = blockIds.includes(player.player_id);
                 return (
-                  <motion.div key={player.player_id} layout={off ? false : "position"} transition={PIN_SPRING} className="flex-none">
+                  <motion.div
+                    key={player.player_id}
+                    layout={off ? false : "position"}
+                    transition={PIN_SPRING}
+                    className="flex-none"
+                  >
                     <Toggle
                       value={player.player_id}
                       aria-label={`${player.name}, ${player.position}`}
-                      className="press group/item flex w-[64px] cursor-pointer flex-col items-center gap-sp-1 rounded-card py-sp-1 outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-accent aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+                      className="press group/item gap-sp-1 rounded-card py-sp-1 focus-visible:outline-accent flex w-[64px] cursor-pointer flex-col items-center outline-none focus-visible:outline-2 focus-visible:outline-solid aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
                     >
                       {/* A player past the cap dims only his headshot, so his name keeps full contrast. */}
-                      <span className={cn("relative transition-opacity duration-150 ease-out", full && !on && "opacity-40")}>
+                      <span
+                        className={cn(
+                          "relative transition-opacity duration-150 ease-out",
+                          full && !on && "opacity-40",
+                        )}
+                      >
                         <Headshot
                           src={player.headshot || HEADSHOT_FALLBACK}
                           size={52}
                           className={cn(
-                            "rounded-full bg-chip-dark object-cover object-top ring-2 ring-offset-2 ring-offset-band transition-[box-shadow] duration-150 ease-out",
+                            "bg-chip-dark ring-offset-band rounded-full object-cover object-top ring-2 ring-offset-2 transition-[box-shadow] duration-150 ease-out",
                             on ? "ring-accent" : "ring-transparent",
                           )}
                         />
@@ -152,7 +173,7 @@ export function TradeBlock({
                           aria-hidden="true"
                           data-check={on}
                           className={cn(
-                            "absolute -right-sp-0 -bottom-sp-0 grid size-sp-5 place-items-center rounded-full bg-accent text-on-dark ring-2 ring-band transition-[opacity,scale] duration-150 ease-out",
+                            "-right-sp-0 -bottom-sp-0 size-sp-5 bg-accent text-on-dark ring-band absolute grid place-items-center rounded-full ring-2 transition-[opacity,scale] duration-150 ease-out",
                             on ? "scale-100 opacity-100" : "scale-50 opacity-0",
                           )}
                         >
@@ -162,13 +183,15 @@ export function TradeBlock({
                       {/* A pointer that rests on a player lifts his name to full ink, so a mouse sees what a click picks. */}
                       <span
                         className={cn(
-                          "w-full truncate text-center text-label leading-tight font-bold transition-[color] duration-150 ease-out",
+                          "text-label w-full truncate text-center leading-tight font-bold transition-[color] duration-150 ease-out",
                           on ? "text-on-dark" : "text-on-dark-2 group-hover/item:text-on-dark",
                         )}
                       >
                         {lastName(player.name)}
                       </span>
-                      <span className="text-label leading-none text-on-dark-muted">{player.position}</span>
+                      <span className="text-label text-on-dark-muted leading-none">
+                        {player.position}
+                      </span>
                     </Toggle>
                   </motion.div>
                 );
@@ -183,12 +206,18 @@ export function TradeBlock({
             key={refused}
             animate={off ? undefined : { x: SHAKE }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="m-0 flex items-start gap-sp-2 text-meta leading-tight font-bold text-pretty text-on-dark">
-            <CircleAlertIcon aria-hidden="true" className="mt-px size-sp-4 flex-none text-accent-text" />
+            className="gap-sp-2 text-meta text-on-dark m-0 flex items-start leading-tight font-bold text-pretty"
+          >
+            <CircleAlertIcon
+              aria-hidden="true"
+              className="size-sp-4 text-accent-text mt-px flex-none"
+            />
             {BLOCK_FULL}
           </motion.p>
         )}
-        {blockIds.length === 0 && <p className="m-0 text-meta leading-tight text-pretty text-on-dark-2">{BLOCK_EMPTY}</p>}
+        {blockIds.length === 0 && (
+          <p className="text-meta text-on-dark-2 m-0 leading-tight text-pretty">{BLOCK_EMPTY}</p>
+        )}
       </div>
     </div>
   );

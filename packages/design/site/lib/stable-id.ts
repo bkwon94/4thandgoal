@@ -29,7 +29,12 @@ export const NOT_FOUND = "data-not-found";
    that is not a letter or a digit is one dash. */
 export function stableKey(...parts: (string | number)[]): string {
   return parts
-    .map((part) => String(part).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""))
+    .map((part) =>
+      String(part)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, ""),
+    )
     .filter((part) => part !== "")
     .join("-");
 }

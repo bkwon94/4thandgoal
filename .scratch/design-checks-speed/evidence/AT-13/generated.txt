@@ -1,0 +1,110 @@
+# Recorded at c93e94bd. Proof that each ignore pattern of .oxlintrc.json is build output, a test fixture, or a generated file.
+
+$ sed -n "/ignorePatterns/,/\]/p" .oxlintrc.json
+  "ignorePatterns": [
+    "**/.next/**",
+    "**/out/**",
+    "apps/site/public/**",
+    "apps/site/test-results/**",
+    "apps/site/src/generated/**",
+    "apps/site/src/app/(client)/**",
+    "apps/site/next-env.d.ts"
+  ],
+exit code: 0
+
+$ git ls-files 'apps/site/src/app/(client)' | wc -l
+       0
+exit code: 0
+
+$ git check-ignore -v 'apps/site/src/app/(client)/page.tsx'
+.gitignore:16:apps/site/src/app/(client)/	apps/site/src/app/(client)/page.tsx
+exit code: 0
+
+$ sed -n 12,18p .gitignore
+data/nfl/cache/
+data/cache/
+# The client build of the site writes these from clients/$CLIENT/. See apps/site/scripts/client-build.mjs.
+apps/site/src/generated/
+apps/site/src/app/(client)/
+apps/site/public/[0-9][0-9][0-9][0-9]/
+apps/site/public/brand/
+exit code: 0
+
+$ sed -n 139,141p apps/site/scripts/client-build.mjs
+/* The folders that the build owns. It empties each one first, so a route of the last client never stays behind. */
+const ROUTE_GROUP = join("src", "app", "(client)");
+const GENERATED_DIR = join("src", "generated");
+exit code: 0
+
+$ grep -n "ROUTE_GROUP" apps/site/scripts/client-build.mjs
+140:const ROUTE_GROUP = join("src", "app", "(client)");
+486:  rmSync(join(site, ROUTE_GROUP), { recursive: true, force: true });
+491:      writeFile(join(site, ROUTE_GROUP, route.path), routeText(slug, route));
+495:    writeFile(join(site, ROUTE_GROUP, ASK_ROUTE.path), routeText(slug, ASK_ROUTE));
+exit code: 0
+
+$ git ls-files apps/site/src/generated apps/site/test-results apps/site/public | grep -v '^apps/site/public/' | wc -l
+       0
+exit code: 0
+
+$ git check-ignore -v apps/site/next-env.d.ts apps/site/src/generated/x apps/site/test-results/x
+.gitignore:15:apps/site/src/generated/	apps/site/src/generated/x
+.gitignore:22:apps/site/test-results/	apps/site/test-results/x
+exit code: 0
+
+$ git ls-files apps/site/next-env.d.ts
+apps/site/next-env.d.ts
+exit code: 0
+
+$ cat apps/site/next-env.d.ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/types/routes.d.ts";
+import "./.next/types/root-params.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+exit code: 0
+
+
+# apps/site/public/ (added after the second Judge round, at 0df8458e)
+
+$ git ls-files apps/site/public
+apps/site/public/.nojekyll
+apps/site/public/images/avatar-default.svg
+apps/site/public/images/headshot-default.svg
+exit code: 0
+
+$ git ls-files apps/site/public | grep -E "\.(js|jsx|ts|tsx|mjs|cjs)$" | wc -l
+       0
+exit code: 0
+
+$ file apps/site/public/images/*
+apps/site/public/images/avatar-default.svg:   SVG Scalable Vector Graphics image
+apps/site/public/images/headshot-default.svg: SVG Scalable Vector Graphics image
+exit code: 0
+
+$ sed -n 17,18p .gitignore
+apps/site/public/[0-9][0-9][0-9][0-9]/
+apps/site/public/brand/
+exit code: 0
+
+$ grep -n "BRAND_DIR\|cpSync\|publishedDir\|join(site, \"public\"" apps/site/scripts/client-build.mjs | head -12
+8:  cpSync,
+143:const BRAND_DIR = join("public", "brand");
+158:function latestSeasonDir(publishedDir) {
+159:  if (!existsSync(publishedDir)) return null;
+160:  const seasons = readdirSync(publishedDir)
+163:  return seasons.length > 0 ? join(publishedDir, seasons.at(-1)) : null;
+436:      cpSync(join(published, name), join(publicDir, name), { recursive: true });
+444:  const target = join(site, BRAND_DIR);
+453:  cpSync(join(assets, logo), join(target, logo));
+506:  copyPublished(published, join(site, "public"));
+507:  const redirects = join(site, "public", "_redirects");
+exit code: 0
+
+$ git check-ignore -v apps/site/public/2026/x apps/site/public/brand/x
+.gitignore:17:apps/site/public/[0-9][0-9][0-9][0-9]/	apps/site/public/2026/x
+.gitignore:18:apps/site/public/brand/	apps/site/public/brand/x
+exit code: 0
+

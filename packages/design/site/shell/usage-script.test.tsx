@@ -3,7 +3,7 @@
  * They read the markup that the static export writes, not the props.
  */
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { UsageScript } from "./usage-script";
 
 describe("UsageScript", () => {

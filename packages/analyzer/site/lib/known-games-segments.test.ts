@@ -2,11 +2,15 @@
  * Tests for the stats-through segments that the analyze page and the finder page share.
  * The cases follow the as-of block of the result document.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { AsOf } from "./analyze-types";
 import { knownGamesSegments } from "./known-games-segments";
 
-const base: AsOf = { chart_week: 7, stats_through: 6, rosters_fetched: "2026-10-26T09:30:00-04:00" };
+const base: AsOf = {
+  chart_week: 7,
+  stats_through: 6,
+  rosters_fetched: "2026-10-26T09:30:00-04:00",
+};
 const known = (over: Partial<NonNullable<AsOf["known_games"]>>): AsOf => ({
   ...base,
   stats_through: 7,
@@ -24,7 +28,9 @@ describe("knownGamesSegments", () => {
   });
 
   it("shows the stats week alone when no games are read", () => {
-    expect(knownGamesSegments({ ...known({ games: 0 }), stats_through: 6 })).toEqual(["Stats through week 6"]);
+    expect(knownGamesSegments({ ...known({ games: 0 }), stats_through: 6 })).toEqual([
+      "Stats through week 6",
+    ]);
   });
 
   it("stops after the games count when nothing is in progress or pending", () => {
@@ -37,11 +43,15 @@ describe("knownGamesSegments", () => {
   });
 
   it("uses the singular for one game", () => {
-    expect(knownGamesSegments(known({ games: 1 }))).toEqual(["Stats through week 6, plus 1 week 7 game"]);
+    expect(knownGamesSegments(known({ games: 1 }))).toEqual([
+      "Stats through week 6, plus 1 week 7 game",
+    ]);
   });
 
   it("adds the in-progress count", () => {
-    expect(knownGamesSegments(known({ in_progress: 2 }))).toEqual(["Stats through week 6, plus 13 week 7 games, 2 in progress"]);
+    expect(knownGamesSegments(known({ in_progress: 2 }))).toEqual([
+      "Stats through week 6, plus 13 week 7 games, 2 in progress",
+    ]);
   });
 
   it("adds one segment per pending name", () => {

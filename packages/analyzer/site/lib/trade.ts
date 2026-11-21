@@ -64,7 +64,9 @@ export function analyzeRequest(sides: Sides, season: number): AnalyzeRequest | n
     sides: sides.map((side) => ({
       roster_id: side.rosterId!,
       gives: sides.flatMap((card) =>
-        card.gets.filter((get) => get.fromSide === side.id).map((get) => ({ player_id: get.playerId, to: card.rosterId! })),
+        card.gets
+          .filter((get) => get.fromSide === side.id)
+          .map((get) => ({ player_id: get.playerId, to: card.rosterId! })),
       ),
     })),
   };

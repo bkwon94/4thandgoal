@@ -19,7 +19,7 @@ export default function AnalyzePage() {
   return (
     <>
       <TopBand {...shellProps()} pageHref={analyzeHref()} />
-      <main className="mx-auto w-full max-w-page px-gutter pt-sp-6 pb-sp-6">
+      <main className="max-w-page px-gutter pt-sp-6 pb-sp-6 mx-auto w-full">
         <Analyzer target={apiTarget} finderOn={finderOn} lock={clientValues.lock} />
       </main>
     </>

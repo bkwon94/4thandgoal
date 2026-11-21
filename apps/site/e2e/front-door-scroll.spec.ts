@@ -16,7 +16,11 @@ const OUT = join(process.cwd(), "out");
 // The client build writes the hidden /ask/ route only while the flag front_door is off. Then / is the home page.
 const DOOR = existsSync(join(OUT, "ask", "index.html")) ? "/ask/" : "/";
 
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "POST",
+};
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -51,7 +55,9 @@ async function gapUnderHeader(page: Page, name: string): Promise<number> {
   return bubble.y - (header.y + header.height);
 }
 
-test("a miss scrolls its question to the top, though its dock drops the chips in the same render (ticket 50)", async ({ page }) => {
+test("a miss scrolls its question to the top, though its dock drops the chips in the same render (ticket 50)", async ({
+  page,
+}) => {
   await openDoor(page, `${server.url}${DOOR}`);
   // The ask route answers with a miss, so the miss card and the dock without its chips land in one render.
   await page.route("**/clients/*/ask", (route) =>
@@ -59,7 +65,14 @@ test("a miss scrolls its question to the top, though its dock drops the chips in
       status: route.request().method() === "OPTIONS" ? 204 : 200,
       headers: CORS,
       contentType: "application/json",
-      body: JSON.stringify({ route: "miss", line: null, topic: null, team: null, closest: ["week_recap", "power_rankings", "playoff_race"], suggestion: null }),
+      body: JSON.stringify({
+        route: "miss",
+        line: null,
+        topic: null,
+        team: null,
+        closest: ["week_recap", "power_rankings", "playoff_race"],
+        suggestion: null,
+      }),
     }),
   );
   await openTopic(page, "Week recap");
@@ -75,7 +88,9 @@ test("a miss scrolls its question to the top, though its dock drops the chips in
   expect(gap, `the bubble top sits ${gap}px under the header`).toBeLessThanOrEqual(16);
 });
 
-test("the first question in a short Thread does not jump the page (ticket 45)", async ({ page }) => {
+test("the first question in a short Thread does not jump the page (ticket 45)", async ({
+  page,
+}) => {
   await openDoor(page, `${server.url}${DOOR}`);
   await startSamples(page, () => window.scrollY);
   await askQuestion(page, "week 1 results");

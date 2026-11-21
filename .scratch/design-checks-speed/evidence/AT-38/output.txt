@@ -1,0 +1,23 @@
+$ git show main:apps/site/src/app/globals.css | grep -n -E "\-\-spacing-sp-[0-9]+:"
+72:    --spacing-sp-0: 2px;
+73:    --spacing-sp-1: 4px;
+74:    --spacing-sp-2: 8px;
+75:    --spacing-sp-3: 12px;
+76:    --spacing-sp-4: 16px;
+77:    --spacing-sp-5: 20px;
+78:    --spacing-sp-6: 24px;
+exit code: 0
+
+$ grep -n -E "\-\-spacing-sp-[0-9]+:" apps/site/src/app/globals.css
+72:  --spacing-sp-0: 2px;
+73:  --spacing-sp-1: 4px;
+74:  --spacing-sp-2: 8px;
+75:  --spacing-sp-3: 12px;
+76:  --spacing-sp-4: 16px;
+77:  --spacing-sp-5: 20px;
+78:  --spacing-sp-6: 24px;
+exit code: 0
+
+$ diff <(git show main:apps/site/src/app/globals.css | grep -E "\-\-spacing-sp-[0-9]+:" | sed "s/^ *//") <(grep -E "\-\-spacing-sp-[0-9]+:" apps/site/src/app/globals.css | sed "s/^ *//")
+exit code: 0
+

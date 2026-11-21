@@ -23,9 +23,9 @@ export function ShareBar({ share, tone }: { share: number; tone: keyof typeof TR
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={share}
-      className={cn("h-sp-1 overflow-hidden rounded-pill", TRACKS[tone])}
+      className={cn("h-sp-1 rounded-pill overflow-hidden", TRACKS[tone])}
     >
-      <BarFill pct={share} className="block h-full rounded-pill bg-accent" />
+      <BarFill pct={share} className="rounded-pill bg-accent block h-full" />
     </div>
   );
 }

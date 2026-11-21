@@ -54,15 +54,21 @@ function litPlace(block: NflGameBlock): number {
    game yet. */
 function litFacts(block: NflGameBlock): { opponent: string; allows: string | null } {
   const lit = block.strip.defenses.find((row) => row.team === block.strip.lit);
-  const opponent = block.sides.find((side) => side.code === block.strip.lit)?.name ?? block.strip.lit;
+  const opponent =
+    block.sides.find((side) => side.code === block.strip.lit)?.name ?? block.strip.lit;
   if (!lit) return { opponent, allows: null };
   const what = block.strip.position ? `${block.strip.position} points` : "points to all positions";
-  return { opponent, allows: `${oneDecimal(lit.allowed)} ${what} a game, ${ordinal(litPlace(block))} fewest of ${block.strip.defenses.length}` };
+  return {
+    opponent,
+    allows: `${oneDecimal(lit.allowed)} ${what} a game, ${ordinal(litPlace(block))} fewest of ${block.strip.defenses.length}`,
+  };
 }
 
 function stripWords(block: NflGameBlock): string {
   const { opponent, allows } = litFacts(block);
-  return allows === null ? `${opponent} defense: no games yet` : `${opponent} defense allows ${allows}`;
+  return allows === null
+    ? `${opponent} defense: no games yet`
+    : `${opponent} defense allows ${allows}`;
 }
 
 /* The card as one short line of plain text, so the turn of the Answer carries it. */
@@ -76,7 +82,8 @@ export function nflGameText(block: NflGameBlock): string {
     })
     .filter(Boolean)
     .join(", ");
-  const league = block.pass_share.league === null ? "" : ` (league ${percent(block.pass_share.league)})`;
+  const league =
+    block.pass_share.league === null ? "" : ` (league ${percent(block.pass_share.league)})`;
   return `${head} ${stripWords(block)}.${passes ? ` ${passes}${league}.` : ""}`;
 }
 
@@ -91,15 +98,39 @@ function useRise(live: boolean) {
 function useGrow(live: boolean) {
   const off = useMotionOff();
   return (axis: "scaleX" | "scaleY", delay: number) =>
-    live ? { initial: off ? { opacity: 0 } : { opacity: 0, [axis]: 0 }, animate: off ? { opacity: 1 } : { opacity: 1, [axis]: 1 }, transition: off ? fadeIn(SLOW, delay) : { duration: SLOW, ease: SMOOTH, delay } } : {};
+    live
+      ? {
+          initial: off ? { opacity: 0 } : { opacity: 0, [axis]: 0 },
+          animate: off ? { opacity: 1 } : { opacity: 1, [axis]: 1 },
+          transition: off ? fadeIn(SLOW, delay) : { duration: SLOW, ease: SMOOTH, delay },
+        }
+      : {};
 }
 
 /* One team in the head of the card. The favorite carries the red ink; the other is quiet. */
-function Team({ side, favorite, align }: { side: NflGameBlock["sides"][number]; favorite: boolean; align: "left" | "right" }) {
+function Team({
+  side,
+  favorite,
+  align,
+}: {
+  side: NflGameBlock["sides"][number];
+  favorite: boolean;
+  align: "left" | "right";
+}) {
   return (
-    <div className={`flex min-w-0 flex-col gap-sp-1 ${align === "right" ? "items-end text-right" : ""}`}>
-      <p className={`m-0 max-w-full truncate text-row leading-tight font-semibold ${favorite ? "text-accent-ink" : "text-ink-2"}`}>{side.name}</p>
-      <p className={`m-0 text-stat leading-tight tabular-nums ${favorite ? "font-bold text-ink" : "font-semibold text-mute"}`}>{oneDecimal(side.projected)}</p>
+    <div
+      className={`gap-sp-1 flex min-w-0 flex-col ${align === "right" ? "items-end text-right" : ""}`}
+    >
+      <p
+        className={`text-row m-0 max-w-full truncate leading-tight font-semibold ${favorite ? "text-accent-ink" : "text-ink-2"}`}
+      >
+        {side.name}
+      </p>
+      <p
+        className={`text-stat m-0 leading-tight tabular-nums ${favorite ? "text-ink font-bold" : "text-mute font-semibold"}`}
+      >
+        {oneDecimal(side.projected)}
+      </p>
     </div>
   );
 }
@@ -112,20 +143,27 @@ function Tug({ block, live }: { block: NflGameBlock; live: boolean }) {
   const width = (Math.min(Math.abs(block.margin), FULL_PULL) / FULL_PULL) * 50;
   const side = block.margin > 0 ? "left" : "right";
   return (
-    <div className="flex flex-col gap-sp-1">
-      <div role="img" aria-label={`Expected margin: ${block.margin === 0 ? "even game" : words}`} className="relative h-2 rounded-pill bg-rule">
-        <span aria-hidden className="absolute inset-y-[-3px] left-1/2 w-px bg-mute" />
+    <div className="gap-sp-1 flex flex-col">
+      <div
+        role="img"
+        aria-label={`Expected margin: ${block.margin === 0 ? "even game" : words}`}
+        className="rounded-pill bg-rule relative h-2"
+      >
+        {/* oxlint-disable-next-line design/no-arbitrary-value -- the tick runs 3 px past the bar, between two steps */}
+        <span aria-hidden className="bg-mute absolute inset-y-[-3px] left-1/2 w-px" />
         {block.margin !== 0 && (
           <motion.span
             aria-hidden
             data-tug={side}
-            className={`absolute inset-y-0 rounded-pill bg-accent ${side === "left" ? "right-1/2 origin-right" : "left-1/2 origin-left"}`}
+            className={`rounded-pill bg-accent absolute inset-y-0 ${side === "left" ? "right-1/2 origin-right" : "left-1/2 origin-left"}`}
             style={{ width: `${width}%` }}
             {...grow("scaleX", VERY_SLOW * 0.6)}
           />
         )}
       </div>
-      <p className="m-0 text-center font-mono text-meta leading-tight text-mute tabular-nums">{block.margin === 0 ? "Even game" : words}</p>
+      <p className="text-meta text-mute m-0 text-center font-mono leading-tight tabular-nums">
+        {block.margin === 0 ? "Even game" : words}
+      </p>
     </div>
   );
 }
@@ -140,9 +178,16 @@ function DefenseStrip({ block, live }: { block: NflGameBlock; live: boolean }) {
   const words = stripWords(block);
   const facts = litFacts(block);
   return (
-    <div className="flex flex-col gap-sp-1">
-      <p className="m-0 font-mono text-meta leading-tight tracking-caps text-mute uppercase">Defense vs {block.strip.position ?? "all positions"}</p>
-      <div role="img" aria-label={`${words}.`} className="flex items-end gap-px" style={{ height: STRIP_HEIGHT }}>
+    <div className="gap-sp-1 flex flex-col">
+      <p className="text-meta tracking-caps text-mute m-0 font-mono leading-tight uppercase">
+        Defense vs {block.strip.position ?? "all positions"}
+      </p>
+      <div
+        role="img"
+        aria-label={`${words}.`}
+        className="flex items-end gap-px"
+        style={{ height: STRIP_HEIGHT }}
+      >
         {block.strip.defenses.map((row, index) => {
           const lit = row.team === block.strip.lit;
           // The shortest tick keeps a fifth of the height, so every defense shows on the strip.
@@ -158,13 +203,15 @@ function DefenseStrip({ block, live }: { block: NflGameBlock; live: boolean }) {
           );
         })}
       </div>
-      <p className="m-0 flex justify-between font-mono text-meta leading-tight text-mute">
+      <p className="text-meta text-mute m-0 flex justify-between font-mono leading-tight">
         <span>Fewest</span>
         <span>Most</span>
       </p>
-      <p className="m-0 text-row leading-tight text-ink-2">
-        <span className="font-semibold text-accent-ink">{facts.opponent}</span>{" "}
-        <span className="tabular-nums">{facts.allows === null ? "have no games yet" : `allow ${facts.allows}`}</span>
+      <p className="text-row text-ink-2 m-0 leading-tight">
+        <span className="text-accent-ink font-semibold">{facts.opponent}</span>{" "}
+        <span className="tabular-nums">
+          {facts.allows === null ? "have no games yet" : `allow ${facts.allows}`}
+        </span>
       </p>
     </div>
   );
@@ -175,12 +222,12 @@ function PassShare({ block, live }: { block: NflGameBlock; live: boolean }) {
   const grow = useGrow(live);
   const league = block.pass_share.league;
   return (
-    <div className="flex flex-col gap-sp-2">
-      <p className="m-0 flex justify-between font-mono text-meta leading-tight tracking-caps text-mute uppercase">
+    <div className="gap-sp-2 flex flex-col">
+      <p className="text-meta tracking-caps text-mute m-0 flex justify-between font-mono leading-tight uppercase">
         <span>Pass share</span>
         {league !== null && (
-          <span className="flex items-center gap-sp-1 normal-case tracking-normal">
-            <span aria-hidden className="inline-block h-sp-3 w-px bg-ink" />
+          <span className="gap-sp-1 flex items-center tracking-normal normal-case">
+            <span aria-hidden className="h-sp-3 bg-ink inline-block w-px" />
             League {percent(league)}
           </span>
         )}
@@ -190,13 +237,34 @@ function PassShare({ block, live }: { block: NflGameBlock; live: boolean }) {
         if (side.share === null) return null;
         const label = `${name} pass ${percent(side.share)} of plays${league === null ? "" : `, against ${percent(league)} for the league`}`;
         return (
-          <div key={side.code} className="grid grid-cols-[5.5rem_minmax(0,1fr)_2.75rem] items-center gap-x-sp-2">
-            <span className="truncate text-row leading-tight text-ink-2">{name}</span>
-            <span role="img" aria-label={label} className="relative block h-1.5 rounded-pill bg-rule">
-              <motion.span aria-hidden className="absolute inset-y-0 left-0 origin-left rounded-pill bg-mute" style={{ width: `${side.share * 100}%` }} {...grow("scaleX", VERY_SLOW * 0.6 + 0.08 * (index + 1))} />
-              {league !== null && <span aria-hidden data-league-mark className="absolute inset-y-[-4px] w-px bg-ink" style={{ left: `${league * 100}%` }} />}
+          <div
+            key={side.code}
+            className="gap-x-sp-2 grid grid-cols-[5.5rem_minmax(0,1fr)_2.75rem] items-center"
+          >
+            <span className="text-row text-ink-2 truncate leading-tight">{name}</span>
+            <span
+              role="img"
+              aria-label={label}
+              className="rounded-pill bg-rule relative block h-1.5"
+            >
+              <motion.span
+                aria-hidden
+                className="rounded-pill bg-mute absolute inset-y-0 left-0 origin-left"
+                style={{ width: `${side.share * 100}%` }}
+                {...grow("scaleX", VERY_SLOW * 0.6 + 0.08 * (index + 1))}
+              />
+              {league !== null && (
+                <span
+                  aria-hidden
+                  data-league-mark
+                  className="bg-ink -inset-y-sp-1 absolute w-px"
+                  style={{ left: `${league * 100}%` }}
+                />
+              )}
             </span>
-            <span className="text-right font-mono text-row leading-tight text-ink tabular-nums">{percent(side.share)}</span>
+            <span className="text-row text-ink text-right font-mono leading-tight tabular-nums">
+              {percent(side.share)}
+            </span>
           </div>
         );
       })}
@@ -209,19 +277,26 @@ export function NflGameView({ block, live }: { block: NflGameBlock; live: boolea
   const rise = useRise(live);
   const [left, right] = block.sides;
   return (
-    <div role="group" aria-label={block.title} className="flex min-w-0 flex-col gap-sp-4" data-block="nfl_game">
-      <motion.div className="flex flex-col gap-sp-3" {...rise(VERY_SLOW * 0.6)}>
-        <p className="m-0 truncate font-mono text-meta leading-tight tracking-caps text-mute uppercase">{block.title} · Projected</p>
-        <div className="grid grid-cols-2 items-end gap-x-sp-4">
+    <div
+      role="group"
+      aria-label={block.title}
+      className="gap-sp-4 flex min-w-0 flex-col"
+      data-block="nfl_game"
+    >
+      <motion.div className="gap-sp-3 flex flex-col" {...rise(VERY_SLOW * 0.6)}>
+        <p className="text-meta tracking-caps text-mute m-0 truncate font-mono leading-tight uppercase">
+          {block.title} · Projected
+        </p>
+        <div className="gap-x-sp-4 grid grid-cols-2 items-end">
           <Team side={left} favorite={block.margin > 0} align="left" />
           <Team side={right} favorite={block.margin < 0} align="right" />
         </div>
         <Tug block={block} live={live} />
       </motion.div>
-      <motion.div className="border-t border-rule pt-sp-3" {...rise(VERY_SLOW * 0.6 + 0.08)}>
+      <motion.div className="border-rule pt-sp-3 border-t" {...rise(VERY_SLOW * 0.6 + 0.08)}>
         <DefenseStrip block={block} live={live} />
       </motion.div>
-      <motion.div className="border-t border-rule pt-sp-3" {...rise(VERY_SLOW * 0.6 + 0.16)}>
+      <motion.div className="border-rule pt-sp-3 border-t" {...rise(VERY_SLOW * 0.6 + 0.16)}>
         <PassShare block={block} live={live} />
       </motion.div>
     </div>

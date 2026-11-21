@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { shortName } from "@cpc/design/format/format";
@@ -72,9 +73,14 @@ function Orb({
     >
       <motion.div
         animate={drift ? { x: [0, slot.dx], y: [0, slot.dy] } : { x: 0, y: 0 }}
-        transition={drift ? { duration: slot.period, ease: DRIFT_EASE, repeat: Infinity, repeatType: "mirror" } : INSTANT}
+        transition={
+          drift
+            ? { duration: slot.period, ease: DRIFT_EASE, repeat: Infinity, repeatType: "mirror" }
+            : INSTANT
+        }
       >
-        <button
+        <Button
+          variant="plain"
           type="button"
           aria-label={price ? `${player.name}, ${price}` : player.name}
           aria-pressed={open}
@@ -88,7 +94,7 @@ function Orb({
               size={slot.size}
               className={cn(
                 // The fill is the dark rule, so it stays one step off the black card in both themes. Ink-2 turns light grey in the dark theme.
-                "block rounded-full border-2 bg-rule-dark object-cover object-top shadow-orb",
+                "bg-rule-dark shadow-orb block rounded-full border-2 object-cover object-top",
                 open ? "border-on-dark" : "border-accent",
               )}
             />
@@ -96,15 +102,17 @@ function Orb({
               <span
                 style={{ top: -TAG.up * scale, right: -TAG.out * scale }}
                 // The price tag uses the page and its ink, so it inverts with the theme. Ink inverts with the page, so the chip text shows in both themes.
-                className="absolute rounded-full bg-page px-sp-1 py-sp-0 text-label leading-tight font-bold text-ink tabular-nums"
+                className="bg-page px-sp-1 py-sp-0 text-label text-ink absolute rounded-full leading-tight font-bold tabular-nums"
               >
                 {price}
               </span>
             )}
           </span>
-          <span className="mt-sp-1 block w-full truncate text-center text-meta leading-tight font-bold">{shortName(player.name)}</span>
-          <span className="block text-label leading-tight text-on-dark-2">{`${player.position} · ${player.team}`}</span>
-        </button>
+          <span className="mt-sp-1 text-meta block w-full truncate text-center leading-tight font-bold">
+            {shortName(player.name)}
+          </span>
+          <span className="text-label text-on-dark-2 block leading-tight">{`${player.position} · ${player.team}`}</span>
+        </Button>
       </motion.div>
     </motion.div>
   );

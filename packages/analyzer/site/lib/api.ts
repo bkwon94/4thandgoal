@@ -63,7 +63,9 @@ async function errorDetail(response: Response): Promise<string | undefined> {
 function parseBody<S extends ZodType>(schema: S, body: unknown, route: string): z.output<S> {
   const result = schema.safeParse(body);
   if (result.success) return result.data;
-  const issues = result.error.issues.map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`);
+  const issues = result.error.issues.map(
+    (issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`,
+  );
   throw new ApiError(502, `The API sent a wrong body for ${route}. ${issues.join("; ")}`);
 }
 
@@ -108,7 +110,9 @@ export function toErrorLine(error: unknown, timedOut: boolean, timeoutMessage: s
     if (error.status === 429) return { message: retryText(error.retryAfter) };
     // The API says why it is down in its detail, so the reader sees that reason when it exists.
     if (error.status === 503) {
-      return { message: error.detail ?? "The analyzer is down for the moment. Try again in a few minutes." };
+      return {
+        message: error.detail ?? "The analyzer is down for the moment. Try again in a few minutes.",
+      };
     }
   }
   return { message: "The API did not answer. Try again." };
@@ -178,7 +182,13 @@ export function postAnalyze(
    runs over every other team. With a limit, each offer brings back a player at aim_position, the same field of the
    Limit that a typed question of trade ideas sets. With a Trade block of 1 to 3 player ids of the asker, each offer
    sends at least one of them. */
-export type FindRequest = { season: number; asker: number; partner?: number; limit?: { aim_position: string }; trade_block?: string[] };
+export type FindRequest = {
+  season: number;
+  asker: number;
+  partner?: number;
+  limit?: { aim_position: string };
+  trade_block?: string[];
+};
 
 /* What the find stream gives the finder before its document: each step line, live while its step works, the roster id
    of each team as the search reads it, and each trade of the pick as soon as it stands, with its place in the pick
@@ -199,19 +209,38 @@ export type FindEvents = {
 const shortlistPlayerSchema = z.object({ name: z.string(), last: z.string() });
 /* One trade of the Shortlist that the pick weighs, from the side of the asker: the players he gives, then the players
    he gets. The stream sends the Shortlist before the pick, so the wait of step 5 can name each trade (decision 20). */
-const shortlistTradeSchema = z.object({ offer_id: z.string(), gives: z.array(shortlistPlayerSchema), gets: z.array(shortlistPlayerSchema) });
+const shortlistTradeSchema = z.object({
+  offer_id: z.string(),
+  gives: z.array(shortlistPlayerSchema),
+  gets: z.array(shortlistPlayerSchema),
+});
 export type ShortlistTrade = z.infer<typeof shortlistTradeSchema>;
 
 /* One part of the find stream that the site reads. The stream sends more parts, such as the start, and the reader skips them. */
 const findPartSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("data-step"), data: z.object({ line: z.string(), live: z.boolean().optional() }) }),
+  z.object({
+    type: z.literal("data-step"),
+    data: z.object({ line: z.string(), live: z.boolean().optional() }),
+  }),
   z.object({ type: z.literal("data-team"), data: z.object({ roster_id: z.number() }) }),
-  z.object({ type: z.literal("data-trade"), data: z.object({ index: z.number(), most: z.number(), trade: finderTradeSchema }) }),
-  z.object({ type: z.literal("data-shortlist"), data: z.object({ trades: z.array(shortlistTradeSchema) }) }),
+  z.object({
+    type: z.literal("data-trade"),
+    data: z.object({ index: z.number(), most: z.number(), trade: finderTradeSchema }),
+  }),
+  z.object({
+    type: z.literal("data-shortlist"),
+    data: z.object({ trades: z.array(shortlistTradeSchema) }),
+  }),
   z.object({ type: z.literal("data-trades-count"), data: z.object({ count: z.number() }) }),
   z.object({ type: z.literal("data-trades-done"), data: z.object({}) }),
-  z.object({ type: z.literal("data-answer"), data: z.object({ kind: z.literal("find"), document: findResponseSchema }) }),
-  z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
+  z.object({
+    type: z.literal("data-answer"),
+    data: z.object({ kind: z.literal("find"), document: findResponseSchema }),
+  }),
+  z.object({
+    type: z.literal("data-error"),
+    data: z.object({ status: z.number(), line: z.string() }),
+  }),
 ]);
 
 /* The find press as a stream: each step and each team read go to `events` as they come, and the document ends it.
@@ -221,7 +250,13 @@ const findPartSchema = z.discriminatedUnion("type", [
    The document returns at once, and the rest of the body drains to its end with no part read. The API closes the
    stream right after the document, so the drain ends at once, and a later abort of the page cuts no open stream that
    the API logs as a failure. */
-export async function streamFind(target: ApiTarget, passphrase: string, body: FindRequest, events: FindEvents, signal: AbortSignal): Promise<FindResponse> {
+export async function streamFind(
+  target: ApiTarget,
+  passphrase: string,
+  body: FindRequest,
+  events: FindEvents,
+  signal: AbortSignal,
+): Promise<FindResponse> {
   const response = await fetch(`${clientBase(target)}/find-stream`, {
     method: "POST",
     headers: { "X-League-Passphrase": passphrase, "Content-Type": "application/json" },

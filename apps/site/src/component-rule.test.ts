@@ -6,7 +6,7 @@
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type Offense, report } from "./rule-report";
 
 const COMPONENTS_DIR = join(process.cwd(), "src", "components");
@@ -31,8 +31,9 @@ function sourceFiles(dir = COMPONENTS_DIR): string[] {
   });
 }
 
-/* A module name in an import, an export from, a dynamic import, a vi.mock, or a require. Only these reach a module. */
-const SPECIFIER = /(?:\bfrom|\bimport\s*\(?|\bmock\s*\(|\brequire\s*\()\s*["']([^"']+)["']/g;
+/* A module name in an import, an export from, a dynamic import, a mock.module, or a require. Only these reach a module. */
+const SPECIFIER =
+  /(?:\bfrom|\bimport\s*\(?|\bmock(?:\.module)?\s*\(|\brequire\s*\()\s*["']([^"']+)["']/g;
 
 /* The modules a component must not reach. The match takes the alias and a relative path alike. */
 const BANNED: { ruleId: string; test: (specifier: string) => boolean; fix: string }[] = [
@@ -64,7 +65,13 @@ function offenses(path: string, source: string): Offense[] {
     const found: Offense[] = [];
     for (const [, specifier] of line.matchAll(SPECIFIER)) {
       for (const banned of BANNED) {
-        if (banned.test(specifier)) found.push({ ...at, ruleId: banned.ruleId, what: `${name} imports ${specifier}.`, fix: banned.fix });
+        if (banned.test(specifier))
+          found.push({
+            ...at,
+            ruleId: banned.ruleId,
+            what: `${name} imports ${specifier}.`,
+            fix: banned.fix,
+          });
       }
     }
     if (/\bprocess\.env\b/.test(line)) {
@@ -90,7 +97,9 @@ describe("the component rule", () => {
   });
 
   it("finds no component that reads a file, reads the env, imports the config, or imports a loader", () => {
-    const found = [COMPONENTS_DIR, ...packageSiteDirs()].flatMap((dir) => sourceFiles(dir)).flatMap(fileOffenses);
+    const found = [COMPONENTS_DIR, ...packageSiteDirs()]
+      .flatMap((dir) => sourceFiles(dir))
+      .flatMap(fileOffenses);
     if (found.length > 0) throw new Error(report(found));
   });
 
@@ -104,15 +113,33 @@ describe("the component rule", () => {
           .flatMap((line, index) =>
             [...line.matchAll(SPECIFIER)]
               .filter(([, specifier]) => specifier.startsWith("@/"))
-              .map(([, specifier]) => `${relative(process.cwd(), file)}:${index + 1} imports ${specifier}`),
+              .map(
+                ([, specifier]) =>
+                  `${relative(process.cwd(), file)}:${index + 1} imports ${specifier}`,
+              ),
           ),
       );
     expect(found).toEqual([]);
   });
 
   it("finds one offense in a component that imports a loader", () => {
-    const found = offenses("src/components/week/standings.tsx", 'import { weekData } from "@/lib/data/week-data";\n');
-    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "components/no-loader", line: 1 }]);
+    const found = offenses(
+      "src/components/week/standings.tsx",
+      'import { weekData } from "@/lib/data/week-data";\n',
+    );
+    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+      { ruleId: "components/no-loader", line: 1 },
+    ]);
+  });
+
+  it("finds one offense in a component that mocks a loader with mock.module", () => {
+    const found = offenses(
+      "src/components/week/standings.tsx",
+      'mock.module("@/lib/data/week-data", () => ({}));\n',
+    );
+    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+      { ruleId: "components/no-loader", line: 1 },
+    ]);
   });
 
   it("finds one offense in a component file on disk that imports a loader", () => {
@@ -122,7 +149,9 @@ describe("the component rule", () => {
       const file = join(dir, "standings.tsx");
       writeFileSync(file, 'import { weekData } from "@/lib/data/week-data";\n');
       const found = fileOffenses(file);
-      expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "components/no-loader", line: 1 }]);
+      expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+        { ruleId: "components/no-loader", line: 1 },
+      ]);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

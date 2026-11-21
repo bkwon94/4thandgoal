@@ -31,27 +31,34 @@ export function GameChanger({
   ];
   return (
     <WeekChapter id="game-changer" title="Game Changer">
-      <Card className="flex flex-col gap-sp-4">
-        <div className="flex items-center gap-sp-4">
+      <Card className="gap-sp-4 flex flex-col">
+        <div className="gap-sp-4 flex items-center">
           <PhotoFrame src={photoOf(headshots, line.player_id)} name={line.name} size="lg" />
           <div className="min-w-0">
             <div className="text-lead leading-tight font-bold">{line.name}</div>
             {/* One string, so React writes one text node and the browser kerns the line as one run. */}
-            <div className="mt-sp-1 text-meta leading-tight text-mute">
+            <div className="mt-sp-1 text-meta text-mute leading-tight">
               {[line.position, line.nfl_team, gameChanger.team].filter(Boolean).join(" · ")}
             </div>
           </div>
         </div>
         {/* The tiles share one row when each word fits, and a tile wraps to a new row where it does not, as on a phone.
             A tile never shrinks under its longest word, so "Projected" and "+20.44" never split. */}
-        <ul className="m-0 flex list-none flex-wrap gap-sp-2 p-0">
+        <ul className="gap-sp-2 m-0 flex list-none flex-wrap p-0">
           {tiles.map((tile) => (
             <li key={tile.label} className="flex-1">
               <Tile label={tile.label} value={tile.value} className="h-full" />
             </li>
           ))}
         </ul>
-        {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>}
+        {blurb && (
+          <p
+            className="max-w-measure text-lead leading-body text-ink-2 m-0"
+            {...textId("blurb", blurb)}
+          >
+            {blurb}
+          </p>
+        )}
       </Card>
     </WeekChapter>
   );

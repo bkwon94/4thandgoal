@@ -3,7 +3,7 @@
  * They read what a manager sees: the steals and busts, the waivers, the trade cards, the lineups, and the record book.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { sleeperHeadshot } from "@cpc/league/images";
 import { midseason } from "../fixtures/midseason";
 import { MidseasonScreen } from "../report/midseason-screen";
@@ -26,15 +26,25 @@ const AVATARS = Object.fromEntries(
 );
 
 const renderReport = () =>
-  render(<MidseasonScreen report={midseason} shell={SHELL} pageHref="/midseason/2026/" avatars={AVATARS} />);
+  render(
+    <MidseasonScreen
+      report={midseason}
+      shell={SHELL}
+      pageHref="/midseason/2026/"
+      avatars={AVATARS}
+    />,
+  );
 
 /* A chapter with its own prose: each chapter of an act but Quick hits, and each part of Quick hits. */
-type ProseChapter = Exclude<MidseasonChapter, { key: "quick-hits" }> | QuickHitsChapter["chapters"][number];
+type ProseChapter =
+  Exclude<MidseasonChapter, { key: "quick-hits" }> | QuickHitsChapter["chapters"][number];
 
 const proseChapters = (): ProseChapter[] =>
   midseason.acts
     .flatMap((act) => act.chapters)
-    .flatMap((chapter): ProseChapter[] => (chapter.key === "quick-hits" ? chapter.chapters : [chapter]));
+    .flatMap((chapter): ProseChapter[] =>
+      chapter.key === "quick-hits" ? chapter.chapters : [chapter],
+    );
 
 /* The chapter of the fixture with the key `key`, or a part of Quick hits. */
 function chapterOf<K extends ProseChapter["key"]>(key: K): Extract<ProseChapter, { key: K }> {
@@ -63,7 +73,8 @@ describe("draft steals and busts", () => {
     expect(rows).toHaveLength(busts.length);
     for (const [index, bust] of busts.entries()) {
       expect(rows[index].textContent).toContain(bust.name);
-      if (bust.tag !== null) expect(rows[index].textContent).toContain(bust.tag === "hurt" ? "Hurt" : "Just bad");
+      if (bust.tag !== null)
+        expect(rows[index].textContent).toContain(bust.tag === "hurt" ? "Hurt" : "Just bad");
     }
   });
 
@@ -71,12 +82,18 @@ describe("draft steals and busts", () => {
     renderReport();
     const { letdowns } = chapterOf("draft").facts;
     const chapter = document.getElementById("draft")!;
-    const lists = within(chapter).getAllByRole("list").map((list) => list.getAttribute("aria-label"));
+    const lists = within(chapter)
+      .getAllByRole("list")
+      .map((list) => list.getAttribute("aria-label"));
     expect(lists.indexOf("Letdowns")).toBe(lists.indexOf("Busts") + 1);
     const rows = within(chapter).getByRole("list", { name: "Letdowns" }).children;
     expect(rows).toHaveLength(letdowns.length);
     const bijan = Array.from(rows).find((row) => row.textContent!.includes("Bijan Robinson"))!;
-    expect(within(bijan as HTMLElement).getByText("Letdown").getAttribute("data-tag")).toBe("mute");
+    expect(
+      within(bijan as HTMLElement)
+        .getByText("Letdown")
+        .getAttribute("data-tag"),
+    ).toBe("mute");
     expect(bijan.textContent).toContain("$81");
     expect(bijan.textContent).toContain("RB3 points");
     expect(bijan.textContent).toContain("Last top 17 wk 4");
@@ -126,7 +143,9 @@ describe("the trade report card", () => {
       const trade = trades[index];
       expect(card.textContent).toContain(trade.result);
       for (const side of trade.sides) {
-        const since = within(card).getByText(`${side.team}`, { selector: "[data-team]" }).closest("[data-side]")!;
+        const since = within(card)
+          .getByText(`${side.team}`, { selector: "[data-team]" })
+          .closest("[data-side]")!;
         const { wins, losses, ties } = side.since;
         const text = ties > 0 ? `${wins}-${losses}-${ties} since` : `${wins}-${losses} since`;
         expect(since.textContent).toContain(text);
@@ -142,16 +161,20 @@ describe("the trade report card", () => {
     expect(chapter.queryAllByText(/./, { selector: "[data-tag]" })).toHaveLength(0);
   });
 
-  it("names the winner in each result with a winner, as \"Slight edge to <team>\", and shows Even for no winner", () => {
+  it('names the winner in each result with a winner, as "Slight edge to <team>", and shows Even for no winner', () => {
     renderReport();
     const trades = chapterOf("trades").facts.trades;
     expect(trades.some((trade) => trade.result === "Slight edge")).toBe(true);
     expect(trades.some((trade) => trade.result === "Even")).toBe(true);
     const chapter = chapterEl("trades");
     fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
-    const results = chapter.getAllByText(/./, { selector: "[data-result]" }).map((result) => result.textContent);
+    const results = chapter
+      .getAllByText(/./, { selector: "[data-result]" })
+      .map((result) => result.textContent);
     expect(results).toEqual(
-      trades.map((trade) => (trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result)),
+      trades.map((trade) =>
+        trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result,
+      ),
     );
     expect(document.getElementById("trades")!.textContent).not.toMatch(/\bPush\b/);
   });
@@ -161,7 +184,9 @@ describe("the trade report card", () => {
     const rest = chapterOf("trades").facts.trades.slice(3);
     const chapter = chapterEl("trades");
     fireEvent.click(chapter.getByRole("button", { name: /^Show all/ }));
-    const rows = [...chapter.getByRole("list", { name: "Every other trade" }).children] as HTMLElement[];
+    const rows = [
+      ...chapter.getByRole("list", { name: "Every other trade" }).children,
+    ] as HTMLElement[];
     expect(rows).toHaveLength(rest.length);
     for (const [index, row] of rows.entries()) {
       const trade = rest[index];
@@ -169,7 +194,9 @@ describe("the trade report card", () => {
       const [top, players] = [...row.children] as HTMLElement[];
       expect(top.textContent).toContain(`Week ${trade.week}`);
       for (const side of trade.sides) expect(top.textContent).toContain(side.team);
-      expect(top.textContent).toContain(trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result);
+      expect(top.textContent).toContain(
+        trade.winner !== null ? `${trade.result} to ${trade.winner}` : trade.result,
+      );
       expect(players.className).toMatch(/(^|\s)text-mute(\s|$)/);
       for (const side of trade.sides) {
         for (const player of side.got) expect(players.textContent).toContain(player.player);
@@ -181,13 +208,15 @@ describe("the trade report card", () => {
   it("sits third of the five chapters of Act II", () => {
     renderReport();
     const act = within(document.getElementById("the-moves")!);
-    expect(act.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
-      "Draft Steals and Busts",
-      "Waiver Hits and Misses",
-      "The Trade Report Card",
-      "The Record Book",
-      "Quick Hits",
-    ]);
+    expect(act.getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual(
+      [
+        "Draft Steals and Busts",
+        "Waiver Hits and Misses",
+        "The Trade Report Card",
+        "The Record Book",
+        "Quick Hits",
+      ],
+    );
   });
 
   it("shows 5 of the other trades, and the rest after Show all", () => {
@@ -201,7 +230,9 @@ describe("the trade report card", () => {
     expect(button.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(button);
     expect(list.children).toHaveLength(rest);
-    expect(chapter.getByRole("button", { name: "Show top 5" }).getAttribute("aria-expanded")).toBe("true");
+    expect(chapter.getByRole("button", { name: "Show top 5" }).getAttribute("aria-expanded")).toBe(
+      "true",
+    );
   });
 
   it("draws Show all as a mono text control with a chevron that turns, and no border", () => {
@@ -249,7 +280,9 @@ describe("the record book", () => {
   it("shows the high, the low, the biggest margin, and the closest game", () => {
     renderReport();
     const { high, low, biggest_margin, closest } = chapterOf("records").facts;
-    const items = [...chapterEl("records").getByRole("list", { name: "Records" }).children].map((item) => item.textContent);
+    const items = [...chapterEl("records").getByRole("list", { name: "Records" }).children].map(
+      (item) => item.textContent,
+    );
     expect(items).toHaveLength(4);
     expect(items[0]).toContain(high.team);
     expect(items[1]).toContain(low.team);
@@ -265,7 +298,9 @@ describe("the record book", () => {
       expect(screen.getAllByText(title)).toHaveLength(1);
       expect(book.getByText(title)).toBeTruthy();
     }
-    const listed = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
+    const listed = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole(
+      "listitem",
+    );
     expect(listed.map((item) => item.querySelector("b")!.textContent)).toEqual(
       awards.filter((award) => !award.in_record_book).map((award) => award.title),
     );
@@ -275,11 +310,18 @@ describe("the record book", () => {
   it("shows each award as a small card, title, then winner, then short fact, with an image", () => {
     renderReport();
     const { awards } = chapterOf("records").facts;
-    const cards = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole("listitem");
-    expect(cards[0].textContent).toBe("MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.");
+    const cards = within(chapterEl("records").getByRole("list", { name: "Awards" })).getAllByRole(
+      "listitem",
+    );
+    expect(cards[0].textContent).toBe(
+      "MVP — Jahmyr Gibbs, Maye d'force B with U — 135.1 points over the line in his starts.",
+    );
     const listed = awards.filter((award) => !award.in_record_book);
     expect(cards.map((card) => card.textContent)).toEqual(
-      listed.map((award) => `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.short_fact}`),
+      listed.map(
+        (award) =>
+          `${award.title} — ${award.player !== null ? `${award.player}, ` : ""}${award.team} — ${award.short_fact}`,
+      ),
     );
     for (const [index, card] of cards.entries()) {
       const award = listed[index];
@@ -287,7 +329,9 @@ describe("the record book", () => {
       expect(card.className).toMatch(/(^|\s)rounded-report(\s|$)/);
       const img = within(card).getByRole("img", { name: award.player ?? award.team });
       expect(img.getAttribute("src")).toBe(
-        award.player_id !== null ? sleeperHeadshot(award.player_id) : AVATARS[String(award.roster_id)],
+        award.player_id !== null
+          ? sleeperHeadshot(award.player_id)
+          : AVATARS[String(award.roster_id)],
       );
       expect(img.getAttribute("loading")).toBe("lazy");
       expect(img.parentElement!.className).toMatch(/(^|\s)size-photo(\s|$)/);

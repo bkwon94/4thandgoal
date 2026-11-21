@@ -8,12 +8,20 @@ import { cn } from "@cpc/design/lib/utils";
 export type TagTone = "mute" | "accent";
 
 /* data-tag holds the tone, so a test finds each tag of the report and reads its tone. */
-export function WordTag({ children, tone = "mute", className }: { children: ReactNode; tone?: TagTone; className?: string }) {
+export function WordTag({
+  children,
+  tone = "mute",
+  className,
+}: {
+  children: ReactNode;
+  tone?: TagTone;
+  className?: string;
+}) {
   return (
     <span
       data-tag={tone}
       className={cn(
-        "ml-sp-2 inline-block align-baseline font-mono text-meta font-bold tracking-caps whitespace-nowrap uppercase",
+        "ml-sp-2 text-meta tracking-caps inline-block align-baseline font-mono font-bold whitespace-nowrap uppercase",
         tone === "accent" ? "text-accent-ink" : "text-mute",
         className,
       )}

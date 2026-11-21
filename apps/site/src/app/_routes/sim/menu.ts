@@ -11,8 +11,13 @@ import { simHref } from "@/lib/routes";
 /* A client with no published week, or a latest season with no week sim file, has no sim link yet. */
 export const menuLink = (): Destination | null => {
   const latest = listWeeks().sort((a, b) => Number(b.season) - Number(a.season))[0];
-  return latest && weekSimSeasons().includes(latest.season) ? { label: "Season Sim", href: simHref(latest.season) } : null;
+  return latest && weekSimSeasons().includes(latest.season)
+    ? { label: "Season Sim", href: simHref(latest.season) }
+    : null;
 };
 
 /* The line of the page in the Site answer of the front door: a Tool, with its fixed blurb. Code writes it, never Claude. */
-export const siteLine: SiteLine = { blurb: "Plays out the rest of the season, game by game.", tool: true };
+export const siteLine: SiteLine = {
+  blurb: "Plays out the rest of the season, game by game.",
+  tool: true,
+};

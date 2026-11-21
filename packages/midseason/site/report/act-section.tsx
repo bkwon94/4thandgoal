@@ -21,7 +21,11 @@ export function ActSection({
   const heading = `${act.key}-heading`;
   return (
     // The rail sits under the top band, so a jump to the act leaves the height of the rail free above the title page.
-    <section id={act.key} aria-labelledby={heading} className="flex scroll-mt-[calc(var(--spacing-touch)+1px)] flex-col gap-sp-6">
+    <section
+      id={act.key}
+      aria-labelledby={heading}
+      className="gap-sp-6 flex scroll-mt-[calc(var(--spacing-touch)+1px)] flex-col"
+    >
       <ActTitle index={index} title={act.title} headingId={heading} />
       {act.chapters.map((chapter) => (
         <ChapterPart key={chapter.key} chapter={chapter} avatars={avatars} />

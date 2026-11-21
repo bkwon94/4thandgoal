@@ -8,7 +8,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { managers as fixture } from "@cpc/managers/fixtures/managers";
@@ -16,31 +16,43 @@ import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 /* The last week of the rankings fixture, and a week 5 before it where each playoff percent is shifted by the given points.
    The fixture's own week before week 6 is week 1, which has no odds. */
 function rankingsWithWeek5(shift: (rosterId: number) => number) {
   const last = rankingsFixture.weeks.at(-1)!;
-  const rows = last.rows.map((row) => ({ ...row, odds: { ...row.odds!, playoff: row.odds!.playoff - shift(row.roster_id) } }));
-  return { ...rankingsFixture, weeks: [rankingsFixture.weeks[0], { ...last, week: 5, rows }, last] };
+  const rows = last.rows.map((row) => ({
+    ...row,
+    odds: { ...row.odds!, playoff: row.odds!.playoff - shift(row.roster_id) },
+  }));
+  return {
+    ...rankingsFixture,
+    weeks: [rankingsFixture.weeks[0], { ...last, week: 5, rows }, last],
+  };
 }
 
 /* A temp public/ folder with the week 6 page, the managers file unless managers is false, and the rankings file when given.
    Managers is the fixture when true, or the given file when it is an object. */
-async function routeOver({ managers = true, rankings }: { managers?: boolean | object; rankings?: unknown } = {}) {
+async function routeOver({
+  managers = true,
+  rankings,
+}: { managers?: boolean | object; rankings?: unknown } = {}) {
   const root = mkdtempSync(join(tmpdir(), "manager-page-"));
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
   writeFileSync(
     join(root, "public", "2026", "week-06", "page.json"),
     weekPageJson({ avatars: { "9": "avatars/9.jpg" } }),
   );
-  if (managers) writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers === true ? fixture : managers));
-  if (rankings !== undefined) writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  if (managers)
+    writeFileSync(
+      join(root, "public", "2026", "managers.json"),
+      JSON.stringify(managers === true ? fixture : managers),
+    );
+  if (rankings !== undefined)
+    writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./manager-page");
 }
 
@@ -73,7 +85,9 @@ describe("generateStaticParams", () => {
 describe("generateMetadata", () => {
   it("titles the page with the team name", async () => {
     const { generateMetadata } = await routeOver({ rankings: rankingsFixture });
-    const metadata = await generateMetadata({ params: Promise.resolve({ season: "2026", roster: "9" }) });
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ season: "2026", roster: "9" }),
+    });
     expect(metadata.title).toBe("Maye d'force B with U · Cornerstone Fantasy Football League");
   });
 });
@@ -90,7 +104,9 @@ describe("ManagerPage", () => {
   it("shows the team name as the page heading, the owner, the record, and the standing in the hero", async () => {
     await renderManager("9", { rankings: rankingsFixture });
     const hero = screen.getByRole("region", { name: "Maye d'force B with U" });
-    expect(within(hero).getByRole("heading", { level: 1 }).textContent).toBe("Maye d'force B with U");
+    expect(within(hero).getByRole("heading", { level: 1 }).textContent).toBe(
+      "Maye d'force B with U",
+    );
     expect(hero.textContent).toContain(fixture.managers[8].team.owner);
     expect(hero.textContent).toContain("7-5 · 4th of 12");
     // The team name sits next to the avatar, so the image is decorative and has no role to query.
@@ -100,7 +116,9 @@ describe("ManagerPage", () => {
   it("shows the grade letter as the big number of the hero, with the grade text beside it", async () => {
     await renderManager("9", { rankings: rankingsFixture });
     const hero = screen.getByRole("region", { name: "Maye d'force B with U" });
-    expect(within(hero).getByRole("button", { name: "Grade B, how the grade reads" }).textContent).toBe("B");
+    expect(
+      within(hero).getByRole("button", { name: "Grade B, how the grade reads" }).textContent,
+    ).toBe("B");
     expect(within(hero).getByText("Strong at QB and TE. Soft at WR. Thin at RB.")).toBeTruthy();
   });
 
@@ -133,7 +151,10 @@ describe("ManagerPage", () => {
   it("shows a dash in each tile when no week has odds", async () => {
     const noOdds = {
       ...rankingsFixture,
-      weeks: rankingsFixture.weeks.map((week) => ({ ...week, rows: week.rows.map(({ odds: _odds, ...row }) => row) })),
+      weeks: rankingsFixture.weeks.map((week) => ({
+        ...week,
+        rows: week.rows.map(({ odds: _odds, ...row }) => row),
+      })),
     };
     const group = await renderManager("9", { rankings: noOdds });
     expect(numbersIn(group)).toEqual([
@@ -147,7 +168,13 @@ describe("ManagerPage", () => {
     await renderManager("7", { rankings: rankingsFixture });
     const hero = screen.getByRole("region", { name: "To Infinity and Bijan" });
     const slots = [...hero.querySelectorAll("[data-hero-slot]")];
-    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual(["eyebrow", "title", "meta", "feature", "stats"]);
+    expect(slots.map((slot) => slot.getAttribute("data-hero-slot"))).toEqual([
+      "eyebrow",
+      "title",
+      "meta",
+      "feature",
+      "stats",
+    ]);
     const [eyebrow, title, meta, feature, stats] = slots;
     // The fixture holds an older week than the live file, so the record line differs from the "7-9 · 9th of 12" of AT-1.
     expect(eyebrow.textContent).toBe("4-8 · 11th of 12");
@@ -155,7 +182,9 @@ describe("ManagerPage", () => {
     expect(title.textContent).toBe("To Infinity and Bijan");
     expect(meta.textContent).toBe("bjpicard96");
     expect(feature.querySelector("img")).not.toBeNull();
-    expect(within(feature as HTMLElement).getByRole("list", { name: "Results By Week" })).toBeTruthy();
+    expect(
+      within(feature as HTMLElement).getByRole("list", { name: "Results By Week" }),
+    ).toBeTruthy();
     expect(within(stats as HTMLElement).getByRole("group", { name: "Hero Numbers" })).toBeTruthy();
   });
 
@@ -170,7 +199,11 @@ describe("ManagerPage", () => {
     // Maye d'force B with U won weeks 1, 2, 5, and 6, and lost weeks 3 and 4.
     await renderManager("9", { rankings: rankingsFixture });
     const results = screen.getByRole("list", { name: "Results By Week" });
-    expect(within(results).getAllByRole("listitem").map((item) => [...item.children].map((part) => part.textContent))).toEqual([
+    expect(
+      within(results)
+        .getAllByRole("listitem")
+        .map((item) => [...item.children].map((part) => part.textContent)),
+    ).toEqual([
       ["W", "1"],
       ["W", "2"],
       ["L", "3"],
@@ -183,13 +216,11 @@ describe("ManagerPage", () => {
   it("shows the five chapters, each with its heading", async () => {
     await renderManager("9", { rankings: rankingsFixture });
     const main = screen.getByRole("main");
-    expect(within(main).getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual([
-      "Season So Far",
-      "Roster",
-      "Best Adds",
-      "Top Performers",
-      "Moves",
-    ]);
+    expect(
+      within(main)
+        .getAllByRole("heading", { level: 2 })
+        .map((heading) => heading.textContent),
+    ).toEqual(["Season So Far", "Roster", "Best Adds", "Top Performers", "Moves"]);
   });
 
   it("shows a tile for each position slot in the Roster chapter, with its rank and its depth, in the file's order", async () => {
@@ -197,7 +228,9 @@ describe("ManagerPage", () => {
     const slots = screen.getByRole("list", { name: "Slot Ranks" });
     // The lines of a tile are the boxes with no box inside: the label, the number, and the note.
     const linesOf = (item: HTMLElement) =>
-      [...item.querySelectorAll("div")].filter((box) => box.children.length === 0).map((line) => line.textContent);
+      [...item.querySelectorAll("div")]
+        .filter((box) => box.children.length === 0)
+        .map((line) => line.textContent);
     expect(within(slots).getAllByRole("listitem").map(linesOf)).toEqual([
       ["QB", "1st", "of 12 · fine"],
       ["RB", "2nd", "of 12 · thin"],
@@ -209,7 +242,11 @@ describe("ManagerPage", () => {
   it("lists the four grade parts with their ranks under the slot tiles", async () => {
     await renderManager("9", { rankings: rankingsFixture });
     const parts = screen.getByRole("list", { name: "Grade Parts" });
-    expect(within(parts).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+    expect(
+      within(parts)
+        .getAllByRole("listitem")
+        .map((item) => item.textContent),
+    ).toEqual([
       "Projection Ahead9th of 12",
       "Season Production12th of 12",
       "Trade Value3rd of 12",
@@ -218,7 +255,9 @@ describe("ManagerPage", () => {
   });
 
   it("shows a dash in the grade box of the hero and one quiet line in the Roster chapter with no grade", async () => {
-    const managers = fixture.managers.map((entry) => (entry.roster_id === 9 ? { ...entry, grade: null } : entry));
+    const managers = fixture.managers.map((entry) =>
+      entry.roster_id === 9 ? { ...entry, grade: null } : entry,
+    );
     await renderManager("9", { managers: { ...fixture, managers }, rankings: rankingsFixture });
     const hero = screen.getByRole("region", { name: "Maye d'force B with U" });
     expect(within(hero).queryByRole("button")).toBeNull();
@@ -233,7 +272,11 @@ describe("ManagerPage", () => {
     await renderManager("5", { rankings: rankingsFixture });
     const moves = screen.getByRole("heading", { name: "Moves" }).closest("section")!;
     const totals = within(moves).getByRole("group", { name: "Move Totals" });
-    expect([...totals.children].map((tile) => tile.children[1].textContent)).toEqual(["2", "1", "1"]);
+    expect([...totals.children].map((tile) => tile.children[1].textContent)).toEqual([
+      "2",
+      "1",
+      "1",
+    ]);
     const weeks = within(moves).getAllByRole("group", { name: /^Week / });
     expect(weeks.map((group) => group.getAttribute("aria-label"))).toEqual([
       "Week 6",
@@ -264,14 +307,20 @@ describe("ManagerPage", () => {
     const names = (id: string) =>
       [...document.getElementById(id)!.querySelectorAll("li b")].map((name) => name.textContent);
     expect(names("best-adds")).toEqual(fixture.managers[8].best_adds.map((add) => add.name));
-    expect(names("top-performers")).toEqual(fixture.managers[8].top_performers.map((performer) => performer.name));
+    expect(names("top-performers")).toEqual(
+      fixture.managers[8].top_performers.map((performer) => performer.name),
+    );
     expect(names("best-adds")).toEqual(["Alvin Kamara", "Kyler Murray", "Emmett Johnson"]);
   });
 
   it("lists the five chapters in the chapter rail", async () => {
     await renderManager("9", { rankings: rankingsFixture });
     const rail = screen.getByRole("navigation", { name: "Chapters" });
-    expect(within(rail).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
+    expect(
+      within(rail)
+        .getAllByRole("link")
+        .map((link) => [link.textContent, link.getAttribute("href")]),
+    ).toEqual([
       ["Season So Far", "#season"],
       ["Roster", "#roster"],
       ["Best Adds", "#best-adds"],
@@ -287,7 +336,10 @@ describe("The Grade dial in Season So Far", () => {
     JSON.parse(readFileSync(fixturePublished("cpc", "2026", name), "utf8"));
 
   it("shows A, the grade read, and arcs 4th, 6th, 7th, and 7th for The Blue Tent of CPC week 8", async () => {
-    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
+    await renderManager("1", {
+      managers: published("managers.json"),
+      rankings: published("rankings.json"),
+    });
     const season = within(document.getElementById("season")!);
     const grade = within(season.getByRole("group", { name: "Roster Grade" }));
     expect(grade.getByText("A")).toBeTruthy();
@@ -299,8 +351,12 @@ describe("The Grade dial in Season So Far", () => {
       "Trade Value: 7th of 12, 10% of the grade",
       "Depth And Holes: 7th of 12, 15% of the grade",
     ]);
-    expect(arcs.map((arc) => arc.querySelectorAll("[data-blade]").length)).toEqual([12, 12, 12, 12]);
-    expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([9, 7, 6, 6]);
+    expect(arcs.map((arc) => arc.querySelectorAll("[data-blade]").length)).toEqual([
+      12, 12, 12, 12,
+    ]);
+    expect(arcs.map((arc) => arc.querySelectorAll('[data-blade][data-on="true"]').length)).toEqual([
+      9, 7, 6, 6,
+    ]);
   });
 });
 
@@ -318,12 +374,22 @@ describe("The Trend tiles of Moves", () => {
 
   /* The week and the count of each mark of a chart. */
   const marks = (chart: HTMLElement) =>
-    [...chart.querySelectorAll("[data-week]")].map((mark) => [Number(mark.getAttribute("data-week")), Number(mark.getAttribute("data-value"))]);
+    [...chart.querySelectorAll("[data-week]")].map((mark) => [
+      Number(mark.getAttribute("data-week")),
+      Number(mark.getAttribute("data-value")),
+    ]);
 
   it("shows the adds and drops of each week as bars and each week with a trade as a dot for The Blue Tent of CPC week 8", async () => {
-    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
-    expect(marks(chartOf("Adds"))).toEqual([5, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]));
-    expect(marks(chartOf("Drops"))).toEqual([4, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]));
+    await renderManager("1", {
+      managers: published("managers.json"),
+      rankings: published("rankings.json"),
+    });
+    expect(marks(chartOf("Adds"))).toEqual(
+      [5, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]),
+    );
+    expect(marks(chartOf("Drops"))).toEqual(
+      [4, 1, 2, 4, 1, 1, 6, 3].map((value, index) => [index + 1, value]),
+    );
     expect(marks(chartOf("Trades"))).toEqual([
       [1, 1],
       [4, 1],
@@ -331,9 +397,16 @@ describe("The Trend tiles of Moves", () => {
   });
 
   it("gives each of the three tiles a text of its trend", async () => {
-    await renderManager("1", { managers: published("managers.json"), rankings: published("rankings.json") });
-    expect(chartOf("Adds").getAttribute("aria-label")).toBe("The most adds in one week: 6, in week 7.");
-    expect(chartOf("Drops").getAttribute("aria-label")).toBe("The most drops in one week: 6, in week 7.");
+    await renderManager("1", {
+      managers: published("managers.json"),
+      rankings: published("rankings.json"),
+    });
+    expect(chartOf("Adds").getAttribute("aria-label")).toBe(
+      "The most adds in one week: 6, in week 7.",
+    );
+    expect(chartOf("Drops").getAttribute("aria-label")).toBe(
+      "The most drops in one week: 6, in week 7.",
+    );
     expect(chartOf("Trades").getAttribute("aria-label")).toBe("Trades in week 1 and week 4.");
   });
 });

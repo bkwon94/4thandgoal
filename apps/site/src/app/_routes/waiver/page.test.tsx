@@ -6,14 +6,12 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@/fixtures/waiver.json";
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
 });
 
 /* A temp public/ folder with week 5 and week 6 pages. Only week 6 has the waiver file. */
@@ -30,9 +28,8 @@ async function routeOver() {
     );
   }
   writeFileSync(join(root, "public", "2026", "week-06", "waiver.json"), JSON.stringify(fixture));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./page");
 }
 
@@ -50,8 +47,8 @@ describe("WaiverPage", () => {
     render(await WaiverPage({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
     const page = document.body;
     expect(page.textContent).toContain("WEEK 6");
-    // The build time reads in league time, US Eastern.
-    expect(page.textContent).toContain("Built Fri, Oct 23, 10:05 AM EDT");
+    // The build time reads in league time, US Eastern. Node writes "Oct 23, 10:05" and Bun writes "Oct 23 at 10:05".
+    expect(page.textContent).toMatch(/Built Fri, Oct 23(,| at) 10:05 AM EDT/);
   });
 
   it("gives the menu a link to its own week, through the menu link of the waiver package", async () => {
@@ -66,7 +63,11 @@ describe("WaiverPage", () => {
     const budgets = within(screen.getByRole("list", { name: "Budgets" })).getAllByRole("listitem");
     expect(budgets).toHaveLength(12);
     expect(within(budgets[0]).getByText("Pukancun on 3")).toBeTruthy();
-    expect(budgets[0].querySelector("img")?.getAttribute("src")).toBe("/2026/week-06/avatars/4.jpg");
-    expect(within(screen.getByRole("list", { name: "Also" })).getAllByRole("listitem")).toHaveLength(2);
+    expect(budgets[0].querySelector("img")?.getAttribute("src")).toBe(
+      "/2026/week-06/avatars/4.jpg",
+    );
+    expect(
+      within(screen.getByRole("list", { name: "Also" })).getAllByRole("listitem"),
+    ).toHaveLength(2);
   });
 });

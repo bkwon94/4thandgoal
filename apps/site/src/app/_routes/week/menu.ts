@@ -13,4 +13,7 @@ export const menuLink = (): Destination | null => {
 };
 
 /* The line of the page in the Site answer of the front door: a page to read, with its fixed blurb. Code writes it, never Claude. */
-export const siteLine: SiteLine = { blurb: "The recap, scores, and awards of the week.", tool: false };
+export const siteLine: SiteLine = {
+  blurb: "The recap, scores, and awards of the week.",
+  tool: false,
+};

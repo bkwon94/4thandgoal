@@ -24,20 +24,31 @@ export const TURN_ANSWER_MAX = 2_000;
 /* The turn of one item, or null for an item in flight. A free and a personal answer give their whole checked text, a
    free answer with the short text of its block, and a league Topic its text. Each other kind gives its one line, as
    the manager saw it. */
-function turnOf(item: ThreadItem, answers: Record<number, DoorAnswer[]>, teamName: (team: number) => string | undefined): Turn | null {
+function turnOf(
+  item: ThreadItem,
+  answers: Record<number, DoorAnswer[]>,
+  teamName: (team: number) => string | undefined,
+): Turn | null {
   if (item.kind === "topic") {
     const answer = (answers[item.team] ?? []).find((candidate) => candidate.topic === item.key);
     if (!answer) return null;
-    return { question: personalName(item, teamName(item.team)), answer: answer.text.join(" ") || answer.fact };
+    return {
+      question: personalName(item, teamName(item.team)),
+      answer: answer.text.join(" ") || answer.fact,
+    };
   }
   const line = turnLine(item, teamName);
   if (!line) return null;
   // A free answer carries its block as short text after the lead, so "the second one" has a list to point at.
   if (item.kind === "free" && item.result) {
     const block = item.result.block;
-    return { question: line.name, answer: block ? `${item.result.text} ${blockText(block)}` : item.result.text };
+    return {
+      question: line.name,
+      answer: block ? `${item.result.text} ${blockText(block)}` : item.result.text,
+    };
   }
-  if (item.kind === "personal" && item.result) return { question: line.name, answer: item.result.text };
+  if (item.kind === "personal" && item.result)
+    return { question: line.name, answer: item.result.text };
   return { question: line.name, answer: line.fact };
 }
 
@@ -48,7 +59,12 @@ type TradeSide = Extract<TradeAnswer, { kind: "check" }>["document"]["trade"]["s
 
 /* Who gives whom in a trade: each side with the names of the players it gives, such as "Ann gives Cy." */
 function sidesLine(sides: TradeSide[]): string {
-  return sides.map((side) => `${side.team} gives ${side.gives.map((player) => player.name).join(", ") || "nobody"}.`).join(" ");
+  return sides
+    .map(
+      (side) =>
+        `${side.team} gives ${side.gives.map((player) => player.name).join(", ") || "nobody"}.`,
+    )
+    .join(" ");
 }
 
 /* The one fact of each trade Answer: the Lean and the sides of a trade check, the count and the top offers of the trade
@@ -62,10 +78,24 @@ function tradeFact(answer: TradeAnswer): string {
     case "ideas": {
       const { trades, near, empty } = answer.document;
       // Each near idea keeps the number it shows with after the offers, so "the second one" points at one idea.
-      const ideas = near.slice(0, TURN_OFFERS_MAX).map((idea, i) => `Idea ${trades.length + i + 1}: ${sidesLine(idea.sides)} Why not: ${idea.reason}`);
-      if (trades.length === 0) return ideas.length === 0 ? "No offer found" : ["No clear offer.", ...(empty ? [empty] : []), ...ideas].join(" ");
-      const offers = trades.slice(0, TURN_OFFERS_MAX).map((trade, i) => `Offer ${i + 1}: ${sidesLine(trade.sides)}`);
-      return [trades.length === 1 ? "1 offer." : `${trades.length} offers.`, ...offers, ...ideas].join(" ");
+      const ideas = near
+        .slice(0, TURN_OFFERS_MAX)
+        .map(
+          (idea, i) =>
+            `Idea ${trades.length + i + 1}: ${sidesLine(idea.sides)} Why not: ${idea.reason}`,
+        );
+      if (trades.length === 0)
+        return ideas.length === 0
+          ? "No offer found"
+          : ["No clear offer.", ...(empty ? [empty] : []), ...ideas].join(" ");
+      const offers = trades
+        .slice(0, TURN_OFFERS_MAX)
+        .map((trade, i) => `Offer ${i + 1}: ${sidesLine(trade.sides)}`);
+      return [
+        trades.length === 1 ? "1 offer." : `${trades.length} offers.`,
+        ...offers,
+        ...ideas,
+      ].join(" ");
     }
     case "sell": {
       const names = answer.document.picks.map((pick) => pick.player.name);
@@ -83,7 +113,10 @@ function siteFact(page: SiteAnswerPage): string {
 
 /* The name and one plain fact of an item that is not a league Topic, or null for an item in flight: a question that
    routes, or a stream that has not ended. A free and a personal answer use only the name here. */
-function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team: number) => string | undefined): { name: string; fact: string } | null {
+function turnLine(
+  item: Exclude<ThreadItem, { kind: "topic" }>,
+  teamName: (team: number) => string | undefined,
+): { name: string; fact: string } | null {
   switch (item.kind) {
     case "pending":
       return null;
@@ -92,7 +125,9 @@ function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team:
     case "free":
       return item.result ? { name: item.question, fact: item.result.text } : null;
     case "personal":
-      return item.result ? { name: personalName(item, teamName(item.team)), fact: item.result.text } : null;
+      return item.result
+        ? { name: personalName(item, teamName(item.team)), fact: item.result.text }
+        : null;
     case "miss":
       return { name: item.question, fact: MISS_LEAD };
     case "cap":
@@ -104,11 +139,21 @@ function turnLine(item: Exclude<ThreadItem, { kind: "topic" }>, teamName: (team:
 }
 
 /* The turns of `items`, each cut to the caps of the API, oldest first. The oldest turns drop first past the limit. */
-export function threadTurns(items: ThreadItem[], answers: Record<number, DoorAnswer[]>, teamName: (team: number) => string | undefined): Turn[] {
+export function threadTurns(
+  items: ThreadItem[],
+  answers: Record<number, DoorAnswer[]>,
+  teamName: (team: number) => string | undefined,
+): Turn[] {
   const turns = items
     .map((item) => turnOf(item, answers, teamName))
-    .filter((turn): turn is Turn => turn !== null && turn.question.trim() !== "" && turn.answer.trim() !== "")
-    .map((turn) => ({ question: turn.question.slice(0, TURN_QUESTION_MAX), answer: turn.answer.slice(0, TURN_ANSWER_MAX) }));
+    .filter(
+      (turn): turn is Turn =>
+        turn !== null && turn.question.trim() !== "" && turn.answer.trim() !== "",
+    )
+    .map((turn) => ({
+      question: turn.question.slice(0, TURN_QUESTION_MAX),
+      answer: turn.answer.slice(0, TURN_ANSWER_MAX),
+    }));
   const kept: Turn[] = [];
   let size = 0;
   for (const turn of turns.toReversed()) {
@@ -129,4 +174,3 @@ export function turnsBefore(
   const at = entries.findIndex((entry) => entry.id === id);
   return threadTurns(at < 0 ? entries : entries.slice(0, at), answers, teamName);
 }
-

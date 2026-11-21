@@ -16,7 +16,13 @@ export type RawTeam = {
   team: string;
   manager: string;
   avatar: null;
-  players: { player_id: string; name: string; position: string; nfl_team: string; headshot: string }[];
+  players: {
+    player_id: string;
+    name: string;
+    position: string;
+    nfl_team: string;
+    headshot: string;
+  }[];
 };
 
 /* The folder of a client. Each test runs in apps/site, as pnpm runs each script of the site there. */
@@ -24,7 +30,10 @@ const clientDir = (client: string) => join(process.cwd(), "..", "..", "clients",
 
 /* The last folder of a list of folders named by number, such as the seasons or the weeks. */
 function last(dir: string, pattern: RegExp): string {
-  const name = readdirSync(dir).filter((entry) => pattern.test(entry)).sort().at(-1);
+  const name = readdirSync(dir)
+    .filter((entry) => pattern.test(entry))
+    .sort()
+    .at(-1);
   if (name === undefined) throw new Error(`no folder of ${pattern} in ${dir}`);
   return name;
 }
@@ -34,7 +43,10 @@ export function latestRaw(client: string): { season: string; raw: string } {
   const data = join(clientDir(client), "data");
   const season = last(data, /^\d{4}$/);
   const week = readdirSync(join(data, season))
-    .filter((entry) => /^week-\d{2}$/.test(entry) && existsSync(join(data, season, entry, "raw", "rosters.json")))
+    .filter(
+      (entry) =>
+        /^week-\d{2}$/.test(entry) && existsSync(join(data, season, entry, "raw", "rosters.json")),
+    )
     .sort()
     .at(-1);
   if (week === undefined) throw new Error(`no raw rosters in ${join(data, season)}`);
@@ -48,15 +60,29 @@ export function rawTeams(client: string): RawTeam[] {
   const rosters = read<RawRoster[]>(join(raw, "rosters.json"));
   const players = read<Record<string, RawPlayer>>(join(raw, "players.json"));
   const users = read<RawUser[]>(join(raw, "users.json"));
-  const { managers } = read<Managers>(join(clientDir(client), "published", season, "managers.json"));
+  const { managers } = read<Managers>(
+    join(clientDir(client), "published", season, "managers.json"),
+  );
   return rosters.map((roster) => ({
     roster_id: roster.roster_id,
-    team: managers.find((m) => m.roster_id === roster.roster_id)?.team.name ?? `Team ${roster.roster_id}`,
+    team:
+      managers.find((m) => m.roster_id === roster.roster_id)?.team.name ??
+      `Team ${roster.roster_id}`,
     manager: users.find((u) => u.user_id === roster.owner_id)?.display_name ?? "",
     avatar: null,
     players: (roster.players ?? []).flatMap((id) => {
       const p = players[id];
-      return p?.full_name ? [{ player_id: id, name: p.full_name, position: p.position ?? "", nfl_team: p.team ?? "FA", headshot: "" }] : [];
+      return p?.full_name
+        ? [
+            {
+              player_id: id,
+              name: p.full_name,
+              position: p.position ?? "",
+              nfl_team: p.team ?? "FA",
+              headshot: "",
+            },
+          ]
+        : [];
     }),
   }));
 }

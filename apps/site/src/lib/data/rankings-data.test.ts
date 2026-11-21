@@ -5,13 +5,9 @@
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import fixture from "@cpc/rankings/fixtures/rankings.json";
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 /* A temp public/ folder with one week page per week folder, and the rankings file when one is given. */
 async function readerOver(weeks: string[], rankings?: unknown) {
@@ -26,9 +22,8 @@ async function readerOver(weeks: string[], rankings?: unknown) {
   if (rankings !== undefined) {
     writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankings));
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The week reader reads the working folder when it loads, so reset it to pick up the temp folder.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./rankings-data");
 }
 
@@ -40,7 +35,12 @@ describe("loadRankings", () => {
     const last = rankings!.weeks.at(-1)!;
     expect(last.week).toBe(6);
     expect(last.rows.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    expect(last.rows[0].components).toEqual({ standing: 2, form: 1, schedule_played: 2, scoring: 1 });
+    expect(last.rows[0].components).toEqual({
+      standing: 2,
+      form: 1,
+      schedule_played: 2,
+      scoring: 1,
+    });
   });
 
   it("reads rows with odds and rows with no odds under schema version 1", async () => {

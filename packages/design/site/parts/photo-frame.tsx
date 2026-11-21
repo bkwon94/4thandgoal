@@ -1,6 +1,8 @@
 /**
  * The round photo frame of a headshot or a team avatar: the photo on a ground of the brand glow, cropped at the shoulders.
  * With no image, the frame shows the initials of the name, so a missing photo leaves no hole.
+ * Use it when: a headshot or a team avatar needs a round frame.
+ * Do not use it when: the image is art and not a person or a team.
  */
 import { cn } from "../lib/utils";
 
@@ -34,8 +36,18 @@ export function initialsOf(name: string): string {
     .join("");
 }
 
-export function PhotoFrame({ src, name, size = "md", decorative = false, className }: PhotoFrameProps) {
-  const frame = cn("relative inline-flex flex-none overflow-hidden rounded-full shadow-orb", SIZES[size], className);
+export function PhotoFrame({
+  src,
+  name,
+  size = "md",
+  decorative = false,
+  className,
+}: PhotoFrameProps) {
+  const frame = cn(
+    "shadow-orb relative inline-flex flex-none overflow-hidden rounded-full",
+    SIZES[size],
+    className,
+  );
   if (src === null) {
     // The initials sit on the plain raised surface and not on the glow, so their contrast is the pair of ink on raised.
     return (
@@ -43,7 +55,7 @@ export function PhotoFrame({ src, name, size = "md", decorative = false, classNa
         role={decorative ? undefined : "img"}
         aria-label={decorative ? undefined : name}
         aria-hidden={decorative ? true : undefined}
-        className={cn(frame, "items-center justify-center bg-raised font-mono font-bold text-ink")}
+        className={cn(frame, "bg-raised text-ink items-center justify-center font-mono font-bold")}
       >
         {initialsOf(name)}
       </span>
@@ -52,7 +64,12 @@ export function PhotoFrame({ src, name, size = "md", decorative = false, classNa
   return (
     <span className={cn(frame, "photo-ground items-end justify-center")}>
       {/* The top of the photo stays in the frame, so the crop falls at the shoulders and the head is never cut. */}
-      <img src={src} alt={decorative ? "" : name} loading="lazy" className="size-full object-cover object-top" />
+      <img
+        src={src}
+        alt={decorative ? "" : name}
+        loading="lazy"
+        className="size-full object-cover object-top"
+      />
     </span>
   );
 }

@@ -3,7 +3,16 @@
  * sim, with the package fixtures in its published season folder. The full check runs it after each real client.
  */
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -38,11 +47,15 @@ export function fixtureRoot(slug = SLUG) {
   cpSync(join(REPO_ROOT, "clients", slug), client, { recursive: true });
   const toml = join(client, "client.toml");
   const values = parse(readFileSync(toml, "utf8"));
-  values.packages = [...values.packages, ...REPORT_PACKAGES.filter((name) => !values.packages.includes(name))];
+  values.packages = [
+    ...values.packages,
+    ...REPORT_PACKAGES.filter((name) => !values.packages.includes(name)),
+  ];
   writeFileSync(toml, stringify(values));
   const season = String(JSON.parse(readFileSync(FIXTURES["midseason.json"], "utf8")).season);
   mkdirSync(join(client, "published", season), { recursive: true });
-  for (const [name, file] of Object.entries(FIXTURES)) cpSync(file, join(client, "published", season, name));
+  for (const [name, file] of Object.entries(FIXTURES))
+    cpSync(file, join(client, "published", season, name));
   return root;
 }
 

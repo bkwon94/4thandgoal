@@ -16,21 +16,25 @@ import { stableId, textId } from "@cpc/design/lib/stable-id";
 function AwardTile({ award, headshots }: { award: Award; headshots: HeadshotMap }) {
   return (
     <li className="min-w-0 list-none" {...stableId("award", award.title)}>
-      <Card className="flex h-full flex-col gap-sp-3">
-        <div className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">
+      <Card className="gap-sp-3 flex h-full flex-col">
+        <div className="text-meta tracking-caps text-accent-ink font-mono leading-tight font-bold uppercase">
           {award.title}
         </div>
         {award.missing ? (
           <div className="text-meta text-mute">Projections unavailable this week</div>
         ) : (
-          <div className="flex flex-col gap-sp-1">
-            <div className="flex items-center justify-between gap-sp-2">
-              <div className="font-mono text-score leading-stat font-bold tabular-nums">{num(award.points)}</div>
+          <div className="gap-sp-1 flex flex-col">
+            <div className="gap-sp-2 flex items-center justify-between">
+              <div className="text-score leading-stat font-mono font-bold tabular-nums">
+                {num(award.points)}
+              </div>
               <PhotoFrame src={photoOf(headshots, award.player_id)} name={award.player} size="md" />
             </div>
             <div className="text-body leading-tight font-bold">{award.player}</div>
-            <div className="text-meta leading-tight text-mute tabular-nums">
-              {award.projection !== null ? `${award.team} · proj ${num(award.projection)}` : award.team}
+            <div className="text-meta text-mute leading-tight tabular-nums">
+              {award.projection !== null
+                ? `${award.team} · proj ${num(award.projection)}`
+                : award.team}
             </div>
           </div>
         )}
@@ -39,15 +43,28 @@ function AwardTile({ award, headshots }: { award: Award; headshots: HeadshotMap 
   );
 }
 
-export function Awards({ awards, headshots, blurb }: { awards: Award[]; headshots: HeadshotMap; blurb: string }) {
+export function Awards({
+  awards,
+  headshots,
+  blurb,
+}: {
+  awards: Award[];
+  headshots: HeadshotMap;
+  blurb: string;
+}) {
   return (
     <WeekChapter id="awards" title="Awards">
-      <ul className="m-0 grid grid-cols-2 gap-sp-2 p-0">
+      <ul className="gap-sp-2 m-0 grid grid-cols-2 p-0">
         {awards.map((award) => (
           <AwardTile key={award.title} award={award} headshots={headshots} />
         ))}
       </ul>
-      <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>
+      <p
+        className="max-w-measure text-lead leading-body text-ink-2 m-0"
+        {...textId("blurb", blurb)}
+      >
+        {blurb}
+      </p>
     </WeekChapter>
   );
 }

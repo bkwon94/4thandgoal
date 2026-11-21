@@ -26,7 +26,13 @@ const KEYBOARD = 336;
 
 // The browser of a file is set at its top, because a group cannot pick the browser. iOS Safari runs on WebKit.
 const { defaultBrowserType: _browser, ...phone } = devices["iPhone 15"];
-test.use({ ...phone, browserName: "webkit", viewport: { width: 393, height: 852 }, isMobile: false, reducedMotion: "no-preference" });
+test.use({
+  ...phone,
+  browserName: "webkit",
+  viewport: { width: 393, height: 852 },
+  isMobile: false,
+  reducedMotion: "no-preference",
+});
 
 let server: { url: string; close: () => Promise<void> };
 test.beforeAll(async () => {
@@ -40,7 +46,10 @@ test.afterAll(async () => {
    takes the focus first, and the keyboard rises after it. The fake visual viewport starts at full height, and
    openKeyboard shrinks it and fires its resize, in that order. No passphrase is kept, so the first action asks for it. */
 async function fakeViewport(page: Page) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript(() => {
     localStorage.removeItem("cpc.passphrase");
     let keyboard = 0;
@@ -82,7 +91,10 @@ async function stallKeyboardSlide(page: Page) {
    reads are no proof of rest, because a loaded runner can draw no frame between them while the slide still moves. So the
    read waits for the Drawer to take the keyboard inset, and then for each running motion of the sheet to end. */
 async function boxAndKeyboard(page: Page) {
-  const field = page.getByRole("dialog").getByLabel("League passphrase", { exact: true }).and(page.locator("input"));
+  const field = page
+    .getByRole("dialog")
+    .getByLabel("League passphrase", { exact: true })
+    .and(page.locator("input"));
   const form = page.getByRole("dialog").getByRole("form", { name: "League passphrase" });
   // The Drawer writes --keyboard-inset on the host of the sheet, and starts its keyboard slide in the same step.
   const inset = () =>
@@ -91,7 +103,9 @@ async function boxAndKeyboard(page: Page) {
       while (el && !el.style.getPropertyValue("--keyboard-inset")) el = el.parentElement;
       return el?.style.getPropertyValue("--keyboard-inset") ?? "";
     });
-  await expect.poll(inset, { message: "the Drawer lifts the sheet by the keyboard" }).toBe(`${KEYBOARD}px`);
+  await expect
+    .poll(inset, { message: "the Drawer lifts the sheet by the keyboard" })
+    .toBe(`${KEYBOARD}px`);
   const place = await form.evaluate(async (formEl, keyboard) => {
     let host: HTMLElement | SVGElement | null = formEl;
     while (host && !host.style.getPropertyValue("--keyboard-inset")) host = host.parentElement;
@@ -100,10 +114,17 @@ async function boxAndKeyboard(page: Page) {
        count. A canceled slide rejects its finished promise, so allSettled waits for each. */
     const moving = (host ?? formEl)
       .getAnimations({ subtree: true })
-      .filter((animation) => animation.playState === "running" && animation.timeline === document.timeline);
+      .filter(
+        (animation) =>
+          animation.playState === "running" && animation.timeline === document.timeline,
+      );
     await Promise.allSettled(moving.map((animation) => animation.finished));
     const box = formEl.getBoundingClientRect();
-    return { top: Math.round(box.top), bottom: Math.round(box.bottom), keyboard: innerHeight - keyboard };
+    return {
+      top: Math.round(box.top),
+      bottom: Math.round(box.bottom),
+      keyboard: innerHeight - keyboard,
+    };
   }, KEYBOARD);
   await expect(field).toBeFocused();
   return place;
@@ -111,11 +132,18 @@ async function boxAndKeyboard(page: Page) {
 
 /* A tap focuses the field first, and then the keyboard rises, as on iOS. */
 async function tapAndOpenKeyboard(page: Page) {
-  const field = page.getByRole("dialog").getByLabel("League passphrase", { exact: true }).and(page.locator("input"));
+  const field = page
+    .getByRole("dialog")
+    .getByLabel("League passphrase", { exact: true })
+    .and(page.locator("input"));
   await expect(field).toBeFocused();
   await field.blur();
   await field.tap();
-  await page.evaluate((height) => (window as unknown as { openKeyboard: (height: number) => void }).openKeyboard(height), KEYBOARD);
+  await page.evaluate(
+    (height) =>
+      (window as unknown as { openKeyboard: (height: number) => void }).openKeyboard(height),
+    KEYBOARD,
+  );
 }
 
 /* The page clock starts on the release day of the season sim, so its Announcement can open on each run, whatever the date
@@ -129,7 +157,10 @@ async function startClock(page: Page) {
    front door. */
 async function passLoadBeat(page: Page) {
   await page.clock.fastForward(LOAD_BEAT_MS + 1000);
-  await expect(page.getByRole("dialog"), "no Announcement and no Tour covers the front door before the first tap").toHaveText([]);
+  await expect(
+    page.getByRole("dialog"),
+    "no Announcement and no Tour covers the front door before the first tap",
+  ).toHaveText([]);
 }
 
 /* Ask a question with no kept passphrase, so the passphrase modal opens, and the Thread holds no passphrase box. */
@@ -139,30 +170,47 @@ async function askForPassphrase(page: Page) {
   await ask.fill("Who should I start?");
   await page.getByRole("button", { name: "Send" }).tap();
   await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Thread" }).getByRole("form", { name: "League passphrase" }), "the Thread holds no passphrase box").toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: "Thread" }).getByRole("form", { name: "League passphrase" }),
+    "the Thread holds no passphrase box",
+  ).toHaveCount(0);
 }
 
 test.describe("the passphrase box of the passphrase modal with the iOS keyboard (AT-51)", () => {
-  test("the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap", async ({ page }) => {
+  test("the team sheet asks only for the team, and the box sits above the keyboard on the first Topic tap", async ({
+    page,
+  }) => {
     await fakeViewport(page);
     await stallKeyboardSlide(page);
     await startClock(page);
     await page.goto(`${server.url}${DOOR}`);
     await page.getByRole("dialog").getByRole("button").first().tap();
-    await expect(page.getByRole("dialog"), "the pick of the team closes the sheet, and no modal opens on its own").toHaveCount(0);
+    await expect(
+      page.getByRole("dialog"),
+      "the pick of the team closes the sheet, and no modal opens on its own",
+    ).toHaveCount(0);
     await passLoadBeat(page);
     // A weekly Topic from "More" needs no API, and the first action still asks for the passphrase.
-    await page.getByRole("group", { name: "Suggestions" }).getByRole("button", { name: "More" }).tap();
+    await page
+      .getByRole("group", { name: "Suggestions" })
+      .getByRole("button", { name: "More" })
+      .tap();
     await page.getByRole("list", { name: "All Topics" }).getByRole("button").first().tap();
-    await expect(page.getByRole("dialog", { name: "What is the league passphrase?" })).toBeVisible();
+    await expect(
+      page.getByRole("dialog", { name: "What is the league passphrase?" }),
+    ).toBeVisible();
     await tapAndOpenKeyboard(page);
     const place = await boxAndKeyboard(page);
-    console.log(`the box spans ${place.top} to ${place.bottom} px, and the keyboard starts at ${place.keyboard} px`);
+    console.log(
+      `the box spans ${place.top} to ${place.bottom} px, and the keyboard starts at ${place.keyboard} px`,
+    );
     expect(place.bottom, "the whole box is above the keyboard").toBeLessThanOrEqual(place.keyboard);
     expect(place.top, "the box is in view").toBeGreaterThanOrEqual(0);
   });
 
-  test("the box sits above the keyboard with a kept team and no kept passphrase", async ({ page }) => {
+  test("the box sits above the keyboard with a kept team and no kept passphrase", async ({
+    page,
+  }) => {
     await fakeViewport(page);
     await stallKeyboardSlide(page);
     await startClock(page);

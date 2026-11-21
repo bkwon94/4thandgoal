@@ -7,19 +7,31 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { openPage, scanAxe, scanContrast, scanScroll, scanTargets, scanText, scanWords } from "./floor";
+import {
+  openPage,
+  scanAxe,
+  scanContrast,
+  scanScroll,
+  scanTargets,
+  scanText,
+  scanWords,
+} from "./floor";
 import { serveDir } from "./serve";
 
 const PHONE = { width: 390, height: 844 };
 
 test("prose under 16px fails and names the element and the size", async ({ page }) => {
   await page.setViewportSize(PHONE);
-  await page.setContent(`<main><p class="blurb" style="font-size:14px">A short blurb of the week.</p></main>`);
+  await page.setContent(
+    `<main><p class="blurb" style="font-size:14px">A short blurb of the week.</p></main>`,
+  );
   const scan = await scanText(page);
   expect(scan.failures).toEqual([expect.stringMatching(/p\.blurb .*14px.*prose.*16px/)]);
 });
 
-test("other text under 11px fails, 11px passes, and the scan counts each tier", async ({ page }) => {
+test("other text under 11px fails, 11px passes, and the scan counts each tier", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main>
     <span class="eyebrow" style="font-size:11px">Week 8</span>
@@ -28,11 +40,15 @@ test("other text under 11px fails, 11px passes, and the scan counts each tier", 
     <p style="font-size:16px">A blurb.</p>
   </main>`);
   const scan = await scanText(page);
-  expect(scan.failures).toEqual([expect.stringMatching(/span\.dock "Home" is 10px.*other text.*11px/)]);
+  expect(scan.failures).toEqual([
+    expect.stringMatching(/span\.dock "Home" is 10px.*other text.*11px/),
+  ]);
   expect(scan).toMatchObject({ prose: 3, other: 2 });
 });
 
-test("a link or button under 44px fails, and a link inside prose is exempt and listed", async ({ page }) => {
+test("a link or button under 44px fails, and a link inside prose is exempt and listed", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main>
     <a class="row" href="/a" style="display:block;height:48px">A whole row</a>
@@ -40,7 +56,9 @@ test("a link or button under 44px fails, and a link inside prose is exempt and l
     <p style="font-size:16px">Read the <a class="inline" href="/b">manager page</a> next.</p>
   </main>`);
   const scan = await scanTargets(page);
-  expect(scan.failures).toEqual([expect.stringMatching(/button\.close "x" is 30x30px, under the tap floor of 44px/)]);
+  expect(scan.failures).toEqual([
+    expect.stringMatching(/button\.close "x" is 30x30px, under the tap floor of 44px/),
+  ]);
   expect(scan.exempt).toEqual([expect.stringMatching(/a\.inline "manager page"/)]);
 });
 
@@ -50,7 +68,8 @@ test("a link or button under 44px fails, and a link inside prose is exempt and l
  */
 const PROXY_STYLE =
   "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;opacity:0;pointer-events:none";
-const proxy = (value: string) => `<input type="radio" aria-hidden="true" tabindex="-1" style="${PROXY_STYLE}" value="${value}">`;
+const proxy = (value: string) =>
+  `<input type="radio" aria-hidden="true" tabindex="-1" style="${PROXY_STYLE}" value="${value}">`;
 
 test("a form proxy input after a control of 44px is skipped and listed, and the floor still fails a small control or a plain hidden input", async ({
   page,
@@ -64,7 +83,9 @@ test("a form proxy input after a control of 44px is skipped and listed, and the 
     <button class="pair" style="width:60px;height:44px">Go</button><input class="tappable" aria-hidden="true" tabindex="-1" style="width:1px;height:1px">
   </main>`);
   const scan = await scanTargets(page);
-  expect(scan.proxies).toEqual([expect.stringMatching(/input "" is the form proxy of button\.big "Grade a trade" at 148x44px/)]);
+  expect(scan.proxies).toEqual([
+    expect.stringMatching(/input "" is the form proxy of button\.big "Grade a trade" at 148x44px/),
+  ]);
   expect(scan.failures).toEqual([
     expect.stringMatching(/button\.small "Find a trade" is 148x30px/),
     expect.stringMatching(/^input "" is 1x1px/),
@@ -74,18 +95,26 @@ test("a form proxy input after a control of 44px is skipped and listed, and the 
   expect(scan.exempt).toEqual([]);
 });
 
-test("a sideways scroll at 390px fails and names the widest element, and a box that scrolls itself passes", async ({ page }) => {
+test("a sideways scroll at 390px fails and names the widest element, and a box that scrolls itself passes", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<body style="margin:0">
     <div style="overflow-x:auto"><table style="width:900px"><tr><td>A wide table in its own box</td></tr></table></div>
   </body>`);
   expect(await scanScroll(page)).toEqual([]);
 
-  await page.setContent(`<body style="margin:0"><div class="strip" style="width:500px">A strip of weeks</div></body>`);
-  expect(await scanScroll(page)).toEqual([expect.stringMatching(/scrolls sideways: 500px wide in 390px.*div\.strip/)]);
+  await page.setContent(
+    `<body style="margin:0"><div class="strip" style="width:500px">A strip of weeks</div></body>`,
+  );
+  expect(await scanScroll(page)).toEqual([
+    expect.stringMatching(/scrolls sideways: 500px wide in 390px.*div\.strip/),
+  ]);
 });
 
-test("a word split over two lines fails and names the word, and a wrap between words or after a hyphen passes", async ({ page }) => {
+test("a word split over two lines fails and names the word, and a wrap between words or after a hyphen passes", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<body style="margin:0;overflow-wrap:break-word;font:12px monospace">
     <div class="tile" style="width:60px">UNDERPERFORMER</div>
@@ -93,10 +122,14 @@ test("a word split over two lines fails and names the word, and a wrap between w
     <div class="hyphen" style="width:40px">my 5-game</div>
     <div class="cut" style="width:60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">BENCHWARMER</div>
   </body>`);
-  expect(await scanWords(page)).toEqual([expect.stringMatching(/div\.tile .*"UNDERPERFORMER" breaks over 2 lines/)]);
+  expect(await scanWords(page)).toEqual([
+    expect.stringMatching(/div\.tile .*"UNDERPERFORMER" breaks over 2 lines/),
+  ]);
 });
 
-test("axe color-contrast fails on a violation and on an incomplete result, and passes a clear pair", async ({ page }) => {
+test("axe color-contrast fails on a violation and on an incomplete result, and passes a clear pair", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">
     <p class="clear" style="color:#111">Clear text.</p>
@@ -126,7 +159,9 @@ const hero = (label: string, glow: string, content: string) => `<section aria-la
     <div style="position:relative">${content}</div>
   </section>`;
 
-test("hero text over the art passes on its pixels, and an incomplete result outside a hero still fails and names it", async ({ page }) => {
+test("hero text over the art passes on its pixels, and an incomplete result outside a hero still fails and names it", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">
     ${hero("Week 9", "#3a1418", `<h1 class="title" style="font-size:32px">Week 9</h1><p class="meta" style="font-size:16px">A clear meta line.</p>`)}
@@ -145,11 +180,15 @@ test("hero text that the glow makes faint fails, and the failure names the hero,
   </main>`);
   const failures = await scanContrast(page);
   expect(failures).toEqual([
-    expect.stringMatching(/^pixel: hero "Manager" p\.muted "A muted line on the glow\." is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/),
+    expect.stringMatching(
+      /^pixel: hero "Manager" p\.muted "A muted line on the glow\." is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/,
+    ),
   ]);
 });
 
-test("a short text of a hero, which axe cannot judge, is rated on its pixels, and a short text outside a hero still fails", async ({ page }) => {
+test("a short text of a hero, which axe cannot judge, is rated on its pixels, and a short text outside a hero still fails", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">
     ${hero("Chips", "#ff4040", `<p style="font-size:16px;color:#f5f5f5">A clear line.</p><span class="chip" style="display:block;font-size:16px;color:#7a7a7a">7</span><span class="ok" style="display:block;font-size:16px;color:#ffffff">8</span>`)}
@@ -157,10 +196,16 @@ test("a short text of a hero, which axe cannot judge, is rated on its pixels, an
   </main>`);
   const failures = await scanContrast(page);
   expect(failures).toEqual(
-    expect.arrayContaining([expect.stringMatching(/^pixel: hero "Chips" span\.chip "7" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/)]),
+    expect.arrayContaining([
+      expect.stringMatching(
+        /^pixel: hero "Chips" span\.chip "7" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/,
+      ),
+    ]),
   );
   expect(failures.filter((line) => line.startsWith("pixel:"))).toHaveLength(1);
-  expect(failures).toEqual(expect.arrayContaining([expect.stringMatching(/^incomplete: \.short .*too short/)]));
+  expect(failures).toEqual(
+    expect.arrayContaining([expect.stringMatching(/^incomplete: \.short .*too short/)]),
+  );
 });
 
 test("an aria-hidden text of a hero is rated on its pixels", async ({ page }) => {
@@ -169,7 +214,11 @@ test("an aria-hidden text of a hero is rated on its pixels", async ({ page }) =>
     ${hero("Art text", "#ff4040", `<p style="font-size:16px;color:#f5f5f5">A clear line.</p><div aria-hidden="true" class="art" style="font-size:48px;color:#9a9a9a">404</div>`)}
   </main>`);
   const failures = await scanContrast(page);
-  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Art text" div\.art "404" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/)]);
+  expect(failures).toEqual([
+    expect.stringMatching(
+      /^pixel: hero "Art text" div\.art "404" is \d\.\d\d:1 on #[0-9a-f]{6}, under 4\.5:1$/,
+    ),
+  ]);
 });
 
 test("a hero where the pixel scan finds no text fails and names the hero", async ({ page }) => {
@@ -178,10 +227,14 @@ test("a hero where the pixel scan finds no text fails and names the hero", async
     ${hero("Empty stage", "#3a1418", `<div style="height:120px"></div><span style="position:absolute;width:1px;height:1px;overflow:hidden">Hidden note</span>`)}
   </main>`);
   const failures = await scanContrast(page);
-  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Empty stage": the pixel scan finds no text$/)]);
+  expect(failures).toEqual([
+    expect.stringMatching(/^pixel: hero "Empty stage": the pixel scan finds no text$/),
+  ]);
 });
 
-test("the egg banner is a hero of its own, so the pixel scan reads its line over the hero texture", async ({ page }) => {
+test("the egg banner is a hero of its own, so the pixel scan reads its line over the hero texture", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">
     <section aria-label="Egg drop" class="hero-texture" style="background:#101418 radial-gradient(ellipse 60% 80% at 0% 0%, #ff4040, transparent 70%);color:#f5f5f5;padding:8px">
@@ -189,10 +242,14 @@ test("the egg banner is a hero of its own, so the pixel scan reads its line over
     </section>
   </main>`);
   const failures = await scanContrast(page);
-  expect(failures).toEqual([expect.stringMatching(/^pixel: hero "Egg drop" span\.line "3 eggs dropped" is \d\.\d\d:1/)]);
+  expect(failures).toEqual([
+    expect.stringMatching(/^pixel: hero "Egg drop" span\.line "3 eggs dropped" is \d\.\d\d:1/),
+  ]);
 });
 
-test("axe color-contrast with a scope checks only the open part, so text that the open part covers passes", async ({ page }) => {
+test("axe color-contrast with a scope checks only the open part, so text that the open part covers passes", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<main style="background:#fff">
     <p class="covered" style="color:#bbb">Text under the strip.</p>
@@ -223,21 +280,30 @@ async function bandOverScrolledPage(page: Page, titleColor: string) {
     const centers = [...range.getClientRects()].map((rect) => (rect.left + rect.right) / 2);
     const tile = document.querySelector(".tile") as HTMLElement;
     tile.style.width = `${(Math.min(...centers) + Math.max(...centers)) / 2}px`;
-    window.scrollTo({ top: tile.getBoundingClientRect().top + window.scrollY - 20, behavior: "instant" });
+    window.scrollTo({
+      top: tile.getBoundingClientRect().top + window.scrollY - 20,
+      behavior: "instant",
+    });
   });
 }
 
-test("a band title cut by an ellipsis over a scrolled page passes, because its opaque band hides the page under it", async ({ page }) => {
+test("a band title cut by an ellipsis over a scrolled page passes, because its opaque band hides the page under it", async ({
+  page,
+}) => {
   await bandOverScrolledPage(page, "#111");
   expect(await scanContrast(page)).toEqual([]);
 });
 
 test("a faint band title cut by an ellipsis over a scrolled page still fails", async ({ page }) => {
   await bandOverScrolledPage(page, "#bbb");
-  expect(await scanContrast(page)).toEqual([expect.stringMatching(/^violation: span .*contrast.*#bbbbbb/)]);
+  expect(await scanContrast(page)).toEqual([
+    expect.stringMatching(/^violation: span .*contrast.*#bbbbbb/),
+  ]);
 });
 
-test("the full axe scan counts the violations and the incomplete items apart, and passes a clean part", async ({ page }) => {
+test("the full axe scan counts the violations and the incomplete items apart, and passes a clean part", async ({
+  page,
+}) => {
   await page.setViewportSize(PHONE);
   await page.setContent(`<html lang="en"><head><title>Axe</title></head><body><main style="background:#fff">
     <section class="part"><button class="bare" style="width:48px;height:48px"></button></section>
@@ -246,7 +312,9 @@ test("the full axe scan counts the violations and the incomplete items apart, an
   </main></body></html>`);
   const scan = await scanAxe(page);
   expect(scan.violations).toEqual([expect.stringMatching(/^violation: \.bare .*button-name/)]);
-  expect(scan.incomplete).toEqual([expect.stringMatching(/^incomplete: p color-contrast: .*gradient/)]);
+  expect(scan.incomplete).toEqual([
+    expect.stringMatching(/^incomplete: p color-contrast: .*gradient/),
+  ]);
   expect(await scanAxe(page, "section.clean")).toEqual({ violations: [], incomplete: [] });
 });
 
@@ -254,7 +322,10 @@ test("openPage sets each theme through the shipped boot script and the server gi
   page,
 }) => {
   const dir = mkdtempSync(join(tmpdir(), "floor-"));
-  writeFileSync(join(dir, "index.html"), `<html class="${DARK_CLASS}"><head><script>${BOOT_SCRIPT}</script></head><body>Home</body></html>`);
+  writeFileSync(
+    join(dir, "index.html"),
+    `<html class="${DARK_CLASS}"><head><script>${BOOT_SCRIPT}</script></head><body>Home</body></html>`,
+  );
   writeFileSync(join(dir, "404.html"), "<html><body>Not found</body></html>");
   const server = await serveDir(dir);
   try {
@@ -279,7 +350,10 @@ const HANG_TIMEOUT = 15_000;
 
 async function openHangPage(page: Parameters<typeof openPage>[0], body: string): Promise<void> {
   const dir = mkdtempSync(join(tmpdir(), "floor-"));
-  writeFileSync(join(dir, "index.html"), `<html><body><div id="box">Box</div><script>${body}</script></body></html>`);
+  writeFileSync(
+    join(dir, "index.html"),
+    `<html><body><div id="box">Box</div><script>${body}</script></body></html>`,
+  );
   const server = await serveDir(dir);
   try {
     await openPage(page, `${server.url}/`, "light");
@@ -289,7 +363,9 @@ async function openHangPage(page: Parameters<typeof openPage>[0], body: string):
   }
 }
 
-test("openPage does not hang on an animation with an end time that is not finite", async ({ page }) => {
+test("openPage does not hang on an animation with an end time that is not finite", async ({
+  page,
+}) => {
   test.setTimeout(HANG_TIMEOUT);
   // A scroll-driven animation has an end time that is not a number, and it stays running.
   await openHangPage(
@@ -298,11 +374,16 @@ test("openPage does not hang on an animation with an end time that is not finite
      const timeline = new ScrollTimeline({ source: document.documentElement });
      box.animate({ opacity: [0, 1] }, { timeline, fill: "both" });`,
   );
-  const ends = await page.evaluate(() => document.getAnimations().map((animation) => animation.effect?.getComputedTiming().endTime));
+  const ends = await page.evaluate(() =>
+    document.getAnimations().map((animation) => animation.effect?.getComputedTiming().endTime),
+  );
   expect(ends.some((end) => typeof end !== "number" || !Number.isFinite(end))).toBe(true);
 });
 
 test("openPage does not hang on a finite animation that never finishes", async ({ page }) => {
   test.setTimeout(HANG_TIMEOUT);
-  await openHangPage(page, `const animation = document.getElementById("box").animate({ opacity: [0, 1] }, 1000); animation.pause();`);
+  await openHangPage(
+    page,
+    `const animation = document.getElementById("box").animate({ opacity: [0, 1] }, 1000); animation.pause();`,
+  );
 });

@@ -3,23 +3,24 @@
  * Your team with the playoff line, the odds, and the What-if chip that a tap turns on and off (AT-51 to AT-53).
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
 import { norcalWeekSim, weekSim } from "../fixtures/sim";
 import { previewOf } from "./preview";
 import { AUTO_WHAT_IF_MS, SimPreview } from "./sim-preview";
 
 beforeEach(() => {
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 const BO_GIRDS_CPC = 6;
 const BO_GIRDS_NORCAL = 7;
 
-const rows = () => within(screen.getByRole("list", { name: "Standings near your team" })).getAllByRole("listitem");
+const rows = () =>
+  within(screen.getByRole("list", { name: "Standings near your team" })).getAllByRole("listitem");
 const rowNames = () => rows().map((row) => row.querySelector("[data-team]")?.textContent);
 const chip = () => screen.getByRole("button", { name: /^What-if:/ });
 // The live line names the odds that the count lands on, so the test reads the number, not a frame of the count.
@@ -71,29 +72,33 @@ describe("the art of the sim Announcement", () => {
   });
 
   it("turns the chip on by itself once, only after the sheet settles (AT-53)", () => {
-    const { rerender } = render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />);
-    act(() => vi.advanceTimersByTime(5000));
+    const { rerender } = render(
+      <SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />,
+    );
+    act(() => jest.advanceTimersByTime(5000));
     expect(chip().getAttribute("aria-pressed")).toBe("false");
 
     rerender(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);
-    act(() => vi.advanceTimersByTime(AUTO_WHAT_IF_MS - 1));
+    act(() => jest.advanceTimersByTime(AUTO_WHAT_IF_MS - 1));
     expect(chip().getAttribute("aria-pressed")).toBe("false");
-    act(() => vi.advanceTimersByTime(1));
+    act(() => jest.advanceTimersByTime(1));
     expect(chip().getAttribute("aria-pressed")).toBe("true");
     expect(odds()).toBe("Playoff odds 86%");
 
     // A tap turns it off, and it never turns on by itself again.
     fireEvent.click(chip());
-    act(() => vi.advanceTimersByTime(5000));
+    act(() => jest.advanceTimersByTime(5000));
     expect(chip().getAttribute("aria-pressed")).toBe("false");
   });
 
   it("leaves the chip alone when the manager taps it before the automatic turn", () => {
-    const { rerender } = render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);
+    const { rerender } = render(
+      <SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />,
+    );
     fireEvent.click(chip());
     fireEvent.click(chip());
     rerender(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);
-    act(() => vi.advanceTimersByTime(5000));
+    act(() => jest.advanceTimersByTime(5000));
     expect(chip().getAttribute("aria-pressed")).toBe("false");
   });
 });

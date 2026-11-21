@@ -3,7 +3,7 @@
  * and the real midseason fixture of CPC week 8, then reads the part that the home page gets for the latest week.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import fixture from "@cpc/midseason/fixtures/midseason.json";
 import { publicOver, removePublics } from "./temp-public";
 
@@ -25,22 +25,29 @@ describe("the home part of the midseason package", () => {
     expect(sections.map((section) => section.place)).toEqual(["takeover"]);
     render(<>{sections[0].part}</>);
     const takeover = screen.getByRole("region", { name: "2026 Midseason Report" });
-    expect(within(takeover).getByRole("heading", { level: 2, name: "The Title Race" })).toBeTruthy();
-    expect(within(takeover).getByRole("link", { name: "Read the Midseason Report" }).getAttribute("href")).toBe(
-      "/midseason/2026/",
-    );
+    expect(
+      within(takeover).getByRole("heading", { level: 2, name: "The Title Race" }),
+    ).toBeTruthy();
+    expect(
+      within(takeover)
+        .getByRole("link", { name: "Read the Midseason Report" })
+        .getAttribute("href"),
+    ).toBe("/midseason/2026/");
   });
 
-  it.each([9, 10])("shows the report tile with one big fact with week %i published", async (latest) => {
-    const sections = (await homeOver(latest, fixture))();
-    expect(sections.map((section) => section.place)).toEqual(["middle"]);
-    render(<>{sections[0].part}</>);
-    expect(screen.queryByRole("region", { name: "2026 Midseason Report" })).toBeNull();
-    const link = screen.getByRole("link", { name: /Midseason Report/ });
-    expect(link.getAttribute("href")).toBe("/midseason/2026/");
-    expect(within(link).getByText("16.8%")).toBeTruthy();
-    expect(within(link).getByText("London Cooking")).toBeTruthy();
-  });
+  it.each([9, 10])(
+    "shows the report tile with one big fact with week %i published",
+    async (latest) => {
+      const sections = (await homeOver(latest, fixture))();
+      expect(sections.map((section) => section.place)).toEqual(["middle"]);
+      render(<>{sections[0].part}</>);
+      expect(screen.queryByRole("region", { name: "2026 Midseason Report" })).toBeNull();
+      const link = screen.getByRole("link", { name: /Midseason Report/ });
+      expect(link.getAttribute("href")).toBe("/midseason/2026/");
+      expect(within(link).getByText("16.8%")).toBeTruthy();
+      expect(within(link).getByText("London Cooking")).toBeTruthy();
+    },
+  );
 
   it("gives no part when the season has no midseason file", async () => {
     expect((await homeOver(8))()).toEqual([]);

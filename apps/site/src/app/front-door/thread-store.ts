@@ -17,8 +17,12 @@ export const THREAD_KEY = "cpc.thread";
    stays with its page key alone, so a reload builds its links from the Menu of the build and asks nothing. */
 export type ThreadEntry =
   | Extract<ThreadItem, { kind: "topic" | "miss" | "cap" | "note" | "trade" | "site" }>
-  | (Extract<ThreadItem, { kind: "free" }> & { result: NonNullable<Extract<ThreadItem, { kind: "free" }>["result"]> })
-  | (Extract<ThreadItem, { kind: "personal" }> & { result: NonNullable<Extract<ThreadItem, { kind: "personal" }>["result"]> });
+  | (Extract<ThreadItem, { kind: "free" }> & {
+      result: NonNullable<Extract<ThreadItem, { kind: "free" }>["result"]>;
+    })
+  | (Extract<ThreadItem, { kind: "personal" }> & {
+      result: NonNullable<Extract<ThreadItem, { kind: "personal" }>["result"]>;
+    });
 
 const KEPT = new Set(["topic", "miss", "cap", "note", "site"]);
 
@@ -36,7 +40,9 @@ type Threads = Record<string, { week: number; entries: ThreadEntry[] }>;
 function readAll(): Threads {
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(THREAD_KEY) ?? "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Threads) : {};
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Threads)
+      : {};
   } catch {
     // Blocked storage or a bad value reads as an empty Thread.
     return {};

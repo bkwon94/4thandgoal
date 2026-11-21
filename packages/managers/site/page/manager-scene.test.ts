@@ -2,7 +2,7 @@
  * Tests for the data of the manager scene, built from the real managers file of CPC.
  * They check one light per played week, the tone of a win and a loss, the median of each week, and the label at rest.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import type { ManagerEntry } from "../schema/manager-types";
 import { managers } from "../fixtures/managers";
 import { managerScene } from "./manager-scene";
@@ -15,13 +15,22 @@ describe("managerScene", () => {
 
   it("has one light per played week, with x the week and y the points", () => {
     expect(scene.lights.map((light) => light.x)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(scene.lights.map((light) => light.y)).toEqual([109.21, 96.1, 107.39, 118.28, 66.82, 46.08]);
+    expect(scene.lights.map((light) => light.y)).toEqual([
+      109.21, 96.1, 107.39, 118.28, 66.82, 46.08,
+    ]);
     expect(scene.mode).toBe("settle");
     expect(scene.margin).toBeNull();
   });
 
   it("draws a win bright and a loss dim, with no flare", () => {
-    expect(scene.lights.map((light) => light.tone)).toEqual(["dim", "dim", "bright", "bright", "dim", "dim"]);
+    expect(scene.lights.map((light) => light.tone)).toEqual([
+      "dim",
+      "dim",
+      "bright",
+      "bright",
+      "dim",
+      "dim",
+    ]);
   });
 
   it("labels each light with the week, the points, and the result, and shows the latest week at rest", () => {
@@ -50,12 +59,18 @@ describe("managerScene", () => {
   });
 
   it("draws no guide for a league with no median game", () => {
-    const noMedian: ManagerEntry = { ...roster7, weeks: roster7.weeks.map((week) => ({ ...week, median: null })) };
+    const noMedian: ManagerEntry = {
+      ...roster7,
+      weeks: roster7.weeks.map((week) => ({ ...week, median: null })),
+    };
     expect(managerScene(noMedian).guides).toEqual([]);
   });
 
   it("draws a week with no result, such as a tie, dim with a dash for its result", () => {
-    const tie: ManagerEntry = { ...roster7, weeks: [{ week: 1, points: 100, median: 99, won: null }] };
+    const tie: ManagerEntry = {
+      ...roster7,
+      weeks: [{ week: 1, points: 100, median: 99, won: null }],
+    };
     const [light] = managerScene(tie).lights;
     expect(light).toEqual({ x: 1, y: 100, label: "Week 1 · 100 · —", tone: "dim" });
   });

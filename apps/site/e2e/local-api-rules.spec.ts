@@ -74,9 +74,21 @@ test("an API that exits fails the start with its log, even when a server of anot
   await new Promise<void>((done) => other.listen(0, "127.0.0.1", done));
   const { port } = other.address() as AddressInfo;
   try {
-    const exits = () => [process.execPath, "-e", 'console.log("ERROR: [Errno 48] address already in use"); process.exit(3)'];
-    const start = startApi({ origin: "http://127.0.0.1:1", out, port, command: exits, timeoutMs: 10_000 });
-    await expect(start).rejects.toThrow(/the API exited with code 3 before it was ready[\s\S]*address already in use/);
+    const exits = () => [
+      process.execPath,
+      "-e",
+      'console.log("ERROR: [Errno 48] address already in use"); process.exit(3)',
+    ];
+    const start = startApi({
+      origin: "http://127.0.0.1:1",
+      out,
+      port,
+      command: exits,
+      timeoutMs: 10_000,
+    });
+    await expect(start).rejects.toThrow(
+      /the API exited with code 3 before it was ready[\s\S]*address already in use/,
+    );
   } finally {
     await new Promise<void>((done) => other.close(() => done()));
   }

@@ -1,0 +1,345 @@
+$ python3 lockdiff.py   # compares the keys of the packages: section of pnpm-lock.yaml on main and on HEAD (2108f8bc); the script follows the output
+lockfileVersion main: ["lockfileVersion: '9.0'"]  spec: ["lockfileVersion: '9.0'"]
+
+[packages] entries: main 538, spec 483; removed 85, added 30, same 453
+
+Added entries (name@version on the Spec branch, not on main):
+  + @happy-dom/global-registrator@21.0.4  (new name)
+  + @oxlint/binding-android-arm-eabi@1.94.0  (new name)
+  + @oxlint/binding-android-arm64@1.94.0  (new name)
+  + @oxlint/binding-darwin-arm64@1.94.0  (new name)
+  + @oxlint/binding-darwin-x64@1.94.0  (new name)
+  + @oxlint/binding-freebsd-x64@1.94.0  (new name)
+  + @oxlint/binding-linux-arm-gnueabihf@1.94.0  (new name)
+  + @oxlint/binding-linux-arm-musleabihf@1.94.0  (new name)
+  + @oxlint/binding-linux-arm64-gnu@1.94.0  (new name)
+  + @oxlint/binding-linux-arm64-musl@1.94.0  (new name)
+  + @oxlint/binding-linux-ppc64-gnu@1.94.0  (new name)
+  + @oxlint/binding-linux-riscv64-gnu@1.94.0  (new name)
+  + @oxlint/binding-linux-riscv64-musl@1.94.0  (new name)
+  + @oxlint/binding-linux-s390x-gnu@1.94.0  (new name)
+  + @oxlint/binding-linux-x64-gnu@1.94.0  (new name)
+  + @oxlint/binding-linux-x64-musl@1.94.0  (new name)
+  + @oxlint/binding-openharmony-arm64@1.94.0  (new name)
+  + @oxlint/binding-win32-arm64-msvc@1.94.0  (new name)
+  + @oxlint/binding-win32-ia32-msvc@1.94.0  (new name)
+  + @oxlint/binding-win32-x64-msvc@1.94.0  (new name)
+  + @types/bun@1.4.5  (new name)
+  + @types/whatwg-mimetype@3.0.2  (new name)
+  + @types/ws@8.18.2  (new name)
+  + buffer-image-size@0.6.4  (new name)
+  + bun-types@1.4.5  (new name)
+  + entities@7.0.1  (name also on main at 8.1.0)
+  + happy-dom@21.0.4  (new name)
+  + oxlint@1.94.0  (new name)
+  + whatwg-mimetype@3.0.0  (name also on main at 5.0.0)
+  + ws@8.23.0  (new name)
+
+Removed entries (on main, not on the Spec branch):
+  - @asamuzakjp/css-color@7.1.7 
+  - @asamuzakjp/dom-selector@10.0.4 
+  - @bramus/specificity@2.4.3 
+  - @csstools/color-helpers@6.1.2 
+  - @csstools/css-calc@3.4.3 
+  - @csstools/css-color-parser@4.2.6 
+  - @csstools/css-parser-algorithms@4.0.2 
+  - @csstools/css-syntax-patches-for-csstree@1.1.15 
+  - @csstools/css-tokenizer@4.0.2 
+  - @exodus/bytes@1.16.0 
+  - @oxc-project/types@0.155.0 
+  - @rolldown/binding-android-arm-eabi@1.2.15 
+  - @rolldown/binding-android-arm64@1.2.15 
+  - @rolldown/binding-darwin-arm64@1.2.15 
+  - @rolldown/binding-darwin-x64@1.2.15 
+  - @rolldown/binding-freebsd-x64@1.2.15 
+  - @rolldown/binding-linux-arm-gnueabihf@1.2.15 
+  - @rolldown/binding-linux-arm64-gnu@1.2.15 
+  - @rolldown/binding-linux-arm64-musl@1.2.15 
+  - @rolldown/binding-linux-ppc64-gnu@1.2.15 
+  - @rolldown/binding-linux-s390x-gnu@1.2.15 
+  - @rolldown/binding-linux-x64-gnu@1.2.15 
+  - @rolldown/binding-linux-x64-musl@1.2.15 
+  - @rolldown/binding-openharmony-arm64@1.2.15 
+  - @rolldown/binding-win32-arm64-msvc@1.2.15 
+  - @rolldown/binding-win32-x64-msvc@1.2.15 
+  - @rolldown/pluginutils@1.0.1 
+  - @types/chai@5.2.3 
+  - @types/deep-eql@4.0.2 
+  - @types/estree@1.0.9 
+  - @vitejs/plugin-react@6.1.2 
+  - @vitest/mocker@5.0.5 
+  - @vitest/spy@5.0.5 
+  - assertion-error@2.0.1 
+  - bidi-js@1.1.0 
+  - chai@6.3.0 
+  - css-tree@3.2.1 
+  - data-urls@8.0.0 
+  - decimal.js@10.6.0 
+  - entities@8.1.0  (name stays on the Spec branch at 7.0.1)
+  - es-module-lexer@2.3.2 
+  - estree-walker@3.0.3 
+  - expect-type@1.4.0 
+  - fsevents@2.3.3 
+  - html-encoding-sniffer@7.0.0 
+  - is-potential-custom-element-name@1.0.1 
+  - jsdom@30.1.3 
+  - lightningcss-android-arm64@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-darwin-arm64@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-darwin-x64@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-freebsd-x64@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-linux-arm-gnueabihf@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-linux-arm64-gnu@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-linux-arm64-musl@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-linux-x64-gnu@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-linux-x64-musl@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-win32-arm64-msvc@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss-win32-x64-msvc@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lightningcss@1.33.0  (name stays on the Spec branch at 1.32.0)
+  - lru-cache@11.5.3  (name stays on the Spec branch at 5.1.1)
+  - magic-string@1.4.3  (name stays on the Spec branch at 0.30.21)
+  - mdn-data@2.27.1 
+  - obug@3.0.0 
+  - parse5@8.0.1 
+  - punycode@2.3.1 
+  - rolldown@1.2.15 
+  - saxes@6.0.0 
+  - std-env@4.3.0 
+  - tinybench@6.2.2 
+  - tinyexec@1.3.1 
+  - tinyglobby@0.2.17 
+  - tldts-core@7.4.19 
+  - tldts@7.4.19 
+  - tough-cookie@6.0.2 
+  - tr46@7.0.0 
+  - undici@8.12.3  (name stays on the Spec branch at 7.30.1)
+  - vite@8.3.5 
+  - vitest@5.0.5 
+  - w3c-xmlserializer@6.0.0 
+  - webidl-conversions@8.0.1 
+  - whatwg-mimetype@5.0.0  (name stays on the Spec branch at 3.0.0)
+  - whatwg-url@17.3.0 
+  - why-is-node-running@3.2.1 
+  - xml-name-validator@5.0.0 
+  - xmlchars@2.2.0 
+
+Names on both branches whose set of locked versions differs:
+  entities: main ['8.1.0'] -> spec ['7.0.1']; versions of main kept: []
+  lightningcss: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-android-arm64: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-darwin-arm64: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-darwin-x64: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-freebsd-x64: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-linux-arm-gnueabihf: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-linux-arm64-gnu: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-linux-arm64-musl: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-linux-x64-gnu: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-linux-x64-musl: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-win32-arm64-msvc: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lightningcss-win32-x64-msvc: main ['1.32.0', '1.33.0'] -> spec ['1.32.0']; versions of main kept: ['1.32.0']
+  lru-cache: main ['11.5.3', '5.1.1'] -> spec ['5.1.1']; versions of main kept: ['5.1.1']
+  magic-string: main ['0.30.21', '1.4.3'] -> spec ['0.30.21']; versions of main kept: ['0.30.21']
+  undici: main ['7.30.1', '8.12.3'] -> spec ['7.30.1']; versions of main kept: ['7.30.1']
+  whatwg-mimetype: main ['5.0.0'] -> spec ['3.0.0']; versions of main kept: []
+  count: 17
+
+Entries of main whose name stays but whose version is gone: ['lightningcss-win32-arm64-msvc@1.33.0', 'lightningcss-freebsd-x64@1.33.0', 'lightningcss-linux-arm64-gnu@1.33.0', 'lightningcss-darwin-arm64@1.33.0', 'magic-string@1.4.3', 'entities@8.1.0', 'lightningcss-linux-x64-gnu@1.33.0', 'whatwg-mimetype@5.0.0', 'undici@8.12.3', 'lightningcss@1.33.0', 'lightningcss-linux-arm64-musl@1.33.0', 'lru-cache@11.5.3', 'lightningcss-linux-arm-gnueabihf@1.33.0', 'lightningcss-darwin-x64@1.33.0', 'lightningcss-linux-x64-musl@1.33.0', 'lightningcss-android-arm64@1.33.0', 'lightningcss-win32-x64-msvc@1.33.0']
+
+# Which snapshot of main's pnpm-lock.yaml depends on each version that the Spec branch drops
+lightningcss@1.33.0 <- vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0)
+undici@8.12.3 <- jsdom@30.1.3
+lru-cache@11.5.3 <- @asamuzakjp/css-color@7.1.7, @asamuzakjp/dom-selector@10.0.4, jsdom@30.1.3
+magic-string@1.4.3 <- @vitest/mocker@5.0.5(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0)), vitest@5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+entities@8.1.0 <- parse5@8.0.1
+whatwg-mimetype@5.0.0 <- data-urls@8.0.0, jsdom@30.1.3
+
+# The importers section of pnpm-lock.yaml (each package.json): diff -u main HEAD
+--- imp-main.yaml	2026-11-21 10:57:12
++++ imp-HEAD.yaml	2026-11-21 10:57:12
+@@ -81,6 +81,9 @@
+       '@axe-core/playwright':
+         specifier: ^4.14.0
+         version: 4.14.0(playwright-core@1.64.1)
++      '@happy-dom/global-registrator':
++        specifier: ^21.0.4
++        version: 21.0.4
+       '@playwright/test':
+         specifier: ~1.64.1
+         version: 1.64.1
+@@ -93,6 +96,9 @@
+       '@testing-library/react':
+         specifier: ^16.3.3
+         version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
++      '@types/bun':
++        specifier: 1.4.5
++        version: 1.4.5
+       '@types/node':
+         specifier: ^26.6.5
+         version: 26.6.5
+@@ -102,15 +108,12 @@
+       '@types/react-dom':
+         specifier: ^19.3.0
+         version: 19.3.0(@types/react@19.3.0)
+-      '@vitejs/plugin-react':
+-        specifier: ^6.1.2
+-        version: 6.1.2(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+       ajv:
+         specifier: ^8.20.0
+         version: 8.20.0
+-      jsdom:
+-        specifier: ^30.1.3
+-        version: 30.1.3
++      oxlint:
++        specifier: ^1.94.0
++        version: 1.94.0
+       postcss:
+         specifier: ^8.5.31
+         version: 8.5.31
+@@ -126,9 +129,6 @@
+       typescript:
+         specifier: ^7.0.2
+         version: 7.0.2
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/analyzer/site:
+     dependencies:
+@@ -169,9 +169,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/design/site:
+     dependencies:
+@@ -215,9 +212,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/eggs/site:
+     dependencies:
+@@ -246,9 +240,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/league/site:
+     devDependencies:
+@@ -267,9 +258,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/managers/site:
+     dependencies:
+@@ -304,9 +292,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/midseason/site:
+     dependencies:
+@@ -338,9 +323,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/rankings/site:
+     dependencies:
+@@ -375,9 +357,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/sim/site:
+     dependencies:
+@@ -412,9 +391,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/waiver/site:
+     dependencies:
+@@ -449,9 +425,6 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+   packages/week/site:
+     dependencies:
+@@ -486,7 +459,4 @@
+       react-dom:
+         specifier: ^19.3.1
+         version: 19.3.1(react@19.3.1)
+-      vitest:
+-        specifier: ^5.0.5
+-        version: 5.0.5(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(jiti@2.7.0))
+ 
+
+# lockdiff.py
+import subprocess,re,collections
+def keys(ref):
+    txt=subprocess.run(["git","show",f"{ref}:pnpm-lock.yaml"],capture_output=True,text=True).stdout
+    sec=None; out={'packages':set(),'snapshots':set()}; head=[]
+    for l in txt.splitlines():
+        m=re.match(r'^(\S[^:]*):\s*$',l)
+        if m: sec=m.group(1); continue
+        if sec in out:
+            m=re.match(r"^  '?([^' ].*?)'?:\s*(\{\})?$",l)
+            if m: out[sec].add(m.group(1))
+        if l.startswith('lockfileVersion') or l.startswith('settings') : head.append(l)
+    return out,txt
+def split(k):
+    # name@version, scoped names start with @
+    i=k.rfind('@',1) if not k.startswith('@') else k.find('@',1)
+    return k[:i],k[i+1:]
+a,ta=keys("main"); b,tb=keys("HEAD")
+print("lockfileVersion main:", [l for l in ta.splitlines() if l.startswith('lockfileVersion')], " spec:", [l for l in tb.splitlines() if l.startswith('lockfileVersion')])
+for sec in ['packages']:
+    A,B=a[sec],b[sec]
+    print(f"\n[{sec}] entries: main {len(A)}, spec {len(B)}; removed {len(A-B)}, added {len(B-A)}, same {len(A&B)}")
+    va=collections.defaultdict(set); vb=collections.defaultdict(set)
+    for k in A: n,v=split(k); va[n].add(v)
+    for k in B: n,v=split(k); vb[n].add(v)
+    print("\nAdded entries (name@version on the Spec branch, not on main):")
+    for k in sorted(B-A):
+        n,v=split(k); note=" (name also on main at "+", ".join(sorted(va[n]))+")" if n in va else " (new name)"
+        print("  +",k,note)
+    print("\nRemoved entries (on main, not on the Spec branch):")
+    for k in sorted(A-B):
+        n,v=split(k); note=" (name stays on the Spec branch at "+", ".join(sorted(vb[n]))+")" if n in vb else ""
+        print("  -",k,note)
+    print("\nNames on both branches whose set of locked versions differs:")
+    c=0
+    for n in sorted(set(va)&set(vb)):
+        if va[n]!=vb[n]: c+=1; print(f"  {n}: main {sorted(va[n])} -> spec {sorted(vb[n])}; versions of main kept: {sorted(va[n]&vb[n])}")
+    print("  count:",c)
+    lost=[k for k in A-B if split(k)[0] in vb]
+    print("\nEntries of main whose name stays but whose version is gone:",lost or "none")

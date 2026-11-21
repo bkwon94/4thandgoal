@@ -5,12 +5,12 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type Offense, report } from "./rule-report";
 
 const ROOT = process.cwd();
 const TREES = ["src", "scripts"].map((dir) => join(ROOT, dir));
-const ROOT_FILES = ["next.config.ts", "vitest.config.mts", "postcss.config.mjs"].map((file) => join(ROOT, file));
+const ROOT_FILES = ["next.config.ts", "postcss.config.mjs"].map((file) => join(ROOT, file));
 
 /* The test builds each pattern from two parts, so this file holds no match and the test never skips its own file. */
 const TS = "@" + "ts-";
@@ -71,7 +71,9 @@ function offenses(path: string, source: string, allow = ALLOW): Offense[] {
 
 /* An entry that matches no line is stale, and a stale entry cannot stay. The path is the part of the key before the line text. */
 function staleEntries(files: { path: string; source: string }[], allow = ALLOW): Offense[] {
-  const keys = new Set(files.flatMap(({ path, source }) => suppressions(path, source).map(({ key }) => key)));
+  const keys = new Set(
+    files.flatMap(({ path, source }) => suppressions(path, source).map(({ key }) => key)),
+  );
   return [...allow.keys()]
     .filter((key) => !keys.has(key))
     .map((key) => ({
@@ -95,7 +97,7 @@ describe("the suppression rule", () => {
     const paths = siteFiles().map((file) => relative(ROOT, file));
     expect(paths).toContain("scripts/check-export.mjs");
     expect(paths).toContain("src/suppression-rule.test.ts");
-    expect(paths).toEqual(expect.arrayContaining(["next.config.ts", "vitest.config.mts", "postcss.config.mjs"]));
+    expect(paths).toEqual(expect.arrayContaining(["next.config.ts", "postcss.config.mjs"]));
   });
 
   it("finds no suppression comment outside the allow list", () => {
@@ -111,8 +113,13 @@ describe("the suppression rule", () => {
   });
 
   it(`finds one offense in a source string with a ${TS}ignore line`, () => {
-    const found = offenses("src/lib/week.ts", `const a = 1;\n// ${TS}ignore\nconst b: string = a;\n`);
-    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "suppression/comment", line: 2 }]);
+    const found = offenses(
+      "src/lib/week.ts",
+      `const a = 1;\n// ${TS}ignore\nconst b: string = a;\n`,
+    );
+    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+      { ruleId: "suppression/comment", line: 2 },
+    ]);
   });
 
   it("passes a line in the allow list and finds an entry that matches no line", () => {
@@ -136,7 +143,9 @@ describe("the suppression rule", () => {
       const found = sourceFiles(dir)
         .map(readSite)
         .flatMap(({ path, source }) => offenses(path, source));
-      expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([{ ruleId: "suppression/comment", line: 1 }]);
+      expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+        { ruleId: "suppression/comment", line: 1 },
+      ]);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

@@ -1,0 +1,16 @@
+$ gh api repos/{owner}/{repo}/actions/jobs/136753507833/logs | grep -E "playwright test|Running [0-9]+ tests? using|passed \(|PLAYWRIGHT_SHARD:"   # run 44873662117, job site-browser (7)
+2026-11-21T06:02:49.3904199Z   PLAYWRIGHT_SHARD: 7/7
+2026-11-21T06:04:30.2341624Z > playwright test --project=rules
+2026-11-21T06:04:31.4326233Z Running 7 tests using 4 workers, shard 7 of 7
+2026-11-21T06:05:19.9285079Z   7 passed (49.0s)
+2026-11-21T06:05:41.9557624Z Running 44 tests using 4 workers, shard 7 of 7
+2026-11-21T06:06:29.1554126Z   44 passed (49.0s)
+2026-11-21T06:06:30.6362911Z Running 1 test using 1 worker, shard 7 of 7
+2026-11-21T06:06:33.6872577Z   1 passed (3.7s)
+2026-11-21T06:06:46.6001265Z Running 43 tests using 4 workers, shard 7 of 7
+2026-11-21T06:07:30.4393864Z   32 passed (44.5s)
+2026-11-21T06:07:40.8771259Z > playwright test --project=grade-bar
+2026-11-21T06:07:41.8044029Z Running 6 tests using 4 workers, shard 7 of 7
+2026-11-21T06:07:53.7038264Z   6 passed (12.3s)
+2026-11-21T06:08:06.4008025Z Running 4 tests using 4 workers, shard 7 of 7
+2026-11-21T06:08:22.6287302Z   3 passed (16.9s)

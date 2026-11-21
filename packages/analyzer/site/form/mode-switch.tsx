@@ -48,7 +48,14 @@ export function ModeSwitch({
     return () => cancelAnimationFrame(id);
   }, [shown, value]);
   return (
-    <SegmentedControl<AnalyzerMode> aria-label="Mode" tone="dark" value={shown} controller={controller} onValueChange={(next) => next !== null && onChange(next)} disabled={disabled}>
+    <SegmentedControl<AnalyzerMode>
+      aria-label="Mode"
+      tone="dark"
+      value={shown}
+      controller={controller}
+      onValueChange={(next) => next !== null && onChange(next)}
+      disabled={disabled}
+    >
       <SegmentedControlIndicator />
       {MODES.map((mode) => (
         <SegmentedControlItem key={mode.value} value={mode.value}>

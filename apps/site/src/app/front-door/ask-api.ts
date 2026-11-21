@@ -19,7 +19,16 @@ export type SiteAnswerPage = PackageName | typeof ALL_PAGES | typeof MISSING_PAG
 
 /* Each package name, so a page key from the API reads as a PackageName. The Record type fails the typecheck when a
    package name is missing here. */
-const PAGE_KEYS: Record<PackageName, true> = { week: true, rankings: true, managers: true, waiver: true, analyzer: true, sim: true, midseason: true, eggs: true };
+const PAGE_KEYS: Record<PackageName, true> = {
+  week: true,
+  rankings: true,
+  managers: true,
+  waiver: true,
+  analyzer: true,
+  sim: true,
+  midseason: true,
+  eggs: true,
+};
 
 const isPageKey = (value: string): value is PackageName => Object.hasOwn(PAGE_KEYS, value);
 
@@ -55,11 +64,18 @@ export type AskPage = Pick<SitePage, "key" | "label" | "blurb">;
 
 /* The pages of the ask route: each page of the Site answer with only its key, its label, and its blurb. The link and
    the Tool mark stay in the site. */
-export const askPagesOf = (pages: SitePage[]): AskPage[] => pages.map(({ key, label, blurb }) => ({ key, label, blurb }));
+export const askPagesOf = (pages: SitePage[]): AskPage[] =>
+  pages.map(({ key, label, blurb }) => ({ key, label, blurb }));
 
 /* The body of the ask route: the question as typed, the roster id of Your team, the latest week of the site, the
    earlier turns of the Thread, oldest first, and the pages of the client. */
-export type AskQuestion = { question: string; roster_id: number; week: number; turns?: Turn[]; pages?: AskPage[] };
+export type AskQuestion = {
+  question: string;
+  roster_id: number;
+  week: number;
+  turns?: Turn[];
+  pages?: AskPage[];
+};
 
 /* A failed call: its status, and the wait of a 429 in seconds. A status of 0 is a call that never reached the API. */
 export class AskError extends Error {
@@ -76,7 +92,12 @@ export class AskError extends Error {
 
 /* Send one POST to `path` under /clients/<slug>/ of the API, with the league passphrase. A call that never reaches the
    API throws an AskError of status 0. A failed status throws its AskError, with the wait of the Retry-After header. */
-export async function postClient(target: AskTarget, passphrase: string, path: string, body: unknown): Promise<Response> {
+export async function postClient(
+  target: AskTarget,
+  passphrase: string,
+  path: string,
+  body: unknown,
+): Promise<Response> {
   let response: Response;
   try {
     response = await fetch(`${target.url}/clients/${encodeURIComponent(target.client)}/${path}`, {
@@ -94,7 +115,11 @@ export async function postClient(target: AskTarget, passphrase: string, path: st
 /* The AskError of a failed status. A 429 carries its wait in seconds when the Retry-After header gives one. */
 export function statusError(response: Response): AskError {
   const seconds = Number(response.headers.get("Retry-After"));
-  return new AskError(response.status, response.statusText, Number.isFinite(seconds) && seconds > 0 ? seconds : undefined);
+  return new AskError(
+    response.status,
+    response.statusText,
+    Number.isFinite(seconds) && seconds > 0 ? seconds : undefined,
+  );
 }
 
 /* The JSON body of a response, read with its schema. A body that the schema rejects throws an AskError of status 502. */
@@ -104,6 +129,10 @@ export async function readBody<T>(response: Response, schema: z.ZodType<T>): Pro
   return parsed.data;
 }
 
-export async function askRoute(target: AskTarget, passphrase: string, body: AskQuestion): Promise<AskAnswer> {
+export async function askRoute(
+  target: AskTarget,
+  passphrase: string,
+  body: AskQuestion,
+): Promise<AskAnswer> {
   return readBody(await postClient(target, passphrase, "ask", body), askAnswerSchema);
 }

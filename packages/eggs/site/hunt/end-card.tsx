@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import type { ReactNode } from "react";
 import { HeroFrame } from "@cpc/design/parts/hero";
 import { Label } from "@cpc/design/parts/label";
@@ -31,7 +32,7 @@ export function EndCard({ end, onClose }: { end: End; onClose: () => void }) {
         line={`Try again in ${end.minutes} ${end.minutes === 1 ? "minute" : "minutes"}.`}
         onClose={onClose}
       >
-        <div className="flex flex-col items-center gap-sp-2 font-mono font-bold">
+        <div className="gap-sp-2 flex flex-col items-center font-mono font-bold">
           <span className="text-hero leading-hero text-accent-text">{end.minutes}</span>
           <span className="text-meta tracking-caps text-on-dark-muted uppercase">Minutes left</span>
         </div>
@@ -40,8 +41,14 @@ export function EndCard({ end, onClose }: { end: End; onClose: () => void }) {
   }
   if (end.kind === "claimed-first") {
     return (
-      <Shell label="Too late" title="Another manager claimed first." line="The first claim wins the egg." onClose={onClose} board>
-        <span className="egg-pop flex size-28 items-center justify-center rounded-letter bg-chip-dark font-mono text-hero leading-hero font-bold text-on-dark-muted line-through decoration-accent decoration-6">
+      <Shell
+        label="Too late"
+        title="Another manager claimed first."
+        line="The first claim wins the egg."
+        onClose={onClose}
+        board
+      >
+        <span className="egg-pop rounded-letter bg-chip-dark text-hero leading-hero text-on-dark-muted decoration-accent flex size-28 items-center justify-center font-mono font-bold line-through decoration-6">
           {end.letter}
         </span>
       </Shell>
@@ -59,10 +66,10 @@ export function EndCard({ end, onClose }: { end: End; onClose: () => void }) {
         board
       >
         <div className="relative size-28">
-          <span className="egg-pop absolute inset-0 flex items-center justify-center rounded-letter border-4 border-dashed border-accent bg-band font-mono text-hero leading-hero font-bold text-accent-text">
+          <span className="egg-pop rounded-letter border-accent bg-band text-hero leading-hero text-accent-text absolute inset-0 flex items-center justify-center border-4 border-dashed font-mono font-bold">
             {answer.letter}
           </span>
-          <span className="egg-stamp absolute -inset-x-3.5 top-10 rounded-letter border-2 border-on-dark bg-accent py-sp-1 font-mono text-lead font-bold tracking-wide text-on-dark">
+          <span className="egg-stamp rounded-letter border-on-dark bg-accent py-sp-1 text-lead text-on-dark absolute -inset-x-3.5 top-10 border-2 font-mono font-bold tracking-wide">
             BLOCKED
           </span>
         </div>
@@ -81,12 +88,16 @@ export function EndCard({ end, onClose }: { end: End; onClose: () => void }) {
     <Shell
       label="Claimed"
       title={won ? `${word} is complete.` : `${answer.letter} goes to ${word}.`}
-      line={won ? `The ${gift} gift card is yours.` : `${left} ${left === 1 ? "letter" : "letters"} to go for the ${gift}.`}
+      line={
+        won
+          ? `The ${gift} gift card is yours.`
+          : `${left} ${left === 1 ? "letter" : "letters"} to go for the ${gift}.`
+      }
       team={team}
       onClose={onClose}
       board
     >
-      <div className="flex items-baseline gap-sp-0 font-mono font-bold">
+      <div className="gap-sp-0 flex items-baseline font-mono font-bold">
         <span className="egg-tick text-hero leading-hero">{letters.length}</span>
         <span className="text-score text-on-dark-muted">/{word.length}</span>
       </div>
@@ -115,41 +126,52 @@ function Shell({
   children: ReactNode;
 }) {
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="egg-end-title" className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-gutter">
-      <div aria-hidden="true" className="egg-scrim fixed inset-0 bg-band/80" />
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="egg-end-title"
+      className="p-gutter fixed inset-0 z-50 grid place-items-center overflow-y-auto"
+    >
+      <div aria-hidden="true" className="egg-scrim bg-band/80 fixed inset-0" />
       <HeroFrame label={label} className="egg-hero egg-hero-in w-full max-w-sm">
-        <div className="flex flex-col items-center gap-sp-4 text-center">
-          <div className="flex w-full items-center justify-between gap-sp-2">
-            <Label dark className="mb-0 text-meta">
+        <div className="gap-sp-4 flex flex-col items-center text-center">
+          <div className="gap-sp-2 flex w-full items-center justify-between">
+            <Label dark className="text-meta mb-0">
               {label}
             </Label>
             {team && (
-              <span className="font-mono text-meta font-bold tracking-caps text-on-dark-muted uppercase">{team}</span>
+              <span className="text-meta tracking-caps text-on-dark-muted font-mono font-bold uppercase">
+                {team}
+              </span>
             )}
           </div>
           {/* The ground reaches the edges of the hero, and never above or below the art. */}
-          <div className="relative flex flex-col items-center gap-sp-4 self-stretch">
+          <div className="gap-sp-4 relative flex flex-col items-center self-stretch">
             <ArtGround inset="inset-y-0 -inset-x-hero-x" />
-            <div className="relative flex flex-col items-center gap-sp-4 self-stretch">{children}</div>
+            <div className="gap-sp-4 relative flex flex-col items-center self-stretch">
+              {children}
+            </div>
           </div>
-          <div className="egg-fade-in egg-fade-in-late flex flex-col gap-sp-1">
+          <div className="egg-fade-in egg-fade-in-late gap-sp-1 flex flex-col">
             <h2 id="egg-end-title" className="text-score leading-tight font-bold">
               {title}
             </h2>
-            <p className="text-lead text-on-dark-2">
-              {line}
-            </p>
+            <p className="text-lead text-on-dark-2">{line}</p>
           </div>
-          <div className="flex w-full flex-col items-center gap-sp-2">
-            <button
+          <div className="gap-sp-2 flex w-full flex-col items-center">
+            <Button
+              variant="plain"
               type="button"
               onClick={onClose}
-              className="press min-h-touch w-full rounded-pill bg-on-dark text-lead font-bold text-band"
+              className="press min-h-touch rounded-pill bg-on-dark text-lead text-band w-full font-bold"
             >
               Back to the page
-            </button>
+            </Button>
             {board && (
-              <a href="/eggs/" className="inline-flex min-h-touch items-center rounded-pill px-sp-4 text-body font-bold text-accent-text">
+              <a
+                href="/eggs/"
+                className="min-h-touch rounded-pill px-sp-4 text-body text-accent-text inline-flex items-center font-bold"
+              >
                 See the egg board
               </a>
             )}

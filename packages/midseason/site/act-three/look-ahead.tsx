@@ -12,25 +12,26 @@ import type { LookAheadChapter, TeamLookAhead } from "../schema/midseason-types"
 import { stableId } from "@cpc/design/lib/stable-id";
 
 /* A win rate in the box-score form, such as ".440", or "1.000" for a perfect rate. */
-export const rateText = (rate: number) => (rate >= 1 ? "1.000" : `.${String(Math.round(rate * 1000)).padStart(3, "0")}`);
+export const rateText = (rate: number) =>
+  rate >= 1 ? "1.000" : `.${String(Math.round(rate * 1000)).padStart(3, "0")}`;
 
 function Row({ team, end }: { team: TeamLookAhead; end: "Softest" | "Hardest" | null }) {
   return (
-    <li className="flex flex-col gap-sp-2 border-b border-rule py-sp-3 last:border-b-0">
-      <span className="flex flex-wrap items-baseline justify-between gap-x-sp-3">
+    <li className="gap-sp-2 border-rule py-sp-3 flex flex-col border-b last:border-b-0">
+      <span className="gap-x-sp-3 flex flex-wrap items-baseline justify-between">
         <span className="text-body leading-tight font-bold">
           {team.name}
           {end !== null && <WordTag>{end}</WordTag>}
         </span>
         {team.opponents_rate !== null && (
-          <span className="font-mono text-meta text-ink-2 tabular-nums">
-            Opponents <span className="font-bold text-ink">{rateText(team.opponents_rate)}</span>
+          <span className="text-meta text-ink-2 font-mono tabular-nums">
+            Opponents <span className="text-ink font-bold">{rateText(team.opponents_rate)}</span>
           </span>
         )}
       </span>
       <ol
         aria-label={`Games left of ${team.name}`}
-        className="m-0 grid list-none grid-cols-2 gap-sp-1 p-0 tablet:grid-cols-3 desktop:grid-cols-6"
+        className="gap-sp-1 tablet:grid-cols-3 desktop:grid-cols-6 m-0 grid list-none grid-cols-2 p-0"
       >
         {team.games.map((game) => {
           const good = game.wins > game.losses;
@@ -40,13 +41,15 @@ function Row({ team, end }: { team: TeamLookAhead; end: "Softest" | "Hardest" | 
               data-week={game.week}
               {...stableId("look-ahead", team.roster_id, game.week)}
               className={cn(
-                "flex flex-col rounded-report border px-sp-2 py-sp-1 text-meta leading-tight",
+                "rounded-report px-sp-2 py-sp-1 text-meta flex flex-col border leading-tight",
                 good ? "border-ink" : "border-rule",
               )}
             >
-              <span className="font-mono text-mute">Week {game.week}</span>
+              <span className="text-mute font-mono">Week {game.week}</span>
               <span className="truncate font-semibold">{game.name}</span>
-              <span className="font-mono text-ink-2 tabular-nums">{fullRecord(game.wins, game.losses, game.ties)}</span>
+              <span className="text-ink-2 font-mono tabular-nums">
+                {fullRecord(game.wins, game.losses, game.ties)}
+              </span>
             </li>
           );
         })}
@@ -57,12 +60,14 @@ function Row({ team, end }: { team: TeamLookAhead; end: "Softest" | "Hardest" | 
 
 export function LookAhead({ chapter }: { chapter: LookAheadChapter }) {
   const { teams, softest, hardest } = chapter.facts;
-  const endOf = (rosterId: number) => (rosterId === softest ? "Softest" : rosterId === hardest ? "Hardest" : null);
+  const endOf = (rosterId: number) =>
+    rosterId === softest ? "Softest" : rosterId === hardest ? "Hardest" : null;
   const weeks = teams[0]?.games ?? [];
-  const note = weeks.length > 0 ? `Weeks ${weeks[0].week} to ${weeks[weeks.length - 1].week}` : undefined;
+  const note =
+    weeks.length > 0 ? `Weeks ${weeks[0].week} to ${weeks[weeks.length - 1].week}` : undefined;
   return (
     <ReportChapter id={chapter.key} title={chapter.title} note={note} blurb={chapter.blurb}>
-      <p className="m-0 max-w-measure text-lead text-ink-2">
+      <p className="max-w-measure text-lead text-ink-2 m-0">
         The rate is the win rate of the opponents so far. A lower rate is a softer path.
       </p>
       <ReportCard className="py-sp-1">

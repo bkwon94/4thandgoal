@@ -1,0 +1,13 @@
+$ cat -n packages/design/lint/fixtures/no-arbitrary-value/ignored.tsx
+     1	/**
+     2	 * A lint fixture: the spacing value of spacing.tsx with a one-line ignore and a reason on the line above it.
+     3	 * The value rule test expects design/no-arbitrary-value to pass it.
+     4	 */
+     5	import { cn } from "@/lib/utils";
+     6	
+     7	export const Rail = ({ open }: { open: boolean }) => (
+     8	  <nav
+     9	    // oxlint-disable-next-line design/no-arbitrary-value -- a one-off offset that no token names
+    10	    className={cn("sticky", "top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)]", open && "opacity-100")}
+    11	  />
+    12	);

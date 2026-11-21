@@ -3,7 +3,13 @@
  * part. The API streams a plain step for each stage, then the whole Answer, as `data:` lines of an event stream.
  */
 import { z } from "zod";
-import { analyzeResponseSchema, asOfSchema, bulletSchema, findResponseSchema, tradedPlayerSchema } from "@cpc/analyzer/lib/schemas/api";
+import {
+  analyzeResponseSchema,
+  asOfSchema,
+  bulletSchema,
+  findResponseSchema,
+  tradedPlayerSchema,
+} from "@cpc/analyzer/lib/schemas/api";
 import { AskError, type AskTarget, postClient, statusError } from "./ask-api";
 import type { Turn } from "./chat-turns";
 import { type SellList, sellListSchema } from "./sell-list";
@@ -23,7 +29,9 @@ export type TradeForm = z.infer<typeof tradeFormSchema>;
 export const sellHighSchema = z.object({
   season: z.number(),
   team: z.object({ roster_id: z.number(), team: z.string() }),
-  picks: z.array(z.object({ player: tradedPlayerSchema, headline: z.string(), bullets: z.array(bulletSchema) })),
+  picks: z.array(
+    z.object({ player: tradedPlayerSchema, headline: z.string(), bullets: z.array(bulletSchema) }),
+  ),
   empty: z.string().nullable(),
   as_of: asOfSchema,
 });
@@ -32,9 +40,17 @@ export type SellHigh = z.infer<typeof sellHighSchema>;
 /* The whole Answer of a trade Topic: the read of a trade check, the form of an unsure pick, the trade ideas, or the
    players to sell. A trade check and trade ideas carry the trade card. An Answer kept from before the card has none. */
 export const tradeAnswerSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("check"), document: analyzeResponseSchema, block: tradeBlockSchema.optional() }),
+  z.object({
+    kind: z.literal("check"),
+    document: analyzeResponseSchema,
+    block: tradeBlockSchema.optional(),
+  }),
   z.object({ kind: z.literal("form"), form: tradeFormSchema }),
-  z.object({ kind: z.literal("ideas"), document: findResponseSchema, block: tradeBlockSchema.optional() }),
+  z.object({
+    kind: z.literal("ideas"),
+    document: findResponseSchema,
+    block: tradeBlockSchema.optional(),
+  }),
   // The sell list of the stream rides on the Answer, so a kept Answer shows it again. One kept before the block has none.
   z.object({ kind: z.literal("sell"), document: sellHighSchema, block: sellListSchema.optional() }),
 ]);
@@ -47,12 +63,21 @@ export type TradeRead = z.infer<typeof tradeReadSchema>;
 
 /* One part of the stream that the site reads. The API sends more parts, such as the player picks, for the evidence. */
 const partSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("data-step"), data: z.object({ line: z.string(), live: z.boolean().optional() }) }),
+  z.object({
+    type: z.literal("data-step"),
+    data: z.object({ line: z.string(), live: z.boolean().optional() }),
+  }),
   z.object({ type: z.literal("data-key"), data: tradeReadSchema }),
   z.object({ type: z.literal("data-block"), data: sellListSchema }),
   z.object({ type: z.literal("data-answer"), data: tradeAnswerSchema }),
-  z.object({ type: z.literal("data-error"), data: z.object({ status: z.number(), line: z.string() }) }),
-  z.object({ type: z.literal("data-cap"), data: z.object({ cap: z.enum(["team", "league"]), line: z.string() }) }),
+  z.object({
+    type: z.literal("data-error"),
+    data: z.object({ status: z.number(), line: z.string() }),
+  }),
+  z.object({
+    type: z.literal("data-cap"),
+    data: z.object({ cap: z.enum(["team", "league"]), line: z.string() }),
+  }),
 ]);
 
 /* What the stream gives the Thread, part by part. A step is live while its stage works. The key of the read comes
@@ -89,7 +114,11 @@ export function endSteps(steps: TradeSteps): string[] {
 }
 
 /* The path of the route of each mode, after /clients/<slug>/. */
-const ROUTE_PATH: Record<TradeRequest["mode"], string> = { check: "trade-check", ideas: "trade-ideas", sell: "sell-high" };
+const ROUTE_PATH: Record<TradeRequest["mode"], string> = {
+  check: "trade-check",
+  ideas: "trade-ideas",
+  sell: "sell-high",
+};
 
 /* Read each `data:` line of `body` and give its part to `events`. A line of no known type, such as the start, is
    skipped. An error part throws an AskError with its status and its line. */
@@ -110,14 +139,18 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
       if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
       const part = partSchema.safeParse(JSON.parse(line.slice("data: ".length)));
       if (!part.success) continue;
-      if (part.data.type === "data-step") events.onStep(part.data.data.line, part.data.data.live ?? false);
+      if (part.data.type === "data-step")
+        events.onStep(part.data.data.line, part.data.data.live ?? false);
       if (part.data.type === "data-key") events.onKey(part.data.data);
-      if (part.data.type === "data-error") throw new AskError(part.data.data.status, part.data.data.line);
+      if (part.data.type === "data-error")
+        throw new AskError(part.data.data.status, part.data.data.line);
       if (part.data.type === "data-block") sellList = part.data.data;
       if (part.data.type === "data-answer") {
         answered = true;
         const answer = part.data.data;
-        events.onAnswer(answer.kind === "sell" && sellList ? { ...answer, block: sellList } : answer);
+        events.onAnswer(
+          answer.kind === "sell" && sellList ? { ...answer, block: sellList } : answer,
+        );
       }
       if (part.data.type === "data-cap") {
         answered = true;
@@ -130,7 +163,12 @@ async function readParts(body: ReadableStream<Uint8Array>, events: TradeEvents):
 
 /* Send one trade Topic and read its stream. A failed call or a stream with no Answer and no cap line throws an
    AskError. */
-export async function streamTrade(target: AskTarget, passphrase: string, request: TradeRequest, events: TradeEvents): Promise<void> {
+export async function streamTrade(
+  target: AskTarget,
+  passphrase: string,
+  request: TradeRequest,
+  events: TradeEvents,
+): Promise<void> {
   const { mode, ...body } = request;
   const response = await postClient(target, passphrase, ROUTE_PATH[mode], body);
   if (!response.body) throw statusError(response);

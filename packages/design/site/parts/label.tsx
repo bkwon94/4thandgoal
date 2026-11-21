@@ -1,6 +1,8 @@
 /**
  * The red uppercase label that opens a chapter or a card. It ports the .lbl rule of the source stylesheet.
  * It is a level 2 heading when it opens a chapter.
+ * Use it when: a red label opens a chapter or a card.
+ * Do not use it when: the label names a form field. Use `Label` in `site/ui/label.tsx`.
  */
 import type { ReactNode } from "react";
 import { cn } from "../lib/utils";

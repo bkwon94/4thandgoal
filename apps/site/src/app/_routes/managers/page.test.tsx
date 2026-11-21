@@ -6,7 +6,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { cpSync, mkdtempSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { fireEvent } from "@testing-library/react";
 import { type FixtureClient, fixturePublished } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
@@ -15,19 +15,21 @@ import { rankings as rankingsFixture } from "@cpc/rankings/fixtures/rankings";
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 /* A temp public/ folder with the week 6 page, the rankings file, and the managers file when one is given. */
 async function routeOver(managers?: unknown) {
   const root = mkdtempSync(join(tmpdir(), "managers-index-"));
   mkdirSync(join(root, "public", "2026", "week-06"), { recursive: true });
-  writeFileSync(join(root, "public", "2026", "week-06", "page.json"), weekPageJson({ avatars: {} }));
+  writeFileSync(
+    join(root, "public", "2026", "week-06", "page.json"),
+    weekPageJson({ avatars: {} }),
+  );
   writeFileSync(join(root, "public", "2026", "rankings.json"), JSON.stringify(rankingsFixture));
-  if (managers !== undefined) writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
-  vi.resetModules();
+  if (managers !== undefined)
+    writeFileSync(join(root, "public", "2026", "managers.json"), JSON.stringify(managers));
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return import("./page");
 }
 
@@ -39,8 +41,7 @@ async function routeOfClient(slug: FixtureClient) {
     recursive: true,
     filter: (source) => statSync(source).isDirectory() || source.endsWith(".json"),
   });
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
   return import("./page");
 }
 
@@ -49,7 +50,8 @@ async function indexOfClient(slug: FixtureClient) {
   const { default: ManagersPage } = await routeOfClient(slug);
   render(await ManagersPage({ params: Promise.resolve({ season: "2026" }) }));
   const main = within(screen.getByRole("main"));
-  const rows = () => within(main.getByRole("list", { name: "Index List" })).getAllByRole("listitem");
+  const rows = () =>
+    within(main.getByRole("list", { name: "Index List" })).getAllByRole("listitem");
   const chips = within(main.getByRole("group", { name: "Playoff Race" }));
   return { main, rows, chips };
 }
@@ -105,7 +107,11 @@ describe("ManagersIndex", () => {
 
   it("shows the chips All 12, In 6, Bubble 2, and Out 4 for CPC week 8, with All pressed", async () => {
     const { chips } = await indexOfClient("cpc");
-    expect(chips.getAllByRole("button").map((chip) => [chip.textContent, chip.getAttribute("aria-pressed")])).toEqual([
+    expect(
+      chips
+        .getAllByRole("button")
+        .map((chip) => [chip.textContent, chip.getAttribute("aria-pressed")]),
+    ).toEqual([
       ["All12", "true"],
       ["In6", "false"],
       ["Bubble2", "false"],
@@ -118,7 +124,10 @@ describe("ManagersIndex", () => {
     const bubble = chips.getByRole("button", { name: /Bubble/ });
     fireEvent.click(bubble);
     expect(bubble.getAttribute("aria-pressed")).toBe("true");
-    expect(rows().map((row) => headOf(row).textContent)).toEqual(["2Teehee61%", "4Return of T Mac42%"]);
+    expect(rows().map((row) => headOf(row).textContent)).toEqual([
+      "2Teehee61%",
+      "4Return of T Mac42%",
+    ]);
     // A tap on the pressed chip clears the filter, so All is pressed again.
     fireEvent.click(bubble);
     expect(chips.getByRole("button", { name: /All/ }).getAttribute("aria-pressed")).toBe("true");
@@ -162,7 +171,9 @@ describe("ManagersIndex", () => {
     expect(slot("eyebrow")?.textContent).toBe("In");
     expect(slot("title")?.textContent).toBe("The Blue Tent");
     expect(slot("meta")?.textContent).toBe("9-7 · Power #5 · 75% playoff");
-    const arcs = within(within(slot("feature") as HTMLElement).getByRole("list", { name: "Grade Dial" })).getAllByRole("img");
+    const arcs = within(
+      within(slot("feature") as HTMLElement).getByRole("list", { name: "Grade Dial" }),
+    ).getAllByRole("img");
     expect(arcs).toHaveLength(4);
     expect(within(slot("stats") as HTMLElement).getByText("A")).toBeTruthy();
     const link = within(slot("action") as HTMLElement).getByRole("link");
@@ -184,7 +195,12 @@ describe("ManagersIndex", () => {
 
   it("shows the chips All 12, In 4, Bubble 5, and Out 3 for NorCal week 8, with Mitseeker5000 first", async () => {
     const { rows, chips } = await indexOfClient("norcal");
-    expect(chips.getAllByRole("button").map((chip) => chip.textContent)).toEqual(["All12", "In4", "Bubble5", "Out3"]);
+    expect(chips.getAllByRole("button").map((chip) => chip.textContent)).toEqual([
+      "All12",
+      "In4",
+      "Bubble5",
+      "Out3",
+    ]);
     expect(headOf(rows()[0]).textContent).toBe("1Mitseeker500097%");
   });
 
@@ -192,6 +208,8 @@ describe("ManagersIndex", () => {
     const { default: ManagersPage } = await routeOver(fixture);
     render(await ManagersPage({ params: Promise.resolve({ season: "2026" }) }));
     const row = screen.getByRole("navigation", { name: "Site menu" });
-    expect(within(row).getByRole("link", { name: "Managers" }).getAttribute("aria-current")).toBe("page");
+    expect(within(row).getByRole("link", { name: "Managers" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
   });
 });

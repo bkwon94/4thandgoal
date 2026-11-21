@@ -22,7 +22,10 @@ function stopApi(apiOut) {
 
 /* Runs the project with the env, and exits with its status. The test of the project writes api.pid into apiOut. */
 export function runProject(project, env, apiOut) {
-  const run = spawn("pnpm", ["exec", "playwright", "test", `--project=${project}`], { env, stdio: "inherit" });
+  const run = spawn("pnpm", ["exec", "playwright", "test", `--project=${project}`], {
+    env,
+    stdio: "inherit",
+  });
   for (const signal of ["SIGINT", "SIGTERM"]) {
     process.on(signal, () => {
       run.kill(signal);

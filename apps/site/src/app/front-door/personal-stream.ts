@@ -4,7 +4,12 @@
  */
 import type { UIMessage } from "ai";
 import { z } from "zod";
-import { type TopicRow, type TopicStat, topicRowSchema, topicStatSchema } from "@/lib/data/topics-schema";
+import {
+  type TopicRow,
+  type TopicStat,
+  topicRowSchema,
+  topicStatSchema,
+} from "@/lib/data/topics-schema";
 import { type AnswerBlock, answerBlockSchema } from "./answer-block";
 import { type FreeView, viewOf } from "./free-stream";
 import { comparisonBlockSchema } from "./comparison-block";
@@ -13,7 +18,8 @@ import { lineupBlockSchema } from "./lineup-block";
 /* The 4 personal Topics, which the API builds live for one team. */
 export const PERSONAL_TOPICS = ["weak_spots", "stack_up", "waiver_targets", "start_sit"] as const;
 export type PersonalTopic = (typeof PERSONAL_TOPICS)[number];
-export const isPersonal = (key: string): key is PersonalTopic => (PERSONAL_TOPICS as readonly string[]).includes(key);
+export const isPersonal = (key: string): key is PersonalTopic =>
+  (PERSONAL_TOPICS as readonly string[]).includes(key);
 
 /* The line of each personal Topic in "More". The fact of a personal Topic comes with its Answer, so the line says what
    it does. */
@@ -25,7 +31,11 @@ export const PERSONAL_LINES: Record<PersonalTopic, string> = {
 };
 
 /* The Topic, the team, and the fact that each data block of a personal Topic carries, whatever its kind. */
-const personalHeadSchema = z.object({ topic: z.enum(PERSONAL_TOPICS), team: z.number(), fact: z.string() });
+const personalHeadSchema = z.object({
+  topic: z.enum(PERSONAL_TOPICS),
+  team: z.number(),
+  fact: z.string(),
+});
 
 /* The data block of a personal Topic with the kind "rows", in the shape of the data block of a league Topic: stats and
    rows. A block kept before the kind has none, so it reads as "rows". */
@@ -54,7 +64,12 @@ export type PersonalBlock = z.infer<typeof personalBlockSchema>;
 /* The stats and the rows that a data block shows on the card, and the block of the block contract that shows under
    them. A block of the contract has no stats and no rows of its own. A Topic Answer shows one block at most, so a
    rows part with its own nested block shows that block in place of its stats and rows. */
-export function shownBlock(block: PersonalBlock): { stats: TopicStat[]; rows: TopicRow[]; asOf?: string; answerBlock: AnswerBlock | null } {
+export function shownBlock(block: PersonalBlock): {
+  stats: TopicStat[];
+  rows: TopicRow[];
+  asOf?: string;
+  answerBlock: AnswerBlock | null;
+} {
   if (block.kind === "rows") {
     if (block.block) return { stats: [], rows: [], asOf: block.as_of, answerBlock: block.block };
     return { stats: block.stats, rows: block.rows, asOf: block.as_of, answerBlock: null };
@@ -67,10 +82,18 @@ export type PersonalCap = { line: string; closest: string[] };
 
 /* What the stream shows so far: the view of the free answer, plus the data block, the key of the Answer, and the cap
    line in place of the text. */
-export type PersonalView = FreeView & { block: PersonalBlock | null; key: string | null; cap: PersonalCap | null };
+export type PersonalView = FreeView & {
+  block: PersonalBlock | null;
+  key: string | null;
+  cap: PersonalCap | null;
+};
 
 /* The checked Answer that the browser keeps: the data block, the text, and the key that the API kept it under. */
-export const personalResultSchema = z.object({ block: personalBlockSchema, text: z.string(), key: z.string() });
+export const personalResultSchema = z.object({
+  block: personalBlockSchema,
+  text: z.string(),
+  key: z.string(),
+});
 export type PersonalResult = z.infer<typeof personalResultSchema>;
 
 export function personalViewOf(message: UIMessage | undefined): PersonalView {
@@ -86,7 +109,8 @@ export function personalViewOf(message: UIMessage | undefined): PersonalView {
       if (typeof data?.key === "string") key = data.key;
     } else if (part.type === "data-cap") {
       const data = (part as { data: { line?: unknown; closest?: unknown } }).data;
-      if (typeof data?.line === "string" && Array.isArray(data.closest)) cap = { line: data.line, closest: data.closest.map(String) };
+      if (typeof data?.line === "string" && Array.isArray(data.closest))
+        cap = { line: data.line, closest: data.closest.map(String) };
     }
   }
   // The data block of a personal Topic shows from `block`, so the free answer view of the same part shows no second copy.

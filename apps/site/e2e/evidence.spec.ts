@@ -25,7 +25,8 @@ const IDS = (process.env.EVIDENCE_TESTS ?? "").split(/\s+/).filter(Boolean);
 if (SLUG) {
   for (const { file, clients } of loadTests(SCRATCH, SLUG, IDS)) {
     for (const client of clients) {
-      if (!existsSync(join(CLIENTS, client, "client.toml"))) throw new Error(`${file}: unknown client "${client}", no ${join(CLIENTS, client)}`);
+      if (!existsSync(join(CLIENTS, client, "client.toml")))
+        throw new Error(`${file}: unknown client "${client}", no ${join(CLIENTS, client)}`);
     }
   }
 }
@@ -55,7 +56,11 @@ test(`the evidence of ${SLUG || "no feature"}`, async ({ browser }) => {
         // pnpm build runs the prebuild step too, which copies the published weeks of the client into public/.
         // A good build stays quiet. A failed build prints its output in the error, because the guide tells the agent to give Brian the command and its error.
         try {
-          execFileSync("pnpm", ["build"], { env: buildEnv(client, api.url), encoding: "utf8", stdio: "pipe" });
+          execFileSync("pnpm", ["build"], {
+            env: buildEnv(client, api.url),
+            encoding: "utf8",
+            stdio: "pipe",
+          });
         } catch (error) {
           const { stdout, stderr } = error as { stdout?: string; stderr?: string };
           throw new Error(`build ${client} failed:\n${stdout ?? ""}${stderr ?? ""}`);

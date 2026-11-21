@@ -10,7 +10,8 @@ import type { Midseason } from "../schema/midseason-types";
 import { fullRecord } from "../report/numbers";
 
 /* True while the latest published week is at or before the takeover end week, the week of the report plus 1 (PRD). */
-export const takeoverOn = (report: Midseason, latestWeek: number) => latestWeek <= report.takeover_end_week;
+export const takeoverOn = (report: Midseason, latestWeek: number) =>
+  latestWeek <= report.takeover_end_week;
 
 export function Takeover({ report, href }: { report: Midseason; href: string }) {
   const { leaders, record_leader: top } = report.opener.facts;
@@ -25,12 +26,20 @@ export function Takeover({ report, href }: { report: Midseason; href: string }) 
         // From the tablet tier up the stats share the bottom row with the wide pill of the action. The row of tiles
         // keeps its max-content width there, so a long team name such as "Mitseeker5000" never breaks over 2 lines,
         // and the pill wraps between its words instead.
-        <Rise step={1} className="w-full tablet:min-w-max">
+        <Rise step={1} className="tablet:min-w-max w-full">
           {/* The leaders by title odds, best first, as the opener of the report shows them. */}
-          <ol aria-label="Title odds" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 tablet:grid-cols-3">
+          <ol
+            aria-label="Title odds"
+            className="gap-sp-2 tablet:grid-cols-3 m-0 grid list-none grid-cols-1 p-0"
+          >
             {leaders.map((leader) => (
               <li key={leader.roster_id}>
-                <Tile tone="hero" label="Title odds" value={`${oneDecimal(leader.title_odds)}%`} note={leader.name} />
+                <Tile
+                  tone="hero"
+                  label="Title odds"
+                  value={`${oneDecimal(leader.title_odds)}%`}
+                  note={leader.name}
+                />
               </li>
             ))}
           </ol>
@@ -44,11 +53,11 @@ export function Takeover({ report, href }: { report: Midseason; href: string }) 
         </Rise>
       }
       action={
-        <Rise step={2} className="w-full tablet:w-auto">
+        <Rise step={2} className="tablet:w-auto w-full">
           {/* A full pill and a 44px tap target in the brand color, as the button of the home hero. */}
           <a
             href={href}
-            className="press flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-center text-body font-bold text-on-dark no-underline"
+            className="press min-h-touch rounded-pill bg-accent px-sp-6 text-body text-on-dark flex items-center justify-center text-center font-bold no-underline"
           >
             Read the Midseason Report
           </a>

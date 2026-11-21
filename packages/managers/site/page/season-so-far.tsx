@@ -16,16 +16,16 @@ const QUIET_LABEL = "text-meta leading-tight font-semibold tracking-caps text-mu
 
 /* The bench points: the season total as the emphasis, and one quiet sentence that says what the total means. */
 function BenchPoints({ bench }: { bench: Bench | null }) {
-  if (bench === null) return <div className="m-0 text-meta text-mute">No bench data yet.</div>;
+  if (bench === null) return <div className="text-meta text-mute m-0">No bench data yet.</div>;
   const { worst } = bench;
   return (
     <div>
       <div className={QUIET_LABEL}>Points Left On The Bench</div>
-      <div className="mt-sp-2 text-score leading-none font-extrabold text-ink tabular-nums">
+      <div className="mt-sp-2 text-score text-ink leading-none font-extrabold tabular-nums">
         <span>{num(bench.total)}</span>
-        <span className="text-meta font-semibold text-mute">{" points"}</span>
+        <span className="text-meta text-mute font-semibold">{" points"}</span>
       </div>
-      <p className="m-0 mt-sp-1 text-lead leading-body text-mute">
+      <p className="mt-sp-1 text-lead leading-body text-mute m-0">
         {worst
           ? `Your best lineup would have scored ${num(bench.total)} more points this season. ` +
             `Worst in week ${worst.week}: ${num(worst.points)} points, ${worst.name} sat.`
@@ -49,7 +49,11 @@ function SeasonNumbers({ pointsFor, weeks }: { pointsFor: number; weeks: SeasonW
   const medians = mediansOf(weeks);
   const above = medians ? weeks.filter((week, i) => week.points > medians[i]).length : 0;
   return (
-    <div role="group" aria-label="Season Numbers" className="grid grid-cols-2 gap-sp-2 tablet:grid-cols-3">
+    <div
+      role="group"
+      aria-label="Season Numbers"
+      className="gap-sp-2 tablet:grid-cols-3 grid grid-cols-2"
+    >
       <Tile label="Points For" value={num(pointsFor)} />
       {medians && <Tile label="Vs Median" value={`${above}-${weeks.length - above}`} />}
       <Tile label="High Week" value={num(high.points)} note={`week ${high.week}`} />
@@ -63,9 +67,9 @@ function RosterGrade({ grade, teams }: { grade: ManagerGrade; teams: number }) {
   return (
     <div role="group" aria-label="Roster Grade">
       <div className={QUIET_LABEL}>Roster Grade</div>
-      <div className="mt-sp-2 flex items-baseline gap-sp-3">
-        <span className="text-score leading-none font-extrabold text-ink">{grade.letter}</span>
-        <p className="m-0 text-lead leading-body text-mute">{grade.read}</p>
+      <div className="mt-sp-2 gap-sp-3 flex items-baseline">
+        <span className="text-score text-ink leading-none font-extrabold">{grade.letter}</span>
+        <p className="text-lead leading-body text-mute m-0">{grade.read}</p>
       </div>
       <div className="mt-sp-4">
         <GradeDial parts={grade.parts} teams={teams} />
@@ -79,7 +83,9 @@ export function SeasonSoFar({ manager, teams }: { manager: Manager; teams: numbe
   return (
     <Chapter reveal id="season">
       {/* The meta size keeps the heading over the text floor of 11px on a phone. */}
-      <Label heading className="text-meta">Season So Far</Label>
+      <Label heading className="text-meta">
+        Season So Far
+      </Label>
       <PointsLine weeks={manager.weeks} />
       {/* The space between the groups sets them apart, so the chapter reads as four groups. */}
       <div className="mt-sp-6">

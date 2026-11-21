@@ -1,0 +1,11 @@
+$ git -c core.hooksPath=<scratch>/hooks-v commit -m "probe"   # the shared prek hook with -v, so a passed hook prints its output
+# worktree <scratch>/wt-a, HEAD 2108f8bc (detached)
+# staged: apps/site/src/lib/routes.test.ts
+# start 2026-11-21 11:08:26
+make check-fast STAGED=1.................................................Passed
+[detached HEAD 19d68d15] probe
+ 1 file changed, 1 insertion(+)
+exit code: 0
+# end 2026-11-21 11:09:39, 73 s
+$ git log -1 --oneline
+19d68d15 probe

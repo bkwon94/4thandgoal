@@ -29,7 +29,8 @@ const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
    its own. A package that the registry omits, or with no page to link yet, gives no destination. */
 export function menuPages(items: MenuItem[], links: MenuLinks, home: string): NavItem[] {
   return items.flatMap((item): NavItem[] => {
-    if ("page" in item) return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
+    if ("page" in item)
+      return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
     // The egg board is not a menu item, so the menu keeps its items. The egg button of the top band opens it.
     if (item.package === "eggs") return [];
     // The midseason report adds no menu item yet: a sixth item overflows the pill bar of CPC at 1280px. The home
@@ -71,7 +72,13 @@ export function deadlineStrip(lock: number | null = clientValues.lock): ReactNod
   });
 }
 
-export function shellProps(): { title: string; brand: Brand; menu: SiteMenu; actions: ReactNode; strip: ReactNode } {
+export function shellProps(): {
+  title: string;
+  brand: Brand;
+  menu: SiteMenu;
+  actions: ReactNode;
+  strip: ReactNode;
+} {
   // The registry holds only the packages of the client, so an omitted package has no link and no code in the bundle.
   const home = homeHref();
   // Every published week, newest first, for the menu sheet. A client with no week lists none.

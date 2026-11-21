@@ -20,4 +20,8 @@ export const findResponse = findResponseSchema.parse(findJson);
 export const teamBoGirds = teamSchema.parse(teamBoGirdsJson);
 
 /* The API of the tests. Each call of a test goes to the routes of cpc at this URL. */
-export const apiTarget: ApiTarget = { url: "https://api.example.test", client: "cpc", season: 2026 };
+export const apiTarget: ApiTarget = {
+  url: "https://api.example.test",
+  client: "cpc",
+  season: 2026,
+};

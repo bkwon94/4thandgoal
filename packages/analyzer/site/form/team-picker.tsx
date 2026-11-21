@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { Team } from "../lib/api";
@@ -25,7 +26,14 @@ type TeamPickerProps = {
   locked?: boolean;
 };
 
-export function TeamPicker({ label, teams, value, disabledId, onChange, locked = false }: TeamPickerProps) {
+export function TeamPicker({
+  label,
+  teams,
+  value,
+  disabledId,
+  onChange,
+  locked = false,
+}: TeamPickerProps) {
   // The list opens until a pick, then it collapses to the chosen row, so the form fits on a phone screen.
   const [open, setOpen] = useState(true);
   const off = useMotionOff();
@@ -66,14 +74,14 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
         <div className="pb-sp-1">
           <div
             className={cn(
-              "group flex min-h-touch items-center rounded-card bg-card has-checked:bg-card-band has-checked:text-on-dark has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-accent",
+              "group min-h-touch rounded-card bg-card has-checked:bg-card-band has-checked:text-on-dark has-[input:focus-visible]:outline-accent flex items-center has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2",
               disabled && "opacity-40",
             )}
           >
             <label
               aria-disabled={disabled || undefined}
               className={cn(
-                "flex min-h-touch min-w-0 flex-1 cursor-pointer items-center gap-sp-3 px-sp-3 py-sp-1",
+                "min-h-touch gap-sp-3 px-sp-3 py-sp-1 flex min-w-0 flex-1 cursor-pointer items-center",
                 disabled ? "cursor-not-allowed" : "press",
               )}
             >
@@ -87,22 +95,28 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
                 onChange={() => pick(team.roster_id)}
                 className="sr-only"
               />
-              <Avatar src={team.avatar ?? AVATAR_FALLBACK} className="flex-none rounded-full bg-page object-cover" />
+              <Avatar
+                src={team.avatar ?? AVATAR_FALLBACK}
+                className="bg-page flex-none rounded-full object-cover"
+              />
               <span className="flex min-w-0 flex-col">
                 <b className="text-row leading-tight font-extrabold">{team.team}</b>
-                <span className="text-meta text-mute group-has-checked:text-on-dark-muted">{team.manager}</span>
+                <span className="text-meta text-mute group-has-checked:text-on-dark-muted">
+                  {team.manager}
+                </span>
               </span>
             </label>
             {collapsed && (
-              <button
+              <Button
+                variant="plain"
                 type="button"
                 onClick={reopen}
                 disabled={locked}
                 aria-label={`Change ${label.toLowerCase()}`}
-                className="press min-h-touch flex-none cursor-pointer rounded-card disabled:cursor-not-allowed px-sp-4 text-meta font-bold tracking-wide text-on-dark uppercase underline underline-offset-4"
+                className="press min-h-touch rounded-card px-sp-4 text-meta text-on-dark flex-none cursor-pointer font-bold tracking-wide uppercase underline underline-offset-4 disabled:cursor-not-allowed"
               >
                 Change
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -112,7 +126,9 @@ export function TeamPicker({ label, teams, value, disabledId, onChange, locked =
 
   return (
     <fieldset ref={fieldset} className="m-0 min-w-0 border-0 p-0">
-      <legend className="mb-sp-2 p-0 text-meta font-bold tracking-wide text-accent-ink uppercase">{label}</legend>
+      <legend className="mb-sp-2 text-meta text-accent-ink p-0 font-bold tracking-wide uppercase">
+        {label}
+      </legend>
       <div className="flex flex-col">
         {/* With motion off, the rows switch at once, with no exit to wait for. initial={false}: the full list shows at once on load. */}
         {off ? rows : <AnimatePresence initial={false}>{rows}</AnimatePresence>}

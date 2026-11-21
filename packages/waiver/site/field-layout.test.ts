@@ -2,7 +2,7 @@
  * Tests for the drift field layout table. They are pure: they read the six slots and the field box, and no React renders.
  * A slot box holds the headshot, the price tag, the name label, and the full drift, so no headshot covers another at 390.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { FIELD, fieldScale, scaleSlot, SLOTS, slotBox } from "./field-layout";
 
 /* The page column at 390 pixels, less the two 16 pixel gutters. */
@@ -64,6 +64,13 @@ describe("the field scale", () => {
   });
 
   it("scales the place, the size, and the drift of a slot, but not its period", () => {
-    expect(scaleSlot(SLOTS[0], 0.5)).toEqual({ x: 89.5, y: 35, size: 44, dx: 4, dy: -5, period: 7 });
+    expect(scaleSlot(SLOTS[0], 0.5)).toEqual({
+      x: 89.5,
+      y: 35,
+      size: 44,
+      dx: 4,
+      dy: -5,
+      period: 7,
+    });
   });
 });

@@ -1,6 +1,8 @@
 /**
  * The one reveal of the site: content fades and rises in once, when it enters the viewport or when it mounts.
  * It is the client leaf of the static pages, so the sections around it stay server components.
+ * Use it when: one block fades and rises in once.
+ * Do not use it when: the whole page enters in a stagger. Use `Rise`.
  */
 "use client";
 
@@ -51,7 +53,10 @@ export function Reveal({
   // A browser with no IntersectionObserver never reports the viewport, so the content plays on mount and never stays hidden.
   const watch = trigger === "view" && typeof IntersectionObserver !== "undefined";
   const shown = rise ? SHOWN : FADE_SHOWN;
-  const play = off || !watch ? { animate: shown } : { whileInView: shown, viewport: { once: true, margin: VIEW_MARGIN } };
+  const play =
+    off || !watch
+      ? { animate: shown }
+      : { whileInView: shown, viewport: { once: true, margin: VIEW_MARGIN } };
   return (
     <motion.div
       data-reveal

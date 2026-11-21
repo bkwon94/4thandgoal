@@ -12,21 +12,56 @@ const OUT = join(process.cwd(), "out");
 // Run it on the export of a client with the finder on, such as NorCal or cpc, built against the local API URL:
 // CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The finder document of the analyzer tests, in the exact shape of the API. Its asker is roster 2.
-const FIND = readFileSync(join(process.cwd(), "..", "..", "packages", "analyzer", "site", "lib", "fixtures", "find-response.json"), "utf8");
+const FIND = readFileSync(
+  join(
+    process.cwd(),
+    "..",
+    "..",
+    "packages",
+    "analyzer",
+    "site",
+    "lib",
+    "fixtures",
+    "find-response.json",
+  ),
+  "utf8",
+);
 // The find stream of the API: the document of the fixture in its answer part, as one event stream.
 const FIND_STREAM = `data: ${JSON.stringify({ type: "data-answer", data: { kind: "find", document: JSON.parse(FIND) } })}\n\ndata: [DONE]\n\n`;
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "GET, POST",
+};
 
 /* The teams of the find fixture: the asker and the partner of the first trade, each with the players it gives. */
 function teamsOfFind() {
   const [first] = JSON.parse(FIND).trades;
-  const teams = first.sides.map((side: { roster_id: number; team: string; gives: { player_id: string; name: string; position: string; nfl_team: string; headshot: string }[] }) => ({
-    roster_id: side.roster_id,
-    team: side.team,
-    manager: side.team,
-    avatar: null,
-    players: side.gives.map(({ player_id, name, position, nfl_team, headshot }) => ({ player_id, name, position, nfl_team, headshot })),
-  }));
+  const teams = first.sides.map(
+    (side: {
+      roster_id: number;
+      team: string;
+      gives: {
+        player_id: string;
+        name: string;
+        position: string;
+        nfl_team: string;
+        headshot: string;
+      }[];
+    }) => ({
+      roster_id: side.roster_id,
+      team: side.team,
+      manager: side.team,
+      avatar: null,
+      players: side.gives.map(({ player_id, name, position, nfl_team, headshot }) => ({
+        player_id,
+        name,
+        position,
+        nfl_team,
+        headshot,
+      })),
+    }),
+  );
   return JSON.stringify({ teams });
 }
 
@@ -42,11 +77,20 @@ test.use({ viewport: { width: 390, height: 600 }, reducedMotion: "reduce" });
 
 /* Opens the analyzer in its first mode, Grade, with Your Team picked. The API answers from the fixtures. */
 async function openAnalyzer(page: Page) {
-  await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
+  await page.route(
+    (url) => !["127.0.0.1", "localhost"].includes(url.hostname),
+    (route) => route.abort(),
+  );
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
-    if (request.url().includes("/find-stream")) return route.fulfill({ status: 200, headers: CORS, contentType: "text/event-stream", body: FIND_STREAM });
+    if (request.url().includes("/find-stream"))
+      return route.fulfill({
+        status: 200,
+        headers: CORS,
+        contentType: "text/event-stream",
+        body: FIND_STREAM,
+      });
     const body = request.url().includes("/teams") ? teamsOfFind() : FIND;
     return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body });
   });
@@ -62,7 +106,10 @@ async function openAnalyzer(page: Page) {
 async function openFinder(page: Page) {
   await openAnalyzer(page);
   // The analyzer opens in Grade mode. A reader taps "Find a trade" on the switch of the hero to show the finder.
-  await page.getByRole("radiogroup", { name: "Mode" }).getByRole("radio", { name: "Find a trade" }).click();
+  await page
+    .getByRole("radiogroup", { name: "Mode" })
+    .getByRole("radio", { name: "Find a trade" })
+    .click();
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();
@@ -77,7 +124,9 @@ test("the bar covers no part of the finder (grade-bar-finder item 1)", async ({ 
   await expect(page.getByRole("article", { name: "Trade 1" })).toBeVisible();
 });
 
-test("the bar stays pinned at the bottom of the screen over the top of the form", async ({ page }) => {
+test("the bar stays pinned at the bottom of the screen over the top of the form", async ({
+  page,
+}) => {
   await openAnalyzer(page);
   const grade = page.getByRole("button", { name: "Grade the Trade" });
   await expect(grade).toBeVisible();

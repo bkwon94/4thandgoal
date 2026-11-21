@@ -3,8 +3,12 @@
  * They check what a reader sees, not the class names.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
-import { analyzeResponse as fixtureJson, analyzeResponseThree as threeJson, analyzeResponseTradeA as tradeA } from "../lib/fixtures/api";
+import { afterEach, describe, expect, it } from "bun:test";
+import {
+  analyzeResponse as fixtureJson,
+  analyzeResponseThree as threeJson,
+  analyzeResponseTradeA as tradeA,
+} from "../lib/fixtures/api";
 import type { AnalyzeResponse, Fairness, Lean } from "../lib/analyze-types";
 import AnalyzeResult, { SwapCard, type SwapSide } from "./analyze-result";
 
@@ -28,7 +32,8 @@ const swapSidesOf = (doc: AnalyzeResponse): SwapSide[] =>
   doc.trade.sides
     .map((side) => ({ ...side, mine: side.roster_id === doc.trade.asker }))
     .sort((a, b) => Number(b.mine) - Number(a.mine));
-const renderSwap = (doc: AnalyzeResponse) => within(render(<SwapCard sides={swapSidesOf(doc)} />).container);
+const renderSwap = (doc: AnalyzeResponse) =>
+  within(render(<SwapCard sides={swapSidesOf(doc)} />).container);
 /* The heading of the chapter of the sides. */
 const sidesHeading = () => screen.getByRole("heading", { level: 2, name: "The Sides" });
 /* The move tag of a chip, found by its full text. The word and the team sit in two spans, so a plain text match misses it. */
@@ -37,7 +42,10 @@ const byTag = (text: string) => (_: string, el: Element | null) =>
 /* Every tag the three-side fixture can show, so a test can check that none shows. */
 const THREE_TAGS = three.trade.sides.flatMap((side) => [`To ${side.team}`, `From ${side.team}`]);
 const withLean = (lean: Lean): AnalyzeResponse => ({ ...fixture, lean });
-const withAsker = (asker: number): AnalyzeResponse => ({ ...fixture, trade: { ...fixture.trade, asker } });
+const withAsker = (asker: number): AnalyzeResponse => ({
+  ...fixture,
+  trade: { ...fixture.trade, asker },
+});
 /* The first Bullet of the asker in the fixture. */
 const ANALYSIS = fixture.sides[0].bullets[0].text;
 const LEANS = ["Send it", "Lean yes", "Gut call", "Lean no", "Pass"] as const;
@@ -46,15 +54,25 @@ const LETTER = /(?<![\w.])[A-F](?![\w.])/;
 const NOTE = "This week's player values are not out yet, so both sides start even.";
 /* The switcher of the sides, its tab names in order, and the open tab panel. A closed panel is hidden, so the role query finds the open one only. */
 const switcher = () => screen.getByRole("tablist", { name: "The sides" });
-const tabNames = () => within(switcher()).getAllByRole("tab").map((tab) => tab.textContent);
+const tabNames = () =>
+  within(switcher())
+    .getAllByRole("tab")
+    .map((tab) => tab.textContent);
 const openPanel = () => screen.getByRole("tabpanel");
 /* The bands of a panel, each a group named by its heading, and the claims of the rows of a band or a panel. */
-const bandsOf = (panel: HTMLElement) => within(panel).getAllByRole("group").filter((g) => ["For", "Against", "Even"].includes(bandName(g)));
-const bandName = (group: HTMLElement) => document.getElementById(group.getAttribute("aria-labelledby") ?? "")?.textContent ?? "";
+const bandsOf = (panel: HTMLElement) =>
+  within(panel)
+    .getAllByRole("group")
+    .filter((g) => ["For", "Against", "Even"].includes(bandName(g)));
+const bandName = (group: HTMLElement) =>
+  document.getElementById(group.getAttribute("aria-labelledby") ?? "")?.textContent ?? "";
 const bandNames = (panel: HTMLElement) => bandsOf(panel).map(bandName);
 const rowsOf = (el: HTMLElement) => [...el.querySelectorAll("[data-bullet-text]")];
 /* The fixture with other Bullets on one side. */
-const withBullets = (rosterId: number, bullets: AnalyzeResponse["sides"][number]["bullets"]): AnalyzeResponse => ({
+const withBullets = (
+  rosterId: number,
+  bullets: AnalyzeResponse["sides"][number]["bullets"],
+): AnalyzeResponse => ({
   ...fixture,
   sides: fixture.sides.map((side) => (side.roster_id === rosterId ? { ...side, bullets } : side)),
 });
@@ -66,7 +84,10 @@ const openTab = (team: string) => {
 /* The fixture reasons repeat Bullet text, so the fairness tests use reasons that show only once on the page. */
 const MY_REASON = "My side gets the better lineup.";
 const THEIR_REASON = "Their side moves up in the standings.";
-const withFairness = (state: Fairness["state"], gives_more: number | null = null): AnalyzeResponse => ({
+const withFairness = (
+  state: Fairness["state"],
+  gives_more: number | null = null,
+): AnalyzeResponse => ({
   ...fixture,
   fairness: {
     state,
@@ -83,8 +104,10 @@ afterEach(() => {
 });
 
 /* The filled hero slots of a hero, in the order of the markup. */
-const slotsOf = (hero: HTMLElement) => [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
-const slotText = (hero: HTMLElement, slot: string) => hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
+const slotsOf = (hero: HTMLElement) =>
+  [...hero.querySelectorAll("[data-hero-slot]")].map((slot) => slot.getAttribute("data-hero-slot"));
+const slotText = (hero: HTMLElement, slot: string) =>
+  hero.querySelector(`[data-hero-slot=${slot}]`)?.textContent;
 
 describe("AnalyzeResult", () => {
   it.each(LEANS)("shows the Lean %s as the word, with the Case under it", (lean) => {
@@ -99,13 +122,17 @@ describe("AnalyzeResult", () => {
     const decision = screen.getByRole("heading", { level: 2, name: "Lean yes" });
     const sides = sidesHeading();
     expect(decision.compareDocumentPosition(sides) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(sides.compareDocumentPosition(switcher()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      sides.compareDocumentPosition(switcher()) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("opens the read chapter with the Lean word as a level-two heading", () => {
     render(<AnalyzeResult doc={fixture} />);
     const heading = screen.getByRole("heading", { level: 2, name: "Lean yes" });
-    expect(heading.compareDocumentPosition(sidesHeading()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      heading.compareDocumentPosition(sidesHeading()) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   /* The hero is the one place that shows the players, so no part below it repeats them (AT-30). */
@@ -121,19 +148,25 @@ describe("AnalyzeResult", () => {
   it.each([
     ["two-side", fixture],
     ["three-side", three],
-  ])("shows no player name, chip, or headshot below the hero for the %s trade, on any tab", (_, doc) => {
-    const { container } = render(<AnalyzeResult doc={doc} />);
-    const hero = screen.getByRole("region", { name: "The Read" });
-    const below = () => [...container.querySelectorAll("img, li")].filter((el) => !hero.contains(el));
-    const names = doc.trade.sides.flatMap((side) => side.gets.map((player) => player.name));
-    for (const side of doc.trade.sides) {
-      openTab(side.team);
-      expect(below().filter((el) => el.tagName === "IMG")).toHaveLength(0);
-      // A Bullet can name a player in its claim, so the scan reads the chips: a list item that is a player name alone.
-      expect(below().filter((el) => names.includes(el.querySelector("b")?.textContent ?? ""))).toHaveLength(0);
-      expect(within(openPanel()).queryByText(/^(You Get|You Give|Gets|Gives)$/)).toBeNull();
-    }
-  });
+  ])(
+    "shows no player name, chip, or headshot below the hero for the %s trade, on any tab",
+    (_, doc) => {
+      const { container } = render(<AnalyzeResult doc={doc} />);
+      const hero = screen.getByRole("region", { name: "The Read" });
+      const below = () =>
+        [...container.querySelectorAll("img, li")].filter((el) => !hero.contains(el));
+      const names = doc.trade.sides.flatMap((side) => side.gets.map((player) => player.name));
+      for (const side of doc.trade.sides) {
+        openTab(side.team);
+        expect(below().filter((el) => el.tagName === "IMG")).toHaveLength(0);
+        // A Bullet can name a player in its claim, so the scan reads the chips: a list item that is a player name alone.
+        expect(
+          below().filter((el) => names.includes(el.querySelector("b")?.textContent ?? "")),
+        ).toHaveLength(0);
+        expect(within(openPanel()).queryByText(/^(You Get|You Give|Gets|Gives)$/)).toBeNull();
+      }
+    },
+  );
 
   /* The read fills the hero slots, and the hero ends at the feature with no empty stats or action. */
   it("puts the read in the slots: the side, the Lean, then the scale, the Case, and the fairness block in the feature", () => {
@@ -147,15 +180,25 @@ describe("AnalyzeResult", () => {
     const readCase = feature.getByText(fixture.case);
     const fairness = feature.getByText("Fairness");
     expect(scale.compareDocumentPosition(readCase) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(readCase.compareDocumentPosition(fairness) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      readCase.compareDocumentPosition(fairness) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(hero.querySelector("[data-hero-rule]")).toBeNull();
   });
 
   /* The scale reads from the no end to the yes end, so the lit step shows how strong the call is. */
   it.each(LEANS)("shows the 5-step scale from Pass to Send it with the step %s lit", (lean) => {
     render(<AnalyzeResult doc={withLean(lean)} />);
-    const steps = within(screen.getByRole("list", { name: "The Lean scale" })).getAllByRole("listitem");
-    expect(steps.map((step) => step.textContent)).toEqual(["Pass", "Lean no", "Gut call", "Lean yes", "Send it"]);
+    const steps = within(screen.getByRole("list", { name: "The Lean scale" })).getAllByRole(
+      "listitem",
+    );
+    expect(steps.map((step) => step.textContent)).toEqual([
+      "Pass",
+      "Lean no",
+      "Gut call",
+      "Lean yes",
+      "Send it",
+    ]);
     const lit = steps.filter((step) => step.getAttribute("aria-current") === "step");
     expect(lit.map((step) => step.textContent)).toEqual([lean]);
   });
@@ -199,7 +242,9 @@ describe("AnalyzeResult", () => {
 
   it("puts one tab per team under The Sides heading, with the tab of the asker first and open", () => {
     render(<AnalyzeResult doc={fixture} />);
-    expect(sidesHeading().compareDocumentPosition(switcher()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      sidesHeading().compareDocumentPosition(switcher()) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(tabNames()).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team"]);
     const [mine, other] = within(switcher()).getAllByRole("tab");
     expect(mine.getAttribute("aria-selected")).toBe("true");
@@ -210,7 +255,13 @@ describe("AnalyzeResult", () => {
 
   it("gives no tab to a side with no read, and no box of Week lines to a side with none, as on the read of a finder card", () => {
     const [mine, other] = fixture.sides;
-    const doc: AnalyzeResponse = { ...fixture, sides: [{ ...mine, week_lines: [] }, { ...other, bullets: [], week_lines: [] }] };
+    const doc: AnalyzeResponse = {
+      ...fixture,
+      sides: [
+        { ...mine, week_lines: [] },
+        { ...other, bullets: [], week_lines: [] },
+      ],
+    };
     render(<AnalyzeResult doc={doc} />);
     expect(tabNames()).toEqual(["Pukancun on 3"]);
     expect(within(openPanel()).getByText(ANALYSIS)).toBeTruthy();
@@ -222,7 +273,11 @@ describe("AnalyzeResult", () => {
   it("shows the Bullets of the other team after a tap on its tab", () => {
     render(<AnalyzeResult doc={fixture} />);
     const panel = openTab("Amon-Ra Dawg Your Team");
-    expect(within(switcher()).getByRole("tab", { name: "Amon-Ra Dawg Your Team" }).getAttribute("aria-selected")).toBe("true");
+    expect(
+      within(switcher())
+        .getByRole("tab", { name: "Amon-Ra Dawg Your Team" })
+        .getAttribute("aria-selected"),
+    ).toBe("true");
     expect(within(panel).getByText(fixture.sides[1].bullets[1].text)).toBeTruthy();
     expect(within(panel).queryByText(ANALYSIS)).toBeNull();
   });
@@ -241,7 +296,11 @@ describe("AnalyzeResult", () => {
 
   it("shows three tabs for a 3-team trade, the asker first", () => {
     render(<AnalyzeResult doc={three} />);
-    expect(tabNames()).toEqual(["Pukancun on 3", "Amon-Ra Dawg Your Team", "To Infinity and Bijan"]);
+    expect(tabNames()).toEqual([
+      "Pukancun on 3",
+      "Amon-Ra Dawg Your Team",
+      "To Infinity and Bijan",
+    ]);
   });
 
   it("shows the Bullets of the open tab as rows, each with its claim, and no The Data part", () => {
@@ -257,27 +316,49 @@ describe("AnalyzeResult", () => {
     render(<AnalyzeResult doc={withBullets(4, mixed)} />);
     const bands = bandsOf(openPanel());
     expect(bands.map(bandName)).toEqual(["For", "Against", "Even"]);
-    for (const [band, mark] of bands.map((band, i) => [band, (["for", "against", "even"] as const)[i]] as const)) {
-      expect(rowsOf(band).map((row) => row.textContent)).toEqual(mixed.filter((b) => b.mark === mark).map((b) => b.text));
+    for (const [band, mark] of bands.map(
+      (band, i) => [band, (["for", "against", "even"] as const)[i]] as const,
+    )) {
+      expect(rowsOf(band).map((row) => row.textContent)).toEqual(
+        mixed.filter((b) => b.mark === mark).map((b) => b.text),
+      );
     }
   });
 
   it("leaves out a band with no Bullet", () => {
-    render(<AnalyzeResult doc={withBullets(4, fixture.sides[0].bullets.filter((b) => b.mark !== "even"))} />);
+    render(
+      <AnalyzeResult
+        doc={withBullets(
+          4,
+          fixture.sides[0].bullets.filter((b) => b.mark !== "even"),
+        )}
+      />,
+    );
     expect(bandNames(openPanel())).toEqual(["For", "Against"]);
-    render(<AnalyzeResult doc={withBullets(4, fixture.sides[0].bullets.filter((b) => b.mark === "against"))} />);
+    render(
+      <AnalyzeResult
+        doc={withBullets(
+          4,
+          fixture.sides[0].bullets.filter((b) => b.mark === "against"),
+        )}
+      />,
+    );
     expect(bandNames(screen.getAllByRole("tabpanel").at(-1)!)).toEqual(["Against"]);
   });
 
   it("marks each Bullet with a glyph that a screen reader hears as its word", () => {
     render(<AnalyzeResult doc={fixture} />);
     const card = openPanel();
-    const glyphs = [...card.querySelectorAll("[aria-hidden='true']")].map((el) => el.textContent).filter((t) => t && /[▲▼–]/.test(t));
+    const glyphs = [...card.querySelectorAll("[aria-hidden='true']")]
+      .map((el) => el.textContent)
+      .filter((t) => t && /[▲▼–]/.test(t));
     const GLYPH = { for: "▲", against: "▼", even: "–" } as const;
     expect(glyphs).toEqual(fixture.sides[0].bullets.map((bullet) => GLYPH[bullet.mark]));
     // The row is a button, and its name starts with the word of the Mark, so the glyph never reaches a screen reader.
     for (const bullet of fixture.sides[0].bullets) {
-      expect(within(card).getByRole("button", { name: `${bullet.mark} ${bullet.text}` })).toBeTruthy();
+      expect(
+        within(card).getByRole("button", { name: `${bullet.mark} ${bullet.text}` }),
+      ).toBeTruthy();
     }
   });
 
@@ -290,7 +371,7 @@ describe("AnalyzeResult", () => {
     expect(fact.closest("[aria-hidden='true']")).not.toBeNull();
     fireEvent.click(row);
     expect(row.getAttribute("aria-expanded")).toBe("true");
-    expect(row.getAttribute("aria-controls")).toBe(fact.closest("[id]")?.id);
+    expect(row.getAttribute("aria-controls")).toBe(fact.closest("[id]")?.id ?? null);
     expect(fact.closest("[aria-hidden='true']")).toBeNull();
     expect(row.compareDocumentPosition(fact) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(row);
@@ -320,22 +401,34 @@ describe("AnalyzeResult", () => {
     const card = openPanel();
     const bullet = within(card).getByText(ANALYSIS);
     const box = within(card).getByRole("region", { name: "This week and next" });
-    expect(within(box).getAllByRole("listitem").map((li) => li.textContent)).toEqual(
-      fixture.sides[0].week_lines.map((line) => line.text),
-    );
+    expect(
+      within(box)
+        .getAllByRole("listitem")
+        .map((li) => li.textContent),
+    ).toEqual(fixture.sides[0].week_lines.map((line) => line.text));
     expect(bullet.compareDocumentPosition(box) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("shows the box This week and next on every side of a three-side trade", () => {
     render(<AnalyzeResult doc={three} />);
     for (const side of three.trade.sides) {
-      expect(within(openTab(side.team)).getAllByRole("region", { name: "This week and next" })).toHaveLength(1);
+      expect(
+        within(openTab(side.team)).getAllByRole("region", { name: "This week and next" }),
+      ).toHaveLength(1);
     }
   });
 
   it("passes the letter scan with a player named A.J. Brown in the trade", () => {
-    const brown = { player_id: "6801", name: "A.J. Brown", position: "WR", nfl_team: "PHI", headshot: "https://cdn.test/6801.png" };
-    const tradeSides = fixture.trade.sides.map((side, i) => (i === 0 ? { ...side, gets: [...side.gets, brown] } : side));
+    const brown = {
+      player_id: "6801",
+      name: "A.J. Brown",
+      position: "WR",
+      nfl_team: "PHI",
+      headshot: "https://cdn.test/6801.png",
+    };
+    const tradeSides = fixture.trade.sides.map((side, i) =>
+      i === 0 ? { ...side, gets: [...side.gets, brown] } : side,
+    );
     const doc = { ...fixture, trade: { ...fixture.trade, sides: tradeSides } };
     const { container } = render(<AnalyzeResult doc={doc} />);
     expect(container.textContent).not.toMatch(LETTER);
@@ -388,13 +481,21 @@ describe("AnalyzeResult", () => {
   });
 
   it("leaves out the fetch time when the API sends null", () => {
-    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, chart_week: null, rosters_fetched: null } }} />);
+    render(
+      <AnalyzeResult
+        doc={{ ...fixture, as_of: { ...fixture.as_of, chart_week: null, rosters_fetched: null } }}
+      />,
+    );
     const line = screen.getByText(/^Stats through week 5/);
     expect(line.textContent).not.toMatch(/null|1970|Chart week|rosters fetched/);
   });
 
   it("shows the no-values note under the Lean when the document says the week has no chart", () => {
-    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, no_chart: true, no_chart_note: NOTE } }} />);
+    render(
+      <AnalyzeResult
+        doc={{ ...fixture, as_of: { ...fixture.as_of, no_chart: true, no_chart_note: NOTE } }}
+      />,
+    );
     const note = screen.getByText(NOTE);
     const decision = screen.getByRole("heading", { level: 2, name: "Lean yes" });
     expect(decision.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -408,7 +509,14 @@ describe("AnalyzeResult", () => {
 
   it("shows the in-progress count and each pending count as its own segment", () => {
     const known_games = { week: 7, games: 13, in_progress: 2, pending: { snaps: 9 } };
-    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...fixture.as_of, stats_through: 7, completed_through: 6, known_games } }} />);
+    render(
+      <AnalyzeResult
+        doc={{
+          ...fixture,
+          as_of: { ...fixture.as_of, stats_through: 7, completed_through: 6, known_games },
+        }}
+      />,
+    );
     const line = screen.getByText(/^Stats through week 6/);
     expect(line.textContent).toMatch(
       /^Stats through week 6, plus 13 week 7 games, 2 in progress · Snaps pending for 9 games · rosters fetched /,
@@ -417,8 +525,14 @@ describe("AnalyzeResult", () => {
 
   it("shows the stale stats segment after the pending segments and before the fetch time", () => {
     const { known_games: _k, ...asOf } = fixture.as_of;
-    render(<AnalyzeResult doc={{ ...fixture, as_of: { ...asOf, stats_through: 6 }, stale: ["stats"] }} />);
-    expect(screen.getByText(/^Stats through week 6 · Week 7 stats not fetched · rosters fetched$/)).toBeTruthy();
+    render(
+      <AnalyzeResult
+        doc={{ ...fixture, as_of: { ...asOf, stats_through: 6 }, stale: ["stats"] }}
+      />,
+    );
+    expect(
+      screen.getByText(/^Stats through week 6 · Week 7 stats not fetched · rosters fetched$/),
+    ).toBeTruthy();
   });
 
   it("shows the stats week alone when the document has no known-games block", () => {
@@ -440,7 +554,9 @@ describe("AnalyzeResult", () => {
   it("shows the meaning of the fairness state fair under the word", () => {
     render(<AnalyzeResult doc={withFairness("fair")} />);
     const word = screen.getByText("Fair");
-    const sentence = screen.getByText("No side gives much more than it gets, so every side can take it without a loss.");
+    const sentence = screen.getByText(
+      "No side gives much more than it gets, so every side can take it without a loss.",
+    );
     expect(word.compareDocumentPosition(sentence) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -456,7 +572,9 @@ describe("AnalyzeResult", () => {
     const decision = screen.getByRole("heading", { level: 2, name: "Lean yes" });
     const line = screen.getByText("Fair");
     expect(decision.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(line.compareDocumentPosition(sidesHeading()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      line.compareDocumentPosition(sidesHeading()) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("puts the Case before the fairness text in the same chapter", () => {
@@ -551,9 +669,18 @@ describe("AnalyzeResult", () => {
     const mine = within(renderSwap(three).getAllByRole("group")[0]);
     const gives = mine.getByText("You Give");
     const gets = mine.getByText("You Get");
-    expect(gives.compareDocumentPosition(mine.getByText("Nico Collins")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(mine.getByText("Nico Collins").compareDocumentPosition(gets) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(gets.compareDocumentPosition(mine.getByText("Marvin Harrison")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      gives.compareDocumentPosition(mine.getByText("Nico Collins")) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      mine.getByText("Nico Collins").compareDocumentPosition(gets) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      gets.compareDocumentPosition(mine.getByText("Marvin Harrison")) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("renders the rows without tags for a three-side document with no to and from", () => {
@@ -576,7 +703,11 @@ describe("AnalyzeResult", () => {
     render(<AnalyzeResult doc={three} />);
     expect(screen.getByText(three.case)).toBeTruthy();
     for (const side of three.sides) {
-      expect(within(openTab(three.trade.sides.find((t) => t.roster_id === side.roster_id)!.team)).getByText(side.bullets[0].text)).toBeTruthy();
+      expect(
+        within(
+          openTab(three.trade.sides.find((t) => t.roster_id === side.roster_id)!.team),
+        ).getByText(side.bullets[0].text),
+      ).toBeTruthy();
     }
   });
 });

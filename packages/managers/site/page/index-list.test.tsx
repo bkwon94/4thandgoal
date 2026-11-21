@@ -3,7 +3,7 @@
  * They check a chip with no team, the letter roll that keeps the name of a row as one plain text, and the sticky top of the stage.
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import managersJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/managers.json";
 import rankingsJson from "../../../../apps/site/src/fixtures/sites/cpc/public/2026/rankings.json";
 import { managersFileSchema } from "../schema/managers";
@@ -17,7 +17,11 @@ afterEach(() => {
 function cpcRows(): IndexRow[] {
   const { managers } = managersFileSchema.parse(managersJson);
   // The managers package holds no rankings type, so the test names the three fields it reads.
-  const last = rankingsJson.weeks.at(-1)!.rows as unknown as { roster_id: number; rank: number; odds: { playoff: number } }[];
+  const last = rankingsJson.weeks.at(-1)!.rows as unknown as {
+    roster_id: number;
+    rank: number;
+    odds: { playoff: number };
+  }[];
   return last.map((row) => {
     const entry = managers.find((each) => each.roster_id === row.roster_id)!;
     return {
@@ -44,12 +48,17 @@ describe("IndexList", () => {
     expect(out.hasAttribute("disabled")).toBe(true);
     fireEvent.click(out);
     expect(chips.getByRole("button", { name: /All/ }).getAttribute("aria-pressed")).toBe("true");
-    expect(within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem")).toHaveLength(12);
+    expect(
+      within(screen.getByRole("list", { name: "Index List" })).getAllByRole("listitem"),
+    ).toHaveLength(12);
   });
 
   it("gives each letter of a name its own roll window, and keeps the name as one text for a reader", () => {
     render(<IndexList rows={cpcRows()} teams={12} />);
-    const head = screen.getByRole("button", { name: /The Blue Tent/ });
+    // happy-dom gives each span of a letter a space in the computed name, so the match ignores the spaces.
+    const head = screen.getByRole("button", {
+      name: (name) => name.replaceAll(" ", "").includes("TheBlueTent"),
+    });
     // "The Blue Tent" has 11 letters and two spaces. The spaces stay plain spaces, so the name wraps between words.
     expect(head.querySelectorAll(".ix-letter")).toHaveLength(11);
     expect(head.querySelector(".ix-name")?.textContent).toBe("The Blue Tent");
@@ -60,6 +69,8 @@ describe("IndexList", () => {
     const stage = container.querySelector("[data-ix-stage]")!;
     // The token grows by the Deadline banner, so the stage follows the band when the banner shows.
     expect(stage.className).toContain("desktop:sticky");
-    expect(stage.className).toContain("desktop:top-[calc(var(--spacing-band-height)+var(--spacing-sp-4))]");
+    expect(stage.className).toContain(
+      "desktop:top-[calc(var(--spacing-band-height)+var(--spacing-sp-4))]",
+    );
   });
 });

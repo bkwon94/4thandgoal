@@ -1,0 +1,148 @@
+$ sed -n 18,53p .scratch/design-checks-speed/issues/15-ci-unit-shards-and-changed.md
+## Evidence
+
+The runs are local, on the shared laptop, through the check lock. Each row gives the load average of 5 min at its start.
+The real CI time gets its proof in ticket 18.
+
+### Shard times
+
+Each shard runs `BUN_TEST_SHARD=<i>/<n> node scripts/bun-test.mjs`, split by the time of each file in `apps/site/bun-test-timings.json`.
+"4 workers" adds `--parallel=4`, the core count of an `ubuntu-latest` runner. Ticket 14 adds `--parallel` to `bun-test.mjs`.
+
+| Shards | Workers | Time of each shard (s) | Load of each shard | Slowest shard (s) |
+| --- | --- | --- | --- | --- |
+| 1 | 4 | 46.7 | 4.82 | 46.7 |
+| 2 | 4 | 33.8, 25.3 | 4.70, 3.77 | 33.8 |
+| 3 | 4 | 33.7, 25.4, 16.6 | 4.85, 3.19, 3.33 | 33.7 |
+| 4 | 4 | 18.4, 33.7, 25.5, 16.9 | 3.66, 3.34, 6.03, 4.33 | 33.7 |
+| 1 | 1 | 170.0 | 3.99 | 170.0 |
+| 2 | 1 | 74.0, 96.9 | 6.81, 5.63 | 96.9 |
+| 3 | 1 | 70.1, 47.9, 56.0 | 5.31, 9.22, 5.95 | 70.1 |
+| 4 | 1 | 37.8, 36.1, 45.6, 52.2 | 8.75, 5.67, 4.62, 4.08 | 52.2 |
+| 5 | 1 | 34.3, 35.9, 33.0, 33.4, 35.2 | 4.16, 4.42, 5.90, 6.53, 5.46 | 35.9 |
+
+A split by file count, with no timings file and 1 worker, gave a slower shard with 3 shards than with 2:
+
+| Shards | Time of each shard (s) | Load of each shard | Slowest shard (s) |
+| --- | --- | --- | --- |
+| 2 | 80.9, 90.1 | 3.84, 4.54 | 90.1 |
+| 3 | 93.5, 31.8, 45.3 | 3.76, 4.06, 4.07 | 93.5 |
+| 4 | 28.8, 31.8, 50.1, 57.0 | 9.51, 5.90, 4.65, 3.60 | 57.0 |
+| 5 | 7.1, 66.1, 22.8, 12.1, 58.4 | 2.27, 2.32, 1.96, 2.62, 2.30 | 66.1 |
+
+`src/app/page-free.test.tsx` takes 33.5 s alone, so no shard count goes below it.
+The setup of one CI job is about 42 s: the step times of the `site-unit` job of run 44656282511 on `main`.
+
+The chosen count is 1. With 4 workers, a second shard saves 13 s, and one more job costs about 42 s of setup.
+The matrix stays, so a later count is a one-line change. With 1 worker, the rule gives 2 shards: a third saves 27 s.
+
+$ sed -n 18,85p .scratch/design-checks-speed/issues/16-ci-playwright-shards.md
+
+Date: 2026-11-20. The source is the green run 44656282511 of `main` at 1fc0a06e, whose specs match this branch.
+
+Method:
+
+1. The raw log of the job site-browser gives the time of each test and the wall time of each Playwright run.
+2. `PLAYWRIGHT_SHARD=<i>/<n> pnpm exec playwright test --list` gives the tests of each shard. It ran on a local build of cpc, norcal, and the midseason fixture.
+3. The time of a project in a shard is its CI wall time times the share of its test time in that shard.
+4. Each shard job adds the builds and the export checks, 48 s, and the job setup, 72 s. The setup was 72 to 108 s on 3 runs.
+
+The job time of each shard, in seconds, with `floor-timing` split by test:
+
+| Shards | Each shard | Slowest |
+| --- | --- | --- |
+| 1 | 740 | 740 |
+| 2 | 483, 378 | 483 |
+| 3 | 382, 257, 345 | 382 |
+| 4 | 338, 232, 225, 309 | 338 |
+| 5 | 296, 199, 200, 254, 277 | 296 |
+
+The chosen count is 5. With 4 shards, the slowest job is 338 s, or 374 s with the worst setup of 108 s. That is above 360 s. With 5 shards, the slowest job is 296 s, or 332 s with the worst setup.
+
+`floor-timing` had `fullyParallel: false`, so 12 of its 13 tests stayed in one shard as one file. The project now has `fullyParallel: true` and `workers: 1`. Its tests spread over the shards, and each shard still runs them one at a time.
+
+A local run of `PLAYWRIGHT_SHARD=2/5 CLIENT=cpc pnpm check:floor` printed "Running 44 tests using 2 workers, shard 2 of 5", then "Running 3 tests using 1 worker, shard 2 of 5". Both passed.
+
+The real CI time of each shard gets its proof after the push of the spec.
+
+## The split after the first CI runs
+
+Date: 2026-11-21. The source is run 44871380504 on 3a100c90, with 6 shards and the built-in split of Playwright.
+
+The jobs took 363, 262, 213, 255, 317, and 326 s. Shard 1 was over 360 s. Each job holds about 120 s of setup and builds.
+
+The built-in split gives each shard one block of tests in a row, by count. The first file of a run is slow, so its tests all landed in shard 1. The raw log of shard 1 shows it:
+
+| Run | Shard 1 | Other shards |
+| --- | --- | --- |
+| `rules` | 66 s, all 9 tests of `evidence-rules.spec.ts` | 4 to 32 s |
+| `floor` of cpc | 65 s, 42 tests of `analyzer-stage.spec.ts` | 27 to 108 s |
+| `floor` of norcal | 54 s, 40 tests of `analyzer-stage.spec.ts` | 15 to 60 s |
+
+The fix is the reporter `apps/site/scripts/playwright-shard-reporter.mjs`. It gives each shard each Nth test of the run, so each slow file spreads over the shards. It keeps each file of `eggs` whole, because that project is not fully parallel. The matrix now has 7 shards.
+
+The model uses the CI time of each test in the 6 logs, and a fit of the wall of each run to the old jobs. It predicts these job times:
+
+| Split | Each shard | Slowest |
+| --- | --- | --- |
+| Each Nth test, 6 shards | 309, 281, 325, 288, 281, 277 | 325 |
+| Each Nth test, 7 shards | 249, 306, 266, 263, 274, 248, 296 | 306 |
+
+A shard that holds one of the two 47 s tests of `evidence-rules.spec.ts` stays near 300 s. The `--list` of each run with `PLAYWRIGHT_SHARD=<i>/7` gives each test once: the union of the 7 shards equals the full list, with no duplicate.
+
+## Evidence of CI
+
+Date: 2026-11-21. Runs 44873662117, 44874144251, and 44874592510 of `check.yml` on 4d5f4d13. Time is `startedAt` to `completedAt` of each job, in seconds. Each job exits 0.
+
+| Job | 44873662117 | 44874144251 | 44874592510 |
+| --- | --- | --- | --- |
+| site-browser (1) | 266 | 237 | 258 |
+| site-browser (2) | 330 | 275 | 302 |
+| site-browser (3) | 231 | 254 | 267 |
+| site-browser (4) | 270 | 284 | 304 |
+| site-browser (5) | 261 | 289 | 254 |
+| site-browser (6) | 260 | 265 | 216 |
+| site-browser (7) | 342 | 270 | 296 |
+
+The slowest shard job is 342 s, below the limit of 360 s.
+
+$ grep -n -B2 -A12 "Evidence of CI" .scratch/design-checks-speed/issues/17-ci-pipeline-split.md
+1-# 17: CI splits the pipeline job in two
+2-
+3-Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-33.
+4-
+5-**App:** root
+6-
+7-**What to build:** The pipeline job of CI splits into one job for the parallel tests and one job for the serial tests.
+8-
+9-**Blocked by:** none
+10-
+11-**Status:** in-review
+12-
+13-- [x] The ticket records the time of each half before the split.
+14-- [x] One job runs the parallel pipeline tests, and another runs the serial pipeline tests.
+15-- [x] Each pipeline job exits 0 in 360 s or less.
+16-
+17-## Times before the split
+18-
+19-Laptop, M2 Pro, no other check running, 2026-11-20. Each run is `make -C apps/pipeline <target>`.
+20-
+21-| Half | Command | Time |
+22-| --- | --- | --- |
+23-| Parallel | `make check-parallel` (lint, typecheck, `pytest -n auto`, 1682 tests) | 130 s |
+24-| Serial | `make test-serial` (`pytest -p no:xdist`, 2 tests) | 6 s |
+25-
+26-CI before the split, median of 5 green runs of `main`: the job `pipeline` took 375 s, and its test step took 342 s.
+27-The serial half is small, so the parallel job holds nearly all of the time. The CI time of each new job gets its proof after the push of the spec.
+28-
+29:## Evidence of CI
+30-
+31-Date: 2026-11-21. Runs 44873662117, 44874144251, and 44874592510 of `check.yml` on 4d5f4d13. Time is `startedAt` to `completedAt` of each job, in seconds. Each job exits 0.
+32-
+33-| Job | 44873662117 | 44874144251 | 44874592510 |
+34-| --- | --- | --- | --- |
+35-| pipeline-parallel (1) | 259 | 197 | 233 |
+36-| pipeline-parallel (2) | 264 | 194 | 268 |
+37-| pipeline-serial | 43 | 45 | 37 |
+38-
+39-The slowest pipeline job is 268 s, below the limit of 360 s.

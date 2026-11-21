@@ -13,7 +13,15 @@ import { managerHrefOrNull } from "@cpc/league/hrefs";
 import { WeekChapter } from "../parts/week-chapter";
 
 /* The team row of a side. With a managers file the whole row is the link, so the tap target is 44px or more. */
-function TeamRow({ side, avatars, href }: { side: TradeSide; avatars: AvatarMap; href: string | null }) {
+function TeamRow({
+  side,
+  avatars,
+  href,
+}: {
+  side: TradeSide;
+  avatars: AvatarMap;
+  href: string | null;
+}) {
   const content = (
     <>
       <Avatar src={avatarSrc(avatars, side.team.roster_id)} />
@@ -24,26 +32,43 @@ function TeamRow({ side, avatars, href }: { side: TradeSide; avatars: AvatarMap;
   return href === null ? (
     <div className={row}>{content}</div>
   ) : (
-    <a href={href} className={cn(row, "press text-inherit no-underline hover-fine:underline")}>
+    <a href={href} className={cn(row, "press hover-fine:underline text-inherit no-underline")}>
       {content}
     </a>
   );
 }
 
-function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: AvatarMap; managersHref: string | null }) {
+function Side({
+  side,
+  avatars,
+  managersHref,
+}: {
+  side: TradeSide;
+  avatars: AvatarMap;
+  managersHref: string | null;
+}) {
   return (
-    <div className="flex min-w-0 flex-col gap-sp-2">
-      <TeamRow side={side} avatars={avatars} href={managerHrefOrNull(managersHref, side.team.roster_id)} />
-      <span className="font-mono text-meta leading-tight tracking-caps text-mute uppercase">Gets</span>
-      <ul aria-label={`${side.team.name} gets`} className="m-0 flex list-none flex-col gap-sp-2 p-0">
+    <div className="gap-sp-2 flex min-w-0 flex-col">
+      <TeamRow
+        side={side}
+        avatars={avatars}
+        href={managerHrefOrNull(managersHref, side.team.roster_id)}
+      />
+      <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+        Gets
+      </span>
+      <ul
+        aria-label={`${side.team.name} gets`}
+        className="gap-sp-2 m-0 flex list-none flex-col p-0"
+      >
         {side.players.map((player) => (
-          <li key={player.name} className="flex min-w-0 items-center gap-sp-2">
+          <li key={player.name} className="gap-sp-2 flex min-w-0 items-center">
             <PhotoFrame src={player.headshot} name={player.name} size="md" decorative />
-            <span className="min-w-0 text-body leading-tight font-semibold">{player.name}</span>
+            <span className="text-body min-w-0 leading-tight font-semibold">{player.name}</span>
           </li>
         ))}
         {side.picks.map((pick) => (
-          <li key={pick} className="text-meta leading-tight text-mute">
+          <li key={pick} className="text-meta text-mute leading-tight">
             {pick}
           </li>
         ))}
@@ -55,23 +80,42 @@ function Side({ side, avatars, managersHref }: { side: TradeSide; avatars: Avata
 /* The swap arrows between the two sides of a pair. They are a graphic, so a screen reader skips them. */
 function Swap() {
   return (
-    <div aria-hidden="true" className="flex justify-center self-center text-mute">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <div aria-hidden="true" className="text-mute flex justify-center self-center">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M4 8h14l-3-3M20 16H6l3 3" />
       </svg>
     </div>
   );
 }
 
-function TradeCard({ trade, avatars, managersHref }: { trade: Trade; avatars: AvatarMap; managersHref: string | null }) {
+function TradeCard({
+  trade,
+  avatars,
+  managersHref,
+}: {
+  trade: Trade;
+  avatars: AvatarMap;
+  managersHref: string | null;
+}) {
   // Three or four sides have no single other side, so only a pair gets the swap arrows.
   const pair = trade.sides.length === 2;
   return (
     <Card
       as="article"
       className={cn(
-        "grid items-start gap-sp-3",
-        pair ? "grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]" : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)]",
+        "gap-sp-3 grid items-start",
+        pair
+          ? "grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
+          : "grid-cols-[minmax(0,1fr)_minmax(0,1fr)]",
       )}
     >
       {trade.sides.map((side, index) => (
@@ -99,7 +143,7 @@ export function Trades({
   return (
     <WeekChapter id="trades" title="Trades" note={`${trades.length} this week`}>
       {/* Two cards per row start at the desktop tier. At the tablet tier a pair card is too narrow for a name such as "McConkey". */}
-      <div className="grid grid-cols-1 gap-sp-2 desktop:grid-cols-2">
+      <div className="gap-sp-2 desktop:grid-cols-2 grid grid-cols-1">
         {trades.map((trade, index) => (
           <TradeCard key={index} trade={trade} avatars={avatars} managersHref={managersHref} />
         ))}

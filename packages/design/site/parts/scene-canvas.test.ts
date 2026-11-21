@@ -2,7 +2,7 @@
  * Tests for the flag of the hint of the hero scene, on the real storage of jsdom.
  * The hint shows until the first touch on any scene, then stays gone for that reader after a reload (AT-28).
  */
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { hintSeen, rememberHint } from "./scene-canvas";
 
 afterEach(() => window.localStorage.clear());

@@ -1,6 +1,8 @@
 /**
  * The big week line of a page with no hero: a label and an optional number in the red accent.
  * It takes no file read, so a client component can render it.
+ * Use it when: a page with no hero needs the big week line.
+ * Do not use it when: the page has a hero. Use `Hero`.
  */
 
 /* The big week line under the top band. The number, when given, takes the red accent. */

@@ -2,7 +2,7 @@
  * Tests for the beats of a replay: the order of the Broadcast motion and the length of a full run.
  * They read the real sim file of CPC 2026 week 8.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { sim } from "../fixtures/sim";
 import { beatsOf, runLength } from "./beats";
 import { replaySeason } from "./season";
@@ -23,8 +23,12 @@ describe("the beats of a replay", () => {
       "result",
       "champion",
     ]);
-    expect(beats.filter((beat) => beat.kind === "week").map((beat) => beat.index)).toEqual([0, 1, 2, 3, 4, 5]);
-    expect(beats.filter((beat) => beat.kind === "draw").map((beat) => beat.index)).toEqual([0, 1, 2]);
+    expect(beats.filter((beat) => beat.kind === "week").map((beat) => beat.index)).toEqual([
+      0, 1, 2, 3, 4, 5,
+    ]);
+    expect(beats.filter((beat) => beat.kind === "draw").map((beat) => beat.index)).toEqual([
+      0, 1, 2,
+    ]);
   });
 
   it("runs a full replay in about 20 seconds", () => {

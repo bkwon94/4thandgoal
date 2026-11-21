@@ -23,7 +23,11 @@ export function liveMatchupOf(text: string): MatchupBlock | null {
 }
 
 /* The live card of the team of `rosterId`, or null when the API sends none. A failed call throws an AskError. */
-export async function fetchLiveMatchup(target: AskTarget, passphrase: string, rosterId: number): Promise<MatchupBlock | null> {
+export async function fetchLiveMatchup(
+  target: AskTarget,
+  passphrase: string,
+  rosterId: number,
+): Promise<MatchupBlock | null> {
   const response = await postClient(target, passphrase, "next-matchup", { roster_id: rosterId });
   return liveMatchupOf(await response.text());
 }
@@ -31,7 +35,11 @@ export async function fetchLiveMatchup(target: AskTarget, passphrase: string, ro
 /* The quiet line under the live card that says when the API read the projections. `timeZone` is the zone of the
    browser by default; a test gives one, so its line never depends on the machine. */
 export function readTimeLine(readAt: string, timeZone?: string): string {
-  const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone }).format(new Date(readAt));
+  const time = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone,
+  }).format(new Date(readAt));
   return `Live projections as of ${time}`;
 }
 
@@ -41,7 +49,11 @@ export type LiveSource = { target: AskTarget; passphrase: () => string | null };
 
 /* The live card of the team of `rosterId` for an Answer of `topic`, or null until it comes. Only Your next matchup has
    one. With no passphrase, or on a failed call, it stays null, so the card of the weekly build stays in place. */
-export function useLiveMatchup(source: LiveSource | undefined, topic: string, rosterId: number): MatchupBlock | null {
+export function useLiveMatchup(
+  source: LiveSource | undefined,
+  topic: string,
+  rosterId: number,
+): MatchupBlock | null {
   const [card, setCard] = useState<MatchupBlock | null>(null);
   useEffect(() => {
     const passphrase = source?.passphrase();

@@ -3,7 +3,7 @@
  * Each side shows on the stage of the title hero with a count of the players it gets, and the hero ground is the mesh (AT-1, AT-2).
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget } from "@cpc/analyzer/lib/fixtures/api";
 import type { Team } from "@cpc/analyzer/lib/api";
@@ -15,10 +15,20 @@ import { TradeForm } from "@cpc/analyzer/form/trade-form";
 /* The teams of trade T, Bo Girds (roster 6) and Teehee (roster 12), from the raw files of the latest week of cpc.
    The schema of the teams route checks the shape, so a drift of the helper fails here. The test sits in the app layer,
    because it reads the raw files of the client, and a package reads no file (ADR 0012). */
-const TEAMS: Team[] = teamsResponseSchema.parse({ teams: rawTeams("cpc").filter((team) => [6, 12].includes(team.roster_id)) }).teams;
+const TEAMS: Team[] = teamsResponseSchema.parse({
+  teams: rawTeams("cpc").filter((team) => [6, 12].includes(team.roster_id)),
+}).teams;
 
 beforeEach(() => {
-  render(<TradeForm teams={TEAMS} target={apiTarget} finderOn={false} passphrase="localtest" onUnauthorized={() => {}} />);
+  render(
+    <TradeForm
+      teams={TEAMS}
+      target={apiTarget}
+      finderOn={false}
+      passphrase="localtest"
+      onUnauthorized={() => {}}
+    />,
+  );
 });
 
 afterEach(() => cleanup());
@@ -43,7 +53,8 @@ describe("the idle stage", () => {
     await pickPlayers("Team Two", "Bo Girds", "Kenneth Walker III");
     const hero = screen.getByRole("region", { name: "Trade Analyzer" });
     const stage = hero.querySelector("[data-hero-slot=feature]") as HTMLElement;
-    const row = (team: string) => within(stage).getByText(team, { exact: true }).closest("li") as HTMLElement;
+    const row = (team: string) =>
+      within(stage).getByText(team, { exact: true }).closest("li") as HTMLElement;
     expect(within(row("Teehee")).getByText("1 player")).toBeTruthy();
     // Bo Girds gets no player yet, so its row holds the dashed empty token.
     expect(row("Bo Girds").querySelector("[data-stage-empty]")).not.toBeNull();

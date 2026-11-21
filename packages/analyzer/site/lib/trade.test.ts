@@ -2,7 +2,7 @@
  * Tests for the trade of the Stack: the body of POST /analyze that a set of picks builds, the gate of the grade, and the halo level.
  * The bodies on the right are the bodies that the form on main sends for the same trade, from its own tests.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { analyzeRequest, everySideTrades, haloLevel, type Sides } from "./trade";
 
 describe("analyzeRequest", () => {
@@ -42,7 +42,13 @@ describe("analyzeRequest", () => {
       season: 2026,
       asker: 4,
       sides: [
-        { roster_id: 4, gives: [{ player_id: "p1", to: 12 }, { player_id: "p2", to: 7 }] },
+        {
+          roster_id: 4,
+          gives: [
+            { player_id: "p1", to: 12 },
+            { player_id: "p2", to: 7 },
+          ],
+        },
         { roster_id: 12, gives: [{ player_id: "p4", to: 7 }] },
         { roster_id: 7, gives: [{ player_id: "p5", to: 4 }] },
       ],
@@ -65,7 +71,9 @@ describe("everySideTrades", () => {
       { id: 1, rosterId: 12, gets: [] },
     ];
     expect(everySideTrades(gets)).toBe(false);
-    expect(everySideTrades([gets[0], { ...gets[1], gets: [{ playerId: "p1", fromSide: 0 }] }])).toBe(true);
+    expect(
+      everySideTrades([gets[0], { ...gets[1], gets: [{ playerId: "p1", fromSide: 0 }] }]),
+    ).toBe(true);
   });
 });
 

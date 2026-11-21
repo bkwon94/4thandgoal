@@ -5,11 +5,11 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 
-/* The test sets the reduced-motion switch for each case. */
-const motion = vi.hoisted(() => ({ off: false }));
-vi.mock("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
+/* The test sets the reduced-motion switch for each case, and each test sets it back to off at its end. */
+const motion = { off: false };
+mock.module("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
 
 const { NflGameView, nflGameText } = await import("./nfl-game-card");
 const { answerBlockOf, blockText } = await import("./answer-block");
@@ -29,17 +29,21 @@ function bearsGame() {
 }
 
 function packersGame() {
-  const block = answerBlockOf(JSON.parse(readFileSync(join(FIXTURES, "nfl-game-packers-week-10.json"), "utf8")));
+  const block = answerBlockOf(
+    JSON.parse(readFileSync(join(FIXTURES, "nfl-game-packers-week-10.json"), "utf8")),
+  );
   if (block?.kind !== "nfl_game") throw new Error("the recorded block is no NFL game card");
   return block;
 }
 
 /* The style of each box of the card that moves, blurs, or scales as it enters. */
 function moved(root: HTMLElement) {
-  return [root, ...root.querySelectorAll<HTMLElement>("*")].filter((box) => /blur\((?!0)|translate|scale/.test(`${box.style.filter} ${box.style.transform}`));
+  return [root, ...root.querySelectorAll<HTMLElement>("*")].filter((box) =>
+    /blur\((?!0)|translate|scale/.test(`${box.style.filter} ${box.style.transform}`),
+  );
 }
 
-beforeEach(() => {
+afterEach(() => {
   motion.off = false;
 });
 
@@ -69,16 +73,26 @@ describe("the NFL game card", () => {
 
   it("shows the 32 defenses against the position with only the opponent lit", () => {
     render(<NflGameView block={bearsGame()} live={false} />);
-    const strip = screen.getByRole("img", { name: /Saints defense allows 29\.8 WR points a game, 14th fewest of 32/ });
+    const strip = screen.getByRole("img", {
+      name: /Saints defense allows 29\.8 WR points a game, 14th fewest of 32/,
+    });
     const ticks = [...strip.querySelectorAll<HTMLElement>("[data-defense]")];
     expect(ticks).toHaveLength(32);
-    expect(ticks.filter((tick) => tick.className.includes("bg-accent")).map((tick) => tick.dataset.defense)).toEqual(["NO"]);
+    expect(
+      ticks
+        .filter((tick) => tick.className.includes("bg-accent"))
+        .map((tick) => tick.dataset.defense),
+    ).toEqual(["NO"]);
   });
 
   it("sets each pass-share bar against the league mark", () => {
     render(<NflGameView block={bearsGame()} live={false} />);
-    expect(screen.getByRole("img", { name: "Bears pass 50% of plays, against 55% for the league" })).toBeTruthy();
-    expect(screen.getByRole("img", { name: "Saints pass 62% of plays, against 55% for the league" })).toBeTruthy();
+    expect(
+      screen.getByRole("img", { name: "Bears pass 50% of plays, against 55% for the league" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("img", { name: "Saints pass 62% of plays, against 55% for the league" }),
+    ).toBeTruthy();
     expect(document.querySelectorAll("[data-league-mark]")).toHaveLength(2);
   });
 

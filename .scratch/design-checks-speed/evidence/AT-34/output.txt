@@ -1,0 +1,32 @@
+$ git ls-files .github/workflows
+.github/workflows/check.yml
+.github/workflows/deploy-api.yml
+.github/workflows/deploy-sites.yml
+.github/workflows/rebuild.yml
+.github/workflows/refresh.yml
+.github/workflows/rerun.yml
+.github/workflows/verdict.yml
+exit code: 0
+
+$ git grep -n "runs-on" -- .github
+.github/workflows/check.yml:30:    runs-on: ubuntu-latest
+.github/workflows/check.yml:50:    runs-on: ubuntu-latest
+.github/workflows/check.yml:105:    runs-on: ubuntu-latest
+.github/workflows/check.yml:203:    runs-on: ubuntu-latest
+.github/workflows/check.yml:234:    runs-on: ubuntu-latest
+.github/workflows/check.yml:258:    runs-on: ubuntu-latest
+.github/workflows/check.yml:283:    runs-on: ubuntu-latest
+.github/workflows/check.yml:311:    runs-on: ubuntu-latest
+.github/workflows/deploy-api.yml:36:    runs-on: ubuntu-latest
+.github/workflows/deploy-api.yml:79:    runs-on: ubuntu-latest
+.github/workflows/deploy-sites.yml:50:    runs-on: ubuntu-latest
+.github/workflows/deploy-sites.yml:67:    runs-on: ubuntu-latest
+.github/workflows/rebuild.yml:24:    runs-on: ubuntu-latest
+.github/workflows/refresh.yml:20:    runs-on: ubuntu-latest
+.github/workflows/rerun.yml:22:    runs-on: ubuntu-latest
+.github/workflows/verdict.yml:32:    runs-on: ubuntu-latest
+exit code: 0
+
+$ git grep -n -i -E "larger|self-hosted|macos|windows|-cores|xlarge|depot|buildjet|namespace|blacksmith" -- .github
+exit code: 1
+

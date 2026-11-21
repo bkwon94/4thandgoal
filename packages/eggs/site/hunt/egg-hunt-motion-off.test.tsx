@@ -4,34 +4,34 @@
  * matchMedia is a stub, and it must exist before Framer Motion first reads it, so the stub runs at the top of the file.
  */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { TAP_GAP_MS } from "../listener/listener";
 import { fakeEggsApi, PASSPHRASE } from "../lib/fixtures/eggs-api";
 import { STAMP_MS } from "./claim-ticket";
 import { EggHunt } from "./egg-hunt";
 
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      matches: query.includes("prefers-reduced-motion"),
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as MediaQueryList,
-);
+beforeEach(() => {
+  spyOn(globalThis, "matchMedia").mockImplementation(
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList,
+  );
+});
 
 afterEach(() => {
   cleanup();
   localStorage.clear();
 });
-afterAll(() => vi.unstubAllGlobals());
 
 describe("EggHunt with reduced motion", () => {
   it("shows the letter tile at once on a tap of the egg, with no ring, no crack line, no shard, and no motion class", async () => {

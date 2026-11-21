@@ -6,11 +6,14 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { type Offense, report } from "./rule-report";
 
 /* The tracker and the state file sit at the repo root, so the rule asks git for the root and not the folder of the app. */
-const ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8", env: cleanGitEnv() }).trim();
+const ROOT = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+  encoding: "utf8",
+  env: cleanGitEnv(),
+}).trim();
 const STATE_FILE = "docs/agents/state.md";
 /* A shared feature keeps a site and a pipeline subfolder, so a ticket path may name the app between the feature and issues. */
 const TICKET_PATH = /^\.scratch\/([^/]+)\/(?:(site|pipeline)\/)?issues\/([^/]+)\.md$/;
@@ -22,7 +25,15 @@ const RULE_ID = "tracker/state-file";
 
 /* The nine statuses of a ticket. The first word of a Status line must be one of them. */
 const STATUSES = [
-  "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "in-progress", "in-review", "blocked", "done", "wontfix",
+  "needs-triage",
+  "needs-info",
+  "ready-for-agent",
+  "ready-for-human",
+  "in-progress",
+  "in-review",
+  "blocked",
+  "done",
+  "wontfix",
 ];
 const STATUS_RULE = "the first word of the Status line of a ticket is one of the nine statuses";
 const STATUS_RULE_ID = "tracker/status";
@@ -49,7 +60,11 @@ function cleanGitEnv(): NodeJS.ProcessEnv {
  * An untracked draft ticket in one checkout does not change the verdict.
  */
 function trackedTickets(root: string): Ticket[] {
-  return execFileSync("git", ["ls-files", ".scratch"], { cwd: root, encoding: "utf8", env: cleanGitEnv() })
+  return execFileSync("git", ["ls-files", ".scratch"], {
+    cwd: root,
+    encoding: "utf8",
+    env: cleanGitEnv(),
+  })
     .split("\n")
     .filter((path) => TICKET_PATH.test(path))
     .map((path) => ({ path, source: readFileSync(join(root, path), "utf8") }));
@@ -74,7 +89,8 @@ function openTickets(tickets: Ticket[]): OpenTicket[] {
   for (const { path, source } of [...tickets].sort((a, b) => a.path.localeCompare(b.path))) {
     const [, feature, app, name] = path.match(TICKET_PATH) ?? [];
     const key = `${feature}/${app ?? ""}`;
-    if (feature && !CLOSED.has(status(source)) && !open.has(key)) open.set(key, { feature, app: app ?? null, name });
+    if (feature && !CLOSED.has(status(source)) && !open.has(key))
+      open.set(key, { feature, app: app ?? null, name });
   }
   return [...open.values()];
 }
@@ -84,7 +100,10 @@ function openTickets(tickets: Ticket[]): OpenTicket[] {
  * A ticket with no subfolder gives the rule no app, so any row of its feature covers it.
  */
 function covers(row: Row, ticket: OpenTicket): boolean {
-  return row.feature === ticket.feature && (ticket.app === null || row.app === ticket.app || row.app === "both");
+  return (
+    row.feature === ticket.feature &&
+    (ticket.app === null || row.app === ticket.app || row.app === "both")
+  );
 }
 
 /* Each table row below the header and the separator, with its line. The first cell is the feature and the second is the App, with backticks removed. */
@@ -130,15 +149,17 @@ function statusOffenses(tickets: Ticket[]): Offense[] {
     const word = status(source);
     if (word === "none" || STATUSES.includes(word)) return [];
     const line = source.split("\n").findIndex((text) => /^(?:\*\*)?Status:/.test(text)) + 1;
-    return [{
-      path,
-      line,
-      ruleId: STATUS_RULE_ID,
-      what: `The ticket has the status ${word || "none"}, and it is not one of the nine statuses.`,
-      rule: STATUS_RULE,
-      adr: ADR,
-      fix: `set the first word of the Status line to one of: ${STATUSES.join(", ")}.`,
-    }];
+    return [
+      {
+        path,
+        line,
+        ruleId: STATUS_RULE_ID,
+        what: `The ticket has the status ${word || "none"}, and it is not one of the nine statuses.`,
+        rule: STATUS_RULE,
+        adr: ADR,
+        fix: `set the first word of the Status line to one of: ${STATUSES.join(", ")}.`,
+      },
+    ];
   });
 }
 
@@ -146,13 +167,16 @@ function fakeTicket(path: string, statusLine: string): Ticket {
   return { path, source: `# A ticket\n\n${statusLine}\n` };
 }
 
-const TABLE = "| Feature | App | Next ticket | Blocked by | Hold |\n| --- | --- | --- | --- | --- |\n";
+const TABLE =
+  "| Feature | App | Next ticket | Blocked by | Hold |\n| --- | --- | --- | --- | --- |\n";
 
 describe("the tracker rule", () => {
   it("finds the tracked tickets", () => {
     // An empty list would pass with no ticket read.
     const paths = trackedTickets(ROOT).map(({ path }) => path);
-    expect(paths).toContain(".scratch/agent-habits/site/issues/02-a-state-file-lists-each-open-feature-and-its-next-step.md");
+    expect(paths).toContain(
+      ".scratch/agent-habits/site/issues/02-a-state-file-lists-each-open-feature-and-its-next-step.md",
+    );
   });
 
   it("finds one row in the state file for each feature with an open ticket, and no other row", () => {
@@ -178,23 +202,39 @@ describe("the tracker rule", () => {
     expect(offenses(tickets, TABLE)).toEqual([]);
     expect(statusOffenses(tickets)).toEqual([]);
     const odd = statusOffenses([fakeTicket(".scratch/a/issues/03-z.md", "Status: backlog")]);
-    expect(odd.map(({ line, ruleId }) => ({ line, ruleId }))).toEqual([{ line: 3, ruleId: "tracker/status" }]);
+    expect(odd.map(({ line, ruleId }) => ({ line, ruleId }))).toEqual([
+      { line: 3, ruleId: "tracker/status" },
+    ]);
   });
 
   it("finds one offense at line 1 for a feature with an open ticket and no row", () => {
-    const tickets = [fakeTicket(".scratch/a/issues/01-x.md", "**Status:** done"), fakeTicket(".scratch/a/issues/02-y.md", "**Status:** triage")];
+    const tickets = [
+      fakeTicket(".scratch/a/issues/01-x.md", "**Status:** done"),
+      fakeTicket(".scratch/a/issues/02-y.md", "**Status:** triage"),
+    ];
     const found = offenses(tickets, TABLE);
     expect(found.map(({ line, ruleId, what }) => ({ line, ruleId, what }))).toEqual([
-      { line: 1, ruleId: "tracker/state-file", what: "a has the open ticket 02-y, and the state file has no row for it." },
+      {
+        line: 1,
+        ruleId: "tracker/state-file",
+        what: "a has the open ticket 02-y, and the state file has no row for it.",
+      },
     ]);
   });
 
   it("finds one offense at the line of a row with no open ticket", () => {
-    const tickets = [fakeTicket(".scratch/a/issues/01-x.md", "**Status:** ready-for-agent"), fakeTicket(".scratch/b/issues/01-x.md", "**Status:** done")];
+    const tickets = [
+      fakeTicket(".scratch/a/issues/01-x.md", "**Status:** ready-for-agent"),
+      fakeTicket(".scratch/b/issues/01-x.md", "**Status:** done"),
+    ];
     const state = `# State\n\n${TABLE}| \`a\` | site | 01 | none | |\n| \`b\` | site | 02 | none | |\n`;
     const found = offenses(tickets, state);
     expect(found.map(({ line, ruleId, fix }) => ({ line, ruleId, fix }))).toEqual([
-      { line: 6, ruleId: "tracker/state-file", fix: "remove the row, because the feature is done." },
+      {
+        line: 6,
+        ruleId: "tracker/state-file",
+        fix: "remove the row, because the feature is done.",
+      },
     ]);
   });
 
@@ -255,10 +295,18 @@ describe("the tracker rule", () => {
       execFileSync("git", ["add", "."], { cwd: dir, env });
       const found = offenses(trackedTickets(dir), `${TABLE}| \`waiver\` | site | 01 | none | |\n`);
       expect(found.map(({ line, what }) => ({ line, what }))).toEqual([
-        { line: 1, what: "waiver has the open ticket pipeline/09-usage-floor, and the state file has no row for it." },
-        { line: 3, what: "The row for waiver with the App site names a feature with no open ticket there." },
+        {
+          line: 1,
+          what: "waiver has the open ticket pipeline/09-usage-floor, and the state file has no row for it.",
+        },
+        {
+          line: 3,
+          what: "The row for waiver with the App site names a feature with no open ticket there.",
+        },
       ]);
-      expect(offenses(trackedTickets(dir), `${TABLE}| \`waiver\` | pipeline | 09 | none | |\n`)).toEqual([]);
+      expect(
+        offenses(trackedTickets(dir), `${TABLE}| \`waiver\` | pipeline | 09 | none | |\n`),
+      ).toEqual([]);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

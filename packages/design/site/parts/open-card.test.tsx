@@ -3,7 +3,7 @@
  * They check the toggle states, the closed panel that find-in-page can still find, and the open on a find match.
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { OpenCard } from "./open-card";
 
 afterEach(() => {
@@ -47,7 +47,11 @@ describe("OpenCard", () => {
     expect(chevron.getAttribute("aria-label")).toBe("Hide the details");
     expect(panel.hasAttribute("hidden")).toBe(false);
     expect(head.closest("[data-open]")?.getAttribute("data-open")).toBe("true");
-    expect(within(panel).getAllByRole("listitem").map((chip) => chip.textContent)).toEqual(["Best A. Player 30", "Records 5-3 · 3-5"]);
+    expect(
+      within(panel)
+        .getAllByRole("listitem")
+        .map((chip) => chip.textContent),
+    ).toEqual(["Best A. Player 30", "Records 5-3 · 3-5"]);
     const link = screen.getByRole("link");
     expect(link.textContent).toBe("Manager page of Team A");
     expect(link.getAttribute("href")).toBe("/2026/managers/9/");

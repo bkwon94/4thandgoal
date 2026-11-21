@@ -1,0 +1,42 @@
+$ grep -n "accent-wash\|dark:" apps/site/src/app/front-door/site-answer.tsx
+69:const TOOL_TINT = "bg-accent-wash-chosen text-accent-ink";
+73:const TOOL_BUTTON = `${TOOL_TINT} transition-[background-color,transform] duration-150 ease-out hover-fine:bg-accent-wash-hover`;
+132:  "border border-transparent bg-accent-wash text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-accent-wash-hover dark:border-rule";
+exit 0
+
+$ grep -rn "dark:bg-\[" apps/site/src/app/front-door/site-answer.tsx
+exit 1
+
+$ grep -rn "accent-wash" apps/site/src packages/*/site | grep -v globals.css   # every use of the three tokens
+apps/site/src/app/front-door/site-answer.tsx:69:const TOOL_TINT = "bg-accent-wash-chosen text-accent-ink";
+apps/site/src/app/front-door/site-answer.tsx:73:const TOOL_BUTTON = `${TOOL_TINT} transition-[background-color,transform] duration-150 ease-out hover-fine:bg-accent-wash-hover`;
+apps/site/src/app/front-door/site-answer.tsx:132:  "border border-transparent bg-accent-wash text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-accent-wash-hover dark:border-rule";
+
+$ grep -n "^@theme static {\|^\.dark {\|accent-wash" apps/site/src/app/globals.css   # the block start lines and the token lines
+40:@theme static {
+258:  --color-accent-wash: color-mix(in srgb, var(--color-accent) 10%, var(--color-card));
+259:  --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 20%, var(--color-card));
+260:  --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 28%, var(--color-card));
+353:.dark {
+366:  --color-accent-wash: var(--color-raised);
+367:  --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 24%, var(--color-raised));
+368:  --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 34%, var(--color-raised));
+
+$ sed -n 256,260p apps/site/src/app/globals.css   # the light block (@theme static, lines 40 to 269)
+  /* The accent washes of the chips of a site answer: a tile at rest, a chosen Tool, and the hover of both. Each mixes the
+       accent into the card, and the .dark block below mixes it into the raised surface, so a chip needs no dark: class. */
+  --color-accent-wash: color-mix(in srgb, var(--color-accent) 10%, var(--color-card));
+  --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 20%, var(--color-card));
+  --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 28%, var(--color-card));
+
+$ sed -n 365,368p apps/site/src/app/globals.css   # the dark block (.dark, lines 353 to 376)
+  /* The accent washes of the chips: the raised surface at rest, then the accent into the raised surface. */
+  --color-accent-wash: var(--color-raised);
+  --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 24%, var(--color-raised));
+  --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 34%, var(--color-raised));
+
+# For reference, the same chip class lines on main:
+$ git show main:apps/site/src/app/front-door/site-answer.tsx | grep -n "bg-\[\|dark:bg"
+57:const TOOL_TINT = "bg-[color-mix(in_srgb,var(--color-accent)_20%,var(--color-card))] text-accent-ink dark:bg-[color-mix(in_srgb,var(--color-accent)_24%,var(--color-raised))]";
+61:const TOOL_BUTTON = `${TOOL_TINT} transition-[background-color,transform] duration-150 ease-out hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_28%,var(--color-card))] dark:hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_34%,var(--color-raised))]`;
+110:  "border border-transparent bg-[color-mix(in_srgb,var(--color-accent)_10%,var(--color-card))] text-ink transition-[background-color,transform] duration-150 ease-out hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_28%,var(--color-card))] dark:border-rule dark:bg-raised dark:hover-fine:bg-[color-mix(in_srgb,var(--color-accent)_34%,var(--color-raised))]";

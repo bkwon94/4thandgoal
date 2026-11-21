@@ -13,7 +13,11 @@ import { useAnnouncement } from "@/app/use-announcement";
 
 /* The release is the merge day of the spec, Thursday 2026-11-19, as Brian set. The Announcement stops 1 week later,
    from the start of 2026-11-26 in the time of the manager. */
-export const SIM_ANNOUNCEMENT = { id: "season-sim-2026", release: "2026-11-19", stops: "2026-11-26" } as const;
+export const SIM_ANNOUNCEMENT = {
+  id: "season-sim-2026",
+  release: "2026-11-19",
+  stops: "2026-11-26",
+} as const;
 
 const COPY = {
   eyebrow: "New: Season sim",
@@ -23,14 +27,27 @@ const COPY = {
   dismiss: "Not now",
 };
 
-export function SimAnnouncement({ data, siteName, href }: { data: PreviewData; siteName: string; href: string }) {
+export function SimAnnouncement({
+  data,
+  siteName,
+  href,
+}: {
+  data: PreviewData;
+  siteName: string;
+  href: string;
+}) {
   // The team kept when the page loads. A load with no team opens the team picker, so the Announcement skips that load
   // even when the pick comes before the load beat. The note then shows on the next load (story 51).
   const keptAtLoad = useRef<number | null>(null);
   useEffect(() => {
     keptAtLoad.current = getYourTeam();
   }, []);
-  const { open, data: you, dismiss, follow } = useAnnouncement({
+  const {
+    open,
+    data: you,
+    dismiss,
+    follow,
+  } = useAnnouncement({
     id: SIM_ANNOUNCEMENT.id,
     href,
     stops: SIM_ANNOUNCEMENT.stops,

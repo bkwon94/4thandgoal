@@ -17,7 +17,8 @@ const BULLET = /^\s*[-*+]\s+(.*)$/;
 const NUMBER = /^\s*(\d+)[.)]\s+(.*)$/;
 /* Bold is `**x**` or `__x__`, italic is `*x*` or `_x_`. An underscore inside a word, as in a snake_case name, is no mark.
    A mark never starts or ends on a space, so "5 * 3 * 2" stays plain. */
-const INLINE = /\*\*(?=\S)(.+?)(?<=\S)\*\*|__(?=\S)(.+?)(?<=\S)__|\*(?=\S)(.+?)(?<=\S)\*|(?<!\w)_(?=\S)(.+?)(?<=\S)_(?!\w)/g;
+const INLINE =
+  /\*\*(?=\S)(.+?)(?<=\S)\*\*|__(?=\S)(.+?)(?<=\S)__|\*(?=\S)(.+?)(?<=\S)\*|(?<!\w)_(?=\S)(.+?)(?<=\S)_(?!\w)/g;
 
 /* The runs of one line or one list item. */
 function runsOf(line: string): TextRun[] {
@@ -26,7 +27,11 @@ function runsOf(line: string): TextRun[] {
   for (const match of line.matchAll(INLINE)) {
     if (match.index > at) runs.push({ mark: "plain", text: line.slice(at, match.index) });
     const bold = match[1] ?? match[2];
-    runs.push(bold !== undefined ? { mark: "bold", text: bold } : { mark: "italic", text: (match[3] ?? match[4])! });
+    runs.push(
+      bold !== undefined
+        ? { mark: "bold", text: bold }
+        : { mark: "italic", text: (match[3] ?? match[4])! },
+    );
     at = match.index + match[0].length;
   }
   if (at < line.length) runs.push({ mark: "plain", text: line.slice(at) });
@@ -80,21 +85,44 @@ export function textWords(text: string): number {
 /* The text block. Each word goes through `word` with its index in the whole text, so a live Answer can sweep its words
    in one by one. With no `word`, each run shows as it is. Only p, ul, ol, li, strong, em, and the spans of `word` reach
    the page. React escapes every text, so raw HTML in the text shows as its letters. */
-export function TextBlock({ text, className = "", word }: { text: string; className?: string; word?: (word: string, index: number) => ReactNode }) {
+export function TextBlock({
+  text,
+  className = "",
+  word,
+}: {
+  text: string;
+  className?: string;
+  word?: (word: string, index: number) => ReactNode;
+}) {
   let index = 0;
   const show = (run: TextRun, key: number) => {
     const body = word
-      ? tokensOf(run.text).map((token, at) => (token.trim() ? <Fragment key={at}>{word(token, index++)}</Fragment> : token))
+      ? tokensOf(run.text).map((token, at) =>
+          token.trim() ? <Fragment key={at}>{word(token, index++)}</Fragment> : token,
+        )
       : run.text;
-    if (run.mark === "bold") return <strong key={key} className="font-semibold text-ink">{body}</strong>;
+    if (run.mark === "bold")
+      return (
+        <strong key={key} className="text-ink font-semibold">
+          {body}
+        </strong>
+      );
     if (run.mark === "italic") return <em key={key}>{body}</em>;
     return <span key={key}>{body}</span>;
   };
   const line = (runs: TextRun[]) => runs.map(show);
   return (
-    <div data-text-block="" className={`flex flex-col gap-sp-3 text-body leading-body ${className}`}>
+    <div
+      data-text-block=""
+      className={`gap-sp-3 text-body leading-body flex flex-col ${className}`}
+    >
       {textParts(text).map((part, key) => {
-        if (part.kind === "paragraph") return <p key={key} className="m-0">{line(part.runs)}</p>;
+        if (part.kind === "paragraph")
+          return (
+            <p key={key} className="m-0">
+              {line(part.runs)}
+            </p>
+          );
         const items = part.items.map((runs, at) => (
           <li key={at} className="pl-sp-1">
             {line(runs)}
@@ -102,11 +130,15 @@ export function TextBlock({ text, className = "", word }: { text: string; classN
         ));
         // The markers sit in the mute ink, so the words of each item lead.
         return part.kind === "bullets" ? (
-          <ul key={key} className="m-0 flex list-disc flex-col gap-sp-1 pl-sp-5 marker:text-mute">
+          <ul key={key} className="gap-sp-1 pl-sp-5 marker:text-mute m-0 flex list-disc flex-col">
             {items}
           </ul>
         ) : (
-          <ol key={key} start={part.start === 1 ? undefined : part.start} className="m-0 flex list-decimal flex-col gap-sp-1 pl-sp-5 marker:text-mute marker:tabular-nums">
+          <ol
+            key={key}
+            start={part.start === 1 ? undefined : part.start}
+            className="gap-sp-1 pl-sp-5 marker:text-mute m-0 flex list-decimal flex-col marker:tabular-nums"
+          >
             {items}
           </ol>
         );

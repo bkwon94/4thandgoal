@@ -4,7 +4,7 @@
  * They read only the attributes of the image, never a class name.
  */
 import { cleanup, fireEvent, render } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { Headshot } from "./headshot";
 import { HEADSHOT_FALLBACK, headshotSrc, sleeperHeadshot } from "./images";
 
@@ -17,7 +17,9 @@ afterEach(cleanup);
 
 describe("Headshot", () => {
   it("renders the src it gets", () => {
-    expect(renderHeadshot(<Headshot src="headshots/4046.png" />).getAttribute("src")).toBe("headshots/4046.png");
+    expect(renderHeadshot(<Headshot src="headshots/4046.png" />).getAttribute("src")).toBe(
+      "headshots/4046.png",
+    );
   });
 
   it("has an empty alt text, because the player name sits next to it", () => {
@@ -31,7 +33,9 @@ describe("Headshot", () => {
   });
 
   it("sets no inline size for a named size", () => {
-    expect(renderHeadshot(<Headshot src="headshots/4046.png" size="avatar" />).getAttribute("style")).toBeNull();
+    expect(
+      renderHeadshot(<Headshot src="headshots/4046.png" size="avatar" />).getAttribute("style"),
+    ).toBeNull();
   });
 
   it("loads lazy only when asked", () => {

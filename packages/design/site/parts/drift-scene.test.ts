@@ -2,7 +2,7 @@
  * Tests for the data of the drift scene, the scatter of lights that never settles, as on the 404 page.
  * They check the mode, the count of lights, and that the scene shows no label, no guide, and no margin mark.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { driftScene } from "./drift-scene";
 import { layoutScene } from "./scene-math";
 

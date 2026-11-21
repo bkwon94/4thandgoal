@@ -53,9 +53,14 @@ export default async function WaiverPage({ params }: Props) {
         <WeekLine label="WEEK" number={board.week} />
         <div className="mt-sp-1 text-meta text-on-dark-2 tabular-nums">{`Built ${BUILT.format(new Date(board.built))}`}</div>
       </TopBand>
-      <main className="mx-auto max-w-page bg-page">
+      <main className="max-w-page bg-page mx-auto">
         {/* The War chest shows the team picker of the analyzer through its port, so the waiver package imports no other core package. */}
-        <WarChest board={board} teams={page.teams} avatars={weekAvatars(season, week, page.avatars)} TeamPicker={TeamPicker} />
+        <WarChest
+          board={board}
+          teams={page.teams}
+          avatars={weekAvatars(season, week, page.avatars)}
+          TeamPicker={TeamPicker}
+        />
       </main>
     </>
   );

@@ -28,13 +28,21 @@ test.afterAll(async () => {
 
 /* The last words of the recap of the game, from the built page JSON. The pipeline rewrites recaps, so the test never holds them as a literal. */
 function recapWords(): string {
-  const page = JSON.parse(readFileSync(join(OUT, ROUTE, "page.json"), "utf8")) as { matchups: { id: number; recap: string | null }[] };
+  const page = JSON.parse(readFileSync(join(OUT, ROUTE, "page.json"), "utf8")) as {
+    matchups: { id: number; recap: string | null }[];
+  };
   const recap = page.matchups.find((matchup) => matchup.id === GAME)?.recap;
   if (!recap) throw new Error(`game ${GAME} of ${ROUTE} has no recap`);
-  return recap.replace(/[.!?]$/, "").split(" ").slice(-6).join(" ");
+  return recap
+    .replace(/[.!?]$/, "")
+    .split(" ")
+    .slice(-6)
+    .join(" ");
 }
 
-test("find-in-page finds a word of a closed recap, and the match opens the card (AT-8)", async ({ page }) => {
+test("find-in-page finds a word of a closed recap, and the match opens the card (AT-8)", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   // A text fragment runs the find of the browser on load, the same search as find-in-page.
   const words = recapWords();
@@ -72,7 +80,9 @@ test("the open of a game card keeps its frame rate on a slow phone (AT-10)", asy
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
   const median = gaps[Math.floor(gaps.length / 2)];
   const fps = Math.round(1000 / median);
-  console.log(`frame rate: median ${fps} fps over ${gaps.length} frames, throttle ${THROTTLE}x, viewport 375px, worst gap ${gaps.at(-1)?.toFixed(1)} ms`);
+  console.log(
+    `frame rate: median ${fps} fps over ${gaps.length} frames, throttle ${THROTTLE}x, viewport 375px, worst gap ${gaps.at(-1)?.toFixed(1)} ms`,
+  );
   await expect(head).toHaveAttribute("aria-expanded", "true");
   // ADR 0028 keeps the blur while the median is 50 fps or more.
   expect(fps).toBeGreaterThanOrEqual(50);

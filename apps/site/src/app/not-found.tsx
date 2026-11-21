@@ -37,7 +37,7 @@ export function NotFoundHero({ scene }: { scene?: HeroScene }) {
         <Rise step={1}>
           <div
             aria-hidden="true"
-            className="w-fit font-mono text-hero leading-none font-bold tracking-grade"
+            className="text-hero tracking-grade w-fit font-mono leading-none font-bold"
             {...stableId("not-found-hero")}
           >
             404
@@ -45,14 +45,17 @@ export function NotFoundHero({ scene }: { scene?: HeroScene }) {
         </Rise>
       }
       action={
-        <Rise step={2} className="flex flex-wrap gap-sp-3">
+        <Rise step={2} className="gap-sp-3 flex flex-wrap">
           {/* A client with no published week has no week to go to, so it shows only the home button. */}
           {latest !== undefined && (
             <a href={latest.href} className={`${BUTTON} bg-accent text-on-dark`}>
               Go to Week {latest.number}
             </a>
           )}
-          <a href={shell.brand.home} className={`${BUTTON} border border-rule-dark bg-chip-dark text-on-dark`}>
+          <a
+            href={shell.brand.home}
+            className={`${BUTTON} border-rule-dark bg-chip-dark text-on-dark border`}
+          >
             Go Home
           </a>
         </Rise>
@@ -67,7 +70,7 @@ export default function NotFound() {
       {/* The page is no destination, so it passes no page href, and no item of the shell is marked. */}
       <TopBand {...shellProps()} />
       {/* The mark tells the egg hunt that the page is the 404 page, whatever path the reader typed. */}
-      <main className="mx-auto w-full max-w-page px-gutter py-sp-6" {...{ [NOT_FOUND]: true }}>
+      <main className="max-w-page px-gutter py-sp-6 mx-auto w-full" {...{ [NOT_FOUND]: true }}>
         {/* A lost page has no data to chart, so its lights drift and never settle (story 28). */}
         <NotFoundHero scene={driftScene} />
       </main>

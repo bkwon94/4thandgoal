@@ -4,7 +4,7 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { FONT_CAPS as CAPS, FONT_TOTAL as TOTAL } from "./budget";
 
 const FONTS = join(process.cwd(), "src", "app", "fonts");

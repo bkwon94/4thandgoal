@@ -1,15 +1,24 @@
 /**
- * Tests for the motion of the manager page with motion on. jsdom has no matchMedia, so Framer Motion reads no reduced motion.
+ * Tests for the motion of the manager page with motion on. The window has no reduced motion, so Framer Motion plays each reveal.
  * The odds count from zero once and must end at the final percent. The grade and the slot tiles must end at rest.
  */
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import type { Manager } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";
 import { ManagerHero } from "./manager-hero";
 import { Roster } from "./roster";
 
-afterEach(cleanup);
+// happy-dom has an IntersectionObserver that never reports an entry, so a reveal that waits for the viewport never plays.
+// A browser with no observer plays the reveal on mount, so the tests run without one, as the reveal expects.
+const observer = globalThis.IntersectionObserver;
+beforeEach(() => {
+  Reflect.deleteProperty(globalThis, "IntersectionObserver");
+});
+afterEach(() => {
+  cleanup();
+  globalThis.IntersectionObserver = observer;
+});
 
 /* A fixture entry with the joined fields of the loader and the given playoff odds. */
 function managerOf(odds: Manager["odds"]): Manager {
@@ -25,10 +34,19 @@ function numbers(): HTMLElement[] {
 
 describe("Manager page motion", () => {
   it("counts the odds up once and ends at the final percent", async () => {
-    render(<ManagerHero manager={managerOf({ playoff: 63, bye: 20, seed: 3, status: "open" })} avatar="avatars/1.jpg" teams={12} through={9} />);
+    render(
+      <ManagerHero
+        manager={managerOf({ playoff: 63, bye: 20, seed: 3, status: "open" })}
+        avatar="avatars/1.jpg"
+        teams={12}
+        through={9}
+      />,
+    );
     const odds = numbers()[0];
     // The count starts from zero on the next frame, so the percent first reads under the final number.
-    await waitFor(() => expect(Number.parseInt(odds.textContent!)).toBeLessThan(63), { timeout: 1000 });
+    await waitFor(() => expect(Number.parseInt(odds.textContent!)).toBeLessThan(63), {
+      timeout: 1000,
+    });
     // The count runs over the next frames, so the wait passes once the count ends.
     await waitFor(() => expect(odds.textContent).toBe("63%"), { timeout: 1000 });
     // The count runs once, so the percent stays final after more frames.
@@ -45,7 +63,10 @@ describe("Manager page motion", () => {
     render(<ManagerHero manager={managerOf(null)} avatar="avatars/1.jpg" teams={12} through={9} />);
     const letter = screen.getByRole("button", { name: /^Grade D/ });
     await waitFor(() => expect(letter.closest("[data-reveal]")).not.toBeNull());
-    await waitFor(() => expect((letter.closest("[data-reveal]") as HTMLElement).style.opacity).toBe("1"), { timeout: 1000 });
+    await waitFor(
+      () => expect((letter.closest("[data-reveal]") as HTMLElement).style.opacity).toBe("1"),
+      { timeout: 1000 },
+    );
   });
 
   it("enters the four slot tiles, each in its own reveal", async () => {
@@ -54,7 +75,10 @@ describe("Manager page motion", () => {
     expect(lines).toHaveLength(4);
     for (const line of lines) expect(line.querySelector("[data-reveal]")).not.toBeNull();
     await waitFor(
-      () => lines.forEach((line) => expect((line.querySelector("[data-reveal]") as HTMLElement).style.opacity).toBe("1")),
+      () =>
+        lines.forEach((line) =>
+          expect((line.querySelector("[data-reveal]") as HTMLElement).style.opacity).toBe("1"),
+        ),
       { timeout: 1000 },
     );
   });

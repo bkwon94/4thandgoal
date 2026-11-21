@@ -38,7 +38,11 @@ function latestWeekPart(): HomeSection[] {
           />
           {page.matchups.length > 0 && (
             <HomeChapter id="numbers" title={`Week ${page.week} in four numbers`}>
-              <WeekNumbers matchups={page.matchups} median={page.median} gameChanger={page.game_changer} />
+              <WeekNumbers
+                matchups={page.matchups}
+                median={page.median}
+                gameChanger={page.game_changer}
+              />
             </HomeChapter>
           )}
         </>
@@ -51,18 +55,18 @@ function latestWeekPart(): HomeSection[] {
    The whole row is the link, so it is 44px tall or more. The arrow is drawn, because axe cannot read the contrast of a glyph. */
 function WeekRow({ week }: { week: WeekSummary }) {
   return (
-    <li className="border-t border-rule first:border-t-0">
+    <li className="border-rule border-t first:border-t-0">
       <a
         href={week.href}
-        className="press group grid min-h-touch grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 py-sp-3 text-ink no-underline"
+        className="press group min-h-touch gap-x-sp-3 py-sp-3 text-ink grid grid-cols-[auto_minmax(0,1fr)_auto] items-center no-underline"
       >
-        <span aria-hidden="true" className="font-mono text-stat font-bold tabular-nums">
+        <span aria-hidden="true" className="text-stat font-mono font-bold tabular-nums">
           {twoDigits(week.number)}
         </span>
-        <span className="flex min-w-0 flex-col gap-sp-0">
-          <b className="text-lead leading-tight group-hover:text-accent-ink">Week {week.number}</b>
-          <span className="text-meta leading-tight text-mute tabular-nums">{week.dates}</span>
-          <span className="text-meta leading-tight text-mute">{`${week.pickTeams[0]} vs ${week.pickTeams[1]}`}</span>
+        <span className="gap-sp-0 flex min-w-0 flex-col">
+          <b className="text-lead group-hover:text-accent-ink leading-tight">Week {week.number}</b>
+          <span className="text-meta text-mute leading-tight tabular-nums">{week.dates}</span>
+          <span className="text-meta text-mute leading-tight">{`${week.pickTeams[0]} vs ${week.pickTeams[1]}`}</span>
         </span>
         <svg
           aria-hidden="true"

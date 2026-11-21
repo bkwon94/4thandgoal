@@ -37,7 +37,10 @@ const BRAILLE = spinners.braille;
 export function Spinner({ className = "" }: { className?: string }) {
   const [frame, setFrame] = useState(0);
   useEffect(() => {
-    const timer = setInterval(() => setFrame((count) => (count + 1) % BRAILLE.frames.length), BRAILLE.interval);
+    const timer = setInterval(
+      () => setFrame((count) => (count + 1) % BRAILLE.frames.length),
+      BRAILLE.interval,
+    );
     return () => clearInterval(timer);
   }, []);
   return (
@@ -52,7 +55,7 @@ export function Spinner({ className = "" }: { className?: string }) {
 function Mark({ live }: { live: boolean }) {
   const off = useMotionOff();
   return (
-    <span className="flex w-sp-4 flex-none items-center justify-center">
+    <span className="w-sp-4 flex flex-none items-center justify-center">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={live ? "live" : "done"}
@@ -67,7 +70,7 @@ function Mark({ live }: { live: boolean }) {
               ✔
             </span>
           ) : off ? (
-            <span data-mark="" data-dot="" aria-hidden className="size-1.5 rounded-full bg-ink" />
+            <span data-mark="" data-dot="" aria-hidden className="bg-ink size-1.5 rounded-full" />
           ) : (
             <Spinner className="text-ink" />
           )}
@@ -81,13 +84,21 @@ function Mark({ live }: { live: boolean }) {
    stands in until a step comes. Each live line ends in one "…", added here and nowhere else. Each step lands with a
    short rise from a soft blur, and with motion off it only fades in. Once the wait ends, each step shows done. `first`
    is the stand-in line, the first line of the league by default. */
-export function Steps({ steps, live, first = FIRST_LINE }: { steps: Step[]; live: boolean; first?: string }) {
+export function Steps({
+  steps,
+  live,
+  first = FIRST_LINE,
+}: {
+  steps: Step[];
+  live: boolean;
+  first?: string;
+}) {
   const off = useMotionOff();
   const lines = live && steps.length === 0 ? [{ line: first, done: false }] : steps;
   if (lines.length === 0) return null;
   return (
     <div role="status">
-      <ol aria-label="Steps" className="m-0 flex list-none flex-col gap-sp-1 p-0">
+      <ol aria-label="Steps" className="gap-sp-1 m-0 flex list-none flex-col p-0">
         {lines.map((step, index) => {
           const running = live && !step.done;
           return (
@@ -95,13 +106,16 @@ export function Steps({ steps, live, first = FIRST_LINE }: { steps: Step[]; live
               // The first line gives its place to the first step, so the list never jumps.
               key={index}
               data-state={running ? "live" : "done"}
-              className="flex items-center gap-sp-2 font-mono text-meta leading-tight"
+              className="gap-sp-2 text-meta flex items-center font-mono leading-tight"
               initial={off ? { opacity: 0 } : { opacity: 0, y: 4, filter: "blur(2px)" }}
               animate={off ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={fadeIn(QUICK, Math.min(index, 6) * STAGGER)}
             >
               <Mark live={running} />
-              <span data-line="" className={`transition-colors duration-150 ${running ? "text-ink" : "text-mute"}`}>
+              <span
+                data-line=""
+                className={`transition-colors duration-150 ${running ? "text-ink" : "text-mute"}`}
+              >
                 {running ? `${step.line}…` : step.line}
               </span>
             </motion.li>

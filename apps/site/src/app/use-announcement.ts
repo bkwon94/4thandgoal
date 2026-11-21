@@ -47,7 +47,17 @@ function anotherSheetOpen(): boolean {
 /* `read` gives the data that the use needs, or null when it cannot open on this load, such as with no team set. A load
    that skips the open for any reason does not count as seen, so it shows on the next load. `data` stays after a close, so
    the sheet keeps its content while it leaves. */
-export function useAnnouncement<T>({ id, href, stops, read }: { id: string; href: string; stops: string; read: () => T | null }) {
+export function useAnnouncement<T>({
+  id,
+  href,
+  stops,
+  read,
+}: {
+  id: string;
+  href: string;
+  stops: string;
+  read: () => T | null;
+}) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<T | null>(null);
 

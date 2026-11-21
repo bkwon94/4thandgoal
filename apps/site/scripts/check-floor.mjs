@@ -13,6 +13,8 @@ const PASSES = [
 ];
 
 for (const pass of PASSES) {
-  const run = spawnSync("pnpm", ["exec", "playwright", "test", ...pass, ...args], { stdio: "inherit" });
+  const run = spawnSync("pnpm", ["exec", "playwright", "test", ...pass, ...args], {
+    stdio: "inherit",
+  });
   if (run.status !== 0) process.exit(run.status ?? 1);
 }

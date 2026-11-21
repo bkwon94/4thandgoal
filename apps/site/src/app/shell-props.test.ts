@@ -4,7 +4,8 @@
  */
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { createElement, type ReactElement } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, setSystemTime } from "bun:test";
+import { stubPhone } from "../../test/phone";
 import { readFixtureSite } from "@/fixtures/sites";
 import { TopBand } from "@cpc/design/shell/top-band";
 import type { MenuLinks } from "@/lib/client-values";
@@ -14,11 +15,12 @@ import { apiTarget, finderOn } from "@/lib/config";
 import { BandPart } from "./_routes/eggs/band";
 import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
+
+/* The menu sheet closes at the desktop tier, and happy-dom has a desktop-wide window, so each test sees a phone. */
+beforeEach(stubPhone);
 
 /* The menu links of a client that takes each package, as the registry gives them. */
 const LINKS: MenuLinks = {
@@ -31,7 +33,11 @@ const LINKS: MenuLinks = {
 
 describe("menuPages", () => {
   it("gives one destination per item, in the order of the items", () => {
-    const pages = menuPages([{ package: "analyzer" }, { page: "home" }, { package: "week" }], LINKS, "/");
+    const pages = menuPages(
+      [{ package: "analyzer" }, { page: "home" }, { package: "week" }],
+      LINKS,
+      "/",
+    );
     expect(pages).toEqual([
       { kind: "analyzer", label: "Trade Analyzer", short: "Trade", href: "/analyze/" },
       { kind: "home", label: "Home", short: "Home", href: "/" },
@@ -54,8 +60,15 @@ describe("menuPages", () => {
   });
 
   it("lists no midseason item, because a sixth item overflows the pill bar of CPC at 1280px", () => {
-    const links = { ...LINKS, midseason: () => ({ label: "Midseason Report", href: "/midseason/2026/" }) };
-    const pages = menuPages([{ package: "rankings" }, { package: "midseason", label: "Midseason Report" }], links, "/");
+    const links = {
+      ...LINKS,
+      midseason: () => ({ label: "Midseason Report", href: "/midseason/2026/" }),
+    };
+    const pages = menuPages(
+      [{ package: "rankings" }, { package: "midseason", label: "Midseason Report" }],
+      links,
+      "/",
+    );
     expect(pages.map((page) => page.kind)).toEqual(["rankings"]);
   });
 
@@ -65,7 +78,14 @@ describe("menuPages", () => {
   });
 
   it("takes the label of an item in place of the label of the package, in the pill bar only", () => {
-    const pages = menuPages([{ page: "home", label: "Start" }, { package: "analyzer", label: "Trades" }], LINKS, "/");
+    const pages = menuPages(
+      [
+        { page: "home", label: "Start" },
+        { package: "analyzer", label: "Trades" },
+      ],
+      LINKS,
+      "/",
+    );
     expect(pages.map((page) => page.label)).toEqual(["Start", "Trades"]);
     // The dock keeps the short label of the look, so five items fit the width of a phone.
     expect(pages.map((page) => page.short)).toEqual(["Home", "Trade"]);
@@ -81,12 +101,20 @@ describe("menuPages", () => {
 
   it("lists no page of a package that the registry omits", () => {
     const { rankings: _rankings, analyzer: _analyzer, ...rest } = LINKS;
-    const pages = menuPages([{ package: "week" }, { package: "rankings" }, { package: "analyzer" }], rest, "/");
+    const pages = menuPages(
+      [{ package: "week" }, { package: "rankings" }, { package: "analyzer" }],
+      rest,
+      "/",
+    );
     expect(pages.map((page) => page.label)).toEqual(["Week 7"]);
   });
 
   it("lists no page of a package with no page to link yet, such as managers with no managers file", () => {
-    const pages = menuPages([{ package: "rankings" }, { package: "managers" }], { ...LINKS, managers: () => null }, "/");
+    const pages = menuPages(
+      [{ package: "rankings" }, { package: "managers" }],
+      { ...LINKS, managers: () => null },
+      "/",
+    );
     expect(pages.map((page) => page.label)).toEqual(["Power Rankings"]);
   });
 });
@@ -96,8 +124,20 @@ describe("shellProps of cpc", () => {
   it("keeps the items and the labels of the CPC menu, with the short labels of the menu (AT-9, AT-10)", () => {
     // The report item shows once the season publishes a report, so this test leaves it out.
     const items = shellProps().menu.items.filter((item) => item.kind !== "midseason");
-    expect(items.map((item) => item.label)).toEqual(["Home", "Week 8", "Power Rankings", "Managers", "Trade Analyzer"]);
-    expect(items.map((item) => item.short)).toEqual(["Home", "Week 8", "Rankings", "Managers", "Trade"]);
+    expect(items.map((item) => item.label)).toEqual([
+      "Home",
+      "Week 8",
+      "Power Rankings",
+      "Managers",
+      "Trade Analyzer",
+    ]);
+    expect(items.map((item) => item.short)).toEqual([
+      "Home",
+      "Week 8",
+      "Rankings",
+      "Managers",
+      "Trade",
+    ]);
   });
 
   it("lists every published week, newest first, for the menu sheet (AT-11)", () => {
@@ -115,10 +155,15 @@ describe("shellProps of cpc", () => {
   });
 
   it("puts the Deadline banner with the Lock of client.toml under the band during Deadline week, and none after it (AT-50)", () => {
-    vi.useFakeTimers({ toFake: ["Date"] });
+    // Only `Date` is fixed. The real timers keep running.
     try {
-      vi.setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
-      const strip = shellProps().strip as ReactElement<{ lock: number; api: unknown; gradeHref: string; findHref: string | null }>;
+      setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
+      const strip = shellProps().strip as ReactElement<{
+        lock: number;
+        api: unknown;
+        gradeHref: string;
+        findHref: string | null;
+      }>;
       expect(strip.type).toBe(DeadlineBanner);
       expect(strip.props.lock).toBe(Date.parse("2026-11-24T00:00:00-05:00"));
       // The banner reads the Trade Wire of the client, and its links open the two modes of the analyzer. The finder
@@ -127,10 +172,10 @@ describe("shellProps of cpc", () => {
       expect(strip.props.gradeHref).toBe("/analyze/?mode=grade");
       expect(strip.props.findHref).toBe(finderOn ? "/analyze/?mode=find" : null);
       // A build one day after the Lock has no Deadline week, so its pages hold no banner.
-      vi.setSystemTime(new Date("2026-11-25T00:00:00-05:00"));
+      setSystemTime(new Date("2026-11-25T00:00:00-05:00"));
       expect(shellProps().strip).toBeNull();
     } finally {
-      vi.useRealTimers();
+      setSystemTime();
     }
   });
 
@@ -139,8 +184,12 @@ describe("shellProps of cpc", () => {
     // The egg button renders only after the board of the API names a drop, so the test reads the part in the slot.
     expect((shell.actions as ReactElement[]).map((part) => part.type)).toEqual([BandPart]);
     render(createElement(TopBand, { ...shell, pageHref: "/" }));
-    fireEvent.click(within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }));
-    expect(within(screen.getByRole("navigation", { name: "Pages" })).getAllByRole("link")).toHaveLength(5);
+    fireEvent.click(
+      within(screen.getByRole("banner")).getByRole("button", { name: "Open the menu" }),
+    );
+    expect(
+      within(screen.getByRole("navigation", { name: "Pages" })).getAllByRole("link"),
+    ).toHaveLength(5);
     cleanup();
   });
 });

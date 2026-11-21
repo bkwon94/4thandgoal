@@ -5,25 +5,25 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { act, cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, jest, mock } from "bun:test";
 import { spinners } from "unicode-animations";
 
-/* The test sets the reduced-motion switch for each case. */
-const motion = vi.hoisted(() => ({ off: false }));
-vi.mock("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
+/* The test sets the reduced-motion switch for each case, and each test sets it back to off at its end. */
+const motion = { off: false };
+mock.module("@cpc/design/hooks/use-motion-off", () => ({ useMotionOff: () => motion.off }));
 
 const { FIRST_LINE, Steps } = await import("./steps");
 
 const BRAILLE = spinners.braille.frames;
 
 beforeEach(() => {
-  motion.off = false;
-  vi.useFakeTimers();
+  jest.useFakeTimers();
 });
 
 afterEach(() => {
+  motion.off = false;
   cleanup();
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 const items = () => within(screen.getByRole("list", { name: "Steps" })).getAllByRole("listitem");
@@ -36,9 +36,9 @@ describe("Steps", () => {
     const [step] = items();
     expect(step.getAttribute("data-state")).toBe("live");
     expect(markOf(step)?.textContent).toBe(BRAILLE[0]);
-    act(() => vi.advanceTimersByTime(80));
+    act(() => jest.advanceTimersByTime(80));
     expect(markOf(step)?.textContent).toBe(BRAILLE[1]);
-    act(() => vi.advanceTimersByTime(80 * 9));
+    act(() => jest.advanceTimersByTime(80 * 9));
     expect(markOf(step)?.textContent).toBe(BRAILLE[0]);
   });
 
@@ -47,7 +47,9 @@ describe("Steps", () => {
     const [step] = items();
     expect(step.getAttribute("data-state")).toBe("done");
     expect(markOf(step)?.textContent).toBe("✔");
-    expect(vi.getTimerCount()).toBe(0);
+    // Framer Motion runs its frames on timers, so the check lets them end first. A spinner timer would still run.
+    act(() => jest.advanceTimersByTime(1000));
+    expect(jest.getTimerCount()).toBe(0);
   });
 
   it("shows a static dot on the live step under reduced motion, and runs no frame timer", () => {
@@ -56,7 +58,8 @@ describe("Steps", () => {
     const [step] = items();
     expect(markOf(step)?.textContent).toBe("");
     expect(markOf(step)?.getAttribute("data-dot")).toBe("");
-    expect(vi.getTimerCount()).toBe(0);
+    act(() => jest.advanceTimersByTime(1000));
+    expect(jest.getTimerCount()).toBe(0);
   });
 
   it("ends each live line in one ellipsis, and a done line in none", () => {

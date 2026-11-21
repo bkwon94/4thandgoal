@@ -3,7 +3,7 @@
  * on and off, the cap of 3, the find body, and the life of the block. fetch is a test stub that sends a real stream.
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { apiTarget, findResponse, teamBoGirds } from "../lib/fixtures/api";
 import type { Team } from "../lib/api";
@@ -16,12 +16,26 @@ const OTHER: Team = {
   team: "Lil Fridge",
   manager: "TeamJu",
   avatar: null,
-  players: [{ player_id: "4984", name: "Josh Allen", position: "QB", nfl_team: "BUF", headshot: "https://sleepercdn.com/content/nfl/players/4984.jpg" }],
+  players: [
+    {
+      player_id: "4984",
+      name: "Josh Allen",
+      position: "QB",
+      nfl_team: "BUF",
+      headshot: "https://sleepercdn.com/content/nfl/players/4984.jpg",
+    },
+  ],
 };
-const THIRD: Team = { roster_id: 2, team: "All You Need Is Love", manager: "wsh5022", avatar: null, players: [] };
+const THIRD: Team = {
+  roster_id: 2,
+  team: "All You Need Is Love",
+  manager: "wsh5022",
+  avatar: null,
+  players: [],
+};
 const TEAMS: Team[] = [THIRD, teamBoGirds, OTHER];
 
-const fetchStub = vi.fn();
+const fetchStub = mock();
 
 /* One part of the find stream as a `data:` line. */
 const line = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify(part)}\n\n`);
@@ -30,7 +44,9 @@ const line = (part: unknown) => new TextEncoder().encode(`data: ${JSON.stringify
 function heldStream() {
   let controller!: ReadableStreamDefaultController<Uint8Array>;
   const body = new ReadableStream<Uint8Array>({ start: (c) => void (controller = c) });
-  fetchStub.mockResolvedValueOnce(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+  fetchStub.mockResolvedValueOnce(
+    new Response(body, { headers: { "content-type": "text/event-stream" } }),
+  );
   return {
     end: (doc: unknown) => {
       controller.enqueue(line({ type: "data-answer", data: { kind: "find", document: doc } }));
@@ -42,7 +58,15 @@ const noop = () => {};
 
 function renderFinder(asker: number) {
   return render(
-    <TradeFinder teams={TEAMS} target={apiTarget} asker={asker} onAsker={noop} passphrase="localtest" onUnauthorized={noop} onOpen={noop} />,
+    <TradeFinder
+      teams={TEAMS}
+      target={apiTarget}
+      asker={asker}
+      onAsker={noop}
+      passphrase="localtest"
+      onUnauthorized={noop}
+      onOpen={noop}
+    />,
   );
 }
 
@@ -62,16 +86,18 @@ const strip = () => screen.getByRole("group", { name: "Trade block" });
 /* One toggle of the strip by its accessible name, such as "Kenneth Walker III, RB". */
 const toggle = (name: string) => within(strip()).getByRole("button", { name });
 /* The accessible names of the toggles of the strip, in the order of the strip. */
-const names = () => within(strip()).getAllByRole("button").map((button) => button.getAttribute("aria-label"));
+const names = () =>
+  within(strip())
+    .getAllByRole("button")
+    .map((button) => button.getAttribute("aria-label"));
 
 beforeEach(() => {
   fetchStub.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
+  spyOn(globalThis, "fetch").mockImplementation(fetchStub as unknown as typeof fetch);
 });
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
 });
 
 describe("Trade block", () => {
@@ -95,7 +121,9 @@ describe("Trade block", () => {
     ]);
     // Each item shows the headshot, the last name, and the position.
     const walker = toggle("Kenneth Walker III, RB");
-    expect(walker.querySelector("img")?.getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/8151.jpg");
+    expect(walker.querySelector("img")?.getAttribute("src")).toBe(
+      "https://sleepercdn.com/content/nfl/players/8151.jpg",
+    );
     expect(walker.textContent).toBe("WalkerRB");
   });
 
@@ -105,8 +133,12 @@ describe("Trade block", () => {
     fireEvent.click(toggle("Kenneth Walker III, RB"));
     expect(names()[0]).toBe("Kenneth Walker III, RB");
     expect(toggle("Kenneth Walker III, RB").getAttribute("aria-pressed")).toBe("true");
-    expect(toggle("Kenneth Walker III, RB").querySelector("img")?.className).toContain("ring-accent");
-    expect(toggle("Kenneth Walker III, RB").querySelector("[data-check]")?.getAttribute("data-check")).toBe("true");
+    expect(toggle("Kenneth Walker III, RB").querySelector("img")?.className).toContain(
+      "ring-accent",
+    );
+    expect(
+      toggle("Kenneth Walker III, RB").querySelector("[data-check]")?.getAttribute("data-check"),
+    ).toBe("true");
     expect(screen.getByText("1 of 3")).toBeTruthy();
     expect(screen.getByText("Trade block · tap to add")).toBeTruthy();
 
@@ -120,12 +152,18 @@ describe("Trade block", () => {
     renderFinder(6);
     fireEvent.click(toggle("Zay Flowers, WR"));
     fireEvent.click(toggle("Kenneth Walker III, RB"));
-    expect(names().slice(0, 3)).toEqual(["Zay Flowers, WR", "Kenneth Walker III, RB", "Aaron Rodgers, QB"]);
+    expect(names().slice(0, 3)).toEqual([
+      "Zay Flowers, WR",
+      "Kenneth Walker III, RB",
+      "Aaron Rodgers, QB",
+    ]);
   });
 
   it("scrolls the strip back to its start when a pick from the scrolled end lands at the front", () => {
     const { container } = renderFinder(6);
-    const viewport = container.querySelector<HTMLElement>("[data-slot=scroll-area-viewport]") as HTMLElement;
+    const viewport = container.querySelector<HTMLElement>(
+      "[data-slot=scroll-area-viewport]",
+    ) as HTMLElement;
     viewport.scrollLeft = 600;
     fireEvent.click(toggle("Parker Washington, WR"));
     expect(names()[0]).toBe("Parker Washington, WR");
@@ -143,17 +181,24 @@ describe("Trade block", () => {
   it("adds no one on a 4th tap, scrolls the strip back to the picks, and says why", () => {
     const { container } = renderFinder(6);
     const FULL = "Your block holds 3 players. Take one off to add another.";
-    for (const name of ["Kenneth Walker III, RB", "Zay Flowers, WR", "Blake Corum, RB"]) fireEvent.click(toggle(name));
+    for (const name of ["Kenneth Walker III, RB", "Zay Flowers, WR", "Blake Corum, RB"])
+      fireEvent.click(toggle(name));
     expect(screen.getByText("3 of 3")).toBeTruthy();
     expect(screen.getByText("Trade block · tap a pick to take it off")).toBeTruthy();
     expect(screen.queryByText(FULL)).toBeNull();
 
     // The reader has scrolled to the end of the roster before the 4th tap.
-    const viewport = container.querySelector<HTMLElement>("[data-slot=scroll-area-viewport]") as HTMLElement;
+    const viewport = container.querySelector<HTMLElement>(
+      "[data-slot=scroll-area-viewport]",
+    ) as HTMLElement;
     viewport.scrollLeft = 600;
     fireEvent.click(toggle("Lamar Jackson, QB"));
     expect(toggle("Lamar Jackson, QB").getAttribute("aria-pressed")).toBe("false");
-    expect(names().slice(0, 3)).toEqual(["Kenneth Walker III, RB", "Zay Flowers, WR", "Blake Corum, RB"]);
+    expect(names().slice(0, 3)).toEqual([
+      "Kenneth Walker III, RB",
+      "Zay Flowers, WR",
+      "Blake Corum, RB",
+    ]);
     expect(screen.getByText("3 of 3")).toBeTruthy();
     expect(screen.getByText(FULL)).toBeTruthy();
     expect(viewport.scrollLeft).toBe(0);
@@ -192,12 +237,32 @@ describe("Trade block", () => {
     expect(names().slice(0, 2)).toEqual(["Kenneth Walker III, RB", "Zay Flowers, WR"]);
     expect(screen.getByText("2 of 3")).toBeTruthy();
 
-    view.rerender(<TradeFinder teams={TEAMS} target={apiTarget} asker={10} onAsker={noop} passphrase="localtest" onUnauthorized={noop} onOpen={noop} />);
+    view.rerender(
+      <TradeFinder
+        teams={TEAMS}
+        target={apiTarget}
+        asker={10}
+        onAsker={noop}
+        passphrase="localtest"
+        onUnauthorized={noop}
+        onOpen={noop}
+      />,
+    );
     expect(names()).toEqual(["Josh Allen, QB"]);
     expect(screen.getByText("0 of 3")).toBeTruthy();
 
     // A pick of the first team again starts from an empty block too.
-    view.rerender(<TradeFinder teams={TEAMS} target={apiTarget} asker={6} onAsker={noop} passphrase="localtest" onUnauthorized={noop} onOpen={noop} />);
+    view.rerender(
+      <TradeFinder
+        teams={TEAMS}
+        target={apiTarget}
+        asker={6}
+        onAsker={noop}
+        passphrase="localtest"
+        onUnauthorized={noop}
+        onOpen={noop}
+      />,
+    );
     expect(screen.getByText("0 of 3")).toBeTruthy();
     expect(within(strip()).queryAllByRole("button", { pressed: true })).toHaveLength(0);
   });
@@ -211,13 +276,30 @@ describe("Trade block", () => {
     await waitFor(() => expect(screen.queryByRole("group", { name: "Trade block" })).toBeNull());
     stream.end(findResponse);
     await waitFor(() => expect(screen.getByRole("group", { name: "Trade block" })).toBeTruthy());
-    expect(within(strip()).getAllByRole("button", { pressed: true }).map((b) => b.getAttribute("aria-label"))).toEqual(["Kenneth Walker III, RB"]);
+    expect(
+      within(strip())
+        .getAllByRole("button", { pressed: true })
+        .map((b) => b.getAttribute("aria-label")),
+    ).toEqual(["Kenneth Walker III, RB"]);
   });
 
   it("turns each toggle off while a grade runs", () => {
-    render(<TradeFinder teams={TEAMS} target={apiTarget} asker={6} onAsker={noop} passphrase="localtest" onUnauthorized={noop} onOpen={noop} locked />);
+    render(
+      <TradeFinder
+        teams={TEAMS}
+        target={apiTarget}
+        asker={6}
+        onAsker={noop}
+        passphrase="localtest"
+        onUnauthorized={noop}
+        onOpen={noop}
+        locked
+      />,
+    );
     // A toggle of the group stays in the tab order while it is off, so a screen reader still finds it, and says it is off.
-    within(strip()).getAllByRole("button").forEach((button) => expect(button.getAttribute("aria-disabled")).toBe("true"));
+    within(strip())
+      .getAllByRole("button")
+      .forEach((button) => expect(button.getAttribute("aria-disabled")).toBe("true"));
     fireEvent.click(toggle("Kenneth Walker III, RB"));
     expect(screen.getByText("0 of 3")).toBeTruthy();
   });

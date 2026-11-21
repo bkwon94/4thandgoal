@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { cn } from "@cpc/design/lib/utils";
 import type { WeekSim } from "../schema/sim-types";
 import { CARD, PRESS, nameOf } from "./format";
@@ -16,21 +17,30 @@ export function TeamPick({ sim, onPick }: { sim: WeekSim; onPick: (id: number) =
   return (
     <div className="px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
       <section className={cn(CARD, "w-full")} aria-labelledby="sim-pick-title">
-        <h1 id="sim-pick-title" className="m-0 text-stat leading-tight font-bold text-balance">
+        <h1 id="sim-pick-title" className="text-stat m-0 leading-tight font-bold text-balance">
           Pick your team
         </h1>
         {/* A sub line of the heading, so it is other text of the floor at 11px or more, not prose (ADR 0025). */}
-        <div className="text-meta text-pretty text-mute">See what your team needs to make the playoffs.</div>
-        <ul aria-label="Teams" className="m-0 grid list-none grid-cols-1 gap-x-sp-3 p-0 tablet:grid-cols-2">
+        <div className="text-meta text-mute text-pretty">
+          See what your team needs to make the playoffs.
+        </div>
+        <ul
+          aria-label="Teams"
+          className="gap-x-sp-3 tablet:grid-cols-2 m-0 grid list-none grid-cols-1 p-0"
+        >
           {ids.map((id) => (
-            <li key={id} className="border-t border-rule">
-              <button
+            <li key={id} className="border-rule border-t">
+              <Button
+                variant="plain"
                 type="button"
                 onClick={() => onPick(id)}
-                className={cn(PRESS, "flex min-h-touch w-full items-center text-left text-body font-bold hover-fine:text-accent-ink")}
+                className={cn(
+                  PRESS,
+                  "min-h-touch text-body hover-fine:text-accent-ink flex w-full items-center text-left font-bold",
+                )}
               >
                 {nameOf(sim, id)}
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

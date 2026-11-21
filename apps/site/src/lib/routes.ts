@@ -8,7 +8,8 @@ import type { AnalyzerMode } from "@cpc/analyzer/lib/mode";
 export const homeHref = () => "/";
 export const rankingsHref = () => "/rankings/";
 /* With a mode, the analyzer opens on that half of its switch, such as /analyze/?mode=find for the links of the Trade Wire. */
-export const analyzeHref = (mode?: AnalyzerMode) => (mode === undefined ? "/analyze/" : `/analyze/?mode=${mode}`);
+export const analyzeHref = (mode?: AnalyzerMode) =>
+  mode === undefined ? "/analyze/" : `/analyze/?mode=${mode}`;
 /* The egg board of a client of the eggs package. */
 export const eggsHref = () => "/eggs/";
 /* The week is the folder name, such as week-06, as the published folders name it. */
@@ -19,7 +20,8 @@ export const managersHref = (season: string) => `/${season}/managers/`;
 export const midseasonHref = (season: string) => `/midseason/${season}/`;
 /* The sim page of one season, such as /sim/2026/. */
 export const simHref = (season: string) => `/sim/${season}/`;
-export const managerHref = (season: string, rosterId: number) => managerHrefFrom(managersHref(season), rosterId);
+export const managerHref = (season: string, rosterId: number) =>
+  managerHrefFrom(managersHref(season), rosterId);
 /* The builders from a managers index href need no other value, so the league package holds them for the package parts.
    The app parts take them from here, so a link change still starts in this file. */
 export { managerHrefFrom, managerHrefOrNull };

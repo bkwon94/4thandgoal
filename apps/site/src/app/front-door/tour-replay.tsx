@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { CircleHelpIcon } from "lucide-react";
 import { useCloseMenuSheet } from "@cpc/design/shell/menu-sheet";
 import { replayTour } from "./tour";
@@ -13,16 +14,20 @@ import { replayTour } from "./tour";
 export function TourRow() {
   const closeThen = useCloseMenuSheet();
   return (
-    <button
+    <Button
+      variant="plain"
       type="button"
       onClick={() => (closeThen ? closeThen(replayTour) : replayTour())}
-      className="press flex min-h-dock w-full items-center gap-sp-3 rounded-tile px-sp-2 text-left text-ink hover-fine:bg-raised"
+      className="press min-h-dock gap-sp-3 rounded-tile px-sp-2 text-ink hover-fine:bg-raised flex w-full items-center text-left"
     >
-      <span aria-hidden className="flex size-touch flex-none items-center justify-center rounded-tile bg-raised text-ink-2">
+      <span
+        aria-hidden
+        className="size-touch rounded-tile bg-raised text-ink-2 flex flex-none items-center justify-center"
+      >
         <CircleHelpIcon className="size-sp-5" />
       </span>
-      <span className="truncate text-body leading-tight font-semibold">Show the tour</span>
-    </button>
+      <span className="text-body truncate leading-tight font-semibold">Show the tour</span>
+    </Button>
   );
 }
 
@@ -30,13 +35,14 @@ export function TourRow() {
    phone and a tablet reach the Tour from the menu sheet. It hides with scripts off, as the theme button does. */
 export function TourButton() {
   return (
-    <button
+    <Button
+      variant="plain"
       type="button"
       aria-label="Show the tour"
       onClick={replayTour}
-      className="press hidden size-touch flex-none items-center justify-center text-ink hover-fine:text-accent-ink desktop:flex [@media(scripting:none)]:hidden"
+      className="press size-touch text-ink hover-fine:text-accent-ink desktop:flex hidden flex-none items-center justify-center [@media(scripting:none)]:hidden"
     >
       <CircleHelpIcon aria-hidden className="size-sp-5" />
-    </button>
+    </Button>
   );
 }

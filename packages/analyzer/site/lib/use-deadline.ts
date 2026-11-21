@@ -20,7 +20,9 @@ export function useDeadline(lock: number | null | undefined): Deadline | null {
     const tick = () =>
       setDeadline((last) => {
         const next = deadlineOf(Date.now(), lock);
-        return last !== null && last.phase === next.phase && last.countdown === next.countdown ? last : next;
+        return last !== null && last.phase === next.phase && last.countdown === next.countdown
+          ? last
+          : next;
       });
     tick();
     const id = window.setInterval(tick, 1000);

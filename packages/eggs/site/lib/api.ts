@@ -24,7 +24,12 @@ export type EggCheck = {
 
 export const checkAnswerSchema = z.union([
   z.object({ match: z.literal(false) }),
-  z.object({ match: z.literal(true), claimed: z.literal(false), letter: z.string(), token: z.string() }),
+  z.object({
+    match: z.literal(true),
+    claimed: z.literal(false),
+    letter: z.string(),
+    token: z.string(),
+  }),
   z.object({ match: z.literal(true), claimed: z.literal(true), letter: z.string() }),
 ]);
 export type CheckAnswer = z.infer<typeof checkAnswerSchema>;
@@ -33,7 +38,9 @@ const managerSchema = z.object({ roster_id: z.number(), team: z.string() });
 
 export const boardSchema = z.object({
   counts: z.object({ left: z.number(), found: z.number(), to_drop: z.number() }),
-  weeks: z.array(z.object({ week: z.number(), slots: z.array(z.enum(["found", "out", "future"])) })),
+  weeks: z.array(
+    z.object({ week: z.number(), slots: z.array(z.enum(["found", "out", "future"])) }),
+  ),
   words: z.array(
     z.object({
       word: z.string(),
@@ -117,7 +124,11 @@ export async function checkEgg(target: EggsTarget, check: EggCheck): Promise<Che
   return answer(response, checkAnswerSchema);
 }
 
-export async function claimEgg(target: EggsTarget, passphrase: string, claim: EggClaim): Promise<ClaimAnswer> {
+export async function claimEgg(
+  target: EggsTarget,
+  passphrase: string,
+  claim: EggClaim,
+): Promise<ClaimAnswer> {
   const response = await fetch(`${eggsBase(target)}/claim`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-League-Passphrase": passphrase },

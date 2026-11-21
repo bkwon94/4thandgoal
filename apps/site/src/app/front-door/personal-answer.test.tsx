@@ -6,25 +6,37 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { StrictMode } from "react";
 import { cleanup, render, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
+import { stubGlobal } from "../../../test/stubs";
 import { PersonalAnswerLive } from "./personal-answer";
 
 const TARGET = { url: "https://api.test", client: "cpc" };
 const BODY = { topic: "weak_spots" as const, roster_id: 3, team: null };
-const fetchStub = vi.fn();
+const fetchStub = mock();
 
 // The path comes from this file and not from the working folder, so the run can start in any folder.
-const fixture = (name: string) => readFileSync(join(__dirname, "..", "..", "fixtures", "personal-answer", name), "utf8");
+const fixture = (name: string) =>
+  readFileSync(join(__dirname, "..", "..", "fixtures", "personal-answer", name), "utf8");
 
 function sse(body: string): Response {
-  return new Response(body, { headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" } });
+  return new Response(body, {
+    headers: { "Content-Type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+  });
 }
 
 function renderCard() {
-  const ends = { onDone: vi.fn(), onMiss: vi.fn(), onCap: vi.fn(), onError: vi.fn() };
+  const ends = { onDone: mock(), onMiss: mock(), onCap: mock(), onError: mock() };
   render(
     <StrictMode>
-      <PersonalAnswerLive name="Weak spots" href={null} avatars={{}} target={TARGET} passphrase="cornerstone-test" body={BODY} {...ends} />
+      <PersonalAnswerLive
+        name="Weak spots"
+        href={null}
+        avatars={{}}
+        target={TARGET}
+        passphrase="cornerstone-test"
+        body={BODY}
+        {...ends}
+      />
     </StrictMode>,
   );
   return ends;
@@ -32,12 +44,11 @@ function renderCard() {
 
 beforeEach(() => {
   fetchStub.mockReset();
-  vi.stubGlobal("fetch", fetchStub);
+  stubGlobal("fetch", fetchStub);
 });
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
 });
 
 describe("the live card of a personal Topic", () => {

@@ -1,0 +1,15 @@
+# Recorded again at 5cf24030, after fix group n (d4145d31).
+
+$ git ls-files "apps/site/*.test.*" "packages/*/site/*.test.*" | wc -l
+     203
+exit code: 0
+
+$ git ls-files "apps/site/*.test.*" "packages/*/site/*.test.*" | xargs grep -n -E "\bvi\."
+exit code: 1
+
+$ git ls-files "apps/site/*.test.*" "packages/*/site/*.test.*" | xargs grep -n -E "from [\"']vitest"
+exit code: 1
+
+$ git ls-files "apps/site/*.test.*" "packages/*/site/*.test.*" | xargs grep -n vitest
+exit code: 1
+

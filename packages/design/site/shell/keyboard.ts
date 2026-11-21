@@ -37,7 +37,11 @@ function setRaised(next: boolean) {
    height that it covers. Chrome on iOS and Android shrink the layout viewport, so its foot is already the top of the
    keyboard, and --keyboard-inset is 0. */
 export function useKeyboardRaised(): boolean {
-  return useSyncExternalStore(subscribe, () => raised, () => false);
+  return useSyncExternalStore(
+    subscribe,
+    () => raised,
+    () => false,
+  );
 }
 
 /*

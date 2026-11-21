@@ -1,0 +1,8 @@
+$ LINT_FILES=packages/design/lint/fixtures/no-arbitrary-value/spacing.tsx pnpm --dir apps/site lint
+
+> 4thandgoal-site@0.1.0 lint /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/design-checks-speed/apps/site
+> cd ../.. && apps/site/node_modules/.bin/oxlint --deny-warnings --no-error-on-unmatched-pattern ${LINT_FILES:-apps/site packages/*/site packages/design/lint/plugin.mjs packages/design/lint/rules/*.mjs}
+
+packages/design/lint/fixtures/no-arbitrary-value/spacing.tsx:9:30: error design(no-arbitrary-value): `top-[calc(var(--spacing-touch)+2*var(--spacing-sp-2)+1px)]` is an arbitrary value in the color and spacing groups. Use a role token or a scale step of apps/site/src/app/globals.css. For a true one-off, put `// oxlint-disable-next-line design/no-arbitrary-value -- <reason>` on the line above.
+ ELIFECYCLE  Command failed with exit code 1.
+exit 1

@@ -10,8 +10,9 @@ import { parseVersioned } from "./published-file";
 import { weekPageSchema } from "@cpc/week/schema/week";
 import type { WeekPage, WeekSummary } from "@cpc/week/schema/week-types";
 
-/* The build and the tests both run from the repo root, so public/ sits under the working folder. */
-const PUBLIC_DIR = join(process.cwd(), "public");
+/* The build and the tests both run from the repo root, so public/ sits under the working folder. Each call reads the
+   working folder again, because a test points it at a fixture folder after this module loads. */
+const publicDir = () => join(process.cwd(), "public");
 const SEASON_DIR = /^\d{4}$/;
 const WEEK_DIR = /^week-\d{2}$/;
 
@@ -27,9 +28,10 @@ function dirsMatching(dir: string, pattern: RegExp): string[] {
 
 /* Every week folder that holds a page.json. A folder with only images is not a week page yet. */
 export function listWeeks(): WeekRef[] {
-  return dirsMatching(PUBLIC_DIR, SEASON_DIR).flatMap((season) =>
-    dirsMatching(join(PUBLIC_DIR, season), WEEK_DIR)
-      .filter((week) => existsSync(join(PUBLIC_DIR, season, week, "page.json")))
+  const root = publicDir();
+  return dirsMatching(root, SEASON_DIR).flatMap((season) =>
+    dirsMatching(join(root, season), WEEK_DIR)
+      .filter((week) => existsSync(join(root, season, week, "page.json")))
       .map((week) => ({ season, week })),
   );
 }
@@ -40,13 +42,19 @@ const SCHEMA_VERSION = 2;
 /* A schema change must fail the build loud, so a page never renders from keys it misreads. */
 export function loadWeek(season: string, week: string): WeekPage {
   // The version check runs first, so a layout change reads as a version error and not as a list of bad fields.
-  return parseVersioned(join(PUBLIC_DIR, season, week, "page.json"), SCHEMA_VERSION, weekPageSchema);
+  return parseVersioned(
+    join(publicDir(), season, week, "page.json"),
+    SCHEMA_VERSION,
+    weekPageSchema,
+  );
 }
 
 /* Every published week, newest first. The sort reads the folder names as numbers, so week-10 follows week-09. */
 export function listWeekSummaries(): WeekSummary[] {
   return listWeeks()
-    .sort((a, b) => Number(b.season) - Number(a.season) || weekNumberOf(b.week) - weekNumberOf(a.week))
+    .sort(
+      (a, b) => Number(b.season) - Number(a.season) || weekNumberOf(b.week) - weekNumberOf(a.week),
+    )
     .map(({ season, week }) => {
       const page = loadWeek(season, week);
       return {

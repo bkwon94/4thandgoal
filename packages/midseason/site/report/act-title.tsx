@@ -8,7 +8,15 @@ import { stableId } from "@cpc/design/lib/stable-id";
 /* The act number as a roman numeral, as a book numbers its acts. The report has three acts. */
 const NUMERALS = ["I", "II", "III"];
 
-export function ActTitle({ index, title, headingId }: { index: number; title: string; headingId: string }) {
+export function ActTitle({
+  index,
+  title,
+  headingId,
+}: {
+  index: number;
+  title: string;
+  headingId: string;
+}) {
   const number = `Act ${NUMERALS[index] ?? index + 1}`;
   return (
     // The act number is the eyebrow and the act title the title, at level 2 with the look of the opener title.
@@ -17,7 +25,11 @@ export function ActTitle({ index, title, headingId }: { index: number; title: st
       label={`${number}: ${title}`}
       className="rounded-report py-sp-6 tablet:min-h-[12rem]"
       eyebrow={number}
-      title={<span id={headingId} {...stableId("heading", title)}>{title}</span>}
+      title={
+        <span id={headingId} {...stableId("heading", title)}>
+          {title}
+        </span>
+      }
       level={2}
     />
   );

@@ -26,7 +26,12 @@ export type FreeView = {
 
 /* The final free answer that the browser keeps: the steps, the checked text, its block, and the Suggestion of a half
    fit. An answer kept before blocks has no block field. */
-export type FreeResult = { steps: string[]; text: string; suggestion: { topic: string; team: number | null } | null; block?: AnswerBlock | null };
+export type FreeResult = {
+  steps: string[];
+  text: string;
+  suggestion: { topic: string; team: number | null } | null;
+  block?: AnswerBlock | null;
+};
 
 /* The plain line of one tool call, from its name and its input. A tool that this build does not know reads as the
    league data, so no internal name ever shows (AT-19). */
@@ -58,10 +63,19 @@ type Part = UIMessage["parts"][number];
 
 /* The tool name of a tool part: "tool-<name>" for a static tool, and `toolName` for a dynamic one. */
 function toolOf(part: Part): { name: string; input: unknown; done: boolean } | null {
-  if (part.type === "dynamic-tool") return { name: part.toolName, input: part.input, done: part.state === "output-available" || part.state === "output-error" };
+  if (part.type === "dynamic-tool")
+    return {
+      name: part.toolName,
+      input: part.input,
+      done: part.state === "output-available" || part.state === "output-error",
+    };
   if (!part.type.startsWith("tool-")) return null;
   const tool = part as Part & { input?: unknown; state?: string };
-  return { name: part.type.slice("tool-".length), input: tool.input, done: tool.state === "output-available" || tool.state === "output-error" };
+  return {
+    name: part.type.slice("tool-".length),
+    input: tool.input,
+    done: tool.state === "output-available" || tool.state === "output-error",
+  };
 }
 
 function dataOf<T>(part: Part, kind: string): T | null {
@@ -72,7 +86,15 @@ function dataOf<T>(part: Part, kind: string): T | null {
    shows only once its check passes, so no word that the manager reads is ever pulled back (H10). The API sends a text
    only after its check, and the view holds it back too, so a stream in the other order shows no early word. */
 export function viewOf(message: UIMessage | undefined): FreeView {
-  const view: FreeView = { steps: [], first: "", second: null, answerBlock: null, check: null, suggestion: null, closest: null };
+  const view: FreeView = {
+    steps: [],
+    first: "",
+    second: null,
+    answerBlock: null,
+    check: null,
+    suggestion: null,
+    closest: null,
+  };
   for (const part of message?.parts ?? []) {
     const tool = toolOf(part);
     if (tool) view.steps.push({ line: stepLine(tool.name, tool.input), done: tool.done });
@@ -106,7 +128,8 @@ export const shownText = (view: FreeView) => (view.second ?? view.first).trim();
 /* A kept Answer of the API comes back whole: its text with no step of a model run before it, and its check. A live
    run starts each text with a step. */
 export const isKept = (message: UIMessage | undefined) =>
-  !!message?.parts.some((part) => part.type === "text") && !message.parts.some((part) => part.type === "step-start");
+  !!message?.parts.some((part) => part.type === "text") &&
+  !message.parts.some((part) => part.type === "step-start");
 
 /* The time that each held state of a view first showed: "Checking" of the first text, the fixing line, and "Checking"
    of the rewrite. */
@@ -118,7 +141,12 @@ export const newPace = (): Pace => ({ checkFirst: null, fixing: null, checkSecon
    (AT-20, AT-21). A held view shows no text, so the text shows with "Checked". `pace` keeps the time that each held
    state first showed. `wake` is the time of the next change, or
    null when the view shows the stream as it is. */
-export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, hold: number): { view: V; wake: number | null } {
+export function pacedView<V extends FreeView>(
+  view: V,
+  pace: Pace,
+  now: number,
+  hold: number,
+): { view: V; wake: number | null } {
   const held = (key: keyof Pace) => {
     pace[key] ??= now;
     return now - pace[key] < hold ? pace[key] + hold : null;
@@ -126,14 +154,23 @@ export function pacedView<V extends FreeView>(view: V, pace: Pace, now: number, 
   if (view.check === null && view.second === null) return { view, wake: null };
   // "Checking" of the first text holds before its end shows: "Checked", or the fade to the fixing line.
   const firstWake = held("checkFirst");
-  if (firstWake !== null && (view.second !== null || view.check !== "checking")) return { view: { ...view, first: "", second: null, answerBlock: null, check: "checking" }, wake: firstWake };
+  if (firstWake !== null && (view.second !== null || view.check !== "checking"))
+    return {
+      view: { ...view, first: "", second: null, answerBlock: null, check: "checking" },
+      wake: firstWake,
+    };
   if (view.second === null) return { view, wake: null };
   // The fixing line holds before the rewrite shows.
   const fixingWake = held("fixing");
-  if (fixingWake !== null) return { view: { ...view, second: "", answerBlock: null, check: "fixing" }, wake: fixingWake };
+  if (fixingWake !== null)
+    return { view: { ...view, second: "", answerBlock: null, check: "fixing" }, wake: fixingWake };
   // "Checking" of the rewrite holds before "Checked" shows.
   if (view.check !== "checking" && view.check !== "checked") return { view, wake: null };
   const secondWake = held("checkSecond");
-  if (secondWake !== null && view.check === "checked") return { view: { ...view, second: "", answerBlock: null, check: "checking" }, wake: secondWake };
+  if (secondWake !== null && view.check === "checked")
+    return {
+      view: { ...view, second: "", answerBlock: null, check: "checking" },
+      wake: secondWake,
+    };
   return { view, wake: null };
 }

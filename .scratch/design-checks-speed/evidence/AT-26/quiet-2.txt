@@ -1,0 +1,3 @@
+2026-11-21 11:02:10 check 1: pgrep -fl 'vitest|bun test|check-fast|pytest' shows nothing
+2026-11-21 11:02:40 check 2: pgrep -fl 'vitest|bun test|check-fast|pytest' shows nothing
+2026-11-21 11:03:10 check 3: pgrep -fl 'vitest|bun test|check-fast|pytest' shows nothing

@@ -21,12 +21,17 @@ export function gameId(when: "last" | "next", a: number, b: number): string {
    The line wraps and never cuts, so a long list stays whole. */
 function ByeLine({ byes }: { byes: ByePlayer[] }) {
   return (
-    <div className="pl-[calc(var(--spacing-avatar)+var(--spacing-sp-3))] text-meta leading-body text-mute">
-      <span className="font-mono tracking-caps uppercase">On bye</span>{" "}
+    // oxlint-disable-next-line design/no-arbitrary-value -- the bye line lines up under the name, past the avatar and one step
+    <div className="text-meta leading-body text-mute pl-[calc(var(--spacing-avatar)+var(--spacing-sp-3))]">
+      <span className="tracking-caps font-mono uppercase">On bye</span>{" "}
       {byes.map((player, index) => (
         <span key={player.player_id}>
           {index > 0 && " · "}
-          {player.key ? <strong className="font-semibold text-ink">{player.name}</strong> : <span>{player.name}</span>}
+          {player.key ? (
+            <strong className="text-ink font-semibold">{player.name}</strong>
+          ) : (
+            <span>{player.name}</span>
+          )}
           {` ${player.position}`}
         </span>
       ))}
@@ -37,11 +42,13 @@ function ByeLine({ byes }: { byes: ByePlayer[] }) {
 /* One team of a card: the avatar, the name, and the record, then its players on bye. */
 function Side({ team, avatars }: { team: Team; avatars: AvatarMap }) {
   return (
-    <div className="flex flex-col gap-sp-1">
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-sp-3">
+    <div className="gap-sp-1 flex flex-col">
+      <div className="gap-sp-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
         <Avatar src={avatarSrc(avatars, team.roster_id)} />
-        <span className="truncate text-body leading-tight font-bold">{team.name}</span>
-        <span className="font-mono text-meta text-ink-2 tabular-nums">{record(team.wins, team.losses)}</span>
+        <span className="text-body truncate leading-tight font-bold">{team.name}</span>
+        <span className="text-meta text-ink-2 font-mono tabular-nums">
+          {record(team.wins, team.losses)}
+        </span>
       </div>
       {team.byes && team.byes.length > 0 && <ByeLine byes={team.byes} />}
     </div>
@@ -57,10 +64,12 @@ function Game({ game, avatars }: { game: NextGame; avatars: AvatarMap }) {
       data-must-watch={game.must_watch}
       {...stableId("next-game", game.a.roster_id, game.b.roster_id)}
     >
-      <Card edge={game.must_watch} className="flex h-full flex-col gap-sp-3">
+      <Card edge={game.must_watch} className="gap-sp-3 flex h-full flex-col">
         {game.must_watch && (
-          <div className="flex flex-col gap-sp-1">
-            <span className="font-mono text-meta leading-tight font-bold tracking-caps text-accent-ink uppercase">Must Watch</span>
+          <div className="gap-sp-1 flex flex-col">
+            <span className="text-meta tracking-caps text-accent-ink font-mono leading-tight font-bold uppercase">
+              Must Watch
+            </span>
             {game.reason && <span className="text-row leading-body text-ink-2">{game.reason}</span>}
           </div>
         )}
@@ -83,9 +92,20 @@ export function NextWeek({
   blurb?: string;
 }) {
   return (
-    <WeekChapter id="next-week" title="Next week" note={`Week ${String(week + 1).padStart(2, "0")}`}>
-      {blurb && <p className="m-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurb)}>{blurb}</p>}
-      <div className="grid grid-cols-1 gap-sp-2 tablet:grid-cols-2">
+    <WeekChapter
+      id="next-week"
+      title="Next week"
+      note={`Week ${String(week + 1).padStart(2, "0")}`}
+    >
+      {blurb && (
+        <p
+          className="max-w-measure text-lead leading-body text-ink-2 m-0"
+          {...textId("blurb", blurb)}
+        >
+          {blurb}
+        </p>
+      )}
+      <div className="gap-sp-2 tablet:grid-cols-2 grid grid-cols-1">
         {games.map((game) => (
           <Game key={game.a.roster_id} game={game} avatars={avatars} />
         ))}

@@ -1,0 +1,8 @@
+$ cat -n packages/design/lint/fixtures/outside/top-band.tsx
+     1	/**
+     2	 * A lint fixture: a file outside the ui folder that imports the ui-sdk scope.
+     3	 * The design rule test expects no-restricted-imports to fail it at line 5.
+     4	 */
+     5	import { Drawer } from "@ui-sdk/react";
+     6	
+     7	export const Part = Drawer;

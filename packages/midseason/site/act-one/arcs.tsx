@@ -27,17 +27,23 @@ export function Arcs({ chapter }: { chapter: ArcsChapter }) {
   const teams = chapter.facts.teams.filter((team) => team.arcs.length > 0);
   return (
     <ReportChapter id={chapter.key} title={chapter.title} blurb={chapter.blurb}>
-      {teams.length === 0 && <p className="m-0 text-meta text-mute">No team has an arc yet.</p>}
+      {teams.length === 0 && <p className="text-meta text-mute m-0">No team has an arc yet.</p>}
       {teams.length > 0 && (
-        <ul aria-label="Arcs" className="m-0 grid list-none grid-cols-1 gap-sp-2 p-0 desktop:grid-cols-2">
+        <ul
+          aria-label="Arcs"
+          className="gap-sp-2 desktop:grid-cols-2 m-0 grid list-none grid-cols-1 p-0"
+        >
           {teams.map((team) => (
-            <ReportCard as="li" key={team.roster_id} className="flex flex-col gap-sp-2">
+            <ReportCard as="li" key={team.roster_id} className="gap-sp-2 flex flex-col">
               <span className="text-body leading-tight font-bold">{team.name}</span>
               {team.arcs.map((arc) => (
-                <div key={arc.kind} className="flex flex-col gap-sp-1">
+                <div key={arc.kind} className="gap-sp-1 flex flex-col">
                   <WordTag className="ml-0 w-fit">{arc.kind}</WordTag>
                   {arcNumbers(arc).map((line) => (
-                    <span key={line} className="font-mono text-meta leading-tight text-ink-2 tabular-nums">
+                    <span
+                      key={line}
+                      className="text-meta text-ink-2 font-mono leading-tight tabular-nums"
+                    >
                       {line}
                     </span>
                   ))}

@@ -24,7 +24,8 @@ const SHOWN = 3;
 
 /* The token classes. The ring in the band color parts two overlapped faces, as a cut and not as a line.
    The mesh cuts a hole under each token, so no line of the mesh runs across a face. */
-const TOKEN = "relative grid size-stage-token flex-none place-items-center overflow-hidden rounded-full ring-2 ring-band";
+const TOKEN =
+  "relative grid size-stage-token flex-none place-items-center overflow-hidden rounded-full ring-2 ring-band";
 const OVERLAP = "-ml-sp-2";
 
 /* The first letter of the first and the last name. A suffix such as III or Jr. is not a name, so Kenneth Walker III reads KW. */
@@ -42,7 +43,8 @@ export function initials(name: string): string {
    blur, as the texts reveal of transitions.dev, with a stagger by row and then by token, so the trade fills top to bottom.
    The last token of a trade of 4 sides lands in under 1 s. With motion off, a token only fades in, and nothing moves. */
 function riseOf(off: boolean, row: number, index: number) {
-  if (off) return { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.2 } };
+  if (off)
+    return { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.2 } };
   return {
     initial: { opacity: 0, transform: "translateY(10px) scale(0.92)", filter: "blur(3px)" },
     animate: { opacity: 1, transform: "translateY(0px) scale(1)", filter: "blur(0px)" },
@@ -52,7 +54,19 @@ function riseOf(off: boolean, row: number, index: number) {
 
 /* One headshot token. A headshot that fails to load, or a player with none, shows the initials of the player, because the
    default face would make two players look the same. The title names the player for a pointer that rests on it. */
-function Token({ name, src, index, row, rise }: { name: string; src: string; index: number; row: number; rise: boolean }) {
+function Token({
+  name,
+  src,
+  index,
+  row,
+  rise,
+}: {
+  name: string;
+  src: string;
+  index: number;
+  row: number;
+  rise: boolean;
+}) {
   const off = useMotionOff();
   const [failed, setFailed] = useState(src === "");
   return (
@@ -65,9 +79,16 @@ function Token({ name, src, index, row, rise }: { name: string; src: string; ind
       {...(rise ? riseOf(off, row, index) : {})}
     >
       {failed ? (
-        <span className="font-mono text-label font-bold tracking-wide text-on-dark-2">{initials(name)}</span>
+        <span className="text-label text-on-dark-2 font-mono font-bold tracking-wide">
+          {initials(name)}
+        </span>
       ) : (
-        <img src={src} alt="" onError={() => setFailed(true)} className="size-full max-w-none object-cover object-top" />
+        <img
+          src={src}
+          alt=""
+          onError={() => setFailed(true)}
+          className="size-full max-w-none object-cover object-top"
+        />
       )}
     </motion.span>
   );
@@ -79,7 +100,7 @@ function More({ count, row, rise }: { count: number; row: number; rise: boolean 
   return (
     <motion.span
       data-mesh-hole
-      className={`${TOKEN} ${OVERLAP} bg-band font-mono text-meta font-bold text-on-dark tabular-nums outline-1 -outline-offset-1 outline-rule-dark`}
+      className={`${TOKEN} ${OVERLAP} bg-band text-meta text-on-dark outline-rule-dark font-mono font-bold tabular-nums outline-1 -outline-offset-1`}
       {...(rise ? riseOf(off, row, SHOWN) : {})}
     >
       +{count}
@@ -89,7 +110,12 @@ function More({ count, row, rise }: { count: number; row: number; rise: boolean 
 
 /* A side with no player yet holds the place of a token, so the row keeps its shape and the reader sees the side waits. */
 function EmptyToken() {
-  return <span data-stage-empty className="size-stage-token flex-none rounded-full border border-dashed border-rule-dark" />;
+  return (
+    <span
+      data-stage-empty
+      className="size-stage-token border-rule-dark flex-none rounded-full border border-dashed"
+    />
+  );
 }
 
 /* The tokens of one side: up to 3 faces, overlapped, then "+N". */
@@ -99,7 +125,14 @@ function Tokens({ side, row, rise }: { side: StageSide; row: number; rise: boole
   return (
     <span className="flex items-center">
       {side.players.slice(0, SHOWN).map((player, index) => (
-        <Token key={player.id} name={player.name} src={player.headshot} index={index} row={row} rise={rise} />
+        <Token
+          key={player.id}
+          name={player.name}
+          src={player.headshot}
+          index={index}
+          row={row}
+          rise={rise}
+        />
       ))}
       {rest > 0 && <More count={rest} row={row} rise={rise} />}
     </span>
@@ -111,7 +144,7 @@ function Count({ side }: { side: StageSide }) {
   const count = side.players.length;
   if (count === 0) return <EmptyToken />;
   return (
-    <span className="font-mono text-label font-bold tracking-wide text-on-dark-2 uppercase tabular-nums">
+    <span className="text-label text-on-dark-2 font-mono font-bold tracking-wide uppercase tabular-nums">
       {count} {count === 1 ? "player" : "players"}
     </span>
   );
@@ -121,25 +154,46 @@ function Count({ side }: { side: StageSide }) {
    stage mounts, for the hand-off from idle to the wait. A result mounts its stage at rest, because the reveal has its own motion.
    The cards of the form say the same trade to a screen reader, so the stage is art and hidden from one.
    A long team name truncates, and the tokens keep their width, so a row never wraps. */
-export function TradeOnStage({ sides, show, rise = false }: { sides: StageSide[]; show: "count" | "tokens"; rise?: boolean }) {
+export function TradeOnStage({
+  sides,
+  show,
+  rise = false,
+}: {
+  sides: StageSide[];
+  show: "count" | "tokens";
+  rise?: boolean;
+}) {
   return (
-    <ul aria-hidden="true" className="m-0 flex list-none flex-col p-0 tablet:max-w-stage">
+    <ul aria-hidden="true" className="tablet:max-w-stage m-0 flex list-none flex-col p-0">
       {sides.map((side, row) => (
         // The anchor sets the place of the weight of this side, so the mesh of the wait and of the reveal dips under its row.
         <li
           key={side.id}
           data-mesh-anchor
-          className={`flex min-h-touch items-center gap-sp-3 py-sp-1 ${row > 0 ? "border-t border-rule-dark" : ""}`}
+          className={`min-h-touch gap-sp-3 py-sp-1 flex items-center ${row > 0 ? "border-rule-dark border-t" : ""}`}
         >
-          <Avatar src={side.avatar ?? AVATAR_FALLBACK} size="ring" className="flex-none rounded-full bg-chip-dark object-cover" />
-          <span data-stage-team className="min-w-0 flex-1 truncate text-row leading-tight font-extrabold tracking-snug text-on-dark">
+          <Avatar
+            src={side.avatar ?? AVATAR_FALLBACK}
+            size="ring"
+            className="bg-chip-dark flex-none rounded-full object-cover"
+          />
+          <span
+            data-stage-team
+            className="text-row tracking-snug text-on-dark min-w-0 flex-1 truncate leading-tight font-extrabold"
+          >
             {side.team}
           </span>
           {/* "gets" is small and sits near the glow of the corner on a phone, so it takes the brighter second tone and keeps 4.5:1 in the wait. */}
-          <span className="flex-none font-mono text-label font-bold tracking-wide text-on-dark-2 uppercase">gets</span>
+          <span className="text-label text-on-dark-2 flex-none font-mono font-bold tracking-wide uppercase">
+            gets
+          </span>
           {/* The tokens column keeps the width of 3 faces and a count, so "gets" lines up in each row. */}
-          <span className="flex min-w-stage-tokens flex-none justify-end">
-            {show === "count" ? <Count side={side} /> : <Tokens side={side} row={row} rise={rise} />}
+          <span className="min-w-stage-tokens flex flex-none justify-end">
+            {show === "count" ? (
+              <Count side={side} />
+            ) : (
+              <Tokens side={side} row={row} rise={rise} />
+            )}
           </span>
         </li>
       ))}

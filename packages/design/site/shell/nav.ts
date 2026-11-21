@@ -7,7 +7,8 @@
 export type Destination = { label: string; href: string };
 
 /* The kind of a destination. The menu sheet picks the icon of each item from it. */
-export type NavKind = "home" | "week" | "rankings" | "managers" | "analyzer" | "waiver" | "sim" | "midseason";
+export type NavKind =
+  "home" | "week" | "rankings" | "managers" | "analyzer" | "waiver" | "sim" | "midseason";
 
 /* One destination of the menu. The pill bar shows the full label, and the short label is for a menu with little room. */
 export type NavItem = Destination & { kind: NavKind; short: string };
@@ -31,7 +32,11 @@ function weekOfPage(weeks: WeekLink[], pageHref?: string): WeekLink | undefined 
    Home matches only its own page, because every href starts with the home href. Another item matches its page and each
    page under it, such as one manager under Managers, and the longest match wins, so the waiver page of a week marks
    Waiver and not the week. The week item stands for every week, so the page of an older week marks it too. */
-export function currentHref(items: NavItem[], weeks: WeekLink[], pageHref?: string): string | undefined {
+export function currentHref(
+  items: NavItem[],
+  weeks: WeekLink[],
+  pageHref?: string,
+): string | undefined {
   if (pageHref === undefined) return undefined;
   let best: NavItem | undefined;
   for (const item of items) {

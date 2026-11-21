@@ -43,7 +43,11 @@ export const EVIDENCE_ORIGIN = `http://127.0.0.1:${EVIDENCE_PORT}`;
  * bakes the API URL into the export, and with no value the site calls the production API. A run must never call
  * production, so the build always sets this URL.
  */
-export function buildEnv(client: string, api: string, env: Partial<NodeJS.ProcessEnv> = process.env): NodeJS.ProcessEnv {
+export function buildEnv(
+  client: string,
+  api: string,
+  env: Partial<NodeJS.ProcessEnv> = process.env,
+): NodeJS.ProcessEnv {
   // The types of Next mark NODE_ENV as required, but a build of the site sets it itself.
   return { ...env, CLIENT: client, NEXT_PUBLIC_API_URL: api } as NodeJS.ProcessEnv;
 }
@@ -97,23 +101,31 @@ export function readSteps(file: string): Omit<EvidenceTest, "id" | "folder"> {
   } catch (error) {
     throw new Error(`${file}: the file is not valid JSON: ${(error as Error).message}`);
   }
-  if (typeof list !== "object" || list === null || Array.isArray(list)) throw new Error(`${file}: the file must hold one object`);
+  if (typeof list !== "object" || list === null || Array.isArray(list))
+    throw new Error(`${file}: the file must hold one object`);
   for (const key of Object.keys(list)) {
     if (!(KEYS as readonly string[]).includes(key)) {
       throw new Error(`${file}: unknown key "${key}". The known keys are ${KEYS.join(", ")}.`);
     }
   }
   const { route, steps, widths, themes, clients } = list as Record<string, unknown>;
-  if (typeof route !== "string" || !route.startsWith("/")) throw new Error(`${file}: "route" must be a path that starts with "/"`);
-  if (steps !== undefined && !Array.isArray(steps)) throw new Error(`${file}: "steps" must be a list`);
+  if (typeof route !== "string" || !route.startsWith("/"))
+    throw new Error(`${file}: "route" must be a path that starts with "/"`);
+  if (steps !== undefined && !Array.isArray(steps))
+    throw new Error(`${file}: "steps" must be a list`);
   const checked: Step[] = [];
   ((steps ?? []) as unknown[]).forEach((step, index) => {
     checked.push(checkStep(`${file}: step ${index + 1} ${JSON.stringify(step)}`, step, checked));
   });
   if (clients !== undefined) {
-    const valid = Array.isArray(clients) && clients.length > 0 && clients.every((client) => typeof client === "string" && client !== "");
+    const valid =
+      Array.isArray(clients) &&
+      clients.length > 0 &&
+      clients.every((client) => typeof client === "string" && client !== "");
     if (!valid || new Set(clients).size !== clients.length) {
-      throw new Error(`${file}: "clients" must be a list of distinct client slugs, such as ["cpc", "norcal"]`);
+      throw new Error(
+        `${file}: "clients" must be a list of distinct client slugs, such as ["cpc", "norcal"]`,
+      );
     }
   }
   const names = (clients as string[] | undefined) ?? [CLIENT];
@@ -129,7 +141,8 @@ export function readSteps(file: string): Omit<EvidenceTest, "id" | "folder"> {
 
 /* Checks one step against the steps before it. The error starts with name, which holds the file and the step. */
 export function checkStep(name: string, step: unknown, before: readonly Step[]): Step {
-  const verbs = typeof step === "object" && step !== null && !Array.isArray(step) ? Object.keys(step) : [];
+  const verbs =
+    typeof step === "object" && step !== null && !Array.isArray(step) ? Object.keys(step) : [];
   if (verbs.length !== 1) throw new Error(`${name} must hold exactly one verb`);
   const [verb] = verbs;
   if (!(VERBS as readonly string[]).includes(verb)) {
@@ -145,9 +158,14 @@ export function checkStep(name: string, step: unknown, before: readonly Step[]):
       if (!text) fail("takes a selector");
       break;
     case "fill": {
-      const fields = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+      const fields =
+        typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
       const keys = Object.keys(fields).sort().join(",");
-      if (keys !== "selector,value" || typeof fields.selector !== "string" || typeof fields.value !== "string") {
+      if (
+        keys !== "selector,value" ||
+        typeof fields.selector !== "string" ||
+        typeof fields.value !== "string"
+      ) {
         fail('takes {"selector": "<selector>", "value": "<text>"}');
       }
       break;
@@ -163,12 +181,15 @@ export function checkStep(name: string, step: unknown, before: readonly Step[]):
         fail('takes a selector, "url", or a time in ms');
       }
       // "url" waits for the URL to change from the URL before the last click, so it needs a click before it.
-      if (value === "url" && !before.some((earlier) => "click" in earlier)) fail('"url" needs a click before it');
+      if (value === "url" && !before.some((earlier) => "click" in earlier))
+        fail('"url" needs a click before it');
       break;
     case "shot":
       // The name goes into a file name, so it holds only lower-case letters, digits, and hyphens.
-      if (typeof value !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(value)) fail("takes a name of a-z, 0-9, and -");
-      if (before.some((earlier) => "shot" in earlier && earlier.shot === value)) fail(`name "${value}" is used twice`);
+      if (typeof value !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(value))
+        fail("takes a name of a-z, 0-9, and -");
+      if (before.some((earlier) => "shot" in earlier && earlier.shot === value))
+        fail(`name "${value}" is used twice`);
       break;
     case "url":
       if (value !== true) fail("takes the value true");
@@ -179,26 +200,41 @@ export function checkStep(name: string, step: unknown, before: readonly Step[]):
 
 /* Checks the widths of a step list: a list of whole widths in px, each one time. */
 function checkWidths(file: string, value: unknown): number[] {
-  const ok = Array.isArray(value) && value.length > 0 && value.every((width) => Number.isInteger(width) && width > 0);
-  if (!ok || new Set(value).size !== value.length) throw new Error(`${file}: "widths" must be a list of widths in px, such as [768, 1280]`);
+  const ok =
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every((width) => Number.isInteger(width) && width > 0);
+  if (!ok || new Set(value).size !== value.length)
+    throw new Error(`${file}: "widths" must be a list of widths in px, such as [768, 1280]`);
   return value as number[];
 }
 
 /* Checks the themes of a step list: a list of light and dark, each one time. */
 function checkThemes(file: string, value: unknown): Theme[] {
-  const ok = Array.isArray(value) && value.length > 0 && value.every((theme) => (THEMES as readonly unknown[]).includes(theme));
-  if (!ok || new Set(value).size !== value.length) throw new Error(`${file}: "themes" must be a list of ${THEMES.join(", ")}`);
+  const ok =
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every((theme) => (THEMES as readonly unknown[]).includes(theme));
+  if (!ok || new Set(value).size !== value.length)
+    throw new Error(`${file}: "themes" must be a list of ${THEMES.join(", ")}`);
   return value as Theme[];
 }
 
 /* Finds and checks the step list of each test of the feature, or of each named test. */
-export function loadTests(scratch: string, slug: string, ids: readonly string[] = []): EvidenceTest[] {
+export function loadTests(
+  scratch: string,
+  slug: string,
+  ids: readonly string[] = [],
+): EvidenceTest[] {
   const root = join(scratch, slug, "evidence");
   const found = existsSync(root)
-    ? readdirSync(root).filter((id) => /^AT-\d+$/.test(id) && existsSync(join(root, id, "steps.json")))
+    ? readdirSync(root).filter(
+        (id) => /^AT-\d+$/.test(id) && existsSync(join(root, id, "steps.json")),
+      )
     : [];
   for (const id of ids) {
-    if (!found.includes(id)) throw new Error(`${join(root, id, "steps.json")}: the file does not exist`);
+    if (!found.includes(id))
+      throw new Error(`${join(root, id, "steps.json")}: the file does not exist`);
   }
   const chosen = ids.length > 0 ? found.filter((id) => ids.includes(id)) : found;
   if (chosen.length === 0) throw new Error(`${root}: no evidence/AT-<n>/steps.json to run`);
@@ -253,7 +289,13 @@ const EXPECT_MS = 5000;
  * Runs the steps of one test in one page. A shot or a url step writes its file for this width and theme.
  * A failed step throws an error that names the step by its number and its JSON, so the log says which step failed.
  */
-export async function runSteps(page: Page, test: EvidenceTest, client: string, width: number, theme: Theme): Promise<void> {
+export async function runSteps(
+  page: Page,
+  test: EvidenceTest,
+  client: string,
+  width: number,
+  theme: Theme,
+): Promise<void> {
   // The URL before the last click, for "wait": "url".
   let clickedFrom = page.url();
   for (const [index, step] of test.steps.entries()) {
@@ -264,11 +306,20 @@ export async function runSteps(page: Page, test: EvidenceTest, client: string, w
     }
   }
   // With no shot step, the test gets one shot after its last step, with the plain name.
-  if (!test.steps.some((step) => "shot" in step)) await takeShot(page, shotFile(test, client, `${width}-${theme}`));
+  if (!test.steps.some((step) => "shot" in step))
+    await takeShot(page, shotFile(test, client, `${width}-${theme}`));
 }
 
 /* Runs one step, and gives the URL before the last click, for "wait": "url". */
-async function runStep(page: Page, test: EvidenceTest, client: string, width: number, theme: Theme, step: Step, from: string): Promise<string> {
+async function runStep(
+  page: Page,
+  test: EvidenceTest,
+  client: string,
+  width: number,
+  theme: Theme,
+  step: Step,
+  from: string,
+): Promise<string> {
   let clickedFrom = from;
   if ("click" in step) {
     clickedFrom = page.url();
@@ -276,11 +327,14 @@ async function runStep(page: Page, test: EvidenceTest, client: string, width: nu
   } else if ("fill" in step) {
     await page.locator(step.fill.selector).first().fill(step.fill.value);
   } else if ("scroll" in step) {
-    if (step.scroll === "end") await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    if (step.scroll === "end")
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     else await page.locator(step.scroll).first().scrollIntoViewIfNeeded();
     // The scroll events and the IntersectionObserver callbacks of the page run in the next frames. Two frames let them
     // run, so the next step sees the page after its scroll.
-    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+    await page.evaluate(
+      () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
+    );
   } else if ("wait" in step) {
     // "url" waits until the URL changes from the URL before the last click, so a tap that opens a page has opened it.
     if (step.wait === "url") await page.waitForURL((now) => now.href !== clickedFrom);
@@ -293,7 +347,8 @@ async function runStep(page: Page, test: EvidenceTest, client: string, width: nu
       .waitFor({ state: "visible", timeout: EXPECT_MS })
       .then(() => true)
       .catch(() => false);
-    if (!shown) throw new Error(`the expect failed: "${step.expect}" is not visible after ${EXPECT_MS} ms`);
+    if (!shown)
+      throw new Error(`the expect failed: "${step.expect}" is not visible after ${EXPECT_MS} ms`);
   } else if ("shot" in step) {
     await takeShot(page, shotFile(test, client, `${step.shot}-${width}-${theme}`));
   } else {
@@ -306,14 +361,24 @@ async function runStep(page: Page, test: EvidenceTest, client: string, width: nu
 
 /* The number of shots that one test takes. */
 const shotCount = (test: EvidenceTest) =>
-  test.widths.length * test.themes.length * Math.max(1, test.steps.filter((step) => "shot" in step).length);
+  test.widths.length *
+  test.themes.length *
+  Math.max(1, test.steps.filter((step) => "shot" in step).length);
 
 /* Takes the shots of one test for one client: its steps run once for each width and theme, each in a fresh page. */
-async function takeShots(browser: Browser, url: string, test: EvidenceTest, client: string): Promise<void> {
+async function takeShots(
+  browser: Browser,
+  url: string,
+  test: EvidenceTest,
+  client: string,
+): Promise<void> {
   for (const width of test.widths) {
     for (const theme of test.themes) {
       // A fresh page per width and theme, because openPage adds an init script that sets the theme, and a page keeps each one.
-      const page = await browser.newPage({ viewport: { width, height: HEIGHT }, reducedMotion: "no-preference" });
+      const page = await browser.newPage({
+        viewport: { width, height: HEIGHT },
+        reducedMotion: "no-preference",
+      });
       try {
         await openPage(page, `${url}${test.route}`, theme);
         await page.waitForLoadState("networkidle");
@@ -345,11 +410,15 @@ export async function runRound(options: RoundOptions): Promise<void> {
         const begin = Date.now();
         await takeShots(options.browser, server.url, test, client);
         const count = shotCount(test);
-        options.log(`${test.id} ${test.route} ${client}: ${count} ${count === 1 ? "shot" : "shots"} in ${seconds(begin)}`);
+        options.log(
+          `${test.id} ${test.route} ${client}: ${count} ${count === 1 ? "shot" : "shots"} in ${seconds(begin)}`,
+        );
       }
     } finally {
       await server.close();
     }
   }
-  options.log(`Total: ${tests.length} ${tests.length === 1 ? "test" : "tests"} of ${options.slug} in ${seconds(start)}`);
+  options.log(
+    `Total: ${tests.length} ${tests.length === 1 ? "test" : "tests"} of ${options.slug} in ${seconds(start)}`,
+  );
 }

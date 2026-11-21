@@ -3,7 +3,7 @@
  * They read the rows a reader sees: the order, the quiet lines, the numbers, and the empty line.
  */
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import type { Manager } from "../schema/manager-types";
 import { managers as fixture } from "../fixtures/managers";
 import { TopPerformers } from "./top-performers";
@@ -46,12 +46,20 @@ describe("TopPerformers", () => {
   it("shows a headshot from the Sleeper CDN in a round photo frame for each performer", () => {
     render(<TopPerformers manager={manager} />);
     const images = within(screen.getByRole("list")).getAllByRole("presentation");
-    expect(images[0].getAttribute("src")).toBe("https://sleepercdn.com/content/nfl/players/8183.jpg");
+    expect(images[0].getAttribute("src")).toBe(
+      "https://sleepercdn.com/content/nfl/players/8183.jpg",
+    );
     expect(images).toHaveLength(5);
   });
 
   it("reads one start in the singular and leaves out a null position", () => {
-    const performer = { ...manager.top_performers[0], position: null, games: 1, points: 21.3, per_game: 21.3 };
+    const performer = {
+      ...manager.top_performers[0],
+      position: null,
+      games: 1,
+      points: 21.3,
+      per_game: 21.3,
+    };
     render(<TopPerformers manager={{ ...manager, top_performers: [performer] }} />);
     expect(rowLines()).toEqual([["Brock Purdy", "1 start", "21.3", "21.3 a game"]]);
   });

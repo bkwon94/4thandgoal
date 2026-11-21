@@ -16,15 +16,32 @@ const OUT = join(process.cwd(), "out");
 // CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The roster of Bo Girds in cpc, as the teams route sends it, and the teams of a real find for him as the partners.
 const FIXTURES = join(process.cwd(), "..", "..", "packages", "analyzer", "site", "lib", "fixtures");
-const BO_GIRDS = JSON.parse(readFileSync(join(FIXTURES, "team-bo-girds.json"), "utf8")) as { roster_id: number };
+const BO_GIRDS = JSON.parse(readFileSync(join(FIXTURES, "team-bo-girds.json"), "utf8")) as {
+  roster_id: number;
+};
 const FIND = JSON.parse(readFileSync(join(FIXTURES, "find-response-bo-girds-rb.json"), "utf8")) as {
   trades: { sides: { roster_id: number; team: string }[] }[];
 };
-const PARTNERS = [...new Map(FIND.trades.flatMap((trade) => trade.sides).filter((side) => side.roster_id !== BO_GIRDS.roster_id).map((side) => [side.roster_id, side])).values()].map(
-  (side) => ({ roster_id: side.roster_id, team: side.team, manager: side.team, avatar: null, players: [] }),
-);
+const PARTNERS = [
+  ...new Map(
+    FIND.trades
+      .flatMap((trade) => trade.sides)
+      .filter((side) => side.roster_id !== BO_GIRDS.roster_id)
+      .map((side) => [side.roster_id, side]),
+  ).values(),
+].map((side) => ({
+  roster_id: side.roster_id,
+  team: side.team,
+  manager: side.team,
+  avatar: null,
+  players: [],
+}));
 const TEAMS = JSON.stringify({ teams: [BO_GIRDS, ...PARTNERS] });
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET, POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "GET, POST",
+};
 
 const WALKER = "Kenneth Walker III, RB";
 const FLOWERS = "Zay Flowers, WR";
@@ -62,11 +79,20 @@ test.afterAll(async () => {
 
 /* Opens the analyzer in Find mode with Bo Girds as Your team. The teams route sends his roster; no other request leaves the page. */
 async function openFind(page: Page, theme: Theme) {
-  await page.route((url) => !["127.0.0.1", "localhost"].includes(url.hostname), (route) => route.abort());
+  await page.route(
+    (url) => !["127.0.0.1", "localhost"].includes(url.hostname),
+    (route) => route.abort(),
+  );
   await page.route(`${LOCAL_API}/**`, (route) => {
     const request = route.request();
     if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS });
-    if (request.url().includes("/teams")) return route.fulfill({ status: 200, headers: CORS, contentType: "application/json", body: TEAMS });
+    if (request.url().includes("/teams"))
+      return route.fulfill({
+        status: 200,
+        headers: CORS,
+        contentType: "application/json",
+        body: TEAMS,
+      });
     return route.abort();
   });
   await page.addInitScript((asker) => {
@@ -93,7 +119,10 @@ async function frameClock(page: Page, ms = 1000 / 60) {
     const start = performance.now();
     let frames = 0;
     let last = -1;
-    Object.defineProperty(performance, "now", { configurable: true, value: () => start + frames * step });
+    Object.defineProperty(performance, "now", {
+      configurable: true,
+      value: () => start + frames * step,
+    });
     window.requestAnimationFrame = (callback) =>
       raf((time) => {
         if (time !== last) {
@@ -130,16 +159,23 @@ async function framesAfterTap(page: Page, name: string, ms: number) {
   return page.evaluate(
     ([label, span]) =>
       new Promise<{ t: number; x: number; front: number }[]>((done) => {
-        const group = document.querySelector('[role="group"][aria-label="Trade block"]') as HTMLElement;
+        const group = document.querySelector(
+          '[role="group"][aria-label="Trade block"]',
+        ) as HTMLElement;
         const button = group.querySelector(`[aria-label="${label}"]`) as HTMLElement;
         // The first place of the strip: the left edge of the group plus its left padding.
-        const front = () => group.getBoundingClientRect().left + parseFloat(getComputedStyle(group).paddingLeft);
+        const front = () =>
+          group.getBoundingClientRect().left + parseFloat(getComputedStyle(group).paddingLeft);
         const samples: { t: number; x: number; front: number }[] = [];
         const start = performance.now();
         button.click();
         const read = () => {
           const t = Math.round(performance.now() - start);
-          samples.push({ t, x: Math.round(button.getBoundingClientRect().left * 10) / 10, front: Math.round(front() * 10) / 10 });
+          samples.push({
+            t,
+            x: Math.round(button.getBoundingClientRect().left * 10) / 10,
+            front: Math.round(front() * 10) / 10,
+          });
           if (t < span) requestAnimationFrame(read);
           else done(samples);
         };
@@ -153,32 +189,52 @@ async function framesAfterTap(page: Page, name: string, ms: number) {
    content that the reader scrolls past, so the scan hides each one for its run. */
 async function expectNoOverlap(page: Page, name: string) {
   const hidden = await page.evaluate(() => {
-    const bars = [...document.querySelectorAll<HTMLElement>("body *")].filter((el) => ["fixed", "sticky"].includes(getComputedStyle(el).position));
+    const bars = [...document.querySelectorAll<HTMLElement>("body *")].filter((el) =>
+      ["fixed", "sticky"].includes(getComputedStyle(el).position),
+    );
     for (const bar of bars) bar.style.visibility = "hidden";
     return bars.length;
   });
   const overlap = await findOverlap(page);
-  console.log(`${name}: the text scan hides ${hidden} fixed or sticky parts; overlap: ${overlap ?? "none"}`);
+  console.log(
+    `${name}: the text scan hides ${hidden} fixed or sticky parts; overlap: ${overlap ?? "none"}`,
+  );
   expect(overlap).toBeNull();
   await page.evaluate(() => {
-    for (const el of document.querySelectorAll<HTMLElement>("body *")) if (el.style.visibility === "hidden") el.style.visibility = "";
+    for (const el of document.querySelectorAll<HTMLElement>("body *"))
+      if (el.style.visibility === "hidden") el.style.visibility = "";
   });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
 }
 
 /* The fixed and sticky parts of the page that show and cover a part of the screen. */
 async function fixedBars(page: Page) {
   return page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>("body *")]
-      .filter((el) => ["fixed", "sticky"].includes(getComputedStyle(el).position) && el.checkVisibility({ opacityProperty: true, visibilityProperty: true }))
-      .map((el) => ({ name: el.getAttribute("aria-label") ?? el.tagName.toLowerCase(), ...el.getBoundingClientRect().toJSON() }))
-      .filter((box) => box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight),
+      .filter(
+        (el) =>
+          ["fixed", "sticky"].includes(getComputedStyle(el).position) &&
+          el.checkVisibility({ opacityProperty: true, visibilityProperty: true }),
+      )
+      .map((el) => ({
+        name: el.getAttribute("aria-label") ?? el.tagName.toLowerCase(),
+        ...el.getBoundingClientRect().toJSON(),
+      }))
+      .filter(
+        (box) => box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight,
+      ),
   );
 }
 
 /* True when the fixed bar covers a part of the box that shows on the screen. A bar at the top of the screen sits over
    content that scrolled up past it, which the reader can scroll back. */
-async function covers(bar: { top: number; bottom: number; left: number; right: number }, part: Locator, height: number) {
+async function covers(
+  bar: { top: number; bottom: number; left: number; right: number },
+  part: Locator,
+  height: number,
+) {
   const box = (await part.boundingBox())!;
   const top = Math.max(box.y, 0);
   const bottom = Math.min(box.y + box.height, height);
@@ -197,7 +253,9 @@ for (const viewport of VIEWPORTS) {
       await openFind(page, "light");
       const frames = await framesAfterTap(page, WALKER, 100);
       const first = frames[0];
-      console.log(`${viewport.name} motion off: one frame after the tap (${first.t} ms), Walker x=${first.x}, the front x=${first.front}`);
+      console.log(
+        `${viewport.name} motion off: one frame after the tap (${first.t} ms), Walker x=${first.x}, the front x=${first.front}`,
+      );
       expect(Math.abs(first.x - first.front)).toBeLessThanOrEqual(1);
       for (const frame of frames) expect(Math.abs(frame.x - frame.front)).toBeLessThanOrEqual(1);
       await expect(toggle(page, WALKER)).toHaveAttribute("aria-pressed", "true");
@@ -213,7 +271,9 @@ for (const viewport of VIEWPORTS) {
         const before = (await toggle(page, WALKER).boundingBox())!.x;
         const frames = await framesAfterTap(page, WALKER, 800);
         const front = frames.at(-1)!.front;
-        console.log(`${viewport.name} motion on: Walker x=${before} before the tap, the front x=${front}`);
+        console.log(
+          `${viewport.name} motion on: Walker x=${before} before the tap, the front x=${front}`,
+        );
         console.log(frames.map((f) => `${f.t}ms x=${f.x}`).join(", "));
         // The first frame after the tap still shows Walker near his old place, so the move is a glide and not a jump.
         expect(frames[0].x - front).toBeGreaterThan((before - front) / 2);
@@ -231,10 +291,14 @@ for (const viewport of VIEWPORTS) {
 
       // The reader has scrolled the strip to its end. The strip scrolls back as the pick glides, so he leaves the
       // place under the thumb with no jump and lands at the front.
-      test("a pick from the scrolled end glides back to the front with no jump", async ({ page }) => {
+      test("a pick from the scrolled end glides back to the front with no jump", async ({
+        page,
+      }) => {
         await openFind(page, "light");
         const tight = await page.evaluate(() => {
-          const area = document.querySelector('[role="group"][aria-label="Trade block"]')!.closest("[data-slot=scroll-area-viewport]") as HTMLElement;
+          const area = document
+            .querySelector('[role="group"][aria-label="Trade block"]')!
+            .closest("[data-slot=scroll-area-viewport]") as HTMLElement;
           area.style.scrollBehavior = "auto";
           area.scrollLeft = area.scrollWidth;
           area.style.scrollBehavior = "";
@@ -244,11 +308,14 @@ for (const viewport of VIEWPORTS) {
         const before = (await toggle(page, name).boundingBox())!.x;
         const frames = await framesAfterTap(page, name, 900);
         const front = frames.at(-1)!.front;
-        console.log(`${viewport.name} scrolled ${tight} px: Parker Washington x=${before} before the tap, the front x=${front}`);
+        console.log(
+          `${viewport.name} scrolled ${tight} px: Parker Washington x=${before} before the tap, the front x=${front}`,
+        );
         console.log(frames.map((f) => `${f.t}ms x=${f.x}`).join(", "));
         // No jump on the first frame: he is still within 40 px of his old place.
         expect(Math.abs(frames[0].x - before)).toBeLessThanOrEqual(40);
-        for (const [i, frame] of frames.entries()) if (i > 0) expect(frame.x).toBeLessThanOrEqual(frames[i - 1].x + 1);
+        for (const [i, frame] of frames.entries())
+          if (i > 0) expect(frame.x).toBeLessThanOrEqual(frames[i - 1].x + 1);
         expect(Math.abs(frames.at(-1)!.x - front)).toBeLessThanOrEqual(1);
       });
     });
@@ -258,7 +325,9 @@ for (const viewport of VIEWPORTS) {
     for (const motion of ["no-preference", "reduce"] as const) {
       test.describe(`reason line, motion ${motion}`, () => {
         test.use({ reducedMotion: motion });
-        test(`a refused 4th tap ${motion === "reduce" ? "shows the reason with no shake" : "shakes the reason line each time"}`, async ({ page }) => {
+        test(`a refused 4th tap ${motion === "reduce" ? "shows the reason with no shake" : "shakes the reason line each time"}`, async ({
+          page,
+        }) => {
           await recordAnimations(page);
           await openFind(page, "light");
           for (const name of [WALKER, FLOWERS, "Blake Corum, RB"]) await toggle(page, name).click();
@@ -269,11 +338,17 @@ for (const viewport of VIEWPORTS) {
               (first) =>
                 (window as unknown as { recorded: Animation[] }).recorded
                   .slice(first)
-                  .filter((animation) => ((animation.effect as KeyframeEffect).target as Element | null)?.textContent?.startsWith("Your block holds 3 players")).length,
+                  .filter((animation) =>
+                    (
+                      (animation.effect as KeyframeEffect).target as Element | null
+                    )?.textContent?.startsWith("Your block holds 3 players"),
+                  ).length,
               from,
             );
           for (const tap of [1, 2]) {
-            const from = await page.evaluate(() => (window as unknown as { recorded: Animation[] }).recorded.length);
+            const from = await page.evaluate(
+              () => (window as unknown as { recorded: Animation[] }).recorded.length,
+            );
             await toggle(page, "Lamar Jackson, QB").click();
             await expect(reason).toBeVisible();
             let seen: number[];
@@ -282,7 +357,9 @@ for (const viewport of VIEWPORTS) {
               seen = await page.evaluate(
                 () =>
                   new Promise<number[]>((done) => {
-                    const line = [...document.querySelectorAll("p")].find((p) => p.textContent?.startsWith("Your block holds 3 players"))!;
+                    const line = [...document.querySelectorAll("p")].find((p) =>
+                      p.textContent?.startsWith("Your block holds 3 players"),
+                    )!;
                     const seen: number[] = [];
                     const start = performance.now();
                     const read = () => {
@@ -304,7 +381,11 @@ for (const viewport of VIEWPORTS) {
               seen = await page.evaluate((first) => {
                 const shakes = (window as unknown as { recorded: Animation[] }).recorded
                   .slice(first)
-                  .filter((animation) => ((animation.effect as KeyframeEffect).target as Element | null)?.textContent?.startsWith("Your block holds 3 players"));
+                  .filter((animation) =>
+                    (
+                      (animation.effect as KeyframeEffect).target as Element | null
+                    )?.textContent?.startsWith("Your block holds 3 players"),
+                  );
                 const runs = shakes.map((shake) => {
                   const line = (shake.effect as KeyframeEffect).target as Element;
                   const end = Number(shake.effect!.getComputedTiming().endTime);
@@ -322,7 +403,9 @@ for (const viewport of VIEWPORTS) {
               }, from);
             }
             const spread = Math.max(...seen) - Math.min(...seen);
-            console.log(`${viewport.name} motion ${motion}: refused tap ${tap}, the reason line moves ${spread} px across ${seen.length} frames`);
+            console.log(
+              `${viewport.name} motion ${motion}: refused tap ${tap}, the reason line moves ${spread} px across ${seen.length} frames`,
+            );
             expect(seen.length).toBeGreaterThan(0);
             if (motion === "reduce") expect(spread).toBe(0);
             else expect(spread).toBeGreaterThanOrEqual(6);
@@ -336,15 +419,23 @@ for (const viewport of VIEWPORTS) {
       test("a pointer on a player lifts his name to full ink", async ({ page }) => {
         await openFind(page, "light");
         await toggle(page, WALKER).click();
-        const ink = (name: string) => toggle(page, name).locator("span").nth(-2).evaluate((el) => getComputedStyle(el).color);
+        const ink = (name: string) =>
+          toggle(page, name)
+            .locator("span")
+            .nth(-2)
+            .evaluate((el) => getComputedStyle(el).color);
         const rest = await ink("Aaron Rodgers, QB");
         await toggle(page, "Aaron Rodgers, QB").hover();
         await expect.poll(() => ink("Aaron Rodgers, QB")).toBe(await ink(WALKER));
-        console.log(`${viewport.name}: Rodgers name ${rest} at rest, ${await ink("Aaron Rodgers, QB")} under the pointer`);
+        console.log(
+          `${viewport.name}: Rodgers name ${rest} at rest, ${await ink("Aaron Rodgers, QB")} under the pointer`,
+        );
       });
 
     // Each item reads as a toggle with the name and the position, and only a pick has the pressed state.
-    test("each item reads as a toggle with the name, the position, and the state (AT-25)", async ({ page }) => {
+    test("each item reads as a toggle with the name, the position, and the state (AT-25)", async ({
+      page,
+    }) => {
       await openFind(page, "light");
       await toggle(page, WALKER).click();
       const tree = await strip(page).ariaSnapshot();
@@ -365,31 +456,55 @@ for (const viewport of VIEWPORTS) {
         await toggle(page, WALKER).click();
         await toggle(page, FLOWERS).click();
         await expect(page.getByText("2 of 3")).toBeVisible();
-        await page.screenshot({ path: info.outputPath(`trade-block-${theme}.png`), fullPage: true });
+        await page.screenshot({
+          path: info.outputPath(`trade-block-${theme}.png`),
+          fullPage: true,
+        });
 
         // The scroll area of the strip runs from the inner left edge of the hero to its inner right edge.
         const fit = await page.evaluate(() => {
-          const hero = document.querySelector('section[aria-label="Trade Ideas"] section[aria-label="Trade Ideas"]') as HTMLElement;
-          const area = document.querySelector('[role="group"][aria-label="Trade block"]')!.closest("[data-slot=scroll-area-viewport]") as HTMLElement;
+          const hero = document.querySelector(
+            'section[aria-label="Trade Ideas"] section[aria-label="Trade Ideas"]',
+          ) as HTMLElement;
+          const area = document
+            .querySelector('[role="group"][aria-label="Trade block"]')!
+            .closest("[data-slot=scroll-area-viewport]") as HTMLElement;
           const h = hero.getBoundingClientRect();
           const a = area.getBoundingClientRect();
           const border = parseFloat(getComputedStyle(hero).borderLeftWidth);
-          return { heroLeft: h.left + border, heroRight: h.right - border, stripLeft: a.left, stripRight: a.right };
+          return {
+            heroLeft: h.left + border,
+            heroRight: h.right - border,
+            stripLeft: a.left,
+            stripRight: a.right,
+          };
         });
-        console.log(`${viewport.name} ${theme}: hero inner ${fit.heroLeft} to ${fit.heroRight}, strip ${fit.stripLeft} to ${fit.stripRight}`);
+        console.log(
+          `${viewport.name} ${theme}: hero inner ${fit.heroLeft} to ${fit.heroRight}, strip ${fit.stripLeft} to ${fit.stripRight}`,
+        );
         expect(Math.abs(fit.stripLeft - fit.heroLeft)).toBeLessThanOrEqual(1);
         expect(Math.abs(fit.stripRight - fit.heroRight)).toBeLessThanOrEqual(1);
 
         await expectNoOverlap(page, `${viewport.name} ${theme}`);
 
         // No fixed bar covers the strip, the chips, or the find button, at the top of the page or scrolled to them.
-        const parts = [strip(page), page.getByRole("radiogroup", { name: "Position" }), page.getByRole("button", { name: "Find a Trade" })];
+        const parts = [
+          strip(page),
+          page.getByRole("radiogroup", { name: "Position" }),
+          page.getByRole("button", { name: "Find a Trade" }),
+        ];
         for (const part of parts) {
           await part.scrollIntoViewIfNeeded();
           const bars = await fixedBars(page);
-          for (const bar of bars) expect(await covers(bar, part, viewport.use.viewport.height), `the fixed part ${bar.name} covers a control`).toBe(false);
+          for (const bar of bars)
+            expect(
+              await covers(bar, part, viewport.use.viewport.height),
+              `the fixed part ${bar.name} covers a control`,
+            ).toBe(false);
         }
-        console.log(`${viewport.name} ${theme}: no fixed bar covers the strip, the chips, or the find button`);
+        console.log(
+          `${viewport.name} ${theme}: no fixed bar covers the strip, the chips, or the find button`,
+        );
       });
     }
   });
@@ -400,15 +515,27 @@ for (const viewport of KEY_VIEWPORTS) {
   test.describe(`keyboard ${viewport.name}`, () => {
     test.use(viewport.use);
     for (const theme of ["light", "dark"] as const) {
-      test(`Tab, the arrow keys, and Space put Flowers on the block, ${theme} (AT-26)`, async ({ page }, info) => {
+      test(`Tab, the arrow keys, and Space put Flowers on the block, ${theme} (AT-26)`, async ({
+        page,
+      }, info) => {
         await openFind(page, theme);
         // Tab from the Your team button, the control before the strip.
         await page.getByRole("button", { name: /Your team/ }).focus();
         await page.keyboard.press("Tab");
-        const focused = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? document.activeElement?.tagName ?? "");
+        const focused = () =>
+          page.evaluate(
+            () =>
+              document.activeElement?.getAttribute("aria-label") ??
+              document.activeElement?.tagName ??
+              "",
+          );
         const start = await focused();
         console.log(`${viewport.name} ${theme}: Tab lands on "${start}"`);
-        expect(await page.evaluate(() => document.activeElement?.closest('[role="group"]')?.getAttribute("aria-label"))).toBe("Trade block");
+        expect(
+          await page.evaluate(() =>
+            document.activeElement?.closest('[role="group"]')?.getAttribute("aria-label"),
+          ),
+        ).toBe("Trade block");
         const path = [start];
         for (let i = 0; i < 20 && (await focused()) !== FLOWERS; i++) {
           await page.keyboard.press("ArrowRight");
@@ -423,13 +550,22 @@ for (const viewport of KEY_VIEWPORTS) {
         const ring = await page.evaluate(() => {
           const el = document.activeElement as HTMLElement;
           const style = getComputedStyle(el);
-          return { name: el.getAttribute("aria-label"), outline: `${style.outlineStyle} ${style.outlineWidth}`, visible: el.matches(":focus-visible") };
+          return {
+            name: el.getAttribute("aria-label"),
+            outline: `${style.outlineStyle} ${style.outlineWidth}`,
+            visible: el.matches(":focus-visible"),
+          };
         });
-        console.log(`${viewport.name} ${theme}: after Space, Flowers is pressed, the counter reads 1 of 3, and the focus is on "${ring.name}" with the outline ${ring.outline}`);
+        console.log(
+          `${viewport.name} ${theme}: after Space, Flowers is pressed, the counter reads 1 of 3, and the focus is on "${ring.name}" with the outline ${ring.outline}`,
+        );
         expect(ring.name).toBe(FLOWERS);
         expect(ring.visible).toBe(true);
         expect(ring.outline).toBe("solid 2px");
-        await page.screenshot({ path: info.outputPath(`trade-block-keyboard-${theme}.png`), fullPage: true });
+        await page.screenshot({
+          path: info.outputPath(`trade-block-keyboard-${theme}.png`),
+          fullPage: true,
+        });
       });
     }
   });

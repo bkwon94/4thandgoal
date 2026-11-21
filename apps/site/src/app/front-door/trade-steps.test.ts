@@ -2,7 +2,7 @@
  * Tests for the steps of a trade stream: a live line names the stage at work, and its done line takes its place.
  * A live line with no done line drops when the Answer comes.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { addStep, endSteps, noSteps } from "./trade-api";
 
 describe("the steps of a trade stream", () => {
@@ -17,14 +17,21 @@ describe("the steps of a trade stream", () => {
   });
 
   it("adds a done line with no live line before it, such as a line of an older API", () => {
-    expect(addStep(addStep(noSteps, "Found Kenneth Walker III", false), "Checked 11 teams for a fit", false).lines).toEqual([
-      "Found Kenneth Walker III",
-      "Checked 11 teams for a fit",
-    ]);
+    expect(
+      addStep(
+        addStep(noSteps, "Found Kenneth Walker III", false),
+        "Checked 11 teams for a fit",
+        false,
+      ).lines,
+    ).toEqual(["Found Kenneth Walker III", "Checked 11 teams for a fit"]);
   });
 
   it("drops a live line that got no done line when the Answer comes", () => {
-    const steps = addStep(addStep(noSteps, "Weighed 41 offers", false), "Picking the best offers", true);
+    const steps = addStep(
+      addStep(noSteps, "Weighed 41 offers", false),
+      "Picking the best offers",
+      true,
+    );
     expect(endSteps(steps)).toEqual(["Weighed 41 offers"]);
     expect(endSteps(addStep(noSteps, "Weighed 41 offers", false))).toEqual(["Weighed 41 offers"]);
   });

@@ -4,7 +4,15 @@
  */
 "use client";
 
-import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { Button } from "@cpc/design/ui/button";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 import { Card } from "@cpc/design/parts/card";
 import { Hero, HeroFrame } from "@cpc/design/parts/hero";
 import { Rise } from "@cpc/design/parts/rise";
@@ -68,7 +76,12 @@ function age(claimedAt: string, now: Date): string {
    and an egg still to drop is dashed. */
 function Egg({ slot }: { slot: Slot }) {
   return (
-    <svg data-slot={slot} viewBox="0 0 16 20" aria-hidden="true" className={cn("h-sp-5 w-sp-4", slot === "out" && "drop-shadow-egg")}>
+    <svg
+      data-slot={slot}
+      viewBox="0 0 16 20"
+      aria-hidden="true"
+      className={cn("h-sp-5 w-sp-4", slot === "out" && "drop-shadow-egg")}
+    >
       <path
         d="M8 1c3.6 0 7 6.4 7 10.6A7 7 0 0 1 1 11.6C1 7.4 4.4 1 8 1z"
         strokeWidth={1.4}
@@ -76,11 +89,18 @@ function Egg({ slot }: { slot: Slot }) {
         className={cn(
           slot === "found" && "fill-on-dark stroke-on-dark",
           slot === "out" && "fill-card-band stroke-accent-text",
-          slot === "future" && "fill-none stroke-on-dark-muted",
+          slot === "future" && "stroke-on-dark-muted fill-none",
         )}
       />
       {slot === "out" && (
-        <path d="M3 11.5l2.5-1.7 2.5 1.7 2.5-1.7 2.5 1.7" fill="none" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="stroke-accent" />
+        <path
+          d="M3 11.5l2.5-1.7 2.5 1.7 2.5-1.7 2.5 1.7"
+          fill="none"
+          strokeWidth={1.6}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="stroke-accent"
+        />
       )}
     </svg>
   );
@@ -116,18 +136,21 @@ function BoardHero({ board }: { board: Board }) {
       title="The Egg Board"
       meta={`$${total} in gift cards. ${countWord(board.words.length)} egg words. First to fill a word wins it.`}
       feature={
-        <div className="flex flex-col gap-sp-3">
+        <div className="gap-sp-3 flex flex-col">
           <div className="relative">
             {/* The ground stops above the week numbers, so its box never reaches a line of text. */}
             <ArtGround inset="top-0 bottom-8 -inset-x-hero-x" />
-            <ul aria-label="The eggs of each week" className="relative m-0 grid list-none grid-cols-9 gap-sp-1 p-0">
+            <ul
+              aria-label="The eggs of each week"
+              className="gap-sp-1 relative m-0 grid list-none grid-cols-9 p-0"
+            >
               {board.weeks.map((week) => (
                 <li
                   key={week.week}
                   aria-label={weekName(week)}
                   aria-current={week.week === current ? "date" : undefined}
                   className={cn(
-                    "flex flex-col items-center gap-sp-1 rounded-tile py-sp-2",
+                    "gap-sp-1 rounded-tile py-sp-2 flex flex-col items-center",
                     week.week === current && "bg-accent/20",
                   )}
                 >
@@ -139,7 +162,10 @@ function BoardHero({ board }: { board: Board }) {
                       read its contrast. */}
                   <span
                     aria-hidden="true"
-                    className={cn("mt-auto font-mono text-meta font-bold", week.week === current ? "text-accent-text" : "text-on-dark-muted")}
+                    className={cn(
+                      "text-meta mt-auto font-mono font-bold",
+                      week.week === current ? "text-accent-text" : "text-on-dark-muted",
+                    )}
                   >
                     {String(week.week).padStart(2, "0")}
                   </span>
@@ -147,17 +173,38 @@ function BoardHero({ board }: { board: Board }) {
               ))}
             </ul>
           </div>
-          <div aria-hidden="true" className="flex flex-wrap gap-x-sp-4 gap-y-sp-1 text-meta text-on-dark-2">
-            <span className="inline-flex items-center gap-sp-1"><Egg slot="found" />Found</span>
-            <span className="inline-flex items-center gap-sp-1"><Egg slot="out" />Out now</span>
-            <span className="inline-flex items-center gap-sp-1"><Egg slot="future" />Drops on a later Tuesday</span>
+          <div
+            aria-hidden="true"
+            className="gap-x-sp-4 gap-y-sp-1 text-meta text-on-dark-2 flex flex-wrap"
+          >
+            <span className="gap-sp-1 inline-flex items-center">
+              <Egg slot="found" />
+              Found
+            </span>
+            <span className="gap-sp-1 inline-flex items-center">
+              <Egg slot="out" />
+              Out now
+            </span>
+            <span className="gap-sp-1 inline-flex items-center">
+              <Egg slot="future" />
+              Drops on a later Tuesday
+            </span>
           </div>
         </div>
       }
       stats={
-        <div role="group" aria-label="Egg counts" className="grid w-full grid-cols-3 gap-sp-2 tablet:w-auto">
+        <div
+          role="group"
+          aria-label="Egg counts"
+          className="gap-sp-2 tablet:w-auto grid w-full grid-cols-3"
+        >
           {counts.map(([label, value, color]) => (
-            <Tile key={label} tone="hero" label={label} value={<span className={color}>{value}</span>} />
+            <Tile
+              key={label}
+              tone="hero"
+              label={label}
+              value={<span className={color}>{value}</span>}
+            />
           ))}
         </div>
       }
@@ -168,10 +215,23 @@ function BoardHero({ board }: { board: Board }) {
 /* A row of letter tiles: one grid column per letter, each at most the tile size, as the slot row of the hunt.
    On a narrow phone each column shrinks by the same amount, so the row never wraps and never leaves its slide. Each tile
    fills its column, so every tile has one width. The gap keeps two dashed borders apart, so each slot reads as its own box. */
-function TileRow({ length, small, className, children }: { length: number; small: boolean; className?: string; children: ReactNode }) {
+function TileRow({
+  length,
+  small,
+  className,
+  children,
+}: {
+  length: number;
+  small: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
   const size = small ? "var(--spacing-letter-sm)" : "var(--spacing-letter)";
   return (
-    <div className={cn("grid max-w-full gap-sp-2", className)} style={{ gridTemplateColumns: `repeat(${length}, minmax(0, ${size}))` }}>
+    <div
+      className={cn("gap-sp-2 grid max-w-full", className)}
+      style={{ gridTemplateColumns: `repeat(${length}, minmax(0, ${size}))` }}
+    >
       {children}
     </div>
   );
@@ -184,9 +244,9 @@ function LetterTile({ letter, small }: { letter: string; small: boolean }) {
     <span
       data-testid="tile"
       className={cn(
-        "inline-flex w-full items-center justify-center rounded-letter font-mono text-meta font-bold",
+        "rounded-letter text-meta inline-flex w-full items-center justify-center font-mono font-bold",
         small ? "h-letter-sm" : "h-letter",
-        letter !== "" ? "bg-on-dark text-band" : "border border-dashed border-rule-dark",
+        letter !== "" ? "bg-on-dark text-band" : "border-rule-dark border border-dashed",
       )}
     >
       {letter}
@@ -196,7 +256,7 @@ function LetterTile({ letter, small }: { letter: string; small: boolean }) {
 
 function GiftPill({ prize }: { prize: number }) {
   return (
-    <span className="rounded-pill border border-on-dark px-sp-3 py-sp-1 font-mono text-meta font-bold tracking-caps text-on-dark uppercase">
+    <span className="rounded-pill border-on-dark px-sp-3 py-sp-1 text-meta tracking-caps text-on-dark border font-mono font-bold uppercase">
       {`$${prize} gift card`}
     </span>
   );
@@ -253,8 +313,10 @@ function GiantWord({ race, roll }: { race: Race; roll: Roll }) {
     <h2
       aria-label={word.word}
       data-roll={roll}
-      className="egg-word m-0 grid max-w-full gap-sp-1"
-      style={{ gridTemplateColumns: `repeat(${word.word.length}, minmax(0, var(--spacing-giant-tile)))` }}
+      className="egg-word gap-sp-1 m-0 grid max-w-full"
+      style={{
+        gridTemplateColumns: `repeat(${word.word.length}, minmax(0, var(--spacing-giant-tile)))`,
+      }}
     >
       {[...word.word].map((letter, index) => {
         const state = won ? "won" : held[index] !== "" ? "lit" : "outline";
@@ -265,10 +327,10 @@ function GiantWord({ race, roll }: { race: Race; roll: Roll }) {
             data-letter={state}
             style={{ "--k": index } as CSSProperties}
             className={cn(
-              "egg-letter inline-flex aspect-square w-full items-center justify-center rounded-letter font-mono text-stat font-bold tablet:text-score",
-              state === "won" && "border-2 border-on-dark bg-accent text-on-dark shadow-orb",
+              "egg-letter rounded-letter text-stat tablet:text-score inline-flex aspect-square w-full items-center justify-center font-mono font-bold",
+              state === "won" && "border-on-dark bg-accent text-on-dark shadow-orb border-2",
               state === "lit" && "bg-on-dark text-band",
-              state === "outline" && "border border-on-dark-muted text-on-dark-muted",
+              state === "outline" && "border-on-dark-muted text-on-dark-muted border",
             )}
           >
             {letter}
@@ -293,18 +355,28 @@ function OpenSlide({ race }: { race: Race }) {
             {shown.map((manager, index) => {
               const leads = leaders.includes(manager);
               return (
-                <li key={manager.roster_id} className="flex flex-col gap-sp-2 border-t border-rule-dark py-sp-3">
-                  <div className="flex items-center gap-sp-2">
-                    <span className={cn("w-sp-6 font-mono text-row font-bold", leads ? "text-accent-text" : "text-on-dark-muted")}>
+                <li
+                  key={manager.roster_id}
+                  className="gap-sp-2 border-rule-dark py-sp-3 flex flex-col border-t"
+                >
+                  <div className="gap-sp-2 flex items-center">
+                    <span
+                      className={cn(
+                        "w-sp-6 text-row font-mono font-bold",
+                        leads ? "text-accent-text" : "text-on-dark-muted",
+                      )}
+                    >
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span data-team className="min-w-0 truncate text-body font-semibold">{manager.team}</span>
+                    <span data-team className="text-body min-w-0 truncate font-semibold">
+                      {manager.team}
+                    </span>
                     {leads && (
-                      <span className="rounded-pill bg-accent px-sp-2 py-sp-0 font-mono text-meta font-bold tracking-caps text-on-dark uppercase">
+                      <span className="rounded-pill bg-accent px-sp-2 py-sp-0 text-meta tracking-caps text-on-dark font-mono font-bold uppercase">
                         Leads
                       </span>
                     )}
-                    <span className="ml-auto font-mono text-row font-bold tabular-nums">
+                    <span className="text-row ml-auto font-mono font-bold tabular-nums">
                       {manager.letters.length}
                       <span className="text-on-dark-muted">{`/${word.word.length}`}</span>
                     </span>
@@ -318,14 +390,15 @@ function OpenSlide({ race }: { race: Race }) {
               );
             })}
           </ol>
-          <button
+          <Button
+            variant="plain"
             type="button"
             aria-expanded={all}
             onClick={() => setAll(!all)}
-            className="press mt-sp-1 min-h-touch cursor-pointer rounded-pill border border-rule-dark bg-transparent text-body font-semibold text-on-dark"
+            className="press mt-sp-1 min-h-touch rounded-pill border-rule-dark text-body text-on-dark cursor-pointer border bg-transparent font-semibold"
           >
             {all ? `Show the top ${TOP}` : `Show all ${word.managers.length}`}
-          </button>
+          </Button>
         </>
       )}
     </>
@@ -335,13 +408,13 @@ function OpenSlide({ race }: { race: Race }) {
 function WonSlide({ word, winner }: { word: Word; winner: NonNullable<Word["winner"]> }) {
   return (
     <>
-      <div className="flex items-center gap-sp-3">
+      <div className="gap-sp-3 flex items-center">
         <span className="text-score leading-tight font-bold">{`${winner.team} won it.`}</span>
-        <span className="-rotate-6 rounded-letter border-2 border-on-dark bg-on-dark px-sp-2 py-sp-0 font-mono text-meta font-bold tracking-wide text-accent">
+        <span className="rounded-letter border-on-dark bg-on-dark px-sp-2 py-sp-0 text-meta text-accent -rotate-6 border-2 font-mono font-bold tracking-wide">
           WON
         </span>
       </div>
-      <p className="m-0 text-lead text-on-dark">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
+      <p className="text-lead text-on-dark m-0">{`The $${word.prize} gift card is theirs. The race is over.`}</p>
     </>
   );
 }
@@ -394,7 +467,11 @@ function EggWordSlider({ words }: { words: Word[] }) {
   }
 
   // With motion off, every duration and every delay is 0, so each move is an instant change (ADR 0028).
-  const motion = { "--es-dur": off ? "0s" : `${SLIDE_DURATION}s`, "--es-on": off ? "0" : "1", "--es-spring": SLIDE_SPRING } as CSSProperties;
+  const motion = {
+    "--es-dur": off ? "0s" : `${SLIDE_DURATION}s`,
+    "--es-on": off ? "0" : "1",
+    "--es-spring": SLIDE_SPRING,
+  } as CSSProperties;
 
   // The start of a touch on the slider. A vertical swipe stays a page scroll: the slider allows only pan-y, so the
   // browser scrolls the page and cancels the pointer, and a drag that moves more up than to the side moves no slide.
@@ -417,19 +494,25 @@ function EggWordSlider({ words }: { words: Word[] }) {
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLButtonElement>, tabIndex: number) {
-    const moves: Record<string, number> = { ArrowRight: tabIndex + 1, ArrowLeft: tabIndex - 1, Home: 0, End: races.length - 1 };
+    const moves: Record<string, number> = {
+      ArrowRight: tabIndex + 1,
+      ArrowLeft: tabIndex - 1,
+      Home: 0,
+      End: races.length - 1,
+    };
     if (!(event.key in moves)) return;
     event.preventDefault();
     select(moves[event.key]);
   }
 
   return (
-    <div data-slider style={motion} className="egg-slider flex flex-col gap-sp-3">
-      <div role="tablist" aria-label="Egg words" className="grid grid-cols-3 gap-sp-2">
+    <div data-slider style={motion} className="egg-slider gap-sp-3 flex flex-col">
+      <div role="tablist" aria-label="Egg words" className="gap-sp-2 grid grid-cols-3">
         {races.map((race, tabIndex) => {
           const on = race === shown;
           return (
-            <button
+            <Button
+              variant="plain"
               key={race.word.word}
               ref={(element) => {
                 tabs.current[tabIndex] = element;
@@ -443,13 +526,17 @@ function EggWordSlider({ words }: { words: Word[] }) {
               onClick={() => select(tabIndex)}
               onKeyDown={(event) => onKeyDown(event, tabIndex)}
               className={cn(
-                "press flex min-h-touch min-w-0 cursor-pointer flex-col items-center justify-center rounded-tile border px-sp-2 py-sp-1 font-mono text-meta font-bold tracking-wide",
-                on ? "border-rule-dark bg-band text-on-dark" : "border-rule bg-transparent text-ink",
+                "press min-h-touch rounded-tile px-sp-2 py-sp-1 text-meta flex min-w-0 cursor-pointer flex-col items-center justify-center border font-mono font-bold tracking-wide",
+                on
+                  ? "border-rule-dark bg-band text-on-dark"
+                  : "border-rule text-ink bg-transparent",
               )}
             >
               <span>{race.word.word}</span>{" "}
-              <span className={cn("tabular-nums", on ? "text-on-dark-2" : "text-mute")}>{tabCount(race)}</span>
-            </button>
+              <span className={cn("tabular-nums", on ? "text-on-dark-2" : "text-mute")}>
+                {tabCount(race)}
+              </span>
+            </Button>
           );
         })}
       </div>
@@ -464,7 +551,10 @@ function EggWordSlider({ words }: { words: Word[] }) {
       >
         {/* The class egg-hero hides the texture of the frame, so each line of text sits on the flat band color or the
             flat accent, and axe can read its contrast. */}
-        <HeroFrame label="Egg word" className={cn("egg-hero egg-wash", wonShown && "border-accent bg-accent")}>
+        <HeroFrame
+          label="Egg word"
+          className={cn("egg-hero egg-wash", wonShown && "border-accent bg-accent")}
+        >
           {slides.map((race, index) => {
             const rel = offset(index, selected, slides.length);
             // A slide that wraps from one side to the other passes behind the frame, so it jumps with no roll.
@@ -482,11 +572,18 @@ function EggWordSlider({ words }: { words: Word[] }) {
                 inert={!on}
                 data-rel={Math.max(-1, Math.min(1, rel))}
                 data-jump={jump}
-                className={cn("egg-slide flex flex-col items-start gap-sp-4", on ? "relative" : "absolute inset-x-0 top-0")}
+                className={cn(
+                  "egg-slide gap-sp-4 flex flex-col items-start",
+                  on ? "relative" : "absolute inset-x-0 top-0",
+                )}
               >
                 <GiantWord race={race} roll={rollOf(index)} />
                 <GiftPill prize={race.word.prize} />
-                {race.word.winner !== null ? <WonSlide word={race.word} winner={race.word.winner} /> : <OpenSlide race={race} />}
+                {race.word.winner !== null ? (
+                  <WonSlide word={race.word} winner={race.word.winner} />
+                ) : (
+                  <OpenSlide race={race} />
+                )}
               </div>
             );
           })}
@@ -501,47 +598,59 @@ function LatestClaims({ board, now }: { board: Board; now: Date }) {
   const filled = new Set(
     board.words.flatMap((word) => {
       if (word.winner === null) return [];
-      const index = board.latest.findIndex((claim) => claim.word === word.word && claim.roster_id === word.winner!.roster_id);
+      const index = board.latest.findIndex(
+        (claim) => claim.word === word.word && claim.roster_id === word.winner!.roster_id,
+      );
       return index < 0 ? [] : [index];
     }),
   );
   const left = board.counts.left;
   return (
     <section aria-labelledby="egg-latest">
-    <Card className="flex flex-col">
-      <h2 id="egg-latest" className={cn(LABEL, "mb-sp-3 text-accent-ink")}>Latest claims</h2>
-      {board.latest.length === 0 ? (
-        <span className="py-sp-2 text-body text-mute">
-          {left > 0 ? `No claims yet. ${left} ${left === 1 ? "egg is" : "eggs are"} out there.` : "No claims yet."}
-        </span>
-      ) : (
-        <ol className="m-0 flex list-none flex-col p-0">
-          {board.latest.slice(0, FEED).map((claim, index) => {
-            const fills = filled.has(index);
-            return (
-              <li key={`${claim.claimed_at}-${claim.roster_id}-${claim.letter}`} className="flex items-center gap-sp-3 border-t border-rule py-sp-2">
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "inline-flex size-feed-tile flex-none items-center justify-center rounded-letter font-mono text-lead font-bold",
-                    fills ? "bg-accent text-on-dark" : "bg-ink text-page",
-                  )}
+      <Card className="flex flex-col">
+        <h2 id="egg-latest" className={cn(LABEL, "mb-sp-3 text-accent-ink")}>
+          Latest claims
+        </h2>
+        {board.latest.length === 0 ? (
+          <span className="py-sp-2 text-body text-mute">
+            {left > 0
+              ? `No claims yet. ${left} ${left === 1 ? "egg is" : "eggs are"} out there.`
+              : "No claims yet."}
+          </span>
+        ) : (
+          <ol className="m-0 flex list-none flex-col p-0">
+            {board.latest.slice(0, FEED).map((claim, index) => {
+              const fills = filled.has(index);
+              return (
+                <li
+                  key={`${claim.claimed_at}-${claim.roster_id}-${claim.letter}`}
+                  className="gap-sp-3 border-rule py-sp-2 flex items-center border-t"
                 >
-                  {claim.letter}
-                </span>
-                <span data-claim className="flex-1 text-body leading-tight">
-                  <b className="font-bold">{claim.team}</b>
-                  {` claimed ${withArticle(claim.letter)} ${fills ? "and filled" : "for"} ${claim.word}.`}
-                </span>
-                <time dateTime={claim.claimed_at} className="font-mono text-meta font-bold text-mute">
-                  {age(claim.claimed_at, now)}
-                </time>
-              </li>
-            );
-          })}
-        </ol>
-      )}
-    </Card>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "size-feed-tile rounded-letter text-lead inline-flex flex-none items-center justify-center font-mono font-bold",
+                      fills ? "bg-accent text-on-dark" : "bg-ink text-page",
+                    )}
+                  >
+                    {claim.letter}
+                  </span>
+                  <span data-claim className="text-body flex-1 leading-tight">
+                    <b className="font-bold">{claim.team}</b>
+                    {` claimed ${withArticle(claim.letter)} ${fills ? "and filled" : "for"} ${claim.word}.`}
+                  </span>
+                  <time
+                    dateTime={claim.claimed_at}
+                    className="text-meta text-mute font-mono font-bold"
+                  >
+                    {age(claim.claimed_at, now)}
+                  </time>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </Card>
     </section>
   );
 }
@@ -551,7 +660,10 @@ function HowItWorks({ board }: { board: Board }) {
   const last = board.weeks[board.weeks.length - 1]?.week;
   const perDrop = board.weeks[0]?.slots.length ?? 0;
   const prizes = board.words.map((word) => `${word.word} $${word.prize}`);
-  const prizeList = prizes.length > 1 ? `${prizes.slice(0, -1).join(", ")}, and ${prizes[prizes.length - 1]}` : prizes.join("");
+  const prizeList =
+    prizes.length > 1
+      ? `${prizes.slice(0, -1).join(", ")}, and ${prizes[prizes.length - 1]}`
+      : prizes.join("");
   const rules = [
     `${perDrop} new eggs drop each Tuesday from week ${first} through week ${last}.`,
     "Eggs hide across the site. Tap or press the right spot to find one.",
@@ -564,17 +676,21 @@ function HowItWorks({ board }: { board: Board }) {
   ];
   return (
     <section aria-labelledby="egg-rules">
-    <Card className="flex flex-col gap-sp-3">
-      <h2 id="egg-rules" className={cn(LABEL, "text-accent-ink")}>How the hunt works</h2>
-      <ol className="m-0 flex list-none flex-col gap-sp-3 p-0">
-        {rules.map((rule, index) => (
-          <li key={index} className="flex items-baseline gap-sp-3">
-            <span className="font-mono text-meta font-bold text-accent-ink">{String(index + 1).padStart(2, "0")}</span>
-            <span className="text-body text-ink-2">{rule}</span>
-          </li>
-        ))}
-      </ol>
-    </Card>
+      <Card className="gap-sp-3 flex flex-col">
+        <h2 id="egg-rules" className={cn(LABEL, "text-accent-ink")}>
+          How the hunt works
+        </h2>
+        <ol className="gap-sp-3 m-0 flex list-none flex-col p-0">
+          {rules.map((rule, index) => (
+            <li key={index} className="gap-sp-3 flex items-baseline">
+              <span className="text-meta text-accent-ink font-mono font-bold">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="text-body text-ink-2">{rule}</span>
+            </li>
+          ))}
+        </ol>
+      </Card>
     </section>
   );
 }
@@ -587,7 +703,7 @@ type EggBoardProps = {
 
 export function EggBoard({ board, now = new Date() }: EggBoardProps) {
   return (
-    <div className="flex flex-col gap-sp-4">
+    <div className="gap-sp-4 flex flex-col">
       <Rise step={0}>
         <BoardHero board={board} />
       </Rise>

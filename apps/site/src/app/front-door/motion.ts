@@ -25,7 +25,14 @@ export const morphId = (key: string) => `suggestion-${key}`;
    morphs into the question on the shared layout spring, and the question then only fades, because the morph is its
    move. League, personal, and trade Topics all morph here. With motion off, or with no chip, the question rises in. */
 export function bubbleIn(off: boolean, morph?: string) {
-  return morph && !off ? { layoutId: morph, initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { layout: GLIDE, opacity: fadeIn(FAST) } } : riseIn(off);
+  return morph && !off
+    ? {
+        layoutId: morph,
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        transition: { layout: GLIDE, opacity: fadeIn(FAST) },
+      }
+    : riseIn(off);
 }
 
 /* The halo of the send button, from 0 for an empty field to 1 at 24 letters: about one short question. */
@@ -50,15 +57,31 @@ export const BLUR_SMALL = "blur(2px)";
 export const staggerOf = (index: number) => Math.min(index, 6) * STAGGER;
 
 /* A move that jumps when `still` is true, as under reduced motion, and otherwise runs on `transition`. */
-export const orStill = (still: boolean, transition: Transition): Transition => (still ? { duration: 0 } : transition);
+export const orStill = (still: boolean, transition: Transition): Transition =>
+  still ? { duration: 0 } : transition;
 
 /* A short fade-in, the same with motion on or off, so reduced motion keeps the fade. */
-export const fadeIn = (duration: number, delay = 0): Transition => ({ duration, ease: SMOOTH, delay });
+export const fadeIn = (duration: number, delay = 0): Transition => ({
+  duration,
+  ease: SMOOTH,
+  delay,
+});
 
 /* The props of a part that rises in from --distance-base, or from --distance-medium with a --blur-medium for a text reveal.
    With motion off, only the opacity moves. */
-export function riseIn(off: boolean, { delay = 0, text = false }: { delay?: number; text?: boolean } = {}) {
-  const from = off ? { opacity: 0 } : text ? { opacity: 0, y: 12, filter: "blur(3px)" } : { opacity: 0, y: 8 };
-  const to = off ? { opacity: 1 } : text ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0 };
+export function riseIn(
+  off: boolean,
+  { delay = 0, text = false }: { delay?: number; text?: boolean } = {},
+) {
+  const from = off
+    ? { opacity: 0 }
+    : text
+      ? { opacity: 0, y: 12, filter: "blur(3px)" }
+      : { opacity: 0, y: 8 };
+  const to = off
+    ? { opacity: 1 }
+    : text
+      ? { opacity: 1, y: 0, filter: "blur(0px)" }
+      : { opacity: 1, y: 0 };
   return { initial: from, animate: to, transition: fadeIn(text ? VERY_SLOW : 0.35, delay) };
 }

@@ -22,13 +22,30 @@ export const SPRING: Transition = { type: "spring", bounce: 0.25, duration: 0.6 
    fades in, and after a skip it shows at rest. */
 export function enter(
   pace: Pace,
-  from: { x?: number | string; y?: number | string; scale?: number; scaleX?: number; scaleY?: number },
-  { duration = 0.5, delay = 0, spring = false }: { duration?: number; delay?: number; spring?: boolean } = {},
+  from: {
+    x?: number | string;
+    y?: number | string;
+    scale?: number;
+    scaleX?: number;
+    scaleY?: number;
+  },
+  {
+    duration = 0.5,
+    delay = 0,
+    spring = false,
+  }: { duration?: number; delay?: number; spring?: boolean } = {},
 ) {
-  const rest = Object.fromEntries(Object.keys(from).map((key) => [key, key.startsWith("scale") ? 1 : 0]));
-  if (pace.still) return { initial: false as const, animate: { opacity: 1, ...rest }, transition: INSTANT };
+  const rest = Object.fromEntries(
+    Object.keys(from).map((key) => [key, key.startsWith("scale") ? 1 : 0]),
+  );
+  if (pace.still)
+    return { initial: false as const, animate: { opacity: 1, ...rest }, transition: INSTANT };
   if (pace.off) {
-    return { initial: { opacity: 0 }, animate: { opacity: 1 } satisfies TargetAndTransition, transition: { duration: FADE, delay } };
+    return {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 } satisfies TargetAndTransition,
+      transition: { duration: FADE, delay },
+    };
   }
   return {
     initial: { opacity: 0, ...from },

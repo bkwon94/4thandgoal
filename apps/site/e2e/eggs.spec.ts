@@ -16,7 +16,12 @@ const OUT = join(process.cwd(), "out");
 const PASSPHRASE = "localtest";
 const COMMISSIONER_KEY = "localkey";
 // The test egg T1 of the acceptance tests: a double-tap on the Luck cell of Lil Fridge, roster 3, in the light theme.
-const T1 = { page: "/midseason/2026/", target: "luck-3", action: "tap2", conditions: { theme: "light" } };
+const T1 = {
+  page: "/midseason/2026/",
+  target: "luck-3",
+  action: "tap2",
+  conditions: { theme: "light" },
+};
 // The egg words of the hunt, in the order of the values file. The claim goes into the first word that holds the letter.
 const EGG_WORDS = ["CORNERSTONE", "LANSDALE", "EAGLES"];
 const WIDTHS = [375, 1280];
@@ -33,7 +38,11 @@ let word: string;
 
 test.beforeAll(async () => {
   test.setTimeout(600_000);
-  execFileSync("pnpm", ["build"], { env: buildEnv("cpc", LOCAL_API), encoding: "utf8", stdio: "pipe" });
+  execFileSync("pnpm", ["build"], {
+    env: buildEnv("cpc", LOCAL_API),
+    encoding: "utf8",
+    stdio: "pipe",
+  });
   server = await serveDir(OUT, PORT);
   const drop = await fetch(`${LOCAL_API}/clients/cpc/eggs/drop`, {
     method: "POST",
@@ -63,7 +72,9 @@ test.describe("with motion", () => {
   test.use({ reducedMotion: "no-preference" });
 
   for (const width of WIDTHS) {
-    test(`a manager finds the test egg, cracks it, tears the stub, and sees the claim on the egg board at ${width} px`, async ({ page }) => {
+    test(`a manager finds the test egg, cracks it, tears the stub, and sees the claim on the egg board at ${width} px`, async ({
+      page,
+    }) => {
       await page.setViewportSize({ width, height: 900 });
       await openPage(page, `${server.url}${T1.page}`, "light");
       await findEgg(page);
@@ -83,8 +94,12 @@ test.describe("with motion", () => {
       await expect(page).toHaveURL(/\/eggs\/$/);
       await page.getByRole("tab", { name: new RegExp(word) }).click();
       const slide = page.getByRole("tabpanel", { name: new RegExp(word) });
-      await expect(slide.getByRole("listitem").filter({ hasText: "Lil Fridge" })).toContainText(letter);
-      await expect(page.getByRole("region", { name: "Latest claims" })).toContainText(new RegExp(`Lil Fridge claimed an? ${letter} for ${word}\\.`));
+      await expect(slide.getByRole("listitem").filter({ hasText: "Lil Fridge" })).toContainText(
+        letter,
+      );
+      await expect(page.getByRole("region", { name: "Latest claims" })).toContainText(
+        new RegExp(`Lil Fridge claimed an? ${letter} for ${word}\\.`),
+      );
       await expectNoHint(page, `${width} px`);
       await page.screenshot({ path: `test-results/eggs/board-${width}.png`, fullPage: true });
       await expectOneFound();
@@ -104,12 +119,18 @@ test("floor: the find card, the claim sheet, and the egg board at 390px", async 
   const failures = await partFloor(page, "find card, egg", '[aria-labelledby="egg-find-title"]');
   await page.getByRole("button", { name: "Crack the egg" }).click();
   await expect(page.getByTestId("egg-letter")).toHaveText(letter);
-  failures.push(...(await partFloor(page, "find card, letter", '[aria-labelledby="egg-find-title"]')));
+  failures.push(
+    ...(await partFloor(page, "find card, letter", '[aria-labelledby="egg-find-title"]')),
+  );
   await page.getByRole("button", { name: `Claim ${letter}` }).click();
   await expect(page.getByRole("dialog", { name: `Put ${letter} in an egg word.` })).toBeVisible();
-  failures.push(...(await partFloor(page, "claim sheet, empty", '[aria-labelledby="egg-claim-title"]')));
+  failures.push(
+    ...(await partFloor(page, "claim sheet, empty", '[aria-labelledby="egg-claim-title"]')),
+  );
   await fillSheet(page);
-  failures.push(...(await partFloor(page, "claim sheet, filled", '[aria-labelledby="egg-claim-title"]')));
+  failures.push(
+    ...(await partFloor(page, "claim sheet, filled", '[aria-labelledby="egg-claim-title"]')),
+  );
   await tearStub(page);
   await expect(page.getByRole("dialog", { name: `${letter} goes to ${word}.` })).toBeVisible();
   for (const theme of ["light", "dark"] as const) {
@@ -118,7 +139,10 @@ test("floor: the find card, the claim sheet, and the egg board at 390px", async 
     await expect(tabs).toHaveCount(EGG_WORDS.length);
     for (const each of EGG_WORDS) {
       await page.getByRole("tab", { name: new RegExp(each) }).click();
-      await expect(page.getByRole("tab", { name: new RegExp(each) })).toHaveAttribute("aria-selected", "true");
+      await expect(page.getByRole("tab", { name: new RegExp(each) })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
       failures.push(...(await partFloor(page, `egg board, ${each}, ${theme}`)));
     }
   }
@@ -136,7 +160,10 @@ async function findEgg(page: Page) {
 
 /* Fills the three steps of the claim sheet: the team, the egg word, and the passphrase. */
 async function fillSheet(page: Page) {
-  await page.getByRole("group", { name: "Your team" }).getByRole("button", { name: "Lil Fridge" }).click();
+  await page
+    .getByRole("group", { name: "Your team" })
+    .getByRole("button", { name: "Lil Fridge" })
+    .click();
   // The name of the card of an egg word starts with the word, then the gift card, the count, and the note.
   await page.getByRole("button", { name: new RegExp(`^${word} `) }).click();
   await page.getByLabel("League passphrase").fill(PASSPHRASE);
@@ -147,7 +174,9 @@ async function fillSheet(page: Page) {
  * steps, and the capture of the stub keeps each move on it.
  */
 async function tearStub(page: Page) {
-  const stub = page.getByRole("group", { name: "Claim ticket" }).getByRole("button", { name: `Tear to claim ${letter} for ${word}` });
+  const stub = page
+    .getByRole("group", { name: "Claim ticket" })
+    .getByRole("button", { name: `Tear to claim ${letter} for ${word}` });
   await stub.scrollIntoViewIfNeeded();
   const box = (await stub.boundingBox())!;
   const x = box.x + 4;
@@ -180,9 +209,19 @@ async function partFloor(page: Page, label: string, scope?: string): Promise<str
   const targets = await scanTargets(page);
   const scroll = await scanScroll(page);
   const axe = await scanAxe(page, scope);
-  console.log(`${label}: axe violations ${axe.violations.length}, axe incomplete ${axe.incomplete.length}`);
-  console.log(`${label}: tap targets under 44px ${targets.failures.length}, sideways scroll ${scroll.length}, small text ${text.failures.length}`);
-  return [...axe.violations, ...axe.incomplete, ...targets.failures, ...scroll, ...text.failures].map((line) => `${label}: ${line}`);
+  console.log(
+    `${label}: axe violations ${axe.violations.length}, axe incomplete ${axe.incomplete.length}`,
+  );
+  console.log(
+    `${label}: tap targets under 44px ${targets.failures.length}, sideways scroll ${scroll.length}, small text ${text.failures.length}`,
+  );
+  return [
+    ...axe.violations,
+    ...axe.incomplete,
+    ...targets.failures,
+    ...scroll,
+    ...text.failures,
+  ].map((line) => `${label}: ${line}`);
 }
 
 /* The claim of the test reached the API: the board counts the one test egg as found. */

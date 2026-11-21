@@ -25,7 +25,16 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
       <TopBand
         {...shell}
         pageHref={pageHref}
-        actions={door ? <>{shell.actions}<TourButton /></> : shell.actions}
+        actions={
+          door ? (
+            <>
+              {shell.actions}
+              <TourButton />
+            </>
+          ) : (
+            shell.actions
+          )
+        }
         menuFoot={door ? <TourRow /> : undefined}
       />
       {/* The strip of each package under the top band, edge to edge, such as the egg banner after an egg drop. */}
@@ -38,10 +47,20 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
         {door ? (
           // The Menu link of the sim gives the link of the standings ladder, so it opens the same page as the Menu.
           <SimLinkProvider href={menuLinks.sim?.()?.href ?? null}>
-            <FrontDoor siteName={clientValues.copy.siteName} week={door.week} teams={door.teams} answers={door.answers} personalHrefs={door.personalHrefs} pages={clientSitePages()} askTarget={askTarget} />
+            <FrontDoor
+              siteName={clientValues.copy.siteName}
+              week={door.week}
+              teams={door.teams}
+              answers={door.answers}
+              personalHrefs={door.personalHrefs}
+              pages={clientSitePages()}
+              askTarget={askTarget}
+            />
           </SimLinkProvider>
         ) : (
-          <h1 className="m-0 px-gutter py-sp-6 text-score leading-tight font-bold">{clientValues.copy.siteName}</h1>
+          <h1 className="px-gutter py-sp-6 text-score m-0 leading-tight font-bold">
+            {clientValues.copy.siteName}
+          </h1>
         )}
       </main>
     </>

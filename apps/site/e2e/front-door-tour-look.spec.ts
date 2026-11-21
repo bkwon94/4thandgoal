@@ -32,7 +32,10 @@ type Rect = { x: number; y: number; width: number; height: number };
 /* A browser with Your team, a kept passphrase, and no seen key. Each call off the test server fails, because the run
    uses no real API. */
 async function openTour(page: Page, theme?: "light" | "dark") {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.addInitScript(
     ({ team, theme }) => {
       localStorage.setItem("cpc.passphrase", "test");
@@ -49,18 +52,32 @@ async function openTour(page: Page, theme?: "light" | "dark") {
 
 /* The stream of a free answer that the API recorded. */
 const FREE = readFileSync(join(process.cwd(), "src", "fixtures", "free-answer", "fix.sse"), "utf8");
-const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST" };
+const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "*",
+  "access-control-allow-methods": "POST",
+};
 
 /* A browser with Your team, a kept passphrase, and the seen key, so the Tour shows only on a replay. The fake of the API
    port routes each question to a free answer and sends the recorded stream, so the run needs no key of Claude. */
 async function openDoorWithFreeAnswer(page: Page) {
-  await page.route((url) => url.hostname !== "127.0.0.1", (route) => route.abort());
+  await page.route(
+    (url) => url.hostname !== "127.0.0.1",
+    (route) => route.abort(),
+  );
   await page.route("**/clients/*/ask", (route) =>
     route.fulfill({
       status: route.request().method() === "OPTIONS" ? 204 : 200,
       headers: CORS,
       contentType: "application/json",
-      body: JSON.stringify({ route: "free", line: null, topic: null, team: null, closest: [], suggestion: null }),
+      body: JSON.stringify({
+        route: "free",
+        line: null,
+        topic: null,
+        team: null,
+        closest: [],
+        suggestion: null,
+      }),
     }),
   );
   await page.route("**/clients/*/ask/free", (route) =>
@@ -68,7 +85,11 @@ async function openDoorWithFreeAnswer(page: Page) {
       ? route.fulfill({ status: 204, headers: CORS })
       : route.fulfill({
           status: 200,
-          headers: { ...CORS, "access-control-expose-headers": "*", "x-vercel-ai-ui-message-stream": "v1" },
+          headers: {
+            ...CORS,
+            "access-control-expose-headers": "*",
+            "x-vercel-ai-ui-message-stream": "v1",
+          },
           contentType: "text/event-stream",
           body: FREE,
         }),
@@ -96,13 +117,22 @@ async function restingHole(page: Page) {
   const read = () =>
     page.locator("[data-tour-hole]").evaluate((el) => {
       const rect = el.getBoundingClientRect();
-      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius: parseFloat(getComputedStyle(el).borderTopLeftRadius) };
+      return {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        radius: parseFloat(getComputedStyle(el).borderTopLeftRadius),
+      };
     });
   let last = await read();
   await expect
     .poll(async () => {
       const now = await read();
-      const still = Math.abs(now.x - last.x) < 0.5 && Math.abs(now.y - last.y) < 0.5 && Math.abs(now.width - last.width) < 0.5;
+      const still =
+        Math.abs(now.x - last.x) < 0.5 &&
+        Math.abs(now.y - last.y) < 0.5 &&
+        Math.abs(now.width - last.width) < 0.5;
       last = now;
       return still;
     })
@@ -123,9 +153,12 @@ async function visualBox(page: Page, header: string): Promise<Rect> {
       return { x: left, y: top, width: right - left, height: bottom - top };
     };
     const visible = (el: Element) => (el as HTMLElement).checkVisibility?.() ?? true;
-    if (header === "Ask") return union([document.querySelector('form[aria-label="Ask"]')!.getBoundingClientRect()]);
+    if (header === "Ask")
+      return union([document.querySelector('form[aria-label="Ask"]')!.getBoundingClientRect()]);
     if (header === "Suggestions") {
-      const chips = [...document.querySelectorAll('[role="group"][aria-label="Suggestions"] > button')].map((el) => el.getBoundingClientRect());
+      const chips = [
+        ...document.querySelectorAll('[role="group"][aria-label="Suggestions"] > button'),
+      ].map((el) => el.getBoundingClientRect());
       const box = union(chips);
       const left = Math.max(8, box.x);
       const right = Math.min(window.innerWidth - 8, box.x + box.width);
@@ -136,7 +169,8 @@ async function visualBox(page: Page, header: string): Promise<Rect> {
       return union([...button.children].filter(visible).map((el) => el.getBoundingClientRect()));
     }
     const menu = [...document.querySelectorAll('button[aria-label="Open the menu"]')].find(visible);
-    if (menu) return union([menu.querySelector("svg:not([style*='none'])")!.getBoundingClientRect()]);
+    if (menu)
+      return union([menu.querySelector("svg:not([style*='none'])")!.getBoundingClientRect()]);
     const bar = document.querySelector('nav[aria-label="Site menu"]')!;
     return union([...bar.querySelectorAll("a")].map((el) => el.getBoundingClientRect()));
   }, header);
@@ -154,7 +188,8 @@ async function eachStop(page: Page, check: (header: string) => Promise<void>) {
   for (const [index, header] of HEADERS.entries()) {
     await expect(card(page, header)).toBeVisible();
     await check(header);
-    if (index < HEADERS.length - 1) await card(page, header).getByRole("button", { name: "Next" }).click();
+    if (index < HEADERS.length - 1)
+      await card(page, header).getByRole("button", { name: "Next" }).click();
   }
 }
 
@@ -162,7 +197,9 @@ const overlap = (a: Rect, b: Rect) =>
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 for (const width of [375, 1280]) {
-  test(`the hole pad is even on each side of the visual box, a circle on the menu button and a pill on each other control, at ${width} px (AT-14)`, async ({ page }) => {
+  test(`the hole pad is even on each side of the visual box, a circle on the menu button and a pill on each other control, at ${width} px (AT-14)`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 800 });
     await openTour(page);
     await eachStop(page, async (header) => {
@@ -176,13 +213,24 @@ for (const width of [375, 1280]) {
         bottom: hole.y + hole.height - (box.y + box.height),
       };
       // The evidence of AT-14 is the measured rect of each control and each hole, so the log prints them.
-      console.log(`AT-14 ${width} px ${header}: control ${JSON.stringify(box)}, hole ${JSON.stringify(hole)}, pads ${JSON.stringify(sides)}, expected pad ${pad}`);
+      console.log(
+        `AT-14 ${width} px ${header}: control ${JSON.stringify(box)}, hole ${JSON.stringify(hole)}, pads ${JSON.stringify(sides)}, expected pad ${pad}`,
+      );
       for (const [side, value] of Object.entries(sides)) {
-        expect(Math.abs(value - pad), `${header}: the ${side} pad is ${value}px, not ${pad}px`).toBeLessThanOrEqual(1);
+        expect(
+          Math.abs(value - pad),
+          `${header}: the ${side} pad is ${value}px, not ${pad}px`,
+        ).toBeLessThanOrEqual(1);
       }
-      expect(hole.radius, `${header}: the hole is round at its ends`).toBeGreaterThanOrEqual(hole.height / 2 - 1);
+      expect(hole.radius, `${header}: the hole is round at its ends`).toBeGreaterThanOrEqual(
+        hole.height / 2 - 1,
+      );
       const menuButton = width < 1000 && header === "Menu";
-      if (menuButton) expect(Math.abs(hole.width - hole.height), "the hole on the menu button is a circle").toBeLessThanOrEqual(1);
+      if (menuButton)
+        expect(
+          Math.abs(hole.width - hole.height),
+          "the hole on the menu button is a circle",
+        ).toBeLessThanOrEqual(1);
       else expect(hole.width, `${header}: the hole is a pill`).toBeGreaterThan(hole.height);
     });
   });
@@ -196,21 +244,36 @@ for (const width of [375, 1280]) {
       heights.push((await rectOf(page, "[data-tour-card]")).height);
     });
     console.log(`AT-17 ${width} px card heights at Stops 1 to 4: ${heights.join(", ")}`);
-    for (const height of heights) expect(Math.abs(height - heights[0]), `the heights are ${heights.join(", ")}`).toBeLessThanOrEqual(1);
+    for (const height of heights)
+      expect(
+        Math.abs(height - heights[0]),
+        `the heights are ${heights.join(", ")}`,
+      ).toBeLessThanOrEqual(1);
   });
 }
 
 /* The four viewports of the iPhone rule: an iPhone in Safari, an iPad in portrait and in landscape, and a desktop. */
 const VIEWPORTS = [
-  { name: "iPhone 390x660", use: { ...devices["iPhone 15"], viewport: { width: 390, height: 660 } } },
-  { name: "iPad 810x980", use: { ...devices["iPad (gen 7)"], viewport: { width: 810, height: 980 } } },
-  { name: "iPad 1080x740", use: { ...devices["iPad (gen 7) landscape"], viewport: { width: 1080, height: 740 } } },
+  {
+    name: "iPhone 390x660",
+    use: { ...devices["iPhone 15"], viewport: { width: 390, height: 660 } },
+  },
+  {
+    name: "iPad 810x980",
+    use: { ...devices["iPad (gen 7)"], viewport: { width: 810, height: 980 } },
+  },
+  {
+    name: "iPad 1080x740",
+    use: { ...devices["iPad (gen 7) landscape"], viewport: { width: 1080, height: 740 } },
+  },
   { name: "desktop 1280x800", use: { viewport: { width: 1280, height: 800 } } },
 ];
 
 for (const viewport of VIEWPORTS) {
   test.describe(viewport.name, () => {
-    const { defaultBrowserType: _browser, ...use } = viewport.use as typeof viewport.use & { defaultBrowserType?: string };
+    const { defaultBrowserType: _browser, ...use } = viewport.use as typeof viewport.use & {
+      defaultBrowserType?: string;
+    };
     test.use(use);
 
     test(`the card does not overlap its control at any Stop (AT-16)`, async ({ page }) => {
@@ -220,14 +283,28 @@ for (const viewport of VIEWPORTS) {
         const cardRect = await rectOf(page, "[data-tour-card]");
         const control = await rectOf(page, "[data-tour-target]");
         // The evidence of AT-16 is the rects and a screenshot of each Stop on each viewport, so the test logs and saves them.
-        console.log(`AT-16 ${viewport.name} ${header}: card ${JSON.stringify(cardRect)}, control ${JSON.stringify(control)}, overlap ${overlap(cardRect, control)}`);
+        console.log(
+          `AT-16 ${viewport.name} ${header}: card ${JSON.stringify(cardRect)}, control ${JSON.stringify(control)}, overlap ${overlap(cardRect, control)}`,
+        );
         // The copy of the card cross-fades after the hole rests, so the shot waits for the swap to end.
         await page.waitForTimeout(1000);
-        await page.screenshot({ path: test.info().outputPath(`${viewport.name.split(" ").at(-1)}-${header.replace(" ", "-").toLowerCase()}.png`) });
-        expect(overlap(cardRect, control), `${header}: the card ${JSON.stringify(cardRect)} covers its control ${JSON.stringify(control)}`).toBe(false);
+        await page.screenshot({
+          path: test
+            .info()
+            .outputPath(
+              `${viewport.name.split(" ").at(-1)}-${header.replace(" ", "-").toLowerCase()}.png`,
+            ),
+        });
+        expect(
+          overlap(cardRect, control),
+          `${header}: the card ${JSON.stringify(cardRect)} covers its control ${JSON.stringify(control)}`,
+        ).toBe(false);
         const size = page.viewportSize()!;
         expect(cardRect.y, `${header}: the card top is on the screen`).toBeGreaterThanOrEqual(0);
-        expect(cardRect.y + cardRect.height, `${header}: the card bottom is on the screen`).toBeLessThanOrEqual(size.height);
+        expect(
+          cardRect.y + cardRect.height,
+          `${header}: the card bottom is on the screen`,
+        ).toBeLessThanOrEqual(size.height);
       });
     });
   });
@@ -237,40 +314,66 @@ test.describe("iPhone 390x660", () => {
   const { defaultBrowserType: _browser, ...iphone } = devices["iPhone 15"];
   test.use({ ...iphone, viewport: { width: 390, height: 660 } });
 
-  test("each control is inside the visual viewport when its Stop shows, from a page at its top (AT-18)", async ({ page }) => {
+  test("each control is inside the visual viewport when its Stop shows, from a page at its top (AT-18)", async ({
+    page,
+  }) => {
     await openTour(page);
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
     await eachStop(page, async (header) => {
       await restingHole(page);
       const control = await rectOf(page, "[data-tour-target]");
-      const view = await page.evaluate(() => ({ width: window.visualViewport!.width, height: window.visualViewport!.height }));
-      console.log(`AT-18 ${header}: control ${JSON.stringify(control)}, visual viewport ${JSON.stringify(view)}`);
+      const view = await page.evaluate(() => ({
+        width: window.visualViewport!.width,
+        height: window.visualViewport!.height,
+      }));
+      console.log(
+        `AT-18 ${header}: control ${JSON.stringify(control)}, visual viewport ${JSON.stringify(view)}`,
+      );
       expect(control.x, `${header}: left edge`).toBeGreaterThanOrEqual(-1);
       expect(control.y, `${header}: top edge`).toBeGreaterThanOrEqual(-1);
-      expect(control.y + control.height, `${header}: bottom edge in ${view.height}`).toBeLessThanOrEqual(view.height + 1);
+      expect(
+        control.y + control.height,
+        `${header}: bottom edge in ${view.height}`,
+      ).toBeLessThanOrEqual(view.height + 1);
       // The Suggestions row bleeds to both edges and scrolls sideways, so its box is the width of the screen.
-      expect(control.x + control.width, `${header}: right edge in ${view.width}`).toBeLessThanOrEqual(view.width + 1);
+      expect(
+        control.x + control.width,
+        `${header}: right edge in ${view.width}`,
+      ).toBeLessThanOrEqual(view.width + 1);
     });
   });
 
-  test("the overlap check of the smoke run finds no overlap when each Stop shows over the first answer", async ({ page }) => {
+  test("the overlap check of the smoke run finds no overlap when each Stop shows over the first answer", async ({
+    page,
+  }) => {
     await openDoorWithFreeAnswer(page);
     await page.getByRole("textbox", { name: "Ask a question" }).fill("who has the best roster");
     await page.getByRole("button", { name: "Send" }).click();
-    await expect(page.getByRole("article", { name: "who has the best roster" }).getByRole("status").getByText("Checked")).toBeVisible();
+    await expect(
+      page
+        .getByRole("article", { name: "who has the best roster" })
+        .getByRole("status")
+        .getByText("Checked"),
+    ).toBeVisible();
     await page.getByRole("button", { name: "Open the menu" }).click();
     await page.getByRole("button", { name: "Show the tour" }).click();
     await eachStop(page, async (header) => {
       // The copy of the card cross-fades after the hole rests, so the check polls until the fade ends.
-      await expect.poll(() => findOverlap(page), { message: `${header}: the overlap check of the smoke run` }).toBeNull();
+      await expect
+        .poll(() => findOverlap(page), { message: `${header}: the overlap check of the smoke run` })
+        .toBeNull();
     });
   });
 
-  test("after a turn of the phone from 390x660 to 660x390 at Stop 2, the hole stays on the ask box (AT-19)", async ({ page }) => {
+  test("after a turn of the phone from 390x660 to 660x390 at Stop 2, the hole stays on the ask box (AT-19)", async ({
+    page,
+  }) => {
     await openTour(page);
     await goTo(page, "Ask");
     // The evidence of AT-19 is the rects before and after, and a screenshot at each size, so the test logs and saves them.
-    console.log(`AT-19 before at 390x660: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`);
+    console.log(
+      `AT-19 before at 390x660: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`,
+    );
     await page.waitForTimeout(1000);
     await page.screenshot({ path: test.info().outputPath("390x660.png") });
     await page.setViewportSize({ width: 660, height: 390 });
@@ -284,14 +387,18 @@ test.describe("iPhone 390x660", () => {
         );
       })
       .toBeLessThanOrEqual(2);
-    console.log(`AT-19 after at 660x390: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`);
+    console.log(
+      `AT-19 after at 660x390: hole ${JSON.stringify(await restingHole(page))}, ask box ${JSON.stringify(await rectOf(page, 'form[aria-label="Ask"]'))}`,
+    );
     await page.waitForTimeout(1000);
     await page.screenshot({ path: test.info().outputPath("660x390.png") });
   });
 });
 
 for (const theme of ["light", "dark"] as const) {
-  test(`Next and Done fill with the accent token and use the on-dark text in the ${theme} theme (AT-22)`, async ({ page }) => {
+  test(`Next and Done fill with the accent token and use the on-dark text in the ${theme} theme (AT-22)`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 660 });
     await page.emulateMedia({ colorScheme: theme });
     await openTour(page, theme);
@@ -309,10 +416,15 @@ for (const theme of ["light", "dark"] as const) {
     const colorsOf = (name: string, button: string) =>
       card(page, name)
         .getByRole("button", { name: button })
-        .evaluate((el) => ({ fill: getComputedStyle(el).backgroundColor, text: getComputedStyle(el).color }));
+        .evaluate((el) => ({
+          fill: getComputedStyle(el).backgroundColor,
+          text: getComputedStyle(el).color,
+        }));
     // The evidence of AT-22 is the computed colors in each theme, so the log prints them.
     const next = await colorsOf("Suggestions", "Next");
-    console.log(`AT-22 ${theme}: tokens accent and on-dark ${JSON.stringify(tokens)}, Next ${JSON.stringify(next)}`);
+    console.log(
+      `AT-22 ${theme}: tokens accent and on-dark ${JSON.stringify(tokens)}, Next ${JSON.stringify(next)}`,
+    );
     expect(next).toEqual(tokens);
     await goTo(page, "Menu");
     const done = await colorsOf("Menu", "Done");

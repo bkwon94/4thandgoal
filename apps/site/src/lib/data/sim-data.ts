@@ -43,11 +43,17 @@ export function weekSimSeasons(): string[] {
 /* The week sim file of the newest week of the season, which the sim page reads. A season with none gives null. */
 export function latestWeekSim(season: string): WeekSim | null {
   const week = simWeeks(season).at(-1);
-  return week === undefined ? null : readPublished(join(publicDir(), season, week, FILE), WEEK_SIM_SCHEMA_VERSION, weekSimSchema);
+  return week === undefined
+    ? null
+    : readPublished(join(publicDir(), season, week, FILE), WEEK_SIM_SCHEMA_VERSION, weekSimSchema);
 }
 
 /* The week sim file of one week folder, such as "week-10", which the Sim tile of that week page reads. A week with no
    file gives null, so an older week page has no tile. */
 export function loadWeekSim(season: string, week: string): WeekSim | null {
-  return readPublished(join(publicDir(), season, week, FILE), WEEK_SIM_SCHEMA_VERSION, weekSimSchema);
+  return readPublished(
+    join(publicDir(), season, week, FILE),
+    WEEK_SIM_SCHEMA_VERSION,
+    weekSimSchema,
+  );
 }

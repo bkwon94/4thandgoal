@@ -110,7 +110,9 @@ export const medianSchema = z.object({
   value: z.number(),
   above: z.object({ team: teamSchema, gap: z.number() }),
   below: z.object({ team: teamSchema, gap: z.number() }),
-  bars: z.array(z.object({ team: teamSchema, score: z.number(), above: z.boolean(), pct: z.number() })),
+  bars: z.array(
+    z.object({ team: teamSchema, score: z.number(), above: z.boolean(), pct: z.number() }),
+  ),
   line_pct: z.number(),
 });
 

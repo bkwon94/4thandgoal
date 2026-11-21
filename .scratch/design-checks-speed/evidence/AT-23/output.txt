@@ -1,0 +1,33 @@
+$ cd apps/site && pnpm typecheck   # in a scratch worktree of the Spec branch, after the probe line below
+# Scratch worktree of the Spec branch at 2108f8bc (branch design-checks-speed-at-probe, a scratch worktree). One line added to apps/site/src/lib/routes.ts:
+$ git diff
+diff --git a/apps/site/src/lib/routes.ts b/apps/site/src/lib/routes.ts
+index 676dfdfd..b89128f6 100644
+--- a/apps/site/src/lib/routes.ts
++++ b/apps/site/src/lib/routes.ts
+@@ -27,3 +27,4 @@ export const managerHref = (season: string, rosterId: number) =>
+ export { managerHrefFrom, managerHrefOrNull };
+ /* The logo is a plain img on every page, and its src is a path from the root. A client with no logo gives null. */
+ export const logoSrc = (logo: string | null) => logo;
++export const probeLabel: string = 42;
+
+$ cd apps/site && pnpm typecheck; echo "exit code: $?"
+
+> 4thandgoal-site@0.1.0 typecheck <scratch>/wt-probe/apps/site
+> next typegen && bun check --no-script
+
+Generating route types...
+✓ Types generated successfully
+<error file="src/lib/routes.ts" line="30" column="14" code="TS2322">
+Type 'number' is not assignable to type 'string'.
+<source>
+27 | export { managerHrefFrom, managerHrefOrNull };
+28 | /* The logo is a plain img on every page, and its src is a path from the root. A client with no logo gives null. */
+29 | export const logoSrc = (logo: string | null) => logo;
+30 | export const probeLabel: string = 42;
+                  ^^^^^^^^^^
+</source>
+</error>
+Found 1 error in 1 file, checked 613 files [253.42ms]
+ ELIFECYCLE  Command failed with exit code 1.
+exit code: 1

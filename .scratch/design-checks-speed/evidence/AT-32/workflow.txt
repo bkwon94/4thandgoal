@@ -1,0 +1,48 @@
+$ sed -n 1,19p .github/workflows/check.yml
+# Runs the full check of each member of the repo on each push to main and on each pull request.
+# One job per member runs at the same time, and the gate job "check" needs them all, so the check name stays "check".
+# A branch with a PR runs once, because a push to a branch alone does not start it.
+# The deploy workflows keep their own build steps. Each deploy starts from the workflow_run event of this workflow,
+# so a push to main runs the check once. A manual dispatch of a deploy calls this workflow for the ref it deploys.
+# workflow_run fires once, when every job ends, and its conclusion is success only if each job succeeded.
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      # A deploy by hand passes the ref it deploys, so the check runs on the same commit. Empty means the ref of the run.
+      ref:
+        type: string
+        default: ""
+
+$ grep -n -E "event_name|BUN_TEST_BASE|fetch-depth" .github/workflows/check.yml
+64:      BUN_TEST_BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || '' }}
+71:          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
+
+$ sed -n 57,71p .github/workflows/check.yml
+    env:
+      # scripts/bun-test.mjs reads it, such as "1/1". The total comes from the matrix, so the list above is the one count.
+      BUN_TEST_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
+      # On a PR, bun test runs only the test files that the diff since the base can reach. The checkout of a PR is the test
+      # merge commit, and its first parent HEAD^1 is the tip of the base branch, so the diff is the change of the PR.
+      # A push, a dispatch, and a call from a deploy set no base, so each runs the full suite, also a push to main.
+      # A diff that names a file of FULL_SUITE_FILES in scripts/test-scope.mjs, such as the lock file, runs the full suite too.
+      BUN_TEST_BASE: ${{ github.event_name == 'pull_request' && 'HEAD^1' || '' }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          # A PR needs the base commit HEAD^1 for the diff. Every other run takes one commit.
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
+
+$ grep -n -E "BUN_TEST_BASE|base" apps/site/scripts/bun-test.mjs
+5: * CI sets BUN_TEST_SHARD, such as "2/4", for the shard of each job, and BUN_TEST_BASE on a PR for the tests the diff can reach.
+36:// The scope of the run. With no BUN_TEST_BASE, or a diff that names a config file, the run takes the full suite.
+37:const base = process.env.BUN_TEST_BASE;
+38:const scope = scopeArgs({ base, changedFiles: base ? changedFilesSince(base) : [] });
+55:    : `The run takes only the tests that the diff since ${base} can reach.`,

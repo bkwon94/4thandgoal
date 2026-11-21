@@ -71,7 +71,9 @@ export default async function WeekPage({ params }: Props) {
   ];
   // The footer links the nearest published weeks of the same season on each side. The list is newest first,
   // so the first lower number is the prior week and the last higher number is the next week.
-  const seasonWeeks = listWeekSummaries().filter((summary) => summary.href.startsWith(`/${season}/`));
+  const seasonWeeks = listWeekSummaries().filter((summary) =>
+    summary.href.startsWith(`/${season}/`),
+  );
   const prior = seasonWeeks.find((summary) => summary.number < page.week) ?? null;
   const next = seasonWeeks.filter((summary) => summary.number > page.week).at(-1) ?? null;
   return (
@@ -83,7 +85,7 @@ export default async function WeekPage({ params }: Props) {
         <PageColumn rail={<ChapterRail chapters={chapters} />}>
           {/* One scroll with no tabs, in the order of the spec (decision 05). The hero and the four numbers rise in on load.
               Each chapter below rises in once as it enters the view. */}
-          <div className="flex flex-col gap-sp-6 px-gutter pt-sp-4 pb-sp-6 tablet:px-0">
+          <div className="gap-sp-6 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
             <MatchupOfTheWeek
               week={page.week}
               dates={page.dates}
@@ -102,14 +104,26 @@ export default async function WeekPage({ params }: Props) {
               trends={trends}
             />
             {page.matchups.length > 0 && (
-              <AllMatchups matchups={page.matchups} avatars={page.avatars} managersHref={managersHref} />
+              <AllMatchups
+                matchups={page.matchups}
+                avatars={page.avatars}
+                managersHref={managersHref}
+              />
             )}
             {page.game_changer && (
-              <GameChanger gameChanger={page.game_changer} headshots={page.headshots} blurb={page.blurbs.game_changer} />
+              <GameChanger
+                gameChanger={page.game_changer}
+                headshots={page.headshots}
+                blurb={page.blurbs.game_changer}
+              />
             )}
             <Awards awards={page.awards} headshots={page.headshots} blurb={page.blurbs.awards} />
             {page.leaders.length > 0 && (
-              <PositionLeaders leaders={page.leaders} headshots={page.headshots} blurb={page.blurbs.position_leaders} />
+              <PositionLeaders
+                leaders={page.leaders}
+                headshots={page.headshots}
+                blurb={page.blurbs.position_leaders}
+              />
             )}
             <Trades trades={page.trades} avatars={page.avatars} managersHref={managersHref} />
             <MedianGame median={page.median} avatars={page.avatars} blurb={page.blurbs.median} />
@@ -122,7 +136,12 @@ export default async function WeekPage({ params }: Props) {
             {tiles.map(({ chapter, tile }) => (
               <Fragment key={chapter.id}>{tile}</Fragment>
             ))}
-            <NextWeek week={page.week} games={page.next} avatars={page.avatars} blurb={page.blurbs.next_week} />
+            <NextWeek
+              week={page.week}
+              games={page.next}
+              avatars={page.avatars}
+              blurb={page.blurbs.next_week}
+            />
             <WeekFooter prior={prior} next={next} />
           </div>
         </PageColumn>

@@ -6,17 +6,16 @@ import { act, cleanup, render, screen, within } from "@testing-library/react";
 import { copyFileSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
+import { stubGlobal } from "../../../../test/stubs";
 import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import weekSimJson from "@cpc/sim/fixtures/week-sim.json";
 import { YOUR_TEAM_KEY } from "@cpc/analyzer/lib/your-team";
 import WeekPage from "./page";
 
-/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. The spy
-   runs before the imports, because the week reader takes its folder when it loads. Each test sets it again, because a
-   restore of the mocks removes it. */
-await vi.hoisted(async () => (await import("@/fixtures/sites")).readFixtureSite("cpc"));
+/* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
 
 /* The hero and the eight chapters in the order of the spec (decision 05): the id each one sets and the words of its heading.
@@ -42,27 +41,6 @@ function setReducedMotion(on: boolean) {
   motionChange?.();
 }
 
-/* jsdom has no matchMedia. Framer Motion reads it once per file and then listens for a change, so the stub runs at the top. */
-vi.stubGlobal(
-  "matchMedia",
-  (query: string) =>
-    ({
-      // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
-      get matches() {
-        return reduceMotion && query.includes("prefers-reduced-motion");
-      },
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: (_type: string, listener: () => void) => {
-        motionChange = listener;
-      },
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList,
-);
-
 /* jsdom has no IntersectionObserver. The stub keeps each observer and its targets, so a test reports a chapter in or out of view. */
 const observers = new Set<ObserverStub>();
 
@@ -83,7 +61,31 @@ class ObserverStub {
   }
 }
 
-vi.stubGlobal("IntersectionObserver", ObserverStub);
+/* The stubs of matchMedia and IntersectionObserver. Framer Motion reads matchMedia and then listens for a change, and
+   the stub of IntersectionObserver keeps each observer, so a test reports a chapter in or out of view. The preload
+   restores each stub after each test, so each test sets them again. */
+beforeEach(() => {
+  stubGlobal(
+    "matchMedia",
+    (query: string) =>
+      ({
+        // Framer Motion asks for "(prefers-reduced-motion)" with no value, so the stub matches the feature name.
+        get matches() {
+          return reduceMotion && query.includes("prefers-reduced-motion");
+        },
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: (_type: string, listener: () => void) => {
+          motionChange = listener;
+        },
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }) as unknown as MediaQueryList,
+  );
+  stubGlobal("IntersectionObserver", ObserverStub);
+});
 
 /* Reports to each observer of the chapter with this id that the chapter is in or out of view, as a scroll does. */
 function reportChapter(id: string, inView: boolean) {
@@ -99,7 +101,9 @@ function reportChapter(id: string, inView: boolean) {
 
 /* The rail link of the chapter with this label. */
 function railLink(label: string) {
-  return within(screen.getByRole("navigation", { name: "Chapters" })).getByRole("link", { name: label });
+  return within(screen.getByRole("navigation", { name: "Chapters" })).getByRole("link", {
+    name: label,
+  });
 }
 
 /* The labels of the rail links that carry the current state. */
@@ -120,13 +124,9 @@ afterEach(() => {
   cleanup();
   setReducedMotion(false);
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
 });
 
-afterAll(() => {
-  vi.unstubAllGlobals();
-});
+afterAll(() => {});
 
 describe("WeekPage chapters", () => {
   it("renders the nine chapters in the report's order with their ids", async () => {
@@ -149,7 +149,9 @@ describe("WeekPage chapters", () => {
     await renderWeek7();
     const headings = within(screen.getByRole("main")).getAllByRole("heading", { level: 2 });
     const chapters = CHAPTERS.slice(1);
-    expect(headings.map((heading) => heading.textContent)).toEqual(chapters.map(({ label }) => label));
+    expect(headings.map((heading) => heading.textContent)).toEqual(
+      chapters.map(({ label }) => label),
+    );
     headings.forEach((heading, index) => {
       expect(document.getElementById(chapters[index].id)?.contains(heading)).toBe(true);
     });
@@ -176,7 +178,10 @@ describe("WeekPage order of week 8 (AT-16)", () => {
     for (const part of parts) expect(main.contains(part)).toBe(true);
     for (let index = 1; index < parts.length; index++) {
       const order = parts[index - 1].compareDocumentPosition(parts[index]);
-      expect(order & Node.DOCUMENT_POSITION_FOLLOWING, `part ${index} follows part ${index - 1}`).toBeTruthy();
+      expect(
+        order & Node.DOCUMENT_POSITION_FOLLOWING,
+        `part ${index} follows part ${index - 1}`,
+      ).toBeTruthy();
     }
   });
 
@@ -184,7 +189,9 @@ describe("WeekPage order of week 8 (AT-16)", () => {
     await renderWeek8();
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings.map((heading) => heading.textContent)).toEqual(["The Blue Tent by 1.43"]);
-    expect(screen.getByRole("region", { name: "Matchup of the Week" }).contains(headings[0])).toBe(true);
+    expect(screen.getByRole("region", { name: "Matchup of the Week" }).contains(headings[0])).toBe(
+      true,
+    );
   });
 
   it("shows Joe Burrow at 42.48 in Game Changer", async () => {
@@ -218,7 +225,9 @@ function topScoreBars() {
     .getAllByRole("listitem")
     .find((item) => item.textContent?.startsWith("Top Score"))!;
   const chart = within(tile).getByRole("img");
-  const weeks = [...chart.querySelectorAll("[data-week]")].map((bar) => Number(bar.getAttribute("data-week")));
+  const weeks = [...chart.querySelectorAll("[data-week]")].map((bar) =>
+    Number(bar.getAttribute("data-week")),
+  );
   return { weeks, lit: Number(chart.querySelector("[data-lit]")?.getAttribute("data-week")) };
 }
 
@@ -240,7 +249,9 @@ describe("WeekPage Trend tiles", () => {
       .getAllByRole("listitem")
       .find((item) => item.textContent?.startsWith("Median"))!;
     expect(within(median).getByText("99.6")).toBeTruthy();
-    expect(within(median).getByRole("img").getAttribute("aria-label")).toBe("Down from 103.87 in week 7.");
+    expect(within(median).getByRole("img").getAttribute("aria-label")).toBe(
+      "Down from 103.87 in week 7.",
+    );
   });
 });
 
@@ -250,7 +261,9 @@ describe("WeekPage chapter rail", () => {
     const rail = screen.getByRole("navigation", { name: "Chapters" });
     const links = within(rail).getAllByRole("link");
     expect(links.map((link) => link.textContent)).toEqual(CHAPTERS.map(({ label }) => label));
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(CHAPTERS.map(({ id }) => `#${id}`));
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(
+      CHAPTERS.map(({ id }) => `#${id}`),
+    );
   });
 
   it("links only to ids that the page renders", async () => {
@@ -340,14 +353,20 @@ async function publicWithWeeks() {
   const root = mkdtempSync(join(tmpdir(), "week-page-"));
   roots.push(root);
   const season = join(root, "public", "2026");
-  for (const week of ["week-05", "week-06", "week-07"]) mkdirSync(join(season, week), { recursive: true });
-  writeFileSync(join(season, "week-05", "page.json"), weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }));
+  for (const week of ["week-05", "week-06", "week-07"])
+    mkdirSync(join(season, week), { recursive: true });
+  writeFileSync(
+    join(season, "week-05", "page.json"),
+    weekPageJson({ week: 5, dates: "Oct 8 – Oct 12, 2026" }),
+  );
   for (const week of ["week-06", "week-07"]) {
-    copyFileSync(fixturePublished("cpc", "2026", week, "page.json"), join(season, week, "page.json"));
+    copyFileSync(
+      fixturePublished("cpc", "2026", week, "page.json"),
+      join(season, week, "page.json"),
+    );
   }
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them to pick up the temp folder.
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   return (await import("./page")).default;
 }
 
@@ -385,7 +404,10 @@ describe("WeekPage week footer with a week on each side", () => {
   it("gives every footer link a path from the root", async () => {
     await renderWeek6();
     const links = within(screen.getByRole("navigation", { name: "Weeks" })).getAllByRole("link");
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/2026/week-05/", "/2026/week-07/"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([
+      "/2026/week-05/",
+      "/2026/week-07/",
+    ]);
   });
 
   it("shows the footer at rest with motion off", async () => {
@@ -408,8 +430,7 @@ async function renderWeekWithNoMedian() {
   mkdirSync(folder, { recursive: true });
   const { median: _median, ...blurbs } = JSON.parse(weekPageJson()).blurbs;
   writeFileSync(join(folder, "page.json"), weekPageJson({ median: null, blurbs }));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
   const Page = (await import("./page")).default;
   render(await Page({ params: Promise.resolve({ season: "2026", week: "week-06" }) }));
 }
@@ -423,7 +444,10 @@ describe("WeekPage with no median game", () => {
     expect(rail.queryByRole("link", { name: "The median game" })).toBeNull();
     // The other chapters stay, so the rail still links the standings after the trades.
     const labels = rail.getAllByRole("link").map((link) => link.textContent);
-    expect(labels.slice(labels.indexOf("Trades"), labels.indexOf("Trades") + 2)).toEqual(["Trades", "Standings"]);
+    expect(labels.slice(labels.indexOf("Trades"), labels.indexOf("Trades") + 2)).toEqual([
+      "Trades",
+      "Standings",
+    ]);
   });
 });
 
@@ -445,8 +469,7 @@ async function publicWithWeekSim() {
   mkdirSync(folder, { recursive: true });
   writeFileSync(join(folder, "page.json"), weekPageJson({ week: 10 }));
   writeFileSync(join(folder, "sim.json"), JSON.stringify(weekSimJson));
-  vi.spyOn(process, "cwd").mockReturnValue(root);
-  vi.resetModules();
+  spyOn(process, "cwd").mockReturnValue(root);
   return (await import("./page")).default;
 }
 
@@ -475,13 +498,21 @@ describe("WeekPage Sim tile", () => {
     expect(link.textContent).toContain("58%");
     expect(link.textContent).toContain("Win 5 of the 8 left and you're in.");
     // The rail links the tile between the two chapters, with the words of its heading.
-    const labels = within(screen.getByRole("navigation", { name: "Chapters" })).getAllByRole("link").map((item) => item.textContent);
-    expect(labels.slice(labels.indexOf("Standings"), labels.indexOf("Standings") + 3)).toEqual(["Standings", "Season sim", "Next week"]);
+    const labels = within(screen.getByRole("navigation", { name: "Chapters" }))
+      .getAllByRole("link")
+      .map((item) => item.textContent);
+    expect(labels.slice(labels.indexOf("Standings"), labels.indexOf("Standings") + 3)).toEqual([
+      "Standings",
+      "Season sim",
+      "Next week",
+    ]);
   });
 
   it("shows the league fact of the file with no team set (AT-46)", async () => {
     await renderWeek10();
-    expect(within(document.getElementById("sim")!).getByRole("link").textContent).toContain("6 managers fight for the last 4 spots");
+    expect(within(document.getElementById("sim")!).getByRole("link").textContent).toContain(
+      "6 managers fight for the last 4 spots",
+    );
   });
 
   it("has no tile and no rail link on a week with no sim file", async () => {

@@ -1,6 +1,8 @@
 /**
  * A chapter of a page: the section that holds one topic, on the brand black or on white.
  * It ports the .chap rule of the source stylesheet. It can fade in once as a unit when it enters the view.
+ * Use it when: one topic of a page needs its own section.
+ * Do not use it when: the group sits inside a chapter. Use `Card`.
  */
 import type { ReactNode } from "react";
 import { Reveal } from "./reveal";
@@ -27,7 +29,7 @@ export function Chapter({
     <section
       id={id}
       className={cn(
-        "border-b-(length:--chap-rule) border-card px-gutter py-sp-5 tablet:border-b-0",
+        "border-card px-gutter py-sp-5 tablet:border-b-0 border-b-(length:--chap-rule)",
         dark ? "bg-card-band text-on-dark" : "tablet:bg-page",
       )}
     >

@@ -2,7 +2,7 @@
  * Tests for the read of a finder card: the analyze document that the analyzer shows when a card opens, with no second grade.
  * The input is the shared finder fixture, the document that the find route sends.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { findResponse } from "./fixtures/api";
 import { analyzeResponseSchema } from "./schemas/api";
 import { finderRead } from "./finder-read";
@@ -14,7 +14,9 @@ describe("finderRead", () => {
     const read = finderRead(trade, findResponse)!;
     expect(analyzeResponseSchema.safeParse(read).success).toBe(true);
     expect(read.lean).toBe("Lean yes");
-    expect(read.case).toBe("If Roschon Johnson keeps his role, you get a steady starter and the other manager gets the receiver he needs.");
+    expect(read.case).toBe(
+      "If Roschon Johnson keeps his role, you get a steady starter and the other manager gets the receiver he needs.",
+    );
     expect(read.trade).toEqual({ asker: 2, sides: trade.sides });
   });
 

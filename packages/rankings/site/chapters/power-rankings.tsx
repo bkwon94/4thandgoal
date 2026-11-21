@@ -5,6 +5,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { useEffect, useRef, type ReactNode } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
@@ -52,12 +53,15 @@ export function Movement({ movement }: { movement: number | null }) {
   }
   const up = movement > 0;
   return (
-    <span className="inline-flex items-center gap-sp-0">
+    <span className="gap-sp-0 inline-flex items-center">
       <svg
         aria-hidden
         data-arrow={up ? "up" : "down"}
         viewBox="0 0 10 10"
-        className={cn("size-[0.7em] fill-current", up ? "text-move-up" : "rotate-180 text-move-down")}
+        className={cn(
+          "size-[0.7em] fill-current",
+          up ? "text-move-up" : "text-move-down rotate-180",
+        )}
       >
         <path d="M5 1 9.5 9h-9z" />
       </svg>
@@ -117,7 +121,15 @@ const blurbText = (row: RankingsRow) => row.blurb.map((sentence) => sentence.tex
    The hero keeps the static grid: the Ladder under it already shows the race, so a scene would say it twice.
    The Ladder starts at rank 2, so the action slot holds the manager link of rank 1, the link that its card would hold.
    With no managers href the hero has no link and no action slot. */
-function TopHero({ row, week, managersHref }: { row: RankingsRow; week: RankingsWeek; managersHref: string | null }) {
+function TopHero({
+  row,
+  week,
+  managersHref,
+}: {
+  row: RankingsRow;
+  week: RankingsWeek;
+  managersHref: string | null;
+}) {
   const odds = row.odds;
   const href = managerHrefOrNull(managersHref, row.roster_id);
   return (
@@ -131,11 +143,26 @@ function TopHero({ row, week, managersHref }: { row: RankingsRow; week: Rankings
         </span>
       }
       stats={
-        <Rise step={1} className="w-full tablet:w-auto">
-          <div className="grid grid-cols-3 gap-sp-2">
-            <Tile tone="hero" label="Playoff" value={playoffText(odds)} stable={stableKey("hero-tile", row.roster_id, "playoff")} />
-            <Tile tone="hero" label="Bye" value={odds ? `${odds.bye}%` : <Missing what="No odds" />} stable={stableKey("hero-tile", row.roster_id, "bye")} />
-            <Tile tone="hero" label="Seed" value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />} stable={stableKey("hero-tile", row.roster_id, "seed")} />
+        <Rise step={1} className="tablet:w-auto w-full">
+          <div className="gap-sp-2 grid grid-cols-3">
+            <Tile
+              tone="hero"
+              label="Playoff"
+              value={playoffText(odds)}
+              stable={stableKey("hero-tile", row.roster_id, "playoff")}
+            />
+            <Tile
+              tone="hero"
+              label="Bye"
+              value={odds ? `${odds.bye}%` : <Missing what="No odds" />}
+              stable={stableKey("hero-tile", row.roster_id, "bye")}
+            />
+            <Tile
+              tone="hero"
+              label="Seed"
+              value={odds?.seed != null ? String(odds.seed) : <Missing what="No seed" />}
+              stable={stableKey("hero-tile", row.roster_id, "seed")}
+            />
           </div>
         </Rise>
       }
@@ -145,7 +172,7 @@ function TopHero({ row, week, managersHref }: { row: RankingsRow; week: Rankings
             {/* A full pill and a 44px tap target in the brand color, as the buttons of the 404 page. */}
             <a
               href={href}
-              className="press inline-flex min-h-touch items-center justify-center rounded-pill bg-accent px-sp-6 text-body font-bold text-on-dark no-underline"
+              className="press min-h-touch rounded-pill bg-accent px-sp-6 text-body text-on-dark inline-flex items-center justify-center font-bold no-underline"
             >
               Manager page
             </a>
@@ -161,12 +188,26 @@ function chipsOf(row: RankingsRow): ReactNode[] {
   const odds = row.odds;
   return [
     // The egg hunt names each part of the rank by the same id as the tile of the ladder before it.
-    ...COMPONENTS.map(({ key, name }) => <span {...stableId("ladder", row.roster_id, name)}>{`${name} ${row.components[key]}`}</span>),
+    ...COMPONENTS.map(({ key, name }) => (
+      <span {...stableId("ladder", row.roster_id, name)}>{`${name} ${row.components[key]}`}</span>
+    )),
     <>
       Move <Movement movement={row.movement} />
     </>,
-    odds ? `Bye ${odds.bye}%` : <>Bye <Missing what="No odds" /></>,
-    odds?.seed != null ? `Seed ${odds.seed}` : <>Seed <Missing what="No seed" /></>,
+    odds ? (
+      `Bye ${odds.bye}%`
+    ) : (
+      <>
+        Bye <Missing what="No odds" />
+      </>
+    ),
+    odds?.seed != null ? (
+      `Seed ${odds.seed}`
+    ) : (
+      <>
+        Seed <Missing what="No seed" />
+      </>
+    ),
   ];
 }
 
@@ -201,25 +242,37 @@ function LadderCard({
           <>
             <span
               data-rank-panel
-              className="block rounded-tile bg-raised px-sp-4 py-sp-4 font-mono text-hero leading-none font-bold tracking-grade text-ink tabular-nums"
+              className="rounded-tile bg-raised px-sp-4 py-sp-4 text-hero tracking-grade text-ink block font-mono leading-none font-bold tabular-nums"
             >
               {twoDigits(row.rank)}
             </span>
-            <span className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-sp-3 px-sp-2">
+            <span className="gap-x-sp-3 px-sp-2 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
               <Avatar src={avatarSrc(avatars, row.roster_id)} />
               <span className="flex min-w-0 flex-col">
-                <span className="truncate text-row leading-tight font-bold text-ink">{row.name}</span>
-                <span className="mt-sp-0 font-mono text-meta leading-tight text-ink-2 tabular-nums" {...stableId("movement", row.roster_id)}>
+                <span className="text-row text-ink truncate leading-tight font-bold">
+                  {row.name}
+                </span>
+                <span
+                  className="mt-sp-0 text-meta text-ink-2 font-mono leading-tight tabular-nums"
+                  {...stableId("movement", row.roster_id)}
+                >
                   <RecordLine row={row} />
                 </span>
               </span>
-              <span className="rounded-pill bg-raised px-sp-3 py-sp-1 font-mono text-meta leading-tight font-bold text-ink tabular-nums">
+              <span className="rounded-pill bg-raised px-sp-3 py-sp-1 text-meta text-ink font-mono leading-tight font-bold tabular-nums">
                 Playoff {playoffText(row.odds)}
               </span>
             </span>
             {row.odds && (
-              <span aria-hidden className="mx-sp-2 block h-sp-1 overflow-hidden rounded-pill bg-raised">
-                <BarFill data-odds-bar pct={playoffFill(row.odds)} className="block h-full rounded-pill bg-accent" />
+              <span
+                aria-hidden
+                className="mx-sp-2 h-sp-1 rounded-pill bg-raised block overflow-hidden"
+              >
+                <BarFill
+                  data-odds-bar
+                  pct={playoffFill(row.odds)}
+                  className="rounded-pill bg-accent block h-full"
+                />
               </span>
             )}
           </>
@@ -231,7 +284,9 @@ function LadderCard({
         }
         chips={chipsOf(row)}
         text={row.blurb.length > 0 ? blurbText(row) : null}
-        action={href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${row.name}` }}
+        action={
+          href === null ? null : { href, label: "Manager page", hiddenLabel: ` of ${row.name}` }
+        }
       />
     </Reveal>
   );
@@ -242,7 +297,15 @@ function LadderCard({
    aria-pressed names the chosen chip, so the fill is never the only sign.
    The chips keep one row. A season longer than the width scrolls inside the row, so the page never scrolls sideways.
    The 4px inset keeps the focus ring inside the row, because a box that scrolls clips what passes its edge. */
-function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: number; choose: (week: number) => void }) {
+function WeekChips({
+  weeks,
+  chosen,
+  choose,
+}: {
+  weeks: RankingsWeek[];
+  chosen: number;
+  choose: (week: number) => void;
+}) {
   const row = useRef<HTMLDivElement>(null);
 
   // The chosen week, the latest on load, can sit past the right edge of a phone. The row scrolls to show it in full.
@@ -257,9 +320,15 @@ function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: n
   }, [chosen]);
 
   return (
-    <div ref={row} role="group" aria-label="Week" className="relative -m-sp-1 mb-sp-3 flex gap-sp-1 overflow-x-auto p-sp-1">
+    <div
+      ref={row}
+      role="group"
+      aria-label="Week"
+      className="-m-sp-1 mb-sp-3 gap-sp-1 p-sp-1 relative flex overflow-x-auto"
+    >
       {weeks.map(({ week }) => (
-        <button
+        <Button
+          variant="plain"
           key={week}
           type="button"
           aria-pressed={week === chosen}
@@ -267,13 +336,13 @@ function WeekChips({ weeks, chosen, choose }: { weeks: RankingsWeek[]; chosen: n
           {...openId("week", week)}
           onClick={() => choose(week)}
           className={cn(
-            "press min-h-touch min-w-touch flex-none cursor-pointer rounded-card border-0 px-sp-3 text-row font-extrabold tabular-nums",
-            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+            "press min-h-touch min-w-touch rounded-card px-sp-3 text-row flex-none cursor-pointer border-0 font-extrabold tabular-nums",
+            "focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-2",
             week === chosen ? "bg-ink text-page" : "bg-card text-ink",
           )}
         >
           {week}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -299,19 +368,28 @@ export function PowerRankings({
         <TopHero key={week.week} row={top} week={week} managersHref={managersHref} />
         {/* The blurb of rank 1 sits directly under the hero, outside its frame, so the hero stays as short as the others. */}
         {top.blurb.length > 0 && (
-          <p className="mt-sp-4 mb-0 max-w-measure text-lead leading-body text-ink-2" {...textId("blurb", blurbText(top))}>{blurbText(top)}</p>
+          <p
+            className="mt-sp-4 max-w-measure text-lead leading-body text-ink-2 mb-0"
+            {...textId("blurb", blurbText(top))}
+          >
+            {blurbText(top)}
+          </p>
         )}
       </div>
       <Chapter>
         <Reveal delay={stagger(0)}>
-          <div className="mb-sp-3 flex items-baseline justify-between gap-sp-3">
-            <h2 className="m-0 font-mono text-meta leading-tight font-bold tracking-wide text-accent-ink uppercase">The Ladder</h2>
-            <span className="font-mono text-meta leading-tight text-mute uppercase">Odds = playoff</span>
+          <div className="mb-sp-3 gap-sp-3 flex items-baseline justify-between">
+            <h2 className="text-meta text-accent-ink m-0 font-mono leading-tight font-bold tracking-wide uppercase">
+              The Ladder
+            </h2>
+            <span className="text-meta text-mute font-mono leading-tight uppercase">
+              Odds = playoff
+            </span>
           </div>
           <WeekChips weeks={weeks} chosen={week.week} choose={choose} />
         </Reveal>
         {/* The key starts each week with closed cards, so an open card of one week never carries into the next. */}
-        <ol key={week.week} className="m-0 flex list-none flex-col gap-sp-2 p-0">
+        <ol key={week.week} className="gap-sp-2 m-0 flex list-none flex-col p-0">
           {rest.map((row, index) => (
             <li key={row.roster_id}>
               <LadderCard row={row} avatars={avatars} index={index} managersHref={managersHref} />
@@ -320,10 +398,15 @@ export function PowerRankings({
         </ol>
       </Chapter>
       <Chapter>
-        <p className="m-0 max-w-measure text-lead leading-body text-ink-2">
-          Each team gets a rank from 1 to 12 in four parts: standing, recent form, schedule played, and scoring. Form reads the last 3 weeks: the head-to-head record and streak, the median game at half the weight, and the all-play record, and it carries 60 percent of the score. Pts ranks scoring: points for and the all-play record.
+        <p className="max-w-measure text-lead leading-body text-ink-2 m-0">
+          Each team gets a rank from 1 to 12 in four parts: standing, recent form, schedule played,
+          and scoring. Form reads the last 3 weeks: the head-to-head record and streak, the median
+          game at half the weight, and the all-play record, and it carries 60 percent of the score.
+          Pts ranks scoring: points for and the all-play record.
         </p>
-        <p className="mt-sp-3 mb-0 text-lead leading-body text-mute">Playoff odds from 5,000 simulated seasons.</p>
+        <p className="mt-sp-3 text-lead leading-body text-mute mb-0">
+          Playoff odds from 5,000 simulated seasons.
+        </p>
       </Chapter>
     </>
   );

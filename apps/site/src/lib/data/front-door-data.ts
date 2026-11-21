@@ -13,7 +13,14 @@ import type { WeekPage } from "@cpc/week/schema/week-types";
 import { listWeeks, loadWeek, type WeekRef } from "./week-data";
 
 /* One team of the sheet. The rank and the record come from the table of the latest week. */
-export type DoorTeam = { id: number; name: string; avatar: string | null; wins: number; losses: number; rank: number };
+export type DoorTeam = {
+  id: number;
+  name: string;
+  avatar: string | null;
+  wins: number;
+  losses: number;
+  rank: number;
+};
 
 /* The Answer of one league Topic, with the page of its long form. A Topic whose page the client lacks has no link. */
 export type DoorAnswer = TopicAnswer & { href: string | null };
@@ -40,10 +47,16 @@ const publicFile = (...parts: string[]) => join(process.cwd(), "public", ...part
    the report, such as on a bye, gets the id of the chapter. */
 function gameOf(page: WeekPage, rosterId: number, when: "last" | "next"): string {
   if (when === "last") {
-    const game = page.matchups.find((matchup) => matchup.sides.some((side) => side.team.roster_id === rosterId));
-    return game ? gameId("last", game.sides[0].team.roster_id, game.sides[1].team.roster_id) : "matchups";
+    const game = page.matchups.find((matchup) =>
+      matchup.sides.some((side) => side.team.roster_id === rosterId),
+    );
+    return game
+      ? gameId("last", game.sides[0].team.roster_id, game.sides[1].team.roster_id)
+      : "matchups";
   }
-  const game = page.next.find((next) => next.a.roster_id === rosterId || next.b.roster_id === rosterId);
+  const game = page.next.find(
+    (next) => next.a.roster_id === rosterId || next.b.roster_id === rosterId,
+  );
   return game ? gameId("next", game.a.roster_id, game.b.roster_id) : "next-week";
 }
 
@@ -75,8 +88,12 @@ function hrefOf(topic: LeagueTopic, ref: WeekRef, page: WeekPage, rosterId: numb
    of the team only when the client takes the managers package. A client that omits a package has no route for it, even
    with its file in the published data, so a link would give a 404. */
 function personalHrefsOf(ref: WeekRef, rosterId: number): Record<PersonalTopic, string | null> {
-  const hasManagers = clientValues.packages.includes("managers") && existsSync(publicFile(ref.season, "managers.json"));
-  const hasWaiver = clientValues.packages.includes("waiver") && existsSync(publicFile(ref.season, ref.week, "waiver.json"));
+  const hasManagers =
+    clientValues.packages.includes("managers") &&
+    existsSync(publicFile(ref.season, "managers.json"));
+  const hasWaiver =
+    clientValues.packages.includes("waiver") &&
+    existsSync(publicFile(ref.season, ref.week, "waiver.json"));
   const manager = hasManagers ? managerHref(ref.season, rosterId) : null;
   const waiver = hasWaiver ? waiverHref(ref.season, ref.week) : null;
   return { weak_spots: manager, stack_up: manager, waiver_targets: waiver };
@@ -103,12 +120,21 @@ export function loadFrontDoor(): FrontDoorData | null {
   });
   // A manager looks for a name, so the sheet lists the teams by name and not by rank.
   teams.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
-  const topics = readPublished(publicFile(ref.season, ref.week, "topics.json"), TOPICS_VERSIONS, topicsFileSchema);
+  const topics = readPublished(
+    publicFile(ref.season, ref.week, "topics.json"),
+    TOPICS_VERSIONS,
+    topicsFileSchema,
+  );
   const answers: Record<number, DoorAnswer[]> = {};
   for (const [key, list] of Object.entries(topics?.teams ?? {})) {
     const rosterId = Number(key);
-    answers[rosterId] = list.map((answer) => ({ ...answer, href: hrefOf(answer.topic, ref, page, rosterId) }));
+    answers[rosterId] = list.map((answer) => ({
+      ...answer,
+      href: hrefOf(answer.topic, ref, page, rosterId),
+    }));
   }
-  const personalHrefs = Object.fromEntries(teams.map((team) => [team.id, personalHrefsOf(ref, team.id)]));
+  const personalHrefs = Object.fromEntries(
+    teams.map((team) => [team.id, personalHrefsOf(ref, team.id)]),
+  );
   return { week: page.week, teams, answers, personalHrefs };
 }

@@ -4,7 +4,7 @@
  */
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useState } from "react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import "../ui/sheet-jsdom";
 import { standInForAnimate } from "../ui/sheet-drag-jsdom";
 import { Announcement } from "./announcement";
@@ -53,7 +53,8 @@ const dialog = () => screen.queryByRole("dialog", { name: "A test title" });
 function dragDown(element: Element) {
   const pointer = { pointerId: 1, pointerType: "mouse", button: 0 };
   fireEvent.pointerDown(element, { ...pointer, clientX: 100, clientY: 100 });
-  for (const y of [140, 200, 280, 380]) fireEvent.pointerMove(document, { ...pointer, clientX: 100, clientY: y });
+  for (const y of [140, 200, 280, 380])
+    fireEvent.pointerMove(document, { ...pointer, clientX: 100, clientY: y });
   fireEvent.pointerUp(document, { ...pointer, clientX: 100, clientY: 380 });
   fireEvent.click(document.body);
 }
@@ -64,10 +65,19 @@ describe("the Announcement (AT-60)", () => {
     const sheet = dialog()!;
     expect(sheet).toBeTruthy();
     const text = sheet.textContent ?? "";
-    const order = ["Test art", "New: Test feature", "A test title", "One test line.", "Open the test", "Not now"].map((part) => text.indexOf(part));
+    const order = [
+      "Test art",
+      "New: Test feature",
+      "A test title",
+      "One test line.",
+      "Open the test",
+      "Not now",
+    ].map((part) => text.indexOf(part));
     expect(order.every((at) => at >= 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    expect(within(sheet).getByRole("link", { name: "Open the test" }).getAttribute("href")).toBe("/test/");
+    expect(within(sheet).getByRole("link", { name: "Open the test" }).getAttribute("href")).toBe(
+      "/test/",
+    );
   });
 
   it("names the site for a screen reader, with no site name on the screen", () => {

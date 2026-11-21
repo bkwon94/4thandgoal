@@ -3,7 +3,7 @@
  * league fact with no team, the title odds or the favorite in a playoff week, and the champion after the final.
  */
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "bun:test";
 import { finalWeekSim, playoffsWeekSim, roundTwoWeekSim, weekSim } from "../fixtures/sim";
 import { SimTile } from "./sim-tile";
 import { simTileOf } from "./tile";
@@ -52,7 +52,9 @@ describe("the Sim tile in a playoff week (AT-47)", () => {
     const data = simTileOf(playoffsWeekSim);
     render(<SimTile tile={data.teams[1]} fact={data.fact} href={HREF} />);
     expect(tileLink().textContent).toContain("14%");
-    expect(tileLink().textContent).toContain("Week 15 vs Maye d'force B with U. Win and you reach the semifinals.");
+    expect(tileLink().textContent).toContain(
+      "Week 15 vs Maye d'force B with U. Win and you reach the semifinals.",
+    );
   });
 
   it("shows the favorite fact for the 12th team, which is out", () => {
@@ -65,7 +67,9 @@ describe("the Sim tile in a playoff week (AT-47)", () => {
 
   it("shows the favorite fact for a team that lost its bracket game", () => {
     const data = simTileOf(roundTwoWeekSim);
-    const lost = Object.values(roundTwoWeekSim.pages).find((page) => page.playoffs!.seed !== null && !page.playoffs!.alive)!;
+    const lost = Object.values(roundTwoWeekSim.pages).find(
+      (page) => page.playoffs!.seed !== null && !page.playoffs!.alive,
+    )!;
     expect(data.teams[lost.you]).toBeNull();
     expect(data.fact).toBe("4 teams left, The Blue Tent is the favorite at 28%");
   });

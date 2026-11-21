@@ -3,7 +3,7 @@
  * A test reads this copy in place of public/ or clients/<slug>/published/, so a weekly publish never changes what a test sees.
  */
 import { join } from "node:path";
-import { vi } from "vitest";
+import { spyOn } from "bun:test";
 
 /* The clients that the copy holds. */
 export type FixtureClient = "cpc" | "norcal";
@@ -21,7 +21,8 @@ export function fixturePublished(slug: FixtureClient, ...path: string[]): string
   return join(SITES, slug, "public", ...path);
 }
 
-/* Points the working folder at the fixed site folder of one client, so each reader of public/ reads the fixed copy. */
+/* Points the working folder at the fixed site folder of one client, so each reader of public/ reads the fixed copy.
+   It is a spy, so the preload puts the real working folder back after each test. A test file calls it in `beforeEach`. */
 export function readFixtureSite(slug: FixtureClient = "cpc"): void {
-  vi.spyOn(process, "cwd").mockReturnValue(fixtureSite(slug));
+  spyOn(process, "cwd").mockReturnValue(fixtureSite(slug));
 }

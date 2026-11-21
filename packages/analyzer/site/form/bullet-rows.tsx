@@ -4,6 +4,7 @@
  */
 "use client";
 
+import { Button } from "@cpc/design/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 import type { Bullet, Mark as MarkKind } from "../lib/analyze-types";
@@ -36,26 +37,38 @@ function Mark({ mark }: { mark: MarkKind }) {
    The fact fades in from a 2 px blur with the height, so no half-drawn text shows. Reduced motion opens it at once.
    A closed fact is inert and hidden from a screen reader, so the reader hears only the open facts.
    index is the place of the Bullet in its side, so the stable id stays the same in any band order. */
-function BulletRow({ bullet, idBase, index }: { bullet: Bullet; idBase: string | number; index: number }) {
+function BulletRow({
+  bullet,
+  idBase,
+  index,
+}: {
+  bullet: Bullet;
+  idBase: string | number;
+  index: number;
+}) {
   const [open, setOpen] = useState(false);
   const factId = useId();
   return (
-    <li {...stableId("bullet", idBase, index)} data-open={open} className="group/row border-b border-rule last:border-b-0">
-      <button
+    <li
+      {...stableId("bullet", idBase, index)}
+      data-open={open}
+      className="group/row border-rule border-b last:border-b-0"
+    >
+      <Button
+        variant="plain"
         type="button"
         aria-expanded={open}
         aria-controls={factId}
         onClick={() => setOpen(!open)}
         {...openId("bullet", idBase, index)}
-        className="grid min-h-touch w-full cursor-pointer grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)_auto] items-start gap-x-sp-1 px-sp-1 py-sp-2 text-left text-lead text-ink-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+        className="min-h-touch gap-x-sp-1 px-sp-1 py-sp-2 text-lead text-ink-2 focus-visible:outline-accent grid w-full cursor-pointer grid-cols-[var(--spacing-sp-4)_minmax(0,1fr)_auto] items-start text-left focus-visible:outline-2 focus-visible:-outline-offset-2"
       >
-        <Mark mark={bullet.mark} />{" "}
-        <span data-bullet-text>{bullet.text}</span>
+        <Mark mark={bullet.mark} /> <span data-bullet-text>{bullet.text}</span>
         <ChevronDown
           aria-hidden="true"
           className="mt-sp-0 size-sp-5 text-mute transition-transform duration-250 ease-out group-data-[open=true]/row:[transform:scaleY(-1)] motion-reduce:transition-none [&_path]:[vector-effect:non-scaling-stroke]"
         />
-      </button>
+      </Button>
       <div
         id={factId}
         aria-hidden={!open}
@@ -64,7 +77,7 @@ function BulletRow({ bullet, idBase, index }: { bullet: Bullet; idBase: string |
       >
         <div className="min-h-0 overflow-hidden">
           {/* The padding sits on the inner box, never on the 0fr track, so the closed row keeps no strip of height. */}
-          <p className="m-0 pr-sp-1 pb-sp-3 pl-sp-6 text-meta text-mute opacity-0 blur-[2px] transition-[opacity,filter] duration-250 ease-out group-data-[open=true]/row:opacity-100 group-data-[open=true]/row:blur-none motion-reduce:transition-none">
+          <p className="pr-sp-1 pb-sp-3 pl-sp-6 text-meta text-mute m-0 opacity-0 blur-[2px] transition-[opacity,filter] duration-250 ease-out group-data-[open=true]/row:opacity-100 group-data-[open=true]/row:blur-none motion-reduce:transition-none">
             {bullet.fact_text}
           </p>
         </div>
@@ -74,16 +87,32 @@ function BulletRow({ bullet, idBase, index }: { bullet: Bullet; idBase: string |
 }
 
 /* One band: its heading and its rows. The heading names the group, so a screen reader hears "For" before the rows. */
-function Band({ mark, rows, idBase }: { mark: MarkKind; rows: { bullet: Bullet; index: number }[]; idBase: string | number }) {
+function Band({
+  mark,
+  rows,
+  idBase,
+}: {
+  mark: MarkKind;
+  rows: { bullet: Bullet; index: number }[];
+  idBase: string | number;
+}) {
   const headingId = useId();
   return (
     <div role="group" aria-labelledby={headingId}>
-      <div id={headingId} className={cn("mb-sp-1 text-label font-bold tracking-caps uppercase", MARKS[mark].color)}>
+      <div
+        id={headingId}
+        className={cn("mb-sp-1 text-label tracking-caps font-bold uppercase", MARKS[mark].color)}
+      >
         {MARKS[mark].band}
       </div>
-      <ul className="m-0 list-none border-t-2 border-ink p-0">
+      <ul className="border-ink m-0 list-none border-t-2 p-0">
         {rows.map(({ bullet, index }) => (
-          <BulletRow key={`${bullet.fact_id}-${index}`} bullet={bullet} idBase={idBase} index={index} />
+          <BulletRow
+            key={`${bullet.fact_id}-${index}`}
+            bullet={bullet}
+            idBase={idBase}
+            index={index}
+          />
         ))}
       </ul>
     </div>
@@ -95,7 +124,7 @@ function Band({ mark, rows, idBase }: { mark: MarkKind; rows: { bullet: Bullet; 
 export function BulletRows({ bullets, idBase }: { bullets: Bullet[]; idBase: string | number }) {
   const indexed = bullets.map((bullet, index) => ({ bullet, index }));
   return (
-    <div className="flex max-w-measure flex-col gap-sp-4">
+    <div className="max-w-measure gap-sp-4 flex flex-col">
       {BAND_ORDER.map((mark) => {
         const rows = indexed.filter(({ bullet }) => bullet.mark === mark);
         return rows.length > 0 ? <Band key={mark} mark={mark} rows={rows} idBase={idBase} /> : null;

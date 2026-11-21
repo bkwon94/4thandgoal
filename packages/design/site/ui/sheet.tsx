@@ -1,10 +1,12 @@
 /**
  * Sheet primitive built on the ui-sdk Drawer. It is the one place the site imports ui-sdk.
  * It renders the root, trigger, backdrop, content, grip, title, and close parts of an edge sheet.
+ * Use it when: a panel comes in from an edge and the reader drags it closed.
+ * Do not use it when: the panel is a centered modal. Use `Dialog`.
  */
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Drawer,
   DrawerBackdrop,
@@ -12,30 +14,30 @@ import {
   DrawerContent,
   DrawerTitle,
   DrawerTrigger,
-} from "@ui-sdk/react/drawer"
-import { cn } from "../lib/utils"
+} from "@ui-sdk/react/drawer";
+import { cn } from "../lib/utils";
 
 // The root takes every option of the Drawer, such as side, snapPoints, physics, and persistentElements.
 function Sheet({ ...props }: React.ComponentProps<typeof Drawer>) {
-  return <Drawer {...props} />
+  return <Drawer {...props} />;
 }
 
 function SheetTrigger({ ...props }: React.ComponentProps<typeof DrawerTrigger>) {
-  return <DrawerTrigger {...props} />
+  return <DrawerTrigger {...props} />;
 }
 
 // The Drawer writes the opacity of the backdrop inline from --drawer-dim, so the class never sets it. The backdrop is a
 // popover, so the class drops the size, margin, border, and pad that a browser gives a popover.
-function SheetBackdrop({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerBackdrop>) {
+function SheetBackdrop({ className, ...props }: React.ComponentProps<typeof DrawerBackdrop>) {
   return (
     <DrawerBackdrop
-      className={cn("fixed inset-0 z-50 m-0 size-auto max-h-none max-w-none border-0 bg-scrim p-0", className)}
+      className={cn(
+        "bg-scrim fixed inset-0 z-50 m-0 size-auto max-h-none max-w-none border-0 p-0",
+        className,
+      )}
       {...props}
     />
-  )
+  );
 }
 
 // The Drawer places the content and moves it with translate, so the class sets only the surface. data-side names the
@@ -55,7 +57,7 @@ function SheetContent({
   return (
     <DrawerContent
       className={cn(
-        "group/sheet relative border-rule bg-page text-ink outline-none data-[side=top]:rounded-b-card data-[side=top]:border-b data-[side=top]:shadow-drop",
+        "group/sheet border-rule bg-page text-ink data-[side=top]:rounded-b-card data-[side=top]:shadow-drop relative outline-none data-[side=top]:border-b",
         className,
       )}
       {...props}
@@ -75,7 +77,7 @@ function SheetContent({
         </>
       )}
     </DrawerContent>
-  )
+  );
 }
 
 const sheetBleed = (
@@ -84,7 +86,7 @@ const sheetBleed = (
     data-slot="sheet-bleed"
     className="pointer-events-none absolute -inset-x-px hidden h-[6rem] bg-inherit group-data-[side=bottom]/sheet:top-full group-data-[side=bottom]/sheet:block group-data-[side=top]/sheet:bottom-full group-data-[side=top]/sheet:block"
   />
-)
+);
 
 // The grip shows that the sheet drags. A sheet with one snap point takes this plain bar, not the handle button of the
 // Drawer, because a press on that button has no other place to move the sheet to.
@@ -93,26 +95,18 @@ function SheetGrip({ className, ...props }: React.ComponentProps<"div">) {
     <div
       aria-hidden
       data-slot="sheet-grip"
-      className={cn("mx-auto h-1.5 w-10 flex-none rounded-pill bg-rule", className)}
+      className={cn("rounded-pill bg-rule mx-auto h-1.5 w-10 flex-none", className)}
       {...props}
     />
-  )
+  );
 }
 
 function SheetTitle({ ...props }: React.ComponentProps<typeof DrawerTitle>) {
-  return <DrawerTitle {...props} />
+  return <DrawerTitle {...props} />;
 }
 
 function SheetClose({ ...props }: React.ComponentProps<typeof DrawerClose>) {
-  return <DrawerClose {...props} />
+  return <DrawerClose {...props} />;
 }
 
-export {
-  Sheet,
-  SheetBackdrop,
-  SheetClose,
-  SheetContent,
-  SheetGrip,
-  SheetTitle,
-  SheetTrigger,
-}
+export { Sheet, SheetBackdrop, SheetClose, SheetContent, SheetGrip, SheetTitle, SheetTrigger };

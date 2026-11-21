@@ -34,7 +34,10 @@ function fileFor(dir: string, path: string): string | null {
  * Serves dir on 127.0.0.1, on port, or on a free port when port is 0. A missing path gets 404.html with the status 404,
  * as the Worker does.
  */
-export async function serveDir(dir: string, port = 0): Promise<{ url: string; close: () => Promise<void> }> {
+export async function serveDir(
+  dir: string,
+  port = 0,
+): Promise<{ url: string; close: () => Promise<void> }> {
   const server = createServer((request, response) => {
     const path = new URL(request.url ?? "/", "http://localhost").pathname;
     const file = fileFor(dir, path);
