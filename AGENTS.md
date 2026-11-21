@@ -81,7 +81,7 @@ after this file, then reads one ticket in the tracker.
 ## Flaky tests
 
 A flaky test gets a fix of its cause, or a delete with the reason in the commit. A second run is never the fix.
-Set no retry in a config. `scripts/retry_rule.py` fails on a Playwright `retries` above 0, on a Vitest `retry`, and on `pytest-rerunfailures`.
+Set no retry in a config. `scripts/retry_rule.py` fails on a Playwright `retries` above 0, on a Bun retry in `bunfig.toml`, in a `--retry` flag, or in a per-test `retry` option, and on `pytest-rerunfailures`.
 
 ## Commits
 
