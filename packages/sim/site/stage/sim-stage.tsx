@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { Pause, Play, RotateCcw, SkipForward, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -326,37 +326,44 @@ function Player({
   // The controls of the end, or of the replay while it plays.
   const controls = ended ? (
     <>
-      <PendingButton
+      <Button
+        variant="plain"
         type="button"
         onClick={onAgain}
         className={cn(CONTROL, "bg-accent text-on-dark hover-fine:opacity-90")}
       >
         <RotateCcw aria-hidden />
         Sim again
-      </PendingButton>
-      <PendingButton type="button" onClick={onClose} className={cn(CONTROL, QUIET)}>
+      </Button>
+      <Button variant="plain" type="button" onClick={onClose} className={cn(CONTROL, QUIET)}>
         Done
-      </PendingButton>
+      </Button>
     </>
   ) : (
     <>
-      <PendingButton
+      <Button
+        variant="plain"
         type="button"
         aria-label={playing ? "Pause" : "Play"}
         onClick={() => setPlaying((now) => !now)}
         className={cn(CONTROL, QUIET, "px-0")}
       >
         {playing ? <Pause aria-hidden /> : <Play aria-hidden />}
-      </PendingButton>
-      <PendingButton type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
+      </Button>
+      <Button variant="plain" type="button" onClick={skip} className={cn(CONTROL, QUIET)}>
         <SkipForward aria-hidden />
         Skip
-      </PendingButton>
+      </Button>
       {/* During the replay, "Sim again" stays quiet. It takes the brand red only at the end, where it is the next step. */}
-      <PendingButton type="button" onClick={onAgain} className={cn(CONTROL, QUIET, "ml-auto")}>
+      <Button
+        variant="plain"
+        type="button"
+        onClick={onAgain}
+        className={cn(CONTROL, QUIET, "ml-auto")}
+      >
         <RotateCcw aria-hidden />
         Sim again
-      </PendingButton>
+      </Button>
     </>
   );
 
@@ -374,14 +381,15 @@ function Player({
           open={tabOpen}
           onGo={goTab}
         />
-        <PendingButton
+        <Button
+          variant="plain"
           type="button"
           aria-label="Close the replay"
           onClick={onClose}
           className={cn(CONTROL, "text-on-dark hover-fine:bg-chip-dark px-0")}
         >
           <X aria-hidden />
-        </PendingButton>
+        </Button>
       </header>
       <div data-testid="stage-body" className="relative min-h-0 flex-1">
         <LayoutGroup>

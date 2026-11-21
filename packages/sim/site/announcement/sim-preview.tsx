@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
@@ -192,7 +192,8 @@ export function SimPreview({
       </ol>
 
       {whatIf && (
-        <PendingButton
+        <Button
+          variant="plain"
           type="button"
           aria-pressed={on}
           onClick={() => {
@@ -205,7 +206,7 @@ export function SimPreview({
           <span aria-hidden className="text-label tracking-caps flex-none font-mono uppercase">
             {on ? "On" : "Tap"}
           </span>
-        </PendingButton>
+        </Button>
       )}
     </div>
   );

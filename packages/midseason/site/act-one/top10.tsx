@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { useState } from "react";
 import { oneDecimal } from "@cpc/design/format/format";
 import { cn } from "@cpc/design/lib/utils";
@@ -87,7 +87,8 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
         {boards.map(({ position }) => {
           const on = position === board?.position;
           return (
-            <PendingButton
+            <Button
+              variant="plain"
               key={position}
               type="button"
               aria-pressed={on}
@@ -99,7 +100,7 @@ export function Top10({ chapter }: { chapter: Top10Chapter }) {
               )}
             >
               {position}
-            </PendingButton>
+            </Button>
           );
         })}
         <span

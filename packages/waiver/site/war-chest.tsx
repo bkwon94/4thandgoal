@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { type ComponentType, useEffect, useState } from "react";
 import { useMarkHydrated } from "@cpc/design/hooks/use-mark-hydrated";
 import { avatarSrc, sleeperHeadshot } from "@cpc/league/images";
@@ -119,7 +119,8 @@ function RestList({
           return (
             <li key={player.player_id} className="border-rule-dark border-b">
               {/* The whole row is the button, so the touch target is the row. 44px is the smallest comfortable touch target. */}
-              <PendingButton
+              <Button
+                variant="plain"
                 type="button"
                 aria-pressed={open}
                 onClick={() => onOpen(player)}
@@ -148,7 +149,7 @@ function RestList({
                   </span>
                 </span>
                 <span className="text-right font-bold">{priceText(player)}</span>
-              </PendingButton>
+              </Button>
             </li>
           );
         })}
@@ -222,7 +223,8 @@ export function WarChest({
         {tabs.map((tab) => {
           const on = tab.key === bucket;
           return (
-            <PendingButton
+            <Button
+              variant="plain"
               key={tab.key}
               type="button"
               aria-pressed={on}
@@ -233,7 +235,7 @@ export function WarChest({
               )}
             >
               {tab.name}
-            </PendingButton>
+            </Button>
           );
         })}
       </div>

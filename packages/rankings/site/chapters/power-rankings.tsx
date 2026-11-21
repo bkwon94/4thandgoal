@@ -5,7 +5,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { useEffect, useRef, type ReactNode } from "react";
 import { Chapter } from "@cpc/design/parts/chapter";
 import { Hero } from "@cpc/design/parts/hero";
@@ -327,7 +327,8 @@ function WeekChips({
       className="-m-sp-1 mb-sp-3 gap-sp-1 p-sp-1 relative flex overflow-x-auto"
     >
       {weeks.map(({ week }) => (
-        <PendingButton
+        <Button
+          variant="plain"
           key={week}
           type="button"
           aria-pressed={week === chosen}
@@ -341,7 +342,7 @@ function WeekChips({
           )}
         >
           {week}
-        </PendingButton>
+        </Button>
       ))}
     </div>
   );

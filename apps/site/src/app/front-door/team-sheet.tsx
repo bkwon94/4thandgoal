@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import { useRef, useState } from "react";
@@ -119,7 +119,8 @@ export function TeamSheet({
                 animate={off ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 transition={fadeIn(0.35, 0.12 + staggerOf(index))}
               >
-                <PendingButton
+                <Button
+                  variant="plain"
                   type="button"
                   aria-pressed={picked}
                   onClick={() => choose(team.id)}
@@ -143,7 +144,7 @@ export function TeamSheet({
                     {team.wins}-{team.losses} · {ordinal(team.rank)}
                   </span>
                   <PickMark on={picked} off={off} />
-                </PendingButton>
+                </Button>
               </motion.li>
             );
           })}

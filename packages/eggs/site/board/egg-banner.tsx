@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { useState } from "react";
 import { Rise } from "@cpc/design/parts/rise";
 import type { Board, EggsApi } from "../lib/api";
@@ -117,7 +117,8 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </a>
-        <PendingButton
+        <Button
+          variant="plain"
           type="button"
           aria-label="Hide the banner"
           onClick={hide}
@@ -134,7 +135,7 @@ export function EggBanner({ board, href, now = new Date() }: EggBannerProps) {
           >
             <path d="M18 6 6 18M6 6l12 12" />
           </svg>
-        </PendingButton>
+        </Button>
       </section>
     </Rise>
   );

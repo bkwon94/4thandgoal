@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { ArrowUpIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { Sheet, SheetBackdrop, SheetContent, SheetGrip, SheetTitle } from "@cpc/design/ui/sheet";
@@ -93,22 +93,24 @@ export function PassphraseSheet({
               onBlur={keyboard.onBlur}
               className="text-lead text-ink placeholder:text-mute min-w-0 flex-1 bg-transparent leading-tight outline-none focus-visible:outline-none"
             />
-            <PendingButton
+            <Button
+              variant="plain"
               type="submit"
               aria-label="Use this passphrase"
               disabled={!typed}
               className="press size-send bg-accent text-on-dark disabled:bg-raised disabled:text-mute flex flex-none items-center justify-center rounded-full transition-colors duration-150"
             >
               <ArrowUpIcon aria-hidden className="size-sp-5" strokeWidth={2.25} />
-            </PendingButton>
+            </Button>
           </form>
-          <PendingButton
+          <Button
+            variant="plain"
             type="button"
             onClick={close}
             className="press min-h-touch rounded-pill px-sp-3 text-meta text-mute hover-fine:text-ink flex items-center self-center leading-tight font-semibold"
           >
             Not now
-          </PendingButton>
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

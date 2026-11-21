@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { cn } from "@cpc/design/lib/utils";
 import { ArtGround } from "./egg-art";
@@ -233,7 +233,8 @@ export function ClaimTicket({
           className="rounded-pill bg-page absolute -right-2 -bottom-2 z-20 size-4"
         />
       </div>
-      <PendingButton
+      <Button
+        variant="plain"
         type="button"
         aria-label={label}
         aria-disabled={!canTear}
@@ -279,7 +280,7 @@ export function ClaimTicket({
         <span className="text-meta text-center font-mono leading-tight font-bold tracking-wide uppercase">
           {locked ? label : "Tear to claim"}
         </span>
-      </PendingButton>
+      </Button>
     </div>
   );
 }

@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
 import type { Team } from "../lib/api";
@@ -29,7 +29,8 @@ export function TeamSheet({ open, title, teams, taken, onPick, onClose }: TeamSh
           const inTrade = taken.includes(team.roster_id);
           return (
             <li key={team.roster_id}>
-              <PendingButton
+              <Button
+                variant="plain"
                 type="button"
                 disabled={inTrade}
                 onClick={() => onPick(team.roster_id)}
@@ -42,7 +43,7 @@ export function TeamSheet({ open, title, teams, taken, onPick, onClose }: TeamSh
                     {inTrade ? "In the trade" : team.manager}
                   </span>
                 </span>
-              </PendingButton>
+              </Button>
             </li>
           );
         })}

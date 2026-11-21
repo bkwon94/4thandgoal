@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { PlusIcon } from "lucide-react";
 import { Avatar } from "@cpc/league/avatar";
 import { AVATAR_FALLBACK } from "@cpc/league/images";
@@ -33,7 +33,8 @@ export function TeamsRow({ slots, onPickSlot, onAdd, locked }: TeamsRowProps) {
     >
       {slots.map((slot, index) => (
         <li key={slot.id}>
-          <PendingButton
+          <Button
+            variant="plain"
             type="button"
             disabled={locked}
             onClick={() => onPickSlot(index)}
@@ -65,12 +66,13 @@ export function TeamsRow({ slots, onPickSlot, onAdd, locked }: TeamsRowProps) {
             <span className="text-meta max-w-[6rem] truncate leading-tight font-bold">
               {slot.title}
             </span>
-          </PendingButton>
+          </Button>
         </li>
       ))}
       {slots.length < MAX_SIDES && (
         <li className="gap-sp-1 flex flex-col items-center">
-          <PendingButton
+          <Button
+            variant="plain"
             type="button"
             disabled={locked}
             onClick={onAdd}
@@ -78,7 +80,7 @@ export function TeamsRow({ slots, onPickSlot, onAdd, locked }: TeamsRowProps) {
             className={`press ${FACE} border-rule bg-card text-ink hover:border-accent focus-visible:outline-accent cursor-pointer border-dashed focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed`}
           >
             <PlusIcon aria-hidden="true" className="size-sp-5" />
-          </PendingButton>
+          </Button>
           <span className="text-meta text-mute font-mono leading-tight font-bold">
             {slots.length} of {MAX_SIDES}
           </span>

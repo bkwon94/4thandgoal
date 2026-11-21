@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "@cpc/design/ui/pending-button";
+import { Button } from "@cpc/design/ui/button";
 import { cn } from "@cpc/design/lib/utils";
 import type { WeekSim } from "../schema/sim-types";
 import { CARD, PRESS, nameOf } from "./format";
@@ -30,7 +30,8 @@ export function TeamPick({ sim, onPick }: { sim: WeekSim; onPick: (id: number) =
         >
           {ids.map((id) => (
             <li key={id} className="border-rule border-t">
-              <PendingButton
+              <Button
+                variant="plain"
                 type="button"
                 onClick={() => onPick(id)}
                 className={cn(
@@ -39,7 +40,7 @@ export function TeamPick({ sim, onPick }: { sim: WeekSim; onPick: (id: number) =
                 )}
               >
                 {nameOf(sim, id)}
-              </PendingButton>
+              </Button>
             </li>
           ))}
         </ul>

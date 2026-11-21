@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { PendingButton } from "../ui/pending-button";
+import { Button } from "../ui/button";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { DARK_CLASS, storeTheme } from "../lib/theme";
@@ -47,7 +47,8 @@ export function ThemeButton({ className }: { className: string }) {
   // The icon shows the theme a press gives: the moon in the light theme, the sun in the dark theme.
   const Icon = dark ? SunIcon : MoonIcon;
   return (
-    <PendingButton
+    <Button
+      variant="plain"
       type="button"
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={switchTheme}
@@ -57,6 +58,6 @@ export function ThemeButton({ className }: { className: string }) {
       )}
     >
       <Icon aria-hidden className="size-sp-5" />
-    </PendingButton>
+    </Button>
   );
 }
