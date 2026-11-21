@@ -244,8 +244,12 @@ for (const viewport of VIEWPORTS) {
       const box = await rectOf(page, "[data-deadline-banner] button");
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
       await page.mouse.down();
-      await page.waitForTimeout(400);
-      const press = await page.locator("[data-deadline-grid]").evaluate((el) => {
+      // The press sets :active at once, but WebKit starts the scale transition only at its next rendering update. A
+      // loaded headless WebKit on Linux can hold that update for more than 700 ms, and the transition stays pending at
+      // scale 1. So the test waits until the transition of the press ends, not for a fixed time. With no press, the
+      // grid has no transition, and the read below gives scale 1.
+      const press = await page.locator("[data-deadline-grid]").evaluate(async (el) => {
+        await Promise.all(el.getAnimations().map((animation) => animation.finished));
         const style = getComputedStyle(el);
         return { transform: style.transform, scale: style.scale, duration: style.transitionDuration, property: style.transitionProperty };
       });
