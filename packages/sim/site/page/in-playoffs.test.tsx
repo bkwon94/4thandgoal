@@ -4,7 +4,7 @@
  */
 import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { finalWeekSim, playoffsWeekSim, roundTwoWeekSim } from "../fixtures/sim";
 import { fakeWhatIfApi } from "../fixtures/what-if-api";
 import { whatIfApi } from "../lib/what-if-api";
@@ -157,6 +157,13 @@ describe("after the final", () => {
 /* In the week 14 fixture, the 3rd seed plays the 6th seed in week 15, and both teams of the game are set. The one fake
    of the port holds no answer of a playoff week, so it answers 422, as the route does for a set it cannot hold. */
 describe("the What-if of a bracket game", () => {
+  /* The API is down in each test of this block, as a refused connection makes it, so no test opens a socket. A test
+     that needs an answer passes the one fake of the port. */
+  beforeEach(() => {
+    spyOn(globalThis, "fetch").mockImplementation((() =>
+      Promise.reject(new TypeError("fetch failed"))) as unknown as typeof fetch);
+  });
+
   const you = () => seed(playoffsWeekSim, 3);
   const game = () => playoffsOf(playoffsWeekSim, you()).game!;
 
@@ -209,7 +216,7 @@ describe("the What-if of a bracket game", () => {
   });
 
   it("shows the line when the API is down", async () => {
-    // A real call to port 9, which nothing serves, so the connection is refused as when the API is down.
+    // The real client of the port, with the refused call of the beforeEach, as when the API is down.
     render(
       <SimPage
         sim={playoffsWeekSim}
