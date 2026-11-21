@@ -169,14 +169,19 @@ describe("HomePage", () => {
     const teams = [
       { roster_id: 1, team: "Gridiron Ghosts", manager: "Ana", avatar: null, players: [] },
     ];
-    const fetchStub = mock().mockResolvedValue(new Response(JSON.stringify({ teams })));
+    // A fresh Response for each call, because the egg board call of the shell reads its body first.
+    const fetchStub = mock().mockImplementation(() =>
+      Promise.resolve(new Response(JSON.stringify({ teams }))),
+    );
     stubGlobal("fetch", fetchStub);
     render(<HomePage />);
 
     // The list renders without a wait on the fetch.
     expect(screen.getByText("Week 6")).toBeTruthy();
     await waitFor(() => expect(sessionStorage.getItem("cpc.teams.2026")).not.toBeNull());
-    expect(fetchStub.mock.calls[0][1].headers["X-League-Passphrase"]).toBe("localtest");
+    // The shell also asks for the egg board, so the check reads only the call to the teams route.
+    const [teamsCall] = fetchStub.mock.calls.filter(([url]) => String(url).includes("/teams?"));
+    expect(teamsCall[1].headers["X-League-Passphrase"]).toBe("localtest");
     expect(JSON.parse(sessionStorage.getItem("cpc.teams.2026")!).teams[0].team).toBe(
       "Gridiron Ghosts",
     );
@@ -186,7 +191,8 @@ describe("HomePage", () => {
     const fetchStub = mock();
     stubGlobal("fetch", fetchStub);
     render(<HomePage />);
-    expect(fetchStub).not.toHaveBeenCalled();
+    // The shell also asks for the egg board, so the check reads only the calls to the teams route.
+    expect(fetchStub.mock.calls.filter(([url]) => String(url).includes("/teams?"))).toEqual([]);
   });
 });
 

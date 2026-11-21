@@ -44,6 +44,8 @@ Each site test runs on `bun test` with happy-dom (ADR 0038). No test runs on Vit
 
 The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. If a test needs a real jsdom feature, the ticket names it for Brian.
 
+The preload gives each test a `fetch` that rejects each call to a host other than `localhost` or `127.0.0.1`, as when the API is down. So no test sends a request to the live API. A test that needs an answer of the API stubs `fetch` in its own `beforeEach`. `node scripts/network-leak-check.mjs` runs the suite and fails if its output shows a request to the live API or a refused connection.
+
 The preload makes happy-dom act as a browser in five more ways. `test/dom.test.ts` proves each one.
 
 - `TransformStream` and `WritableStream` are the web stream classes of Bun. happy-dom sets them to the Node classes `Stream.Transform` and `Stream.Writable`, so the native `pipeThrough` refused them, and each streamed Answer showed "The question did not go through".

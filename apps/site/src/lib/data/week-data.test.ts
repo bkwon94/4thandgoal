@@ -2,12 +2,18 @@
  * Tests for the week data loader against the real public/ folder.
  * The week 6 JSON is the fixture, so these tests break if the publish layout changes.
  */
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it, spyOn } from "bun:test";
+import { afterEach, describe, expect, it, spyOn } from "bun:test";
 import { weekPageJson } from "@/fixtures/week-page-json";
 import { listWeeks, listWeekSummaries, loadWeek } from "./week-data";
+
+/* The temp folders of the tests. Each one goes after its test, so a run leaves no folder in the temp folder of the OS. */
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
 describe("listWeeks", () => {
   it("lists week 6 of 2026 by its folder names", () => {
@@ -29,6 +35,7 @@ describe("loadWeek schema check", () => {
   it("throws when the schema version is not 2", async () => {
     // A temp public/ folder holds a page at the old version.
     const root = mkdtempSync(join(tmpdir(), "week-data-"));
+    roots.push(root);
     mkdirSync(join(root, "public", "2026", "week-01"), { recursive: true });
     writeFileSync(
       join(root, "public", "2026", "week-01", "page.json"),
@@ -59,6 +66,7 @@ describe("listWeekSummaries", () => {
   it("sorts by season, then by week, as numbers", async () => {
     // A temp public/ folder holds weeks 2 and 10 of 2026 and week 1 of 2027.
     const root = mkdtempSync(join(tmpdir(), "week-data-"));
+    roots.push(root);
     for (const [season, week, number] of [
       ["2026", "week-02", 2],
       ["2026", "week-10", 10],

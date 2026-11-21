@@ -250,6 +250,13 @@ const weekItem = (label: string) =>
   within(weekSwitch()).getByRole("button", { name: new RegExp(`^${label}`) });
 
 describe("the What-if", () => {
+  /* The API is down in each test of this block, as a refused connection makes it, so no test opens a socket. A test
+     that needs an answer passes the one fake of the port. */
+  beforeEach(() => {
+    spyOn(globalThis, "fetch").mockImplementation((() =>
+      Promise.reject(new TypeError("fetch failed"))) as unknown as typeof fetch);
+  });
+
   it("sets a result on a tap, shows the numbers of the API answer, and stays on its week", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
@@ -355,7 +362,7 @@ describe("the What-if", () => {
   });
 
   it("keeps the numbers of the file and shows one line when the API is down", async () => {
-    // A real call to port 9, which nothing serves, so the connection is refused as when the API is down.
+    // The real client of the port, with the refused call of the beforeEach, as when the API is down.
     render(
       <SimPage
         sim={weekSim}
