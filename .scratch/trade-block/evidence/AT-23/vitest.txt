@@ -1,0 +1,68 @@
+$ pnpm --dir apps/site exec vitest run ../../packages/analyzer/site/form/trade-block.test.tsx ../../packages/analyzer/site/form/trade-finder.test.tsx --reporter=verbose
+# run from a detached worktree of 3dd395a0 (the head of trade-block), 2026-11-21 11:44 EST
+
+ RUN  v5.0.5 /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-site2/apps/site
+
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > lists only the QB, RB, WR, and TE of the asker, in that position order and then by name 150ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > puts a tapped player on the block with a ring and a check at the front, and a second tap takes him off 98ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > leads the strip with the picks in the order of the taps 67ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > scrolls the strip back to its start when a pick from the scrolled end lands at the front 42ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > shows the empty line while no one is on the block 35ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the wait in the stage lines, one real step at a time, each line held until the next step 415ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > adds no one on a 4th tap, scrolls the strip back to the picks, and says why 96ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > sends the block in the find body, in the order of the taps, and no block while it is empty 129ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > clears the block on a change of Your team, and keeps it on a change of the partner or the chip 108ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > locks the strip during a find, so a tap there changes nothing 87ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > turns each toggle off while a grade runs 31ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > Trade block > never says anchor in the copy of Find mode 22ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > lastName > drops a name suffix 0ms
+ ✓ ../../packages/analyzer/site/form/trade-block.test.tsx > lastName > keeps a name with no suffix 0ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > holds each step line at least 1.5 s, even when the steps end faster 566ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > names one Shortlist trade at a time on step 5, the first 1.5 s after the step line, then each held about 3 s, and loops 903ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows at least 3 trade lines before the first card of a pick of 15 s, with the step times of a real press 1424ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > stops the step 5 lines when the first card shows 622ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > keeps the step 5 line when the stream sends no Shortlist 543ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the wait in the hero of the grade wait, with the same title level and the mesh 20ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > lights the avatar of each team as the stream reports it read, in the order of the stream 17ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows only the picked partner in the wait 51ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > tells the form that a search runs, and that it ended 52ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > lists Every team first, then the eleven other teams and not the asker 35ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > keeps the find button on with no partner picked 40ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > posts the season and the asker with no partner to the find stream with the passphrase 32ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > posts the picked partner, and Every team clears it 107ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > lands the cards in one list under the hero, each led by its Lean, with the Case and no headline 38ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows each trade as a Ledger: You get and You give columns, a row per player with the rank, and a total under each 39ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > states the gap of the two totals in one plain line under them 40ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no total and no gap line when the week has no chart 25ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no gap line when a side has no trade value 28ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows each card as its trade part comes, and the count line counts the trades still to come down to none 64ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > counts the trades still to come from the count of the pick, from the first card, and down when a trade drops 36ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the cards of the answer when it keeps fewer trades than the stream counted 33ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > drops the count line as soon as the stream says the pick has no more trades, before the answer 33ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows up to 5 cards, then the near ideas folded under Close, but not sent 39ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > keeps at most 5 picks and 3 near ideas 37ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no near fold when the answer has no near idea 32ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > clamps the Case of a card to 3 lines 28ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > folds the Bullets of a card under one button, and a tap opens the rows with their Marks 37ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > opens the fact of a Bullet row on a tap 35ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows no letter grade on any card 27ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows Find in one hero with its title, the line, Your team, the partner, the chips, and the button 39ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > hands a pick of Your team to the form 24ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > names each result card by its place, with See the Full Result 28ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > opens the trade of a card with the document of the find, so the form shows its read 36ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the fact lines of each shortlist offer after a fallback, with no Lean and no row 39ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the empty line when no trade works 26ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the as-of line as on the analyze result 24ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the wait line on a 429 23ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the API message on a 422 26ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the error line and Try Again in the hero when the find route answers 500 21ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the line of an error part of the stream, and Try Again runs the find again 36ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > shows the same down line as the trade form on a 503 with no detail 19ms
+ ✓ ../../packages/analyzer/site/form/trade-finder.test.tsx > TradeFinder > asks for the passphrase again on a 401 61ms
+
+ Test Files  2 passed (2)
+      Tests  56 passed (56)
+   Start at  11:44:35
+   Duration  7.24s (tests 71%, environment 15%, import 10%, transform 4%)
+
+exit code: 0

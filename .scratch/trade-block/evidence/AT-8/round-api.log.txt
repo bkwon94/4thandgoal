@@ -1,0 +1,19 @@
+# The API that the runner round started (pnpm --dir apps/site evidence trade-block ..., CORNERSTONE_RESULT_CACHE_DIR in the same scratch folder as the agent's API). Lines 1 to 17 of its log, with httpx and typesafe_sdk left out: the fair warm-up and the first press of the round, the AT-10 press at 375 px light (Skattebo on the block, Every team).
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:61463 CORNERSTONE_REPO=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block UV_PROJECT_ENVIRONMENT=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block/.venv-api-evidence uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --host 127.0.0.1 --port 61464
+INFO:     analyzer.fair_cache: The fair cache loaded 117832 answers of cpc from its file
+INFO:     Started server process [7951]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:61464 (Press CTRL+C to quit)
+INFO:     127.0.0.1:61467 - "GET /health HTTP/1.1" 200 OK
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams, 117832 answers loaded from the file
+INFO:     127.0.0.1:61485 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc ended: 96148 questions, 0 asked, 96148 held, about 0 tokens, $0.0000, 6.3s
+INFO:     127.0.0.1:61485 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61493 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=5.2s cost=$0.0000 claude_calls=0
+# The round press read the result that the agent's API stored for the same request, so it logs no search line and claude_calls=0. Each later press of the round does the same (scripts/round-api.log.txt).

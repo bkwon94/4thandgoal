@@ -1,0 +1,33 @@
+How the site evidence of trade-block was made, on 2026-11-21, from the Spec branch trade-block at 3dd395a0, the second round.
+
+The commit
+- At 3dd395a0 the Spec branch holds main, so clients/cpc/client.toml has finder = true. No scratch merge was needed.
+- The roster of Bo Girds (roster 6) in /teams at 11:36 EST: Blake Corum, Kirk Cousins, Cam Skattebo, Matthew Golden, Chimere Dike, Fernando Mendoza, Antonio Williams, Zonovan Knight, Trey McBride, Kenneth Walker III, Parker Washington, Tyjae Spears, Zay Flowers, LAC DEF.
+- By the Revisions line of ACCEPTANCE.md, Cam Skattebo stands in for Walker and Kirk Cousins for Jackson.
+
+The local evidence API of the agent
+- source ~/.secrets; CORNERSTONE_RESULT_CACHE_DIR=<scratch>/cache/results make -C apps/api api-evidence API_PORT=18431 API_ORIGIN=http://127.0.0.1:18432
+- It ran from the Spec worktree, started 11:35:37 EST 2026-11-21. It loaded the fair cache file <scratch>/cache/fair/cpc.json on its own.
+- Its warm-up ended before the first press: "Fair warm-up of cpc ended: 96148 questions, 19408 asked, 76740 held, about 5926079 tokens, $0.2489, 73.2s".
+- Every press was on this local API or on the runner's own local API, never on Fly.
+
+The site of that API, and the agent's scripts
+- The agent's Playwright scripts need a place in apps/site to import the runner's own code, and the Spec worktree must hold no extra file there. So a detached worktree of 3dd395a0 sat in <scratch>/tb-site2, with pnpm install --frozen-lockfile and a copy of the untracked data/nfl, data/eggs, data/ask.
+- Its .scratch/trade-block/evidence was a symlink to the evidence folder of the Spec worktree, so every file lands here.
+- In it: CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:18431 pnpm --dir apps/site build. A copy of apps/site/out was served on http://127.0.0.1:18432 by scripts/serve.mjs, which answers a missing path with 404.html and status 404.
+- The scripts sat there as apps/site/zz-tb.config.ts and apps/site/e2e/zz-tb-*.ts. Their copies are scripts/zz-tb*.txt. They import runSteps and takeShot of apps/site/e2e/evidence.ts.
+- An env value "none" gives an empty list, so no test runs for it.
+- iPhone shots: Playwright WebKit with devices["iPhone 15"], viewport 390x660, light theme, motion on.
+- The press tests ran first in iPhone WebKit, one at a time, so the API log of each press could be cut out: AT-10, AT-10/walker, AT-11, AT-12, AT-13, AT-14.
+- Then: TB_IDS="AT-15 AT-16 AT-17 AT-19 AT-20 AT-21 AT-22 AT-31" pnpm exec playwright test --config zz-tb.config.ts --project=webkit e2e/zz-tb-webkit.spec.ts, and pnpm exec playwright test --config zz-tb.config.ts --project=chromium e2e/zz-tb-chromium.spec.ts.
+
+The runner round (the 375, 768, and 1280 px shots in light and dark)
+- In the Spec worktree, after the site part of the background check ended, with ~/.secrets sourced and the same CORNERSTONE_RESULT_CACHE_DIR:
+  pnpm --dir apps/site evidence trade-block AT-10 AT-11 AT-12 AT-13 AT-14 AT-15 AT-16 AT-17 AT-19 AT-20 AT-21 AT-22 AT-31
+- Started 2026-11-21 11:51:35 EST. The output is scripts/round-output.txt. Its total: "Total: 13 tests of trade-block in 763.1 s".
+- Its API loaded the fair cache file, and its warm-up ended in 6.3 s with 0 asked, before its first press (scripts/round-api.log.txt).
+- Each press of the round read the result that the agent's API stored for the same request, so the round shows the same answer as find.json (each press logs claude_calls=0).
+
+Two waits that the steps hold
+- A wait of 800 ms after the Mode switch shows: a tap before the teams load changes nothing.
+- A wait of 1000 ms before a tap on a row of the Teams or Partners sheet: in WebKit the row is "not stable" while the sheet rises.

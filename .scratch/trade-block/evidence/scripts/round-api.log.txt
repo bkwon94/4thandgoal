@@ -1,0 +1,398 @@
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:61463 CORNERSTONE_REPO=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block UV_PROJECT_ENVIRONMENT=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block/.venv-api-evidence uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --host 127.0.0.1 --port 61464
+INFO:     analyzer.fair_cache: The fair cache loaded 117832 answers of cpc from its file
+INFO:     Started server process [7951]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:61464 (Press CTRL+C to quit)
+INFO:     127.0.0.1:61467 - "GET /health HTTP/1.1" 200 OK
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc started: chart week 11, 12 teams, 117832 answers loaded from the file
+INFO:     127.0.0.1:61485 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     cornerstone_api.fair_warm: Fair warm-up of cpc ended: 96148 questions, 0 asked, 96148 held, about 0 tokens, $0.0000, 6.3s
+INFO:     127.0.0.1:61485 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61493 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61485 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=5.2s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61532 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61532 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61532 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61532 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61535 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.3s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61535 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61535 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61569 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61569 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61569 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61569 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61572 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.3s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61572 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61572 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61605 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61605 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61605 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61605 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61610 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=4.7s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61610 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61610 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61645 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61645 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61645 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61645 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61646 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.6s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61646 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61646 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61733 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61733 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61733 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61733 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61734 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.2s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61734 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61734 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61768 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61768 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61768 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61768 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61769 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.2s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61769 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61769 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61801 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61801 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61801 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61801 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61802 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.1s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61802 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61802 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61835 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61835 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61835 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61835 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61837 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.9s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61837 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61837 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61868 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61868 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61868 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61868 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61870 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.8s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61870 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61870 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61901 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61901 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61901 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61901 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61902 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=4.5s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61902 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61901 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61929 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61929 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61929 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61929 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61930 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.9s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61930 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61930 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61967 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61967 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61967 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61968 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61968 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61983 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61983 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=4.6s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:61999 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61999 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61999 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62001 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62001 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62020 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62020 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=3.7s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62036 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62036 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62036 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62039 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62039 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.1s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62039 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62058 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62074 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62074 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62074 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62076 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62076 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62076 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62090 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62107 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62107 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62107 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62108 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62108 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62108 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62126 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62138 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62138 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62138 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62141 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62141 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.1s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62141 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62160 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62173 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62173 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62173 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62173 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62174 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62174 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62173 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62203 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62203 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62203 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62203 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62204 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62204 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62203 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62235 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62235 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62235 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62235 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62236 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62236 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62235 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62263 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62263 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62263 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62263 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62264 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62264 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62263 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62291 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62291 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62291 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62291 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62292 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.2s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62292 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62291 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62317 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62317 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62317 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62317 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62318 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62318 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62317 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62345 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62345 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62345 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62348 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62348 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=1.9s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62348 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62361 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62375 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62375 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62375 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62378 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62378 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62378 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62393 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62404 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62404 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62404 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62405 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62405 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62405 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62420 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62435 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62435 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62435 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62436 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62436 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62436 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62453 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62464 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62464 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62464 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62467 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62467 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62467 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62482 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62493 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62493 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62493 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62494 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62494 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.0s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:62494 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62515 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62528 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62528 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62528 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62552 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62552 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62552 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62580 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62580 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62580 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62604 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62604 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62604 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62626 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62626 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62626 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62650 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62650 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62650 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62674 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62674 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62674 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62698 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62698 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62698 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62721 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62721 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62721 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62746 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62746 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62746 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62774 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62774 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62774 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62800 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62800 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62800 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62825 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62825 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62825 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62851 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62851 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62851 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62875 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62875 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62875 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62929 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62929 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62929 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62952 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62952 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62952 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62978 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62978 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62978 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63004 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63004 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63004 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63029 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63029 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63029 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63054 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63054 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63054 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63076 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63076 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63076 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63106 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63106 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63106 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63130 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63130 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63130 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63154 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63154 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63154 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63176 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63176 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63176 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63204 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63204 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63204 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63228 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63228 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63228 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63254 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63254 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63254 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63278 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63278 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63278 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63303 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63303 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63303 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63328 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63328 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63328 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63357 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63357 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63357 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63379 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63379 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63379 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63404 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63404 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63404 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63430 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63430 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63430 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63456 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63456 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63456 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63480 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63480 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63480 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63504 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63504 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63504 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63530 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63530 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63530 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63554 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63554 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63554 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63580 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63580 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63580 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63605 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63605 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63605 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63630 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63630 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63630 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63657 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63657 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63657 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63679 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63679 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63679 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63703 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63703 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63703 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [7951]
+make: *** [api-evidence] Error 143

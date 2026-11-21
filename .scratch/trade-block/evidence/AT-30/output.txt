@@ -1,0 +1,33 @@
+# Built pages: the cpc export of 3dd395a0 (cpc finder = true), built in a detached worktree of that commit with NEXT_PUBLIC_API_URL=http://127.0.0.1:18431.
+# The export folder is a copy of apps/site/out of that build. Its path: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/outB
+$ grep -rn -i -c anchor <export> --include='*.html' --include='*.txt' | grep -v ':0$'
+exit code: 1 (1 means no line matched)
+$ ls <export> | wc -l; find <export> -name '*.html' | wc -l
+      19
+      27
+
+# The analyzer site source, with test files and fixtures left out. Run in the Spec worktree at 3dd395a0.
+$ grep -rn -i anchor packages/analyzer/site --include='*.tsx' --include='*.ts' | grep -v '\.test\.\|fixtures'
+packages/analyzer/site/form/trade-on-stage.tsx:3: * Idle shows a count, the wait and the result show up to 3 headshot tokens and a "+N" token, and each row anchors the mesh under its side.
+packages/analyzer/site/form/trade-on-stage.tsx:128:        // The anchor sets the place of the weight of this side, so the mesh of the wait and of the reveal dips under its row.
+packages/analyzer/site/form/trade-on-stage.tsx:131:          data-mesh-anchor
+exit code: 0
+
+# The site source of the analyzer route.
+$ grep -rn -i anchor apps/site/src --include='*.tsx' --include='*.ts' | grep -v '\.test\.'
+apps/site/src/app/home-tile.tsx:7:/* A plain anchor, so the link skips the router. The whole card is the tap target, well over 44px on each side. */
+apps/site/src/app/front-door/tour.tsx:152:   burst of events gives one read. CSS anchor positioning is out, because iOS 18 Safari does not support it. */
+apps/site/src/app/front-door/tour.tsx:419:  // The anchor of the card is the middle of its edge on the side of the hole. A card over the control draws up from its
+apps/site/src/app/front-door/tour.tsx:420:  // anchor, so it needs no measure of its own height.
+apps/site/src/app/front-door/tour.tsx:470:          anchor={{ x: 0, y: 0 }}
+apps/site/src/app/front-door/nfl-game-card.tsx:89:/* The props of a bar that grows along one axis from its anchor. With motion off it only fades in, and a kept card shows
+apps/site/src/lib/data/manager-data.ts:65:   The link is a plain anchor, so the route builder puts the base path in it. */
+apps/site/src/lib/data/waiver-data.ts:31:   The link is a plain anchor, so the route builder puts the base path in it. */
+exit code: 0 (1 means no line matched)
+
+# The rendered text of the analyzer: the page text and the aria-label, title, placeholder, and alt of each element, on the cpc site of 127.0.0.1:18432 (scripts/setup.txt), 2026-11-21 11:50 EST.
+# Note: in this shell, a first node launch now and then exits 1 with no output, before any script line runs. The launch below is the next one.
+$ node .scratch/trade-block/evidence/scripts/anchor-text.mjs
+Find mode with Skattebo and Flowers on the block: 482 characters of page text and 45 label lines; lines with "anchor": none
+after the press, with the cards: 1122 characters of page text and 53 label lines; lines with "anchor": none
+exit code: 0

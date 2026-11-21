@@ -1,0 +1,119 @@
+/**
+ * The flows of the trade-block evidence that no step verb covers: the reload of AT-32, the keys of AT-26, motion off of
+ * AT-24, the fit of AT-27, and the 4th tap of AT-18. Each one runs on the real local site and the real local API, in the browser of its project.
+ */
+import { expect, type Page } from "@playwright/test";
+import { join } from "node:path";
+import type { Theme } from "@cpc/design/lib/theme";
+import { takeShot } from "./evidence";
+import { CORUM, COUSINS, EVID, FLOWERS, SKATTEBO, STRIP, log, openFind, toggle } from "./zz-tb-shared";
+import { covers, fixedBars, framesAfterTap, overlapScan, stripFit } from "./zz-tb-checks";
+
+const pressed = (page: Page) => page.locator(`${STRIP} button[aria-pressed="true"]`).evaluateAll((els) => els.map((el) => el.getAttribute("aria-label")));
+const counter = (page: Page) => page.getByText(/^\d of 3$/).first().innerText();
+
+export async function reloadFlow(page: Page, label: string, theme: Theme) {
+  await openFind(page, theme);
+  await toggle(page, SKATTEBO).click();
+  await page.waitForTimeout(800);
+  log("AT-32", "reload.txt", `${label} ${theme}: before the reload, pressed=${JSON.stringify(await pressed(page))}, counter="${await counter(page)}", url=${page.url()}`);
+  await takeShot(page, join(EVID, "AT-32", `before-${label}-${theme}.png`));
+  await page.reload();
+  await page.waitForLoadState("networkidle");
+  // The passphrase and Your team may come back from local storage. If the passphrase sheet shows, fill it as a reader does.
+  const sheet = page.locator("input[type=password]");
+  if (await sheet.isVisible().catch(() => false)) {
+    await sheet.fill("localtest");
+    await page.locator("button[type=submit]").click();
+  }
+  await page.waitForTimeout(1500);
+  const stripShown = await page.locator(STRIP).isVisible();
+  const mode = await page.locator('[role=radiogroup][aria-label="Mode"] button[aria-checked="true"], [role=radiogroup][aria-label="Mode"] button[data-checked]').allInnerTexts();
+  const team = await page.locator('section[aria-label="Trade Ideas"] button:has-text("Your team")').first().innerText().catch(() => "(no Your team button)");
+  log("AT-32", "reload.txt", `${label} ${theme}: after the reload, url=${page.url()}, mode=${JSON.stringify(mode)}, Your team="${team.replace(/\n/g, " / ")}", strip shown=${stripShown}${stripShown ? `, pressed=${JSON.stringify(await pressed(page))}, counter="${await counter(page)}"` : ""}`);
+  await takeShot(page, join(EVID, "AT-32", `${label}-${theme}.png`));
+  // The reload drops Your team too, so the strip hides. A pick of Bo Girds again shows the strip, so the shot shows its block.
+  if (!stripShown) {
+    await page.locator('section[aria-label="Trade Ideas"] button:has-text("Pick a team")').click();
+    await page.locator('ul[aria-label="Teams"] button:has-text("Bo Girds")').waitFor();
+    await page.waitForTimeout(1000);
+    await page.locator('ul[aria-label="Teams"] button:has-text("Bo Girds")').click();
+    await expect(page.locator(STRIP)).toBeVisible();
+    await page.waitForTimeout(1000);
+    log("AT-32", "reload.txt", `${label} ${theme}: after the reload and a new pick of Bo Girds, pressed=${JSON.stringify(await pressed(page))}, counter="${await counter(page)}"`);
+    await takeShot(page, join(EVID, "AT-32", `repick-${label}-${theme}.png`));
+  }
+}
+
+export async function keyFlow(page: Page, label: string, theme: Theme) {
+  await openFind(page, theme);
+  await page.locator('section[aria-label="Trade Ideas"] button:has-text("Your team")').first().focus();
+  await page.keyboard.press("Tab");
+  const focused = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? document.activeElement?.tagName ?? "");
+  const start = await focused();
+  const inStrip = await page.evaluate(() => document.activeElement?.closest('[role="group"]')?.getAttribute("aria-label") ?? null);
+  const path = [start];
+  for (let i = 0; i < 20 && (await focused()) !== FLOWERS; i++) {
+    await page.keyboard.press("ArrowRight");
+    path.push(await focused());
+  }
+  await page.keyboard.press("Space");
+  await page.waitForTimeout(800);
+  log("AT-26", "keys.txt", `${label} ${theme}: Tab from Your team lands on "${start}" (group "${inStrip}"); ArrowRight path: ${path.join(" > ")}; after Space pressed=${JSON.stringify(await pressed(page))}, counter="${await counter(page)}", focus on "${await focused()}"`);
+  await takeShot(page, join(EVID, "AT-26", `${label}-${theme}.png`));
+}
+
+export async function motionOffFlow(page: Page, label: string) {
+  await openFind(page, "light");
+  const before = (await toggle(page, SKATTEBO).boundingBox())!.x;
+  log("AT-24", "frames.txt", `${label} reducedMotion=reduce: before the tap, Skattebo x=${Math.round(before * 10) / 10}`);
+  const frames = await framesAfterTap(page, SKATTEBO, 300);
+  const first = frames[0];
+  log("AT-24", "frames.txt", `${label} reducedMotion=reduce: first frame after the tap at ${first.t} ms: Skattebo x=${first.x}, front of the strip x=${first.front}, gap=${Math.round((first.x - first.front) * 10) / 10} px`);
+  log("AT-24", "frames.txt", `${label} every frame for 300 ms: ${frames.map((f) => `${f.t}ms x=${f.x}`).join(", ")}`);
+  log("AT-24", "frames.txt", `${label} after the tap: pressed=${JSON.stringify(await pressed(page))}`);
+}
+
+export async function fitFlow(page: Page, label: string, theme: Theme, height: number) {
+  await openFind(page, theme);
+  await toggle(page, SKATTEBO).click();
+  await toggle(page, FLOWERS).click();
+  await expect(page.getByText("2 of 3")).toBeVisible();
+  await page.waitForTimeout(800);
+  await takeShot(page, join(EVID, "AT-27", `${label}-${theme}.png`));
+  const fit = await stripFit(page);
+  log("AT-27", "fit.txt", `${label} ${theme}: hero inner ${fit.heroLeft} to ${fit.heroRight}, strip ${fit.stripLeft} to ${fit.stripRight} (left gap ${Math.abs(fit.stripLeft - fit.heroLeft)}, right gap ${Math.abs(fit.stripRight - fit.heroRight)})`);
+  const scan = await overlapScan(page);
+  log("AT-27", "fit.txt", `${label} ${theme}: the text scan hides ${scan.hidden} fixed or sticky parts; overlap: ${scan.overlap ?? "none"}; scrollWidth ${scan.sideways.scrollWidth}, innerWidth ${scan.sideways.innerWidth}`);
+  const parts = { strip: page.locator(STRIP), chips: page.getByRole("radiogroup", { name: "Position" }), find: page.locator('button:text-is("Find a Trade")') };
+  for (const [name, part] of Object.entries(parts)) {
+    await part.scrollIntoViewIfNeeded();
+    const bars = await fixedBars(page);
+    const covering = [];
+    for (const bar of bars) if (await covers(bar, part, height)) covering.push(bar.name);
+    log("AT-27", "fit.txt", `${label} ${theme}: ${name} scrolled into view; fixed parts on screen: ${bars.map((b) => b.name).join(", ") || "none"}; covering it: ${covering.join(", ") || "none"}`);
+  }
+}
+
+/* AT-18: three picks, the strip scrolled to its end, then a DOM click on Cousins that does not scroll the page first. */
+export async function blockedFlow(page: Page, label: string, theme: Theme) {
+  await openFind(page, theme);
+  for (const name of [SKATTEBO, FLOWERS, CORUM]) {
+    await toggle(page, name).click();
+    await page.waitForTimeout(400);
+  }
+  await expect(page.getByText("3 of 3")).toBeVisible();
+  const area = page.locator(STRIP).locator("xpath=ancestor::*[@data-slot='scroll-area-viewport'][1]");
+  const read = () => area.evaluate((el) => ({ scrollLeft: Math.round(el.scrollLeft), scrollWidth: el.scrollWidth, clientWidth: el.clientWidth }));
+  await area.evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: "instant" }));
+  await page.waitForTimeout(800);
+  const end = await read();
+  await takeShot(page, join(EVID, "AT-18", `end-${label}-${theme}.png`));
+  // A Playwright click scrolls its target into view first. The DOM click does not, so any scroll back comes from the page.
+  await toggle(page, COUSINS).dispatchEvent("click");
+  await page.waitForTimeout(1000);
+  const after = await read();
+  const line = await page.getByText("Your block holds 3 players. Take one off to add another.").isVisible();
+  log("AT-18", "steps.txt", `${label} ${theme}: strip at its end scrollLeft=${end.scrollLeft} (scrollWidth ${end.scrollWidth}, clientWidth ${end.clientWidth}); DOM click on Cousins; after 1000 ms scrollLeft=${after.scrollLeft}; pressed=${JSON.stringify(await pressed(page))}; counter="${await counter(page)}"; full-block line shown=${line}`);
+  await takeShot(page, join(EVID, "AT-18", `after-${label}-${theme}.png`));
+}

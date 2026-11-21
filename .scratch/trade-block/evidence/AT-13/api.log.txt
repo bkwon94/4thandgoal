@@ -1,0 +1,270 @@
+# The AT-13 press on the local evidence API (127.0.0.1:18431, after its warm-up), from the iPhone WebKit run at 11:40:44 EST. Request body: {"season":2026,"asker":6,"limit":{"aim_position":"RB"},"trade_block":["9997"]}
+# Every API log line from the page load to the end of the press, with the httpx and typesafe_sdk lines left out:
+INFO:     127.0.0.1:56024 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 1 (spares tree): 11 requests, about 28177 tokens
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with The Blue Tent: passed; partner gives Bucky Irving=0.90, Jordyn Tyson=0.93, Jadarian Price=0.09, Ja'Kobi Lane=0.87, Mike Evans=0.94, Travis Etienne Jr.=0.12, Kyren Williams=0.87, Christian Watson=0.94; asker gives Matthew Golden=0.86, Chimere Dike=0.26, Antonio Williams=0.08, Parker Washington=0.84, Zay Flowers=0.89
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with All You Need Is Love: passed; partner gives Tre Tucker=0.90, Dylan Sampson=0.62, Corey Kiner=0.48, Elic Ayomanor=0.74, Ashton Jeanty=0.84, Aaron Jones Sr.=0.87, Ja'Marr Chase=0.97, Chris Olave=0.94, Zach Charbonnet=0.79; asker gives Blake Corum=0.86, Cam Skattebo=0.43, Zonovan Knight=0.36, Tyjae Spears=0.47
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Stefon Diggs=0.95, Derrick Henry=0.88, Christian McCaffrey=0.95, Courtland Sutton=0.94, Jakobi Meyers=0.91, J.K. Dobbins=0.82, Tyler Allgeier=0.09, Khalil Shakir=0.91, Jaxon Smith-Njigba=0.95; asker gives Blake Corum=0.91, Cam Skattebo=0.92, Matthew Golden=0.88, Chimere Dike=0.17, Antonio Williams=0.08, Zonovan Knight=0.40, Parker Washington=0.88, Tyjae Spears=0.62, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with NFC Least: passed; partner gives Rashee Rice=0.94, Adonai Mitchell=0.90, Keon Coleman=0.83, Tetairoa McMillan=0.93, Saquon Barkley=0.84, David Montgomery=0.37, DeVonta Smith=0.94, Jameson Williams=0.93, Chase Brown=0.86; asker gives Blake Corum=0.85, Cam Skattebo=0.71, Fernando Mendoza=0.47, Zonovan Knight=0.61, Tyjae Spears=0.62
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Puka Deez...: passed; partner gives Xavier Hutchinson=0.91, MarShawn Lloyd=0.87, Emeka Egbuka=0.94, Denzel Boston=0.93, DK Metcalf=0.93, Chuba Hubbard=0.90, James Cook III=0.93; asker gives Matthew Golden=0.82, Chimere Dike=0.23, Antonio Williams=0.06, Parker Washington=0.82, Zay Flowers=0.88
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with To Infinity and Bijan: passed; partner gives Braelon Allen=0.89, Malik Washington=0.80, Ladd McConkey=0.95, Ryan Flournoy=0.93, KC Concepcion Jr.=0.94, Samaje Perine=0.70, Rhamondre Stevenson=0.90, Breece Hall=0.69; asker gives Blake Corum=0.43, Cam Skattebo=0.10, Matthew Golden=0.39, Chimere Dike=0.15, Antonio Williams=0.07, Zonovan Knight=0.10, Parker Washington=0.57, Tyjae Spears=0.14, Zay Flowers=0.78
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Return of T Mac: passed; partner gives Rome Odunze=0.93, Sione Vaki=0.29, Carnell Tate=0.92, CeeDee Lamb=0.96, Jaylen Waddle=0.93, Jaylen Warren=0.89, Jordan Mason=0.13, Bijan Robinson=0.91; asker gives Matthew Golden=0.86, Chimere Dike=0.14, Antonio Williams=0.08, Parker Washington=0.86, Zay Flowers=0.91
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Maye d'force B with U: passed; partner gives Jalen Coker=0.91, Kaleb Johnson=0.62, Makai Lemon=0.92, Emmett Johnson=0.64, Jonah Coleman=0.80, Kaelon Black=0.20, Alvin Kamara=0.84, D'Andre Swift=0.90, Justin Jefferson=0.96, Jahmyr Gibbs=0.93; asker gives Matthew Golden=0.89, Chimere Dike=0.60, Fernando Mendoza=0.51, Antonio Williams=0.09, Parker Washington=0.89, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with behold the lamb: stopped on asker; partner gives Pat Bryant=0.72, Quinshon Judkins=0.90, Kyle Monangai=0.88, Germie Bernard=0.90, Keenan Allen=0.94, Deebo Samuel Sr.=0.94, Rico Dowdle=0.88, Nico Collins=0.93, Javonte Williams=0.46, Drake London=0.94; asker gives no one
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Unsolicited Dak Picks: passed; partner gives Ollie Gordon II=0.85, Caleb Douglas=0.91, Josh Jacobs=0.87, Justice Hill=0.81, Jonathan Taylor=0.63, Rachaad White=0.59, George Pickens=0.93, Josh Downs=0.93, Tank Dell=0.94; asker gives Blake Corum=0.88, Cam Skattebo=0.79, Matthew Golden=0.43, Chimere Dike=0.27, Antonio Williams=0.09, Zonovan Knight=0.35, Parker Washington=0.56, Tyjae Spears=0.47, Zay Flowers=0.82
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Teehee: stopped on asker; partner gives Bhayshul Tuten=0.88, Omarion Hampton=0.12, Luther Burden III=0.93, DJ Moore=0.94, Tony Pollard=0.81, Tee Higgins=0.96, Amon-Ra St. Brown=0.96, Kenny Gainwell=0.72, Garrett Wilson=0.95; asker gives no one
+INFO:     analyzer.finder_search: Finder Value offers of Bo Girds: 1187; 1-for-1=2, 2-for-1=18, 1-for-2=29, 3-for-1=38, 1-for-3=13, 3-for-2=463, 2-for-3=624
+INFO:     analyzer.finder_search: Finder fair answers of Bo Girds: 2374 questions, 2374 from the cache, 0 asked live
+INFO:     analyzer.finder_search: Finder fair step of Bo Girds: checked 1187, dropped 251, no answer 0
+INFO:     analyzer.finder_search: Finder step 2 of Bo Girds: 121 offers, the 3 best of each partner and shape direction
+INFO:     analyzer.finder_search: Finder offer 6:1166+9997-1:8150: Bo Girds gives Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); The Blue Tent gives Kyren Williams (RB, LAR)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-1:11584: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); The Blue Tent gives Bucky Irving (RB, TB)
+INFO:     analyzer.finder_search: Finder offer 6:9997-1:13281+13286: Bo Girds gives Zay Flowers (WR, BAL); The Blue Tent gives Jordyn Tyson (WR, NO) and Jadarian Price (RB, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:9997-1:13286+2216: Bo Girds gives Zay Flowers (WR, BAL); The Blue Tent gives Jadarian Price (RB, SEA) and Mike Evans (WR, SF)
+INFO:     analyzer.finder_search: Finder offer 6:9997-1:2216+7543: Bo Girds gives Zay Flowers (WR, BAL); The Blue Tent gives Mike Evans (WR, SF) and Travis Etienne Jr. (RB, NO)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481+9997-1:11584: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); The Blue Tent gives Bucky Irving (RB, TB)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-1:11584: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); The Blue Tent gives Bucky Irving (RB, TB)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9487+9997-1:11584+8183: Bo Girds gives Blake Corum (RB, LAR) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); The Blue Tent gives Bucky Irving (RB, TB) and Brock Purdy (QB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9487+9997-1:8150+8167: Bo Girds gives Blake Corum (RB, LAR) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); The Blue Tent gives Kyren Williams (RB, LAR) and Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-1:7543+8167: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); The Blue Tent gives Travis Etienne Jr. (RB, NO) and Christian Watson (WR, GB)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-1:13281+7543+8183: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); The Blue Tent gives Jordyn Tyson (WR, NO) and Travis Etienne Jr. (RB, NO) and Brock Purdy (QB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-1:2216+8150+8183: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); The Blue Tent gives Mike Evans (WR, SF) and Kyren Williams (RB, LAR) and Brock Purdy (QB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-1:13286+2216+8150: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); The Blue Tent gives Jadarian Price (RB, SEA) and Mike Evans (WR, SF) and Kyren Williams (RB, LAR)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-2:12527+8144: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); All You Need Is Love gives Ashton Jeanty (RB, LV) and Chris Olave (WR, NO)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487+9997-2:7564+9753: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); All You Need Is Love gives Ja'Marr Chase (WR, CIN) and Zach Charbonnet (RB, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12501+8130+9997-2:12527+7564: Bo Girds gives Matthew Golden (WR, GB) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); All You Need Is Love gives Ashton Jeanty (RB, LV) and Ja'Marr Chase (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-2:10213+8144+9753: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); All You Need Is Love gives Tre Tucker (WR, LV) and Chris Olave (WR, NO) and Zach Charbonnet (RB, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-2:10213+12527+6770: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); All You Need Is Love gives Tre Tucker (WR, LV) and Ashton Jeanty (RB, LV) and Joe Burrow (QB, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-2:10213+12517+12527: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); All You Need Is Love gives Tre Tucker (WR, LV) and Colston Loveland (TE, CHI) and Ashton Jeanty (RB, LV)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9997-3:3198: Bo Girds gives Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); Lil Fridge gives Derrick Henry (RB, BAL)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9487+9997-3:4034: Bo Girds gives Blake Corum (RB, LAR) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Christian McCaffrey (RB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:12481+8130+9997-3:4034: Bo Girds gives Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Lil Fridge gives Christian McCaffrey (RB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9487+9997-3:4034: Bo Girds gives Trey McBride (TE, ARI) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Christian McCaffrey (RB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487+9997-3:1466+4034: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Travis Kelce (TE, KC) and Christian McCaffrey (RB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487+9997-3:4034+5947: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Christian McCaffrey (RB, SF) and Jakobi Meyers (WR, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9487+9997-3:3198+9488: Bo Girds gives Matthew Golden (WR, GB) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-3:11560+3198+5947: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Lil Fridge gives Caleb Williams (QB, CHI) and Derrick Henry (RB, BAL) and Jakobi Meyers (WR, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-3:1466+2449+3198: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS) and Derrick Henry (RB, BAL)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-3:2449+3198+5947: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Stefon Diggs (WR, WAS) and Derrick Henry (RB, BAL) and Jakobi Meyers (WR, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9997-4:9224: Bo Girds gives Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); NFC Least gives Chase Brown (RB, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:9997-4:10229+5892: Bo Girds gives Zay Flowers (WR, BAL); NFC Least gives Rashee Rice (WR, KC) and David Montgomery (RB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-4:3163+4866: Bo Girds gives Zay Flowers (WR, BAL); NFC Least gives Jared Goff (QB, DET) and Saquon Barkley (RB, PHI)
+INFO:     analyzer.finder_search: Finder offer 6:9997-4:4866+5892: Bo Girds gives Zay Flowers (WR, BAL); NFC Least gives Saquon Barkley (RB, PHI) and David Montgomery (RB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-4:11625+12518+4866: Bo Girds gives Zay Flowers (WR, BAL); NFC Least gives Adonai Mitchell (WR, NYJ) and Tyler Warren (TE, IND) and Saquon Barkley (RB, PHI)
+INFO:     analyzer.finder_search: Finder offer 6:9997-4:11625+4866+5892: Bo Girds gives Zay Flowers (WR, BAL); NFC Least gives Adonai Mitchell (WR, NYJ) and Saquon Barkley (RB, PHI) and David Montgomery (RB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:11586+1166+9997-4:4866+9224: Bo Girds gives Blake Corum (RB, LAR) and Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); NFC Least gives Saquon Barkley (RB, PHI) and Chase Brown (RB, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-4:10229+9224: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); NFC Least gives Rashee Rice (WR, KC) and Chase Brown (RB, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-4:7525+9224: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); NFC Least gives DeVonta Smith (WR, PHI) and Chase Brown (RB, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9997-4:10229+11625+4866: Bo Girds gives Blake Corum (RB, LAR) and Zay Flowers (WR, BAL); NFC Least gives Rashee Rice (WR, KC) and Adonai Mitchell (WR, NYJ) and Saquon Barkley (RB, PHI)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9997-4:11625+4866+7525: Bo Girds gives Blake Corum (RB, LAR) and Zay Flowers (WR, BAL); NFC Least gives Adonai Mitchell (WR, NYJ) and Saquon Barkley (RB, PHI) and DeVonta Smith (WR, PHI)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9997-4:12518+3163+4866: Bo Girds gives Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); NFC Least gives Tyler Warren (TE, IND) and Jared Goff (QB, DET) and Saquon Barkley (RB, PHI)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-5:7594: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Puka Deez... gives Chuba Hubbard (RB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481+9997-5:7594: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Puka Deez... gives Chuba Hubbard (RB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481+9997-5:8138: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Puka Deez... gives James Cook III (RB, BUF)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-5:7594: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Puka Deez... gives Chuba Hubbard (RB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:11586+12481+9997-5:5846+7594: Bo Girds gives Blake Corum (RB, LAR) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Puka Deez... gives DK Metcalf (WR, PIT) and Chuba Hubbard (RB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9487+9997-5:13346+7594: Bo Girds gives Kirk Cousins (QB, MIN) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Puka Deez... gives Denzel Boston (WR, CLE) and Chuba Hubbard (RB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9487+9997-5:12514+8138: Bo Girds gives Trey McBride (TE, ARI) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Puka Deez... gives Emeka Egbuka (WR, TB) and James Cook III (RB, BUF)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-5:13346+5846+7594: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); Puka Deez... gives Denzel Boston (WR, CLE) and DK Metcalf (WR, PIT) and Chuba Hubbard (RB, CAR)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-5:13346+5846+8138: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); Puka Deez... gives Denzel Boston (WR, CLE) and DK Metcalf (WR, PIT) and James Cook III (RB, BUF)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:8155: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Breece Hall (RB, NYJ)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:12506+7611: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Harold Fannin Jr. (TE, CLE) and Rhamondre Stevenson (RB, NE)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:13298+7611: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives KC Concepcion Jr. (WR, CLE) and Rhamondre Stevenson (RB, NE)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:11576+11635+11783: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Braelon Allen (RB, NYJ) and Ladd McConkey (WR, LAC) and Ryan Flournoy (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:11576+11635+4046: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Braelon Allen (RB, NYJ) and Ladd McConkey (WR, LAC) and Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:9997-7:11576+11783+4046: Bo Girds gives Zay Flowers (WR, BAL); To Infinity and Bijan gives Braelon Allen (RB, NYJ) and Ryan Flournoy (WR, DAL) and Patrick Mahomes (QB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:11586+8130+9997-7:11576+11632: Bo Girds gives Blake Corum (RB, LAR) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Braelon Allen (RB, NYJ) and Malik Nabers (WR, NYG)
+INFO:     analyzer.finder_search: Finder offer 6:11586+8130+9997-7:11632+7611: Bo Girds gives Blake Corum (RB, LAR) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Malik Nabers (WR, NYG) and Rhamondre Stevenson (RB, NE)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9487+9997-7:11632+7611: Bo Girds gives Kirk Cousins (QB, MIN) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Malik Nabers (WR, NYG) and Rhamondre Stevenson (RB, NE)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9997-7:11576+11783+8155: Bo Girds gives Blake Corum (RB, LAR) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Braelon Allen (RB, NYJ) and Ryan Flournoy (WR, DAL) and Breece Hall (RB, NYJ)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-7:13298+4046+8155: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); To Infinity and Bijan gives KC Concepcion Jr. (WR, CLE) and Patrick Mahomes (QB, KC) and Breece Hall (RB, NYJ)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-7:11635+12506+8155: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); To Infinity and Bijan gives Ladd McConkey (WR, LAC) and Harold Fannin Jr. (TE, CLE) and Breece Hall (RB, NYJ)
+INFO:     analyzer.finder_search: Finder offer 6:11586+12481+9997-8:9509: Bo Girds gives Blake Corum (RB, LAR) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Return of T Mac gives Bijan Robinson (RB, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:11586+8130+9997-8:9509: Bo Girds gives Blake Corum (RB, LAR) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Return of T Mac gives Bijan Robinson (RB, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9487+9997-8:9509: Bo Girds gives Kirk Cousins (QB, MIN) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Return of T Mac gives Bijan Robinson (RB, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:11586+12481+9997-8:12545+9509: Bo Girds gives Blake Corum (RB, LAR) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Return of T Mac gives Tyler Shough (QB, NO) and Bijan Robinson (RB, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9487+9997-8:6804+9509: Bo Girds gives Blake Corum (RB, LAR) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Return of T Mac gives Jordan Love (QB, GB) and Bijan Robinson (RB, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12501+9997-8:11620+9509: Bo Girds gives Kirk Cousins (QB, MIN) and Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); Return of T Mac gives Rome Odunze (WR, CHI) and Bijan Robinson (RB, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-8:5844+8228+9484: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Return of T Mac gives T.J. Hockenson (TE, MIN) and Jaylen Warren (RB, PIT) and Tucker Kraft (TE, GB)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-8:11620+12545+8228: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Return of T Mac gives Rome Odunze (WR, CHI) and Tyler Shough (QB, NO) and Jaylen Warren (RB, PIT)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-8:6804+8228+9484: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Return of T Mac gives Jordan Love (QB, GB) and Jaylen Warren (RB, PIT) and Tucker Kraft (TE, GB)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9997-9:13345: Bo Girds gives Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jonah Coleman (RB, DEN)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-9:6790: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Maye d'force B with U gives D'Andre Swift (RB, CHI)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9487+9997-9:9221: Bo Girds gives Blake Corum (RB, LAR) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jahmyr Gibbs (RB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12501+9997-9:9221: Bo Girds gives Kirk Cousins (QB, MIN) and Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jahmyr Gibbs (RB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9487+9997-9:9221: Bo Girds gives Trey McBride (TE, ARI) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jahmyr Gibbs (RB, DET)
+INFO:     analyzer.finder_search: Finder offer 6:9997-9:11646+13294+13337: Bo Girds gives Zay Flowers (WR, BAL); Maye d'force B with U gives Jalen Coker (WR, CAR) and Makai Lemon (WR, PHI) and Emmett Johnson (RB, KC)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12501+9997-9:13345+6790: Bo Girds gives Kirk Cousins (QB, MIN) and Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jonah Coleman (RB, DEN) and D'Andre Swift (RB, CHI)
+INFO:     analyzer.finder_search: Finder offer 6:12481+8130+9997-9:6790+8131: Bo Girds gives Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Maye d'force B with U gives D'Andre Swift (RB, CHI) and Isaiah Likely (TE, NYG)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9487+9997-9:13345+6794: Bo Girds gives Trey McBride (TE, ARI) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jonah Coleman (RB, DEN) and Justin Jefferson (WR, MIN)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-9:11646+13294+13345: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jalen Coker (WR, CAR) and Makai Lemon (WR, PHI) and Jonah Coleman (RB, DEN)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-9:11646+13337+13345: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Maye d'force B with U gives Jalen Coker (WR, CAR) and Emmett Johnson (RB, KC) and Jonah Coleman (RB, DEN)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-9:13294+13337+13345: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Maye d'force B with U gives Makai Lemon (WR, PHI) and Emmett Johnson (RB, KC) and Jonah Coleman (RB, DEN)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-10:7588: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); behold the lamb gives Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-10:7588: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); behold the lamb gives Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:12512+12534: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Quinshon Judkins (RB, CLE) and Kyle Monangai (RB, CHI)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:12512+1479: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Quinshon Judkins (RB, CLE) and Keenan Allen (WR, SF)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:12512+5872: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Quinshon Judkins (RB, CLE) and Deebo Samuel Sr. (WR, SF)
+INFO:     analyzer.finder_search: Finder offer 6:11586+1166+9997-10:7588: Bo Girds gives Blake Corum (RB, LAR) and Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); behold the lamb gives Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481+9997-10:7588: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); behold the lamb gives Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-10:7588: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); behold the lamb gives Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:11566+12534+13274: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Jayden Daniels (QB, WAS) and Kyle Monangai (RB, CHI) and Germie Bernard (WR, PIT)
+INFO:     analyzer.finder_search: Finder offer 6:9997-10:12534+13274+1479: Bo Girds gives Zay Flowers (WR, BAL); behold the lamb gives Kyle Monangai (RB, CHI) and Germie Bernard (WR, PIT) and Keenan Allen (WR, SF)
+INFO:     analyzer.finder_search: Finder offer 6:11586+8130+9997-10:12512+7588: Bo Girds gives Blake Corum (RB, LAR) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); behold the lamb gives Quinshon Judkins (RB, CLE) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:1166+9487+9997-10:12512+7588: Bo Girds gives Kirk Cousins (QB, MIN) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); behold the lamb gives Quinshon Judkins (RB, CLE) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487+9997-10:7569+7588: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); behold the lamb gives Nico Collins (WR, HOU) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9997-10:12534+13274+8112: Bo Girds gives Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); behold the lamb gives Kyle Monangai (RB, CHI) and Germie Bernard (WR, PIT) and Drake London (WR, ATL)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-10:13274+5872+7588: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); behold the lamb gives Germie Bernard (WR, PIT) and Deebo Samuel Sr. (WR, SF) and Javonte Williams (RB, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-10:12534+5872+7569: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); behold the lamb gives Kyle Monangai (RB, CHI) and Deebo Samuel Sr. (WR, SF) and Nico Collins (WR, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9997-11:6813: Bo Girds gives Blake Corum (RB, LAR) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Jonathan Taylor (RB, IND)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-11:6813: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Jonathan Taylor (RB, IND)
+INFO:     analyzer.finder_search: Finder offer 6:9997-11:12495+9502: Bo Girds gives Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Ollie Gordon II (RB, MIA) and Tank Dell (WR, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-11:12495+9758: Bo Girds gives Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Ollie Gordon II (RB, MIA) and C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-11:5850+9502: Bo Girds gives Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Josh Jacobs (RB, GB) and Tank Dell (WR, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:11586+1166+9997-11:13296+6813: Bo Girds gives Blake Corum (RB, LAR) and Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Caleb Douglas (WR, MIA) and Jonathan Taylor (RB, IND)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-11:6813+9500: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Jonathan Taylor (RB, IND) and Josh Downs (WR, KC)
+INFO:     analyzer.finder_search: Finder offer 6:12481+8130+9997-11:6813+8137: Bo Girds gives Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Jonathan Taylor (RB, IND) and George Pickens (WR, DAL)
+INFO:     analyzer.finder_search: Finder offer 6:12501+9997-11:12495+3294+6813: Bo Girds gives Matthew Golden (WR, GB) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Ollie Gordon II (RB, MIA) and Dak Prescott (QB, DAL) and Jonathan Taylor (RB, IND)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-11:12495+13296+5850: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Ollie Gordon II (RB, MIA) and Caleb Douglas (WR, MIA) and Josh Jacobs (RB, GB)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-11:6813+9502+9758: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Unsolicited Dak Picks gives Jonathan Taylor (RB, IND) and Tank Dell (WR, HOU) and C.J. Stroud (QB, HOU)
+INFO:     analyzer.finder_search: Finder offer 6:9997-12:5967: Bo Girds gives Zay Flowers (WR, BAL); Teehee gives Tony Pollard (RB, TEN)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9997-12:12490: Bo Girds gives Blake Corum (RB, LAR) and Zay Flowers (WR, BAL); Teehee gives Bhayshul Tuten (RB, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:8130+9997-12:12490: Bo Girds gives Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Teehee gives Bhayshul Tuten (RB, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:11586+1166+9997-12:12490: Bo Girds gives Blake Corum (RB, LAR) and Kirk Cousins (QB, MIN) and Zay Flowers (WR, BAL); Teehee gives Bhayshul Tuten (RB, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:9997-12:10236+10859+12507: Bo Girds gives Zay Flowers (WR, BAL); Teehee gives Dalton Kincaid (TE, BUF) and Sam LaPorta (TE, DET) and Omarion Hampton (RB, LAC)
+INFO:     analyzer.finder_search: Finder offer 6:11586+12481+9997-12:12490+8146: Bo Girds gives Blake Corum (RB, LAR) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Teehee gives Bhayshul Tuten (RB, JAX) and Garrett Wilson (WR, NYJ)
+INFO:     analyzer.finder_search: Finder offer 6:1166+8130+9997-12:5967+8146: Bo Girds gives Kirk Cousins (QB, MIN) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Teehee gives Tony Pollard (RB, TEN) and Garrett Wilson (WR, NYJ)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487+9997-12:5967+6801: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Teehee gives Tony Pollard (RB, TEN) and Tee Higgins (WR, CIN)
+INFO:     analyzer.finder_search: Finder offer 6:11586+9997-12:10859+12507+5967: Bo Girds gives Blake Corum (RB, LAR) and Zay Flowers (WR, BAL); Teehee gives Sam LaPorta (TE, DET) and Omarion Hampton (RB, LAC) and Tony Pollard (RB, TEN)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-12:10236+10859+12490: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Teehee gives Dalton Kincaid (TE, BUF) and Sam LaPorta (TE, DET) and Bhayshul Tuten (RB, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:9487+9997-12:12507+7523+8146: Bo Girds gives Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Teehee gives Omarion Hampton (RB, LAC) and Trevor Lawrence (QB, JAX) and Garrett Wilson (WR, NYJ)
+INFO:     analyzer.jev_waves: Jev wave 2 (shortlist): 10 requests, about 96603 tokens
+INFO:     127.0.0.1:56274 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56274 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 3 (shortlist): 1 requests, about 9119 tokens
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9997-1:8150: gains={6: 0.03, 1: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-1:11584: gains={6: 0.04, 1: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-1:13281+13286: gains={6: 0.03, 1: 0.97}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-1:13286+2216: gains={6: 0.12, 1: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-1:2216+7543: gains={6: 0.09, 1: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481+9997-1:11584: gains={6: 0.03, 1: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-1:11584: gains={6: 0.02, 1: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-1:11584+8183: gains={6: 0.04, 1: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-1:8150+8167: gains={6: 0.96, 1: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-1:7543+8167: gains={6: 0.02, 1: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-1:13281+7543+8183: gains={6: 0.05, 1: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-1:2216+8150+8183: gains={6: 0.98, 1: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-1:13286+2216+8150: gains={6: 0.97, 1: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-2:12527+8144: gains={6: 0.03, 2: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487+9997-2:7564+9753: gains={6: 0.05, 2: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+8130+9997-2:12527+7564: gains={6: 0.04, 2: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-2:10213+8144+9753: gains={6: 0.08, 2: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-2:10213+12527+6770: gains={6: 0.96, 2: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-2:10213+12517+12527: gains={6: 0.04, 2: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9997-3:3198: gains={6: 0.03, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-3:4034: gains={6: 0.04, 3: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+8130+9997-3:4034: gains={6: 0.03, 3: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487+9997-3:4034: gains={6: 0.03, 3: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487+9997-3:1466+4034: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487+9997-3:4034+5947: gains={6: 0.05, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9487+9997-3:3198+9488: gains={6: 0.98, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-3:11560+3198+5947: gains={6: 0.07, 3: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-3:1466+2449+3198: gains={6: 0.97, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-3:2449+3198+5947: gains={6: 0.98, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9997-4:9224: gains={6: 0.03, 4: 0.8}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:10229+5892: gains={6: 0.04, 4: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:3163+4866: gains={6: 0.04, 4: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:4866+5892: gains={6: 0.04, 4: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:11625+12518+4866: gains={6: 0.04, 4: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-4:11625+4866+5892: gains={6: 0.04, 4: 0.83}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+1166+9997-4:4866+9224: gains={6: 0.03, 4: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-4:10229+9224: gains={6: 0.03, 4: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-4:7525+9224: gains={6: 0.02, 4: 0.89}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-4:10229+11625+4866: gains={6: 0.04, 4: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-4:11625+4866+7525: gains={6: 0.07, 4: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9997-4:12518+3163+4866: gains={6: 0.04, 4: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-5:7594: gains={6: 0.05, 5: 0.12}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481+9997-5:7594: gains={6: 0.03, 5: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481+9997-5:8138: gains={6: 0.03, 5: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-5:7594: gains={6: 0.03, 5: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12481+9997-5:5846+7594: gains={6: 0.05, 5: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9487+9997-5:13346+7594: gains={6: 0.03, 5: 0.12}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487+9997-5:12514+8138: gains={6: 0.03, 5: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-5:13346+5846+7594: gains={6: 0.06, 5: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-5:13346+5846+8138: gains={6: 0.05, 5: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:8155: gains={6: 0.07, 7: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:12506+7611: gains={6: 0.04, 7: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:13298+7611: gains={6: 0.03, 7: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:11576+11635+11783: gains={6: 0.03, 7: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:11576+11635+4046: gains={6: 0.03, 7: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-7:11576+11783+4046: gains={6: 0.05, 7: 0.03}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-7:11576+11632: gains={6: 0.03, 7: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-7:11632+7611: gains={6: 0.03, 7: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9487+9997-7:11632+7611: gains={6: 0.03, 7: 0.76}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-7:11576+11783+8155: gains={6: 0.05, 7: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-7:13298+4046+8155: gains={6: 0.04, 7: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-7:11635+12506+8155: gains={6: 0.03, 7: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12481+9997-8:9509: gains={6: 0.04, 8: 0.75}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-8:9509: gains={6: 0.03, 8: 0.58}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9487+9997-8:9509: gains={6: 0.03, 8: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12481+9997-8:12545+9509: gains={6: 0.04, 8: 0.91}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-8:6804+9509: gains={6: 0.03, 8: 0.83}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12501+9997-8:11620+9509: gains={6: 0.03, 8: 0.87}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-8:5844+8228+9484: gains={6: 0.08, 8: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-8:11620+12545+8228: gains={6: 0.04, 8: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-8:6804+8228+9484: gains={6: 0.04, 8: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9997-9:13345: gains={6: 0.04, 9: 0.97}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-9:6790: gains={6: 0.06, 9: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9487+9997-9:9221: gains={6: 0.06, 9: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12501+9997-9:9221: gains={6: 0.04, 9: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487+9997-9:9221: gains={6: 0.04, 9: 0.15}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-9:11646+13294+13337: gains={6: 0.04, 9: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12501+9997-9:13345+6790: gains={6: 0.03, 9: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+8130+9997-9:6790+8131: gains={6: 0.08, 9: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9487+9997-9:13345+6794: gains={6: 0.03, 9: 0.93}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-9:11646+13294+13345: gains={6: 0.04, 9: 0.95}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-9:11646+13337+13345: gains={6: 0.04, 9: 0.96}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-9:13294+13337+13345: gains={6: 0.04, 9: 0.97}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-10:7588: gains={6: 0.05, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-10:7588: gains={6: 0.04, 10: 0.12}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:12512+12534: gains={6: 0.97, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:12512+1479: gains={6: 0.04, 10: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:12512+5872: gains={6: 0.12, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+1166+9997-10:7588: gains={6: 0.03, 10: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481+9997-10:7588: gains={6: 0.03, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-10:7588: gains={6: 0.03, 10: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:11566+12534+13274: gains={6: 0.97, 10: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-10:12534+13274+1479: gains={6: 0.97, 10: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+8130+9997-10:12512+7588: gains={6: 0.04, 10: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+9487+9997-10:12512+7588: gains={6: 0.03, 10: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487+9997-10:7569+7588: gains={6: 0.06, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9997-10:12534+13274+8112: gains={6: 0.98, 10: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-10:13274+5872+7588: gains={6: 0.96, 10: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-10:12534+5872+7569: gains={6: 0.98, 10: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-11:6813: gains={6: 0.04, 11: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-11:6813: gains={6: 0.03, 11: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-11:12495+9502: gains={6: 0.04, 11: 0.81}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-11:12495+9758: gains={6: 0.05, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-11:5850+9502: gains={6: 0.1, 11: 0.9}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+1166+9997-11:13296+6813: gains={6: 0.03, 11: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-11:6813+9500: gains={6: 0.03, 11: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+8130+9997-11:6813+8137: gains={6: 0.04, 11: 0.88}
+INFO:     analyzer.finder_search: Finder gain drop 6:12501+9997-11:12495+3294+6813: gains={6: 0.03, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-11:12495+13296+5850: gains={6: 0.03, 11: 0.94}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-11:6813+9502+9758: gains={6: 0.05, 11: 0.86}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-12:5967: gains={6: 0.97, 12: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-12:12490: gains={6: 0.04, 12: 0.1}
+INFO:     analyzer.finder_search: Finder gain drop 6:8130+9997-12:12490: gains={6: 0.03, 12: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+1166+9997-12:12490: gains={6: 0.03, 12: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9997-12:10236+10859+12507: gains={6: 0.04, 12: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12481+9997-12:12490+8146: gains={6: 0.05, 12: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+8130+9997-12:5967+8146: gains={6: 0.03, 12: 0.92}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487+9997-12:5967+6801: gains={6: 0.07, 12: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+9997-12:10859+12507+5967: gains={6: 0.08, 12: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-12:10236+10859+12490: gains={6: 0.03, 12: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:9487+9997-12:12507+7523+8146: gains={6: 0.03, 12: 0.05}
+INFO:     analyzer.routes: Press of find for cpc: time=5.2s cost=$0.0000 claude_calls=0

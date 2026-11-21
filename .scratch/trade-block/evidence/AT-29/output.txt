@@ -1,0 +1,8 @@
+$ uv run --exact --package cpc-api pytest apps/api/tests/test_trade_topics.py -k "gives_ask or gets_ask" -q -s
+ask 'What can I get for Walker?' as Bo Girds -> find request {"season":2026,"asker":6,"partner":null,"limit":null,"trade_block":["8151"]}
+.ask 'How do I get Bijan Robinson?' as Bo Girds -> find request {"season":2026,"asker":6,"partner":7,"anchor":{"player_id":"9509","side":"gets"},"limit":null}
+.
+2 passed, 64 deselected in 3.21s
+[exit 0]
+
+Ran in a detached worktree of trade-block at 3dd395a0, on 2026-11-21 11:35 EST.

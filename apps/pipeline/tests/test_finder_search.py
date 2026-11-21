@@ -15,7 +15,7 @@ from cpc import cpc_client
 from fakes import FakeJev, no_news
 from typesafe_sdk import RetryPolicy, TypeSafeClient
 
-from analyzer.finder_pick import offer_sheet
+from analyzer.finder_pick import build_pick_prompt, offer_sheet, offer_sheets, pick_trades
 from analyzer.finder_search import (
     SHORTLIST_KEEP,
     UNSURE,
@@ -738,15 +738,6 @@ def _last_pool_player(snap, roster_id):
     return max(pid for pid in snap.rosters[roster_id] if in_pool(snap, pid, roster_id) and pid in snap.chart.values)
 
 
-def test_an_anchor_that_the_asker_gives_is_in_each_offer_on_the_asker_side(snap):
-    anchor = _last_pool_player(snap, ASKER)
-    found = search(ASKER, None, snap, FakeJev(), anchor=Anchor(player_id=anchor, side="gives"))
-    assert found.offers and found.shortlist
-    for trade in found.offers + [offer.trade for offer in found.shortlist]:
-        assert trade.sides[0].roster_id == ASKER and anchor in trade.sides[0].player_ids
-        assert all(anchor not in side.player_ids for side in trade.sides[1:])
-
-
 def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_offer_holds_him(snap):
     anchor = _last_pool_player(snap, PARTNER)
     jev = FakeJev()
@@ -760,7 +751,7 @@ def test_an_anchor_that_the_asker_gets_keeps_the_search_to_his_roster_and_each_o
 
 
 
-def test_an_anchored_search_runs_the_spares_tree_on_each_pair_and_stops_no_partner(snap):
+def test_a_block_search_runs_the_spares_tree_on_each_pair_and_stops_no_partner(snap):
     # Each Spares tree answer is a clear no, so a filter would stop every partner.
     def answer(key, question, state):
         return 0.1 if key.startswith("spare:") else 0.9
@@ -768,7 +759,7 @@ def test_an_anchored_search_runs_the_spares_tree_on_each_pair_and_stops_no_partn
     others = sorted(rid for rid in snap.rosters if rid != ASKER)
     anchor = _last_pool_player(snap, ASKER)
     jev = FakeJev(answer=answer)
-    found = search(ASKER, None, snap, jev, anchor=Anchor(player_id=anchor, side="gives"))
+    found = search(ASKER, None, snap, jev, trade_block=[anchor])
     # The Spares tree runs once per pair with a listed player, and the Value screen still builds the offers.
     assert len(_filter_requests(jev)) == sum(any(pair_spares(snap, ASKER, rid).values()) for rid in others)
     assert sorted(read.roster_id for read in found.partners) == others
@@ -786,6 +777,126 @@ def test_an_aim_and_a_keep_of_the_limit_hold_on_every_value_offer(snap):
     for trade in found.offers:
         assert kept not in trade.sides[0].player_ids
         assert all(snap.players[pid].position != "WR" for pid in trade.sides[0].player_ids)
+
+
+# Nico Collins and Jameson Williams of the asker are pool players with chart values. Tyler Warren is out with no return
+# week on the fixture, so he fails the pool rules though the chart has a value for him.
+COLLINS, WILLIAMS, WARREN = "7569", "8148", "12518"
+
+
+def test_each_offer_of_a_search_with_a_trade_block_sends_a_block_player(snap):
+    found = search(ASKER, None, snap, FakeJev(), trade_block=[COLLINS, WILLIAMS])
+    assert found.offers and found.shortlist
+    for trade in found.offers + [offer.trade for offer in found.shortlist]:
+        assert {COLLINS, WILLIAMS} & set(trade.sides[0].player_ids)
+    print(f"{len(found.offers)} offers, each sends Collins, Williams, or both")
+
+
+def test_the_value_screen_keeps_a_package_of_two_block_players(snap):
+    partners = sorted(rid for rid in snap.rosters if rid != ASKER)
+    offers = [trade for rid in partners for trade in value_offers(ASKER, rid, snap, trade_block=[COLLINS, WILLIAMS])]
+    package = [trade for trade in offers if {COLLINS, WILLIAMS} <= set(trade.sides[0].player_ids)]
+    assert package
+    print(f"{len(package)} offers send Collins and Williams together, first {offer_id(package[0])}")
+
+
+def test_a_block_player_who_fails_the_pool_rules_enters_no_offer_and_raises_no_error(snap):
+    assert not in_pool(snap, WARREN, ASKER) and WARREN in snap.chart.values
+    found = search(ASKER, None, snap, FakeJev(), trade_block=[WARREN, COLLINS])
+    assert found.offers and found.shortlist
+    assert all(WARREN not in trade.sides[0].player_ids for trade in found.offers)
+    assert all(COLLINS in trade.sides[0].player_ids for trade in found.offers)
+
+
+def test_a_block_of_only_players_who_fail_the_pool_rules_gives_no_offer_and_no_error(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(), trade_block=[WARREN])
+    assert found.offers == [] and found.shortlist == []
+
+
+def test_a_search_with_a_trade_block_runs_the_spares_tree_on_each_pair_and_stops_no_partner(snap):
+    # Each Spares tree answer is a clear no, so a filter would stop every partner.
+    def answer(key, question, state):
+        return 0.1 if key.startswith("spare:") else 0.9
+
+    others = sorted(rid for rid in snap.rosters if rid != ASKER)
+    jev = FakeJev(answer=answer)
+    found = search(ASKER, None, snap, jev, trade_block=[COLLINS])
+    assert len(_filter_requests(jev)) == sum(any(pair_spares(snap, ASKER, rid).values()) for rid in others)
+    assert sorted(read.roster_id for read in found.partners) == others
+    assert found.offers and all(COLLINS in trade.sides[0].player_ids for trade in found.offers)
+
+
+def test_an_empty_trade_block_gives_the_same_offers_in_the_same_order_as_no_block(snap):
+    plain = search(ASKER, PARTNER, snap, FakeJev())
+    empty = search(ASKER, PARTNER, snap, FakeJev(), trade_block=[])
+    assert plain.offers
+    assert [offer_id(t) for t in empty.offers] == [offer_id(t) for t in plain.offers]
+    assert [o.offer_id for o in empty.shortlist] == [o.offer_id for o in plain.shortlist]
+
+
+def test_varied_with_a_trade_block_gives_the_best_offer_of_each_block_player_a_place_before_a_player_off_the_block():
+    # Each offer is a 2-for-1 with partner 11, so only the tier of the players that the asker gives sorts them.
+    offers = [_offer(["p1", "p3"], 11, ["a"], 0.9), _offer(["p1", "p4"], 11, ["b"], 0.8),
+              _offer(["p1", "p2"], 11, ["c"], 0.7)]
+    # With no block, p4 has his own best offer (0.8), so it takes the second place.
+    assert [offer.score for offer in varied(offers, 2)] == [0.9, 0.8]
+    # With p1 and p2 on the block, p4 takes no place of that tier, so the best offer of p2 (0.7) comes second.
+    assert [offer.score for offer in varied(offers, 2, trade_block=["p1", "p2"])] == [0.9, 0.7]
+
+
+def test_two_block_players_with_fair_offers_both_reach_the_shortlist(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair), trade_block=[COLLINS, WILLIAMS])
+    sent = [set(offer.trade.sides[0].player_ids) for offer in found.shortlist]
+    assert any(COLLINS in gives for gives in sent) and any(WILLIAMS in gives for gives in sent)
+    print("The Shortlist of the block Collins and Williams:")
+    for offer in found.shortlist:
+        print(f"  {offer.offer_id} score={offer.score:.2f}")
+
+
+def test_the_pick_names_the_trade_block_and_its_prompt_holds_the_block_rule(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair), trade_block=[COLLINS, WILLIAMS])
+    system, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
+    block_line = "The Trade block: Nico Collins and Jameson Williams."
+    assert block_line in user.splitlines()
+    rule = ("When the list holds a fair offer for a block player, at least one pick sends him.")
+    assert rule in " ".join(system.split())
+    print(f"The block line of the user message: {block_line}")
+    print(f"The rule of the prompt: {rule}")
+
+
+def test_the_block_line_of_the_pick_joins_three_names_with_commas_and_a_last_and(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair), trade_block=[COLLINS, WILLIAMS, WARREN])
+    _, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
+    a, b, c = (snap.players[pid].name for pid in (COLLINS, WILLIAMS, WARREN))
+    block_line = f"The Trade block: {a}, {b}, and {c}."
+    assert block_line in user.splitlines()
+    print(f"The block line of the user message: {block_line}")
+
+
+def test_the_pick_of_a_search_with_no_block_names_no_trade_block(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev())
+    _, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
+    assert "Trade block" not in user
+
+
+def test_an_empty_search_with_a_trade_block_names_the_block_players_in_its_line(snap):
+    keep_all = Limit(keep_positions=["QB", "RB", "WR", "TE"])
+    found = search(ASKER, PARTNER, snap, FakeJev(), limit=keep_all, trade_block=[COLLINS, WILLIAMS])
+    assert found.shortlist == []
+    picks = pick_trades(found, snap, news=NewsFeed(fetch=no_news), jev=FakeJev())
+    assert picks.picks == []
+    assert picks.none_line == "No fair trade sends Collins or Williams with the partner and the position you picked."
+    print(picks.none_line)
+
+
+def test_the_empty_line_of_a_block_of_one_or_three_players_names_each_of_them(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(), trade_block=[WARREN])
+    assert pick_trades(found, snap, news=NewsFeed(fetch=no_news), jev=FakeJev()).none_line == (
+        "No fair trade sends Warren with the partner and the position you picked.")
+    keep_all = Limit(keep_positions=["QB", "RB", "WR", "TE"])
+    found = search(ASKER, PARTNER, snap, FakeJev(), limit=keep_all, trade_block=[COLLINS, WILLIAMS, WARREN])
+    assert pick_trades(found, snap, news=NewsFeed(fetch=no_news), jev=FakeJev()).none_line == (
+        "No fair trade sends Collins, Williams, or Warren with the partner and the position you picked.")
 
 
 class _FairFails(FakeJev):

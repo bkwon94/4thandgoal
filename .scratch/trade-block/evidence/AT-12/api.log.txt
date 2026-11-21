@@ -1,0 +1,43 @@
+# The AT-12 press on the local evidence API (127.0.0.1:18431, after its warm-up), from the iPhone WebKit run at 11:40:28 EST. Request body: {"season":2026,"asker":6,"partner":3,"trade_block":["12481"]}
+# Every API log line from the page load to the end of the press, with the httpx and typesafe_sdk lines left out:
+INFO:     127.0.0.1:55910 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55910 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55910 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55949 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55949 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.jev_waves: Jev wave 1 (spares tree): 1 requests, about 3227 tokens
+INFO:     analyzer.finder_search: Spares tree of Bo Girds with Lil Fridge: passed; partner gives Stefon Diggs=0.95, Derrick Henry=0.88, Christian McCaffrey=0.95, Courtland Sutton=0.92, Jakobi Meyers=0.91, J.K. Dobbins=0.81, Tyler Allgeier=0.10, Khalil Shakir=0.90, Jaxon Smith-Njigba=0.95; asker gives Blake Corum=0.91, Cam Skattebo=0.93, Matthew Golden=0.88, Chimere Dike=0.16, Antonio Williams=0.08, Zonovan Knight=0.31, Parker Washington=0.88, Tyjae Spears=0.58, Zay Flowers=0.92
+INFO:     analyzer.finder_search: Finder Value offers of Bo Girds: 71; 1-for-1=0, 2-for-1=2, 1-for-2=3, 3-for-1=12, 1-for-3=0, 3-for-2=39, 2-for-3=15
+INFO:     analyzer.finder_search: Finder fair answers of Bo Girds: 142 questions, 142 from the cache, 0 asked live
+INFO:     analyzer.finder_search: Finder fair step of Bo Girds: checked 71, dropped 22, no answer 0
+INFO:     analyzer.finder_search: Finder step 2 of Bo Girds: 13 offers, the 3 best of each partner and shape direction
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481-3:3198: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG); Lil Fridge gives Derrick Henry (RB, BAL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+12501-3:9488: Bo Girds gives Cam Skattebo (RB, NYG) and Matthew Golden (WR, GB); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12481-3:1466+2449: Bo Girds gives Cam Skattebo (RB, NYG); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS)
+INFO:     analyzer.finder_search: Finder offer 6:12481-3:2449+5947: Bo Girds gives Cam Skattebo (RB, NYG); Lil Fridge gives Stefon Diggs (WR, WAS) and Jakobi Meyers (WR, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:11586+12481+9997-3:9488: Bo Girds gives Blake Corum (RB, LAR) and Cam Skattebo (RB, NYG) and Zay Flowers (WR, BAL); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12481+8130+9997-3:4034: Bo Girds gives Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Lil Fridge gives Christian McCaffrey (RB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:12481+8130+9997-3:9488: Bo Girds gives Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI) and Zay Flowers (WR, BAL); Lil Fridge gives Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:1166+12481+12501-3:5947+9488: Bo Girds gives Kirk Cousins (QB, MIN) and Cam Skattebo (RB, NYG) and Matthew Golden (WR, GB); Lil Fridge gives Jakobi Meyers (WR, JAX) and Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12481+12501+9487-3:3198+9488: Bo Girds gives Cam Skattebo (RB, NYG) and Matthew Golden (WR, GB) and Parker Washington (WR, JAX); Lil Fridge gives Derrick Henry (RB, BAL) and Jaxon Smith-Njigba (WR, SEA)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487+9997-3:1466+4034: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX) and Zay Flowers (WR, BAL); Lil Fridge gives Travis Kelce (TE, KC) and Christian McCaffrey (RB, SF)
+INFO:     analyzer.finder_search: Finder offer 6:12481+8130-3:1466+3198+5947: Bo Girds gives Cam Skattebo (RB, NYG) and Trey McBride (TE, ARI); Lil Fridge gives Travis Kelce (TE, KC) and Derrick Henry (RB, BAL) and Jakobi Meyers (WR, JAX)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487-3:1466+2449+3198: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX); Lil Fridge gives Travis Kelce (TE, KC) and Stefon Diggs (WR, WAS) and Derrick Henry (RB, BAL)
+INFO:     analyzer.finder_search: Finder offer 6:12481+9487-3:2449+3198+5947: Bo Girds gives Cam Skattebo (RB, NYG) and Parker Washington (WR, JAX); Lil Fridge gives Stefon Diggs (WR, WAS) and Derrick Henry (RB, BAL) and Jakobi Meyers (WR, JAX)
+INFO:     analyzer.jev_waves: Jev wave 2 (shortlist): 1 requests, about 10848 tokens
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481-3:3198: gains={6: 0.03, 3: 0.04}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+12501-3:9488: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481-3:1466+2449: gains={6: 0.95, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481-3:2449+5947: gains={6: 0.96, 3: 0.08}
+INFO:     analyzer.finder_search: Finder gain drop 6:11586+12481+9997-3:9488: gains={6: 0.04, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+8130+9997-3:4034: gains={6: 0.03, 3: 0.09}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+8130+9997-3:9488: gains={6: 0.03, 3: 0.07}
+INFO:     analyzer.finder_search: Finder gain drop 6:1166+12481+12501-3:5947+9488: gains={6: 0.04, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+12501+9487-3:3198+9488: gains={6: 0.98, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487+9997-3:1466+4034: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+8130-3:1466+3198+5947: gains={6: 0.96, 3: 0.06}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487-3:1466+2449+3198: gains={6: 0.97, 3: 0.05}
+INFO:     analyzer.finder_search: Finder gain drop 6:12481+9487-3:2449+3198+5947: gains={6: 0.97, 3: 0.06}
+INFO:     analyzer.routes: Press of find for cpc: time=2.5s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:55949 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55949 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK

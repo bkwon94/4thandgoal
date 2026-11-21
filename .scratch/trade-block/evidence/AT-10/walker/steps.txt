@@ -1,0 +1,4 @@
+The extra press of AT-10 for story 21: Kenneth Walker III alone on the block, Every team, chip Any. steps.json is the AT-10 step list with Walker.
+The runner reads only AT-<n>/steps.json, so scripts/zz-tb-chromium.spec.ts.txt ran this steps.json with the runner's runSteps at 375, 768, and 1280 px (height 900) in light and dark.
+The shot at 390x660 in iPhone WebKit comes from scripts/zz-tb-webkit.spec.ts.txt, with TB_IDS="AT-10/walker".
+find.json is the data-answer document of the iPhone WebKit press. api.log.txt holds the API log lines of that press.

@@ -1,0 +1,113 @@
+{
+  "roster_id": 6,
+  "team": "Bo Girds",
+  "manager": "bkwon",
+  "avatar": null,
+  "players": [
+    {
+      "player_id": "11586",
+      "name": "Blake Corum",
+      "position": "RB",
+      "nfl_team": "LAR",
+      "headshot": "https://sleepercdn.com/content/nfl/players/11586.jpg"
+    },
+    {
+      "player_id": "12501",
+      "name": "Matthew Golden",
+      "position": "WR",
+      "nfl_team": "GB",
+      "headshot": "https://sleepercdn.com/content/nfl/players/12501.jpg"
+    },
+    {
+      "player_id": "12540",
+      "name": "Chimere Dike",
+      "position": "WR",
+      "nfl_team": "TEN",
+      "headshot": "https://sleepercdn.com/content/nfl/players/12540.jpg"
+    },
+    {
+      "player_id": "13269",
+      "name": "Fernando Mendoza",
+      "position": "QB",
+      "nfl_team": "LV",
+      "headshot": "https://sleepercdn.com/content/nfl/players/13269.jpg"
+    },
+    {
+      "player_id": "13270",
+      "name": "CJ Daniels",
+      "position": "WR",
+      "nfl_team": "LAR",
+      "headshot": "https://sleepercdn.com/content/nfl/players/13270.jpg"
+    },
+    {
+      "player_id": "13301",
+      "name": "Antonio Williams",
+      "position": "WR",
+      "nfl_team": "WAS",
+      "headshot": "https://sleepercdn.com/content/nfl/players/13301.jpg"
+    },
+    {
+      "player_id": "13305",
+      "name": "Mike Washington Jr.",
+      "position": "RB",
+      "nfl_team": "LV",
+      "headshot": "https://sleepercdn.com/content/nfl/players/13305.jpg"
+    },
+    {
+      "player_id": "4881",
+      "name": "Lamar Jackson",
+      "position": "QB",
+      "nfl_team": "BAL",
+      "headshot": "https://sleepercdn.com/content/nfl/players/4881.jpg"
+    },
+    {
+      "player_id": "8130",
+      "name": "Trey McBride",
+      "position": "TE",
+      "nfl_team": "ARI",
+      "headshot": "https://sleepercdn.com/content/nfl/players/8130.jpg"
+    },
+    {
+      "player_id": "8150",
+      "name": "Kyren Williams",
+      "position": "RB",
+      "nfl_team": "LAR",
+      "headshot": "https://sleepercdn.com/content/nfl/players/8150.jpg"
+    },
+    {
+      "player_id": "8151",
+      "name": "Kenneth Walker III",
+      "position": "RB",
+      "nfl_team": "KC",
+      "headshot": "https://sleepercdn.com/content/nfl/players/8151.jpg"
+    },
+    {
+      "player_id": "9487",
+      "name": "Parker Washington",
+      "position": "WR",
+      "nfl_team": "JAX",
+      "headshot": "https://sleepercdn.com/content/nfl/players/9487.jpg"
+    },
+    {
+      "player_id": "96",
+      "name": "Aaron Rodgers",
+      "position": "QB",
+      "nfl_team": "PIT",
+      "headshot": "https://sleepercdn.com/content/nfl/players/96.jpg"
+    },
+    {
+      "player_id": "9997",
+      "name": "Zay Flowers",
+      "position": "WR",
+      "nfl_team": "BAL",
+      "headshot": "https://sleepercdn.com/content/nfl/players/9997.jpg"
+    },
+    {
+      "player_id": "JAX",
+      "name": "Jacksonville Jaguars",
+      "position": "DEF",
+      "nfl_team": "JAX",
+      "headshot": "https://sleepercdn.com/images/team_logos/nfl/jax.png"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+/**
+ * The Playwright config of the trade-block evidence scripts: one worker, no time limit, WebKit and Chromium projects.
+ * It runs against a served export and a local API that the evidence agent started; it starts no server itself.
+ */
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "e2e",
+  workers: 1,
+  timeout: 600_000,
+  use: { actionTimeout: Number(process.env.TB_ACTION_MS ?? 0) },
+  expect: { timeout: 15_000 },
+  reporter: "list",
+  projects: [
+    { name: "webkit", testMatch: ["zz-tb-webkit.spec.ts", "zz-tb-probe.spec.ts"], use: { browserName: "webkit" } },
+    { name: "chromium", testMatch: "zz-tb-chromium.spec.ts", use: { browserName: "chromium" } },
+  ],
+});

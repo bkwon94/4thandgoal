@@ -66,10 +66,11 @@ FLOOR = 5.0
 
 
 class Anchor(BaseModel):
-    """The one player that a search of trade ideas is built around, and his side: the asker gives him, or gets him."""
+    """The one player that the asker gets in a search of trade ideas. The side is always "gets", because a player that
+    the asker gives goes on his Trade block."""
 
     player_id: str
-    side: Literal["gives", "gets"]
+    side: Literal["gets"]
 
 
 class Limit(BaseModel):
@@ -136,6 +137,9 @@ class Shortlist(BaseModel):
     # The ids of the offers that step 2 asked about: the STEP_TWO_PER_GROUP best offers of each partner and shape
     # direction, by the fair mean, in the order of the partners and of their offers.
     step_two: list[str] = []
+    # The player ids of the Trade block of the search, in the order of the request. The pick names them, and the line
+    # of an empty search names them too. An empty list means the search had no block.
+    trade_block: list[str] = []
 
 
 
@@ -217,8 +221,14 @@ def _within(trade: ProposedTrade, snapshot: Snapshot, limit: Limit | None) -> bo
 
 
 def _holds(trade: ProposedTrade, anchor: Anchor) -> bool:
-    """True when the trade holds the anchor on his side: the first side for "gives", the second side for "gets"."""
-    return anchor.player_id in trade.sides[0 if anchor.side == "gives" else 1].player_ids
+    """True when the trade holds the anchor on the second side, the side that the asker gets."""
+    return anchor.player_id in trade.sides[1].player_ids
+
+
+def _sends_block(trade: ProposedTrade, trade_block: list[str] | None) -> bool:
+    """True when the asker's side sends at least one player of the Trade block. An empty or missing block keeps every
+    trade."""
+    return not trade_block or any(pid in trade_block for pid in trade.sides[0].player_ids)
 
 
 def chart_value(snapshot: Snapshot, pid: str) -> float | None:
@@ -257,12 +267,14 @@ def _value_pool(snapshot: Snapshot, roster_id: int, asker: int, limit: Limit | N
 
 
 def value_offers(asker: int, partner: int, snapshot: Snapshot, anchor: Anchor | None = None,
-                 limit: Limit | None = None) -> list[ProposedTrade]:
+                 limit: Limit | None = None, trade_block: list[str] | None = None) -> list[ProposedTrade]:
     """Every trade of the SHAPES between the asker and the partner that passes the Value screen, with the asker's side
     first, in the order of SHAPES.
 
     No cap follows the screen (decision 14). The hard rules hold too: an anchor sits on his side of each offer, each
     offer keeps the limit of the manager, and an offer that makes a player a handcuff on the roster that gets him drops.
+    With a `trade_block`, the asker's side of each offer sends at least one block player. A block player who fails the
+    pool rules is in no pool, so he enters no offer and raises no error.
     """
     values = {pid: chart_value(snapshot, pid) or 0.0 for rid in (asker, partner)
               for pid in _value_pool(snapshot, rid, asker, limit)}
@@ -277,7 +289,7 @@ def value_offers(asker: int, partner: int, snapshot: Snapshot, anchor: Anchor | 
                          TradeSide(roster_id=partner, gives=[GivenPlayer(player_id=pid, to=asker) for pid in gets]))
                 trade = ProposedTrade(season=snapshot.season, asker=asker, sides=sides)
                 if ((anchor is None or _holds(trade, anchor)) and _within(trade, snapshot, limit)
-                        and not trade_handcuffs(trade, snapshot)):
+                        and _sends_block(trade, trade_block) and not trade_handcuffs(trade, snapshot)):
                     offers.append(trade)
     return offers
 
@@ -287,27 +299,29 @@ def offer_id(trade: ProposedTrade) -> str:
     return "-".join(f"{side.roster_id}:{'+'.join(sorted(side.player_ids))}" for side in trade.sides)
 
 
-def _tier_keys(offer: ShortlistOffer) -> list[list[tuple[str, str | int]]]:
+def _tier_keys(offer: ShortlistOffer, trade_block: list[str] | None) -> list[list[tuple[str, str | int]]]:
     """The keys of the three tiers of `varied` that the offer can be the best of: its shape direction, its partners,
-    and the players that the asker gives."""
+    and the players that the asker gives. With a Trade block, only the block players that the asker gives count."""
     return [[("shape", shape(offer.trade))],
             [("partner", side.roster_id) for side in offer.trade.sides[1:]],
-            [("player", pid) for pid in offer.trade.sides[0].player_ids]]
+            [("player", pid) for pid in offer.trade.sides[0].player_ids if not trade_block or pid in trade_block]]
 
 
-def varied(offers: list[ShortlistOffer], keep: int) -> list[ShortlistOffer]:
+def varied(offers: list[ShortlistOffer], keep: int, trade_block: list[str] | None = None) -> list[ShortlistOffer]:
     """At most `keep` offers, in an order with variety (decision 16, AT-43).
 
     First come the best offers of each shape direction, by score. Then the best offers of each partner that are not on
     the list yet, then those of each player that the asker gives. The rest follow by score, highest first. One offer
     can be the best of a shape, a partner, and a player, and it shows once, in its first tier. With more best offers
     than `keep`, the list holds only best offers.
+    With a `trade_block`, the tier of the players that the asker gives counts only block players. So the best offer of
+    each block player comes before the rest, and a player off the block in the same trade takes no place of that tier.
     """
     # A tie of scores goes to the lower offer id, so the order is the same on each run.
     ranked = sorted(offers, key=lambda offer: (-offer.score, offer.offer_id))
     tiers: list[dict[tuple[str, str | int], str]] = [{}, {}, {}]
     for offer in ranked:
-        for tier, keys in zip(tiers, _tier_keys(offer), strict=True):
+        for tier, keys in zip(tiers, _tier_keys(offer, trade_block), strict=True):
             for key in keys:
                 tier.setdefault(key, offer.offer_id)
     placed: list[ShortlistOffer] = []
@@ -665,13 +679,14 @@ def _no_read(roster_id: int) -> None:
 
 def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves: JevWaves | None = None,
            stage: Stage = quiet, anchor: Anchor | None = None, limit: Limit | None = None,
-           read: Callable[[int], None] = _no_read, fair_cache: FairCache | None = None) -> Shortlist:
+           read: Callable[[int], None] = _no_read, fair_cache: FairCache | None = None,
+           trade_block: list[str] | None = None) -> Shortlist:
     """The Finder search of the asker: with no partner over every other team, else over the picked partner alone.
 
     1. The partner reads: the Spares tree of `spares_tree.py` on both sides of each pair. It stops no partner and
        builds no offer, because the Value screen is the one source of offers (decision 15). A "yes" for a player that
        the asker gets becomes a pick sheet fact of each offer that brings him (decision 16). It runs once per pair, with
-       one picked partner and with an anchor too.
+       one picked partner and with an anchor or a Trade block too.
     2. The Value offers: `value_offers` builds every trade of the SHAPES with each partner that passes the Value screen
        and the hard rules (decision 14, ADR 0038). No cap follows the screen.
     3. Step 1, the fair check: Jev asks the fair Noul of each Value offer once in each side order, and code takes the
@@ -688,6 +703,9 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     his roster, because only that roster can give him.
     With a `limit`, no offer sends a player that the manager keeps, and each offer brings back the position that he
     aims at (a hard rule, because the manager set it).
+    With a `trade_block` of the asker's players, each offer sends at least one of them (a hard rule, because the
+    manager set it). An empty or missing block keeps every offer. A block player who fails the pool rules enters no
+    offer, and the search goes on for the other block players.
     `stage` gets a live line as each of four steps starts and a done line as it ends: the teams read, the Value offers,
     the fair check, and the shortlist. The lines of the Value offers and the fair check carry their counts. The lines name no inner tool, because the site shows them. The default drops
     them. `read` gets the roster id of each partner as the first step reads it, so the site can light each team in
@@ -697,13 +715,14 @@ def search(asker: int, partner: int | None, snapshot: Snapshot, jev: Jev, waves:
     waves = waves or JevWaves(jev)
     # The press is live on the pacer for its whole search, so the warm-up of the fair cache waits (decision 19).
     with waves.pacer.press():
-        return _search(asker, partner, snapshot, waves, stage, anchor, limit, read, fair_cache)
+        return _search(asker, partner, snapshot, waves, stage, anchor, limit, read, fair_cache, trade_block)
 
 
 def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves, stage: Stage, anchor: Anchor | None,
-            limit: Limit | None, read: Callable[[int], None], fair_cache: FairCache | None) -> Shortlist:
+            limit: Limit | None, read: Callable[[int], None], fair_cache: FairCache | None,
+            trade_block: list[str] | None) -> Shortlist:
     """The body of `search`, while the press is live on the pacer."""
-    if anchor is not None and anchor.side == "gets":
+    if anchor is not None:
         # A player who left each roster since the pick keeps the partner, and no offer can hold him.
         partner = next((rid for rid, roster in snapshot.rosters.items() if anchor.player_id in roster), partner)
     partners = [partner] if partner is not None else sorted(rid for rid in snapshot.rosters if rid != asker)
@@ -713,7 +732,7 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
     # The players of each partner with a Spares tree "yes", by player id, each with the weak slot of the asker that he
     # fills. They become pick sheet facts and never stop an offer (decision 16).
     spare_yes: dict[int, dict[str, str]] = {}
-    # The Spares tree runs once per pair, with one picked partner and with an anchor too. It builds no offer and stops
+    # The Spares tree runs once per pair, with one picked partner and with an anchor or a Trade block too. It builds no offer and stops
     # no partner, so its "yes" answers are only pick sheet facts (decision 15).
     spares = {rid: pair_spares(snapshot, asker, rid) for rid in partners}
     requests = {str(rid): pair_request(snapshot, asker, rid, spares[rid]) for rid in partners}
@@ -747,7 +766,7 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
     stage("Matching trade value", live=True)
 
     # The Value screen builds the offers of every partner. The Spares tree stops no partner (decision 15).
-    offers_by_partner = {rid: value_offers(asker, rid, snapshot, anchor, limit) for rid in partners}
+    offers_by_partner = {rid: value_offers(asker, rid, snapshot, anchor, limit, trade_block) for rid in partners}
     offers = [trade for rid in offers_by_partner for trade in offers_by_partner[rid]]
     _log_shapes(snapshot, asker, offers)
     stage(f"Matched {_trades(len(offers))} by trade value")
@@ -810,11 +829,12 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
                 log.info("Finder gain drop %s: gains=%s", offer.offer_id, {r: round(p, 2) for r, p in gains.items()})
                 continue
             rated_offers.append(offer)
-    shortlist = varied(rated_offers, SHORTLIST_KEEP)
+    shortlist = varied(rated_offers, SHORTLIST_KEEP, trade_block)
     stage(f"Made a shortlist of {len(shortlist)}" if len(shortlist) != 1 else "Made a shortlist of one")
     for offer in shortlist:
         log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s gains=%s", offer.offer_id, offer.score,
                  offer.fair, {rid: round(p, 2) for rid, p in offer.needs.items()},
                  {rid: round(p, 2) for rid, p in offer.gains.items()})
     return Shortlist(asker=asker, partners=reads, offers=offers, shortlist=shortlist, dropped=dropped,
-                     fair_means=fair_by_id, unfair=unfair, step_two=step_two)
+                     fair_means=fair_by_id, unfair=unfair, step_two=step_two,
+                     trade_block=list(trade_block or []))

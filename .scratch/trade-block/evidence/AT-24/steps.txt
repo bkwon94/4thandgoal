@@ -1,0 +1,4 @@
+scripts/zz-tb-flows.ts.txt (motionOffFlow) recorded frames.txt, with framesAfterTap copied from apps/site/e2e/trade-block.spec.ts.
+The page runs with reducedMotion "reduce". The script opens Find mode as Bo Girds and reads the left edge of Cam Skattebo (stand-in for Walker) before the tap.
+The click runs in the page, and the script reads the left edge of Skattebo and of the front of the strip on each animation frame for 300 ms.
+Browsers: iPhone WebKit 390x660 (devices["iPhone 15"]) and Chromium 1280x800. The full output is playwright.txt.

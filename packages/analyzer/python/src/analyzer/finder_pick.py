@@ -34,6 +34,7 @@ from analyzer.stage import Stage, quiet
 from analyzer.team_facts import lineup_now_fact
 from analyzer.trade_jev import jev_answer_facts, trade_jev_questions
 from analyzer.trade_news import NewsFeed
+from facts.names import last_name
 from facts.tokens import Nums, fact
 from facts.writer import (
     ANY_NUMBER,
@@ -61,6 +62,8 @@ MIN_BULLETS, MAX_BULLETS = 2, 4
 # The line of a press whose search kept no offer. No Claude call runs, so code writes it. The Spares tree gives reasons,
 # never a gate (decision 16), so no Spares tree answer picks this line.
 NO_OFFER = "No team has a player who fits this ask, so no trade came up."
+# The end of the line of a press with a Trade block whose search kept no offer. The line names the block players first.
+NO_BLOCK_OFFER_END = "with the partner and the position you picked."
 # The line when each pick failed its repair and only near ideas stand, so the Advisor gave no none_line of its own.
 NO_CLEAR_PICK = "No offer on the list is a clear win, so these are ideas to weigh."
 # The Leans of a trade that the asker sends. A pick reads as one of them, so the analyzer read of a pick agrees.
@@ -248,11 +251,26 @@ def label_of(text: str) -> str:
     return text.strip().upper()
 
 
+def no_block_offer_line(snapshot: Snapshot, trade_block: list[str]) -> str:
+    """The line of a press whose search with a Trade block kept no offer, with the last name of each block player, such
+    as "No fair trade sends Walker or Flowers with the partner and the position you picked." Code writes it, because no
+    Claude call runs."""
+    names = [last_name(snapshot.players[pid].name) or snapshot.players[pid].name for pid in trade_block]
+    listed = " or ".join(names) if len(names) < 3 else f"{', '.join(names[:-1])}, or {names[-1]}"
+    return f"No fair trade sends {listed} {NO_BLOCK_OFFER_END}"
+
+
 def build_pick_prompt(shortlist: Shortlist, snapshot: Snapshot, sheets: dict[str, dict[str, Fact]],
                       feedback: str | None) -> tuple[str, str]:
     """The system prompt and the user message of the pick call: each offer with its label, its sides, and its own
-    facts."""
-    lines = [f"The asker: roster {shortlist.asker}, {snapshot.teams[shortlist.asker].name}.", ""]
+    facts. With a Trade block, a line after the asker names the block players, so the pick can spread across them."""
+    lines = [f"The asker: roster {shortlist.asker}, {snapshot.teams[shortlist.asker].name}."]
+    if shortlist.trade_block:
+        block = [snapshot.players[pid].name for pid in shortlist.trade_block]
+        # A list of 3 names reads "A, B, and C", a list of 2 reads "A and B", and a list of 1 reads "A".
+        names = ", and ".join([", ".join(block[:-1]), block[-1]]) if len(block) > 2 else " and ".join(block)
+        lines.append(f"The Trade block: {names}.")
+    lines.append("")
     # One player or one team sits on many offers, so a fact text that an earlier offer gave is not sent again. This
     # keeps the message, and the cost and the time of the call, near those of one read.
     given: set[tuple[str, str]] = set()
@@ -597,7 +615,7 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
                 stage: Stage = quiet, defer: Defer = run_now, on_pick: OnPick | None = None,
                 on_picks_end: OnPicksEnd = _no_end, on_picks_count: OnPicksCount = _no_count) -> FinderPicks:
     """The picks and the near ideas of the Advisor from the shortlist. An empty shortlist makes no call and gives the
-    NO_OFFER line.
+    NO_OFFER line, or with a Trade block the line that names the block players.
 
     One call picks the best 5 across every partner. Each offer has a label, A to J, in the prompt, and code maps the
     label back to its offer. A failure of the whole response retries the pick call once with the failures as feedback.
@@ -616,7 +634,9 @@ def pick_trades(shortlist: Shortlist, snapshot: Snapshot, *, news: NewsFeed, jev
     The FinderPicks that the press gives stay the truth: a pick that went out from a failed answer is not in them.
     """
     if not shortlist.shortlist:
-        return FinderPicks(picks=[], none_line=NO_OFFER, fallback=False)
+        # A search with a Trade block names its block players, so the asker knows which ask kept no trade.
+        none_line = no_block_offer_line(snapshot, shortlist.trade_block) if shortlist.trade_block else NO_OFFER
+        return FinderPicks(picks=[], none_line=none_line, fallback=False)
     most = min(MAX_PICKS, len(shortlist.shortlist))
     # A pick with no offer that stands sends no done line, so the site drops this live line with the Answer.
     stage(f"Picking the best {most}" if most > 1 else "Picking the best one", live=True)

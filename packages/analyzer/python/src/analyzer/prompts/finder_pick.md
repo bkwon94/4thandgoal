@@ -63,6 +63,9 @@ in a certain direction of what they should do on a trade."
 
 ## Rules
 
+- The user message may name a Trade block: the players that the asker wants to move. Each offer of
+  the list sends at least one of them. When the list holds a fair offer for a block player, at least
+  one pick sends him. Keep the spread of partners and shapes too.
 - Read the RB depth after the trade first. Never tell a side to give up its last reliable RB.
 - Every number you write must be in a fact that you cite. One Bullet cites one fact. Do not use a
   number from a second fact. The case may hold only the numbers of the facts that its Bullets cite.

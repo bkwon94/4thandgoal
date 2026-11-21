@@ -180,12 +180,14 @@ export function postAnalyze(
 
 /* The body of the find route: the season, the roster that asks, and the partner roster. With no partner, the search
    runs over every other team. With a limit, each offer brings back a player at aim_position, the same field of the
-   Limit that a typed question of trade ideas sets. */
+   Limit that a typed question of trade ideas sets. With a Trade block of 1 to 3 player ids of the asker, each offer
+   sends at least one of them. */
 export type FindRequest = {
   season: number;
   asker: number;
   partner?: number;
   limit?: { aim_position: string };
+  trade_block?: string[];
 };
 
 /* What the find stream gives the finder before its document: each step line, live while its step works, the roster id

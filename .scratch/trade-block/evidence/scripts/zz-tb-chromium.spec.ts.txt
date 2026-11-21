@@ -1,0 +1,98 @@
+/**
+ * The Chromium runs of the trade-block evidence at 375, 768, and 1280 px in light and dark: the reload of AT-32, the keys
+ * of AT-26, the accessibility tree of AT-25, the strip ids of AT-31, motion off of AT-24, and the desktop fit of AT-27.
+ */
+import { test } from "@playwright/test";
+import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { EVID, SKATTEBO, STRIP, captureFind, listFrom, log, openFind, runEvidence, toggle } from "./zz-tb-shared";
+import { blockedFlow, fitFlow, keyFlow, motionOffFlow, reloadFlow } from "./zz-tb-flows";
+
+const SIZES = [
+  [375, 812],
+  [768, 1024],
+  [1280, 900],
+] as const;
+const FLOWS = listFrom(process.env.TB_FLOWS, "AT-18 AT-24 AT-25 AT-26 AT-27 AT-31 AT-32");
+// The extra press with Walker alone on the block (story 21). The runner reads only AT-<n>/steps.json, so this script runs
+// AT-10/walker/steps.json at the widths and themes of the runner, with the runner's own runSteps.
+const STAND_INS = listFrom(process.env.TB_STAND_INS, "AT-10/walker");
+
+for (const id of STAND_INS) {
+  for (const width of [375, 768, 1280]) {
+    for (const theme of ["light", "dark"] as const) {
+      test.describe(`${id} ${width} ${theme}`, () => {
+        test.use({ viewport: { width, height: 900 }, reducedMotion: "no-preference" });
+        test(`${id} shots ${width} ${theme}`, async ({ page }) => {
+          if (width === 1280 && theme === "light") captureFind(page, join(EVID, id), "1280-light");
+          await runEvidence(page, id, String(width), theme);
+        });
+      });
+    }
+  }
+}
+
+for (const [width, height] of SIZES) {
+  for (const theme of ["light", "dark"] as const) {
+    test.describe(`${width} ${theme}`, () => {
+      test.use({ viewport: { width, height }, reducedMotion: "no-preference" });
+      if (FLOWS.includes("AT-18")) test(`AT-18 blocked ${width} ${theme}`, async ({ page }) => blockedFlow(page, String(width), theme));
+      if (FLOWS.includes("AT-32")) test(`AT-32 reload ${width} ${theme}`, async ({ page }) => reloadFlow(page, String(width), theme));
+      if (FLOWS.includes("AT-26")) test(`AT-26 keys ${width} ${theme}`, async ({ page }) => keyFlow(page, String(width), theme));
+    });
+  }
+}
+
+test.describe("desktop 1280x800", () => {
+  test.use({ viewport: { width: 1280, height: 800 }, reducedMotion: "no-preference" });
+  if (FLOWS.includes("AT-27")) for (const theme of ["light", "dark"] as const) test(`AT-27 fit desktop ${theme}`, async ({ page }) => fitFlow(page, "desktop-1280x800", theme, 800));
+
+  if (FLOWS.includes("AT-25"))
+    test("AT-25 accessibility tree", async ({ page }) => {
+      await openFind(page, "light");
+      await toggle(page, SKATTEBO).click();
+      await page.waitForTimeout(800);
+      const tree = await page.locator(STRIP).ariaSnapshot();
+      const rows = await page.locator(`${STRIP} button`).evaluateAll((els) =>
+        els.map((el) => `role=${el.getAttribute("role") ?? el.tagName.toLowerCase()} name="${el.getAttribute("aria-label")}" aria-pressed=${el.getAttribute("aria-pressed")}`),
+      );
+      const file = join(EVID, "AT-25", "a11y.txt");
+      writeFileSync(file, `# Chromium 1280x800, Find mode as Bo Girds on the local site, after a tap on Skattebo.\n# locator('${STRIP}').ariaSnapshot():\n${tree}\n\n# Each button of the group, its name, and its aria-pressed:\n${rows.join("\n")}\n`);
+      console.log(readFileSync(file, "utf8"));
+    });
+
+  if (FLOWS.includes("AT-31"))
+    test("AT-31 strip ids", async ({ page }) => {
+      await openFind(page, "light");
+      // The strip scrolls sideways. The script reads every toggle in the DOM, then scrolls the strip to its end and back.
+      const items = await page.locator(`${STRIP} button`).evaluateAll((els) =>
+        els.map((el) => ({ name: el.getAttribute("aria-label"), value: (el.querySelector("img")?.getAttribute("src") ?? "").match(/players\/(?:thumb\/)?(\w+)\./)?.[1] ?? null, src: el.querySelector("img")?.getAttribute("src") ?? null })),
+      );
+      const ends = await page.evaluate(() => {
+        const area = document.querySelector('[role="group"][aria-label="Trade block"]')!.closest("[data-slot=scroll-area-viewport]") as HTMLElement;
+        area.style.scrollBehavior = "auto";
+        area.scrollLeft = area.scrollWidth;
+        const end = { scrollLeft: area.scrollLeft, scrollWidth: area.scrollWidth, clientWidth: area.clientWidth };
+        area.scrollLeft = 0;
+        return end;
+      });
+      const teams = JSON.parse(readFileSync(join(EVID, "AT-31", "teams.json"), "utf8")) as { teams: { roster_id: number; team: string; players: { player_id: string; name: string; position: string }[] }[] };
+      const bo = teams.teams.find((team) => team.team === "Bo Girds")!;
+      const lines = items.map((item) => {
+        const match = bo.players.find((p) => p.player_id === item.value) ?? bo.players.find((p) => `${p.name}, ${p.position}` === item.name);
+        const other = teams.teams.filter((t) => t.roster_id !== bo.roster_id && t.players.some((p) => p.player_id === (match?.player_id ?? item.value)));
+        return `${item.value}\t${item.name}\t${item.src}\ton Bo Girds (roster ${bo.roster_id}) in /teams: ${match ? `yes, ${match.player_id} ${match.name}` : "NO"}\ton another roster: ${other.map((t) => t.team).join(", ") || "none"}`;
+      });
+      const file = join(EVID, "AT-31", "strip-ids.txt");
+      writeFileSync(file, `# Chromium 1280x900, Find mode as Bo Girds on the local site. The strip scroll area: ${JSON.stringify(ends)} at its end.\n# player id in the headshot src of each toggle\tits aria-label\tthe check against teams.json\n${lines.join("\n")}\n# ${items.length} toggles on the strip; Bo Girds has ${bo.players.length} players in /teams.\n`);
+      console.log(readFileSync(file, "utf8"));
+    });
+});
+
+test.describe("desktop 1280x800, motion off", () => {
+  test.use({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" });
+  if (FLOWS.includes("AT-24")) test("AT-24 motion off desktop", async ({ page }) => motionOffFlow(page, "chromium-1280x800"));
+});
+
+void appendFileSync;
+void log;

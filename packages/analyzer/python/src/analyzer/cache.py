@@ -170,12 +170,15 @@ def _rows_read(rows: dict[int, float], return_week: int, last_regular_week: int)
 
 
 def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Snapshot,
-                     anchor: Anchor | None = None, limit: Limit | None = None) -> str:
+                     anchor: Anchor | None = None, limit: Limit | None = None,
+                     trade_block: list[str] | None = None) -> str:
     """The hash of the ordered pair of rosters and the content of the snapshot that the finder reads.
 
     With no partner, the search reads every roster, so the content of every roster goes in.
     The anchor of a search around one player goes in too, so a search around a player never serves the plain list.
     The limit of the manager goes in too, so a search with a limit never serves a list that breaks it.
+    The Trade block goes in too, sorted, so a search with a block never serves the plain list, and the order of the
+    taps gives one key. An empty block and a missing block are the same search, so they share one key.
 
     The pair keeps its order, so the asker is part of the key. The finder puts the asker's side first in each
     trade, and its rank breaks a tie by the asker's letter. So the document for A and B can differ from the one
@@ -190,6 +193,7 @@ def finder_cache_key(season: int, asker: int, partner: int | None, snapshot: Sna
         "rosters": [asker, partner],
         "anchor": None if anchor is None else [anchor.player_id, anchor.side],
         "limit": None if limit is None else limit.model_dump(),
+        "trade_block": sorted(trade_block or []),
         "chart_week": as_of.chart_week,
         "stats_through": as_of.stats_through,
         "content": _content_hash(snapshot, [asker, partner] if partner is not None else sorted(snapshot.rosters)),

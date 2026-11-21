@@ -1,0 +1,8 @@
+iphone-390x660 reducedMotion=reduce: before the tap, Skattebo x=257
+iphone-390x660 reducedMotion=reduce: first frame after the tap at 7 ms: Skattebo x=41, front of the strip x=41, gap=0 px
+iphone-390x660 every frame for 300 ms: 7ms x=41, 25ms x=41, 41ms x=41, 57ms x=41, 76ms x=41, 91ms x=41, 108ms x=41, 124ms x=41, 142ms x=41, 158ms x=41, 177ms x=41, 191ms x=41, 208ms x=41, 225ms x=41, 242ms x=41, 257ms x=41, 276ms x=41, 291ms x=41, 310ms x=41
+iphone-390x660 after the tap: pressed=["Cam Skattebo, RB"]
+chromium-1280x800 reducedMotion=reduce: before the tap, Skattebo x=537
+chromium-1280x800 reducedMotion=reduce: first frame after the tap at 5 ms: Skattebo x=321, front of the strip x=321, gap=0 px
+chromium-1280x800 every frame for 300 ms: 5ms x=321, 13ms x=321, 32ms x=321, 48ms x=321, 64ms x=321, 81ms x=321, 98ms x=321, 115ms x=321, 131ms x=321, 148ms x=321, 165ms x=321, 182ms x=321, 199ms x=321, 215ms x=321, 232ms x=321, 248ms x=321, 265ms x=321, 282ms x=321, 298ms x=321, 315ms x=321
+chromium-1280x800 after the tap: pressed=["Cam Skattebo, RB"]

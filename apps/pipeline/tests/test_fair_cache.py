@@ -140,6 +140,19 @@ def test_the_warm_up_asks_each_fair_question_of_every_team_pair_once(snap):
     assert warm_fair(next_week, cache, JevWaves(FakeJev())) == (keys, keys) and len(cache) == keys
 
 
+def test_a_press_with_a_trade_block_after_the_warm_up_asks_no_fair_question(snap):
+    cache = FairCache()
+    warm_fair(snap, cache, JevWaves(FakeJev()))
+    # Each block offer is a Value offer that the warm-up already holds, so the Fair cache key of each is the same.
+    block = [max(pid for pid in snap.rosters[TEAM_A] if pid in snap.chart.values and any(
+        pid in trade.sides[0].player_ids for trade in value_offers(TEAM_A, TEAM_B, snap)))]
+    later = FakeJev()
+    found = search(TEAM_A, None, snap, later, fair_cache=cache, trade_block=block)
+    assert found.offers and all(block[0] in trade.sides[0].player_ids for trade in found.offers)
+    assert _fair_questions(later) == 0
+    print(f"{len(found.offers)} block offers, 0 new fair asks")
+
+
 def test_a_moved_player_gives_new_keys_only_for_the_offers_that_hold_him(snap):
     cache = FairCache()
     warm_fair(snap, cache, JevWaves(FakeJev()))

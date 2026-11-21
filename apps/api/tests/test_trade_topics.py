@@ -27,6 +27,7 @@ from analyzer.finder_pick import pick_trades
 from analyzer.finder_search import Anchor, Limit, search
 from analyzer.trade_news import NewsFeed
 from analyzer.values import AnalyzerValues
+from cornerstone_api import trade_topics
 from cornerstone_api.app import create_app
 from cornerstone_api.caps import TEAM_LINE
 from cornerstone_api.trade_topics import NO_ONE_PLAYER
@@ -71,6 +72,8 @@ VAGUE_TRADE = "is my RB for their WR fair"
 HALF_TRADE = "is Khalil Shakir for their WR fair"
 GIVE_IDEAS = "trade ideas for khalil shakir"
 GET_IDEAS = "trade ideas to get zay flowers"
+WHAT_FOR_WALKER = "What can I get for Walker?"
+HOW_TO_GET_BIJAN = "How do I get Bijan Robinson?"
 VAGUE_IDEAS = "any trade ideas for my team"
 NO_TE = "id rather not trade a TE"
 KEEP_SHAKIR = "keep shakir"
@@ -86,6 +89,8 @@ GETS_MORE_NAMED = "gets_more_named"
 WEEK_9_RAW = Path(__file__).resolve().parents[3] / "clients" / "cpc" / "data" / "2026" / "week-09" / "raw"
 NFC_LEAST = 4
 SHAKIR = "8134"
+WALKER = "8151"
+BIJAN = "9509"
 FLOWERS = "9997"
 # The words that site copy never holds (decision 08 and the copy rules of the spec).
 INNER_NAMES = ("jev", "advisor", "finder", "rival", "brian")
@@ -97,6 +102,10 @@ PICKS = {
     HALF_TRADE: {GIVES_NAMED: 0.95, GETS_NAMED: 0.12, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
     GIVE_IDEAS: {GIVES_NAMED: 0.96, GETS_NAMED: 0.05, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
     GET_IDEAS: {GIVES_NAMED: 0.04, GETS_NAMED: 0.95, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
+    WHAT_FOR_WALKER: {GIVES_NAMED: 0.96, GETS_NAMED: 0.05, GIVES_PLAYER: "Kenneth Walker",
+                      GETS_PLAYER: "Bijan Robinson"},
+    HOW_TO_GET_BIJAN: {GIVES_NAMED: 0.04, GETS_NAMED: 0.95, GIVES_PLAYER: "Kenneth Walker",
+                       GETS_PLAYER: "Bijan Robinson"},
     VAGUE_IDEAS: {GIVES_NAMED: 0.05, GETS_NAMED: 0.06, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers"},
     NO_TE: {GIVES_NAMED: 0.05, GETS_NAMED: 0.04, GIVES_PLAYER: "Khalil Shakir", GETS_PLAYER: "Zay Flowers",
             KEEPS_POSITION["TE"]: 0.95},
@@ -557,6 +566,39 @@ def test_ideas_around_a_player_that_the_manager_gets_hold_him_on_the_side_of_his
         assert FLOWERS in [player["player_id"] for player in theirs["gives"]]
 
 
+def _find_request_of_ask(api, monkeypatch, question: str):
+    """Send a trade ideas ask as Bo Girds through the real handler, and give the find request that it builds. The
+    wrapper runs the real find route, so it only records the request. The test prints the request as evidence."""
+    sent = []
+    real = trade_topics.analyzer_routes.find_trades
+
+    def record(request, pair, *rest, **keywords):
+        sent.append(pair)
+        return real(request, pair, *rest, **keywords)
+
+    monkeypatch.setattr(trade_topics.analyzer_routes, "find_trades", record)
+    parts = _parts(api.post(IDEAS, json={"roster_id": BO_GIRDS, "question": question}, headers=HEADERS))
+    [pair] = sent
+    print(f"ask {question!r} as Bo Girds -> find request {pair.model_dump_json(exclude_unset=True)}")
+    assert _of(parts, "data-answer")
+    return pair
+
+
+def test_a_gives_ask_sends_the_trade_block_of_the_one_player_and_no_anchor(api, monkeypatch):
+    # AT-28: "What can I get for Walker?" as Bo Girds.
+    pair = _find_request_of_ask(api, monkeypatch, WHAT_FOR_WALKER)
+    assert pair.trade_block == [WALKER]
+    assert pair.anchor is None
+    assert "anchor" not in pair.model_fields_set
+
+
+def test_a_gets_ask_sends_the_anchor_with_the_side_gets_and_no_trade_block(api, monkeypatch):
+    # AT-29: "How do I get Bijan Robinson?" as Bo Girds.
+    pair = _find_request_of_ask(api, monkeypatch, HOW_TO_GET_BIJAN)
+    assert pair.anchor == Anchor(player_id=BIJAN, side="gets")
+    assert "trade_block" not in pair.model_fields_set
+
+
 def test_an_unsure_pick_falls_back_to_the_weakest_slot_search_with_a_step_that_says_so(api):
     plain = _of(_ideas(api), "data-answer")
     parts = _ideas(api, VAGUE_IDEAS)
@@ -570,9 +612,8 @@ def test_an_unsure_pick_falls_back_to_the_weakest_slot_search_with_a_step_that_s
 def test_the_kept_answer_key_holds_the_anchor(settings, sources):
     snapshot = _here(sources, settings).snapshot(2026)
     plain = finder_cache_key(2026, LIL_FRIDGE, None, snapshot)
-    gives = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, Anchor(player_id=SHAKIR, side="gives"))
     gets = finder_cache_key(2026, LIL_FRIDGE, None, snapshot, Anchor(player_id=SHAKIR, side="gets"))
-    assert len({plain, gives, gets}) == 3
+    assert plain != gets
 
 
 def test_a_player_search_after_a_tap_never_serves_the_plain_list(api):

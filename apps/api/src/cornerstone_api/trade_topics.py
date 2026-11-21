@@ -229,16 +229,16 @@ def limit_lines(read: ReadLimit) -> list[str]:
     return lines
 
 
-def ideas_anchor(gives: Pick, gets: Pick) -> tuple[Anchor, Pick] | None:
-    """The anchor of trade ideas from the two picks of one Jev request, and the pick of the anchor.
+def ideas_player(gives: Pick, gets: Pick) -> tuple[Pick, Literal["gives", "gets"]] | None:
+    """The player of trade ideas from the two picks of one Jev request, and his side: "gives" or "gets".
 
     Exactly one sure side names the player and the direction. Two sure sides or none name no one player, so the
     ideas aim at the weakest slot, as a tap does.
     """
     if gives.sure and not gets.sure:
-        return Anchor(player_id=gives.player_id, side="gives"), gives
+        return gives, "gives"
     if gets.sure and not gives.sure:
-        return Anchor(player_id=gets.player_id, side="gets"), gets
+        return gets, "gets"
     return None
 
 
@@ -457,7 +457,7 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
 
     def work(emit: Emit, defer: Defer) -> None:
         step = _step(emit)
-        anchor, partner, limit = None, body.partner, None
+        anchor, block, partner, limit = None, None, body.partner, None
         if body.question is not None:
             gives, gets, answers = pick_players(asker.jev, body.question.strip(), teams, body.roster_id, IDEAS_CONTEXT,
                                                 body.turns, limit=True)
@@ -465,22 +465,29 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
                                 "gets": {**asdict(gets), "sure": gets.sure}})
             read = read_limit(answers, teams, body.roster_id)
             emit("data-limit", read.limit.model_dump())
-            picked = ideas_anchor(gives, gets)
+            picked = ideas_player(gives, gets)
             # The manager's keep wins over a give pick of the same player, because "keep Walker" names him too.
-            if picked is not None and picked[0].side == "gives" and picked[0].player_id in read.limit.keep_players:
+            if picked is not None and picked[1] == "gives" and picked[0].player_id in read.limit.keep_players:
                 picked = None
             if not read.empty:
                 limit = read.limit
             if picked is None and limit is None:
                 step(NO_ONE_PLAYER)
             if picked is not None:
-                anchor, pick = picked
+                pick, side = picked
                 step(f"Found {pick.name}")
-                if anchor.side == "gets":
-                    partner = pick.roster_id
+                # A player that the manager gives is a Trade block of one. A player that he gets is the anchor, and
+                # his team is the partner.
+                if side == "gives":
+                    block = [pick.player_id]
+                else:
+                    anchor, partner = Anchor(player_id=pick.player_id, side="gets"), pick.roster_id
             for line in [] if limit is None else limit_lines(read):
                 step(line)
-        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor, limit=limit)
+        # A field that the ask does not use stays unset, so the request shows only what the ask sets.
+        fields = {"anchor": anchor, "trade_block": block}
+        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, limit=limit,
+                           **{name: value for name, value in fields.items() if value is not None})
         # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.find_trades(request, pair, served, step, defer=defer))

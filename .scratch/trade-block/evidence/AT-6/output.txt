@@ -1,0 +1,19 @@
+$ uv run --exact --package cpc-api pytest apps/api/tests/test_api.py -v -s -p no:cacheprovider -k test_find_with_a_bad_trade_block_is_422_with_a_plain_reason
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-unit2/.venv/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-unit2/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 206 items / 203 deselected / 3 selected
+
+apps/api/tests/test_api.py::test_find_with_a_bad_trade_block_is_422_with_a_plain_reason[four-Your trade block holds at most 3 players.] four: 422 Your trade block holds at most 3 players.
+PASSED
+apps/api/tests/test_api.py::test_find_with_a_bad_trade_block_is_422_with_a_plain_reason[repeat-Your trade block names one player twice.] repeat: 422 Your trade block names one player twice.
+PASSED
+apps/api/tests/test_api.py::test_find_with_a_bad_trade_block_is_422_with_a_plain_reason[other-Your trade block holds a player who is not on your roster.] other: 422 Your trade block holds a player who is not on your roster.
+PASSED
+
+====================== 3 passed, 203 deselected in 3.05s =======================
+[exit 0]
+
+Ran in a detached worktree of trade-block at 3dd395a0, on 2026-11-21 11:35 EST.

@@ -1,0 +1,71 @@
+$ uv run --exact --package cpc-api python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trade-block/.scratch/trade-block/evidence/scripts/live_block_search.py . at2
+Uninstalled 3 packages in 1ms
+Installed 8 packages in 10ms
+Live cpc snapshot: season 2026, trade week 11, rosters fetched 2026-11-21 11:38:39.784620-05:00, chart week 11
+Asker: roster 6, team 'Bo Girds', manager 'bkwon'
+Roster 6 on live Sleeper (14 players):
+  Antonio Williams id=13301 WR WAS status=None return_week=None in_pool=True
+  Blake Corum id=11586 RB LAR status=None return_week=None in_pool=True
+  Cam Skattebo id=12481 RB NYG status=None return_week=None in_pool=True
+  Chimere Dike id=12540 WR TEN status=None return_week=None in_pool=True
+  Fernando Mendoza id=13269 QB LV status=None return_week=None in_pool=True
+  Kenneth Walker III id=8151 RB KC status=Out return_week=None in_pool=False
+  Kirk Cousins id=1166 QB MIN status=None return_week=None in_pool=True
+  Los Angeles Chargers id=LAC DEF LAC status=None return_week=None in_pool=False
+  Matthew Golden id=12501 WR GB status=None return_week=None in_pool=True
+  Parker Washington id=9487 WR JAX status=None return_week=None in_pool=True
+  Trey McBride id=8130 TE ARI status=None return_week=None in_pool=True
+  Tyjae Spears id=9508 RB TEN status=Questionable return_week=None in_pool=True
+  Zay Flowers id=9997 WR BAL status=None return_week=None in_pool=True
+  Zonovan Knight id=8122 RB ARI status=None return_week=None in_pool=True
+Kenneth Walker III: id=8151 status=Out out_with_no_return_week=True in_pool=False
+Block player: Cam Skattebo id=12481 RB NYG chart=22.5 in_pool=True NOTE: STAND-IN: Kenneth Walker III is on roster 6 but fails the pool rules (status Out, no return week), so Cam Skattebo takes the place of Walker in this run (ACCEPTANCE.md, Revisions, 2026-11-21)
+Block player: Zay Flowers id=9997 WR BAL chart=23.0 in_pool=True
+Fixed Jev: FakeJev of apps/pipeline/tests/fakes.py with scattered_fair
+
+Count of offers: 3237; fair means kept: 3237; unfair: 0
+Fair offers that send Cam Skattebo: 1837; that send Flowers: 1839
+The Shortlist (10 offers):
+  6:11586+1166+12481-12:4983+5967 score=0.91 sends [Blake Corum, Kirk Cousins, Cam Skattebo] gets [DJ Moore, Tony Pollard]
+  6:11586+12481-11:3294+5850+9500 score=0.91 sends [Blake Corum, Cam Skattebo] gets [Dak Prescott, Josh Jacobs, Josh Downs]
+  6:9997-8:5844+6804+9484 score=0.91 sends [Zay Flowers] gets [T.J. Hockenson, Jordan Love, Tucker Kraft]
+  6:1166+12481+9997-12:6801 score=0.90 sends [Kirk Cousins, Cam Skattebo, Zay Flowers] gets [Tee Higgins]
+  6:9997-4:3163+4866 score=0.89 sends [Zay Flowers] gets [Jared Goff, Saquon Barkley]
+  6:9487+9997-12:6801 score=0.88 sends [Parker Washington, Zay Flowers] gets [Tee Higgins]
+  6:12481-12:5967 score=0.81 sends [Cam Skattebo] gets [Tony Pollard]
+  6:11586+1166+9997-11:6813+9758 score=0.91 sends [Blake Corum, Kirk Cousins, Zay Flowers] gets [Jonathan Taylor, C.J. Stroud]
+  6:11586+1166+9997-4:12526+8148 score=0.91 sends [Blake Corum, Kirk Cousins, Zay Flowers] gets [Tetairoa McMillan, Jameson Williams]
+  6:11586+12481+8130-1:11584+7543 score=0.91 sends [Blake Corum, Cam Skattebo, Trey McBride] gets [Bucky Irving, Travis Etienne Jr.]
+Shortlist offers that send Cam Skattebo: 5
+Shortlist offers that send Flowers: 6
+[exit 0]
+
+----
+$ uv run --exact --package cornerstone pytest apps/pipeline/tests/test_finder_search.py -v -s -p no:cacheprovider -k 'test_two_block_players_with_fair_offers_both_reach_the_shortlist or test_varied_with_a_trade_block'
+Uninstalled 8 packages in 45ms
+Installed 3 packages in 3ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-unit2/.venv/bin/python
+rootdir: /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58/scratchpad/tb-unit2/apps/pipeline
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 62 items / 60 deselected / 2 selected
+
+apps/pipeline/tests/test_finder_search.py::test_varied_with_a_trade_block_gives_the_best_offer_of_each_block_player_a_place_before_a_player_off_the_block PASSED
+apps/pipeline/tests/test_finder_search.py::test_two_block_players_with_fair_offers_both_reach_the_shortlist The Shortlist of the block Collins and Williams:
+  4:11620+12481+7569-5:5846+8112 score=0.91
+  4:11620+7569-12:10236+12490+12507 score=0.91
+  4:7569-5:11566+421+5846 score=0.90
+  4:11620+7021+8148-5:8112 score=0.89
+  4:7569-5:421+4217 score=0.88
+  4:11620+8148-6:9487 score=0.87
+  4:7569-2:6770 score=0.81
+  4:11620+7021+7569-8:12526+6804 score=0.91
+  4:11620+7021+8148-11:5850+8136 score=0.91
+  4:11620+7021+8148-12:12507+8146 score=0.91
+PASSED
+
+======================= 2 passed, 60 deselected in 1.06s =======================
+[exit 0]
+
+Ran in a detached worktree of trade-block at 3dd395a0, on 2026-11-21 11:39 EST.

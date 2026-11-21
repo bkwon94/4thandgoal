@@ -1,0 +1,10 @@
+# The AT-14 press on the local evidence API (127.0.0.1:18431, after its warm-up), from the iPhone WebKit run at 11:41:01 EST. Request body: {"season":2026,"asker":6,"partner":10,"limit":{"aim_position":"QB"},"trade_block":["12481","9997"]}
+# Every API log line from the page load to the end of the press, with the httpx and typesafe_sdk lines left out:
+INFO:     127.0.0.1:56384 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56384 - "OPTIONS /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56384 - "GET /clients/cpc/teams?season=2026 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56482 - "OPTIONS /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56482 - "POST /clients/cpc/find-stream HTTP/1.1" 200 OK
+INFO:     analyzer.routes: Press of find for cpc: time=2.2s cost=$0.0000 claude_calls=0
+INFO:     127.0.0.1:56482 - "OPTIONS /clients/cpc/deadline/trades HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56482 - "GET /clients/cpc/deadline/trades HTTP/1.1" 200 OK
