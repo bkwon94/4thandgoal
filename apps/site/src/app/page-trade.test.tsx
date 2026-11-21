@@ -247,34 +247,30 @@ describe("the trade ideas of Lil Fridge", () => {
     return parts;
   }
 
-  it("shows the near ideas with the reason under each, under a plain label, when no offer is a clear win (H21)", async () => {
+  it("hides the near ideas and shows the plain empty line and the Trade page link when no offer stands", async () => {
     streamOf("/trade-ideas", nearStream(0));
     render(<HomePage />);
     await openTopic("Trade ideas");
     const ideas = await screen.findByRole("region", { name: "Trade ideas" });
-    const near = within(ideas).getByRole("list", { name: "Ideas, none a clear win" });
-    expect(within(near).getAllByRole("listitem")).toHaveLength(2);
-    expect(near.textContent).toContain("You give Derrick Henry and get Tee Higgins.");
-    expect(near.textContent).toContain("Reason 1: you give up your RB for a WR you do not need.");
-    expect(near.textContent).toContain("Reason 2:");
-    // Each idea keeps the link to check it on the Trade page, as an offer does.
-    expect(within(near).getAllByRole("link", { name: "Check this trade" })).toHaveLength(2);
+    expect(within(ideas).queryByRole("list", { name: "Ideas, none a clear win" })).toBeNull();
+    expect(ideas.textContent).not.toContain("Ideas, none a clear win");
+    expect(ideas.textContent).not.toContain("Reason 1:");
+    expect(ideas.textContent).toContain("No offer on the list helps your lineup enough to send.");
+    expect(within(ideas).queryByRole("link", { name: "Check this trade" })).toBeNull();
+    expect(within(ideas).getByRole("link", { name: "Build a trade on the Trade page" })).toBeTruthy();
     const text = (ideas.textContent ?? "").toLowerCase();
     for (const word of ["jev", "advisor", "finder", "rival", "brian", "front door"]) expect(text).not.toContain(word);
   });
 
-  it("lists the near ideas after the picks under their own label (H21)", async () => {
+  it("hides the near ideas under the real offers", async () => {
     streamOf("/trade-ideas", nearStream(1));
     render(<HomePage />);
     await openTopic("Trade ideas");
     const ideas = await screen.findByRole("region", { name: "Trade ideas" });
-    const near = within(ideas).getByRole("list", { name: "Also weighed" });
-    expect(within(near).getAllByRole("listitem")).toHaveLength(1);
-    expect(near.textContent).toContain("You give Derrick Henry and get Amon-Ra St. Brown.");
-    expect(within(ideas).getAllByRole("link", { name: "Check this trade" })).toHaveLength(2);
-    // The pick comes first, then the near idea.
-    const pick = within(ideas).getAllByRole("link", { name: "Check this trade" })[0];
-    expect(near.compareDocumentPosition(pick) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+    expect(within(ideas).queryByRole("list", { name: "Also weighed" })).toBeNull();
+    expect(ideas.textContent).not.toContain("Also weighed");
+    expect(ideas.textContent).not.toContain("Reason 1:");
+    expect(within(ideas).getAllByRole("link", { name: "Check this trade" })).toHaveLength(1);
   });
 
   it("keeps the whole Answer in the Thread after a reload, at no cost", async () => {
