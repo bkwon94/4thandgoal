@@ -591,6 +591,11 @@ handcuff, a player out with no return week, and an unlisted player are never in 
 kicker and no defense, so they are always unlisted.
 _Avoid_: suggested trades, counters (a counter changes one trade for one side)
 
+**Trade block**:
+The players of the asker's own roster that the asker wants to move, at most 3. Each trade of the Finder sends at least
+one of them. The block is empty until the manager adds a player, and an empty block sets no rule.
+_Avoid_: anchor (on the page), shop list, picks
+
 **Partner filter**:
 The first step of the finder with no picked partner: the Spares tree on both sides of each pair. It stops no
 partner. Its answers become reasons on the pick sheet. A search with one picked partner or with an anchor skips it.
