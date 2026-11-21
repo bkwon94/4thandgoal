@@ -8,7 +8,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-29, AT-30, AT-3
 
 **Blocked by:** 13
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The ticket records the time of the full suite with each shard count it tried, and the chosen count.
 - [x] A PR that changes one file of the rankings package runs fewer test files than the full count.
