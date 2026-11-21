@@ -8,7 +8,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import AnalyzeResult from "./analyze-result";
-import { CircleAlertIcon } from "lucide-react";
+import { ArrowLeftIcon, CircleAlertIcon } from "lucide-react";
 import { Card } from "@cpc/design/parts/card";
 import { ErrorLine } from "@cpc/design/parts/error-line";
 import { Hero } from "@cpc/design/parts/hero";
@@ -26,6 +26,7 @@ import { ModeSwitch } from "./mode-switch";
 import { TradeFinder } from "./trade-finder";
 import { TradeOnStage, type StageSide } from "./trade-on-stage";
 import { Button } from "@cpc/design/ui/button";
+import { PendingButton } from "@cpc/design/ui/pending-button";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { useRequest } from "./use-request";
 import { stageLines, type StageTrade } from "../lib/stage-lines";
@@ -77,7 +78,8 @@ type TradeFormProps = {
   // The half of the switch on the screen. The page owns it, because the address of the page names it. Find needs the
   // finder flag, so with the flag off the form shows Grade and no switch.
   mode?: AnalyzerMode;
-  onModeChange?: (mode: AnalyzerMode) => void;
+  // A card that opens its Full Result asks for a "push", so the back gesture returns to the cards.
+  onModeChange?: (mode: AnalyzerMode, how?: "push") => void;
   // The eyebrow of the hero in both modes, such as the countdown to the trade deadline. With none, it names the tool.
   eyebrow?: ReactNode;
 };
@@ -188,6 +190,15 @@ export function TradeForm({
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollToResult = useRef(false);
   const off = useMotionOff();
+  // The Full Result of a finder card shows a way back to the cards. A trade that the reader built or graded shows none.
+  const [fromCard, setFromCard] = useState(false);
+  // The offer of the card that opened, so the page returns to that card when the cards show again.
+  const openedOffer = useRef<string | null>(null);
+  const finderRef = useRef<HTMLDivElement>(null);
+  // The finder mounts when Find first shows, and then stays mounted. Its cards and its near fold are state of the
+  // finder, so a Full Result that unmounted it would lose them, and the back gesture would return to an empty finder.
+  // Keeping it mounted and hidden is plainer than lifting its result up, and a plain switch keeps the cards too.
+  const [finderKept, setFinderKept] = useState(false);
 
   // A link fills the Stack once, when the page reads its query. A later change of the trade is the reader's own.
   useEffect(() => {
@@ -200,6 +211,15 @@ export function TradeForm({
     scrollToResult.current = false;
     resultRef.current?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
   }, [grade.status, off]);
+
+  // The cards show again after a back from a Full Result, so the page goes to the card that opened.
+  useEffect(() => {
+    if (!(finderOn && mode === "find") || openedOffer.current === null) return;
+    const offer = openedOffer.current;
+    openedOffer.current = null;
+    const card = [...(finderRef.current?.querySelectorAll<HTMLElement>("[data-offer-id]") ?? [])].find((el) => el.dataset.offerId === offer);
+    card?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
+  }, [finderOn, mode, off]);
 
   /* Edit keeps the result in place and saves the trade for each way out without a submit. */
   function edit() {
@@ -230,6 +250,7 @@ export function TradeForm({
   // The grade locks the form, so the result always matches the picks on the screen. A result or an error ends it.
   const grading = grade.status === "grading";
   const findMode = finderOn && mode === "find";
+  if (findMode && !finderKept) setFinderKept(true);
   // The form hides while the grade runs, under a result, and in Find mode, so the hero and the read lead the page. The
   // stage of the hero shows the trade, so no line repeats it.
   const formHidden = grading || grade.status === "done" || findMode;
@@ -243,7 +264,10 @@ export function TradeForm({
   function changeTrade(update: (current: Sides) => Sides) {
     request.drop();
     setSides(update);
-    if (!editing) setGrade({ status: "idle" });
+    if (!editing) {
+      setGrade({ status: "idle" });
+      setFromCard(false);
+    }
   }
 
   /* A new team for a side takes the old roster out of the trade, so each get from that side drops. The players the side
@@ -324,8 +348,11 @@ export function TradeForm({
       { id: theirs.id, rosterId: partner.roster_id, gets: toGets(own, mine.id) },
     ];
     setSides(next);
-    // The grade of a card shows in Grade mode, so the address and the switch name the mode of the result.
-    onModeChange?.("grade");
+    // The grade of a card shows in Grade mode, so the address and the switch name the mode of the result. The push
+    // gives the back gesture an entry to leave, and it returns to the cards.
+    onModeChange?.("grade", "push");
+    openedOffer.current = trade.offer_id;
+    setFromCard(true);
     const read = finderRead(trade, find);
     if (read !== null) {
       // A late answer of an earlier grade must not replace the read of the card.
@@ -350,6 +377,8 @@ export function TradeForm({
     const { controller } = run;
     // Only a finder card passes a trade, and only that path scrolls to the result.
     scrollToResult.current = trade !== undefined;
+    // A grade that the reader starts is not the card any more, so the way back to the cards goes.
+    if (trade === undefined) setFromCard(false);
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
@@ -515,8 +544,20 @@ export function TradeForm({
   /* The analyze document names each team but carries no avatar, so the result reads the avatars of the teams of the league. */
   const avatars = new Map(teams.map((team) => [team.roster_id, team.avatar]));
 
-  const result = grade.status === "done" && (
+  // The result waits behind the cards, so a back from a Full Result shows the cards and no result under them.
+  const result = grade.status === "done" && !findMode && (
     <div ref={resultRef}>
+      {fromCard && (
+        <PendingButton
+          // The same step as the back gesture. The popstate of the browser returns the page to the cards.
+          onClick={() => window.history.back()}
+          pendingAnnouncement=""
+          className="press mt-sp-4 flex min-h-touch cursor-pointer items-center gap-sp-2 rounded-pill px-sp-2 text-meta font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <ArrowLeftIcon aria-hidden="true" className="size-sp-4" />
+          Back to trade ideas
+        </PendingButton>
+      )}
       <AnalyzeResult doc={grade.doc} avatars={avatars} onEdit={edit} />
     </div>
   );
@@ -536,8 +577,8 @@ export function TradeForm({
     <ModeSwitch value={mode} from={shownMode.current} onChange={(next) => onModeChange?.(next)} disabled={grading || finding} />
   ) : undefined;
 
-  // Under a result the read is the hero, so the form puts no hero of its own above it.
-  const hero = grading ? (
+  // Under a result the read is the hero, so the form puts no hero of its own above it. In Find mode the finder is the hero.
+  const gradeHero = findMode ? null : grading ? (
     <GradingHero
       trade={sideViews.map(({ index, team, rows }) => ({
         team: team?.team ?? SIDE_TITLES[index],
@@ -548,24 +589,33 @@ export function TradeForm({
       eyebrow={eyebrow}
       toggle={toggle}
     />
-  ) : findMode ? (
-    // The key resets the partner, the chip, and the cards when the asker changes.
-    <TradeFinder
-      key={myTeam?.roster_id ?? "none"}
-      teams={teams}
-      target={target}
-      asker={myTeam?.roster_id ?? null}
-      onAsker={(rosterId) => pickTeam(0, rosterId)}
-      passphrase={passphrase}
-      onUnauthorized={onUnauthorized}
-      onRostersStale={onRostersStale}
-      onOpen={openTrade}
-      onFindingChange={setFinding}
-      eyebrow={eyebrow}
-      toggle={toggle}
-    />
   ) : formHidden ? null : (
     <TitleHero stage={stage} eyebrow={eyebrow} toggle={toggle} />
+  );
+
+  const hero = (
+    <>
+      {finderKept && (
+        <div ref={finderRef} hidden={!findMode}>
+          {/* The key resets the partner, the chip, and the cards when the asker changes. */}
+          <TradeFinder
+            key={myTeam?.roster_id ?? "none"}
+            teams={teams}
+            target={target}
+            asker={myTeam?.roster_id ?? null}
+            onAsker={(rosterId) => pickTeam(0, rosterId)}
+            passphrase={passphrase}
+            onUnauthorized={onUnauthorized}
+            onRostersStale={onRostersStale}
+            onOpen={openTrade}
+            onFindingChange={setFinding}
+            eyebrow={eyebrow}
+            toggle={toggle}
+          />
+        </div>
+      )}
+      {gradeHero}
+    </>
   );
 
   return children({ hero, form, result });

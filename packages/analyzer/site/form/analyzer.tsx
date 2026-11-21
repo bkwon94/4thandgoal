@@ -78,6 +78,13 @@ export function Analyzer({ target, finderOn, lock }: { target: ApiTarget; finder
     if (team !== null) setPrefill(prefillSides({ team, partner: null, gives: [], gets: [] }));
   }, []);
 
+  // The back gesture and the back button of the browser step between the entries that a card pushed, so the mode follows the address.
+  useEffect(() => {
+    const follow = () => setMode(readMode(window.location.search, finderOn));
+    window.addEventListener("popstate", follow);
+    return () => window.removeEventListener("popstate", follow);
+  }, [finderOn]);
+
   useEffect(() => {
     if (!passphrase) return;
     // A stale answer must not overwrite the state after a new submit or an unmount.
@@ -128,10 +135,14 @@ export function Analyzer({ target, finderOn, lock }: { target: ApiTarget; finder
       });
   }
 
-  /* A tap on the switch names the new mode in the address, so a reload or a shared link opens the same half. */
-  function changeMode(next: AnalyzerMode) {
+  /* A tap on the switch names the new mode in the address, so a reload or a shared link opens the same half. A card that
+     opens its Full Result pushes an entry, so the back gesture returns to the cards. A tap on the switch replaces the
+     entry, because a switch of the half is no step to go back through. */
+  function changeMode(next: AnalyzerMode, how: "replace" | "push" = "replace") {
     setMode(next);
-    window.history.replaceState(window.history.state, "", `${window.location.pathname}${withMode(window.location.search, next)}`);
+    const address = `${window.location.pathname}${withMode(window.location.search, next)}`;
+    if (how === "push") window.history.pushState(window.history.state, "", address);
+    else window.history.replaceState(window.history.state, "", address);
   }
 
   function handleSubmit(value: string) {

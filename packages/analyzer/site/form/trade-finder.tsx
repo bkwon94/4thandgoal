@@ -527,7 +527,7 @@ function FinderResult({
       {trades.length > 0 && (
         <ol ref={list} aria-label="Trade ideas" className="m-0 flex list-none flex-col gap-sp-4 p-0">
           {trades.map((trade, i) => (
-            <li key={trade.offer_id} className="scroll-mt-sp-4">
+            <li key={trade.offer_id} data-offer-id={trade.offer_id} className="scroll-mt-sp-4">
               <FinderCard
                 trade={trade}
                 asker={asker}

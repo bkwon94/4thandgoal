@@ -232,6 +232,42 @@ for (const viewport of VIEWPORTS) {
         await page.screenshot({ path: info.outputPath(`stream-last-card-${theme}.png`), fullPage: true });
       });
 
+      // A card opens its Full Result with a pushed entry, so the back gesture returns to the same cards and the near
+      // fold, and the card that opened sits in view.
+      test(`back from a Full Result returns to the cards, the near fold, and the opened card, ${theme}`, async ({ page }, info) => {
+        test.skip(!["iPhone 15 390x660", "desktop 1280x800"].includes(viewport.name), "the phone and the desktop only");
+        await openFinder(page, theme, true);
+        const cards = page.getByRole("article");
+        // Each part comes at the call: the trades, the end of the picks, and the answer.
+        while ((await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext())) > 0);
+        const fold = page.getByRole("button", { name: `Close, but not sent · ${DOC.near.length}` });
+        await expect(fold).toBeVisible();
+        await expect(cards).toHaveCount(DOC.trades.length);
+        const last = cards.last();
+        await last.getByRole("button", { name: "See the Full Result" }).click();
+        await expect(page.getByRole("region", { name: "The Read" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Back to trade ideas" })).toBeVisible();
+        await page.screenshot({ path: info.outputPath(`full-result-back-button-${theme}.png`) });
+        await expectNoOverlap(page);
+        await page.goBack();
+        await expect(cards).toHaveCount(DOC.trades.length);
+        await expect(fold).toBeVisible();
+        await expect(page.getByRole("region", { name: "The Read" })).toHaveCount(0);
+        // The opened card is in view after the scroll, and the page holds the address of Find.
+        await expect.poll(async () => {
+          const box = (await last.boundingBox())!;
+          return box.y >= 0 && box.y < viewport.use.viewport.height;
+        }).toBe(true);
+        expect(page.url()).toContain("mode=find");
+        await page.screenshot({ path: info.outputPath(`back-to-cards-${theme}.png`) });
+        await expectNoOverlap(page);
+        // The button does the same as the gesture.
+        await last.getByRole("button", { name: "See the Full Result" }).click();
+        await page.getByRole("button", { name: "Back to trade ideas" }).click();
+        await expect(cards).toHaveCount(DOC.trades.length);
+        await expect(fold).toBeVisible();
+      });
+
       for (const motion of ["no-preference", "reduce"] as const) {
         // On a fixed clock, step 5 names each Shortlist trade in turn on one line of the wait.
         test(`step 5 names each Shortlist trade on one line, motion ${motion}, ${theme} (AT-36, AT-73)`, async ({ page }, info) => {

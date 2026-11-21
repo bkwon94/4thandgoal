@@ -239,6 +239,90 @@ describe("The Find wait and the cards", () => {
   });
 });
 
+describe("The way back from a Full Result", () => {
+  /* Find mode with the cards and the near fold shown, for the asker of the fixture find. */
+  async function cards() {
+    open("?mode=find&team=2");
+    await waitFor(() => expect((screen.getByRole("button", { name: "Find a Trade" }) as HTMLButtonElement).disabled).toBe(false));
+    await waitFor(() => expect(checked("Find a trade")).toBe(true));
+    findStream(findResponse);
+    fireEvent.click(screen.getByRole("button", { name: "Find a Trade" }));
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(3));
+  }
+  const openSecond = () => fireEvent.click(within(screen.getAllByRole("article")[1]).getByRole("button", { name: "See the Full Result" }));
+  const nearFold = () => screen.queryByRole("button", { name: /Close, but not sent/ });
+  const articleLabels = () => screen.getAllByRole("article").map((card) => card.getAttribute("aria-label"));
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+  afterEach(() => {
+    delete (Element.prototype as Partial<Element>).scrollIntoView;
+  });
+
+  it("returns to the same cards and the near fold on the back gesture, and scrolls to the opened card", async () => {
+    await cards();
+    const labels = articleLabels();
+    expect(nearFold()).not.toBeNull();
+    openSecond();
+    await screen.findByRole("region", { name: "The Read" });
+    expect(window.location.search).not.toContain("mode=find");
+    const scrolled = vi.mocked(Element.prototype.scrollIntoView);
+    scrolled.mockClear();
+    await act(async () => {
+      window.history.back();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    await waitFor(() => expect(checked("Find a trade")).toBe(true));
+    expect(window.location.search).toContain("mode=find");
+    expect(screen.queryByRole("region", { name: "The Read" })).toBeNull();
+    expect(articleLabels()).toEqual(labels);
+    expect(nearFold()).not.toBeNull();
+    // The scroll goes to the card that opened.
+    const target = scrolled.mock.contexts.find((el) => (el as Element).closest("li")?.querySelector("article") === screen.getAllByRole("article")[1]);
+    expect(target).toBeTruthy();
+  });
+
+  it("shows Back to trade ideas on a result from a card, and a tap does what the back gesture does", async () => {
+    await cards();
+    openSecond();
+    await screen.findByRole("region", { name: "The Read" });
+    const back = screen.getByRole("button", { name: "Back to trade ideas" });
+    fireEvent.click(back);
+    await waitFor(() => expect(checked("Find a trade")).toBe(true));
+    expect(screen.getAllByRole("article")).toHaveLength(3);
+    expect(nearFold()).not.toBeNull();
+  });
+
+  it("shows no Back to trade ideas on a result that the reader graded in Grade mode", async () => {
+    open("?team=2");
+    await waitFor(() => expect(checked("Grade a trade")).toBe(true));
+    expect(screen.queryByRole("button", { name: "Back to trade ideas" })).toBeNull();
+  });
+
+  it("adds no history entry on a plain mode switch", async () => {
+    open("");
+    await waitFor(() => expect(checked("Grade a trade")).toBe(true));
+    const push = vi.spyOn(window.history, "pushState");
+    fireEvent.click(half("Find a trade"));
+    await screen.findByRole("heading", { level: 1, name: "Trade Ideas" });
+    await waitFor(() => expect(checked("Find a trade")).toBe(true));
+    fireEvent.click(half("Grade a trade"));
+    await screen.findByRole("heading", { level: 1, name: "Trade Analyzer" });
+    expect(push).not.toHaveBeenCalled();
+    push.mockRestore();
+  });
+
+  it("adds one history entry when a card opens its Full Result", async () => {
+    await cards();
+    const push = vi.spyOn(window.history, "pushState");
+    openSecond();
+    await screen.findByRole("region", { name: "The Read" });
+    expect(push).toHaveBeenCalledTimes(1);
+    push.mockRestore();
+  });
+});
+
 describe("The plain words of the analyzer (AT-12)", () => {
   // The words that no text of a page holds in Deadline week. "Lock" stays a word of the code and the config only.
   const BANNED = /\b(lock|rosters are locked|deadline board|feed|jev|advisor|finder|brian)\b/i;
