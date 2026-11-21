@@ -42,3 +42,28 @@ The chosen count is 5. With 4 shards, the slowest job is 338 s, or 374 s with th
 A local run of `PLAYWRIGHT_SHARD=2/5 CLIENT=cpc pnpm check:floor` printed "Running 44 tests using 2 workers, shard 2 of 5", then "Running 3 tests using 1 worker, shard 2 of 5". Both passed.
 
 The real CI time of each shard gets its proof after the push of the spec.
+
+## The split after the first CI runs
+
+Date: 2026-11-21. The source is run 44871380504 on 3a100c90, with 6 shards and the built-in split of Playwright.
+
+The jobs took 363, 262, 213, 255, 317, and 326 s. Shard 1 was over 360 s. Each job holds about 120 s of setup and builds.
+
+The built-in split gives each shard one block of tests in a row, by count. The first file of a run is slow, so its tests all landed in shard 1. The raw log of shard 1 shows it:
+
+| Run | Shard 1 | Other shards |
+| --- | --- | --- |
+| `rules` | 66 s, all 9 tests of `evidence-rules.spec.ts` | 4 to 32 s |
+| `floor` of cpc | 65 s, 42 tests of `analyzer-stage.spec.ts` | 27 to 108 s |
+| `floor` of norcal | 54 s, 40 tests of `analyzer-stage.spec.ts` | 15 to 60 s |
+
+The fix is the reporter `apps/site/scripts/playwright-shard-reporter.mjs`. It gives each shard each Nth test of the run, so each slow file spreads over the shards. It keeps each file of `eggs` whole, because that project is not fully parallel. The matrix now has 7 shards.
+
+The model uses the CI time of each test in the 6 logs, and a fit of the wall of each run to the old jobs. It predicts these job times:
+
+| Split | Each shard | Slowest |
+| --- | --- | --- |
+| Each Nth test, 6 shards | 309, 281, 325, 288, 281, 277 | 325 |
+| Each Nth test, 7 shards | 249, 306, 266, 263, 274, 248, 296 | 306 |
+
+A shard that holds one of the two 47 s tests of `evidence-rules.spec.ts` stays near 300 s. The `--list` of each run with `PLAYWRIGHT_SHARD=<i>/7` gives each test once: the union of the 7 shards equals the full list, with no duplicate.

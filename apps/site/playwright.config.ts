@@ -27,7 +27,13 @@ export default defineConfig({
   // CI runs the browser check in a matrix of shards, and each job sets PLAYWRIGHT_SHARD, such as "2/4". Each Playwright run of
   // the check then takes only its own part of the tests. A shard with no test of a project passes. No value runs every test.
   shard: shardOfEnv(process.env.PLAYWRIGHT_SHARD),
-  reporter: "list",
+  // The reporter in playwright-shard-reporter.mjs gives each shard each Nth test of the run, so each shard gets a part of
+  // each slow file. The built-in split gives a block of tests in a row, which put each slow first file in shard 1.
+  // The option names the projects that are not fully parallel, so their files stay whole in one shard.
+  reporter: [
+    ["list"],
+    ["./scripts/playwright-shard-reporter.mjs", { wholeFileProjects: ["eggs"] }],
+  ],
   use: {
     ...devices["Desktop Chrome"],
     // The reveal starts each section at opacity 0. axe skips hidden text, so the check reads the page with no motion.
@@ -58,7 +64,8 @@ export default defineConfig({
     // with one worker (scripts/check-floor.mjs does both). CPU load from other workers delays a frame, so a limit of 100 ms
     // fails in a parallel run and holds in a run alone.
     // The one worker still runs one test at a time. fullyParallel lets a shard take single tests, not a whole file, so the
-    // timing tests spread over the shards of CI. Most of them sit in one file.
+    // timing tests spread over the shards of CI. Most of them sit in one file. The project is not in wholeFileProjects of the
+    // shard reporter for the same reason.
     {
       name: "floor-timing",
       testMatch: FLOOR_SPECS,

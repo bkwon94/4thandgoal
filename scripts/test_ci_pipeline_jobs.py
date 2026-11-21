@@ -19,7 +19,10 @@ def job_text(name: str) -> str:
 
 def dry_run(target: str) -> str:
     """Prints the commands of a target of the pipeline Makefile, and runs none."""
-    return subprocess.run(["make", "-n", target], cwd=REPO / "apps/pipeline", capture_output=True, text=True, check=True).stdout
+    # In CI an outer make runs this test, so the child make gets MAKELEVEL and prints "Entering directory" lines.
+    # --no-print-directory keeps those lines out, so the output holds only the commands.
+    command = ["make", "--no-print-directory", "-n", target]
+    return subprocess.run(command, cwd=REPO / "apps/pipeline", capture_output=True, text=True, check=True).stdout
 
 
 class ThePipelineJobs(unittest.TestCase):

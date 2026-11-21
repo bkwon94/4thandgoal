@@ -98,7 +98,9 @@ jobs:
 
   # Playwright runs in a matrix of shards. Each job runs the whole browser check, and each Playwright run in it takes only the
   # tests of its shard, so each job builds each client again. Real CI times set the count: with 5 shards the jobs took 276 to
-  # 389 s on two runs, above the limit of 360 s, so the matrix has 6. The serial projects keep one worker in each shard.
+  # 389 s on two runs, above the limit of 360 s. With 6 shards and the built-in split of Playwright, shard 1 took 363 s, because
+  # it held the slow first file of each run. The reporter scripts/playwright-shard-reporter.mjs now gives each shard each Nth
+  # test, and the matrix has 7. Each job holds about 120 s of setup and builds. The serial projects keep one worker.
   site-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -106,9 +108,9 @@ jobs:
       # Each shard runs to its end, so a red run shows the failures of every shard, not only of the first.
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3, 4, 5, 6, 7]
     env:
-      # The Playwright config reads it, such as "2/6". The total comes from the matrix, so the list above is the one count.
+      # The Playwright config reads it, such as "2/7". The total comes from the matrix, so the list above is the one count.
       PLAYWRIGHT_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
     steps:
       - name: Check out the repository
