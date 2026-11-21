@@ -31,6 +31,11 @@ console.log(
   lines.filter((line) => /^\s*\d+ (pass|fail|skip)\b|^Ran \d+ tests/.test(line)).join("\n"),
 );
 console.log(`bun test exit code: ${run.status}`);
+// A suite that did not run sends no request and makes no folder, so a failed run must not print PASS.
+if (run.status !== 0) {
+  console.log("FAIL: bun test did not pass, so this check counts nothing.");
+  process.exit(1);
+}
 
 /* Bun prints the path of a test file on a line of its own before the output of that file, so the last such line names
    the file that printed each hit. A request can fail after its test ends, so the file is a lead, not a proof. */

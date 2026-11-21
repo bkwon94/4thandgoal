@@ -56,6 +56,11 @@ const summary = `${run.stdout}\n${run.stderr}`
   .filter((line) => /^\s*\d+ (pass|fail|skip)\b|^Ran \d+ tests/.test(line));
 console.log(summary.join("\n"));
 console.log(`bun test exit code: ${run.status}`);
+// A suite that did not run sends no request and makes no folder, so a failed run must not print PASS.
+if (run.status !== 0) {
+  console.log("FAIL: bun test did not pass, so this check counts nothing.");
+  process.exit(1);
+}
 
 const grew = prefixes.filter((prefix) => after[prefix] > before[prefix]);
 for (const prefix of prefixes) {
