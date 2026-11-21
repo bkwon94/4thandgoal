@@ -31,8 +31,9 @@ function sourceFiles(dir = COMPONENTS_DIR): string[] {
   });
 }
 
-/* A module name in an import, an export from, a dynamic import, a vi.mock, or a require. Only these reach a module. */
-const SPECIFIER = /(?:\bfrom|\bimport\s*\(?|\bmock\s*\(|\brequire\s*\()\s*["']([^"']+)["']/g;
+/* A module name in an import, an export from, a dynamic import, a mock.module, or a require. Only these reach a module. */
+const SPECIFIER =
+  /(?:\bfrom|\bimport\s*\(?|\bmock(?:\.module)?\s*\(|\brequire\s*\()\s*["']([^"']+)["']/g;
 
 /* The modules a component must not reach. The match takes the alias and a relative path alike. */
 const BANNED: { ruleId: string; test: (specifier: string) => boolean; fix: string }[] = [
@@ -125,6 +126,16 @@ describe("the component rule", () => {
     const found = offenses(
       "src/components/week/standings.tsx",
       'import { weekData } from "@/lib/data/week-data";\n',
+    );
+    expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
+      { ruleId: "components/no-loader", line: 1 },
+    ]);
+  });
+
+  it("finds one offense in a component that mocks a loader with mock.module", () => {
+    const found = offenses(
+      "src/components/week/standings.tsx",
+      'mock.module("@/lib/data/week-data", () => ({}));\n',
     );
     expect(found.map(({ ruleId, line }) => ({ ruleId, line }))).toEqual([
       { ruleId: "components/no-loader", line: 1 },
