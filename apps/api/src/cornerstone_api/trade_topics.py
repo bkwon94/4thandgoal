@@ -229,7 +229,7 @@ def limit_lines(read: ReadLimit) -> list[str]:
     return lines
 
 
-def ideas_player(gives: Pick, gets: Pick) -> tuple[Pick, str] | None:
+def ideas_player(gives: Pick, gets: Pick) -> tuple[Pick, Literal["gives", "gets"]] | None:
     """The player of trade ideas from the two picks of one Jev request, and his side: "gives" or "gets".
 
     Exactly one sure side names the player and the direction. Two sure sides or none name no one player, so the
@@ -457,7 +457,7 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
 
     def work(emit: Emit, defer: Defer) -> None:
         step = _step(emit)
-        anchor, block, partner, limit = None, [], body.partner, None
+        anchor, block, partner, limit = None, None, body.partner, None
         if body.question is not None:
             gives, gets, answers = pick_players(asker.jev, body.question.strip(), teams, body.roster_id, IDEAS_CONTEXT,
                                                 body.turns, limit=True)
@@ -484,8 +484,10 @@ def trade_ideas(request: Request, body: TradeIdeasRequest, asker: ClientAsker,
                     anchor, partner = Anchor(player_id=pick.player_id, side="gets"), pick.roster_id
             for line in [] if limit is None else limit_lines(read):
                 step(line)
-        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, anchor=anchor, limit=limit,
-                           trade_block=block)
+        # A field that the ask does not use stays unset, so the request shows only what the ask sets.
+        fields = {"anchor": anchor, "trade_block": block}
+        pair = FindRequest(season=asker.season, asker=body.roster_id, partner=partner, limit=limit,
+                           **{name: value for name, value in fields.items() if value is not None})
         # The log-only Jev checks go to `defer`, so they run after the stream ends and add no time to the wait.
         document = capped_press(asker, body.roster_id, emit,
                                 lambda: analyzer_routes.find_trades(request, pair, served, step, defer=defer))

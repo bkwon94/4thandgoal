@@ -564,7 +564,7 @@ def _find_request_of_ask(api, monkeypatch, question: str):
     monkeypatch.setattr(trade_topics.analyzer_routes, "find_trades", record)
     parts = _parts(api.post(IDEAS, json={"roster_id": BO_GIRDS, "question": question}, headers=HEADERS))
     [pair] = sent
-    print(f"ask {question!r} as Bo Girds -> find request {pair.model_dump_json()}")
+    print(f"ask {question!r} as Bo Girds -> find request {pair.model_dump_json(exclude_unset=True)}")
     assert _of(parts, "data-answer")
     return pair
 
@@ -574,13 +574,14 @@ def test_a_gives_ask_sends_the_trade_block_of_the_one_player_and_no_anchor(api, 
     pair = _find_request_of_ask(api, monkeypatch, WHAT_FOR_WALKER)
     assert pair.trade_block == [WALKER]
     assert pair.anchor is None
+    assert "anchor" not in pair.model_fields_set
 
 
 def test_a_gets_ask_sends_the_anchor_with_the_side_gets_and_no_trade_block(api, monkeypatch):
     # AT-29: "How do I get Bijan Robinson?" as Bo Girds.
     pair = _find_request_of_ask(api, monkeypatch, HOW_TO_GET_BIJAN)
     assert pair.anchor == Anchor(player_id=BIJAN, side="gets")
-    assert pair.trade_block == []
+    assert "trade_block" not in pair.model_fields_set
 
 
 def test_an_unsure_pick_falls_back_to_the_weakest_slot_search_with_a_step_that_says_so(api):
