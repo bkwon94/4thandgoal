@@ -66,6 +66,16 @@ describe("the files that run the full suite", () => {
     expect(needsFullSuite(["packages/some-later-package/site/package.json"])).toBe(true);
   });
 
+  it("name the Oxlint config and each file of the design rules, which the rule tests reach only through Oxlint", () => {
+    for (const file of [
+      ".oxlintrc.json",
+      "packages/design/lint/plugin.mjs",
+      "packages/design/lint/rules/use-lines.mjs",
+    ]) {
+      expect(needsFullSuite([file]), file).toBe(true);
+    }
+  });
+
   it("leave out a source file, a test file, and a doc, so Bun picks the reachable tests", () => {
     expect(
       needsFullSuite([

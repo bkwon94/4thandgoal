@@ -19,6 +19,9 @@ export const FULL_SUITE_FILES = [
   "apps/site/test/",
   // The `@` alias and the other paths that Bun resolves.
   "apps/site/tsconfig.json",
+  // The Oxlint config and the design rules. The rule tests run Oxlint as a child process and import no rule file.
+  ".oxlintrc.json",
+  "packages/design/lint/",
   // The runner and the scope, so a change to how CI picks the tests gets a full run.
   "apps/site/scripts/bun-test.mjs",
   "apps/site/scripts/test-scope.mjs",
