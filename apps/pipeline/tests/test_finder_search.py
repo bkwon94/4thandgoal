@@ -15,7 +15,7 @@ from cpc import cpc_client
 from fakes import FakeJev, no_news
 from typesafe_sdk import RetryPolicy, TypeSafeClient
 
-from analyzer.finder_pick import offer_sheet
+from analyzer.finder_pick import build_pick_prompt, offer_sheet, offer_sheets, pick_trades
 from analyzer.finder_search import (
     SHORTLIST_KEEP,
     UNSURE,
@@ -841,6 +841,62 @@ def test_an_empty_trade_block_gives_the_same_offers_in_the_same_order_as_no_bloc
     assert plain.offers
     assert [offer_id(t) for t in empty.offers] == [offer_id(t) for t in plain.offers]
     assert [o.offer_id for o in empty.shortlist] == [o.offer_id for o in plain.shortlist]
+
+
+def test_varied_with_a_trade_block_gives_the_best_offer_of_each_block_player_a_place_before_a_player_off_the_block():
+    # Each offer is a 2-for-1 with partner 11, so only the tier of the players that the asker gives sorts them.
+    offers = [_offer(["p1", "p3"], 11, ["a"], 0.9), _offer(["p1", "p4"], 11, ["b"], 0.8),
+              _offer(["p1", "p2"], 11, ["c"], 0.7)]
+    # With no block, p4 has his own best offer (0.8), so it takes the second place.
+    assert [offer.score for offer in varied(offers, 2)] == [0.9, 0.8]
+    # With p1 and p2 on the block, p4 takes no place of that tier, so the best offer of p2 (0.7) comes second.
+    assert [offer.score for offer in varied(offers, 2, trade_block=["p1", "p2"])] == [0.9, 0.7]
+
+
+def test_two_block_players_with_fair_offers_both_reach_the_shortlist(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair), trade_block=[COLLINS, WILLIAMS])
+    sent = [set(offer.trade.sides[0].player_ids) for offer in found.shortlist]
+    assert any(COLLINS in gives for gives in sent) and any(WILLIAMS in gives for gives in sent)
+    print("The Shortlist of the block Collins and Williams:")
+    for offer in found.shortlist:
+        print(f"  {offer.offer_id} score={offer.score:.2f}")
+
+
+def test_the_pick_names_the_trade_block_and_its_prompt_holds_the_block_rule(snap):
+    found = search(ASKER, None, snap, FakeJev(answer=_scattered_fair), trade_block=[COLLINS, WILLIAMS])
+    system, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
+    block_line = "The Trade block: Nico Collins and Jameson Williams."
+    assert block_line in user.splitlines()
+    rule = ("When the list holds a fair offer for a block player, at least one pick sends him.")
+    assert rule in " ".join(system.split())
+    print(f"The block line of the user message: {block_line}")
+    print(f"The rule of the prompt: {rule}")
+
+
+def test_the_pick_of_a_search_with_no_block_names_no_trade_block(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev())
+    _, user = build_pick_prompt(found, snap, offer_sheets(found, snap, NewsFeed(fetch=no_news)), None)
+    assert "Trade block" not in user
+
+
+def test_an_empty_search_with_a_trade_block_names_the_block_players_in_its_line(snap):
+    keep_all = Limit(keep_positions=["QB", "RB", "WR", "TE"])
+    found = search(ASKER, PARTNER, snap, FakeJev(), limit=keep_all, trade_block=[COLLINS, WILLIAMS])
+    assert found.shortlist == []
+    picks = pick_trades(found, snap, news=NewsFeed(fetch=no_news), jev=FakeJev())
+    assert picks.picks == []
+    assert picks.none_line == "No fair trade sends Collins or Williams with the partner and the position you picked."
+    print(picks.none_line)
+
+
+def test_the_empty_line_of_a_block_of_one_or_three_players_names_each_of_them(snap):
+    found = search(ASKER, PARTNER, snap, FakeJev(), trade_block=[WARREN])
+    assert pick_trades(found, snap, news=NewsFeed(fetch=no_news), jev=FakeJev()).none_line == (
+        "No fair trade sends Warren with the partner and the position you picked.")
+    keep_all = Limit(keep_positions=["QB", "RB", "WR", "TE"])
+    found = search(ASKER, PARTNER, snap, FakeJev(), limit=keep_all, trade_block=[COLLINS, WILLIAMS, WARREN])
+    assert pick_trades(found, snap, news=NewsFeed(fetch=no_news), jev=FakeJev()).none_line == (
+        "No fair trade sends Collins, Williams, or Warren with the partner and the position you picked.")
 
 
 class _FairFails(FakeJev):

@@ -136,6 +136,9 @@ class Shortlist(BaseModel):
     # The ids of the offers that step 2 asked about: the STEP_TWO_PER_GROUP best offers of each partner and shape
     # direction, by the fair mean, in the order of the partners and of their offers.
     step_two: list[str] = []
+    # The player ids of the Trade block of the search, in the order of the request. The pick names them, and the line
+    # of an empty search names them too. An empty list means the search had no block.
+    trade_block: list[str] = []
 
 
 
@@ -295,27 +298,29 @@ def offer_id(trade: ProposedTrade) -> str:
     return "-".join(f"{side.roster_id}:{'+'.join(sorted(side.player_ids))}" for side in trade.sides)
 
 
-def _tier_keys(offer: ShortlistOffer) -> list[list[tuple[str, str | int]]]:
+def _tier_keys(offer: ShortlistOffer, trade_block: list[str] | None) -> list[list[tuple[str, str | int]]]:
     """The keys of the three tiers of `varied` that the offer can be the best of: its shape direction, its partners,
-    and the players that the asker gives."""
+    and the players that the asker gives. With a Trade block, only the block players that the asker gives count."""
     return [[("shape", shape(offer.trade))],
             [("partner", side.roster_id) for side in offer.trade.sides[1:]],
-            [("player", pid) for pid in offer.trade.sides[0].player_ids]]
+            [("player", pid) for pid in offer.trade.sides[0].player_ids if not trade_block or pid in trade_block]]
 
 
-def varied(offers: list[ShortlistOffer], keep: int) -> list[ShortlistOffer]:
+def varied(offers: list[ShortlistOffer], keep: int, trade_block: list[str] | None = None) -> list[ShortlistOffer]:
     """At most `keep` offers, in an order with variety (decision 16, AT-43).
 
     First come the best offers of each shape direction, by score. Then the best offers of each partner that are not on
     the list yet, then those of each player that the asker gives. The rest follow by score, highest first. One offer
     can be the best of a shape, a partner, and a player, and it shows once, in its first tier. With more best offers
     than `keep`, the list holds only best offers.
+    With a `trade_block`, the tier of the players that the asker gives counts only block players. So the best offer of
+    each block player comes before the rest, and a player off the block in the same trade takes no place of that tier.
     """
     # A tie of scores goes to the lower offer id, so the order is the same on each run.
     ranked = sorted(offers, key=lambda offer: (-offer.score, offer.offer_id))
     tiers: list[dict[tuple[str, str | int], str]] = [{}, {}, {}]
     for offer in ranked:
-        for tier, keys in zip(tiers, _tier_keys(offer), strict=True):
+        for tier, keys in zip(tiers, _tier_keys(offer, trade_block), strict=True):
             for key in keys:
                 tier.setdefault(key, offer.offer_id)
     placed: list[ShortlistOffer] = []
@@ -823,11 +828,12 @@ def _search(asker: int, partner: int | None, snapshot: Snapshot, waves: JevWaves
                 log.info("Finder gain drop %s: gains=%s", offer.offer_id, {r: round(p, 2) for r, p in gains.items()})
                 continue
             rated_offers.append(offer)
-    shortlist = varied(rated_offers, SHORTLIST_KEEP)
+    shortlist = varied(rated_offers, SHORTLIST_KEEP, trade_block)
     stage(f"Made a shortlist of {len(shortlist)}" if len(shortlist) != 1 else "Made a shortlist of one")
     for offer in shortlist:
         log.info("Finder shortlist %s: score=%.3f fair=%.2f needs=%s gains=%s", offer.offer_id, offer.score,
                  offer.fair, {rid: round(p, 2) for rid, p in offer.needs.items()},
                  {rid: round(p, 2) for rid, p in offer.gains.items()})
     return Shortlist(asker=asker, partners=reads, offers=offers, shortlist=shortlist, dropped=dropped,
-                     fair_means=fair_by_id, unfair=unfair, step_two=step_two)
+                     fair_means=fair_by_id, unfair=unfair, step_two=step_two,
+                     trade_block=list(trade_block or []))

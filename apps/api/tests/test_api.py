@@ -36,6 +36,7 @@ from cornerstone_api.app import GRADE_COUNTS_FILE, create_app, load_clients
 from cornerstone_api.settings import RATE_LIMIT_PER_MINUTE, Settings
 from cornerstone_api.sources import Sources
 from cornerstone_api.value_models import VALUE_MODELS
+from facts.names import last_name
 from facts.writer import FINDER_PICK_MODEL, ClaudeWriter
 from league.chart import match_chart, name_key
 from league.client import ClientError
@@ -2114,6 +2115,18 @@ def _block_pair(snapshot) -> tuple[str, str]:
     """Two players of roster 2 with a chart value, so each can be on a Trade block of a find of roster 2."""
     first, second = sorted(pid for pid in snapshot.rosters[2] if snapshot.players[pid].position in ("RB", "WR"))[:2]
     return first, second
+
+
+def test_an_empty_find_with_a_trade_block_names_the_block_players_and_makes_no_claude_call(settings, sources):
+    picker = StubPicker()
+    snapshot = _here(sources, settings).snapshot(2026)
+    block = list(_block_pair(snapshot))
+    doc = _find_client(settings, sources, picker).post(
+        "/find", json={"season": 2026, "asker": 2, "limit": KEEP_ALL, "trade_block": block}, headers=HEADERS).json()
+    assert doc["trades"] == [] and picker.calls == []
+    first, second = (last_name(snapshot.players[pid].name) for pid in block)
+    assert doc["empty"] == f"No fair trade sends {first} or {second} with the partner and the position you picked."
+    print(doc["empty"])
 
 
 def test_the_find_cache_key_holds_the_sorted_trade_block(settings, sources):
