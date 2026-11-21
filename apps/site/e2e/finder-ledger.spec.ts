@@ -274,21 +274,23 @@ for (const viewport of VIEWPORTS) {
           await page.emulateMedia({ reducedMotion: motion });
           await openFinder(page, theme, true, true);
           const status = page.getByRole("status");
+          // The clock jumps with fastForward, which fires each due timer once. runFor would also fire each animation frame
+          // of the moving mesh back to back, and a CI runner draws the canvas on its CPU, so one 1.4 s run took 38 s.
           // The stream sends steps 1 to 4 at once, and each line still holds 1.5 s on the screen, then gives way.
           await expect(status).toHaveText(`1 of 5 · Reading ${PARTNERS} teams`);
           for (const line of ["2 of 5 · Matching trade value", "3 of 5 · Checking 4,667 trades for fairness", "4 of 5 · Checking 77 against both lineups", "5 of 5 · Picking the best 5"]) {
-            await page.clock.runFor(1400);
+            await page.clock.fastForward(1400);
             await expect(status).not.toHaveText(line);
-            await page.clock.runFor(100);
+            await page.clock.fastForward(100);
             await expect(status).toHaveText(line);
           }
           const seen: string[] = [];
           const fits: string[] = [];
           // The step 5 line holds 1.5 s, as each step line does, and then each trade line holds 3 s (V2).
-          await page.clock.runFor(1400);
+          await page.clock.fastForward(1400);
           await expect(status).toHaveText("5 of 5 · Picking the best 5");
           for (let turn = 0; turn < SHORTLIST.length + 1; turn++) {
-            await page.clock.runFor(turn === 0 ? 100 : 3000);
+            await page.clock.fastForward(turn === 0 ? 100 : 3000);
             // The page renders the new line after the timer fires, so the read waits for the line to change.
             await expect(status).not.toHaveText(seen.at(-1) ?? "5 of 5 · Picking the best 5");
             const text = (await status.textContent())!;
@@ -318,7 +320,7 @@ for (const viewport of VIEWPORTS) {
             if (turn < 2 && motion === "no-preference") {
               // The swap of the line ends after its release timer, so the shot waits for the line to rest. It stays
               // well inside the hold of 3 s, so the next turn still reads the next line.
-              await page.clock.runFor(400);
+              await page.clock.fastForward(400);
               await page.screenshot({ path: info.outputPath(`step-5-line-${turn + 1}-${theme}.png`) });
             }
           }
@@ -327,7 +329,7 @@ for (const viewport of VIEWPORTS) {
           await page.evaluate(() => (window as unknown as { __sendNext: () => number }).__sendNext());
           await expect(page.getByRole("article")).toHaveCount(1);
           await expect(status).toHaveText("5 of 5 · Picking the best 5");
-          await page.clock.runFor(9000);
+          await page.clock.fastForward(9000);
           await expect(status).toHaveText("5 of 5 · Picking the best 5");
         });
       }
