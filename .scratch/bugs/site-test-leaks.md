@@ -12,7 +12,7 @@ Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam; each do
 
 Done condition: One run of the site `bun test` suite leaves no more entries in the macOS temp folder than it found, for each `mkdtemp` prefix of a site test.
 Method: diagnosing-bugs
-Cause: `routeOver`, `readerOver`, `pageOver`, `routeOfClient`, `dataWithoutWaiver`, and two inline tests in nine site test files (`manager-page.test.tsx`, `managers/page.test.tsx`, `manager-data.test.ts`, `rankings/page.test.tsx`, `rankings-data.test.ts`, `waiver/page.test.tsx`, `waiver-data.test.ts`, `week-data.test.ts`, `page-personal.test.tsx`) make a temp `public/` folder with `mkdtempSync` under `os.tmpdir()` and never remove it, so each run of the suite leaves 72 folders in the macOS temp folder.
+Cause: `routeOver`, `readerOver`, `pageOver`, `routeOfClient`, `dataWithoutWaiver`, and two inline tests in nine site test files (`manager-page.test.tsx`, `managers/page.test.tsx`, `manager-data.test.ts`, `rankings/page.test.tsx`, `rankings-data.test.ts`, `waiver/page.test.tsx`, `waiver-data.test.ts`, `week-data.test.ts`, `page-personal.test.tsx`) make a temp `public/` folder with `mkdtempSync` under `os.tmpdir()` and never remove it, so each run of the suite leaves 73 folders in the macOS temp folder.
 Red: at `2d625fd0`, `node scripts/temp-leak-check.mjs` in `apps/site`
 
 ```text
