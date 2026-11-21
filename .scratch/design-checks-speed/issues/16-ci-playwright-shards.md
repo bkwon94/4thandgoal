@@ -12,7 +12,7 @@ Spec: `.scratch/design-checks-speed/PRD.md`. Acceptance tests AT-29.
 
 - [x] The ticket records the time of each shard with each count it tried, and the chosen count.
 - [x] The serial Playwright projects run with one worker.
-- [ ] Each Playwright shard job exits 0 in 360 s or less.
+- [x] Each Playwright shard job exits 0 in 360 s or less.
 
 ## The measured split
 
@@ -67,3 +67,19 @@ The model uses the CI time of each test in the 6 logs, and a fit of the wall of 
 | Each Nth test, 7 shards | 249, 306, 266, 263, 274, 248, 296 | 306 |
 
 A shard that holds one of the two 47 s tests of `evidence-rules.spec.ts` stays near 300 s. The `--list` of each run with `PLAYWRIGHT_SHARD=<i>/7` gives each test once: the union of the 7 shards equals the full list, with no duplicate.
+
+## Evidence of CI
+
+Date: 2026-11-21. Runs 44873662117, 44874144251, and 44874592510 of `check.yml` on 4d5f4d13. Time is `startedAt` to `completedAt` of each job, in seconds. Each job exits 0.
+
+| Job | 44873662117 | 44874144251 | 44874592510 |
+| --- | --- | --- | --- |
+| site-browser (1) | 266 | 237 | 258 |
+| site-browser (2) | 330 | 275 | 302 |
+| site-browser (3) | 231 | 254 | 267 |
+| site-browser (4) | 270 | 284 | 304 |
+| site-browser (5) | 261 | 289 | 254 |
+| site-browser (6) | 260 | 265 | 216 |
+| site-browser (7) | 342 | 270 | 296 |
+
+The slowest shard job is 342 s, below the limit of 360 s.
