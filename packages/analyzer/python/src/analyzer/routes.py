@@ -481,11 +481,11 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
     _count_grade(request, served)
     # The search gets the anchor keyword only with an anchor, as it gets the stage, so a search with no anchor runs
     # as it always has. The limit keyword and the trade_block keyword go the same way.
-    anchored = {} if pair.anchor is None else {"anchor": pair.anchor}
+    search_args = {} if pair.anchor is None else {"anchor": pair.anchor}
     if pair.limit is not None:
-        anchored["limit"] = pair.limit
+        search_args["limit"] = pair.limit
     if pair.trade_block:
-        anchored["trade_block"] = pair.trade_block
+        search_args["trade_block"] = pair.trade_block
     staged = {} if stage is None else {"stage": stage}
     # The search gets the read keyword only from a stream, as it gets the stage.
     reads = {} if read is None else {"read": read}
@@ -497,7 +497,7 @@ def _find(request: Request, pair: FindRequest, served: Served, stage: Stage | No
             deferred["on_picks_end"] = trades_done
         if trades_count is not None:
             deferred["on_picks_count"] = trades_count
-    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **anchored, **reads)
+    shortlist = request.app.state.finder_search(pair.asker, pair.partner, snapshot, **staged, **search_args, **reads)
     if weigh is not None and shortlist.shortlist:
         weigh(shortlist_trades(shortlist, snapshot))
     picks = request.app.state.finder_pick(shortlist, snapshot, **staged, **deferred)
