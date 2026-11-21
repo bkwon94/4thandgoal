@@ -11,11 +11,19 @@ const OXLINT = join(process.cwd(), "node_modules", ".bin", "oxlint");
 
 /* Lints one fixture, given as a path under packages/design/lint/fixtures/, and gives the exit code and the output. */
 export function lintFixture(fixture: string): { status: number | null; output: string } {
-  const run = spawnSync(OXLINT, [`packages/design/lint/fixtures/${fixture}`], {
-    cwd: ROOT_DIR,
-    encoding: "utf8",
-    // The CI format of Oxlint drops the custom message of a rule, and the tests read that message.
-    env: { ...process.env, GITHUB_ACTIONS: undefined },
-  });
-  return { status: run.status, output: run.stdout + run.stderr };
+  const run = spawnSync(
+    OXLINT,
+    ["--format", "default", `packages/design/lint/fixtures/${fixture}`],
+    {
+      cwd: ROOT_DIR,
+      encoding: "utf8",
+      // Oxlint picks its format from the env: agent vars give a plain format, CI gives color codes.
+      // --format default and the strip below give one output in every env.
+      // A run with GITHUB_ACTIONS set still passed with --format default, so the unset is a guard only.
+      env: { ...process.env, GITHUB_ACTIONS: undefined },
+    },
+  );
+  // Strips the ANSI color codes, which sit between the file name and the line number.
+  const output = (run.stdout + run.stderr).replace(/\x1b\[[0-9;]*m/g, "");
+  return { status: run.status, output };
 }
