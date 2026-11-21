@@ -15,9 +15,10 @@ import {
   mock,
   onTestFinished,
   setDefaultTimeout,
+  spyOn,
 } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import { fixturePublished, readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { fixturePublished, readFixtureSite } from "@/fixtures/sites";
 import { clientValues } from "@/generated/client-values";
 import { loadFrontDoor } from "@/lib/data/front-door-data";
 import { FIXING_LINE } from "./front-door/free-answer";
@@ -29,9 +30,8 @@ import HomePage from "./front-door/door-page";
 setDefaultTimeout(15_000);
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
-   sets the folder, and restoreFixtureSite puts the real one back after each test. */
+   sets the folder, and the preload puts the real one back after each test. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 const PASSPHRASE = "cornerstone-test";
 const LIL_FRIDGE = 3;
@@ -369,8 +369,8 @@ describe("the links of the personal Topics", () => {
     for (const file of ["page.json", "topics.json"])
       copyFileSync(join(from, "week-08", file), join(root, "public", "2026", "week-08", file));
     copyFileSync(join(from, "managers.json"), join(root, "public", "2026", "managers.json"));
-    // The readers read the working folder on each call. restoreFixtureSite puts the real one back after the test.
-    process.cwd = () => root;
+    // The readers read the working folder on each call. The preload restores the spy after the test.
+    spyOn(process, "cwd").mockReturnValue(root);
     return { loadFrontDoor };
   }
 

@@ -5,14 +5,13 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import checkStream from "./front-door/fixtures/trade-check-card-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-card-stream.json";
 import HomePage from "./front-door/door-page";
 
 /* The readers of public/ read the fixed copy of the cpc data, as in page-trade.test.tsx. */
 beforeEach(() => readFixtureSite("cpc"));
-afterEach(restoreFixtureSite);
 
 const SURE = "is Courtland Sutton for Kenneth Walker fair";
 const fetchStub = mock();

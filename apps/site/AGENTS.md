@@ -12,7 +12,7 @@ Run these in `apps/site/`.
 - Dev server: `CLIENT=cpc pnpm dev`
 - Build the static export: `CLIENT=cpc pnpm build`. The `prebuild` step checks `client.toml` and writes the generated files.
 - Test: `pnpm test`. It runs `pnpm test:bun`. The tests read the generated files, so run `pnpm check:fast` or a build first.
-- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. `scripts/bun-test.mjs` runs `bun test --isolate` from `apps/site` on `src/`, `scripts/`, `test/`, and the `site/` folder of each package. With `--isolate`, each file has its own global and module registry. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it. `bunfig.toml` does not read `isolate`, so a direct `bun test` call needs the flag.
+- Test on Bun: `pnpm test:bun [<bun test flag> ...]`. `scripts/bun-test.mjs` runs `bun test --isolate` from `apps/site` on `src/`, `scripts/`, `test/`, and the `site/` folder of each package. With `--isolate`, each file has its own global, module registry, and window, in the same worker process. The preload `test/preload.ts` gives happy-dom, and `bunfig.toml` of `apps/site` loads it. `bunfig.toml` does not read `isolate`, so a direct `bun test` call needs the flag.
 - Run one shard of the unit suite: set `BUN_TEST_SHARD=<i>/<n>`, such as `BUN_TEST_SHARD=2/3 pnpm test:bun`. The split uses the time of each file in `bun-test-timings.json`. Refresh that file with `pnpm test:bun --timings=bun-test-timings.json --update-timings`.
 - Run only the tests that a diff can reach: set `BUN_TEST_BASE=<ref>`, such as `BUN_TEST_BASE=main pnpm test:bun`. It adds `bun test --changed=<ref>`. A diff that names a file of `FULL_SUITE_FILES` in `scripts/test-scope.mjs`, such as the lock file or the preload, runs the full suite. CI sets it on a PR only.
 - Check the export: `CLIENT=cpc pnpm check:export`. Run it after `pnpm build`, with the same `CLIENT`.
@@ -38,10 +38,9 @@ Each site test runs on `bun test` with happy-dom (ADR 0038). No test runs on Vit
 3. In a test of a package, use `spyOn(globalThis, "x").mockImplementation(fake)`. A package imports nothing from the app.
 4. Restore nothing by hand. The preload restores each spy and each stub after each test.
 5. Put each spy and each stub in `beforeEach`. The restore after the first test removes a spy or a stub at the top level of a file.
-6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env or `process.cwd` value when it loads. Then import the module again.
-7. Use an import with a side effect that runs first, such as `@/fixtures/cpc-site`, for a setup that must run before the other imports. Bun has no `vi.hoisted`.
-8. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
-9. Run `pnpm test:bun` in full before the merge.
+6. Use `resetModules()` of `apps/site/test/reset-modules.ts` for a module that reads an env value when it loads, such as `src/lib/config.ts`. Then import the module again. The readers of `src/lib/data/` read `process.cwd` on each call, so a spy on it needs no reset.
+7. Use `setSystemTime` to fix only `Date`. Use `setDefaultTimeout` to change the time limit of each test of a file.
+8. Run `pnpm test:bun` in full before the merge.
 
 The preload unmounts each React Testing Library render after each test, so a file needs no `cleanup` of its own. The preload also marks the `finished` promise of a canceled animation as handled, as a browser does, so a Framer Motion part ends with no `AbortError`. happy-dom has a desktop-wide window, so a test of a page that opens the menu sheet calls `stubPhone` of `test/phone.ts` in `beforeEach`. If a test needs a real jsdom feature, the ticket names it for Brian.
 
@@ -58,7 +57,7 @@ happy-dom differs from jsdom in these ways too. The preload does not change them
 - The window is 1024 pixels wide, and `matchMedia` answers each width query. jsdom has no `matchMedia`, so a test there saw the phone tier. For the phone tier, spy on `matchMedia` in `beforeEach` with a stub that matches no query.
 - `IntersectionObserver` exists, but it never reports an entry. A part that waits on `inView` of Framer Motion never starts. jsdom has none, so the part ran its fallback.
 - `Element.prototype.animate` exists, so Framer Motion runs `opacity`, `transform`, `filter`, `clipPath`, and `backgroundColor` as a Web Animation. The inline style then holds no middle value. In jsdom, Framer Motion wrote each frame to the inline style.
-- `bun test` runs each file in one process, with one module registry and one window. Framer Motion reads `(prefers-reduced-motion)` once per run, and it decides once per run if it uses `Element.prototype.animate`. A spy on `matchMedia` in a later file does not change reduced motion. A file can pass alone and fail in the full run, so run `pnpm test:bun` in full before the merge.
+- `bun test --isolate` gives each file its own global, its own module registry, and its own window, and it runs the preload again for each file. Framer Motion reads `(prefers-reduced-motion)` once per file, and it decides once per file if it uses `Element.prototype.animate`. So the first render of a file sets reduced motion for each later test of that file, and a spy on `matchMedia` after it has no effect. A direct `bun test` call with no `--isolate` shares one registry and one window across the files, so a file can pass alone and fail in that run.
 
 ## Rules
 

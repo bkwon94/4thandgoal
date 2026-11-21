@@ -4,14 +4,13 @@
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { readFixtureSite, restoreFixtureSite } from "@/fixtures/sites";
+import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./door-page";
 // The jsdom stand-ins of the browser APIs that the popover and the menu sheet need.
 import "@cpc/design/ui/sheet-jsdom";
 
 /* The readers of public/ read the fixed copy of the norcal data, so a weekly publish never changes these tests. */
 beforeEach(() => readFixtureSite("norcal"));
-afterEach(restoreFixtureSite);
 
 /* The copy of the Stops, word for word from the table of the PRD (decision 03). */
 const COPY = [

@@ -46,7 +46,7 @@ async function doorOf(league: League, { sim = false } = {}) {
     writeFileSync(join(root, "public", "2026", "week-10", "sim.json"), JSON.stringify(weekSimJson));
   }
   spyOn(process, "cwd").mockReturnValue(root);
-  // The readers read the working folder when they load, so reset them.
+  // The readers read the working folder on each call, so the spy points them at the temp folder.
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }
