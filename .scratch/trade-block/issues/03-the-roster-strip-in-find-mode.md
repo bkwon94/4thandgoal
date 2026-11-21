@@ -8,7 +8,7 @@ Spec: `.scratch/trade-block/PRD.md`. Acceptance tests AT-10, AT-12, AT-13, AT-15
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The strip lists only the QB, RB, WR, and TE of the asker, in that position order and then by name, each with the headshot, the last name, and the position.
 - [x] A tap adds a player with a red ring and a check at the front of the strip, and a tap on a pick takes it off.
