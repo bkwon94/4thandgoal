@@ -14,10 +14,10 @@ RUN = uv run --exact --package cornerstone
 
 .DEFAULT_GOAL := help
 
-.PHONY: need-week need-client need-main settings spares-list backtest help install test test-parallel test-serial golden lint typecheck rules check check-parallel check-serial check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
+.PHONY: need-week need-client need-main settings spares-list backtest help install test test-parallel test-serial golden lint typecheck rules check check-parallel check-parallel-1 check-parallel-2 check-serial check-fast build publish egg-draft egg-drop page-json facts rankings sim sim-fixtures midseason midseason-publish egg-undo push
 
 help: ## List the targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
+	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-11s %s\n", $$1, $$2}'
 
 install: ## Install the dependencies
 	uv sync --exact --package cornerstone
@@ -51,6 +51,15 @@ check: lint typecheck test ## Run lint, typecheck, and all the tests
 check-parallel: lint typecheck test-parallel ## Run lint, typecheck, and the parallel tests
 
 check-serial: test-serial ## Run the serial tests
+
+# CI runs the parallel tests in 2 shard jobs, and PYTEST_SHARD picks the tests of each shard (tests/shard.py). Each test
+# lands in exactly one shard. Shard 1 also runs lint and typecheck, so no job runs them twice. Together the two targets
+# run what "check-parallel" runs.
+check-parallel-1: lint typecheck ## Run lint, typecheck, and shard 1 of 2 of the parallel tests
+	PYTEST_SHARD=1/2 $(RUN) pytest -q -n auto -m 'not live and not serial'
+
+check-parallel-2: ## Run shard 2 of 2 of the parallel tests
+	PYTEST_SHARD=2/2 $(RUN) pytest -q -n auto -m 'not live and not serial'
 
 # Name a rule test tests/test_rule_<topic>.py. This target finds each one with no edit.
 rules: ## Run the rule tests

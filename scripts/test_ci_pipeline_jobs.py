@@ -1,5 +1,5 @@
 """
-Tests that CI runs the pipeline in two jobs, one for the parallel tests and one for the serial tests.
+Tests that CI runs the pipeline in two jobs, one for the parallel tests in 2 shards and one for the serial tests.
 Each case reads the real workflow and asks the real Makefile what each job runs.
 """
 import re
@@ -28,6 +28,24 @@ class ThePipelineJobs(unittest.TestCase):
         self.assertIn("-n auto -m 'not live and not serial'", commands)
         self.assertNotIn("'serial and not live'", commands)
         self.assertIn("make check-pipeline-parallel", job_text("pipeline-parallel"))
+
+    def test_the_parallel_job_runs_one_target_per_shard_of_its_matrix(self):
+        job = job_text("pipeline-parallel")
+        shards = re.search(r"shard: \[(.*)\]", job).group(1).split(", ")
+        self.assertEqual(shards, ["1", "2"])
+        self.assertIn("make check-pipeline-parallel-${{ matrix.shard }}", job)
+        for shard in shards:
+            commands = dry_run(f"check-parallel-{shard}")
+            self.assertIn(f"PYTEST_SHARD={shard}/{len(shards)} ", commands)
+
+    def test_the_shards_run_the_parallel_half_once_and_lint_and_typecheck_only_in_shard_1(self):
+        def unsharded(target):
+            return [re.sub(r"PYTEST_SHARD=\S+ ", "", line) for line in dry_run(target).splitlines()]
+
+        whole = unsharded("check-parallel")
+        first, second = unsharded("check-parallel-1"), unsharded("check-parallel-2")
+        self.assertEqual(first, whole)
+        self.assertEqual(second, [line for line in whole if "pytest" in line])
 
     def test_the_serial_job_runs_the_serial_tests_and_no_parallel_test(self):
         commands = dry_run("check-serial")
