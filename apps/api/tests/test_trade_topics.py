@@ -45,7 +45,9 @@ from cornerstone_api.trade_wording import (
     KEEPS_POSITION,
     KEPT_PLAYER,
 )
+from cornerstone_api.value_models import VALUE_MODELS
 from facts.writer import ClaudeWriter
+from league.client import read_client_values
 from league.jev_port import ChoiceQuestion, JevError, NoulQuestion
 from league.provider.sleeper import load_raw
 
@@ -145,10 +147,10 @@ def advisor():
     return StubAdvisor()
 
 
-def _api(settings, sources, jev, advisor) -> TestClient:
+def _api(settings, sources, jev, advisor, client=CLIENT) -> TestClient:
     news = NewsFeed(fetch=recorded_news, now=lambda: NEWS_RECORDED)
     app = create_app(
-        settings, [CLIENT], sources=_cpc(_here(sources, settings)), jev=jev,
+        settings, [client], sources=_cpc(_here(sources, settings)), jev=jev,
         analyzer=functools.partial(read_trade, jev=jev, news=news, call=advisor),
         finder_search=functools.partial(search, jev=jev),
         finder_pick=functools.partial(pick_trades, news=news, jev=jev, call=StubPicker(), repair_call=StubRepair()))
@@ -332,9 +334,22 @@ def test_a_team_that_is_not_in_the_league_is_422(api):
     assert response.status_code == 422
 
 
-def test_trade_ideas_run_in_a_client_with_the_finder_off_and_give_the_find_document(api):
-    # AT-26: CPC has finder = false, and the trade ideas Topic calls the Finder anyway.
-    assert CLIENT.values.package(AnalyzerValues).finder is False
+def _finder_off(tmp_path: Path):
+    """The CPC client with finder = false, read from a copy of its client.toml, so the real file never changes."""
+    folder = tmp_path / "cpc-finder-off"
+    folder.mkdir()
+    text = (CLIENT.folder / "client.toml").read_text(encoding="utf-8")
+    assert "finder = true" in text
+    (folder / "client.toml").write_text(text.replace("finder = true", "finder = false"), encoding="utf-8")
+    return CLIENT.model_copy(update={"values": read_client_values(folder, VALUE_MODELS)})
+
+
+def test_trade_ideas_run_in_a_client_with_the_finder_off_and_give_the_find_document(settings, sources, jev, advisor,
+                                                                                   tmp_path):
+    # AT-26: in a client with finder = false, the trade ideas Topic calls the Finder anyway.
+    client = _finder_off(tmp_path)
+    assert client.values.package(AnalyzerValues).finder is False
+    api = _api(settings, sources, jev, advisor, client)
     parts = _parts(api.post(IDEAS, json={"roster_id": LIL_FRIDGE}, headers=HEADERS))
     [answer] = _of(parts, "data-answer")
     assert answer["kind"] == "ideas"

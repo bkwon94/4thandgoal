@@ -24,9 +24,15 @@ describe("the steps of a client", () => {
     expect(secondBuild.env).toEqual({ NEXT_PUBLIC_API_URL: "http://localhost:8080" });
   });
 
-  it("runs no grade-bar project for cpc, the client with the finder off", () => {
+  it("runs the grade-bar project on a second build for cpc, the client with the finder on", () => {
     const steps = stepsOfClient("cpc");
-    expect(steps.map((step) => step.script)).toEqual(["build", "check:export", "check:floor"]);
-    expect(steps.every((step) => !step.env)).toBe(true);
+    expect(steps.map((step) => step.script)).toEqual([
+      "build",
+      "check:export",
+      "check:floor",
+      "build",
+      "check:grade-bar-export",
+    ]);
+    expect(steps[3].env).toEqual({ NEXT_PUBLIC_API_URL: "http://localhost:8080" });
   });
 });
