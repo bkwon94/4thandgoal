@@ -8,7 +8,7 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-3, AT-4, AT-5, AT-6, and AT-7
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A unit test of the plan function covers each of the three sections, a missing section, a bad section, and the label `needs-triage`. It passes.
 - [x] `add Bugs` and `add "Quick Wins"` with `--dry-run` each plan one `td task add` in the named section, with no `4ag:` key line.
