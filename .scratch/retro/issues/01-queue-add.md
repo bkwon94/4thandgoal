@@ -10,8 +10,8 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-3, AT-4, AT-5, AT-6, and AT-7
 
 **Status:** ready-for-agent
 
-- [ ] A unit test of the plan function covers each of the three sections, a missing section, a bad section, and the label `needs-triage`. It passes.
-- [ ] `add Bugs` and `add "Quick Wins"` with `--dry-run` each plan one `td task add` in the named section, with no `4ag:` key line.
-- [ ] `add Backlog ... --dry-run` plans no command, prints one warning, and exits 0.
-- [ ] A real task that `add` made gets the key line from `take --dry-run`, above its old description. The probe task is then deleted.
-- [ ] The section "The queue" of `docs/agents/issue-tracker.md` names the subcommand `add`.
+- [x] A unit test of the plan function covers each of the three sections, a missing section, a bad section, and the label `needs-triage`. It passes.
+- [x] `add Bugs` and `add "Quick Wins"` with `--dry-run` each plan one `td task add` in the named section, with no `4ag:` key line.
+- [x] `add Backlog ... --dry-run` plans no command, prints one warning, and exits 0.
+- [x] A real task that `add` made gets the key line from `take --dry-run`, above its old description. The probe task is then deleted.
+- [x] The section "The queue" of `docs/agents/issue-tracker.md` names the subcommand `add`.

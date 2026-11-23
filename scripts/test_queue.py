@@ -856,6 +856,68 @@ class ATake(unittest.TestCase):
         self.assertNotIn("td ", out)
 
 
+class AnAdd(unittest.TestCase):
+    """`add` files one new task in Bugs, Quick Wins, or Ideas, with the label needs-triage and no key line."""
+
+    SECTIONS = {"Bugs": "bugs-id", "Quick Wins": "qw-id", "Ideas": "ideas-id"}
+
+    def add(self, section: str, sections: dict[str, str] | None = None, labels: set[str] | None = None):
+        sections = self.SECTIONS if sections is None else sections
+        labels = {"needs-triage"} if labels is None else labels
+        return queue_script.plan_file(section, "A probe", "A probe text.", Queue("p1", sections, [], labels))
+
+    def test_an_add_of_each_of_the_three_sections_plans_one_task_in_it_with_needs_triage(self):
+        for section, section_id in (("Bugs", "bugs-id"), ("Quick Wins", "qw-id"), ("Ideas", "ideas-id")):
+            with self.subTest(section=section):
+                plan = self.add(section)
+                self.assertEqual(len(plan), 1)
+                self.assertEqual(plan[0][:3], ["task", "add", "A probe"])
+                self.assertEqual(option(plan[0], "--section"), f"id:{section_id}")
+                self.assertEqual(option(plan[0], "--labels"), "needs-triage")
+                self.assertEqual(option(plan[0], "--description"), "A probe text.")
+
+    def test_an_add_puts_no_key_line_in_the_description(self):
+        self.assertFalse(option(self.add("Bugs")[0], "--description").startswith("4ag:"))
+
+    def test_an_add_to_a_missing_section_makes_the_section_before_the_task(self):
+        plan = self.add("Ideas", sections={"Bugs": "bugs-id"})
+        self.assertEqual([command[:2] for command in plan], [["section", "create"], ["task", "add"]])
+        self.assertEqual(option(plan[0], "--name"), "Ideas")
+        self.assertEqual(option(plan[1], "--section"), "Ideas")
+
+    def test_an_add_makes_the_label_when_the_queue_has_none(self):
+        plan = self.add("Bugs", labels=set())
+        self.assertEqual(plan[0], ["label", "create", "--name", "needs-triage"])
+        self.assertEqual(plan[1][:2], ["task", "add"])
+
+    def test_an_add_of_a_section_outside_the_three_plans_nothing(self):
+        self.assertEqual(self.add("Backlog"), [])
+
+    def run_main(self, *argv: str) -> tuple[int, str]:
+        original = queue_script.read_queue
+        queue_script.read_queue = lambda: Queue("p1", self.SECTIONS, [], {"needs-triage"})
+        self.addCleanup(setattr, queue_script, "read_queue", original)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = queue_script.main(list(argv))
+        return code, out.getvalue()
+
+    def test_an_add_dry_run_prints_one_td_task_add_and_sends_nothing(self):
+        code, out = self.run_main("add", "Quick Wins", "A probe", "--description", "A probe text.", "--dry-run")
+        self.assertEqual(code, 0)
+        self.assertEqual(len([line for line in out.splitlines() if line.startswith("td task add")]), 1)
+        self.assertIn("1 command planned, none sent.", out)
+
+    def test_an_add_of_a_bad_section_prints_one_warning_naming_the_three_and_exits_0(self):
+        code, out = self.run_main("add", "Backlog", "A probe", "--description", "A probe text.", "--dry-run")
+        self.assertEqual(code, 0)
+        warnings = [line for line in out.splitlines() if line.startswith("warning:")]
+        self.assertEqual(len(warnings), 1)
+        for name in ("Bugs", "Quick Wins", "Ideas"):
+            self.assertIn(name, warnings[0])
+        self.assertNotIn("td ", out)
+
+
 class TheCommandLine(unittest.TestCase):
 
     def test_a_merge_pr_wait_needs_the_pr_number(self):

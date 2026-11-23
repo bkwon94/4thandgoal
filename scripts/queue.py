@@ -421,6 +421,20 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
 
 
+# A task that Brian or a skill files by hand lands in one of these sections, and waits for triage.
+ADD_SECTIONS = ("Bugs", "Quick Wins", "Ideas")
+
+
+def plan_file(section: str, title: str, description: str, queue: Queue) -> list[list[str]]:
+    """The `td` commands that file one new task with the label needs-triage in Bugs, Quick Wins, or Ideas. The
+    description has no key line, because `take` or `push` adds it later. A section outside the three plans no command.
+    """
+    if section not in ADD_SECTIONS:
+        return []
+    plan = [] if "needs-triage" in queue.labels else [["label", "create", "--name", "needs-triage"]]
+    return plan + _plan_task_add(title, section, ["needs-triage"], description, queue)
+
+
 def plan_take(name: str, path: str, queue: Queue) -> tuple[list[dict], list[list[str]]]:
     """The open tasks of the name in Bugs or Quick Wins, and the `td` command that puts the key line `4ag: <path>` first
     in the description of the one match.
@@ -816,6 +830,16 @@ def take(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return args.name, plan
 
 
+def add(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
+    """Plan one new task in the section. A section outside Bugs, Quick Wins, and Ideas warns and plans nothing."""
+    args.target = args.title
+    if args.section not in ADD_SECTIONS:
+        print(f"warning: {args.section!r} is not a section for a new task. Use {', '.join(ADD_SECTIONS)}. "
+              "Nothing changed.")
+        return args.title, []
+    return args.title, plan_file(args.section, args.title, args.description, read_queue())
+
+
 def fetch_main(root: Path) -> None:
     """Fetch main from origin, so the sweep sees each merge on GitHub. A failed fetch warns, and the sweep reads the
     last fetched main."""
@@ -894,6 +918,12 @@ def main(argv: list[str]) -> int:
     take_parser.add_argument("name", help="the title of the task")
     take_parser.add_argument("path", help="the path of the quick file, which becomes the key line of the task")
     take_parser.set_defaults(plan=take)
+    add_parser = subcommands.add_parser("add", parents=[shared],
+                                        help="file one new task with the label needs-triage in Bugs, Quick Wins, or Ideas")
+    add_parser.add_argument("section", help="Bugs, Quick Wins, or Ideas")
+    add_parser.add_argument("title", help="the title of the task")
+    add_parser.add_argument("--description", default="", help="the text of the task, with no key line")
+    add_parser.set_defaults(plan=add)
     import_parser = subcommands.add_parser("import", parents=[shared],
                                            help="load the open work, the labels, Ideas, and the filter into the queue")
     import_parser.set_defaults(plan=import_)
