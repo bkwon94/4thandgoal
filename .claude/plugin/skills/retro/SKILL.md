@@ -22,6 +22,8 @@ Step 7 holds the other calls.
 
 ## Before you start
 
+Write no repo file and make no branch before these checks pass.
+
 1. Check that the global skill `writing-for-agents` is in the available skill list. The `4ag` skills ship with this skill, so do not check them.
 2. If it is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Run `gh auth status`. If it fails, stop. Tell Brian to run `gh auth login`.

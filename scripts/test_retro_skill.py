@@ -103,6 +103,10 @@ class RetroSkillTest(unittest.TestCase):
         filing = section(self.skill, "Step 7: file each accepted candidate")
         self.assertRegex(filing, r"(?i)`Ideas`[^\n]*draft outcome statement")
 
+    def test_retro_starts_before_you_start_with_a_guard(self):
+        start = section(self.skill, "Before you start")
+        self.assertTrue(start.lstrip().startswith("Write no repo file and make no branch before these checks pass."))
+
     def test_retro_keeps_each_stage_line_to_its_shape(self):
         stages = section(self.skill, "Step 4: give the stage times")
         self.assertRegex(stages, r"(?i)note on its own line")
