@@ -10,8 +10,8 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-1, AT-2, AT-8, AT-9, AT-17, A
 
 **Status:** ready-for-agent
 
-- [ ] A text test reads the real skill file and checks the sweep, the four inputs with the default, the two logs, the drop rule, each category with its place, `CODING_STANDARDS.md`, and the check for a manager name. It passes.
-- [ ] A text test checks that the end of `4ag:quick` and of `4ag:implement` names `/4ag:retro` only as an option. It passes.
-- [ ] The rule test of the harness passes with the new symlink.
+- [x] A text test reads the real skill file and checks the sweep, the four inputs with the default, the two logs, the drop rule, each category with its place, `CODING_STANDARDS.md`, and the check for a manager name. It passes.
+- [x] A text test checks that the end of `4ag:quick` and of `4ag:implement` names `/4ag:retro` only as an option. It passes.
+- [x] The rule test of the harness passes with the new symlink.
 - [ ] A Claude Code session lists `4ag:retro`, and `codex debug prompt-input "hi"` lists it once.
-- [ ] `4ag:plan` has no diff, and `4ag:quick` does not name `code-review`.
+- [x] `4ag:plan` has no diff, and `4ag:quick` does not name `code-review`.

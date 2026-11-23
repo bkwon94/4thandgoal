@@ -58,4 +58,6 @@ If the Spec branch already has an open PR, read [`pr.md`](pr.md#a-second-start).
 
 Give Brian the PR address and the Test verdicts of the Judge. Brian needs to post no comment. He may check the work on the local dev server. A FAIL from Brian in a PR comment blocks the merge. Tell Brian to run `4ag:review <PR number>` for a FAIL or a review comment.
 
+Brian can run `/4ag:retro <PR number>` to review the run. It is his choice.
+
 If stage 4 ends with a BLOCKED test, no PR opens. Give Brian each BLOCKED test and the reason of the Judge.
