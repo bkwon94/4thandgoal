@@ -1,0 +1,9 @@
+$ git status --short   (in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at, detached at a4a97bcb)
+Before AT-10:
+(empty)
+After AT-12:
+(empty)
+".scratch/retros": No such file or directory (os error 2)
+[exit 2]
+$ ls .scratch/retros
+".scratch/retros": No such file or directory (os error 2)

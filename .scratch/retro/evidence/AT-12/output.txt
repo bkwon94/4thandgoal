@@ -1,0 +1,53 @@
+The reply of Brian, in the chat of the orchestrator, to the list of AT-10 and the advice "My recommendation is 2": "ok"
+The orchestrator passed that pick to the same session:
+$ env -u ANTHROPIC_API_KEY claude -p --resume a6f3a691-50e5-4901-ada3-e6cce63d517b --plugin-dir /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin --allowedTools "Bash Read Grep Glob Skill" --disallowedTools "Edit Write NotebookEdit" -- 2
+
+--- reply ---
+I filed candidate 2 in the queue. To build it next, run `/4ag:quick` on the task "The smoke run starts with no API keys".
+
+**The task:** `queue.py add` sent one command. It made the task in `Bugs` with the label `needs-triage`. The name check found no league manager in the text.
+
+**Stage times for PR #91:**
+```
+Boundary and go: 10 min
+Build of item 1: 13 min
+Build of item 2: 25 min
+Smoke run: 10 min
+Quick Judge: 1 min
+PR to green: 20 min
+Total: 80 min
+```
+
+**Candidates:** I found 5 and you accepted 1. Candidates 1, 3, 4, and 5 go nowhere.
+
+**Failed calls:** none. The merge sweep and the add call both ran clean.
+--- the queue.py add call of the session, from its log ~/.claude/projects/-private-tmp-claude-503--Users-brian-kwon-repos-4thandgoal-3e6503e5-d321-46d7-b54d-de002ca27bd4-scratchpad-retro-at/a6f3a691-50e5-4901-ada3-e6cce63d517b.jsonl ---
+CMD 2026-11-23T19:00:18.024Z python3 scripts/queue.py add Bugs "The smoke run starts with no API keys" --description "$(cat /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-91/desc.md)"
+OUT 2026-11-23T19:00:27.174Z td task add 'The smoke run starts with no API keys' --project id:6j222rQrr58wHx9G --section id:6j29GCJqM59vMP2G --labels needs-triage --description 'Moment: 2026-11-21T19:13:39.999Z, the session log of the quick run of PR #91. The smoke run went red with a 503 and a 500, because ~/.secrets was not sourced. The verify skill says to source it, but the agent missed that line. The red run cost about 5.5 min.
+
+Category: a mechanical mistake. The fix is a check.
+
+Fix: at the start of apps/site/scripts/smoke.mjs, check ANTHROPIC_API_KEY and TYPESAFE_API_KEY. If either is not set, exit 2 with "Source ~/.secrets in this shell first." Never print a key.'
+1 command sent.
+CMD None cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at && python3 scripts/queue.py add Bugs "The smoke run starts with no API keys" --description "$(cat /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-91/desc.md)"
+--- td task view ---
+$ td task view id:6j4XHjPCHHmP9mFp
+The smoke run starts with no API keys
+
+ID:       6j4XHjPCHHmP9mFp
+Priority: p4
+Project:  4thandgoal
+Labels:   needs-triage
+URL:      https://app.todoist.com/app/task/6j4XHjPCHHmP9mFp
+
+Description:
+Moment: 2026-11-21T19:13:39.999Z, the session log of the quick run of PR #91.
+The smoke run went red with a 503 and a 500, because ~/.secrets was not sourced.
+The verify skill says to source it, but the agent missed that line. The red run
+cost about 5.5 min.
+
+Category: a mechanical mistake. The fix is a check.
+
+Fix: at the start of apps/site/scripts/smoke.mjs, check ANTHROPIC_API_KEY and
+TYPESAFE_API_KEY. If either is not set, exit 2 with "Source ~/.secrets in this
+shell first." Never print a key.

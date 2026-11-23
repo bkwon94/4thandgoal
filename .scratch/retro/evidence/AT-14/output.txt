@@ -1,0 +1,72 @@
+$ env -u ANTHROPIC_API_KEY claude -p --session-id 428cad1f-18e0-4a41-a412-6e47e1ba5b35 --plugin-dir /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin --allowedTools "Bash Read Grep Glob Skill" --disallowedTools "Edit Write NotebookEdit" -- '/4ag:retro .scratch/bugs/site-test-leaks.md'
+(run in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at, detached at a4a97bcb)
+
+The log file of AT-10: ~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea.jsonl
+
+--- reply ---
+START=2026-11-23T18:10:26Z
+Warning: Code Mode (experimental) isn't available: claude -p and Agent SDK apps get it only when CLAUDE_CODE_EXPERIMENTAL_CODE_MODE is in the env block of --settings (the SDK's settings option). Starting with the ordinary tools.
+Step 6 of 7: the candidates are ready. Brian picks the numbers. Nothing is filed yet.
+
+**The run:** `bug-site-test-leaks`, PR [#91](https://github.com/bkwon94/4thandgoal/pull/91), merge `d2c4e9ed`. This run shared one session with the Quick win run of PR #90.
+
+**What I read**
+- The record: `.scratch/bugs/site-test-leaks.md`. PR #91 has no comments.
+- CI: runs `44940549231` (Rerun, red), `44940549242`, `44940549251`, `44940549142`, and the second set `44941433482`, `44941433490`, `44941433545`, `44941433523` (all green).
+- The logs, all under `~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/`:
+  - `273e1874-e353-447c-b1f4-846fe1e64dea.jsonl` (main)
+  - `273e1874-e353-447c-b1f4-846fe1e64dea/subagents/agent-af3bff8c6d4344f3c.jsonl` (item 1)
+  - `273e1874-e353-447c-b1f4-846fe1e64dea/subagents/agent-ae0e3a78ee9e2ef69.jsonl` (item 2)
+  - `273e1874-e353-447c-b1f4-846fe1e64dea/subagents/agent-a03ad9d916d20ad81.jsonl` (Judge)
+- I dropped the other logs that matched. They fall outside 18:19Z to 19:45Z on 2026-11-21.
+
+**Stage times**
+```
+Boundary and go: 10 min
+Item 1 build: 14 min
+Item 2 build: 24 min
+Smoke run: 11 min
+Quick Judge: 1 min
+PR to green check: 20 min
+Total: 80 min
+```
+The boundary time holds about 5 min of wait on your "go". It also holds the setup of Run B.
+
+## Candidates
+
+**1. A gap in the `4ag:quick` skill text.**
+- **Moment:** `2026-11-21T19:28:27.261Z`, main log. The Rerun check failed: "the Red command passed at `2d625fd0`". In CI, `bun test` exited 1, but both leak scripts still printed PASS and exited 0. The agent fixed both scripts and `rerun.yml`, then waited on a second CI run.
+- **Cost:** about 10 min, to green at 19:38Z.
+- **Fix:** add a rule to step 2 of the Bug brief in `.claude/plugin/skills/quick/SKILL.md`. The rule: the loop exits non-zero when a command that it wraps fails. With this rule, a run that cannot start never prints PASS. The local runs hid the gap because Bun was on PATH.
+- **Section:** Quick Wins.
+
+**2. A mechanical mistake, so the fix is a check.**
+- **Moment:** `2026-11-21T19:13:24.511Z`, main log. Front door got a 503 and Analyzer got a 500. The cause: the shell did not source `~/.secrets`, although `verify` says to source it. The agent ran all 7 flows a second time.
+- **Cost:** about 6 min and the one fix round.
+- **Fix:** in `apps/site/scripts/smoke.mjs`, stop at start with "source ~/.secrets" when `ANTHROPIC_API_KEY` or `TYPESAFE_API_KEY` is missing and a chosen flow calls Claude. Today the script reads no key.
+- **Section:** Bugs.
+
+**3. A gap in the `4ag:quick` skill text.**
+- **Moment:** `2026-11-21T18:47:37.501Z`, item 2 log. The hook rejected the red commit on format. The agent ran `bun fmt`. This made the Red output come from a file that is not in the red commit. At `2026-11-21T19:04:14.917Z` the main agent saw this and ran Red again at `ceba8eb5`.
+- **Cost:** about 3 min.
+- **Fix:** in step 4 of the Bug brief, run `bun fmt` on the loop file before the first run. The Red output then comes from the file of the red commit.
+- **Section:** Quick Wins.
+
+**4. A costly tool call.**
+- **Moment:** `2026-11-21T18:46:27.489Z`, item 2 log. The commit ran with `-q`, and a `grep` filtered the hook output, so the reject showed no cause. The agent ran a second throwaway commit `-m "x"`, which ran the hook for about 70 s more, to see the error.
+- **Cost:** about 1 min.
+- **Fix:** add a rule to step 5 of the Bug brief in `SKILL.md`. On a hook reject, read the full hook output from a file and do not filter it.
+- **Section:** Quick Wins.
+
+**5. A mechanical mistake, so the fix is a script.**
+- **Moment:** `2026-11-21T19:18:05.912Z`, main log. The hand-written Python cut of the Judge brief kept the note paragraphs, and those notes hold cause hints. The agent ran the cut again.
+- **Cost:** under 1 min. The risk is larger than the cost, because a leaked cause makes the Judge biased.
+- **Fix:** add `scripts/judge_brief.py`. It prints the items of the brief from a quick file by the rules of `judge.md`, with a test in `scripts/`.
+- **Section:** Bugs.
+
+I saw one more moment but do not propose it. At `2026-11-21T18:41:18.566Z` the count in the Cause line was wrong (72 against 73), and the agent fixed it itself. The cost was 1 min.
+
+**Queue calls:** `queue.py sweep` ran and sent 0 commands. No call failed.
+
+Reply with the numbers you accept, for example "1 2 3". I file only those numbers.
+END=2026-11-23T18:15:41Z

@@ -1,0 +1,25 @@
+The list of candidates of the reply of AT-10, copied from evidence/AT-10/reply.txt:
+
+## Candidates
+
+1. **A gap in a `4ag` skill text.**
+   - Moment: `2026-11-21T19:28:19.804Z`, main log. The Rerun check failed. In CI, `bun test` exited 1, but `temp-leak-check.mjs` and `network-leak-check.mjs` exited 0 and printed PASS. The run had to fix both scripts and `rerun.yml`, which cost one CI round of about 10 min.
+   - Fix: change step 2 of the Bug brief in `.claude/plugin/skills/quick/SKILL.md` to say: "If the loop wraps a test run, the loop must fail when that run fails." Change the same step of the Quick win brief.
+   - Section: `Quick Wins`.
+2. **A mechanical mistake.**
+   - Moment: `2026-11-21T19:13:39.999Z`, main log. The smoke run went red with a 503 and a 500, because `~/.secrets` was not sourced. The `verify` skill says to source it, but the agent missed that line. The red run cost about 5.5 min.
+   - Fix: add a check at the start of `apps/site/scripts/smoke.mjs`. If `ANTHROPIC_API_KEY` or `TYPESAFE_API_KEY` is not set, exit 2 with "Source ~/.secrets in this shell first." Do not print either key. A memory note has this fact now, but a memory note is not the fix.
+   - Section: `Bugs`.
+3. **A gap in a `4ag` skill text.**
+   - Moment: `2026-11-21T18:33:21.811Z` (item 1) and `2026-11-21T18:47:37.501Z` (item 2), in the subagent logs. Each time, the commit hook rejected the red commit, because the new loop file was not formatted. Then at `2026-11-21T19:04:14.917Z`, the orchestrator found that the item 2 Red output came from the file before `bun fmt`, so it ran the Red again at `ceba8eb5`.
+   - Fix: add a step to the Bug brief, before step 4: "Run `bun fmt` on each file you add, before you run the loop."
+   - Section: `Quick Wins`.
+4. **A mechanical mistake.**
+   - Moment: `2026-11-21T19:18:05.912Z`, main log. The orchestrator wrote its own Python to cut the Judge brief. The first cut kept the note after each Green block, and those notes hold cause hints that the Judge must not see.
+   - Fix: add `scripts/judge_brief.py <quick file>`. It prints the items of the brief by the rules of `judge.md`, and it uses `parse_items` of `scripts/rerun.py`. Then change step 8 of `judge.md` to call the script.
+   - Section: `Quick Wins`.
+5. **A gap in a `4ag` skill text.** This one is low in cost.
+   - Moment: `2026-11-21T18:41:18.566Z`, main log. The item 1 Cause line said 72 folders, but the Red output adds up to 73. The count was added by hand, and the run needed two correction commits.
+   - Fix: add one line to the Cause section of `.claude/plugin/skills/quick/format.md`: "Copy each count from the output of the loop. Never add counts by hand." Another option is to make the loop print the total.
+   - Section: `Quick Wins`.
+
