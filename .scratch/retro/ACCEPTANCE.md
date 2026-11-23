@@ -128,7 +128,8 @@ When: the agent runs the real spec Retro in a fresh session, and stops it after 
 Then: the reply names `EVIDENCE.md`, `VERDICTS.md`, the CI runs of PR #88, and at least one log of a subagent that it read.
 Evidence: the full reply of the session.
 
-AT-16: A run with no log reviews the record only
+AT-16: Retired: A run with no log reviews the record only
+Reason: no merged PR on this machine lacks a session log. A grep for each of the 82 merged branches matched 4 or more logs, so no real input fits the Given line. AT-17 checks the rule "No log matched the run." in the skill text.
 App: both
 Stories: 12
 Given: a merged PR whose branch name no session log names, found by the agent with `grep -rl` over the Claude log folder and `~/.codex/sessions/`.
@@ -181,7 +182,7 @@ Story 8: AT-17
 Story 9: AT-15
 Story 10: AT-15
 Story 11: AT-15
-Story 12: AT-10, AT-16
+Story 12: AT-10
 Story 13: AT-15, AT-17
 Story 14: AT-10
 Story 15: AT-11
@@ -221,4 +222,4 @@ Out of scope "A Retro over many runs at once": no test. Reason: each input names
 
 ## Revisions
 
-None yet.
+- 2026-11-23: AT-16 is retired, with the approval of Brian. No merged PR lacks a session log, so no real input fits its Given line.
