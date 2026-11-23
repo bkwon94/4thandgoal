@@ -376,10 +376,10 @@ def _section_create(name: str, queue: Queue) -> list[str]:
     return ["section", "create", "--name", name, "--project", f"id:{queue.project_id}"]
 
 
-def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
-    """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
+def _plan_task_add(title: str, name: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
+    """Make a task in the section called name, and first the section when it is missing. A command after a planned
     `section create` names the section, because its id is not known yet."""
-    name, section = _section(feature, queue)
+    section = queue.sections.get(name)
     plan = [] if section else [_section_create(name, queue)]
     plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
                  "--section", f"id:{section}" if section else name,
@@ -391,7 +391,7 @@ def _plan_ticket_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
     """Make the task of the ticket, and first each missing label."""
     labels = _labels(ticket, [])
     plan = [["label", "create", "--name", label] for label in labels if label not in queue.labels]
-    return plan + _plan_task_add(ticket.title, ticket.feature, labels, ticket.description, queue)
+    return plan + _plan_task_add(ticket.title, section_name(ticket.feature), labels, ticket.description, queue)
 
 
 # The kinds of a wait task, each with its title. The section names the feature, so the title does not.
@@ -418,7 +418,7 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     if kind == "merge-pr":
         lines.append(f"{PULL}/{number}")
     plan = [["label", "create", "--name", "ready-for-human"]] if "ready-for-human" not in queue.labels else []
-    return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
+    return plan + _plan_task_add(title, section_name(feature), ["ready-for-human"], "\n".join(lines), queue)
 
 
 # A task that Brian or a skill files by hand lands in one of these sections, and waits for triage.
