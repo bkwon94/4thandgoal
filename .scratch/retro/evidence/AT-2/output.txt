@@ -1,0 +1,16 @@
+$ codex debug prompt-input "hi" | grep -o -- "- 4ag:retro:" | wc -l
+       1
+[exit 0]
+$ codex debug prompt-input "hi" | grep -o -- "- 4ag:[a-z-]*:" | sort | uniq -c
+   1 - 4ag:implement:
+   1 - 4ag:plan:
+   1 - 4ag:quick:
+   1 - 4ag:retro:
+   1 - 4ag:review:
+   1 - 4ag:to-acceptance:
+   1 - 4ag:to-spec:
+   1 - 4ag:to-tickets:
+[exit 0]
+$ readlink -f .agents/skills/4ag-retro
+/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/retro/.claude/plugin/skills/retro
+[exit 0]

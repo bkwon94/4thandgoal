@@ -1,0 +1,30 @@
+$ python3 scripts/queue.py add Bugs "Retro probe take" --description "A probe of AT-7."
+td task add 'Retro probe take' --project id:6j222rQrr58wHx9G --section id:6j29GCJqM59vMP2G --labels needs-triage --description 'A probe of AT-7.'
+1 command sent.
+[exit 0]
+$ python3 scripts/queue.py take "Retro probe take" .scratch/bugs/retro-probe.md --dry-run
+Retro probe take
+A probe of AT-7.
+td task update id:6j4XHr92Cq2fqcFG --description '4ag: .scratch/bugs/retro-probe.md
+A probe of AT-7.'
+1 command planned, none sent.
+[exit 0]
+$ td task view id:6j4XHr92Cq2fqcFG
+Retro probe take
+
+ID:       6j4XHr92Cq2fqcFG
+Priority: p4
+Project:  4thandgoal
+Labels:   needs-triage
+URL:      https://app.todoist.com/app/task/6j4XHr92Cq2fqcFG
+
+Description:
+A probe of AT-7.
+[exit 0]
+$ td task delete id:6j4XHr92Cq2fqcFG --yes
+Deleted: Retro probe take (id:6j4XHr92Cq2fqcFG)
+[exit 0]
+$ td task view id:6j4XHr92Cq2fqcFG
+Error: NOT_FOUND
+HTTP 404: Not Found
+[exit 1]

@@ -1,0 +1,17 @@
+$ env -u ANTHROPIC_API_KEY claude -p --plugin-dir /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin 'List each skill in your available skill list whose name starts with 4ag. Reply with one name per line, and the path of each SKILL.md if you know it. Nothing else.' | grep -v "^Warning: Code Mode"
+Warning: Code Mode (experimental) isn't available: claude -p and Agent SDK apps get it only when CLAUDE_CODE_EXPERIMENTAL_CODE_MODE is in the env block of --settings (the SDK's settings option). Starting with the ordinary tools.
+4ag:implement /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/implement/SKILL.md
+4ag:plan /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/plan/SKILL.md
+4ag:quick /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/quick/SKILL.md
+4ag:retro /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/retro/SKILL.md
+4ag:review /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/review/SKILL.md
+4ag:to-acceptance /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/to-acceptance/SKILL.md
+4ag:to-spec /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/to-spec/SKILL.md
+4ag:to-tickets /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/to-tickets/SKILL.md
+[exit 0]
+$ git log --oneline -1
+a4a97bcb Retire AT-16 of retro
+[exit 0]
+$ readlink -f /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/retro/SKILL.md
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin/skills/retro/SKILL.md
+[exit 0]

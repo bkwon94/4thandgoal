@@ -1,0 +1,4 @@
+$ grep -n "retro" .claude/plugin/skills/quick/SKILL.md .claude/plugin/skills/implement/*.md
+.claude/plugin/skills/quick/SKILL.md:210:Brian can run `/4ag:retro <PR number>` to review the run. It is his choice.
+.claude/plugin/skills/implement/SKILL.md:61:Brian can run `/4ag:retro <PR number>` to review the run. It is his choice.
+[exit 0]

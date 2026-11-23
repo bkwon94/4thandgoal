@@ -1,0 +1,4 @@
+$ git diff main...retro --stat -- .claude/plugin/skills/plan
+[exit 0]
+$ grep -n "code-review" .claude/plugin/skills/quick/SKILL.md
+[exit 1]

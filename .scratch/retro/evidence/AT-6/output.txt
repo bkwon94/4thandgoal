@@ -1,0 +1,46 @@
+$ .venv/bin/python -m pytest scripts/test_queue.py -k add -v
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/retro/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/retro
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 98 items / 92 deselected / 6 selected
+
+scripts/test_queue.py::AnAdd::test_an_add_dry_run_prints_one_td_task_add_and_sends_nothing PASSED [ 16%]
+scripts/test_queue.py::AnAdd::test_an_add_makes_the_label_when_the_queue_has_none PASSED [ 33%]
+scripts/test_queue.py::AnAdd::test_an_add_of_a_bad_section_prints_one_warning_naming_the_three_and_exits_0 PASSED [ 50%]
+scripts/test_queue.py::AnAdd::test_an_add_of_each_of_the_three_sections_plans_one_task_in_it_with_needs_triage 
+scripts/test_queue.py::AnAdd::test_an_add_of_each_of_the_three_sections_plans_one_task_in_it_with_needs_triage PASSED [ 66%]
+scripts/test_queue.py::AnAdd::test_an_add_puts_no_key_line_in_the_description PASSED [ 83%]
+scripts/test_queue.py::AnAdd::test_an_add_to_a_missing_section_makes_the_section_before_the_task PASSED [100%]
+
+============= 6 passed, 92 deselected, 3 subtests passed in 0.02s ==============
+[exit 0]
+$ sed -n '882,906p' scripts/test_queue.py
+    def test_an_add_to_a_missing_section_makes_the_section_before_the_task(self):
+        plan = self.add("Ideas", sections={"Bugs": "bugs-id"})
+        self.assertEqual([command[:2] for command in plan], [["section", "create"], ["task", "add"]])
+        self.assertEqual(option(plan[0], "--name"), "Ideas")
+        self.assertEqual(option(plan[1], "--section"), "Ideas")
+
+    def test_an_add_makes_the_label_when_the_queue_has_none(self):
+        plan = self.add("Bugs", labels=set())
+        self.assertEqual(plan[0], ["label", "create", "--name", "needs-triage"])
+        self.assertEqual(plan[1][:2], ["task", "add"])
+
+    def run_main(self, *argv: str) -> tuple[int, str]:
+        original = queue_script.read_queue
+        queue_script.read_queue = lambda: Queue("p1", self.SECTIONS, [], {"needs-triage"})
+        self.addCleanup(setattr, queue_script, "read_queue", original)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = queue_script.main(list(argv))
+        return code, out.getvalue()
+
+    def test_an_add_dry_run_prints_one_td_task_add_and_sends_nothing(self):
+        code, out = self.run_main("add", "Quick Wins", "A probe", "--description", "A probe text.", "--dry-run")
+        self.assertEqual(code, 0)
+        self.assertEqual(len([line for line in out.splitlines() if line.startswith("td task add")]), 1)
+        self.assertIn("1 command planned, none sent.", out)
+[exit 0]

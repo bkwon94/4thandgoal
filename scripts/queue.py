@@ -305,7 +305,7 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     closed = ticket.status in CLOSED_STATUSES
     if not tasks:
         # A closed ticket never enters the queue.
-        return [] if closed else _plan_add(ticket, queue)
+        return [] if closed else _plan_ticket_add(ticket, queue)
     plan: list[list[str]] = []
     for task in tasks:
         plan += [command for command in _plan_task_update(ticket, task, queue) if command not in plan]
@@ -376,10 +376,10 @@ def _section_create(name: str, queue: Queue) -> list[str]:
     return ["section", "create", "--name", name, "--project", f"id:{queue.project_id}"]
 
 
-def _plan_task_add(title: str, feature: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
-    """Make a task in the section of the feature, and first the section when it is missing. A command after a planned
+def _plan_task_add(title: str, name: str, labels: list[str], description: str, queue: Queue) -> list[list[str]]:
+    """Make a task in the section called name, and first the section when it is missing. A command after a planned
     `section create` names the section, because its id is not known yet."""
-    name, section = _section(feature, queue)
+    section = queue.sections.get(name)
     plan = [] if section else [_section_create(name, queue)]
     plan.append(["task", "add", title, "--project", f"id:{queue.project_id}",
                  "--section", f"id:{section}" if section else name,
@@ -387,11 +387,11 @@ def _plan_task_add(title: str, feature: str, labels: list[str], description: str
     return plan
 
 
-def _plan_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
+def _plan_ticket_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
     """Make the task of the ticket, and first each missing label."""
     labels = _labels(ticket, [])
     plan = [["label", "create", "--name", label] for label in labels if label not in queue.labels]
-    return plan + _plan_task_add(ticket.title, ticket.feature, labels, ticket.description, queue)
+    return plan + _plan_task_add(ticket.title, section_name(ticket.feature), labels, ticket.description, queue)
 
 
 # The kinds of a wait task, each with its title. The section names the feature, so the title does not.
@@ -418,7 +418,20 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
     if kind == "merge-pr":
         lines.append(f"{PULL}/{number}")
     plan = [["label", "create", "--name", "ready-for-human"]] if "ready-for-human" not in queue.labels else []
-    return plan + _plan_task_add(title, feature, ["ready-for-human"], "\n".join(lines), queue)
+    return plan + _plan_task_add(title, section_name(feature), ["ready-for-human"], "\n".join(lines), queue)
+
+
+# A task that Brian or a skill files by hand lands in one of these sections, and waits for triage.
+ADD_SECTIONS = ("Bugs", "Quick Wins", "Ideas")
+
+
+def plan_add(section: str, title: str, description: str, queue: Queue) -> list[list[str]]:
+    """The `td` commands that file one new task with the label needs-triage in Bugs, Quick Wins, or Ideas. The
+    description has no key line, because `take` or `push` adds it later. The caller checks the section against
+    ADD_SECTIONS.
+    """
+    plan = [] if "needs-triage" in queue.labels else [["label", "create", "--name", "needs-triage"]]
+    return plan + _plan_task_add(title, section, ["needs-triage"], description, queue)
 
 
 def plan_take(name: str, path: str, queue: Queue) -> tuple[list[dict], list[list[str]]]:
@@ -816,6 +829,16 @@ def take(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
     return args.name, plan
 
 
+def add(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
+    """Plan one new task in the section. A section outside Bugs, Quick Wins, and Ideas warns and plans nothing."""
+    args.target = args.title
+    if args.section not in ADD_SECTIONS:
+        print(f"warning: {args.section!r} is not a section for a new task. Use {', '.join(ADD_SECTIONS)}. "
+              "Nothing changed.")
+        return args.title, []
+    return args.title, plan_add(args.section, args.title, args.description, read_queue())
+
+
 def fetch_main(root: Path) -> None:
     """Fetch main from origin, so the sweep sees each merge on GitHub. A failed fetch warns, and the sweep reads the
     last fetched main."""
@@ -894,6 +917,12 @@ def main(argv: list[str]) -> int:
     take_parser.add_argument("name", help="the title of the task")
     take_parser.add_argument("path", help="the path of the quick file, which becomes the key line of the task")
     take_parser.set_defaults(plan=take)
+    add_parser = subcommands.add_parser("add", parents=[shared],
+                                        help="file one new task with the label needs-triage in Bugs, Quick Wins, or Ideas")
+    add_parser.add_argument("section", help="Bugs, Quick Wins, or Ideas")
+    add_parser.add_argument("title", help="the title of the task")
+    add_parser.add_argument("--description", default="", help="the text of the task, with no key line")
+    add_parser.set_defaults(plan=add)
     import_parser = subcommands.add_parser("import", parents=[shared],
                                            help="load the open work, the labels, Ideas, and the filter into the queue")
     import_parser.set_defaults(plan=import_)

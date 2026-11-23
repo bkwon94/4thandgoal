@@ -1,0 +1,11 @@
+$ grep -n -A2 '^\*\*Retro' GLOSSARY.md
+1382:**Retro**:
+1383-One run of `4ag:retro` over one finished quick run or spec build. It proposes fixes to the environment of the agent, not to the code, and Brian accepts each one.
+1384-_Avoid_: Debrief, postmortem, review
+[exit 0]
+$ grep -n '^## ' GLOSSARY.md
+6:## Site language
+261:## Pipeline language
+1164:## Client language
+1292:## Workflow
+[exit 0]

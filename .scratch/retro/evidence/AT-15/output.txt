@@ -1,0 +1,71 @@
+$ env -u ANTHROPIC_API_KEY claude -p --session-id 67e34715-1270-4f54-b49a-55c09176a501 --plugin-dir /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at/.claude/plugin --allowedTools "Bash Read Grep Glob Skill" --disallowedTools "Edit Write NotebookEdit" -- '/4ag:retro trade-block'
+(run in /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/3e6503e5-d321-46d7-b54d-de002ca27bd4/scratchpad/retro-at, detached at a4a97bcb)
+
+--- reply ---
+START=2026-11-23T18:10:28Z
+Warning: Code Mode (experimental) isn't available: claude -p and Agent SDK apps get it only when CLAUDE_CODE_EXPERIMENTAL_CODE_MODE is in the env block of --settings (the SDK's settings option). Starting with the ordinary tools.
+Step 6 of 7. I wait for your numbers before step 7.
+
+**Record read:** `PRD.md`, `EVIDENCE.md`, `VERDICTS.md`, `FLAGS.md` and `ACCEPTANCE.md` at `ae4933cc`. PR #88 has no comments. I read 16 CI runs. Two `Check` runs were red: 44928994748 and 44933648284. I read their raw job logs through the API, because `--log-failed` came back empty.
+
+**Logs read:**
+- Build session: `~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/2435e2e3-2893-45cc-8306-449d32ac7e58.jsonl`.
+- Its 17 subagent logs under `2435e2e3-…/subagents/`, mainly `agent-a50a6ffbcd574d92f.jsonl` and `agent-a7cc302d9ab670fb7.jsonl`, the two motion fixes.
+- Planning sessions `70a9518c-….jsonl` and `028c442e-….jsonl`, before the build. `273e1874-….jsonl` started after the PR opened.
+- Three Codex files under `~/.codex/sessions/2026/11/21/`. They copy the Claude sessions, and every line has the same timestamp, so they give no times.
+
+## Stage times
+
+```
+Build of ticket 01: 10 min
+Build of ticket 02: 15 min
+Build of ticket 03: 21 min
+Build of ticket 04: 11 min
+Build of ticket 05: 15 min
+Review: 28 min
+Evidence: 591 min
+  Note: 529 min of this is two waits on Brian (07:37–15:45 and 15:46–16:28 UTC). About 62 min is work.
+Judge: 3 min
+PR to green: 81 min
+  Note: two red Check runs and one stop of 4 min for Brian's go.
+Total: 751 min
+```
+
+Tickets 02 to 04 built in parallel, so the build stage took 48 min.
+
+## Candidates (5, most costly first)
+
+**1. A gap in a `4ag` skill: the stand-in rule covered only a player who left the roster.**
+- **Moment:** `2026-11-21T07:37:55.133Z`, in the build session log. On the live data, Walker was still on the roster but Out, and the search dropped him. The `ACCEPTANCE.md` rule did not cover that case, so the agent asked Brian which player to use. The answer came 8 h later, and by then a trade had changed the roster. Round 1 of the evidence was thrown away, and round 2 cost 36 min.
+- **Fix:** In `.claude/plugin/skills/to-acceptance/`, a test that names a real player on live data gets a stand-in line. That line covers two cases: the player left the roster, or the player fails the pool rules. It also says how to choose the stand-in: the healthy player of the same position with the most value. In `implement/evidence.md`, the evidence agent applies that line and records the stand-in without a question.
+- **Section:** Quick Wins.
+
+**2. A mechanical mistake: the motion specs sampled frames against the wall clock.**
+- **Moments:** `2026-11-21T17:26:24.338Z`, where 8 `grade-bar` tests of `trade-block.spec.ts` failed on the slow CI runner. Then `2026-11-21T18:11:48.126Z`, where a sibling test at line 294 failed for the same cause on the next run. The first fix brief named only the failed tests.
+- **Fix:** Move `frameClock` from `apps/site/e2e/trade-block.spec.ts` into a shared e2e helper. Add a rule test for the case where an e2e spec samples motion with `requestAnimationFrame` or `performance.now()` but does not install the frame clock. The rule test fails then, and today's specs that do this go on an exception list with a reason each.
+- **Section:** Bugs.
+
+**3. A gap in a `4ag` skill: the stop rule of stage 5 stopped on a known cause.**
+- **Moment:** `2026-11-21T18:15:58.835Z`. You replied "just fix the CI so its green? what do you need from me lol". At 18:12:28 the agent had named the cause and the fix, then stopped because `Check` had failed two times.
+- **Fix:** In `implement/pr.md`, keep the stop for two failures on the same test, or a failure with no known cause. A failure on a new test with a named cause gets one more fix round, up to 3 rounds in all. The fix brief also asks the subagent to fix every test in the file that has the same cause.
+- **Section:** Quick Wins.
+
+**4. A mechanical mistake: the agent ran the merge rule by hand.**
+- **Moments:**
+  - `2026-11-21T06:26:03.928Z`: the `ls` alias added color codes, so the Status edit of ticket 04 failed.
+  - `2026-11-21T07:11:33.493Z`: a `pgrep -f "check-fast"` wait loop matched its own shell and blocked for 10 min.
+  - At 07:11:41, the agent then wrote its own `merge-fix.sh` in its scratch folder.
+- **Fix:** Add a script in `scripts/` for the merge rule of `build.md`. It waits on a lock for another `check-fast` to finish, then merges and runs `make check-fast`. If the check is red, it resets. If the check passes, it sets the Status, runs `queue.py push`, and removes the worktree. `build.md` then points to the script.
+- **Section:** Bugs.
+
+**5. Information the agent could not reach: the Evidence flags did not read the Revisions line.**
+- **Moment:** `2026-11-21T17:09:43.377Z`. Seven of the eight flags read "Walker" in the Then line literally and missed the approved stand-in. The agent set each one to disagree and ran the flags a second time.
+- **Fix:** In `apps/pipeline/src/cornerstone/evidence_flags.py`, put the `## Revisions` section of `ACCEPTANCE.md` into the state of each question.
+- **Section:** Bugs.
+
+**Dropped:** The README length rule went red only in the full check (07:23:13), because `check-fast` on the branch ran only the related site tests. `main` now runs every site test in `check-fast` (#89), so that gap is closed. The two merges of a moved `main` (16:28 and 17:59) point to no fix in the environment.
+
+The merge sweep ran with no error and sent 0 commands. No call failed.
+
+Reply with the numbers you accept, for example `1 2 4`, and I will file each one in the queue.
+END=2026-11-23T18:18:29Z

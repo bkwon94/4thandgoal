@@ -1,0 +1,5 @@
+$ python3 scripts/queue.py add Backlog "Retro probe" --description "A probe of AT-5." --dry-run; echo "echo \$? gives: $?"
+warning: 'Backlog' is not a section for a new task. Use Bugs, Quick Wins, Ideas. Nothing changed.
+0 commands planned, none sent.
+echo $? gives: 0
+[exit 0]

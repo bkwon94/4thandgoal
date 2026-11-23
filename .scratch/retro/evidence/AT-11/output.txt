@@ -1,0 +1,17 @@
+The list of candidates is in evidence/AT-11/candidates.txt. Each matched line is cut to its first 300 characters.
+
+$ grep -rF 2026-11-21T19:28:19.804Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea.jsonl:{"parentUuid":"078a648a-fe0c-47e7-8abb-114180ffd81e","isSidechain":false,"promptId":"10cbed89-8179-42ef-b329-411d0b2bd69a","type":"user","message":{"role":"user","content":"<task-notifica
+$ grep -rF 2026-11-21T19:13:39.999Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea.jsonl:{"parentUuid":"51e1323d-2f64-479d-9ac5-ebe204ee3e9c","isSidechain":false,"message":{"model":"claude-opus-5-5","id":"msg_011ChGc73gb8ocapAkxF54LG","type":"message","role":"assistant","cont
+$ grep -rF 2026-11-21T18:33:21.811Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea/subagents/agent-af3bff8c6d4344f3c.jsonl:{"parentUuid":"dda4a412-c0f5-4735-b328-3be3578c3358","isSidechain":true,"promptId":"a767346b-671a-4192-8a10-642e69b34404","agentId":"af3bff8c6d4344f3c","
+$ grep -rF 2026-11-21T18:47:37.501Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea/subagents/agent-ae0e3a78ee9e2ef69.jsonl:{"parentUuid":"07c7aaca-6498-422a-ac68-946aee73621a","isSidechain":true,"agentId":"ae0e3a78ee9e2ef69","attachment":{"type":"deferred_tools_record","entri
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea/subagents/agent-ae0e3a78ee9e2ef69.jsonl:{"parentUuid":"3350abfd-8864-476b-a0ce-f32856331a4d","isSidechain":true,"agentId":"ae0e3a78ee9e2ef69","message":{"model":"claude-opus-5-5","id":"msg_011C
+$ grep -rF 2026-11-21T19:04:14.917Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea.jsonl:{"parentUuid":"f1ba45b3-ca1e-4ec5-b85b-b526195c7ee7","isSidechain":false,"message":{"model":"claude-opus-5-5","id":"msg_011ChGbP5kScZUzhTTXTGuYy","type":"message","role":"assistant","cont
+$ grep -rF 2026-11-21T19:18:05.912Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea.jsonl:{"parentUuid":"d994ea26-afe6-47f1-a29c-3cd7a09cf0ef","isSidechain":false,"message":{"model":"claude-opus-5-5","id":"msg_011ChGcScPsnZie1XzzPF4y1","type":"message","role":"assistant","cont
+$ grep -rF 2026-11-21T18:41:18.566Z <main log> <subagents folder> | cut -c1-300
+~/.claude/projects/-Users-brian-kwon-repos-4thandgoal/273e1874-e353-447c-b1f4-846fe1e64dea.jsonl:{"parentUuid":"7479b70d-328d-4809-936c-4c0298bba212","isSidechain":false,"message":{"model":"claude-opus-5-5","id":"msg_011ChGZdzCW4ZUQLYv543JGu","type":"message","role":"assistant","cont

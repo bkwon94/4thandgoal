@@ -1,0 +1,33 @@
+$ .venv/bin/python -m pytest scripts -k retro -v
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/retro/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/retro
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 266 items / 245 deselected / 21 selected
+
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_changes_no_repo_file PASSED [  4%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_checks_each_task_for_a_manager_name PASSED [  9%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_checks_for_writing_for_agents PASSED [ 14%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_copies_the_full_timestamp_of_the_log_line PASSED [ 19%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_drops_a_candidate_with_no_moment_in_the_log PASSED [ 23%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_files_an_ideas_task_with_its_draft_outcome_statement PASSED [ 28%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_files_each_accepted_number_with_queue_add PASSED [ 33%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_keeps_each_stage_line_to_its_shape PASSED [ 38%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_keeps_rules_out_of_agents_md PASSED [ 42%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_maps_each_category_to_its_place PASSED [ 47%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_names_each_record_file_and_each_ci_run_that_it_read PASSED [ 52%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_prints_the_stage_times PASSED [ 57%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_proposes_coding_standards_at_the_first_judgement_rule PASSED [ 61%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_reads_the_claude_log_and_the_codex_log PASSED [ 66%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_says_no_log_matched_when_no_log_is_left_in_the_time_window PASSED [ 71%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_starts_before_you_start_with_a_guard PASSED [ 76%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_starts_with_the_merge_sweep PASSED [ 80%]
+scripts/test_retro_skill.py::RetroSkillTest::test_retro_takes_four_inputs_with_the_current_session_as_the_default PASSED [ 85%]
+scripts/test_retro_skill.py::RetroEndLineTest::test_implement_end_names_retro_as_an_option PASSED [ 90%]
+scripts/test_retro_skill.py::RetroEndLineTest::test_no_other_part_of_quick_or_implement_names_retro PASSED [ 95%]
+scripts/test_retro_skill.py::RetroEndLineTest::test_quick_end_names_retro_as_an_option PASSED [100%]
+
+====================== 21 passed, 245 deselected in 0.06s ======================
+[exit 0]

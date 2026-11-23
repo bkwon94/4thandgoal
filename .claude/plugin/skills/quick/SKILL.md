@@ -206,3 +206,5 @@ If the branch of the run exists, find its worktree with `git worktree list`. Rea
 ## The end
 
 Give Brian the PR address as a bare URL on one line, and the Test verdict of each item. Brian merges the PR. The merge sweep of the next `4ag` skill then completes the queue task and the wait task.
+
+Brian can run `/4ag:retro <PR number>` to review the run. It is his choice.
