@@ -52,6 +52,7 @@ Read each file from the merge commit on `main`, with `git show <commit>:<path>`,
 2. For a spec build, read `.scratch/<slug>/PRD.md`, `.scratch/<slug>/EVIDENCE.md`, and `.scratch/<slug>/VERDICTS.md`.
 3. For both, read the PR comments: `gh pr view <PR number> --comments`. Note each FAIL from Brian and each review comment.
 4. For both, read the CI runs: `gh run list --branch <branch> --json databaseId,conclusion,name,createdAt`. For each red run, read the raw log with `gh run view <run id> --log-failed`.
+5. Name each record file that you read in the reply, such as `EVIDENCE.md` and `VERDICTS.md`, and the id of each CI run.
 
 ## Step 3: find the session logs
 
@@ -64,8 +65,8 @@ The session log shows the struggles that the record does not show. Read the log 
 2. Otherwise, find each log that names the branch or the worktree path: `grep -rl -e '<branch>' -e '.claude/worktrees/<branch>' ~/.claude/projects/ ~/.codex/sessions/`.
 3. Keep the logs whose time falls between the first commit of the branch and the merge.
 4. For a spec build, read the logs of the subagents too. The struggle of a ticket shows in the log of its subagent.
-5. Name each log file that you read in the reply.
-6. If no log matches, say "No log matched the run." Review the record only, and give no stage times.
+5. Name each log file that you read in the reply, with its full path.
+6. If no log matches, or no log is left after item 3, say "No log matched the run." Review the record only, and give no stage times.
 
 ## Step 4: give the stage times
 
@@ -73,14 +74,14 @@ Take each stage time from the timestamps of the log. Do not ask for a timestamp 
 
 1. For a quick run, the stages are the steps of `4ag:quick`: the boundary and the "go", the build of each item, the smoke run, the quick Judge, and the PR to a green check.
 2. For a spec build, the stages are the stages of `4ag:implement`: the build of each ticket, the review, the evidence, the Judge, and the PR to a green check.
-3. Print one line per stage in the shape `<stage>: <minutes> min`. Then print the line `Total: <minutes> min`.
+3. Print one line per stage in the shape `<stage>: <minutes> min`. Then print the line `Total: <minutes> min`. Keep each stage line to that shape. Put a note on its own line under it.
 
 ## Step 5: find the candidates
 
 1. Load the skill `writing-for-agents`. Use it for the text of each proposed change to a skill or a steering file.
 2. Read the logs from start to end. Look for each moment where the agent struggled: a red check, a retry, a long search, a wrong guess, a question to Brian, a `STUCK`, or a fix round.
 3. Give each moment one category from the table below. The category sets the place of the fix.
-4. Write down the timestamp of each moment, from the log line.
+4. Copy the timestamp of each moment in full from the `timestamp` field of its log line, such as `2026-11-21T19:28:19.766Z`. A `grep` of that text finds the line. The log writes UTC, so never label the time as a local time.
 5. Drop each candidate with no moment in the log. A candidate with no moment is generic advice.
 6. Before you propose a check, read `Makefile`, `scripts/`, the rule tests, and `.github/workflows/`. A check that exists is the finding, not a reason to build a second check.
 

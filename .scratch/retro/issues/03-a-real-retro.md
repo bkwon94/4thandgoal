@@ -10,9 +10,9 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT-13, AT-1
 
 **Status:** ready-for-agent
 
-- [ ] `/4ag:retro 91` in a fresh session finds the log of PR #91, prints the stage times, and lists candidates with timestamps that a `grep` finds in the log.
+- [x] `/4ag:retro 91` in a fresh session finds the log of PR #91, prints the stage times, and lists candidates with timestamps that a `grep` finds in the log.
 - [ ] Brian accepts one candidate, and the queue then holds exactly one new task with the timestamp in its description.
-- [ ] `git status --short` is empty after the Retro.
-- [ ] `/4ag:retro .scratch/bugs/site-test-leaks.md` finds the same log as `/4ag:retro 91`.
-- [ ] `/4ag:retro trade-block` names `EVIDENCE.md`, `VERDICTS.md`, the CI runs of PR #88, and at least one log of a subagent.
+- [x] `git status --short` is empty after the Retro.
+- [x] `/4ag:retro .scratch/bugs/site-test-leaks.md` finds the same log as `/4ag:retro 91`.
+- [x] `/4ag:retro trade-block` names `EVIDENCE.md`, `VERDICTS.md`, the CI runs of PR #88, and at least one log of a subagent.
 - [ ] A merged PR with no matched log gets a reply that says so, with candidates from the record only.

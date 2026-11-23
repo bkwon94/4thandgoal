@@ -84,6 +84,25 @@ class RetroSkillTest(unittest.TestCase):
     def test_retro_changes_no_repo_file(self):
         self.assertRegex(self.skill, r"(?i)writes? no (repo )?file|changes? no repo file")
 
+    def test_retro_copies_the_full_timestamp_of_the_log_line(self):
+        find = section(self.skill, "Step 5: find the candidates")
+        self.assertIn("`timestamp`", find)
+        self.assertRegex(find, r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+Z")
+        self.assertRegex(find, r"(?i)`grep`")
+
+    def test_retro_names_each_record_file_and_each_ci_run_that_it_read(self):
+        record = section(self.skill, "Step 2: read the record of the run")
+        self.assertRegex(record, r"(?i)name each record file[^\n]*CI run")
+        self.assertRegex(section(self.skill, "Step 3: find the session logs"), r"(?i)name each log file[^\n]*full path")
+
+    def test_retro_says_no_log_matched_when_no_log_is_left_in_the_time_window(self):
+        logs = section(self.skill, "Step 3: find the session logs")
+        self.assertRegex(logs, r"(?i)no log is left after")
+
+    def test_retro_keeps_each_stage_line_to_its_shape(self):
+        stages = section(self.skill, "Step 4: give the stage times")
+        self.assertRegex(stages, r"(?i)note on its own line")
+
 
 class RetroEndLineTest(unittest.TestCase):
     def test_quick_end_names_retro_as_an_option(self):
