@@ -8,7 +8,7 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT-13, AT-1
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `/4ag:retro 91` in a fresh session finds the log of PR #91, prints the stage times, and lists candidates with timestamps that a `grep` finds in the log.
 - [ ] Brian accepts one candidate, and the queue then holds exactly one new task with the timestamp in its description.
