@@ -8,7 +8,7 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-1, AT-2, AT-8, AT-9, AT-17, A
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A text test reads the real skill file and checks the sweep, the four inputs with the default, the two logs, the drop rule, each category with its place, `CODING_STANDARDS.md`, and the check for a manager name. It passes.
 - [x] A text test checks that the end of `4ag:quick` and of `4ag:implement` names `/4ag:retro` only as an option. It passes.
