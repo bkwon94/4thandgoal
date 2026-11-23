@@ -8,10 +8,18 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-1, AT-2, AT-8, AT-9, AT-17, A
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A text test reads the real skill file and checks the sweep, the four inputs with the default, the two logs, the drop rule, each category with its place, `CODING_STANDARDS.md`, and the check for a manager name. It passes.
 - [x] A text test checks that the end of `4ag:quick` and of `4ag:implement` names `/4ag:retro` only as an option. It passes.
 - [x] The rule test of the harness passes with the new symlink.
-- [ ] A Claude Code session lists `4ag:retro`, and `codex debug prompt-input "hi"` lists it once.
+- [x] A Claude Code session lists `4ag:retro`, and `codex debug prompt-input "hi"` lists it once.
 - [x] `4ag:plan` has no diff, and `4ag:quick` does not name `code-review`.
+
+## Comments
+
+The merge: `057c8099` on `retro-02`, merged into `retro` on 2026-11-23, with the review fixes of groups b and c.
+The proof: 21 cases of `scripts/test_retro_skill.py` pass, the rule test of the harness passes, and the Judge gave PASS to AT-1, AT-2, AT-8, AT-9, and AT-17 to AT-20.
+Note: a fresh Claude Code session lists `4ag:retro` only with `--plugin-dir` at the head of `retro`, because the installed marketplace reads the main checkout.
+Read at least 10 files: AGENTS.md, .scratch/retro/PRD.md, .scratch/retro/ACCEPTANCE.md, .scratch/retro/issues/02-the-retro-skill.md, .claude/plugin/skills/quick/SKILL.md, .claude/plugin/skills/review/SKILL.md, .claude/plugin/skills/implement/SKILL.md, docs/agents/codex.md, apps/pipeline/tests/test_rule_harness.py, scripts/test_skill_smoke.py.
+Closes with the squash merge of the spec PR.

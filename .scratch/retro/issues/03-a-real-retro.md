@@ -8,11 +8,19 @@ Spec: `.scratch/retro/PRD.md`. Acceptance tests AT-10, AT-11, AT-12, AT-13, AT-1
 
 **Blocked by:** 01, 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] `/4ag:retro 91` in a fresh session finds the log of PR #91, prints the stage times, and lists candidates with timestamps that a `grep` finds in the log.
-- [ ] Brian accepts one candidate, and the queue then holds exactly one new task with the timestamp in its description.
+- [x] Brian accepts one candidate, and the queue then holds exactly one new task with the timestamp in its description.
 - [x] `git status --short` is empty after the Retro.
 - [x] `/4ag:retro .scratch/bugs/site-test-leaks.md` finds the same log as `/4ag:retro 91`.
 - [x] `/4ag:retro trade-block` names `EVIDENCE.md`, `VERDICTS.md`, the CI runs of PR #88, and at least one log of a subagent.
 - [ ] A merged PR with no matched log gets a reply that says so, with candidates from the record only.
+
+## Comments
+
+The merge: `0de9f1fa` on `retro-03`, merged into `retro` on 2026-11-23.
+The proof: real Retros of 91, of the quick file, and of `trade-block` ran in fresh sessions, and the Judge gave PASS to AT-10 to AT-15.
+Note: AT-16 is retired with the approval of Brian, because no merged PR lacks a session log, so its box stays open.
+Read at least 7 files: AGENTS.md, .scratch/retro/PRD.md, .scratch/retro/ACCEPTANCE.md, .scratch/retro/issues/03-a-real-retro.md, .claude/plugin/skills/retro/SKILL.md, scripts/test_retro_skill.py, .scratch/bugs/site-test-leaks.md.
+Closes with the squash merge of the spec PR.
