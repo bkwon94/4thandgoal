@@ -427,10 +427,9 @@ ADD_SECTIONS = ("Bugs", "Quick Wins", "Ideas")
 
 def plan_file(section: str, title: str, description: str, queue: Queue) -> list[list[str]]:
     """The `td` commands that file one new task with the label needs-triage in Bugs, Quick Wins, or Ideas. The
-    description has no key line, because `take` or `push` adds it later. A section outside the three plans no command.
+    description has no key line, because `take` or `push` adds it later. The caller checks the section against
+    ADD_SECTIONS.
     """
-    if section not in ADD_SECTIONS:
-        return []
     plan = [] if "needs-triage" in queue.labels else [["label", "create", "--name", "needs-triage"]]
     return plan + _plan_task_add(title, section, ["needs-triage"], description, queue)
 

@@ -890,9 +890,6 @@ class AnAdd(unittest.TestCase):
         self.assertEqual(plan[0], ["label", "create", "--name", "needs-triage"])
         self.assertEqual(plan[1][:2], ["task", "add"])
 
-    def test_an_add_of_a_section_outside_the_three_plans_nothing(self):
-        self.assertEqual(self.add("Backlog"), [])
-
     def run_main(self, *argv: str) -> tuple[int, str]:
         original = queue_script.read_queue
         queue_script.read_queue = lambda: Queue("p1", self.SECTIONS, [], {"needs-triage"})
