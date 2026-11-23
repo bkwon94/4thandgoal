@@ -73,8 +73,8 @@ its file path from the repo root, such as `4ag: .scratch/<feature>/issues/03-<sl
 `4ag: <feature>/wait/<kind>`. A push finds the task by this line. Git holds no Todoist ID.
 
 **The script.** `scripts/queue.py` is the only code that calls `td`. It has the subcommands `push`, `pull`,
-`wait`, `sweep`, `import`, `take`, and `add`. `add <section> <title> --description <text>` files one new task with the label
-`needs-triage` and no key line in `Bugs`, `Quick Wins`, or `Ideas`. A skill runs it as `python3 scripts/queue.py <subcommand>`. A failed `td` call
+`wait`, `sweep`, `import`, `take`, and `add`. `add <section> <title> --description <text>` files one new task in `Bugs`, `Quick Wins`, or `Ideas`.
+The task has the label `needs-triage` and no key line. A skill runs it as `python3 scripts/queue.py <subcommand>`. A failed `td` call
 prints one warning and exits 0. CI never calls `td`.
 
 ## The quick file
