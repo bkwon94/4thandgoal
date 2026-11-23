@@ -22,6 +22,8 @@ Step 7 holds the other calls.
 
 ## Before you start
 
+Write no repo file and make no branch before these checks pass.
+
 1. Check that the global skill `writing-for-agents` is in the available skill list. The `4ag` skills ship with this skill, so do not check them.
 2. If it is missing, stop. Tell Brian the name of the missing skill. Do not guess its steps.
 3. Run `gh auth status`. If it fails, stop. Tell Brian to run `gh auth login`.
@@ -123,7 +125,7 @@ The section of a candidate:
 
 Do these steps for each number that Brian accepts, and for no other candidate.
 
-1. Write the title and the description of the task. The description holds the moment with its timestamp, the category, and the proposed fix.
+1. Write the title and the description of the task. The description holds the moment with its timestamp, the category, and the proposed fix. For an `Ideas` task, the description also holds the draft outcome statement of step 6.
 2. Write the description to a file in a scratch folder outside the repo, `<scratch>`.
 3. Check the title and the description for the name of a league manager (ADR 0021). Run this check at the root of the checkout. Rewrite the text until it prints `Hits: none.`
 
