@@ -305,7 +305,7 @@ def plan_push(ticket: Ticket, queue: Queue) -> list[list[str]]:
     closed = ticket.status in CLOSED_STATUSES
     if not tasks:
         # A closed ticket never enters the queue.
-        return [] if closed else _plan_add(ticket, queue)
+        return [] if closed else _plan_ticket_add(ticket, queue)
     plan: list[list[str]] = []
     for task in tasks:
         plan += [command for command in _plan_task_update(ticket, task, queue) if command not in plan]
@@ -387,7 +387,7 @@ def _plan_task_add(title: str, feature: str, labels: list[str], description: str
     return plan
 
 
-def _plan_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
+def _plan_ticket_add(ticket: Ticket, queue: Queue) -> list[list[str]]:
     """Make the task of the ticket, and first each missing label."""
     labels = _labels(ticket, [])
     plan = [["label", "create", "--name", label] for label in labels if label not in queue.labels]
@@ -425,7 +425,7 @@ def plan_wait(feature: str, kind: str, number: int | None, done: bool, queue: Qu
 ADD_SECTIONS = ("Bugs", "Quick Wins", "Ideas")
 
 
-def plan_file(section: str, title: str, description: str, queue: Queue) -> list[list[str]]:
+def plan_add(section: str, title: str, description: str, queue: Queue) -> list[list[str]]:
     """The `td` commands that file one new task with the label needs-triage in Bugs, Quick Wins, or Ideas. The
     description has no key line, because `take` or `push` adds it later. The caller checks the section against
     ADD_SECTIONS.
@@ -836,7 +836,7 @@ def add(args: argparse.Namespace) -> tuple[str, list[list[str]]]:
         print(f"warning: {args.section!r} is not a section for a new task. Use {', '.join(ADD_SECTIONS)}. "
               "Nothing changed.")
         return args.title, []
-    return args.title, plan_file(args.section, args.title, args.description, read_queue())
+    return args.title, plan_add(args.section, args.title, args.description, read_queue())
 
 
 def fetch_main(root: Path) -> None:

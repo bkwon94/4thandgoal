@@ -864,7 +864,7 @@ class AnAdd(unittest.TestCase):
     def add(self, section: str, sections: dict[str, str] | None = None, labels: set[str] | None = None):
         sections = self.SECTIONS if sections is None else sections
         labels = {"needs-triage"} if labels is None else labels
-        return queue_script.plan_file(section, "A probe", "A probe text.", Queue("p1", sections, [], labels))
+        return queue_script.plan_add(section, "A probe", "A probe text.", Queue("p1", sections, [], labels))
 
     def test_an_add_of_each_of_the_three_sections_plans_one_task_in_it_with_needs_triage(self):
         for section, section_id in (("Bugs", "bugs-id"), ("Quick Wins", "qw-id"), ("Ideas", "ideas-id")):
