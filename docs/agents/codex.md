@@ -126,7 +126,7 @@ enabled = false
 
 `cpc@cpc-local` is the old name of the same plugin, at the old folder `~/repos/cpcfantasyfootball`.
 
-Check: in a checkout that holds `.agents/skills/`, `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c` shows each of the six skills with the count 1.
+Check: in a checkout that holds `.agents/skills/`, `codex debug prompt-input "hi" | grep -o '\\n- 4ag:[a-z-]*:' | sort | uniq -c` shows each of the eight skills with the count 1.
 
 ## 8. Add the skill `diagnosing-bugs`
 
