@@ -5,7 +5,7 @@ Date: 2026-11-23
 Apps: both. The change is to the `4ag` plugin, `scripts/queue.py`, and `GLOSSARY.md`, not to the code of an app.
 Spec branch: `retro`.
 Source: the session of 2026-11-23. No map and no decision tickets, because the grill cleared all fog. ADR 0014, ADR 0021, ADR 0032, ADR 0033.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 03, in `issues/`.
 
 ## Problem Statement
 
