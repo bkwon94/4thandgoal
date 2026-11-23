@@ -87,7 +87,7 @@ Observation: The reply lists 5 candidates. Each names a category of the table of
 App: both
 Then: the session runs `queue.py add` once, and the queue holds one new task in the named section, whose description holds the timestamp of the moment. No other candidate gets a task.
 Files: `evidence/AT-12/output.txt`
-Observation: Brian replied "ok" to the advice to pick 2. The resumed session ran `queue.py add Bugs "The smoke run starts with no API keys"` once, and `td` printed "1 command sent.". `td task view` shows the task with the label `needs-triage`, and its description starts "Moment: 2026-11-21T19:13:39.999Z". The reply says candidates 1, 3, 4, and 5 go nowhere.
+Observation: Brian replied "ok" to the advice to pick 2. The session log holds one `tool_use` id that runs `queue.py add Bugs "The smoke run starts with no API keys"`; the second record is an `api-request-blob` copy of that id. `td` printed "1 command sent.". The task is in the section `6j29GCJqM59vMP2G`, which `td section list` names `Bugs`, and its description starts "Moment: 2026-11-21T19:13:39.999Z". It is the only task of the project added after the Retro started. The reply says candidates 1, 3, 4, and 5 go nowhere.
 
 ## AT-13: The real quick Retro changes no repo file
 
