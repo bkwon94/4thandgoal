@@ -1,5 +1,5 @@
 ACCEPTANCE.md: ac57a40aa5ff924f9d109799d5ce968842c72b2f
-EVIDENCE.md: aea70255c53b655e169ebc95a5ad10799920b144
+EVIDENCE.md: e741fa39a845ff5009f0068d751f67c0f57b98e8
 
 Test verdicts
 AT-1: PASS
@@ -13,7 +13,7 @@ AT-8: PASS
 AT-9: PASS
 AT-10: PASS
 AT-11: PASS
-AT-12: FAIL The Then line says the session runs `queue.py add` once, but the log extract in evidence/AT-12/output.txt shows two `queue.py add` command lines, and no file shows the task section or that no other candidate got a task.
+AT-12: PASS
 AT-13: PASS
 AT-14: PASS
 AT-15: PASS
