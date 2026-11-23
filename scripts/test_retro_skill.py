@@ -99,6 +99,10 @@ class RetroSkillTest(unittest.TestCase):
         logs = section(self.skill, "Step 3: find the session logs")
         self.assertRegex(logs, r"(?i)no log is left after")
 
+    def test_retro_files_an_ideas_task_with_its_draft_outcome_statement(self):
+        filing = section(self.skill, "Step 7: file each accepted candidate")
+        self.assertRegex(filing, r"(?i)`Ideas`[^\n]*draft outcome statement")
+
     def test_retro_keeps_each_stage_line_to_its_shape(self):
         stages = section(self.skill, "Step 4: give the stage times")
         self.assertRegex(stages, r"(?i)note on its own line")
