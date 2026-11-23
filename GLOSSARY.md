@@ -1378,3 +1378,7 @@ _Avoid_: Flake (alone), intermittent test, unstable test
 **Flow list**:
 The list of user flows that a smoke run can drive. Each flow names the code it covers, so a diff picks its flows.
 _Avoid_: Feature map, test plan, scenario list
+
+**Retro**:
+One run of `4ag:retro` over one finished quick run or spec build. It proposes fixes to the environment of the agent, not to the code, and Brian accepts each one.
+_Avoid_: Debrief, postmortem, review
