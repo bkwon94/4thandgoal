@@ -180,9 +180,20 @@ export function itemOfRoute(
   }
 }
 
-/* The item of a failed call. A 429 says how long to wait. Each other failure is an error, never a miss, so it offers a
+/* The item of a failed call. A 410 with the closed line shows that line, with no retry. A 429 says how long to wait. Each other failure is an error, never a miss, so it offers a
    retry. The front door takes a wrong passphrase to the passphrase modal before it calls this. */
 export function itemOfError(error: unknown, question: string): ThreadItem {
+  // A page built before the Lock can still call a trade route. The API answers 410 with the closed line, so the page shows it.
+  if (error instanceof AskError && error.closedLine !== undefined) {
+    return {
+      kind: "note",
+      question,
+      line: error.closedLine,
+      topic: null,
+      team: null,
+      retry: false,
+    };
+  }
   if (error instanceof AskError && error.status === 429) {
     const wait = error.retryAfter
       ? `Try again in ${error.retryAfter} seconds.`

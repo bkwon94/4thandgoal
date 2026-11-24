@@ -81,12 +81,15 @@ export type AskQuestion = {
 export class AskError extends Error {
   readonly status: number;
   readonly retryAfter?: number;
+  /* The line of the body of a 410 with closed true, which the API writes after the Lock. */
+  readonly closedLine?: string;
 
-  constructor(status: number, message: string, retryAfter?: number) {
+  constructor(status: number, message: string, retryAfter?: number, closedLine?: string) {
     super(message);
     this.name = "AskError";
     this.status = status;
     this.retryAfter = retryAfter;
+    this.closedLine = closedLine;
   }
 }
 
@@ -108,8 +111,21 @@ export async function postClient(
   } catch {
     throw new AskError(0, "The question did not reach the site.");
   }
-  if (!response.ok) throw statusError(response);
+  if (!response.ok) throw await failureOf(response);
   return response;
+}
+
+/* The body of a 410 that the API sends for a trade route after the Lock. */
+const closedBodySchema = z.object({ closed: z.literal(true), line: z.string() });
+
+/* The AskError of a failed response. A 410 with closed true keeps the line of its body, which a page built before the
+   Lock shows as the answer. Each other failure is a statusError. */
+async function failureOf(response: Response): Promise<AskError> {
+  if (response.status === 410) {
+    const body = closedBodySchema.safeParse(await response.json().catch(() => null));
+    if (body.success) return new AskError(410, response.statusText, undefined, body.data.line);
+  }
+  return statusError(response);
 }
 
 /* The AskError of a failed status. A 429 carries its wait in seconds when the Retry-After header gives one. */
