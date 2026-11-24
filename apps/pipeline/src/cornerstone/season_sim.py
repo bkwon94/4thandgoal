@@ -34,7 +34,7 @@ def schedule_file(nfl: Path, season: int) -> Path | None:
 class SimInputs(NamedTuple):
     """The inputs of the season sim after one week, in the order of the arguments of `season_sim`."""
     scores: dict[int, list[float]]
-    records: dict[int, tuple[int, int, float]]
+    records: dict[int, tuple[int, int, float, float]]
     remaining: dict[int, list[tuple[int, int]]]
     projected: dict[int, dict[int, float]]
     # The real scores of each played bracket week, by week and roster ID. Empty in the regular season.
@@ -139,6 +139,7 @@ def fixture_inputs(inputs: SimInputs, run: SimRun, through: int, client: Client)
     wins = {rid: r[0] for rid, r in inputs.records.items()}
     losses = {rid: r[1] for rid, r in inputs.records.items()}
     points = {rid: Decimal(str(r[2])) for rid, r in inputs.records.items()}
+    against = {rid: Decimal(str(r[3])) for rid, r in inputs.records.items()}
 
     def settle(rid: int, mine: float, theirs: float) -> None:
         if mine > theirs:
@@ -153,6 +154,8 @@ def fixture_inputs(inputs: SimInputs, run: SimRun, through: int, client: Client)
         for a, b in inputs.remaining[w]:
             settle(a, week_scores[a], week_scores[b])
             settle(b, week_scores[b], week_scores[a])
+            against[a] += Decimal(str(week_scores[b]))
+            against[b] += Decimal(str(week_scores[a]))
         ordered = sorted(week_scores.values(), reverse=True)
         median = (ordered[len(ordered) // 2 - 1] + ordered[len(ordered) // 2]) / 2
         for rid, score in week_scores.items():
@@ -163,7 +166,8 @@ def fixture_inputs(inputs: SimInputs, run: SimRun, through: int, client: Client)
     played = {}
     for column, w in enumerate(range(settings.last_regular_week + 1, through + 1), start=len(regular)):
         played[w] = {rid: s[column] for rid, s in run.scores.items() if s[column] is not None}
-    records = {rid: (wins[rid], losses[rid], round(float(points[rid]), 2)) for rid in scores}
+    records = {rid: (wins[rid], losses[rid], round(float(points[rid]), 2), round(float(against[rid]), 2))
+               for rid in scores}
     return SimInputs(scores, records, {w: p for w, p in inputs.remaining.items() if w > through}, inputs.projected,
                      played)
 

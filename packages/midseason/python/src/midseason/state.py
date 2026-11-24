@@ -102,7 +102,9 @@ def league_state(
                 settle(rid, score, median)
             points_for[rid] += score
 
-    records = {rid: (wins[rid], losses[rid], r2(float(points_for[rid]))) for rid in points_for}
+    records = {
+        rid: (wins[rid], losses[rid], r2(float(points_for[rid])), r2(float(points_against[rid]))) for rid in points_for
+    }
     return LeagueState(teams=[
         TeamState(
             roster_id=rid,
@@ -112,7 +114,7 @@ def league_state(
             losses=losses[rid],
             ties=ties[rid],
             points_for=records[rid][2],
-            points_against=r2(float(points_against[rid])),
+            points_against=records[rid][3],
             streak=_streak(history, rid, through),
             playoff_odds=playoff_odds.get(rid),
         )

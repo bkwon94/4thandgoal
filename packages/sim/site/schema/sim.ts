@@ -49,8 +49,9 @@ export const simSchema = z.object({
   // The weeks that a run draws: the regular weeks left, then one week per bracket round.
   weeks: z.array(z.number()),
   bracket_weeks: z.array(z.number()),
-  // The real wins, losses, and points for of each roster at the start of the sim.
-  records: z.record(rosterKey, z.tuple([z.number(), z.number(), z.number()])),
+  // The real wins, losses, points for, and points against of each roster at the start of the sim.
+  // A sim file written before points against holds three values, so the fourth is the rest of the tuple.
+  records: z.record(rosterKey, z.tuple([z.number(), z.number(), z.number()]).rest(z.number())),
   // The head-to-head pairs of each regular week left.
   schedule: z.record(rosterKey, z.array(pairSchema)),
   parameters: simParametersSchema,

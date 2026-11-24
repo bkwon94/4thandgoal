@@ -32,7 +32,7 @@ def test_the_record_counts_both_games_of_every_week(fixture_raw_dir, fixture_his
     history, teams = _inputs(fixture_raw_dir, fixture_history_root)
     records = season_records(history, 6)
     for entry in managers(SeasonInputs(history=history), teams):
-        assert (entry.wins, entry.losses, entry.points_for) == records[entry.roster_id]
+        assert (entry.wins, entry.losses, entry.points_for) == records[entry.roster_id][:3]
         # Six weeks of two games each, so a record with no tie sums to twelve.
         assert entry.wins + entry.losses <= 12
 

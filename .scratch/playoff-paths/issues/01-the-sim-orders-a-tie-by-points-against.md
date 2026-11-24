@@ -10,7 +10,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-1 and AT-2.
 
 **Status:** ready-for-agent
 
-- [ ] NorCal 2026 week 8 puts roster 9 above roster 1, as the Sleeper `bracket.json` of week 8 does.
-- [ ] The top 6 of `cpc` weeks 6 to 10 and `norcal` weeks 8 to 10 equal the Sleeper seeds of each week.
-- [ ] A sim package test covers a tie on wins and Points For that Points Against breaks.
-- [ ] `make check-fast` passes.
+- [x] NorCal 2026 week 8 puts roster 9 above roster 1, as the Sleeper `bracket.json` of week 8 does.
+- [x] The top 6 of `cpc` weeks 6 to 10 and `norcal` weeks 8 to 10 equal the Sleeper seeds of each week.
+- [x] A sim package test covers a tie on wins and Points For that Points Against breaks.
+- [x] `make check-fast` passes.

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from statistics import NormalDist
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from league.league_settings import LeagueSettings
 from league.models import OddsResult, OddsStatus, Swing, TeamOdds
@@ -135,8 +135,8 @@ class SimResult(BaseModel):
     weeks: list[int]
     # The weeks of the bracket, a subset of `weeks`.
     bracket_weeks: list[int]
-    # The real wins, losses, and points for of each roster at the start of the sim.
-    records: dict[int, tuple[int, int, float]]
+    # The real wins, losses, points for, and points against of each roster at the start of the sim.
+    records: dict[int, tuple[int, int, float, float]]
     # The head-to-head pairs of each regular week left.
     schedule: dict[int, list[Pair]]
     parameters: SimParameters
@@ -155,10 +155,16 @@ class SimResult(BaseModel):
     # played round is the real one in each run.
     played: dict[int, dict[int, float]] = {}
 
+    @field_validator("records", mode="before")
+    @classmethod
+    def _records_of_an_older_file(cls, records):
+        """A sim file written before points against held three values. Its tie falls to the roster ID, as before."""
+        return {rid: (*record, 0.0) if len(record) == 3 else record for rid, record in records.items()}
+
 
 def season_sim(
     scores: Mapping[int, list[float]],
-    records: Mapping[int, tuple[int, int, float]],
+    records: Mapping[int, tuple[int, int, float, float]],
     remaining: Mapping[int, list[Pair]],
     *,
     season: int,
@@ -221,7 +227,7 @@ def rerun(
 
 def _season_sim(
     model: DrawModel,
-    records: Mapping[int, tuple[int, int, float]],
+    records: Mapping[int, tuple[int, int, float, float]],
     remaining: Mapping[int, list[Pair]],
     *,
     season: int,
@@ -302,8 +308,8 @@ def _season_sim(
             return _hold_bracket(rng, drawn, column, you, opponent, mean, spread, result, place)
 
         week_log: list[tuple[frozenset[int], frozenset[int]]] | None = [] if pages else None
-        wins, points = _regular(records, [remaining[w] for w in regular], drawn, median_game, week_log)
-        table = sorted(rosters, key=lambda rid: (-wins[rid], -points[rid], rid))
+        wins, points, against = _regular(records, [remaining[w] for w in regular], drawn, median_game, week_log)
+        table = sorted(rosters, key=lambda rid: (-wins[rid], -points[rid], -against[rid], rid))
         place = {rid: n for n, rid in enumerate(table[:spots], start=1)}
         rounds, factor = _bracket(table[:spots], drawn, len(regular), reseed, hold if held_bracket else None)
         weight *= factor
@@ -386,7 +392,7 @@ def _season_sim(
 
 
 def draw_model(
-    scores: Mapping[int, list[float]], records: Mapping[int, tuple[int, int, float]], weeks: list[int],
+    scores: Mapping[int, list[float]], records: Mapping[int, tuple[int, int, float, float]], weeks: list[int],
     projected: Mapping[int, Mapping[int, float]] | None,
 ) -> DrawModel:
     """The numbers of the draw of `season_sim` over the drawn `weeks`, from the played-week scores.
@@ -550,19 +556,22 @@ def _swing(
 
 
 def _regular(
-    records: Mapping[int, tuple[int, int, float]], order: list[list[Pair]], drawn: dict[int, list[float]],
+    records: Mapping[int, tuple[int, int, float, float]], order: list[list[Pair]], drawn: dict[int, list[float]],
     median_game: bool, log: list[tuple[frozenset[int], frozenset[int]]] | None = None,
-) -> tuple[dict[int, int], dict[int, float]]:
-    """The wins and the points for of each roster at the end of the regular season of one run.
+) -> tuple[dict[int, int], dict[int, float], dict[int, float]]:
+    """The wins, the points for, and the points against of each roster at the end of the regular season of one run.
 
     The same rule as the weekly odds: an exact tie gives no win, and the median game counts a win above the line.
     With `log`, each week appends its winners of the head-to-head games and its rosters above the median.
     """
     wins = {rid: r[0] for rid, r in records.items()}
     points = {rid: r[2] for rid, r in records.items()}
+    against = {rid: r[3] for rid, r in records.items()}
     for i, pairs in enumerate(order):
         week = {rid: d[i] for rid, d in drawn.items()}
         for a, b in pairs:
+            against[a] += week[b]
+            against[b] += week[a]
             if week[a] > week[b]:
                 wins[a] += 1
             elif week[b] > week[a]:
@@ -576,7 +585,7 @@ def _regular(
             won = frozenset(a if week[a] > week[b] else b for a, b in pairs if week[a] != week[b])
             above = frozenset(rid for rid, score in week.items() if median is not None and score > median)
             log.append((won, above))
-    return wins, points
+    return wins, points, against
 
 
 def _played(drawn: dict[int, list[float]], rounds: list[list[Pair]], first: int) -> dict[int, list[float | None]]:

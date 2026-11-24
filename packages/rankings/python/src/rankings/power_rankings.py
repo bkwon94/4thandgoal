@@ -184,7 +184,7 @@ def _mean_margin(weeks: list[PastWeek], roster_id: int) -> float:
     return sum(margins) / len(margins) if margins else 0.0
 
 
-def _scoring(weeks: list[PastWeek], records: dict[int, tuple[int, int, float]]) -> dict[int, float]:
+def _scoring(weeks: list[PastWeek], records: dict[int, tuple[int, int, float, float]]) -> dict[int, float]:
     """A third the points for, a third the season all-play win rate, a third the mean margin.
 
     Points for and margin are each scaled from the bottom team to the top.

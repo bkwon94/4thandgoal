@@ -9,9 +9,9 @@ SEASON = 2026
 # The fixture league: 4 rosters, 2 weeks played, 2 weeks left, 2 playoff spots, 1 bye, 200 runs.
 SPOTS, BYES, RUNS = 2, 1, 200
 SCORES = {1: [120.0, 95.0], 2: [101.0, 110.0], 3: [88.0, 130.0], 4: [99.0, 85.0]}
-RECORDS = {1: (3, 1, 215.0), 2: (2, 2, 211.0), 3: (2, 2, 218.0), 4: (1, 3, 184.0)}
+RECORDS = {1: (3, 1, 215.0, 190.0), 2: (2, 2, 211.0, 200.0), 3: (2, 2, 218.0, 205.0), 4: (1, 3, 184.0, 230.0)}
 REMAINING = {3: [(1, 2), (3, 4)], 4: [(1, 3), (2, 4)]}
-EVEN = {rid: (2, 2, 200.0) for rid in (1, 2, 3, 4)}
+EVEN = {rid: (2, 2, 200.0, 200.0) for rid in (1, 2, 3, 4)}
 FIXED_PAIRS = {3: [(1, 2), (3, 4)], 4: [(1, 2), (3, 4)]}
 
 
@@ -68,7 +68,7 @@ def test_points_for_breaks_a_tie_on_wins():
 
 
 def test_roster_id_breaks_a_tie_on_wins_and_points_for():
-    records = {1: (4, 0, 300.0), 2: (2, 2, 250.0), 3: (2, 2, 250.0), 4: (2, 2, 260.0)}
+    records = {1: (4, 0, 300.0, 200.0), 2: (2, 2, 250.0, 200.0), 3: (2, 2, 250.0, 200.0), 4: (2, 2, 260.0, 200.0)}
     result = _odds(records=records, remaining={}, week=4)
     assert [result.teams[rid].seed for rid in (1, 4, 2)] == [1, 2, None]
     assert result.teams[3].status == "out"
@@ -93,7 +93,7 @@ def test_the_bye_odds_never_read_above_the_playoff_odds():
 def test_a_bye_of_0_needs_the_bye_to_be_gone():
     # With 1 week left roster 3 can reach 5 wins, short of the 7 of roster 1, so the bye is gone.
     # Its playoff spot is still open, since roster 2 holds the last spot at 5 wins.
-    records = {1: (7, 1, 300.0), 2: (5, 3, 280.0), 3: (3, 5, 250.0), 4: (1, 7, 240.0)}
+    records = {1: (7, 1, 300.0, 200.0), 2: (5, 3, 280.0, 200.0), 3: (3, 5, 250.0, 200.0), 4: (1, 7, 240.0, 200.0)}
     result = _odds(records=records, remaining={5: [(1, 2), (3, 4)]}, week=4, settings=_settings(last_regular_week=5))
     assert result.teams[3].status == "open"
     assert result.teams[3].bye == 0
@@ -102,13 +102,13 @@ def test_a_bye_of_0_needs_the_bye_to_be_gone():
 
 def test_a_sure_bye_shows_100():
     # With 1 week left no roster can reach the 8 wins of roster 1.
-    records = {1: (8, 0, 300.0), 2: (5, 3, 280.0), 3: (3, 5, 250.0), 4: (0, 8, 240.0)}
+    records = {1: (8, 0, 300.0, 200.0), 2: (5, 3, 280.0, 200.0), 3: (3, 5, 250.0, 200.0), 4: (0, 8, 240.0, 200.0)}
     result = _odds(records=records, remaining={5: [(1, 2), (3, 4)]}, week=4, settings=_settings(last_regular_week=5))
     assert result.teams[1].bye == 100
 
 
 def test_an_out_roster_shows_a_bye_of_0_and_no_seed():
-    records = {1: (6, 0, 300.0), 2: (5, 1, 280.0), 3: (0, 6, 250.0), 4: (2, 4, 240.0)}
+    records = {1: (6, 0, 300.0, 200.0), 2: (5, 1, 280.0, 200.0), 3: (0, 6, 250.0, 200.0), 4: (2, 4, 240.0, 200.0)}
     result = _odds(records=records)
     assert result.teams[3].status == "out"
     assert (result.teams[3].playoff, result.teams[3].bye, result.teams[3].seed) == (0, 0, None)
@@ -117,7 +117,7 @@ def test_an_out_roster_shows_a_bye_of_0_and_no_seed():
 
 
 def test_a_4_win_lead_with_1_week_left_is_in():
-    records = {1: (7, 1, 300.0), 2: (5, 3, 280.0), 3: (3, 5, 250.0), 4: (1, 7, 240.0)}
+    records = {1: (7, 1, 300.0, 200.0), 2: (5, 3, 280.0, 200.0), 3: (3, 5, 250.0, 200.0), 4: (1, 7, 240.0, 200.0)}
     result = _odds(records=records, remaining={5: [(1, 2), (3, 4)]}, week=4, settings=_settings(last_regular_week=5))
     assert (result.teams[1].status, result.teams[1].playoff) == ("in", 100)
     # Roster 2 leads roster 3 by 2 wins, and roster 3 can win 2 more, so roster 2 is not in yet.
@@ -158,13 +158,13 @@ def test_the_swing_ignores_the_median_game():
 
 
 def test_a_side_that_is_in_or_out_shows_100_or_0_in_both_halves():
-    records = {1: (6, 0, 300.0), 2: (5, 1, 280.0), 3: (0, 6, 250.0), 4: (2, 4, 240.0)}
+    records = {1: (6, 0, 300.0, 200.0), 2: (5, 1, 280.0, 200.0), 3: (0, 6, 250.0, 200.0), 4: (2, 4, 240.0, 200.0)}
     by_pair = {(s.a, s.b): s for s in _odds(records=records).swings}
     assert (by_pair[(3, 4)].a_win, by_pair[(3, 4)].a_loss) == (0, 0)
 
 
 def test_no_weeks_left_reads_the_final_table_with_no_swing():
-    records = {1: (6, 2, 300.0), 2: (5, 3, 250.0), 3: (5, 3, 240.0), 4: (0, 8, 260.0)}
+    records = {1: (6, 2, 300.0, 200.0), 2: (5, 3, 250.0, 200.0), 3: (5, 3, 240.0, 200.0), 4: (0, 8, 260.0, 200.0)}
     result = _odds(records=records, remaining={}, week=4)
     assert result.swings == []
     assert {rid: t.status for rid, t in result.teams.items()} == {1: "in", 2: "in", 3: "out", 4: "out"}

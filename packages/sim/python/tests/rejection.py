@@ -11,7 +11,7 @@ from sim.tunables import SCORE_DECIMALS
 
 
 def rejection_odds(
-    scores: Mapping[int, list[float]], records: Mapping[int, tuple[int, int, float]],
+    scores: Mapping[int, list[float]], records: Mapping[int, tuple[int, int, float, float]],
     remaining: Mapping[int, list[Pair]], settings: LeagueSettings, you: int, set_results: Sequence[SetResult], *,
     runs: int, seed: int, projected: Mapping[int, Mapping[int, float]] | None = None,
 ) -> tuple[dict[int, float], dict[int, float], int]:
@@ -31,8 +31,8 @@ def rejection_odds(
         level = {rid: rng.gauss(model.level_mean[rid], model.level_se[rid]) for rid in rosters}
         drawn = {rid: [round(rng.gauss(level[rid], model.spread) + shift, SCORE_DECIMALS)
                        for shift in model.shifts[rid]] for rid in rosters}
-        wins, points = _regular(records, [remaining[w] for w in regular], drawn, settings.median_game)
-        table = sorted(rosters, key=lambda rid: (-wins[rid], -points[rid], rid))
+        wins, points, against = _regular(records, [remaining[w] for w in regular], drawn, settings.median_game)
+        table = sorted(rosters, key=lambda rid: (-wins[rid], -points[rid], -against[rid], rid))
         place = {rid: n for n, rid in enumerate(table[:settings.playoff_spots], start=1)}
         rounds, _ = _bracket(table[:settings.playoff_spots], drawn, len(regular), settings.reseed)
         if not all(_holds(r, you, weeks, remaining, drawn, rounds, place) for r in set_results):
