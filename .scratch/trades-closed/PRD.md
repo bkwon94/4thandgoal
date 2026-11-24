@@ -5,7 +5,7 @@ Date: 2026-11-24
 Apps: site and API. The site build leaves out each trade tool of a client after its Lock, and writes a closed page at `/analyze/`. The API refuses each trade route of a client after its Lock, and the fair warm-up skips the client. The pipeline does not change.
 Spec branch: `trades-closed`.
 Source: the session of 2026-11-24, questions Q1 to Q10 of `4ag:plan`. No map and no decision tickets: Brian confirmed that the feature has no fog. ADR 0037 (ui-sdk standard) holds for the closed page.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 04, in `issues/`.
 
 ## Problem Statement
 

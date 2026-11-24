@@ -13,6 +13,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | --- | --- | --- | --- | --- |
 | `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
+| `trades-closed` | both | 01 Trades closed in the client values | none | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
 | `site-pages` | site | 09 the home page test reads a class name | none | |
 | `tone` | pipeline | 10 remove-names-is-case-sensitive | | |
