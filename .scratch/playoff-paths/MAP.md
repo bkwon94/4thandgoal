@@ -27,11 +27,11 @@ The sim page gives each team its paths to each Goal: a playoff spot, a bye, or o
 - The page takes the name "The Race", short label "Race". The route `/sim/<season>/` and the package name `sim` stay. `decisions/01-grill-the-page-name.md`.
 - Paths come from a greedy cover that stops at 90% or 3 teams, with a floor of 400 runs. Clinch lines come from an exact count in the weekly build. The API keeps Paths after a What-if on `shared-cpu-1x`, with a sim loop that writes each run's results, near 2.0 to 2.1 s on Fly. `sim.json` takes the small shape, about 44 KB gzip. `decisions/03-research-path-search-cost.md`.
 - Variant D: the Goal switch, the Your team card that opens in place with the Finish list and the week card, and the League board as one bar chart. Ink bars, the accent only for Your team. A pill only for Clinched (green, names the best Goal) and Out (red). Each part from `@ui-sdk/react`, the bar chart from `@ui-sdk/core`. `decisions/04-prototype-the-page-redesign.md`.
+- The playoff race Topic is the first Suggestion of the front door until week 14 is final. Its Answer adds the top 3 Finishes, the status pill, and "Open The Race". `decisions/05-grill-the-front-door-push.md`.
 
 ## NOT YET SPECIFIED
 
 - How does The Race show live team names, and on which pages? `decisions/07-grill-live-team-names.md`.
-- Does the front door push with a link chip, or with a Topic that answers in chat? `decisions/05-grill-the-front-door-push.md`.
 - What is the copy of a Path, a Week plan, and a Clinch line? `decisions/06-grill-path-and-clinch-copy.md`.
 
 ## OUT OF SCOPE
