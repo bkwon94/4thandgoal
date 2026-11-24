@@ -62,6 +62,6 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: pending
+Smoke: flow `Analyzer`. "Smoke run: 1 flow, 1 passed, 0 failed". Shots in `.scratch/bugs/rerun-and-banner/smoke/`.
 
 ## Comments
