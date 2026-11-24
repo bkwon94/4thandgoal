@@ -1,0 +1,71 @@
+$ pnpm --dir apps/site check:trades-closed
+(the script: CLIENT=cpc BUILD_NOW=2026-11-25T12:00:00-05:00 pnpm build && playwright test --project=trades-closed; run in a detached scratch worktree of ad1c9015; the route table of the build is cut out)
+16:05  up 109 days,  4:43, 23 users, load averages: 6.29 5.96 8.13
+
+> 4thandgoal-site@0.1.0 check:trades-closed /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site
+> CLIENT=cpc BUILD_NOW=2026-11-25T12:00:00-05:00 pnpm build && playwright test --project=trades-closed
+
+
+> 4thandgoal-site@0.1.0 prebuild /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site
+> node scripts/client-build.mjs
+
+(node:98213) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site/src/lib/trades-closed.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> 4thandgoal-site@0.1.0 build /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site
+> next build
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.ts took 100ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.7s
+  Running TypeScript ...
+  Finished TypeScript in 1020ms ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/26) ...
+  Generating static pages using 9 workers (6/26) 
+  Generating static pages using 9 workers (12/26) 
+  Generating static pages using 9 workers (19/26) 
+✓ Generating static pages using 9 workers (26/26) in 1221ms
+  Finalizing page optimization ...
+
+┌ ○ /
+│ └ ● [+2 more paths]
+│ └ ● [+9 more paths]
+
+
+
+
+Running 25 tests using 2 workers
+
+  ✓   2 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 1280 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, light (AT-3, AT-4, AT-5) (1.1s)
+  ✓   1 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 375 › /analyze/ shows the closed page, light (AT-3, AT-4, AT-5) (1.1s)
+  ✓   3 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 1280 › /analyze/?mode=find shows the closed page, light (AT-3, AT-4, AT-5) (468ms)
+  ✓   5 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 1280 › /analyze/ shows the closed page, dark (AT-3, AT-4, AT-5) (480ms)
+  ✓   6 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 1280 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, dark (AT-3, AT-4, AT-5) (378ms)
+  ✓   4 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 375 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, light (AT-3, AT-4, AT-5) (1.6s)
+  ✓   7 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 1280 › /analyze/?mode=find shows the closed page, dark (AT-3, AT-4, AT-5) (345ms)
+  ✓   8 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 375 › /analyze/?mode=find shows the closed page, light (AT-3, AT-4, AT-5) (376ms)
+  ✓   9 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › iPhone 15 390x660 › /analyze/ shows the closed page, light (AT-3, AT-4, AT-5) (426ms)
+  ✓  10 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 375 › /analyze/ shows the closed page, dark (AT-3, AT-4, AT-5) (392ms)
+  ✓  11 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › iPhone 15 390x660 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, light (AT-3, AT-4, AT-5) (419ms)
+  ✓  12 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 375 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, dark (AT-3, AT-4, AT-5) (378ms)
+  ✓  13 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › iPhone 15 390x660 › /analyze/?mode=find shows the closed page, light (AT-3, AT-4, AT-5) (407ms)
+  ✓  14 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 375 › /analyze/?mode=find shows the closed page, dark (AT-3, AT-4, AT-5) (364ms)
+  ✓  15 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › iPhone 15 390x660 › /analyze/ shows the closed page, dark (AT-3, AT-4, AT-5) (377ms)
+  ✓  16 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 768 › /analyze/ shows the closed page, light (AT-3, AT-4, AT-5) (353ms)
+  ✓  17 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › iPhone 15 390x660 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, dark (AT-3, AT-4, AT-5) (398ms)
+  ✓  18 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 768 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, light (AT-3, AT-4, AT-5) (356ms)
+  ✓  19 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › iPhone 15 390x660 › /analyze/?mode=find shows the closed page, dark (AT-3, AT-4, AT-5) (355ms)
+  ✓  20 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 768 › /analyze/?mode=find shows the closed page, light (AT-3, AT-4, AT-5) (322ms)
+  ✓  22 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 768 › /analyze/ shows the closed page, dark (AT-3, AT-4, AT-5) (371ms)
+  ✓  21 [trades-closed] › e2e/trades-closed.spec.ts:76:5 › a browser clock before the Lock still shows the closed page and no Trade Analyzer in the menu (AT-26) (492ms)
+  ✓  23 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 768 › /analyze/?team=3&with=6&give=5045&get=8151 shows the closed page, dark (AT-3, AT-4, AT-5) (360ms)
+  ✓  24 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 768 › /analyze/?mode=find shows the closed page, dark (AT-3, AT-4, AT-5) (338ms)
+  ✓  25 [trades-closed] › e2e/trades-closed.spec.ts:48:13 › 1280 › /analyze/ shows the closed page, light (AT-3, AT-4, AT-5) (333ms)
+
+  25 passed (7.7s)
+EXIT 0

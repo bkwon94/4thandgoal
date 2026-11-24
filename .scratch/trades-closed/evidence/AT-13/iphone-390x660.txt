@@ -1,0 +1,2 @@
+AT-13 /2026/managers/1/ client cpc, WebKit devices["iPhone 15"], viewport 390x660, light theme, 2026-11-24T20:45:12.437Z
+at the end (/2026/managers/1/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none

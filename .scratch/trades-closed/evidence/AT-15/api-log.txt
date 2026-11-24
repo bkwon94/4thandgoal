@@ -1,0 +1,29 @@
+The lines of the log of the local evidence API on 127.0.0.1:18601 that name /clients/cpc/analyze. The first one is the AT-14 curl; each later pair (OPTIONS, then POST) is one press of Grade the Trade.
+$ grep -n "/clients/cpc/analyze" <log>
+181:INFO:     127.0.0.1:50039 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+313:INFO:     127.0.0.1:50761 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+314:INFO:     127.0.0.1:50761 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+319:INFO:     127.0.0.1:50962 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+320:INFO:     127.0.0.1:50962 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+325:INFO:     127.0.0.1:51046 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+326:INFO:     127.0.0.1:51046 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+340:INFO:     127.0.0.1:51099 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+341:INFO:     127.0.0.1:51099 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+346:INFO:     127.0.0.1:51227 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+347:INFO:     127.0.0.1:51227 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+352:INFO:     127.0.0.1:51302 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+353:INFO:     127.0.0.1:51302 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+358:INFO:     127.0.0.1:51387 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+359:INFO:     127.0.0.1:51387 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+364:INFO:     127.0.0.1:51453 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+365:INFO:     127.0.0.1:51453 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+370:INFO:     127.0.0.1:51507 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+371:INFO:     127.0.0.1:51507 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+376:INFO:     127.0.0.1:51638 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+377:INFO:     127.0.0.1:51638 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+382:INFO:     127.0.0.1:51694 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+383:INFO:     127.0.0.1:51694 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+388:INFO:     127.0.0.1:51773 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+389:INFO:     127.0.0.1:51773 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+403:INFO:     127.0.0.1:51852 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+404:INFO:     127.0.0.1:51852 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone

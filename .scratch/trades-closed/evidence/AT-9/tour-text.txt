@@ -1,0 +1,5 @@
+Tour steps at 390x660 (the text of each dialog; the script waits for each step, then taps Next or Done): 
+step 1: Suggestions | 1 OF 4 | Picks for your team right now. Tap one to open it, or tap More for the full list. | Skip | Next
+step 2: Ask | 2 OF 4 | Type any question about your team or your league, such as start or sit or the playoff race. | Skip | Next
+step 3: Your team | 3 OF 4 | Tap to see the league as another manager. | Skip | Next
+step 4: Menu | 4 OF 4 | Every page of the league lives here. | Skip | Done

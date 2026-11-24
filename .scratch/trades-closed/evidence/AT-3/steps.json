@@ -1,0 +1,11 @@
+{
+  "route": "/analyze/",
+  "steps": [
+    {
+      "expect": "text=The trade deadline has passed. Trades open again next season."
+    },
+    {
+      "expect": "main >> role=link[name=\"Home\"]"
+    }
+  ]
+}

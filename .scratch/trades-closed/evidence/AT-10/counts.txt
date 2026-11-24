@@ -1,0 +1,3 @@
+/ after the team pick: {"path":"/","deadlineBanner":0,"tradeWireButtons":0}
+/rankings/: {"path":"/rankings/","deadlineBanner":0,"tradeWireButtons":0}
+/analyze/: {"path":"/analyze/","deadlineBanner":0,"tradeWireButtons":0}

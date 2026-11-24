@@ -1,0 +1,43 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -v tests/test_trade_routes_closed.py::test_a_refused_call_makes_no_jev_call_and_no_claude_call
+Installed 18 packages in 23ms
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_trade_routes_closed.py::test_a_refused_call_makes_no_jev_call_and_no_claude_call PASSED [100%]
+
+============================== 1 passed in 1.12s ===============================
+[exit 0]
+
+The source of the test that ran:
+$ awk 'NR>=125 && NR<=137' apps/api/tests/test_trade_routes_closed.py   (cut at the first blank line)
+def test_a_refused_call_makes_no_jev_call_and_no_claude_call(settings, sources, jev, monkeypatch):
+    # AT-16.
+    _set_clock(monkeypatch, AFTER_CPC_LOCK)
+    counts = Counts()
+    api = _api(settings, sources, jev, counts)
+    for method, route, body in ROUTES:
+        assert _call(api, route, method, body).status_code == 410
+    assert jev.requests == []
+    assert counts.claude() == 0
+$ grep -n "^AFTER_CPC_LOCK\|^ROUTES" -A9 apps/api/tests/test_trade_routes_closed.py   (the clock and the 7 routes it calls)
+38:AFTER_CPC_LOCK = datetime(2026, 11, 24, 12, 0, tzinfo=EASTERN)
+43:ROUTES = [
+44-    ("POST", "analyze", TRADE),
+45-    ("POST", "find", FIND),
+46-    ("POST", "trade-check", {"question": SURE_TRADE, **ROSTER}),
+47-    ("POST", "trade-ideas", ROSTER),
+48-    ("POST", "find-stream", FIND),
+49-    ("POST", "sell-high", ROSTER),
+50-    ("GET", "deadline/trades", None),
+51-]
+52-SECOND_HEADERS = {"X-League-Passphrase": "norcal-test"}
+
+$ grep -n "def claude" -A2 apps/api/tests/test_trade_routes_closed.py
+75:    def claude(self) -> int:
+76-        return len(self.advisor.calls) + len(self.picker.calls) + len(self.repair.calls) + self.sells
+77-

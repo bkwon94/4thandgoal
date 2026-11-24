@@ -1,0 +1,4 @@
+AT-20 / client norcal, WebKit devices["iPhone 15"], viewport 390x660, light theme, 2026-11-24T20:53:55.404Z
+at shot "home" (/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at shot "rankings" (/rankings/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at the end (/rankings/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none

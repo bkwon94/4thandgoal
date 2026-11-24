@@ -1,0 +1,4 @@
+AT-19 / client norcal, WebKit devices["iPhone 15"], viewport 390x660, light theme, 2026-11-24T20:53:44.783Z
+at shot "menu" (/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at shot "analyze" (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at the end (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none

@@ -1,0 +1,13 @@
+The count of trade cards on each week page of the closed cpc build (WebKit, 390x660; a card is "#trades article"), then the count in each page.json.
+/2026/week-06/: {"tradesChapter":true,"tradeCards":5}
+/2026/week-07/: {"tradesChapter":true,"tradeCards":2}
+/2026/week-08/: {"tradesChapter":true,"tradeCards":1}
+/2026/week-09/: {"tradesChapter":true,"tradeCards":2}
+/2026/week-10/: {"tradesChapter":false,"tradeCards":0}
+
+$ python3: len(page.json["trades"]) of each week
+clients/cpc/published/2026/week-06/page.json trades: 5
+clients/cpc/published/2026/week-07/page.json trades: 2
+clients/cpc/published/2026/week-08/page.json trades: 1
+clients/cpc/published/2026/week-09/page.json trades: 2
+clients/cpc/published/2026/week-10/page.json trades: 0

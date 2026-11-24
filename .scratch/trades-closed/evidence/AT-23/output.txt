@@ -1,0 +1,48 @@
+$ cd apps/site && bun test --isolate src/lib/trades-closed.test.ts
+bun test v1.4.5 (a7733435c)
+
+ 2 pass
+ 0 fail
+ 5 expect() calls
+Ran 2 tests across 1 file. [285.00ms]
+[exit 0]
+
+$ cd apps/site && bun test --isolate scripts/client-build.test.mjs -t "tradesClosed"
+bun test v1.4.5 (a7733435c)
+
+ 1 pass
+ 62 filtered out
+ 0 fail
+ 3 expect() calls
+Ran 1 test across 1 file. [283.00ms]
+[exit 0]
+
+$ cd apps/api && uv run --exact --package cpc-api pytest -v tests/test_trades_closed.py::test_a_client_with_no_lock_is_never_closed
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_trades_closed.py::test_a_client_with_no_lock_is_never_closed PASSED [100%]
+
+============================== 1 passed in 0.01s ===============================
+[exit 0]
+
+The names of the bun tests that ran (from the test files):
+10:  it("is never closed for a client with no Lock (AT-23)", () => {
+568:  it("writes tradesClosed from the Lock and the build clock, and false with no Lock", () => {
+569-    const repo = tempRepo();
+570-    buildClient({ ...repo, now: Date.parse("2026-11-23T23:59:59-05:00") });
+571-    expect(clientValuesOf(repo.site).tradesClosed).toBe(false);
+572-    buildClient({ ...repo, now: Date.parse("2026-11-24T00:00:00-05:00") });
+573-    expect(clientValuesOf(repo.site).tradesClosed).toBe(true);
+574-    const none = tempRepo(CPC_TOML.replace(/lock = .*\n/, ""));
+575-    buildClient({ ...none, now: Date.parse("2027-06-01T12:00:00-04:00") });
+576-    expect(clientValuesOf(none.site).tradesClosed).toBe(false);
+577-  });
+578-
+579-  it("writes deadlineWeek from deadline_week, false by default", () => {
+580-    const repo = tempRepo();

@@ -1,0 +1,31 @@
+How the evidence of trades-closed was made, on 2026-11-24, from the Spec branch trades-closed at ad1c9015.
+
+The runner round (the 375, 768, and 1280 px shots in light and dark of AT-1, AT-3 to AT-13, AT-19, AT-20)
+- In the Spec worktree: source ~/.secrets; export CORNERSTONE_RESULT_CACHE_DIR=<scratch>/cache/results; pnpm --dir apps/site evidence trades-closed
+- The output is round-output.txt. Its total: "Total: 14 tests of trades-closed in 578.9 s". The log of its own local API is round-api.log.txt.
+- The runner uses the Playwright project "evidence" of apps/site/playwright.config.ts. That project takes the default device of the config, Desktop Chrome, so its shots are Chromium shots.
+- Each build of the round uses the real clock (no BUILD_NOW), so the cpc build is closed and the norcal build is open.
+
+The scratch worktree (the iPhone 15 check, the text facts, and the shots that no runner verb covers)
+- git worktree add --detach <scratch>/tc-site HEAD (ad1c9015), then pnpm install --frozen-lockfile, and a copy of the ignored data/ask, data/eggs, and data/nfl/cache.
+- The scripts sat there as apps/site/zz-tc.config.ts and apps/site/e2e/zz-tc.spec.ts. Their copies are scripts/zz-tc.config.ts.txt and scripts/zz-tc.spec.ts.txt. They import loadTests and takeShot of apps/site/e2e/evidence.ts, openPage of e2e/floor.ts, and findOverlap of e2e/smoke.ts. The Spec worktree never held them.
+- They run in Playwright WebKit. The iPhone 15 check uses devices["iPhone 15"] with the viewport 390x660, light theme, and reads the steps.json of each test. At each shot step and at the end it writes scrollWidth, clientWidth, and the result of findOverlap to iphone-390x660.txt.
+- The job lists of each run are scripts/facts*.json and scripts/pages*.json.
+- The export apps/site/out of the scratch worktree was served on http://127.0.0.1:18602 by scripts/serve.mjs.txt, which answers a missing path with 404.html and status 404.
+
+The local evidence API of the agent
+- In the Spec worktree: source ~/.secrets; CORNERSTONE_RESULT_CACHE_DIR=<scratch>/cache/results make -C apps/api api-evidence API_PORT=18601 API_ORIGIN=http://127.0.0.1:18602
+- It started at 15:39:38 EST. It ran on the real clock, after the CPC Lock. AT-7, AT-8, AT-12 (iPhone check and text), AT-14, AT-15, AT-18, and the norcal analyzer of AT-19 called it. It was stopped after the last test.
+- AT-17 used a second, fresh start of the same target on port 18603. Its log was copied 120 s after the start, and then the agent stopped it.
+- No call went to Fly.
+
+The builds of the scratch worktree, one at a time, each with NEXT_PUBLIC_API_URL=http://127.0.0.1:18601
+1. CLIENT=cpc, real clock: tradesClosed true. AT-2 registry, the iPhone check of the cpc tests, the facts, AT-10 /analyze/ shots, AT-11 week 9 shots, AT-26 shots.
+2. CLIENT=norcal, real clock: tradesClosed false. The iPhone check and facts of AT-19 and AT-20.
+3. CLIENT=cpc BUILD_NOW=2026-11-21T09:55:00-05:00: tradesClosed false. AT-15.
+4. CLIENT=cpc with lock = "2027-11-23T00:00:00-05:00" in the scratch copy only: tradesClosed false. AT-25. The change was put back after each build of it and never committed.
+5. pnpm --dir apps/site check:trades-closed (CLIENT=cpc BUILD_NOW=2026-11-25T12:00:00-05:00). AT-26/check-trades-closed.txt.
+
+Spend of the round
+- Claude: one call, "The personal Topic weak_spots ended as checked, ... a cost of $0.0061", in the log of the agent API. The round API log has no call to api.anthropic.com.
+- TypeSafe: 12 Jev requests on the agent API and 30 on the round API, each a small read of the routing or the lifts. No fair warm-up ran, because WARM_SLUGS holds only cpc and cpc is closed.

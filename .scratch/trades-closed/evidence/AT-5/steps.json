@@ -1,0 +1,8 @@
+{
+  "route": "/analyze/?mode=find",
+  "steps": [
+    {
+      "expect": "text=The trade deadline has passed. Trades open again next season."
+    }
+  ]
+}

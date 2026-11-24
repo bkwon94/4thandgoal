@@ -1,0 +1,8 @@
+{
+  "route": "/analyze/?team=3&with=6&give=5045&get=8151",
+  "steps": [
+    {
+      "expect": "text=The trade deadline has passed. Trades open again next season."
+    }
+  ]
+}

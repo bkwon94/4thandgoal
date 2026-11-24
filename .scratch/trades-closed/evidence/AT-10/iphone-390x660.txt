@@ -1,0 +1,4 @@
+AT-10 / client cpc, WebKit devices["iPhone 15"], viewport 390x660, light theme, 2026-11-24T20:43:21.579Z
+at shot "home" (/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at shot "rankings" (/rankings/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at the end (/rankings/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
