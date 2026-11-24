@@ -10,10 +10,10 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Status:** ready-for-agent
 
-- [ ] A `cpc` build made today has no "Trade Analyzer" in the menu (AT-1) and no analyzer home tool in the generated registry (AT-2).
+- [x] A `cpc` build made today has no "Trade Analyzer" in the menu (AT-1) and no analyzer home tool in the generated registry (AT-2).
 - [ ] `/analyze/`, the prefill link `/analyze/?team=3&with=6&give=5045&get=8151`, and `/analyze/?mode=find` each show the closed page in WebKit at 375, 768, and 1280 px, both themes, and pass the iPhone 15 check (AT-3, AT-4, AT-5).
 - [ ] With the browser clock at 20:00 Eastern on 2026-11-23, `/analyze/` still shows the closed page (AT-26).
-- [ ] The Site answer of a closed `cpc` build lists no analyzer line (AT-8).
-- [ ] A press of Grade the Trade on a page from before the close shows the closed line from the 410 (AT-15).
-- [ ] A `norcal` build made today keeps the menu item and the analyzer (AT-19). A `cpc` build with a future `lock` in a scratch copy has the analyzer again (AT-25).
+- [x] The Site answer of a closed `cpc` build lists no analyzer line (AT-8).
+- [x] A press of Grade the Trade on a page from before the close shows the closed line from the 410 (AT-15).
+- [x] A `norcal` build made today keeps the menu item and the analyzer (AT-19). A `cpc` build with a future `lock` in a scratch copy has the analyzer again (AT-25).
 - [ ] The week 10 page still shows each of its trade cards, and the manager page of roster 1 still shows 2 trades (AT-11, AT-13).

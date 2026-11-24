@@ -255,6 +255,24 @@ const ROUTES = {
   ],
 };
 
+/* The route of a package after Trades closed, in place of its route in ROUTES. The closed page reads no query, so each
+   old link of the analyzer gives the same page. */
+const CLOSED_ROUTES = {
+  analyzer: [
+    {
+      path: "analyze/page.tsx",
+      source: "@/app/_routes/analyzer/closed-page",
+      exports: ["default", "metadata"],
+    },
+  ],
+};
+
+/* The packages that Trades closed takes out of the menu, the home tools, and the Site answer. The analyzer code stays
+   in the repo, so a build with a later Lock has the analyzer again. */
+function closedPackages(values, now) {
+  return tradesClosed(lockOf(values), now) ? ["analyzer"] : [];
+}
+
 /* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
    The registry imports it only for a package of the list, so the home page of a client that omits the package holds
    none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
@@ -327,18 +345,19 @@ const SITE_LINES = ["week", "rankings", "managers", "analyzer", "midseason", "si
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
-function registryText(slug, values) {
-  const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
+function registryText(slug, values, closed = []) {
+  const open = values.packages.filter((name) => !closed.includes(name));
+  const tools = Object.keys(HOME_TOOLS).filter((name) => open.includes(name));
   const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
   const weekTiles = Object.keys(WEEK_TILES).filter((name) => values.packages.includes(name));
-  const lines = SITE_LINES.filter((name) => values.packages.includes(name));
+  const lines = SITE_LINES.filter((name) => open.includes(name));
   return [
     headerLine(slug),
     `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines, WeekTile } from "@/lib/client-values";`,
-    ...values.packages.map(
+    ...open.map(
       (name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`,
     ),
     ...lines.map(
@@ -359,7 +378,7 @@ function registryText(slug, values) {
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
-    ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
+    ...open.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
     "",
     "/* The site line of each package of the client that shows in the Site answer. */",
@@ -507,15 +526,16 @@ export function buildClient({
   const published = join(root, "clients", slug, "published");
   rmSync(join(site, ROUTE_GROUP), { recursive: true, force: true });
   rmSync(join(site, GENERATED_DIR), { recursive: true, force: true });
+  const closed = closedPackages(values, now);
   for (const name of values.packages) {
-    for (const route of ROUTES[name]) {
+    for (const route of closed.includes(name) ? CLOSED_ROUTES[name] : ROUTES[name]) {
       if (route.needs && !route.needs(published)) continue;
       writeFile(join(site, ROUTE_GROUP, route.path), routeText(slug, route));
     }
   }
   if (!frontDoorOf(values))
     writeFile(join(site, ROUTE_GROUP, ASK_ROUTE.path), routeText(slug, ASK_ROUTE));
-  writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values));
+  writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values, closed));
   const logo = copyAssets(root, slug, site);
   writeFile(
     join(site, GENERATED_DIR, "client-values.ts"),

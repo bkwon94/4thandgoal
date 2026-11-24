@@ -44,13 +44,15 @@ export class ApiError extends Error {
   }
 }
 
-/* A body is { detail: string } or { detail: { message } }. Any other body gives no detail. */
+/* A body is { detail: string } or { detail: { message } }. The 410 of a closed trade route is { closed: true, line }, and
+   its line is the detail. Any other body gives no detail. */
 async function errorDetail(response: Response): Promise<string | undefined> {
   try {
     const body = await response.json();
     const detail = body?.detail;
     if (typeof detail === "string") return detail;
     if (typeof detail?.message === "string") return detail.message;
+    if (body?.closed === true && typeof body.line === "string") return body.line;
   } catch {
     // The body is not JSON, so it has no detail.
   }
@@ -108,6 +110,8 @@ export function toErrorLine(error: unknown, timedOut: boolean, timeoutMessage: s
     // A wrong body is a fault of the API, so the line does not show the paths of the bad fields.
     if (error.status === 502) return { message: "The API sent an answer the site cannot read." };
     if (error.status === 429) return { message: retryText(error.retryAfter) };
+    // The API words the closed line, so a page from before the Lock shows it in place of a grade.
+    if (error.status === 410 && error.detail) return { message: error.detail };
     // The API says why it is down in its detail, so the reader sees that reason when it exists.
     if (error.status === 503) {
       return {

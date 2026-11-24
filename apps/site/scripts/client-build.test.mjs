@@ -279,7 +279,8 @@ describe("the client build", () => {
   it("gives the home page the analyzer tool through the registry only when the list takes analyzer", () => {
     // The Tools chapter shows the analyzer row first, then the managers row, whatever the order of the list.
     const taken = tempRepo();
-    buildClient(taken);
+    // The build runs before the Lock, because a build after it leaves the analyzer out.
+    buildClient({ ...taken, now: Date.parse("2026-11-23T12:00:00-05:00") });
     const withAnalyzer = readFileSync(join(taken.site, "src", "generated", "registry.ts"), "utf8");
     expect(withAnalyzer).toContain(
       'import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";',
@@ -299,6 +300,70 @@ describe("the client build", () => {
     const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
     expect(without).not.toContain("analyzer");
     expect(without).toContain("export const homeTools: HomeTool[] = [managersHomeTool];");
+  });
+
+  describe("with Trades closed (AT-1, AT-2, AT-3, AT-8, AT-19, AT-25)", () => {
+    const BEFORE_LOCK = Date.parse("2026-11-23T23:59:59-05:00");
+    const AFTER_LOCK = Date.parse("2026-11-24T00:00:00-05:00");
+    const read = (repo, ...path) => readFileSync(join(repo.site, ...path), "utf8");
+
+    it("leaves the analyzer out of the menu, the home tools, and the Site answer, and keeps the managers row", () => {
+      const repo = tempRepo();
+      buildClient({ ...repo, now: AFTER_LOCK });
+      const registry = read(repo, "src", "generated", "registry.ts");
+      expect(registry).not.toContain("analyzer/home");
+      expect(registry).not.toContain("analyzer/menu");
+      expect(registry).not.toContain("analyzerSiteLine");
+      expect(registry).not.toContain("  analyzer: analyzerMenuLink,");
+      expect(registry).toContain("export const homeTools: HomeTool[] = [managersHomeTool];");
+    });
+
+    it("writes the closed page at /analyze/ in place of the analyzer page", () => {
+      const repo = tempRepo();
+      buildClient({ ...repo, now: AFTER_LOCK });
+      const route = read(repo, "src", "app", "(client)", "analyze", "page.tsx");
+      expect(route).toContain('from "@/app/_routes/analyzer/closed-page"');
+      expect(route).not.toContain('"@/app/_routes/analyzer/page"');
+    });
+
+    it("keeps the analyzer in the menu, the home tools, and the route before the Lock", () => {
+      const repo = tempRepo();
+      buildClient({ ...repo, now: BEFORE_LOCK });
+      const registry = read(repo, "src", "generated", "registry.ts");
+      expect(registry).toContain("analyzer/home");
+      expect(registry).toContain("  analyzer: analyzerMenuLink,");
+      expect(registry).toContain("analyzerSiteLine");
+      expect(read(repo, "src", "app", "(client)", "analyze", "page.tsx")).toContain(
+        '"@/app/_routes/analyzer/page"',
+      );
+    });
+
+    it("keeps the analyzer with a future Lock in a scratch copy of the values (AT-25)", () => {
+      const repo = tempRepo(
+        CPC_TOML.replace(/lock = .*\n/, 'lock = "2027-11-23T00:00:00-05:00"\n'),
+      );
+      buildClient({ ...repo, now: AFTER_LOCK });
+      expect(read(repo, "src", "generated", "registry.ts")).toContain("analyzer/home");
+    });
+
+    it("keeps the analyzer of norcal after the CPC Lock and before its own Lock (AT-19)", () => {
+      const toml = readFileSync(join(REPO_ROOT, "clients", "norcal", "client.toml"), "utf8");
+      const repo = tempRepo(toml, "norcal");
+      buildClient({ ...repo, now: AFTER_LOCK });
+      expect(clientValuesOf(repo.site).tradesClosed).toBe(false);
+      expect(read(repo, "src", "generated", "registry.ts")).toContain("analyzer/home");
+      expect(read(repo, "src", "app", "(client)", "analyze", "page.tsx")).toContain(
+        '"@/app/_routes/analyzer/page"',
+      );
+    });
+
+    it("keeps the analyzer of a client with no Lock", () => {
+      const repo = tempRepo(
+        CPC_TOML.replace(/lock = .*\n/, "").replace(/deadline_week = .*\n/, ""),
+      );
+      buildClient({ ...repo, now: Date.parse("2027-06-01T12:00:00-04:00") });
+      expect(read(repo, "src", "generated", "registry.ts")).toContain("analyzer/home");
+    });
   });
 
   it("lists the home chapter of each package of the client in the order of the home page", () => {
