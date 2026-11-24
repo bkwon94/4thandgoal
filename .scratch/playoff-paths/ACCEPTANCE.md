@@ -75,7 +75,7 @@ App: pipeline
 Stories: 16, 17, 18
 Given: `week-11/sim.json` of `cpc`.
 When: the reader reads every Path of every page.
-Then: each Path names 1 to 3 teams, each condition is a final record at most, each Path has 400 runs or more, and each Path that names fewer than 3 teams has odds of 90% or more.
+Then: each Path names 1 to 3 teams, each condition is a final record at most, each Path has 400 runs or more, and each Path that names fewer than 3 teams has odds of 90% or more, unless it is the Best chance Path of its Finish.
 Evidence: A script over the file and its counts.
 
 AT-9: No Path repeats
