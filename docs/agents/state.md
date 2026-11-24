@@ -14,6 +14,7 @@ names `.scratch/waiver/pipeline/issues/09-*.md`. A feature with no subfolder has
 | `manager-pages` | site | 11 the bench sentence and the odds change words | none | |
 | `manager-pages` | pipeline | 12 drop-awards-from-managers-entry | | |
 | `modular` | pipeline | 20 remove-the-chart-parameter-of-context | | |
+| `playoff-paths` | both | 01 The sim orders a tie by Points Against | none | |
 | `site-pages` | site | 09 the home page test reads a class name | none | |
 | `tone` | pipeline | 10 remove-names-is-case-sensitive | | |
 | `week-8-fixes` | pipeline | 08 the-scoring-component-fact-names-the-component | | |

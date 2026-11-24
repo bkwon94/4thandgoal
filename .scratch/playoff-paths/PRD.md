@@ -5,7 +5,7 @@ Date: 2026-11-24
 Apps: all three. The pipeline finds the Finishes, the Paths, the Week plans, the Score to beat, and the Clinch lines, and writes them into `week-NN/sim.json`. It also pins the playoff race Topic as the first Suggestion. The API finds the same parts again after a What-if. The site redesigns the sim page as The Race, adds the League board, adds live names on every page, and shows an Announcement.
 Spec branch: `playoff-paths`.
 Source: the map `.scratch/playoff-paths/MAP.md` and decision tickets 01 to 07. ADR 0037 (the sim is the one odds engine, and each new interactive part uses ui-sdk). The prototype is on the branch `playoff-paths-prototype`, with a copy in `~/plans/playoff-paths-prototype/`.
-Tickets: none yet. `4ag:to-tickets` writes them.
+Tickets: 01 to 10, in `issues/`.
 
 ## Problem Statement
 
