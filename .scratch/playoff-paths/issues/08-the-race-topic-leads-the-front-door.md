@@ -10,7 +10,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-24, AT-25, and AT-26.
 
 **Status:** ready-for-agent
 
-- [ ] The Suggestions of Bo Girds in `cpc` week 11 put the race Topic first.
-- [ ] A fixture that runs as week 15 does not pin the race Topic.
-- [ ] The race Answer shows the top 3 Finishes, no pill for a team In the hunt, and the link to `/sim/2026/`.
+- [x] The Suggestions of Bo Girds in `cpc` week 11 put the race Topic first.
+- [x] A fixture that runs as week 15 does not pin the race Topic.
+- [x] The race Answer shows the top 3 Finishes, no pill for a team In the hunt, and the link to `/sim/2026/`.
 - [ ] `make check-fast` passes.

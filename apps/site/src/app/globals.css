@@ -49,6 +49,14 @@
   --color-move-up: #3987e5;
   --color-move-down: #e05a4f;
 
+  /* The quiet tints of the status pill of The Race: green for Clinched, red for Out (decision 04 of playoff-paths). The
+       brand has no green role, so the pill keeps its own pair, and the .dark block below gives the dark pair. Each text
+       passes 4.5 to 1 on its own tint in both themes. */
+  --color-status-in-tint: #e2f3e7;
+  --color-status-in-ink: #1a6532;
+  --color-status-out-tint: #fbe4e1;
+  --color-status-out-ink: #a52e25;
+
   /* The fonts of the look, the same for every client (ADR 0024). The root layout puts the two font variables on
        <html> from src/app/fonts/fonts.ts. Space Grotesk sets text and headings. JetBrains Mono sets numbers, scores,
        and small uppercase labels. Each variable already holds its fallback faces. */
@@ -366,6 +374,11 @@
   --color-accent-wash: var(--color-raised);
   --color-accent-wash-chosen: color-mix(in srgb, var(--color-accent) 24%, var(--color-raised));
   --color-accent-wash-hover: color-mix(in srgb, var(--color-accent) 34%, var(--color-raised));
+  /* The dark pair of the tints of the status pill of The Race. */
+  --color-status-in-tint: #16301f;
+  --color-status-in-ink: #8fd4a4;
+  --color-status-out-tint: #3a1a18;
+  --color-status-out-ink: #f2a59e;
   /* A top edge of light on the ask box and the cards, and a deep shadow under the ask box, so it floats over the page. */
   --door-lift:
     inset 0 1px 0 color-mix(in srgb, var(--color-ink) 6%, transparent),

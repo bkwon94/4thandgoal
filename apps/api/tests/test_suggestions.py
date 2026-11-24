@@ -87,7 +87,7 @@ def test_a_lift_above_the_cutoff_puts_its_topic_first_above_the_order_of_the_day
 def test_an_unsure_lift_is_no_lift_and_the_order_of_the_day_holds(settings, sources):
     # The cutoff is the hard rule of the spec: 0.7 reads as unsure, so the Topic stays in its place.
     _publish_topics(settings)
-    api = _api(settings, sources, FakeJev(answer=Lifts({"playoff_race": 0.7}).answer), Writer())
+    api = _api(settings, _past_the_pin(sources), FakeJev(answer=Lifts({"playoff_race": 0.7}).answer), Writer())
     body = _suggest(api, order=TUESDAY).json()
     assert body["urgent"] == []
     assert body["picks"] == ["week_recap", "last_matchup", "power_rankings"]
@@ -95,7 +95,7 @@ def test_an_unsure_lift_is_no_lift_and_the_order_of_the_day_holds(settings, sour
 
 def test_the_api_serves_the_live_facts_of_the_personal_topics_and_skips_each_opened_topic(settings, sources):
     _publish_topics(settings)
-    api = _api(settings, sources, FakeJev(answer=Lifts().answer), Writer())
+    api = _api(settings, _past_the_pin(sources), FakeJev(answer=Lifts().answer), Writer())
     first = _suggest(api).json()
     assert {"weak_spots", "stack_up", "waiver_targets"} <= set(first["facts"])
     # A Topic opened at the same fact drops off.
@@ -235,7 +235,7 @@ def test_a_lift_of_a_trade_topic_puts_it_first_with_the_same_cutoff(settings, so
     snapshot = _here(sources, settings).snapshot(2026)
     name = snapshot.players[sheet_players(snapshot, LIL_FRIDGE)[0]].name
     jev = FakeJev(answer=Lifts({"sell_high": 0.9, "trade_ideas": 0.8}).answer, choose=_sure_on(name))
-    body = _suggest(_api(settings, sources, jev, Writer())).json()
+    body = _suggest(_api(settings, _past_the_pin(sources), jev, Writer())).json()
     assert body["urgent"] == ["sell_high", "trade_ideas"]
     assert body["picks"][:2] == ["sell_high", "trade_ideas"]
     [lift] = [r for r in jev.requests if any(k.startswith("lift_") for k in r.questions)]
@@ -258,7 +258,7 @@ def test_the_head_start_builds_the_top_personal_suggestion_on_open_and_the_tap_g
     # gets the kept Answer at once with no Claude call.
     _publish_topics(settings)
     writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Lifts().answer), writer)
+    api = _api(settings, _past_the_pin(sources), FakeJev(answer=Lifts().answer), writer)
     order = ["weak_spots", *(key for key in WEDNESDAY if key != "weak_spots")]
     with caplog.at_level(logging.INFO, logger="cornerstone_api"):
         body = _suggest(api, order=order).json()
@@ -290,7 +290,7 @@ def test_a_league_topic_at_the_top_builds_nothing_on_open(settings, sources):
 def test_past_the_league_cap_the_head_start_builds_nothing(settings, sources):
     _publish_topics(settings)
     writer = Writer()
-    api = _api(settings, sources, FakeJev(answer=Lifts().answer), writer)
+    api = _api(settings, _past_the_pin(sources), FakeJev(answer=Lifts().answer), writer)
     caps, now = api.app.state.askers["cpc"].caps, api.app.state.askers["cpc"].clock()
     caps.record(None, 25.00, now, counts=False)
     body = _suggest(api).json()
@@ -452,7 +452,7 @@ def _live_week_api(settings, sources, fixture_raw_dir, jev: FakeJev, now=BEFORE_
 
 def test_start_or_sit_leads_thursday_with_the_next_kickoff_as_its_fact(settings, sources, fixture_raw_dir):
     # AT-13 and AT-15: Bo Girds starts no player who cannot play and no Q, so the fact is the next kickoff of his lineup.
-    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer))
+    api = _live_week_api(settings, _past_the_pin(sources), fixture_raw_dir, FakeJev(answer=Lifts().answer))
     body = _suggest(api, order=THURSDAY_ORDER, roster_id=BO_GIRDS).json()
     assert body["picks"][0] == "start_sit"
     assert body["facts"]["start_sit"] == "Next kickoff Sun 1:00 PM"
@@ -461,7 +461,7 @@ def test_start_or_sit_leads_thursday_with_the_next_kickoff_as_its_fact(settings,
 def test_start_or_sit_leads_sunday_before_the_early_games(settings, sources, fixture_raw_dir):
     # AT-13: Sunday 2026-11-15 at noon in New York, before the 1:00 PM games of the lineup of Bo Girds.
     sunday = datetime(2026, 11, 15, 17, 0, tzinfo=UTC)
-    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer), now=sunday)
+    api = _live_week_api(settings, _past_the_pin(sources), fixture_raw_dir, FakeJev(answer=Lifts().answer), now=sunday)
     body = _suggest(api, order=SUNDAY_ORDER, roster_id=BO_GIRDS).json()
     assert body["picks"][0] == "start_sit"
     assert body["facts"]["start_sit"] == "Next kickoff Sun 1:00 PM"
@@ -470,7 +470,7 @@ def test_start_or_sit_leads_sunday_before_the_early_games(settings, sources, fix
 def test_start_or_sit_is_third_on_wednesday_after_the_waiver_targets(settings, sources, fixture_raw_dir):
     # AT-13: the claims come first on Wednesday.
     wednesday = datetime(2026, 11, 11, 17, 0, tzinfo=UTC)
-    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer), now=wednesday)
+    api = _live_week_api(settings, _past_the_pin(sources), fixture_raw_dir, FakeJev(answer=Lifts().answer), now=wednesday)
     body = _suggest(api, order=WEDNESDAY_ORDER, roster_id=BO_GIRDS).json()
     assert body["picks"] == ["waiver_targets", "weak_spots", "start_sit"]
 
@@ -478,7 +478,7 @@ def test_start_or_sit_is_third_on_wednesday_after_the_waiver_targets(settings, s
 def test_monday_keeps_the_order_of_today_with_start_or_sit_below_the_top_three(settings, sources, fixture_raw_dir):
     # AT-13: Monday does not change, so the next matchup, the playoff race, and the power rankings lead.
     monday = datetime(2026, 11, 16, 17, 0, tzinfo=UTC)
-    api = _live_week_api(settings, sources, fixture_raw_dir, FakeJev(answer=Lifts().answer), now=monday)
+    api = _live_week_api(settings, _past_the_pin(sources), fixture_raw_dir, FakeJev(answer=Lifts().answer), now=monday)
     body = _suggest(api, order=MONDAY_ORDER, roster_id=BO_GIRDS).json()
     assert body["picks"] == ["next_matchup", "playoff_race", "power_rankings"]
 
@@ -487,7 +487,7 @@ def test_a_starter_on_ir_lifts_start_or_sit_first_on_a_tuesday(settings, sources
     # AT-14: Etienne starts on IR, so the lift reads "1 can't play" and Start or sit leads the recap day.
     tuesday = datetime(2026, 11, 10, 17, 0, tzinfo=UTC)
     jev = FakeJev(answer=Lifts({"start_sit": 0.9}).answer)
-    api = _live_week_api(settings, sources, fixture_raw_dir, jev, now=tuesday)
+    api = _live_week_api(settings, _past_the_pin(sources), fixture_raw_dir, jev, now=tuesday)
     body = _suggest(api, order=TUESDAY_ORDER, roster_id=ETIENNE_ON_IR).json()
     assert body["picks"][0] == "start_sit" and body["urgent"] == ["start_sit"]
     [lift] = [r for r in jev.requests if "lift_start_sit" in r.questions]
@@ -584,4 +584,48 @@ def test_the_key_check_reads_a_kept_start_or_sit_answer_from_the_live_week(setti
     [now, stale] = response.json()["answers"]
     assert now["key"] == key and now["current"] is True and now["kept_at"] is not None
     assert stale["current"] is False
+    assert writer.calls == 1
+
+
+def _past_the_pin(sources):
+    """The recorded sources as week 15, past the race pin. A test of the order of the day, the lifts, or the head
+    start reads its rule below the pin there, as each Suggestion ranks after week 14."""
+    return _sources_at_week(sources, 15)
+
+
+def _sources_at_week(sources, week: int):
+    """The recorded sources with the trade week set to `week`, so the league runs as that week of the season."""
+    class AtWeek(type(sources)):
+        def snapshot(self, season: int):
+            return super().snapshot(season).model_copy(update={"week": week})
+
+    return AtWeek(**{field.name: getattr(sources, field.name) for field in dataclasses.fields(sources)})
+
+
+def test_the_race_topic_leads_each_week_of_the_regular_season_above_an_urgent_lift(settings, sources):
+    # AT-24: the race Topic is the first of the 3 Suggestions until week 14 is final (decision 05), even above a Topic
+    # that Jev lifts as urgent, which comes next.
+    _publish_topics(settings)
+    api = _api(settings, sources, FakeJev(answer=Lifts({"waiver_targets": 0.9}).answer), Writer())
+    body = _suggest(api, order=TUESDAY, roster_id=BO_GIRDS).json()
+    assert body["picks"] == ["playoff_race", "waiver_targets", "week_recap"]
+
+
+def test_after_week_14_the_race_topic_ranks_as_usual(settings, sources):
+    # AT-25: the league runs as week 15, so week 14 is final and the race Topic keeps its place in the order of the day.
+    _publish_topics(settings)
+    api = _api(settings, _past_the_pin(sources), FakeJev(answer=Lifts().answer), Writer())
+    body = _suggest(api, order=TUESDAY).json()
+    assert body["picks"] == ["week_recap", "last_matchup", "power_rankings"]
+    assert TUESDAY.index("playoff_race") == 3
+
+
+def test_under_the_race_pin_the_head_start_builds_the_top_personal_suggestion_of_the_day(settings, sources):
+    # The race pin is a league Topic, so the head start reads the top pick of the day below it.
+    _publish_topics(settings)
+    writer = Writer()
+    api = _api(settings, sources, FakeJev(answer=Lifts().answer), writer)
+    order = ["weak_spots", *(key for key in WEDNESDAY if key != "weak_spots")]
+    body = _suggest(api, order=order).json()
+    assert body["picks"][:2] == ["playoff_race", "weak_spots"] and body["head_start"] == "weak_spots"
     assert writer.calls == 1

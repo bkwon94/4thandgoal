@@ -1,0 +1,1070 @@
+{
+  "schema_version": 2,
+  "season": 2026,
+  "week": 11,
+  "teams": {
+    "4": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 106.31, 3rd of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "106.31"
+          },
+          {
+            "label": "Place",
+            "value": "3rd of 12"
+          },
+          {
+            "label": "Median",
+            "value": "92.71"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "32.9",
+            "note": "Jonah Coleman · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "35.9",
+            "note": "Dak Prescott · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "5.6",
+            "note": "Ja'Marr Chase · Bengals Buddies",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "32.9",
+            "note": "Jonah Coleman · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "NFC Least took down Teez Nuts in an upset, 106.31 to 93.21. The new pickup Jared Goff led the way with 20.36 and outscored the margin on his own. They led after Thursday and the lead never changed hands. Josh Allen came in 10.51 under projection on a season-low night for the losing lineup. Saquon Barkley is now listed Questionable with an arm issue after playing 34 of 53 snaps. The win snapped a 3-game losing streak and still leaves the winners out of the playoff race, while the losers' playoff odds rose to 88% this week anyway."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 106.31,
+          "place": 3,
+          "teams": 12,
+          "opponent": "Teez Nuts",
+          "opponent_score": 93.21,
+          "strip": [
+            {
+              "roster_id": 9,
+              "name": "Maye d'force B with U",
+              "score": 150.02,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "Lil Fridge",
+              "score": 112.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "NFC Least",
+              "score": 106.31,
+              "you": true
+            },
+            {
+              "roster_id": 8,
+              "name": "💿 🐑",
+              "score": 99.93,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Nico Collinsizer",
+              "score": 99.36,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Teez Nuts",
+              "score": 93.21,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "Bengals Buddies",
+              "score": 92.2,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Immaculate Concepcion",
+              "score": 89.76,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "The Blue Tent",
+              "score": 80.75,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Unsolicited Dak Picks",
+              "score": 80.61,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Bo Girds",
+              "score": 76.75,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "Omarion Himpton",
+              "score": 69.24,
+              "you": false
+            }
+          ],
+          "median": 92.71,
+          "top": {
+            "name": "Jared Goff",
+            "position": "QB",
+            "points": 20.36,
+            "projection": 17.24
+          },
+          "sentence": "Jared Goff, the new trade pickup, put up 20.36 and outscored the margin on his own, as NFC Least led from Thursday to the final whistle in an upset that still leaves them out of the playoff race."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Won 106.31 to 93.21",
+        "stats": [],
+        "rows": [
+          {
+            "label": "NFC Least",
+            "value": "106.31",
+            "note": "Jared Goff 20.36",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Teez Nuts",
+            "value": "93.21",
+            "note": "Chuba Hubbard 26",
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "Jared Goff, the new trade pickup, put up 20.36 and outscored the margin on his own, as NFC Least led from Thursday to the final whistle in an upset that still leaves them out of the playoff race. Teez Nuts got little from their own new pickups, with the waiver Jaguars defense at 3.95 and Xavier Hutchinson at 2.3, though they held their standings place after the loss. Saquon Barkley is now listed Questionable with an arm issue, and Rashee Rice, the other trade pickup, missed projection yet again."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Lil Fridge, 15-7",
+        "stats": [],
+        "rows": [
+          {
+            "label": "NFC Least",
+            "value": "5-17",
+            "note": null,
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Lil Fridge",
+            "value": "15-7",
+            "note": null,
+            "roster_id": 3,
+            "you": false
+          }
+        ],
+        "text": [
+          "The Blue Tent puts its win streak on the line in a Must Watch rematch with 💿 🐑, and both sides sit right at the cut. The streak side goes to 95% playoff odds with a win and 69% with a loss. The other side gets 89% playoff odds with a win and 56% with a loss. Bengals Buddies has to stop a 3-game skid at the cut in the other Must Watch, against Immaculate Concepcion, whose playoff odds hold near 1% either way. A win lifts the skidding side to 81% playoff odds, and a loss drops it to 49%. Nico Collinsizer and Omarion Himpton, both 10-12 and below the cut, meet in a showdown of the also-rans."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "10th, up 2",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "10th"
+          },
+          {
+            "label": "Move",
+            "value": "Up 2"
+          },
+          {
+            "label": "Record",
+            "value": "5-17"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "9th",
+            "note": "11-11",
+            "roster_id": 6,
+            "you": false
+          },
+          {
+            "label": "NFC Least",
+            "value": "10th",
+            "note": "5-17",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Immaculate Concepcion",
+            "value": "11th",
+            "note": "9-13",
+            "roster_id": 7,
+            "you": false
+          }
+        ],
+        "text": [
+          "NFC Least climbs 2 places on a 13-point win. They are out of the playoff race anyway, sitting at 5-17. Last in the standings, so the name checks out."
+        ],
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 3,
+              "name": "Lil Fridge",
+              "rank": 1,
+              "move": 3,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "Maye d'force B with U",
+              "rank": 2,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Teez Nuts",
+              "rank": 3,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "The Blue Tent",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "💿 🐑",
+              "rank": 5,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Nico Collinsizer",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "Omarion Himpton",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "Bengals Buddies",
+              "rank": 8,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Bo Girds",
+              "rank": 9,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "NFC Least",
+              "rank": 10,
+              "move": 2,
+              "you": true
+            },
+            {
+              "roster_id": 7,
+              "name": "Immaculate Concepcion",
+              "rank": 11,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Unsolicited Dak Picks",
+              "rank": 12,
+              "move": -1,
+              "you": false
+            }
+          ]
+        }
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "Out, 0% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "0%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "0%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-8"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Immaculate Concepcion",
+            "value": "1%",
+            "note": "Seed None",
+            "roster_id": 7,
+            "you": false
+          },
+          {
+            "label": "NFC Least",
+            "value": "0%",
+            "note": "Seed None",
+            "roster_id": 4,
+            "you": true
+          },
+          {
+            "label": "Unsolicited Dak Picks",
+            "value": "0%",
+            "note": "Seed None",
+            "roster_id": 11,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": {
+          "kind": "ladder",
+          "playoff_teams": 6,
+          "rows": [
+            {
+              "roster_id": 3,
+              "name": "Lil Fridge",
+              "rank": 1,
+              "record": "15-7",
+              "odds": 99,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "Maye d'force B with U",
+              "rank": 2,
+              "record": "14-8",
+              "odds": 98,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Teez Nuts",
+              "rank": 3,
+              "record": "13-9",
+              "odds": 88,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "The Blue Tent",
+              "rank": 4,
+              "record": "13-9",
+              "odds": 83,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "Bengals Buddies",
+              "rank": 5,
+              "record": "13-9",
+              "odds": 69,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "💿 🐑",
+              "rank": 6,
+              "record": "13-9",
+              "odds": 71,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Bo Girds",
+              "rank": 7,
+              "record": "11-11",
+              "odds": 48,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "Omarion Himpton",
+              "rank": 8,
+              "record": "10-12",
+              "odds": 36,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Nico Collinsizer",
+              "rank": 9,
+              "record": "10-12",
+              "odds": 6,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Immaculate Concepcion",
+              "rank": 10,
+              "record": "9-13",
+              "odds": 1,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Unsolicited Dak Picks",
+              "rank": 11,
+              "record": "6-16",
+              "odds": 0,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "NFC Least",
+              "rank": 12,
+              "record": "5-17",
+              "odds": 0,
+              "you": true
+            }
+          ],
+          "finishes": [
+            {
+              "name": "4-2",
+              "record": "9-19",
+              "chance": 19.3,
+              "odds": 0,
+              "about": false
+            },
+            {
+              "name": "3-3",
+              "record": "8-20",
+              "chance": 21.1,
+              "odds": 0,
+              "about": false
+            },
+            {
+              "name": "2-4",
+              "record": "7-21",
+              "chance": 24.6,
+              "odds": 0,
+              "about": false
+            }
+          ],
+          "pill": {
+            "kind": "out",
+            "label": "Out"
+          }
+        }
+      },
+      {
+        "topic": "your_season",
+        "fact": "5-17, 12th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "5-17"
+          },
+          {
+            "label": "Standing",
+            "value": "12th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1001.11"
+          }
+        ],
+        "rows": [],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "6 trades this week",
+        "stats": [],
+        "rows": [],
+        "text": [
+          "- **QB** Patrick Mahomes, 24.96, Immaculate Concepcion\n- **RB** Jonah Coleman, 32.9, Maye d'force B with U\n- **WR** CeeDee Lamb, 24.7, 💿 🐑\n- **TE** Travis Kelce, 22.4, Lil Fridge\n- **DEF** Chicago Bears, 19.7, Nico Collinsizer",
+          "Maye d'force B with U owned the backfield: Jonah Coleman led every started running back with 32.9, and Jahmyr Gibbs finished 3rd. Cam Ward chipped in from the same roster with the 2nd-highest score among started quarterbacks. Patrick Mahomes topped the quarterbacks and Travis Kelce topped the tight ends, an old Kansas City double act. Unsolicited Dak Picks got 20.3 from George Pickens, 2nd at receiver behind his Dallas teammate CeeDee Lamb."
+        ],
+        "block": null
+      }
+    ],
+    "6": [
+      {
+        "topic": "week_recap",
+        "fact": "You scored 76.75, 11th of 12",
+        "stats": [
+          {
+            "label": "Your score",
+            "value": "76.75"
+          },
+          {
+            "label": "Place",
+            "value": "11th of 12"
+          },
+          {
+            "label": "Median",
+            "value": "92.71"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Top Scorer",
+            "value": "32.9",
+            "note": "Jonah Coleman · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "MVB · Most Valuable Benchwarmer",
+            "value": "35.9",
+            "note": "Dak Prescott · Unsolicited Dak Picks",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Underperformer",
+            "value": "5.6",
+            "note": "Ja'Marr Chase · Bengals Buddies",
+            "roster_id": null,
+            "you": false
+          },
+          {
+            "label": "Overachiever",
+            "value": "32.9",
+            "note": "Jonah Coleman · Maye d'force B with U",
+            "roster_id": null,
+            "you": false
+          }
+        ],
+        "text": [
+          "NFC Least took down Teez Nuts in an upset, 106.31 to 93.21. The new pickup Jared Goff led the way with 20.36 and outscored the margin on his own. They led after Thursday and the lead never changed hands. Josh Allen came in 10.51 under projection on a season-low night for the losing lineup. Saquon Barkley is now listed Questionable with an arm issue after playing 34 of 53 snaps. The win snapped a 3-game losing streak and still leaves the winners out of the playoff race, while the losers' playoff odds rose to 88% this week anyway."
+        ],
+        "block": {
+          "kind": "recap",
+          "score": 76.75,
+          "place": 11,
+          "teams": 12,
+          "opponent": "Maye d'force B with U",
+          "opponent_score": 150.02,
+          "strip": [
+            {
+              "roster_id": 9,
+              "name": "Maye d'force B with U",
+              "score": 150.02,
+              "you": false
+            },
+            {
+              "roster_id": 3,
+              "name": "Lil Fridge",
+              "score": 112.44,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "NFC Least",
+              "score": 106.31,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "💿 🐑",
+              "score": 99.93,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Nico Collinsizer",
+              "score": 99.36,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Teez Nuts",
+              "score": 93.21,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "Bengals Buddies",
+              "score": 92.2,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Immaculate Concepcion",
+              "score": 89.76,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "The Blue Tent",
+              "score": 80.75,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Unsolicited Dak Picks",
+              "score": 80.61,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Bo Girds",
+              "score": 76.75,
+              "you": true
+            },
+            {
+              "roster_id": 12,
+              "name": "Omarion Himpton",
+              "score": 69.24,
+              "you": false
+            }
+          ],
+          "median": 92.71,
+          "top": {
+            "name": "Antonio Williams",
+            "position": "WR",
+            "points": 16.7,
+            "projection": 6.75
+          },
+          "sentence": "Maye d'force B with U led by 50.92 after the early Sunday games, never gave the lead back, and won by 73.27."
+        }
+      },
+      {
+        "topic": "last_matchup",
+        "fact": "Lost 76.75 to 150.02",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Maye d'force B with U",
+            "value": "150.02",
+            "note": "Jonah Coleman 32.9",
+            "roster_id": 9,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "76.75",
+            "note": "Antonio Williams 16.7",
+            "roster_id": 6,
+            "you": true
+          }
+        ],
+        "text": [
+          "Maye d'force B with U led by 50.92 after the early Sunday games, never gave the lead back, and won by 73.27. The recent adds on the other side flopped: Cam Skattebo, fresh off a trade, scored 4.3 and the Chargers defense, a waiver pickup, posted -2.95 in a Bo Girds season low. Jalen Coker was hurt late in his game and is now listed Questionable, while the winners climbed the standings and the losers fell out of the playoff spots."
+        ],
+        "block": null
+      },
+      {
+        "topic": "next_matchup",
+        "fact": "Next: Teez Nuts, 13-9",
+        "stats": [],
+        "rows": [
+          {
+            "label": "Bo Girds",
+            "value": "11-11",
+            "note": null,
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "Teez Nuts",
+            "value": "13-9",
+            "note": null,
+            "roster_id": 5,
+            "you": false
+          }
+        ],
+        "text": [
+          "The Blue Tent puts its win streak on the line in a Must Watch rematch with 💿 🐑, and both sides sit right at the cut. The streak side goes to 95% playoff odds with a win and 69% with a loss. The other side gets 89% playoff odds with a win and 56% with a loss. Bengals Buddies has to stop a 3-game skid at the cut in the other Must Watch, against Immaculate Concepcion, whose playoff odds hold near 1% either way. A win lifts the skidding side to 81% playoff odds, and a loss drops it to 49%. Nico Collinsizer and Omarion Himpton, both 10-12 and below the cut, meet in a showdown of the also-rans."
+        ],
+        "block": null
+      },
+      {
+        "topic": "power_rankings",
+        "fact": "9th, down 1",
+        "stats": [
+          {
+            "label": "Rank",
+            "value": "9th"
+          },
+          {
+            "label": "Move",
+            "value": "Down 1"
+          },
+          {
+            "label": "Record",
+            "value": "11-11"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bengals Buddies",
+            "value": "8th",
+            "note": "13-9",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "9th",
+            "note": "11-11",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "NFC Least",
+            "value": "10th",
+            "note": "5-17",
+            "roster_id": 4,
+            "you": false
+          }
+        ],
+        "text": [
+          "Bo Girds dips to 9th after a 73-point loss. At 11-11, playoff odds sit at about 48%. They have scored 94.71 a week over the last 3, well off the season pace."
+        ],
+        "block": {
+          "kind": "rank_movers",
+          "rows": [
+            {
+              "roster_id": 3,
+              "name": "Lil Fridge",
+              "rank": 1,
+              "move": 3,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "Maye d'force B with U",
+              "rank": 2,
+              "move": -1,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Teez Nuts",
+              "rank": 3,
+              "move": 0,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "The Blue Tent",
+              "rank": 4,
+              "move": 1,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "💿 🐑",
+              "rank": 5,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Nico Collinsizer",
+              "rank": 6,
+              "move": 4,
+              "you": false
+            },
+            {
+              "roster_id": 12,
+              "name": "Omarion Himpton",
+              "rank": 7,
+              "move": -5,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "Bengals Buddies",
+              "rank": 8,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Bo Girds",
+              "rank": 9,
+              "move": -1,
+              "you": true
+            },
+            {
+              "roster_id": 4,
+              "name": "NFC Least",
+              "rank": 10,
+              "move": 2,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Immaculate Concepcion",
+              "rank": 11,
+              "move": -2,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Unsolicited Dak Picks",
+              "rank": 12,
+              "move": -1,
+              "you": false
+            }
+          ]
+        }
+      },
+      {
+        "topic": "playoff_race",
+        "fact": "48% playoff odds",
+        "stats": [
+          {
+            "label": "Playoff odds",
+            "value": "48%"
+          },
+          {
+            "label": "Bye odds",
+            "value": "2%"
+          },
+          {
+            "label": "Seed",
+            "value": "None"
+          },
+          {
+            "label": "Games from the cut",
+            "value": "-2"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Bengals Buddies",
+            "value": "69%",
+            "note": "Seed 5",
+            "roster_id": 2,
+            "you": false
+          },
+          {
+            "label": "Bo Girds",
+            "value": "48%",
+            "note": "Seed None",
+            "roster_id": 6,
+            "you": true
+          },
+          {
+            "label": "Omarion Himpton",
+            "value": "36%",
+            "note": "Seed None",
+            "roster_id": 12,
+            "you": false
+          }
+        ],
+        "text": [],
+        "block": {
+          "kind": "ladder",
+          "playoff_teams": 6,
+          "rows": [
+            {
+              "roster_id": 3,
+              "name": "Lil Fridge",
+              "rank": 1,
+              "record": "15-7",
+              "odds": 99,
+              "you": false
+            },
+            {
+              "roster_id": 9,
+              "name": "Maye d'force B with U",
+              "rank": 2,
+              "record": "14-8",
+              "odds": 98,
+              "you": false
+            },
+            {
+              "roster_id": 5,
+              "name": "Teez Nuts",
+              "rank": 3,
+              "record": "13-9",
+              "odds": 88,
+              "you": false
+            },
+            {
+              "roster_id": 1,
+              "name": "The Blue Tent",
+              "rank": 4,
+              "record": "13-9",
+              "odds": 83,
+              "you": false
+            },
+            {
+              "roster_id": 2,
+              "name": "Bengals Buddies",
+              "rank": 5,
+              "record": "13-9",
+              "odds": 69,
+              "you": false
+            },
+            {
+              "roster_id": 8,
+              "name": "💿 🐑",
+              "rank": 6,
+              "record": "13-9",
+              "odds": 71,
+              "you": false
+            },
+            {
+              "roster_id": 6,
+              "name": "Bo Girds",
+              "rank": 7,
+              "record": "11-11",
+              "odds": 48,
+              "you": true
+            },
+            {
+              "roster_id": 12,
+              "name": "Omarion Himpton",
+              "rank": 8,
+              "record": "10-12",
+              "odds": 36,
+              "you": false
+            },
+            {
+              "roster_id": 10,
+              "name": "Nico Collinsizer",
+              "rank": 9,
+              "record": "10-12",
+              "odds": 6,
+              "you": false
+            },
+            {
+              "roster_id": 7,
+              "name": "Immaculate Concepcion",
+              "rank": 10,
+              "record": "9-13",
+              "odds": 1,
+              "you": false
+            },
+            {
+              "roster_id": 11,
+              "name": "Unsolicited Dak Picks",
+              "rank": 11,
+              "record": "6-16",
+              "odds": 0,
+              "you": false
+            },
+            {
+              "roster_id": 4,
+              "name": "NFC Least",
+              "rank": 12,
+              "record": "5-17",
+              "odds": 0,
+              "you": false
+            }
+          ],
+          "finishes": [
+            {
+              "name": "4-2",
+              "record": "15-13",
+              "chance": 25.7,
+              "odds": 80,
+              "about": false
+            },
+            {
+              "name": "3-3",
+              "record": "14-14",
+              "chance": 20.0,
+              "odds": 25,
+              "about": false
+            },
+            {
+              "name": "2-4",
+              "record": "13-15",
+              "chance": 20.0,
+              "odds": 3,
+              "about": false
+            }
+          ],
+          "pill": null
+        }
+      },
+      {
+        "topic": "your_season",
+        "fact": "11-11, 7th of 12",
+        "stats": [
+          {
+            "label": "Record",
+            "value": "11-11"
+          },
+          {
+            "label": "Standing",
+            "value": "7th of 12"
+          },
+          {
+            "label": "Points",
+            "value": "1205.76"
+          }
+        ],
+        "rows": [],
+        "text": [],
+        "block": null
+      },
+      {
+        "topic": "leaders_trades",
+        "fact": "6 trades this week",
+        "stats": [],
+        "rows": [],
+        "text": [
+          "- **QB** Patrick Mahomes, 24.96, Immaculate Concepcion\n- **RB** Jonah Coleman, 32.9, Maye d'force B with U\n- **WR** CeeDee Lamb, 24.7, 💿 🐑\n- **TE** Travis Kelce, 22.4, Lil Fridge\n- **DEF** Chicago Bears, 19.7, Nico Collinsizer",
+          "Maye d'force B with U owned the backfield: Jonah Coleman led every started running back with 32.9, and Jahmyr Gibbs finished 3rd. Cam Ward chipped in from the same roster with the 2nd-highest score among started quarterbacks. Patrick Mahomes topped the quarterbacks and Travis Kelce topped the tight ends, an old Kansas City double act. Unsolicited Dak Picks got 20.3 from George Pickens, 2nd at receiver behind his Dallas teammate CeeDee Lamb."
+        ],
+        "block": null
+      }
+    ]
+  }
+}
