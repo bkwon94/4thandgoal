@@ -4,6 +4,7 @@ The route in ask.py decides with code from the answers. Change a question here a
 """
 import re
 
+from cornerstone_api.trades_closed import CLOSED_LINE
 from league.jev_port import ChoiceQuestion, NoulQuestion
 
 CONTEXT = ("A manager of this 12-team fantasy football league typed `manager_question` "
@@ -40,8 +41,8 @@ TOPICS = {
 # The trade Topics of the list above. After the Lock of a client, a question that Jev routes to one of them gets the closed
 # line below. The Topic leaders_trades is not here: it shows the trades that happened, and it stays.
 TRADE_TOPICS = frozenset({"trade_check", "trade_ideas", "sell_high"})
-# The closed line of a trade question. It is the line of the closed reply of the trade routes, word for word.
-TRADES_CLOSED_LINE = "The trade deadline has passed. Trades open again next season."
+# The closed line of a trade question. It is the one CLOSED_LINE of the closed reply of the trade routes.
+TRADES_CLOSED_LINE = CLOSED_LINE
 
 # The Topics that cover one week. The state names that week in each, so a question about an older week reads as no fit.
 WEEK_TOPICS = {
