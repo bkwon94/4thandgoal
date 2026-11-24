@@ -23,11 +23,11 @@ The sim page gives each team its paths to each Goal: a playoff spot, a bye, or o
 - The League board is in scope: a view on the sim page beside Your team. It has one row per team in standings order, with the odds of each Goal and the Clinch lines of this week. A tap on a row opens the Finish list and Paths of that team. Brian, Q10 and Q11.
 - The release gets an Announcement that links to the sim page, and the front door pushes visitors to the page. Brian, Q11.
 - NorCal has no median game, so the page must fit 2 results per week and a 3-0 to 0-3 Finish list. Fact, `clients/norcal/data/2026/league.json`.
+- Sleeper seeds by record (median counted), then Points For, then the higher Points Against, then a coin flip. The sim lacks Points Against, so the spec adds it as the third key in all three sort places, with `rid` for the coin flip. Tied games stay out. `decisions/02-research-tiebreak-rules.md`.
 
 ## NOT YET SPECIFIED
 
 - Does the sim page keep the name "Season sim", or take a new name? `decisions/01-grill-the-page-name.md`.
-- Does the sim break a tie for a seed the way Sleeper does? `decisions/02-research-tiebreak-rules.md`.
 - How does the code find the Paths in the runs, and what do the Paths and the League board cost on Fly? `decisions/03-research-path-search-cost.md`.
 - What does the redesigned sim page look like, part by part, with a ui-sdk brief for each part? `decisions/04-prototype-the-page-redesign.md`.
 - Does the front door push with a link chip, or with a Topic that answers in chat? `decisions/05-grill-the-front-door-push.md`.
@@ -35,6 +35,7 @@ The sim page gives each team its paths to each Goal: a playoff spot, a bye, or o
 
 ## OUT OF SCOPE
 
+- The rank of a tied game in the seeds. No stored week has one, and Sleeper does not document it.
 - Paths in the playoff weeks. A bracket plays one game at a time, so the bracket view of `season-sim` stays.
 - A Path of 4 or more teams in full. The row shows "and 2 more results", because a long Path is hard to read on a phone.
 - Notifications, such as "your Path is alive". The site has no push channel.
