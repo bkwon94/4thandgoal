@@ -25,10 +25,10 @@ The sim page gives each team its paths to each Goal: a playoff spot, a bye, or o
 - NorCal has no median game, so the page must fit 2 results per week and a 3-0 to 0-3 Finish list. Fact, `clients/norcal/data/2026/league.json`.
 - Sleeper seeds by record (median counted), then Points For, then the higher Points Against, then a coin flip. The sim lacks Points Against, so the spec adds it as the third key in all three sort places, with `rid` for the coin flip. Tied games stay out. `decisions/02-research-tiebreak-rules.md`.
 - The page takes the name "The race", short label "Race". The route `/sim/<season>/` and the package name `sim` stay. `decisions/01-grill-the-page-name.md`.
+- Paths come from a greedy cover that stops at 90% or 3 teams, with a floor of 400 runs. Clinch lines come from an exact count in the weekly build. The API keeps Paths after a What-if on `shared-cpu-1x`, with a sim loop that writes each run's results, near 2.0 to 2.1 s on Fly. `sim.json` takes the small shape, about 44 KB gzip. `decisions/03-research-path-search-cost.md`.
 
 ## NOT YET SPECIFIED
 
-- How does the code find the Paths in the runs, and what do the Paths and the League board cost on Fly? `decisions/03-research-path-search-cost.md`.
 - What does the redesigned sim page look like, part by part, with a ui-sdk brief for each part? `decisions/04-prototype-the-page-redesign.md`.
 - Does the front door push with a link chip, or with a Topic that answers in chat? `decisions/05-grill-the-front-door-push.md`.
 - What is the copy of a Path, a Week plan, and a Clinch line? `decisions/06-grill-path-and-clinch-copy.md`.

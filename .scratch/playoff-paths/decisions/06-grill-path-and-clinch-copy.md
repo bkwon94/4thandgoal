@@ -10,7 +10,7 @@ Map: `.scratch/playoff-paths/MAP.md`.
 
 ## Question
 
-Each Path, Week plan row, and Clinch line is one plain sentence with its odds. Decide the fixed phrases, such as "Clinches a spot with a win" and "needs team X to lose 2 of 3", the use of "about" for a small sample, and the copy of "Doesn't matter". Say "manager" or "another manager", never "rival". Name no internal part, such as Jev or Finder. The copy comes after the layout, because the layout sets the room each line has.
+Each Path, Week plan row, and Clinch line is one plain sentence with its odds. Decide the fixed phrases, such as "Clinches a spot with a win" and "needs team X to lose 2 of 3", the use of "about" for a small sample, and the copy of "Doesn't matter". Say "manager" or "another manager", never "rival". Name no internal part, such as Jev or Finder. Decision 03 found that most Finishes under about 50% have no Path of 3 teams that reaches 90%, so decide the copy of a best Path below 90% too. The copy comes after the layout, because the layout sets the room each line has.
 
 ## Decision
 
