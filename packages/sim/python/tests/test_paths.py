@@ -5,7 +5,7 @@ through the page of each team. The real data of CPC and NorCal runs in tests/tes
 import pytest
 
 from league.league_settings import LeagueSettings
-from sim.season import season_sim
+from sim.season import SetResult, season_sim
 
 SEASON = 2026
 ROSTERS = range(1, 9)
@@ -95,3 +95,89 @@ def test_a_sure_or_hopeless_finish_has_no_path_and_a_best_chance_holds_one(sim):
             assert len(finish.paths) == 1 and finish.paths[0].odds < 90
         if finish.case == "paths":
             assert finish.paths and all(path.odds >= 90 for path in finish.paths)
+
+
+def _plans(sim):
+    """Each Week plan of each page: the plan of each Path of the spot and the bye, and of each Finish of a seed."""
+    for page, goal, finish in _all_finishes(sim):
+        for path in finish.paths:
+            yield page, goal, finish, path.plan
+        if finish.plan is not None:
+            yield page, goal, finish, finish.plan
+
+
+def test_each_path_and_each_seed_finish_with_a_way_in_holds_a_week_plan(sim):
+    for _, goal, finish in _all_finishes(sim):
+        assert all(path.plan is not None for path in finish.paths)
+        if goal.startswith("seed-"):
+            assert (finish.plan is None) == (finish.case == "none")
+        else:
+            assert finish.plan is None
+
+
+def test_a_week_plan_has_one_row_per_week_left_and_its_results_add_up_to_its_finish(sim):
+    plans = 0
+    for page, _, finish, plan in _plans(sim):
+        plans += 1
+        assert [week.week for week in plan.weeks] == sorted(REMAINING)
+        for week in plan.weeks:
+            assert week.opponent == next(b if a == page.you else a for a, b in REMAINING[week.week] if page.you in (a, b))
+        assert sum((w.game == "win") + (w.median == "above") for w in plan.weeks) == finish.more_wins
+    assert plans > 0
+
+
+def test_each_game_to_root_for_in_a_plan_is_another_game_of_its_week(sim):
+    rows = 0
+    for page, _, _, plan in _plans(sim):
+        for week in plan.weeks:
+            assert len(week.root_for) <= 2
+            for game in week.root_for:
+                rows += 1
+                assert page.you not in (game.winner, game.loser)
+                assert tuple(sorted((game.winner, game.loser))) in {tuple(sorted(p)) for p in REMAINING[week.week]}
+    assert rows > 0
+
+
+def test_a_plan_with_one_order_says_the_order_matters():
+    # A Finish of every win or of no win has one order of results, which holds all its runs.
+    plain = _sim(median_game=False, runs=3_000)
+    for page in plain.pages.values():
+        for finish in page.finishes["seed-1"]:
+            if finish.plan is not None and finish.more_wins in (0, 2):
+                assert finish.plan.any_order is False
+
+
+def test_the_score_to_beat_of_each_week_puts_the_sure_score_above_the_coin_flip(sim):
+    for page in sim.pages.values():
+        assert [s.week for s in page.score_to_beat] == sorted(REMAINING)
+        for s in page.score_to_beat:
+            assert s.opponent == next(b if a == page.you else a for a, b in REMAINING[s.week] if page.you in (a, b))
+            assert s.win_sure > s.win and s.median_sure > s.median
+
+
+def test_a_league_with_no_median_game_has_no_median_score_to_beat():
+    plain = _sim(median_game=False, runs=2_000)
+    for page in plain.pages.values():
+        assert page.score_to_beat and all(s.median is None and s.median_sure is None for s in page.score_to_beat)
+
+
+def test_the_try_it_odds_of_a_plan_equal_a_what_if_of_the_plan_within_the_error_of_the_sample():
+    # The plan of the most likely Finish of the spot of each team with a Path. "Try it" reads the runs that follow
+    # the plan, and the What-if draws them with weights, so the two agree within the error of the sample of the plan.
+    # At 30,000 runs a plan holds about 3,000 runs, and 3 points is about 3 standard errors of the gap.
+    big = _sim(runs=30_000)
+    checked = 0
+    for page in big.pages.values():
+        finishes = [f for f in page.finishes["spot"] if f.paths]
+        if not finishes:
+            continue
+        plan = max(finishes, key=lambda f: f.chance).paths[0].plan
+        assert plan is not None
+        held = [SetResult(week=w.week, game=w.game, median=w.median) for w in plan.weeks]
+        what_if = season_sim(SCORES, RECORDS, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                             runs=30_000, you=page.you, set_results=held)
+        odds = what_if.teams[page.you].playoff
+        print(f"team {page.you}: Try it {plan.odds}, What-if {odds}")
+        assert abs(odds - plan.odds) <= 3
+        checked += 1
+    assert checked

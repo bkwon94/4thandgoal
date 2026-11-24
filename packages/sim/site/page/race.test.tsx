@@ -6,6 +6,7 @@ import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { weekElevenSim } from "../fixtures/sim";
+import { fakeWhatIfApi, tryIt } from "../fixtures/what-if-api";
 import { SimPage } from "./sim-page";
 
 beforeEach(() => {
@@ -179,5 +180,93 @@ describe("another team on the League board", () => {
     expect(bars).toHaveLength(sim.pages[fridge].finishes.spot.length);
     fireEvent.click(within(sheet).getByRole("button", { name: "Make this Your team" }));
     expect(onYou).toHaveBeenCalledWith(fridge);
+  });
+});
+
+describe("the Week plan of a Path", () => {
+  const four = () => sim.pages[YOU].finishes.spot.find((f) => f.more_wins === 4)!;
+  const openPlan = () => {
+    fireEvent.click(finishBar("4-2"));
+    const panel = screen.getByRole("region", { name: "Paths at 4-2" });
+    fireEvent.click(within(panel).getAllByRole("button", { name: /^Week plan:/ })[0]);
+    return screen.getByRole("dialog", { name: /^Your plan to 15-13/ });
+  };
+
+  it("opens in a sheet from the first Path of 4-2, with its header, its order line, and one row per week", () => {
+    render(<SimPage sim={sim} you={YOU} />);
+    const plan = four().paths[0].plan!;
+    const sheet = openPlan();
+    expect(
+      within(sheet).getByRole("heading", { name: `Your plan to 15-13 · you're in ${plan.odds}%` }),
+    ).toBeTruthy();
+    expect(plan.any_order).toBe(true);
+    expect(sheet.textContent).toContain(
+      "Any 4 wins of your 6 work. This is the most common order.",
+    );
+    const rows = within(
+      within(sheet).getByRole("list", { name: "Weeks of the plan" }),
+    ).getAllByRole("listitem");
+    expect(rows).toHaveLength(3);
+    const beat = Object.fromEntries(sim.pages[YOU].score_to_beat.map((s) => [s.week, s]));
+    plan.weeks.forEach((week, i) => {
+      const text = rows[i].textContent!;
+      expect(text).toContain(`Week ${week.week} · vs ${sim.names[week.opponent]}`);
+      const s = beat[week.week];
+      if (week.game === "win") {
+        expect(text).toContain(`Score ${s.win} to win, ${s.win_sure} to be sure.`);
+      } else {
+        expect(text).not.toContain("to win,");
+      }
+      for (const game of week.root_for)
+        expect(text).toContain(`${sim.names[game.winner]} over ${sim.names[game.loser]}`);
+    });
+    // Week 12 is Bo Girds against roster 5.
+    expect(plan.weeks[0].opponent).toBe(5);
+    expect(rows[0].textContent).toContain("Win and beat the median.");
+  });
+
+  it("sets the 3 results of the plan as a What-if on Try it, and the card takes the odds of the header", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={sim} you={YOU} whatIf={api} />);
+    const plan = four().paths[0].plan!;
+    const sheet = openPlan();
+    fireEvent.click(within(sheet).getByRole("button", { name: `Try it: you're in ${plan.odds}%` }));
+    expect(api.calls).toHaveLength(1);
+    expect(api.calls[0].ask).toEqual({
+      you: YOU,
+      set: plan.weeks.map((week) => ({ week: week.week, game: week.game, median: week.median })),
+    });
+    await waitFor(() => expect(cardOdds()).toBe(`${tryIt.page.playoff}%`));
+    expect(Math.abs(tryIt.page.playoff - plan.odds)).toBeLessThanOrEqual(1);
+    const line = screen.getByRole("region", { name: "What-if" });
+    expect(line.textContent).toContain(
+      "Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median",
+    );
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: /^Your plan/ })).toBeNull());
+    fireEvent.click(within(line).getByRole("button", { name: "Reset" }));
+    expect(cardOdds()).toBe(`${sim.pages[YOU].goals.spot.odds}%`);
+  });
+
+  it("opens the plan of another team on its sheet, with no Try it", () => {
+    render(<SimPage sim={sim} you={YOU} />);
+    // The first other team with a Path for a spot.
+    const fridge = sim.board
+      .map((row) => row.roster_id)
+      .find((id) => id !== YOU && sim.pages[id].finishes.spot.some((f) => f.paths.length > 0))!;
+    const finish = sim.pages[fridge].finishes.spot.find((f) => f.paths.length > 0);
+    expect(finish).toBeTruthy();
+    const board = screen.getByRole("group", { name: /^League board/ });
+    fireEvent.click(
+      within(board)
+        .getAllByRole("button")
+        .find((bar) => Number(bar.getAttribute("data-roster")) === fridge)!,
+    );
+    const team = screen.getByRole("dialog", { name: sim.names[fridge] });
+    const name = `${finish!.more_wins}-${sim.pages[fridge].wins_left - finish!.more_wins}`;
+    fireEvent.click(within(team).getByRole("button", { name: new RegExp(`^${name},`) }));
+    const panel = within(team).getByRole("region", { name: `Paths at ${name}` });
+    fireEvent.click(within(panel).getAllByRole("button", { name: /^Week plan:/ })[0]);
+    const plan = screen.getByRole("dialog", { name: /^Their plan to/ });
+    expect(within(plan).queryByRole("button", { name: /^Try it/ })).toBeNull();
   });
 });

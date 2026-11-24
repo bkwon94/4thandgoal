@@ -18,3 +18,6 @@ export type GoalOdds = z.infer<typeof schema.goalOddsSchema>;
 export type BoardTeam = z.infer<typeof schema.boardTeamSchema>;
 export type Finish = z.infer<typeof schema.finishSchema>;
 export type FinishPath = z.infer<typeof schema.pathSchema>;
+export type WeekPlan = z.infer<typeof schema.weekPlanSchema>;
+export type PlanWeek = z.infer<typeof schema.planWeekSchema>;
+export type ScoreToBeat = z.infer<typeof schema.scoreToBeatSchema>;

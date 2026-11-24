@@ -3,7 +3,7 @@
  * The route in apps/api/src/cornerstone_api/what_if.py owns the shape, and this schema follows it (ADR 0013).
  */
 import { z } from "zod";
-import { simPageSchema, simRunSchema, teamSimSchema } from "./sim";
+import { boardTeamSchema, simPageSchema, simRunSchema, teamSimSchema } from "./sim";
 
 /* JSON keeps each roster ID key as a string, so a record of roster IDs reads its keys back as numbers. */
 const rosterKey = z.coerce.number();
@@ -29,4 +29,6 @@ export const whatIfAnswerSchema = z.object({
   // The weight of each stored run, in the order of `sample`. The replay picks a run in proportion to its weight.
   sample_weights: z.array(z.number()),
   page: simPageSchema,
+  // The odds and the status of each Goal of each team after the set results. An older answer has none.
+  board: z.array(boardTeamSchema).default([]),
 });

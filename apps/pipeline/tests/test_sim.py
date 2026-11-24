@@ -29,7 +29,7 @@ from league.models import History
 from league.nflverse import SCHEDULES_URL, cache_path
 from league.paths import build_dir, client_dir, history_root, nflverse_cache_dir, week_dir
 from rankings.published import render_rankings
-from sim.season import SetResult, season_sim, weekly_odds
+from sim.season import SetResult, SimResult, rerun, season_sim, weekly_odds
 from sim.tunables import LEVEL_SHRINK_WEEKS
 
 # The rejection reference of a What-if lives with the tests of the sim package, which own the method.
@@ -609,3 +609,50 @@ def test_a_sure_or_hopeless_week_11_finish_has_no_path_and_a_best_chance_holds_o
                         print(f"AT-11: {sim['names'][rid]} {goal} {finish}")
     print(f"AT-10 AT-11: Finishes by case {dict(counts)}")
     assert counts["sure"] and counts["none"] and counts["best"]
+
+
+def _bo_girds_plan(sim: dict) -> tuple[str, dict, dict]:
+    """The roster ID of Bo Girds, his page, and the Week plan of the first Path of his 4-2 Finish for a spot."""
+    rid = next(rid for rid, name in sim["names"].items() if name == "Bo Girds")
+    page = sim["pages"][rid]
+    finish = next(f for f in page["finishes"]["spot"] if f["more_wins"] == 4)
+    return rid, page, finish["paths"][0]["plan"]
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_the_week_plan_of_the_first_4_2_path_of_bo_girds_has_a_row_for_each_of_weeks_12_to_14(cpc_week_11_file):
+    # AT-12. Each row holds a result, the Score to beat of its week, and 1 or 2 games to root for.
+    sim = cpc_week_11_file
+    rid, page, plan = _bo_girds_plan(sim)
+    names = sim["names"]
+    beat = {s["week"]: s for s in page["score_to_beat"]}
+    print(f"AT-12: plan odds {plan['odds']}, any order {plan['any_order']}")
+    for week in plan["weeks"]:
+        s = beat[week["week"]]
+        roots = [f"{names[str(g['winner'])]} over {names[str(g['loser'])]} -> {g['odds']}%" for g in week["root_for"]]
+        print(f"AT-12: week {week['week']} vs {names[str(week['opponent'])]}: {week['game']}, {week['median']} median; "
+              f"score {s['win']} to win, {s['win_sure']} to be sure; median {s['median']}, {s['median_sure']}; "
+              f"root for {roots}")
+    assert [week["week"] for week in plan["weeks"]] == [12, 13, 14]
+    assert sum((w["game"] == "win") + (w["median"] == "above") for w in plan["weeks"]) == 4
+    for week in plan["weeks"]:
+        assert week["game"] in ("win", "loss") and week["median"] in ("above", "below")
+        assert 1 <= len(week["root_for"]) <= 2
+        s = beat[week["week"]]
+        assert s["opponent"] == week["opponent"]
+        assert s["win_sure"] > s["win"] and s["median_sure"] > s["median"]
+    # Week 12 is Bo Girds, roster 6, against roster 5, which Sleeper now calls Teez Nuts.
+    assert (int(rid), plan["weeks"][0]["opponent"]) == (6, 5)
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_the_try_it_odds_of_the_plan_equal_a_what_if_of_its_results_within_1_point(cpc_week_11_file):
+    # AT-13. The What-if is the sim again on the inputs of the week file, as the API runs it.
+    sim = cpc_week_11_file
+    rid, _, plan = _bo_girds_plan(sim)
+    held = [SetResult(week=w["week"], game=w["game"], median=w["median"]) for w in plan["weeks"]]
+    what_if = rerun(SimResult.model_validate(sim), you=int(rid), set_results=held, pages=[int(rid)])
+    odds = what_if.pages[int(rid)].goals["spot"].odds
+    print(f"AT-13: rerun(week-11/sim.json, you={rid}, set={[r.model_dump() for r in held]})")
+    print(f"AT-13: Try it {plan['odds']}%, What-if {odds}%, effective runs {what_if.effective_runs}")
+    assert abs(odds - plan["odds"]) <= 1

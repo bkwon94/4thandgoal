@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from league.models import OddsStatus
 from sim.goals import GoalOdds, open_goal
-from sim.paths import Finish
+from sim.paths import Finish, ScoreToBeat
 from sim.percent import percent, shown, tenths
 from sim.tunables import ABOUT_RUNS, IN_ODDS, RACE_FLOOR, ROOT_FOR_LIFT, ROOT_FOR_ROWS
 
@@ -173,6 +173,9 @@ class SimPage(BaseModel):
     # The Finish list of each Goal by its key, best Finish first. The spot and the bye hold the Paths of each Finish.
     # Empty with no regular week left. A file written before the Finish lists has none.
     finishes: dict[str, list[Finish]] = {}
+    # The Score to beat of each regular week left, in week order. The Week plans and the week card read it. A file
+    # written before the Week plans has none.
+    score_to_beat: list[ScoreToBeat] = []
 
 
 def team_page(
@@ -180,7 +183,7 @@ def team_page(
     records: Mapping[int, tuple[int, int, float, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
     effective_runs: int, set_weeks: int = 0, set_wins: int = 0, bracket_weeks: Sequence[int] = (),
     played: Mapping[int, Mapping[int, float]] | None = None, goals: Mapping[str, GoalOdds] | None = None,
-    finishes: Mapping[str, list[Finish]] | None = None,
+    finishes: Mapping[str, list[Finish]] | None = None, score_to_beat: Sequence[ScoreToBeat] = (),
 ) -> SimPage:
     """The page block of `you` by a split of the `runs` of one sim. `schedule` holds the pairs of each regular week
     left, in the order of `RunRecord.weeks`. `playoff` and `status` are the odds of the team over all runs.
@@ -257,7 +260,8 @@ def team_page(
                    weeks_left=weeks_left, wins_left=wins_left, need=need,
                    sentence=_sentence(status, need, wins_left, steps, set_weeks * per_week, set_wins),
                    ladder=steps, weeks=weeks, playoffs=playoffs, goals=dict(goals or {}),
-                   open_goal=open_goal(goals or {}), finishes=dict(finishes or {}))
+                   open_goal=open_goal(goals or {}), finishes=dict(finishes or {}),
+                   score_to_beat=list(score_to_beat))
 
 
 def _whole(part: float, total: float) -> int:

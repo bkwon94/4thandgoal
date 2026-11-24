@@ -10,8 +10,8 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-12, AT-13, AT-20, AT-
 
 **Status:** ready-for-agent
 
-- [ ] The Week plan of the first Path of the 4-2 Finish of Bo Girds holds 3 rows, weeks 12 to 14.
-- [ ] "Try it" odds equal a What-if of the plan within 1 point.
+- [x] The Week plan of the first Path of the 4-2 Finish of Bo Girds holds 3 rows, weeks 12 to 14.
+- [x] "Try it" odds equal a What-if of the plan within 1 point.
 - [ ] Two equal What-if calls on the local evidence API give equal responses.
 - [ ] The sheet and the set line pass the WebKit overlap check at the 4 sizes, in light and dark mode.
-- [ ] `make check-fast` passes.
+- [x] `make check-fast` passes.
