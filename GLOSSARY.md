@@ -1145,9 +1145,13 @@ _Avoid_: Simulation, sample, scenario
 A set of results that a manager sets for Your team in the weeks left: a win or a loss, and above or below the median. The sim draws every other game.
 _Avoid_: Scenario, simulation, prediction
 
-**The race**:
+**The Race**:
 The name of the sim page on the site, with the short label "Race". Use "sim" in code and "the sim page" in the docs. The route is `/sim/<season>/`.
-_Avoid_: Season sim (the old name), playoff picture, race page
+_Avoid_: The race (lower case), Season sim (the old name), playoff picture, race page
+
+**In the hunt**:
+A team that is neither Clinched nor Out for the Goal of the view, by the plain check on wins. The Race shows it as a quiet yellow label, Clinched as quiet green, and Out as quiet red.
+_Avoid_: Bubble (that is a Race group by odds), alive, in contention
 
 **Goal**:
 What a team aims at in the weeks left: a playoff spot, a bye, or one seed. The sim page answers for one Goal at a time.
