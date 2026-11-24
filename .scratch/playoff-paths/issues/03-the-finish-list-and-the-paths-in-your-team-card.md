@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-6 to AT-11, AT-30, AT
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Finish list of Bo Girds in `cpc` week 11 runs 6-0 to 0-6, sums to 100% within 1 point, and gives 4-2 the final record 15-13.
 - [x] A NorCal Finish list runs 4-0 to 0-4 with no median results.
