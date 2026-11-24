@@ -10,9 +10,9 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-6 to AT-11, AT-30, AT
 
 **Status:** ready-for-agent
 
-- [ ] The Finish list of Bo Girds in `cpc` week 11 runs 6-0 to 0-6, sums to 100% within 1 point, and gives 4-2 the final record 15-13.
-- [ ] A NorCal Finish list runs 4-0 to 0-4 with no median results.
-- [ ] Each Path names 1 to 3 teams, has 400 runs or more, and reaches 90% unless it names 3 teams or is the best chance.
-- [ ] A sure Finish and a Finish under 0.5% have no Path, and the page shows their copy.
-- [ ] The card and the sheet pass the WebKit overlap check at the 4 sizes, in light and dark mode.
+- [x] The Finish list of Bo Girds in `cpc` week 11 runs 6-0 to 0-6, sums to 100% within 1 point, and gives 4-2 the final record 15-13.
+- [x] A NorCal Finish list runs 4-0 to 0-4 with no median results.
+- [x] Each Path names 1 to 3 teams, has 400 runs or more, and reaches 90% unless it names 3 teams or is the best chance.
+- [x] A sure Finish and a Finish under 0.5% have no Path, and the page shows their copy.
+- [x] The card and the sheet pass the WebKit overlap check at the 4 sizes, in light and dark mode.
 - [ ] `make check-fast` passes.

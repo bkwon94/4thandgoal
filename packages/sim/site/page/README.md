@@ -2,7 +2,7 @@
 
 ## Knows
 
-- `SimPage` in the regular season is The Race, variant D of decision 04 of playoff-paths: the title, the Goal switch (`goal-switch.tsx`) that opens on the open Goal of the page block, and the Your team card in a `Collapsible`. Its head shows the avatar, the name, the record, and the odds of the Goal. Open, it holds the sentence of more wins, which opens the ladder sheet, the week switch, the week page, and the replay buttons.
+- `SimPage` in the regular season is The Race, variant D of decision 04 of playoff-paths: the title, the Goal switch (`goal-switch.tsx`) that opens on the open Goal of the page block, and the Your team card in a `Collapsible`. Its head shows the avatar, the name, the record, and the odds of the Goal. Open, it holds the Finish list (`finish-list.tsx`), the week switch, the week page, and the replay buttons. A tap on a Finish opens its Paths in place, with the copy of decision 06 of playoff-paths (`finish-copy.ts`). A tap on another team of the board opens its sheet (`team-sheet.tsx`) with its Finish list and "Make this Your team", which calls `onYou`.
 - The League board (`league-board.tsx`): one bar per team in odds order for the Goal, a tie in the order of the standings. It uses the bar chart of `@cpc/design/ui/bar-chart`, with one tab stop and the arrow keys. Each bar is ink at 80%, and only Your team takes the accent and the "You" tag. A tap on Your team opens and shows its card. `goals.ts` holds the names of each Goal and the order of the board. A file written before The Race gives only the spot, from the playoff odds.
 - The week switch: each regular week left, then Playoffs. A week page holds the week card, with one tile per result of Your team, four with the median game and two with none, and the root-for card. On a phone the root-for card opens from one row. From the tablet tier it always shows.
 - A number with the "about" flag reads "about X%" (`format.ts`). `TeamPick` picks a team for a visitor with none kept. The What-if in `use-what-if.ts`. A tap on a tile sets that result, and a tap on the set tile clears it. The next week opens 400 ms after a set. Each tap calls the What-if port at once and cancels the call before it.
@@ -14,7 +14,7 @@
 
 ## Ports
 
-- The props of `SimPage`: the parsed week sim file, the roster id of Your team, the avatars, and the What-if port of `lib/what-if-api.ts`.
+- The props of `SimPage`: the parsed week sim file, the roster id of Your team, the avatars, the What-if port of `lib/what-if-api.ts`, and `onYou`, which the app calls to keep another team as Your team.
 
 ## Does not do
 

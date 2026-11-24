@@ -23,6 +23,18 @@ SEED_SHOW_AT = 50
 ABOUT_RUNS = 400
 # The playoff odds, in percent, at which the sentence of the ladder says "you're in".
 IN_ODDS = 90
+# The Path search of decision 03. A Path stops at PATH_ODDS percent or at PATH_TEAMS teams, and needs PATH_RUNS runs,
+# because at 100 runs its odds move up to 19 points between seeds. A condition must lift the odds by PATH_LIFT points,
+# and a condition true in more than PATH_SKIP_SHARE of the runs of the Finish says almost nothing, so the search skips it.
+PATH_ODDS = 90
+PATH_TEAMS = 3
+PATH_RUNS = 400
+PATH_LIFT = 2
+PATH_SKIP_SHARE = 0.85
+# The most Paths of one Finish. Three fit a phone, and each later Path covers fewer runs.
+PATHS_PER_FINISH = 3
+# A Finish at this share of runs or more is sure, and one under 1 minus it has no way in (decision 06).
+SURE_FINISH = 0.995
 # The lowest odds, in percent, of a Goal that The Race opens on. Below it the 1 seed or the bye is no real race, so the
 # page opens on the next Goal. A call made without Brian (PRD, Further Notes).
 OPEN_GOAL_ODDS = 5

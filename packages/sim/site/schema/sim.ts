@@ -177,6 +177,35 @@ export const boardTeamSchema = z.object({
   goals: goalsSchema,
 });
 
+/* One condition of a Path: another team ends at the final record `record` or worse. */
+export const conditionSchema = z.object({
+  roster_id: z.number(),
+  record: z.tuple([z.number(), z.number()]),
+});
+
+/* A Path of 1 to 3 conditions at one Finish: how often it happens there, the odds of the Goal on it, and its runs. */
+export const pathSchema = z.object({
+  conditions: z.array(conditionSchema).min(1).max(3),
+  chance: z.number(),
+  odds: z.number().int(),
+  runs: z.number().int(),
+});
+
+/* The case of a Finish, which sets its copy: sure at 99.5% or more, none under 0.5%, Paths at 90%, one best chance below
+   90%, or open with no Path to show. */
+export const finishCaseSchema = z.enum(["sure", "paths", "best", "open", "none"]);
+
+/* One count of more wins in the weeks left, with its final record, its chance, and its odds of the Goal. */
+export const finishSchema = z.object({
+  more_wins: z.number().int(),
+  record: z.tuple([z.number(), z.number()]),
+  chance: z.number(),
+  odds: z.number().int(),
+  about: z.boolean(),
+  case: finishCaseSchema,
+  paths: z.array(pathSchema),
+});
+
 /* The page block of one team. sim.json and the What-if answer share it, so the page reads one shape. */
 export const simPageSchema = z.object({
   you: z.number(),
@@ -196,6 +225,8 @@ export const simPageSchema = z.object({
   // The Goals of The Race, empty with no regular week left, and the Goal the page opens on. An older file has neither.
   goals: goalsSchema.default({}),
   open_goal: z.string().nullable().default(null),
+  // The Finish list of each Goal by key, best Finish first. The spot and the bye hold the Paths. An older file has none.
+  finishes: z.record(z.string(), z.array(finishSchema)).default({}),
 });
 
 /* The week file, week-NN/sim.json: the season shape with the run weights, a page for each team, and the league fact. */

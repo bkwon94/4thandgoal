@@ -1,6 +1,7 @@
 /**
  * The League board of The Race: one bar per team with its odds of the Goal, in odds order. Each bar is ink at 80%, and only
- * Your team takes the accent and the "You" tag. A tap on Your team opens the Your team card.
+ * Your team takes the accent and the "You" tag. A tap on Your team opens the Your team card, and a tap on another team opens
+ * its sheet.
  */
 "use client";
 
@@ -46,11 +47,13 @@ export function LeagueBoard({
   you,
   goal,
   onYou,
+  onOther,
 }: {
   sim: WeekSim;
   you: number;
   goal: GoalKey;
   onYou: () => void;
+  onOther: (id: number) => void;
 }) {
   const off = useMotionOff();
   const order = boardOrder(sim, goal);
@@ -68,7 +71,9 @@ export function LeagueBoard({
           aria-label={`League board: odds of ${name}`}
           value={null}
           onValueChange={(value: string | null) => {
-            if (value !== null && Number(value) === you) onYou();
+            if (value === null) return;
+            if (Number(value) === you) onYou();
+            else onOther(Number(value));
           }}
           className="flex flex-col"
         >
@@ -86,6 +91,7 @@ export function LeagueBoard({
                 <BarChartBar
                   value={String(id)}
                   data-roster={id}
+                  aria-haspopup={mine ? undefined : "dialog"}
                   aria-label={`${nameOf(sim, id)}${mine ? ", your team" : ""}: ${oddsText(odds)} odds of ${name}`}
                   className={ROW}
                 >

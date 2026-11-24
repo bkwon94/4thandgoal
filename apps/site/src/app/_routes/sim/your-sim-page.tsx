@@ -36,5 +36,16 @@ export function YourSimPage({ sim, avatars }: { sim: WeekSim; avatars: Avatars }
       />
     );
   }
-  return <SimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} />;
+  return (
+    <SimPage
+      sim={sim}
+      you={you}
+      avatars={avatars}
+      whatIf={whatIf}
+      onYou={(id) => {
+        setYourTeam(id);
+        setYou(id);
+      }}
+    />
+  );
 }

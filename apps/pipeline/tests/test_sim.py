@@ -9,6 +9,7 @@ import json
 import re
 import shutil
 import sys
+from collections import Counter
 from functools import partial
 from pathlib import Path
 
@@ -518,3 +519,93 @@ def test_each_week_11_status_equals_the_plain_check_on_wins_by_hand(cpc_week_11_
         hand = {goal: _hand_goal_status(int(rid), wins, reach, goal) for goal in CPC_GOALS}
         print(f"AT-5: {sim['names'][rid]:<24} wins {wins[int(rid)]} hand {hand}")
         assert {goal: page["goals"][goal]["status"] for goal in CPC_GOALS} == hand
+
+
+def _paths_of(sim: dict):
+    """Each Path of each Finish of each page of the sim file, with its page and its Finish."""
+    for rid, page in sim["pages"].items():
+        for goal, finishes in page["finishes"].items():
+            for finish in finishes:
+                for path in finish["paths"]:
+                    yield rid, goal, finish, path
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_the_finish_list_of_bo_girds_sums_to_100_and_4_2_ends_15_13(cpc_week_11_file):
+    # AT-6. Three weeks left with the median game give 7 Finishes, 6-0 to 0-6.
+    sim = cpc_week_11_file
+    rid = next(rid for rid, name in sim["names"].items() if name == "Bo Girds")
+    page = sim["pages"][rid]
+    assert page["record"] == [11, 11]
+    finishes = page["finishes"]["spot"]
+    for f in finishes:
+        print(f"AT-6: {f['more_wins']}-{6 - f['more_wins']} ends {f['record']} chance {f['chance']} "
+              f"odds {f['odds']} case {f['case']} paths {len(f['paths'])}")
+    assert [f["more_wins"] for f in finishes] == [6, 5, 4, 3, 2, 1, 0]
+    assert sum(f["chance"] for f in finishes) == pytest.approx(100, abs=1)
+    assert next(f["record"] for f in finishes if f["more_wins"] == 4) == [15, 13]
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_a_norcal_finish_list_runs_4_0_to_0_4_with_no_median(week_10_files):
+    # AT-7. NorCal has no median game and 4 weeks left.
+    sim = week_10_files["norcal"]
+    assert sim["parameters"]["median_game"] is False
+    for page in sim["pages"].values():
+        for finishes in page["finishes"].values():
+            assert [f["more_wins"] for f in finishes] == [4, 3, 2, 1, 0]
+        assert all(r["median"] is None for week in page["weeks"] for r in week["results"])
+    page = _page(week_10_files, "norcal", "Skol Daddy")
+    print(f"AT-7: Skol Daddy {[(f['more_wins'], f['odds'], f['chance']) for f in page['finishes']['spot']]}")
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_each_week_11_path_names_1_to_3_teams_with_400_runs_and_reaches_90_unless_full_or_best(cpc_week_11_file):
+    # AT-8 and AT-52. Each condition is a final record at most.
+    sim = cpc_week_11_file
+    paths = list(_paths_of(sim))
+    sizes = [len(path["conditions"]) for *_, path in paths]
+    print(f"AT-8 AT-52: {len(paths)} Paths, teams per Path {dict(sorted(Counter(sizes).items()))}, "
+          f"fewest runs {min(path['runs'] for *_, path in paths)}")
+    assert paths
+    for rid, _, finish, path in paths:
+        teams = [c["roster_id"] for c in path["conditions"]]
+        assert 1 <= len(teams) <= 3 and int(rid) not in teams and len(set(teams)) == len(teams)
+        assert path["runs"] >= 400
+        assert path["odds"] >= 90 or len(teams) == 3 or finish["case"] == "best"
+        for c in path["conditions"]:
+            wins, losses = sim["records"][str(c["roster_id"])][:2]
+            assert c["record"][0] - wins + c["record"][1] - losses == 6 and c["record"][0] - wins < 6
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_no_week_11_path_repeats_within_its_finish(cpc_week_11_file):
+    # AT-9.
+    sim = cpc_week_11_file
+    finishes = 0
+    for page in sim["pages"].values():
+        for goal_finishes in page["finishes"].values():
+            for finish in goal_finishes:
+                sets = [frozenset((c["roster_id"], tuple(c["record"])) for c in p["conditions"]) for p in finish["paths"]]
+                finishes += bool(sets)
+                assert len(sets) == len(set(sets))
+    print(f"AT-9: {finishes} Finishes with Paths, no repeated Path")
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_a_sure_or_hopeless_week_11_finish_has_no_path_and_a_best_chance_holds_one(cpc_week_11_file):
+    # AT-10 and AT-11.
+    sim = cpc_week_11_file
+    counts: Counter[str] = Counter()
+    for rid, page in sim["pages"].items():
+        for goal, finishes in page["finishes"].items():
+            for finish in finishes:
+                counts[finish["case"]] += 1
+                if finish["case"] in ("sure", "none"):
+                    assert finish["paths"] == []
+                if finish["case"] == "best":
+                    assert len(finish["paths"]) == 1 and finish["paths"][0]["odds"] < 90
+                    if counts["best"] <= 2:
+                        print(f"AT-11: {sim['names'][rid]} {goal} {finish}")
+    print(f"AT-10 AT-11: Finishes by case {dict(counts)}")
+    assert counts["sure"] and counts["none"] and counts["best"]
