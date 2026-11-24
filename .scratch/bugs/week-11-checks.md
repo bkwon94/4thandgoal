@@ -12,9 +12,25 @@ Boundary: holds. 4 items of one kind; no new term or ADR; no moved seam; each do
 
 Done condition: `apps/pipeline/tests/test_topics.py` passes on the cpc week 11 data, where some teams have new names.
 Method: diagnosing-bugs.
-Cause: pending
-Red: pending
-Green: pending
+Cause: `test_the_power_rankings_block_lists_each_team_with_its_rank_and_its_move` in `apps/pipeline/tests/test_topics.py` pins the team names, but `rank_movers_block` reads the names of `published/2026/rankings.json`, which each publish rewrites with the current names, so a rename breaks the test.
+Red: at `4ee479ef`, `cd apps/pipeline && uv run --exact --package cornerstone pytest tests/test_topics.py -q`
+
+```text
+E       AssertionError: assert [(1, '💿 🐑', 3...on', -4), ...] == [(1, 'Return ...ee', -4), ...]
+E         At index 0 diff: (1, '💿 🐑', 3) != (1, 'Return of T Mac', 3)
+tests/test_topics.py:228: AssertionError
+FAILED tests/test_topics.py::test_the_power_rankings_block_lists_each_team_with_its_rank_and_its_move
+1 failed, 12 passed in 7.75s
+```
+
+The loop is the test itself, so the fix changes the loop file. The parent `4ee479ef` holds the loop, the week 11 data, and no fix.
+
+Green: at `dfdd443d`, `cd apps/pipeline && uv run --exact --package cornerstone pytest tests/test_topics.py -q`
+
+```text
+.............                                                            [100%]
+13 passed in 7.68s
+```
 Test verdict: pending
 
 ### 2. The analyzer stage spec pins the team names of the live rosters
