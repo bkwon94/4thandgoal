@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-3, AT-4, AT-5, AT-27,
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] `week-11/sim.json` of `cpc` holds the odds and the status of the spot, the bye, and seeds 1 to 6 for each of 12 teams, and the board block.
 - [x] The open Goal of each team is the best Goal with odds of 5% or more, in the order 1 seed, bye, spot.
