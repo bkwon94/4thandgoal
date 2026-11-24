@@ -1,5 +1,5 @@
 /**
- * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team: the header, the ladder, the week
+ * Tests for the sim page on the real week 10 sim files of CPC and NorCal, with Bo Girds as Your team: the header, the Finish list, the week
  * switch, the week card, the root-for card, the "about" numbers, and the What-if, over two local API answers and an API that is down.
  */
 import "@cpc/design/ui/sheet-jsdom";
@@ -53,20 +53,21 @@ describe("the sim page header", () => {
 const odds = (value: number | null, about: boolean) =>
   value === null ? "–" : about ? `about ${value}%` : `${value}%`;
 
-describe("the sentence of more wins", () => {
-  it("shows the sentence of the file and opens the ladder with each count, its odds, and its chance", () => {
+describe("the sentence of more wins and the Finish list", () => {
+  it("shows the sentence of the file and one bar per Finish with its odds of a spot, from the most wins down", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} avatars={AVATARS} />);
-    fireEvent.click(screen.getByRole("button", { name: new RegExp(cpcPage.sentence) }));
-    const ladder = screen.getByRole("dialog", { name: "Wins left and your odds" });
-    const rows = within(ladder).getAllByRole("listitem");
-    expect(rows).toHaveLength(cpcPage.ladder.length);
-    // The ladder reads from the most wins down, so the top row is the best case.
-    const top = [...cpcPage.ladder].reverse();
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
+    expect(yourTeam().textContent).toContain(cpcPage.sentence);
+    const list = screen.getByRole("group", { name: "Finish list for a playoff spot" });
+    const rows = within(list).getAllByRole("button");
+    expect(rows).toHaveLength(cpcPage.finishes.spot.length);
     rows.forEach((row, index) => {
-      const step = top[index];
-      expect(row.textContent).toContain(`${step.more_wins} of ${cpcPage.wins_left}`);
-      expect(row.textContent).toContain(odds(step.playoff, step.about));
-      expect(row.textContent).toContain(`${step.chance}%`);
+      const finish = cpcPage.finishes.spot[index];
+      expect(row.getAttribute("data-finish")).toBe(
+        `${finish.more_wins}-${cpcPage.wins_left - finish.more_wins}`,
+      );
+      expect(row.textContent).toContain(odds(finish.odds, finish.about));
+      expect(row.textContent).toContain(`${Math.round(finish.chance)}% likely`);
     });
   });
 });

@@ -6,7 +6,7 @@
 - `sim`, the same file parsed with the schema, so a stale fixture fails at import.
 - `week-sim.json`, the week sim file in the exact shape the pipeline writes, from the sim step of CPC 2026 week 10.
 - `week-sim-norcal.json`, the week sim file of NorCal 2026 week 10, a league with no median game.
-- `week-sim-week-11.json`, the week sim file of CPC 2026 week 11 from `make sim CLIENT=cpc WEEK=11`, with the Goals of each page and the League board. Bo Girds is 11-11 with 3 weeks left.
+- `week-sim-week-11.json`, the week sim file of CPC 2026 week 11 from `make sim CLIENT=cpc WEEK=11`, with the Goals and the Finish lists of each page and the League board. Bo Girds is 11-11 with 3 weeks left.
 - `weekSim`, `weekElevenSim`, and `norcalWeekSim`, the three week files parsed with the schema.
 - `what-if-win-above.json` and `what-if-loss-below.json`, two answers of the local What-if route on `week-sim.json`, with Bo Girds
   set to a win over the median and to a loss under it in week 11.

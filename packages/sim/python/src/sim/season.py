@@ -17,6 +17,7 @@ from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
 from sim.goals import BoardTeam, GoalOdds
 from sim.page import RunRecord, SimPage, league_fact, team_page
+from sim.paths import RunTable, finish_lists
 from sim.percent import shown, tenths
 from sim.tunables import (
     LEVEL_SHRINK_WEEKS,
@@ -280,6 +281,8 @@ def _season_sim(
     stored_weights: list[float] = []
     # The page block reads each run again, so the sim keeps a record of each run only when a page is asked for.
     log: list[RunRecord] = []
+    # The Path search reads the results of each run from this table, which the loop writes as it draws (decision 03).
+    run_table = RunTable()
     next_pairs = list(remaining[regular[0]]) if regular else []
     # Per next-week pair and per winner, three sums: the runs, the runs side a made it, the runs side b made it.
     halves = {pair: {"a": [0.0, 0.0, 0.0], "b": [0.0, 0.0, 0.0]} for pair in next_pairs}
@@ -331,6 +334,7 @@ def _season_sim(
                 finals[rid] += weight
         titles[champion] += weight
         if week_log is not None:
+            run_table.add(weight, {rid: wins[rid] - records[rid][0] for rid in rosters}, place)
             log.append(RunRecord(weight=weight, wins=wins, made=frozenset(place), weeks=week_log,
                                  seeds=tuple(table[:spots]), rounds=tuple(tuple(r) for r in rounds),
                                  champion=champion))
@@ -379,7 +383,11 @@ def _season_sim(
                              set_weeks=len(held_regular) if rid == you else 0,
                              set_wins=sum((r.game == "win") + (r.median == "above") for _, _, r in held_regular)
                              if rid == you else 0,
-                             bracket_weeks=bracket_weeks, played=played, goals=goals[rid])
+                             bracket_weeks=bracket_weeks, played=played, goals=goals[rid],
+                             finishes=finish_lists(rid, run_table, {key: g.status for key, g in goals[rid].items()},
+                                                   records=records, wins_left=(2 if median_game else 1) * weeks_left,
+                                                   weeks_left=weeks_left, spots=spots, bye_count=bye_count,
+                                                   effective_runs=effective_runs))
               for rid in sorted(set(pages))}
     return SimResult(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,

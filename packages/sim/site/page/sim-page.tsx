@@ -1,6 +1,7 @@
 /**
  * The sim page of Your team. In the regular season it is The Race, variant D of decision 04 of playoff-paths: the title, the Goal
- * switch, the Your team card that opens in place with the ladder, the week pages, and the replay, then the League board.
+ * switch, the Your team card that opens in place with the Finish list, the week pages, and the replay, then the League board.
+ * A tap on another team of the board opens its Finish list in a sheet.
  */
 "use client";
 
@@ -17,12 +18,13 @@ import type { WhatIfApi } from "../lib/what-if-api";
 import { SimStage, type StageAsk } from "../stage/sim-stage";
 import { LABEL, PRESS, nameOf, oddsText, recordText, resultName } from "./format";
 import { GoalSwitch } from "./goal-switch";
-import { type GoalKey, goalShort, hasBye, openGoal, pageGoals } from "./goals";
+import { type GoalKey, goalName, goalShort, hasBye, openGoal, pageGoals } from "./goals";
+import { FinishList } from "./finish-list";
 import { InPlayoffs, seasonLine } from "./in-playoffs";
-import { LadderSheet } from "./ladder-sheet";
 import { LeagueBoard } from "./league-board";
 import { SoftText } from "./parts";
 import { PlayoffsPage } from "./playoffs-page";
+import { TeamSheet } from "./team-sheet";
 import { useWhatIf } from "./use-what-if";
 import { PLAYOFFS, WeekSwitch, type WeekItem } from "./week-switch";
 import { WeekPage } from "./week-page";
@@ -37,23 +39,35 @@ const ENTER = { duration: 0.25, ease: [0.22, 1, 0.36, 1] } as const;
 const setText = (set: SetResult[]) =>
   set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
 
-/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it. */
+/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it.
+   `onYou` makes another team Your team, from its sheet. The app keeps the choice. */
 export function SimPage({
   sim,
   you,
   avatars = {},
   whatIf,
   random = Math.random,
+  onYou,
 }: {
   sim: WeekSim;
   you: number;
   avatars?: Avatars;
   whatIf?: WhatIfApi;
   random?: () => number;
+  onYou?: (id: number) => void;
 }) {
   if (sim.pages[you].playoffs)
     return <PlayoffSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
-  return <RegularSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
+  return (
+    <RegularSimPage
+      sim={sim}
+      you={you}
+      avatars={avatars}
+      whatIf={whatIf}
+      random={random}
+      onYou={onYou}
+    />
+  );
 }
 
 /* The sim page with no regular week left: Your team with its title odds, then the playoff cards. No week switch and no
@@ -151,12 +165,14 @@ function RegularSimPage({
   avatars,
   whatIf,
   random,
+  onYou,
 }: {
   sim: WeekSim;
   you: number;
   avatars: Avatars;
   whatIf?: WhatIfApi;
   random: () => number;
+  onYou?: (id: number) => void;
 }) {
   const file = sim.pages[you];
   const name = nameOf(sim, you);
@@ -173,6 +189,9 @@ function RegularSimPage({
   });
   const off = useMotionOff();
   const [replay, setReplay] = useState<StageAsk | null>(null);
+  const [other, setOther] = useState<number | null>(null);
+  // The Finish list follows the page of a What-if answer, and the file when the answer holds none.
+  const finishes = page.finishes[goal] ?? file.finishes[goal] ?? [];
 
   const openItem = (item: WeekItem) => {
     setView((was) =>
@@ -255,19 +274,45 @@ function RegularSimPage({
           </CollapsibleTrigger>
           <CollapsiblePanel>
             <div className="gap-sp-3 px-sp-3 pb-sp-4 flex flex-col">
-              <LadderSheet
-                page={page}
-                medianGame={sim.parameters.median_game}
-                sentence={
-                  <SoftText
-                    text={page.sentence}
-                    className={cn(
-                      "transition-opacity duration-150 ease-out",
-                      what.pending && "opacity-50",
-                    )}
+              <section aria-labelledby="race-finish-title" className="gap-sp-2 flex flex-col">
+                <div className="gap-sp-1 flex flex-col">
+                  <h2
+                    id="race-finish-title"
+                    className="text-lead m-0 leading-tight font-bold text-balance"
+                  >
+                    {`Your odds of ${goalName(goal)} by final record`}
+                  </h2>
+                  {goal === "spot" && (
+                    <SoftText
+                      text={page.sentence}
+                      className={cn(
+                        "text-body transition-opacity duration-150 ease-out",
+                        what.pending && "opacity-50",
+                      )}
+                    />
+                  )}
+                  <p className="text-meta text-mute m-0 text-pretty">
+                    {sim.parameters.median_game
+                      ? "Your game and the median each count. Tap a record to see what you need."
+                      : "Tap a record to see what you need."}
+                  </p>
+                </div>
+                <div
+                  className={cn(
+                    "-mx-sp-2 transition-opacity duration-150 ease-out",
+                    what.pending && "opacity-50",
+                  )}
+                >
+                  <FinishList
+                    key={goal}
+                    sim={sim}
+                    finishes={finishes}
+                    winsLeft={page.wins_left}
+                    goal={goal}
+                    mine
                   />
-                }
-              />
+                </div>
+              </section>
               <WeekSwitch
                 items={items}
                 open={open}
@@ -320,7 +365,20 @@ function RegularSimPage({
         )}
       </section>
 
-      <LeagueBoard sim={sim} you={you} goal={goal} onYou={openCard} />
+      <LeagueBoard sim={sim} you={you} goal={goal} onYou={openCard} onOther={setOther} />
+      <TeamSheet
+        sim={sim}
+        team={other}
+        goal={goal}
+        onClose={() => setOther(null)}
+        onYou={
+          onYou &&
+          ((id) => {
+            setOther(null);
+            onYou(id);
+          })
+        }
+      />
 
       {replay !== null && (
         <SimStage

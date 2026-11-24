@@ -16,3 +16,5 @@ export type WhatIfAnswer = z.infer<typeof whatIf.whatIfAnswerSchema>;
 export type Playoffs = z.infer<typeof schema.playoffsSchema>;
 export type GoalOdds = z.infer<typeof schema.goalOddsSchema>;
 export type BoardTeam = z.infer<typeof schema.boardTeamSchema>;
+export type Finish = z.infer<typeof schema.finishSchema>;
+export type FinishPath = z.infer<typeof schema.pathSchema>;
