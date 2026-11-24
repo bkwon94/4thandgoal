@@ -8,7 +8,7 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, AT-
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A pytest calls each of the 7 routes for `cpc` after the Lock and gets 410 with the closed body (AT-14).
 - [x] A pytest with a counting fake Jev and fake Claude shows 0 calls for the 7 refused routes (AT-16).
