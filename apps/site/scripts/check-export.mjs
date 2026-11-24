@@ -7,8 +7,9 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildNow, ClientBuildError, clientRoot, readClient, readCopy } from "./client-build.mjs";
-import { CLOSED_LINE, tradesClosed } from "../src/lib/trades-closed.ts";
+import { ClientBuildError, clientRoot, readClient, readCopy } from "./client-build.mjs";
+import { tradesClosedOfBuild } from "./export-closed.mjs";
+import { CLOSED_LINE } from "../src/lib/trades-closed.ts";
 import { FONT_CAPS, FONT_TOTAL } from "../src/app/fonts/budget.ts";
 
 function filesUnder(dir) {
@@ -122,8 +123,9 @@ if (values.packages.includes("analyzer")) {
   const finderOn = values.values?.analyzer?.finder ?? false;
   const analyze = readFileSync(join("out", "analyze", "index.html"), "utf8");
   // A build at or after the Lock writes the closed page at /analyze/, with the closed line and no finder flag.
-  const lock = values.values?.analyzer?.lock;
-  if (tradesClosed(lock === undefined ? null : Date.parse(lock), buildNow(process.env))) {
+  // The build decided that from its own clock (BUILD_NOW), so this check reads its value and never the real clock.
+  const generated = readFileSync(join("src", "generated", "client-values.ts"), "utf8");
+  if (tradesClosedOfBuild(generated)) {
     if (!analyze.includes(CLOSED_LINE))
       fail("out/analyze/index.html does not show the closed line, but the build is after the Lock");
     if (analyze.includes("finderOn"))
