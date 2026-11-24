@@ -8,7 +8,7 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-6, AT-7, AT-9, and AT
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A closed `cpc` build with roster 1 shows no "Trades", "Check", or "Sell high or buy low" chip or Suggestion, and no trade block strip (AT-6).
 - [x] The typed question "Who should I trade for at RB?" gets the closed line, never "I can't answer that.", and the API log shows no Claude call (AT-7).
