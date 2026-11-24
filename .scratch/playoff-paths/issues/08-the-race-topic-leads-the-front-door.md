@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-24, AT-25, and AT-26.
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Suggestions of Bo Girds in `cpc` week 11 put the race Topic first.
 - [x] A fixture that runs as week 15 does not pin the race Topic.
