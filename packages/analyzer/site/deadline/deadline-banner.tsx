@@ -106,11 +106,12 @@ function Banner({
   return (
     <Sheet side="bottom" container={typeof document === "undefined" ? undefined : document.body}>
       {/* The press of transitions.dev: the grid sinks to 0.98 in 150 ms with the ease-out while the press holds, and the
-          surface dims a little, so the tap reads at once. */}
+          surface dims a little, so the tap reads at once. The closed grid holds one line of text, so the button keeps
+          the tap floor height of its own. */}
       <SheetTrigger
         aria-label={name}
         className={cn(
-          "group focus-visible:outline-accent block w-full cursor-pointer border-0 border-t border-solid p-0 text-left transition-[filter] duration-150 ease-(--ease-out) focus-visible:outline-2 focus-visible:-outline-offset-2 active:brightness-95",
+          "group focus-visible:outline-accent min-h-touch block w-full cursor-pointer border-0 border-t border-solid p-0 text-left transition-[filter] duration-150 ease-(--ease-out) focus-visible:outline-2 focus-visible:-outline-offset-2 active:brightness-95",
           TONE[phase],
         )}
       >
