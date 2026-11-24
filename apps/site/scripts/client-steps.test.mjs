@@ -31,6 +31,11 @@ describe("the steps of a client", () => {
     }
   });
 
+  it("runs the trades-closed project last, for cpc only", () => {
+    expect(stepsOfClient("cpc").at(-1)).toEqual({ script: "check:trades-closed" });
+    expect(stepsOfClient("norcal").map((step) => step.script)).not.toContain("check:trades-closed");
+  });
+
   it("runs the grade-bar project on a second build for cpc, the client with the finder on", () => {
     const steps = stepsOfClient("cpc");
     expect(steps.map((step) => step.script)).toEqual([
@@ -39,6 +44,7 @@ describe("the steps of a client", () => {
       "check:floor",
       "build",
       "check:grade-bar-export",
+      "check:trades-closed",
     ]);
     expect(steps[3].env).toEqual({ BUILD_NOW, NEXT_PUBLIC_API_URL: "http://localhost:8080" });
   });

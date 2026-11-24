@@ -79,8 +79,8 @@ export default defineConfig({
       name: "grade-bar",
       testMatch: ["grade-bar.spec.ts", "finder-ledger.spec.ts", "trade-block.spec.ts"],
     },
-    // The project "trades-closed" checks the closed analyzer page on the export of cpc built after the Lock. Build with the real
-    // clock or a BUILD_NOW after the Lock, because the other projects need the build before the Lock. CI runs no step of it.
+    // The project "trades-closed" checks the closed analyzer page on the export of cpc built after the Lock. The script check:trades-closed
+    // builds cpc with a BUILD_NOW after the Lock, because the other projects need the build before the Lock. CI runs it as the last step of cpc.
     { name: "trades-closed", testMatch: "trades-closed.spec.ts" },
     // The evidence run shows the site as a reader sees it, with motion on. Its scroll pass shows each revealed section.
     { name: "evidence", testMatch: "evidence.spec.ts", use: { reducedMotion: "no-preference" } },

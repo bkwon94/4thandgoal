@@ -26,6 +26,7 @@
     "pick": "node scripts/flow-pick.mjs",
     "check:grade-bar": "CLIENT=norcal BUILD_NOW=2026-11-21T09:55:00-05:00 NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build && pnpm check:grade-bar-export",
     "check:grade-bar-export": "playwright test --project=grade-bar",
+    "check:trades-closed": "CLIENT=cpc BUILD_NOW=2026-11-25T12:00:00-05:00 pnpm build && playwright test --project=trades-closed",
     "check:open-card": "playwright test --project=open-card",
     "check": "pnpm check:fast && pnpm check:browser",
     "check:browser": "pnpm test:floor && node scripts/build-each-client.mjs && node scripts/midseason-fixture.mjs",
