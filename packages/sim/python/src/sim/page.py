@@ -167,7 +167,7 @@ class SimPage(BaseModel):
 
 def team_page(
     you: int, runs: Sequence[RunRecord], *, playoff: int, status: OddsStatus,
-    records: Mapping[int, tuple[int, int, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
+    records: Mapping[int, tuple[int, int, float, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
     effective_runs: int, set_weeks: int = 0, set_wins: int = 0, bracket_weeks: Sequence[int] = (),
     played: Mapping[int, Mapping[int, float]] | None = None,
 ) -> SimPage:
@@ -218,7 +218,7 @@ def team_page(
     steps = [LadderStep(more_wins=k, playoff=odds(part), chance=tenths(part[0], total), about=about(part[0]))
              for k, part in enumerate(ladder)]
     need = next((s.more_wins for s in steps if s.playoff is not None and s.playoff >= IN_ODDS), None)
-    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
+    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], -records[rid][3], rid))
     place = {rid: n for n, rid in enumerate(table, start=1)}
     # Each run puts the same count of teams in the playoffs, so the first run gives the count of playoff spots.
     spots = len(runs[0].made) if runs else 0
@@ -337,7 +337,7 @@ def _playoff_game(
 
 def _root_for(
     you: int, pairs: list[Pair], winners: Mapping[int, list[float]], loss_playoff: int | None, odds, about,
-    records: Mapping[int, tuple[int, int, float]], place: Mapping[int, int], last_wins: int | None,
+    records: Mapping[int, tuple[int, int, float, float]], place: Mapping[int, int], last_wins: int | None,
 ) -> list[RootFor]:
     """The root-for rows of one week: for each other game, the side whose win lifts the odds after a loss the most.
     A row stays when it lifts them by ROOT_FOR_LIFT whole points or more and its loser has a true reason. The rows

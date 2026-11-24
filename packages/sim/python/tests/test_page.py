@@ -15,7 +15,7 @@ SEASON = 2026
 ROSTERS = range(1, 9)
 # A league in its regular season: 2 weeks played, 2 weeks left. The records put roster 5 at 4-0 and roster 3 at 0-4.
 SCORES = {rid: [100.0 + 7 * rid, 120.0 - 5 * rid] for rid in ROSTERS}
-RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid) for rid in ROSTERS}
+RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid, 200.0 + rid) for rid in ROSTERS}
 REMAINING = {3: [(1, 2), (3, 4), (5, 6), (7, 8)], 4: [(1, 3), (2, 4), (5, 7), (6, 8)]}
 REASONS = {"2 wins ahead of you", "1 win ahead of you", "Level with you", "1 win behind you",
            "In the race for the last spot"}
@@ -120,7 +120,7 @@ def _true_reason(you: int, loser: int, records, spots: int) -> str | None:
     gap = records[loser][0] - records[you][0]
     if gap in NAMED:
         return NAMED[gap]
-    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
+    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], -records[rid][3], rid))
     last = records[table[spots - 1]][0]
     return "In the race for the last spot" if abs(records[loser][0] - last) <= 1 else None
 
@@ -133,7 +133,7 @@ def test_the_reason_names_the_gap_in_real_wins_to_the_loser(sim):
 
 
 # A spread of real wins from 1 to 8, so some losers sit 3 or more wins from roster 1 and roster 8.
-WIDE = {rid: (rid, 8 - rid, 220.0 + rid) for rid in ROSTERS}
+WIDE = {rid: (rid, 8 - rid, 220.0 + rid, 200.0 + rid) for rid in ROSTERS}
 
 
 def test_the_race_reason_goes_only_to_a_loser_near_the_last_playoff_spot():
@@ -236,7 +236,7 @@ def test_the_sentence_with_every_week_left_set_says_so():
 
 # The same league after its regular season: no regular week left, and a bracket of 4 in weeks 5 and 6. The records
 # set the seeds: roster 8 first, then 7, 6, and 5. Roster 1 is out.
-FINAL_RECORDS = {rid: (rid, 8 - rid, 400.0 + rid) for rid in ROSTERS}
+FINAL_RECORDS = {rid: (rid, 8 - rid, 400.0 + rid, 380.0 + rid) for rid in ROSTERS}
 
 
 def _near(whole: int, tenth: float) -> bool:

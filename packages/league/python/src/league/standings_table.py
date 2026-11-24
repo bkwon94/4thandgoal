@@ -34,16 +34,18 @@ def week_median(week: PastWeek) -> Decimal:
 
 def season_records(
     history: History, through: int, *, median_game: bool = True,
-) -> dict[int, tuple[int, int, float]]:
-    """Wins, losses, and points for of each roster over weeks 1 to `through`.
+) -> dict[int, tuple[int, int, float, float]]:
+    """Wins, losses, points for, and points against of each roster over weeks 1 to `through`.
 
     Each week is two games: the head-to-head game and the game against the median. With `median_game` off, the
     league scores no median game, so each week is the head-to-head game only.
-    A tie in a game counts as neither a win nor a loss.
+    A tie in a game counts as neither a win nor a loss. The points against are the scores of the head-to-head
+    opponents, as Sleeper counts them: the median game has no opponent.
     """
     wins: dict[int, int] = defaultdict(int)
     losses: dict[int, int] = defaultdict(int)
     points: dict[int, Decimal] = defaultdict(Decimal)
+    against: dict[int, Decimal] = defaultdict(Decimal)
 
     def settle(roster_id: int, mine: Decimal, theirs: Decimal) -> None:
         if mine > theirs:
@@ -56,20 +58,23 @@ def season_records(
         for a, b in history.weeks[number].pairs:
             settle(a, scores[a], scores[b])
             settle(b, scores[b], scores[a])
+            against[a] += scores[b]
+            against[b] += scores[a]
         median = week_median(history.weeks[number]) if median_game else None
         for rid, score in scores.items():
             if median is not None:
                 settle(rid, score, median)
             points[rid] += score
-    return {rid: (wins[rid], losses[rid], r2(float(points[rid]))) for rid in points}
+    return {rid: (wins[rid], losses[rid], r2(float(points[rid])), r2(float(against[rid]))) for rid in points}
 
 
-def standings_order(records: dict[int, tuple[int, int, float]]) -> list[int]:
-    """The roster IDs in standings order: most wins first, then most points for.
+def standings_order(records: dict[int, tuple[int, int, float, float]]) -> list[int]:
+    """The roster IDs in standings order: most wins first, then most points for, then the higher points against, as
+    Sleeper seeds a tie. The roster ID stands in for the coin flip of Sleeper, so the order is fixed.
 
     The standings and the power rankings both use this order, so the two cannot drift.
     """
-    return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2]))
+    return sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], -records[rid][3], rid))
 
 
 def standings(week: Week, history: History | None = None, *, client: Client) -> list[Standing]:
@@ -81,7 +86,8 @@ def standings(week: Week, history: History | None = None, *, client: Client) -> 
         if history is not None:
             logger.warning("history incomplete: standings from rosters.json")
         records = {
-            t.roster_id: (t.wins, t.losses, t.points_for) for t in week.teams.values()
+            # rosters.json of the week holds no points against that the build reads, so a tie here falls to the roster ID.
+            t.roster_id: (t.wins, t.losses, t.points_for, 0.0) for t in week.teams.values()
         }
     ordered = standings_order(records)
     cut_wins = records[ordered[client.settings.playoff_spots - 1]][0]
@@ -109,7 +115,7 @@ def standings(week: Week, history: History | None = None, *, client: Client) -> 
 
 
 def _schedule_strength(
-    week: Week, roster_id: int, records: dict[int, tuple[int, int, float]]
+    week: Week, roster_id: int, records: dict[int, tuple[int, int, float, float]]
 ) -> float | None:
     """Mean win rate of the remaining opponents. Version 1 has only the next one."""
     opponents = [
@@ -138,7 +144,7 @@ def head_to_head(week: PastWeek, roster_id: int) -> tuple[int, int] | None:
 
 
 def roster_status(
-    roster_id: int, records: dict[int, tuple[int, int, float]], weeks_left: int, spots: int, *,
+    roster_id: int, records: dict[int, tuple[int, int, float, float]], weeks_left: int, spots: int, *,
     median_game: bool = True,
 ) -> OddsStatus:
     """In, out, or open, by a plain check on wins, not by the runs. Both `in` and `out` are sure.

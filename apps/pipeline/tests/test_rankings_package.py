@@ -67,7 +67,7 @@ def test_cpc_with_its_median_game_counts_two_games_a_week_in_the_standings(build
 def _last_week_odds(client):
     """The odds with one week left: rosters 1 to 6 at 10 wins, 7 to 11 at 9 wins, and roster 12 at 8 wins."""
     wins = {rid: 10 if rid <= 6 else 9 if rid <= 11 else 8 for rid in range(1, 13)}
-    records = {rid: (w, 26 - w, 1000.0 + rid) for rid, w in wins.items()}
+    records = {rid: (w, 26 - w, 1000.0 + rid, 900.0) for rid, w in wins.items()}
     scores = {rid: [100.0 + rid] * 13 for rid in range(1, 13)}
     remaining = {14: [(1, 12), (2, 11), (3, 10), (4, 9), (5, 8), (6, 7)]}
     return weekly_odds(season_sim(scores, records, remaining, season=2026, week=13, settings=client.settings, runs=200))
