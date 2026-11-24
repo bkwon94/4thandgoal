@@ -1,7 +1,7 @@
 # The idle stage test pins a team name of the live data
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-idle-stage-team-name`.
 Source: the session of 2026-11-24.
 Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -37,10 +37,17 @@ Ran 3 tests across 1 file.
 ```
 
 `make check-fast BASE=main` at `8d75c843` passes: 1972 pass, 0 fail, across 204 files.
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
 Smoke: flow `Analyzer`. "Smoke run: 1 flow, 1 passed, 0 failed". Shots in `.scratch/bugs/idle-stage-team-name/smoke/`.
 
 ## Comments
+
+1. Closes with the squash merge of the PR of `bug-idle-stage-team-name`. Commits: `afca6f41`, `8d75c843`, `c3e55b0c`, `e78c82c2`. Date: 2026-11-24.
+2. `make check-fast BASE=main` passes with 1972 tests, and the loop of item 1 went red, then green.
+3. Three Playwright specs still pick a team by a fixed live name: `apps/site/e2e/front-door-tour.spec.ts:354` (Bo Girds), `apps/site/e2e/analyzer-stage.spec.ts:312` (All You Need Is Love, The Blue Tent), and `apps/site/e2e/eggs.spec.ts:165` (Lil Fridge).
+4. The test still picks the player Kenneth Walker III by name, so a trade of that player can break it the same way.
+5. `chooseTeam` in `packages/analyzer/site/form/form-steps.ts:24` builds a `RegExp` from a team name with no escape.
+6. Read 7 files: AGENTS.md, apps/site/AGENTS.md, .claude/plugin/skills/quick/format.md, .scratch/bugs/idle-stage-team-name.md, apps/site/src/app/_routes/analyzer/idle-stage.test.tsx, apps/site/src/fixtures/raw-teams.ts, packages/analyzer/site/form/form-steps.ts.
