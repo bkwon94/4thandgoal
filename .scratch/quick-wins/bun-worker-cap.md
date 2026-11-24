@@ -32,7 +32,7 @@ Green: at `8fc1a72d`, `cd apps/site && bun test --isolate ./scripts/test-scope.t
  54 expect() calls
 Ran 18 tests across 1 file.
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
