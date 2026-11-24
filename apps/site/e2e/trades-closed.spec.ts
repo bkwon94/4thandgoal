@@ -76,6 +76,8 @@ for (const viewport of VIEWPORTS) {
 test("a browser clock before the Lock still shows the closed page and no Trade Analyzer in the menu (AT-26)", async ({
   page,
 }) => {
+  // The menu button shows only below the desktop width, so the test runs at the phone size.
+  await page.setViewportSize({ width: 390, height: 660 });
   // The build decides, not the browser: 20:00 Eastern on Mon 2026-11-23 is before the Lock.
   await page.clock.setFixedTime(new Date("2026-11-23T20:00:00-05:00"));
   await openPage(page, `${server.url}/analyze/`, "dark");
