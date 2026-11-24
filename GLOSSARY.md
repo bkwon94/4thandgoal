@@ -1145,6 +1145,10 @@ _Avoid_: Simulation, sample, scenario
 A set of results that a manager sets for Your team in the weeks left: a win or a loss, and above or below the median. The sim draws every other game.
 _Avoid_: Scenario, simulation, prediction
 
+**The race**:
+The name of the sim page on the site, with the short label "Race". Use "sim" in code and "the sim page" in the docs. The route is `/sim/<season>/`.
+_Avoid_: Season sim (the old name), playoff picture, race page
+
 **Goal**:
 What a team aims at in the weeks left: a playoff spot, a bye, or one seed. The sim page answers for one Goal at a time.
 _Avoid_: Target (a retired word of the finder), aim, objective

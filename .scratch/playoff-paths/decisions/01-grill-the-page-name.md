@@ -6,7 +6,7 @@ Map: `.scratch/playoff-paths/MAP.md`.
 
 **Blocked by:** none
 
-**Status:** open
+**Status:** done
 
 ## Question
 
@@ -14,4 +14,4 @@ The page now answers what each team needs to reach a Goal, and it holds the Leag
 
 ## Decision
 
-None yet.
+The page takes the name "The race", with the short label "Race" in the menu and the shell. The route stays `/sim/<season>/`, so old links from the Announcement of `season-sim` and the week tiles keep working. The code keeps the package name `sim`, and the docs keep "the sim page". The replay inside the page keeps its button names, such as "Sim the season". The new name gives the Announcement of the release its hook: "The race is on." Brian chose option B, 2026-11-24. "Season sim" only named the replay, "Playoff picture" is long for the menu, and "Playoff paths" reads flat.
