@@ -62,7 +62,7 @@
     "name": "Analyzer",
     "globs": ["apps/site/src/app/_routes/analyzer/**", "packages/analyzer/site/**", "apps/api/**"],
     "route": "/analyze/",
-    "expected": "A two-team trade of one player each side, then \"Grade the Trade\": the status \"Grading the trade\", then a Lean word on its scale and a Case.",
+    "expected": "A two-team trade of one player each side, then \"Grade the Trade\": the status \"Grading the trade\", then a Lean word on its scale and a Case. A build with Trades closed shows the closed page instead: the line \"The trade deadline has passed. Trades open again next season.\" and one Home link.",
     "claude": true,
     "layout": true,
     "steps": [
@@ -88,6 +88,11 @@
       { "wait": "[data-stable-id=lean-word]" },
       { "expect": "role=list[name=\"The Lean scale\"]" },
       { "expect": "[data-stable-id^=blurb]" }
+    ],
+    "closedSteps": [
+      { "expect": "text=The trade deadline has passed. Trades open again next season." },
+      { "expect": "main >> role=link[name=\"Home\"]" },
+      { "shot": "closed" }
     ]
   },
   {
