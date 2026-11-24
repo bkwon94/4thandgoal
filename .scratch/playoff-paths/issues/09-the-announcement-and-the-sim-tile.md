@@ -10,7 +10,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-49 and AT-50.
 
 **Status:** ready-for-agent
 
-- [ ] A fresh browser with Your team set sees the Announcement on the first load and not after a dismiss.
-- [ ] The Sim tile reads "The Race" and links to `/sim/2026/`.
-- [ ] The Announcement passes the WebKit overlap check at the 4 sizes, in light and dark mode.
-- [ ] `make check-fast` passes.
+- [x] A fresh browser with Your team set sees the Announcement on the first load and not after a dismiss.
+- [x] The Sim tile reads "The Race" and links to `/sim/2026/`.
+- [x] The Announcement passes the WebKit overlap check at the 4 sizes, in light and dark mode.
+- [x] `make check-fast` passes.

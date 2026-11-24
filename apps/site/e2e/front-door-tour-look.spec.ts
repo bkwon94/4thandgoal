@@ -40,8 +40,8 @@ async function openTour(page: Page, theme?: "light" | "dark") {
     ({ team, theme }) => {
       localStorage.setItem("cpc.passphrase", "test");
       localStorage.setItem("cpc.your-team", team);
-      // A kept team lets the season-sim Announcement open first and cover the page, so the setup marks it seen.
-      localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
+      // A kept team lets The Race Announcement open first and cover the page, so the setup marks it seen.
+      localStorage.setItem("cpc.announcement.the-race-2026", "seen");
       if (theme) localStorage.setItem("cpc.theme", theme);
     },
     { team: BO_GIRDS, theme },

@@ -1,19 +1,19 @@
 /**
- * Tests for the rules of the sim Announcement on the home page, with the real week 10 file of CPC and real local storage.
+ * Tests for the rules of The Race Announcement on the home page, with the real week 11 file of CPC and real local storage.
  * Each render is one page load. It opens 0.7 s after load, once per browser, and never over a sheet or with no team.
  */
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, jest, setSystemTime } from "bun:test";
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
-import { weekSim } from "@cpc/sim/fixtures/sim";
+import { weekElevenSim } from "@cpc/sim/fixtures/sim";
 import { previewOf } from "@cpc/sim/announcement/preview";
 import { YOUR_TEAM_KEY } from "@cpc/analyzer/lib/your-team";
 import { TeamSheet } from "@/app/front-door/team-sheet";
 import { LOAD_BEAT_MS } from "@/app/use-announcement";
 import { SIM_ANNOUNCEMENT, SimAnnouncement } from "./announcement";
 
-const DATA = previewOf(weekSim);
+const DATA = previewOf(weekElevenSim);
 const BO_GIRDS = 6;
 // A day of the week after the release, before the stop date.
 const IN_THE_WEEK = new Date(`${SIM_ANNOUNCEMENT.stops}T12:00:00`).getTime() - 3 * 86_400_000;
@@ -33,7 +33,7 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-const title = () => screen.queryByRole("dialog", { name: "See your path to the playoffs" });
+const title = () => screen.queryByRole("dialog", { name: "The Race is on" });
 
 /* One page load of the home page: mount the Announcement, then let the load beat pass. Unmount it before the next load. */
 function load() {
@@ -42,8 +42,8 @@ function load() {
   return page;
 }
 
-describe("the sim Announcement on the home page", () => {
-  it("opens with the copy of the spec about 0.7 s after load, with Bo Girds set (AT-51)", () => {
+describe("The Race Announcement on the home page", () => {
+  it("opens with the copy of the spec about 0.7 s after load, with Bo Girds set (AT-49)", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     render(<SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />);
     act(() => jest.advanceTimersByTime(LOAD_BEAT_MS - 1));
@@ -52,20 +52,23 @@ describe("the sim Announcement on the home page", () => {
     const sheet = title()!;
     expect(sheet).toBeTruthy();
     for (const copy of [
-      "New: Season sim",
-      "Pick this week's results and watch your playoff odds move.",
-      "Open the sim",
+      "New: The Race",
+      "See what you need each week, and who to root for.",
+      "Open The Race",
       "Not now",
     ]) {
       expect(sheet.textContent).toContain(copy);
     }
-    expect(sheet.textContent).toContain("The Blue Tent");
-    expect(sheet.textContent).toContain("Return of T Mac");
-    expect(sheet.textContent).toContain("Playoff line");
-    expect(sheet.textContent).toContain("What-if: Bo Girds win both");
+    // The art shows the League board rows around Bo Girds.
+    expect(sheet.textContent).toContain("Bengals Buddies");
+    expect(sheet.textContent).toContain("Omarion Himpton");
+    expect(sheet.textContent).toContain("League board");
+    expect(screen.getByRole("link", { name: "Open The Race" }).getAttribute("href")).toBe(
+      "/sim/2026/",
+    );
   });
 
-  it("stays hidden on a reload after Not now (AT-55)", () => {
+  it("stays hidden on a reload after Not now (AT-49)", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     const first = load();
     fireEvent.click(screen.getByRole("button", { name: "Not now" }));
@@ -76,23 +79,23 @@ describe("the sim Announcement on the home page", () => {
     expect(title()).toBeNull();
   });
 
-  it("stays hidden on a reload after a press of Open the sim (AT-55)", () => {
+  it("stays hidden on a reload after a press of Open The Race", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     const first = load();
-    fireEvent.click(screen.getByRole("link", { name: "Open the sim" }));
+    fireEvent.click(screen.getByRole("link", { name: "Open The Race" }));
     first.unmount();
     load();
     expect(title()).toBeNull();
   });
 
-  it("does not open on the page it links to (AT-56)", () => {
+  it("does not open on the page it links to", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     window.history.replaceState(null, "", "/sim/2026/");
     load();
     expect(title()).toBeNull();
   });
 
-  it("does not open over another sheet, and that skipped load does not count (AT-56, AT-57)", () => {
+  it("does not open over another sheet, and that skipped load does not count", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     const first = render(
       <>
@@ -108,7 +111,7 @@ describe("the sim Announcement on the home page", () => {
     expect(title()).toBeTruthy();
   });
 
-  it("does not open with no team set, and opens on a later load after a team is set (AT-57, AT-58)", () => {
+  it("does not open with no team set, and opens on a later load after a team is set", () => {
     const first = load();
     expect(title()).toBeNull();
     first.unmount();
@@ -117,7 +120,7 @@ describe("the sim Announcement on the home page", () => {
     expect(title()).toBeTruthy();
   });
 
-  it("skips the load of the team picker after a pick before the beat, and opens on the next load (AT-57)", () => {
+  it("skips the load of the team picker after a pick before the beat, and opens on the next load", () => {
     const first = render(<SimAnnouncement data={DATA} siteName="Test League" href="/sim/2026/" />);
     act(() => jest.advanceTimersByTime(LOAD_BEAT_MS / 2));
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
@@ -134,7 +137,7 @@ describe("the sim Announcement on the home page", () => {
     expect(title()).toBeNull();
   });
 
-  it("does not open 1 day past its end date (AT-59)", () => {
+  it("does not open 1 day past its end date", () => {
     localStorage.setItem(YOUR_TEAM_KEY, String(BO_GIRDS));
     setSystemTime(new Date(`${SIM_ANNOUNCEMENT.stops}T12:00:00`).getTime() + 86_400_000);
     load();
