@@ -20,6 +20,19 @@ function fixture(name: string): unknown {
 }
 
 describe("API response schemas", () => {
+  it("parses a team that holds a player with a null nfl_team", () => {
+    const team = {
+      roster_id: 7,
+      team: "Test Team",
+      manager: "tester",
+      players: [
+        { player_id: "6803", name: "Brandon Aiyuk", position: "WR", nfl_team: null, headshot: "" },
+      ],
+    };
+    const parsed = teamsResponseSchema.safeParse({ teams: [team] });
+    expect(parsed.success).toBe(true);
+  });
+
   it("parses the analyze fixture", () => {
     expect(analyzeResponseSchema.safeParse(fixture("analyze-response.json")).success).toBe(true);
   });

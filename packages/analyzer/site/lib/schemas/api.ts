@@ -8,7 +8,8 @@ export const playerSchema = z.object({
   player_id: z.string(),
   name: z.string(),
   position: z.string(),
-  nfl_team: z.string(),
+  // A player with no NFL team now has a null team, and the screens show him as "FA".
+  nfl_team: z.string().nullable(),
   headshot: z.string(),
 });
 

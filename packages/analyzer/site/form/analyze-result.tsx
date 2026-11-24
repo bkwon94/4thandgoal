@@ -76,7 +76,7 @@ function PlayerChip({ player, move }: { player: TradedPlayer; move?: Move }) {
       />
       <b className="text-row tracking-snug leading-tight font-extrabold">{player.name}</b>
       <span className="py-sp-1 text-meta text-mute">
-        {player.position} · {player.nfl_team}
+        {player.position} · {player.nfl_team ?? "FA"}
       </span>
       {/* A long team name wraps under the name, so the tag never clips at the phone width. */}
       {/* The word is a muted caps label and the team keeps its own case, so a team name that starts with "To" reads apart.
