@@ -15,4 +15,4 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-10, AT-20, AT-23, and
 - [x] `clients/norcal/client.toml` holds the NorCal `lock` and no `deadline_week`. `clients/cpc/client.toml` holds `deadline_week = true` (AT-24).
 - [x] A `cpc` build made today shows no Deadline banner on `/`, `/rankings/`, and `/analyze/` (AT-10).
 - [x] A `norcal` build made today shows no Deadline banner (AT-20).
-- [ ] The full site and API suites pass, because some tests read the real `client.toml`.
+- [x] The full site and API suites pass, because some tests read the real `client.toml`.

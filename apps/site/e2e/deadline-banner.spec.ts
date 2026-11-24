@@ -260,15 +260,13 @@ for (const viewport of VIEWPORTS) {
         await expectFits(page);
       });
 
-      test(`${theme}: the banner says the trade deadline has passed, with Final, after the Lock (AT-9)`, async ({
+      test(`${theme}: a page open across the Lock hides the banner at the Lock (AT-9)`, async ({
         page,
       }) => {
         await openAt(page, CLOSED, { theme });
-        await expect(trigger(page)).toContainText(
-          "The trade deadline has passed. Good luck in the playoffs.",
-        );
-        await expect(trigger(page)).toContainText("Final");
-        await expectFits(page);
+        await expect(page.locator("header")).toBeVisible();
+        await expect(banner(page)).toHaveCount(0);
+        await expect(trigger(page)).toHaveCount(0);
       });
     }
 
@@ -359,7 +357,9 @@ for (const viewport of VIEWPORTS) {
       expect(running).toBe(0);
     });
 
-    test("Deadline week ends by itself one day after the Lock (AT-10)", async ({ page }) => {
+    test("Deadline week ends at the Lock, with no closed day after it (AT-10)", async ({
+      page,
+    }) => {
       await openAt(page, ENDED);
       await expect(page.locator("header")).toBeVisible();
       await expect(banner(page)).toHaveCount(0);
