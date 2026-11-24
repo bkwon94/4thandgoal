@@ -1,0 +1,2987 @@
+{
+  "schema_version": 1,
+  "week": 11,
+  "built": "2026-11-24T16:18:44.269811-05:00",
+  "buckets": {
+    "best_adds": [
+      {
+        "player_id": "5857",
+        "name": "Noah Fant",
+        "position": "TE",
+        "team": "NO",
+        "week_projection": 5.11,
+        "ros_projection": 21.83,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.8548,
+          "projection": 0.9195
+        },
+        "board_score": 0.9403,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.5857",
+            "text": "Noah Fant played 68% of snaps and took 5 targets last week, up from 44% and 1.",
+            "numbers": [
+              "68",
+              "5",
+              "44",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Fant"
+            ]
+          },
+          {
+            "id": "W.env.5857",
+            "text": "NO runs the 3rd fastest offense and passes on 53% of neutral downs.",
+            "numbers": [
+              "53",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Fant"
+            ]
+          },
+          {
+            "id": "WV.research.5857.1",
+            "text": "Justin Boone's Week 12 Yahoo waiver column lists Noah Fant (0% rostered) as a tight end streaming option at CIN. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "numbers": [
+              "12",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Fant"
+            ]
+          },
+          {
+            "id": "WV.research.5857.2",
+            "text": "FantasyPros says to add Noah Fant after his snap share rose to 68% from 44% and he drew 5 targets, with Juwan Johnson's share falling to 38%. Source: FantasyPros, https://www.fantasypros.com/2026/11/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-12-advice/",
+            "numbers": [
+              "68",
+              "44",
+              "5",
+              "38"
+            ],
+            "teams": [],
+            "players": [
+              "Noah Fant"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 7,
+          "fact": {
+            "id": "waiver_price_5857",
+            "text": "Bid $7 to win Noah Fant. The top bid of another manager is about $6.43, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "7",
+              "6.43",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Noah Fant"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 8,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Justin Boone's Week 12 Yahoo waiver column lists Noah Fant (0% rostered) as a tight end streaming option at CIN.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-24",
+            "stance": "news"
+          },
+          {
+            "text": "FantasyPros says to add Noah Fant after his snap share rose to 68% from 44% and he drew 5 targets, with Juwan Johnson's share falling to 38%.",
+            "url": "https://www.fantasypros.com/2026/11/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-12-advice/",
+            "source": "FantasyPros",
+            "date": "2026-11-24",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "11647",
+        "name": "Kimani Vidal",
+        "position": "RB",
+        "team": "LAC",
+        "week_projection": 5.63,
+        "ros_projection": 32.88,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.4839,
+          "projection": 0.9924
+        },
+        "board_score": 0.8437,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11647",
+            "text": "Kimani Vidal played 43% of snaps and took 7 carries last week, up from 26% and 2.",
+            "numbers": [
+              "43",
+              "7",
+              "26",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Kimani Vidal"
+            ]
+          },
+          {
+            "id": "W.env.11647",
+            "text": "LAC runs the 19th fastest offense and succeeds on 42% of runs.",
+            "numbers": [
+              "42",
+              "19"
+            ],
+            "teams": [],
+            "players": [
+              "Kimani Vidal"
+            ]
+          },
+          {
+            "id": "WV.research.11647.1",
+            "text": "CBS Sports reports Vidal ran 7 times for 36 yards and caught both of his targets for 18 yards in the Chargers' 27-24 loss to the Jets, as his workload picked up again. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/chargers-kimani-vidal-volume-picks-up-again-in-week-11/",
+            "numbers": [
+              "7",
+              "36",
+              "18",
+              "27-24",
+              "27",
+              "24"
+            ],
+            "teams": [],
+            "players": [
+              "Kimani Vidal"
+            ]
+          },
+          {
+            "id": "WV.research.11647.2",
+            "text": "In the prior game, a 23-20 win over Baltimore, Vidal turned 2 carries into 0 yards and caught 2 passes for 14 yards, according to CBS Sports. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/chargers-kimani-vidal-tallies-two-catches-against-baltimore/",
+            "numbers": [
+              "23-20",
+              "23",
+              "20",
+              "2",
+              "0",
+              "2",
+              "14"
+            ],
+            "teams": [],
+            "players": [
+              "Kimani Vidal"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_11647",
+            "text": "Bid $6 to win Kimani Vidal. The top bid of another manager is about $5.77, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.77",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Kimani Vidal"
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "CBS Sports reports Vidal ran 7 times for 36 yards and caught both of his targets for 18 yards in the Chargers' 27-24 loss to the Jets, as his workload picked up again.",
+            "url": "https://www.cbssports.com/fantasy/football/news/chargers-kimani-vidal-volume-picks-up-again-in-week-11/",
+            "source": "CBS Sports",
+            "date": "2026-11-22",
+            "stance": "backs"
+          },
+          {
+            "text": "In the prior game, a 23-20 win over Baltimore, Vidal turned 2 carries into 0 yards and caught 2 passes for 14 yards, according to CBS Sports.",
+            "url": "https://www.cbssports.com/fantasy/football/news/chargers-kimani-vidal-tallies-two-catches-against-baltimore/",
+            "source": "CBS Sports",
+            "date": "2026-11-17",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "6039",
+        "name": "Ty Johnson",
+        "position": "RB",
+        "team": "BUF",
+        "week_projection": 4.25,
+        "ros_projection": 28.57,
+        "scores": {
+          "usage": 0.8,
+          "environment": 0.8226,
+          "projection": 0.9773
+        },
+        "board_score": 0.8422,
+        "trending_count": 15312,
+        "facts": [
+          {
+            "id": "W.usage.6039",
+            "text": "Ty Johnson played 36% of snaps and took 1 carries last week, up from 18% and 0.",
+            "numbers": [
+              "36",
+              "1",
+              "18",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "W.env.6039",
+            "text": "BUF runs the 9th fastest offense and succeeds on 48% of runs.",
+            "numbers": [
+              "48",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "WV.trending.6039",
+            "text": "Ty Johnson was added in 15312 Sleeper leagues in the last day.",
+            "numbers": [
+              "15312"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "WV.research.6039.1",
+            "text": "In Justin Boone's Week 12 waiver column, Ty Johnson is listed as a deeper running back option against KC, at 2% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "numbers": [
+              "12",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "WV.research.6039.2",
+            "text": "CBS Sports notes that Ty Johnson had 7 catches for 55 yards on 8 targets in Week 11 against Miami and has scored at least 5.3 PPR points in 3 of his last 4 games. Source: CBS Sports, https://cbssports.com/fantasy/football/news/week-12-fantasy-football-waiver-wire-early-week-action-impacts-lineup-setting-and-players-to-add-on-waivers",
+            "numbers": [
+              "7",
+              "55",
+              "8",
+              "11",
+              "5.3",
+              "3",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_6039",
+            "text": "Bid $6 to win Ty Johnson. The top bid of another manager is about $5.76, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.76",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "In Justin Boone's Week 12 waiver column, Ty Johnson is listed as a deeper running back option against KC, at 2% rostered.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-24",
+            "stance": "news"
+          },
+          {
+            "text": "CBS Sports notes that Ty Johnson had 7 catches for 55 yards on 8 targets in Week 11 against Miami and has scored at least 5.3 PPR points in 3 of his last 4 games.",
+            "url": "https://cbssports.com/fantasy/football/news/week-12-fantasy-football-waiver-wire-early-week-action-impacts-lineup-setting-and-players-to-add-on-waivers",
+            "source": "CBS Sports",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "13307",
+        "name": "Marlin Klein",
+        "position": "TE",
+        "team": "HOU",
+        "week_projection": 0.79,
+        "ros_projection": 4.51,
+        "scores": {
+          "usage": 0.92,
+          "environment": 0.7742,
+          "projection": 0.7069
+        },
+        "board_score": 0.8336,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.13307",
+            "text": "Marlin Klein played 24% of snaps and took 4 targets last week, up from 12% and 0.",
+            "numbers": [
+              "24",
+              "4",
+              "12",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Marlin Klein"
+            ]
+          },
+          {
+            "id": "W.env.13307",
+            "text": "HOU runs the 13th fastest offense and passes on 56% of neutral downs.",
+            "numbers": [
+              "56",
+              "13"
+            ],
+            "teams": [],
+            "players": [
+              "Marlin Klein"
+            ]
+          },
+          {
+            "id": "WV.research.13307.1",
+            "text": "FantasyPros lists Marlin Klein at a 24% snap share last week, up from 12% the week before. Source: FantasyPros, https://www.fantasypros.com/2026/11/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-12-advice/",
+            "numbers": [
+              "24",
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Marlin Klein"
+            ]
+          },
+          {
+            "id": "WV.research.13307.2",
+            "text": "The Houston Chronicle reports that the rookie caught 4 passes for 24 yards and a touchdown against the Colts as his role grows. Source: Houston Chronicle, https://www.houstonchronicle.com/sports/texans/article/marlin-klein-tight-end-touchdown-colts-22539419.php",
+            "numbers": [
+              "4",
+              "24"
+            ],
+            "teams": [],
+            "players": [
+              "Marlin Klein"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_13307",
+            "text": "Bid $6 to win Marlin Klein. The top bid of another manager is about $5.7, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "6",
+              "5.7",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Marlin Klein"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 8,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "FantasyPros lists Marlin Klein at a 24% snap share last week, up from 12% the week before.",
+            "url": "https://www.fantasypros.com/2026/11/beyond-the-waiver-wire-fantasy-football-moves-to-make-week-12-advice/",
+            "source": "FantasyPros",
+            "date": "2026-11-24",
+            "stance": "backs"
+          },
+          {
+            "text": "The Houston Chronicle reports that the rookie caught 4 passes for 24 yards and a touchdown against the Colts as his role grows.",
+            "url": "https://www.houstonchronicle.com/sports/texans/article/marlin-klein-tight-end-touchdown-colts-22539419.php",
+            "source": "Houston Chronicle",
+            "date": "2026-11-20",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "13670",
+        "name": "Harrison Wallace III",
+        "position": "WR",
+        "team": "ARI",
+        "week_projection": 1.7,
+        "ros_projection": 8.65,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.5161,
+          "projection": 0.752
+        },
+        "board_score": 0.8052,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.13670",
+            "text": "Harrison Wallace III played 64% of snaps and took 7 targets last week, up from 14% and 1.",
+            "numbers": [
+              "64",
+              "7",
+              "14",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Harrison Wallace III"
+            ]
+          },
+          {
+            "id": "W.env.13670",
+            "text": "ARI runs the 8th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "8"
+            ],
+            "teams": [],
+            "players": [
+              "Harrison Wallace III"
+            ]
+          },
+          {
+            "id": "WV.research.13670.1",
+            "text": "Yahoo Fantasy's Week 12 waiver column lists Harrison Wallace III, at 0% rostered, as a wide receiver option against WAS. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "numbers": [
+              "12",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Harrison Wallace III"
+            ]
+          },
+          {
+            "id": "WV.research.13670.2",
+            "text": "RotoBaller says Wallace caught 4 of 7 targets for 57 yards and could become the No. 2 target behind Trey McBride now that Michael Wilson is out for the season. Source: RotoBaller, https://rotoballer.com/wr-waiver-wire-pickups-fantasy-football-week-12-2026/2001683",
+            "numbers": [
+              "4",
+              "7",
+              "57",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Harrison Wallace III"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_13670",
+            "text": "Bid $6 to win Harrison Wallace III. The top bid of another manager is about $5.51, from Teez Nuts with $57 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.51",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Harrison Wallace III"
+            ]
+          },
+          "last_like": {
+            "player_id": "13075",
+            "name": "Myles Price",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 14,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Yahoo Fantasy's Week 12 waiver column lists Harrison Wallace III, at 0% rostered, as a wide receiver option against WAS.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-24",
+            "stance": "news"
+          },
+          {
+            "text": "RotoBaller says Wallace caught 4 of 7 targets for 57 yards and could become the No. 2 target behind Trey McBride now that Michael Wilson is out for the season.",
+            "url": "https://rotoballer.com/wr-waiver-wire-pickups-fantasy-football-week-12-2026/2001683",
+            "source": "RotoBaller",
+            "date": "2026-11-23",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "96",
+        "name": "Aaron Rodgers",
+        "position": "QB",
+        "team": "PIT",
+        "week_projection": 14.27,
+        "ros_projection": 88.54,
+        "scores": {
+          "usage": 0.75,
+          "environment": 0.7742,
+          "projection": 0.94
+        },
+        "board_score": 0.7953,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.96",
+            "text": "Aaron Rodgers played 100% of snaps and took 2 carries last week, up from 82% and 1.",
+            "numbers": [
+              "100",
+              "2",
+              "82",
+              "1"
+            ],
+            "teams": [],
+            "players": [
+              "Aaron Rodgers"
+            ]
+          },
+          {
+            "id": "W.env.96",
+            "text": "PIT runs the 11th fastest offense and passes on 56% of neutral downs.",
+            "numbers": [
+              "56",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Aaron Rodgers"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_96",
+            "text": "Bid $6 to win Aaron Rodgers. The top bid of another manager is about $5.44, from Teez Nuts with $57 left. The last winning QB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.44",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Aaron Rodgers"
+            ]
+          },
+          "last_like": {
+            "player_id": "12545",
+            "name": "Tyler Shough",
+            "roster_id": 8,
+            "team": "💿 🐑",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 9,
+        "injury_status": null,
+        "return_week": null,
+        "research": []
+      },
+      {
+        "player_id": "10219",
+        "name": "Chris Rodriguez Jr.",
+        "position": "RB",
+        "team": "JAX",
+        "week_projection": 6.39,
+        "ros_projection": 33.99,
+        "scores": {
+          "usage": 0.9,
+          "environment": 0.4516,
+          "projection": 1.0
+        },
+        "board_score": 0.7855,
+        "trending_count": 467496,
+        "facts": [
+          {
+            "id": "W.usage.10219",
+            "text": "Chris Rodriguez Jr. played 38% of snaps and took 4 carries last week, up from 14% and 4.",
+            "numbers": [
+              "38",
+              "4",
+              "14",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "W.env.10219",
+            "text": "JAX runs the 22nd fastest offense and succeeds on 44% of runs.",
+            "numbers": [
+              "44",
+              "22"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.trending.10219",
+            "text": "Chris Rodriguez Jr. was added in 467496 Sleeper leagues in the last day.",
+            "numbers": [
+              "467496"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.research.10219.1",
+            "text": "Coach Liam Coen said Bhayshul Tuten re-aggravated his ankle injury against the Giants, and NBC Sports says Rodriguez could get a valuable workload in Week 12 against the Titans if the Jaguars rest Tuten. Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-23/tuten-reaggravates-ankle-business-as-usual",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.research.10219.2",
+            "text": "Ryan Pederson of RotoBaller says Rodriguez is worth adding as a possible injury replacement because Tuten's status for Week 12 against Tennessee is unclear. Source: RotoBaller, https://www.rotoballer.com/player-news/chris-rodriguez-jr-worth-adding-with-tuten-injury-concerns/2001634",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_10219",
+            "text": "Bid $6 to win Chris Rodriguez Jr.. The top bid of another manager is about $5.37, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.37",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Coach Liam Coen said Bhayshul Tuten re-aggravated his ankle injury against the Giants, and NBC Sports says Rodriguez could get a valuable workload in Week 12 against the Titans if the Jaguars rest Tuten.",
+            "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-23/tuten-reaggravates-ankle-business-as-usual",
+            "source": "NBC Sports",
+            "date": "2026-11-23",
+            "stance": "news"
+          },
+          {
+            "text": "Ryan Pederson of RotoBaller says Rodriguez is worth adding as a possible injury replacement because Tuten's status for Week 12 against Tennessee is unclear.",
+            "url": "https://www.rotoballer.com/player-news/chris-rodriguez-jr-worth-adding-with-tuten-injury-concerns/2001634",
+            "source": "RotoBaller",
+            "date": "2026-11-23",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "11834",
+        "name": "Devaughn Vele",
+        "position": "WR",
+        "team": "NO",
+        "week_projection": 4.9,
+        "ros_projection": 28.23,
+        "scores": {
+          "usage": 0.6667,
+          "environment": 0.8548,
+          "projection": 0.9567
+        },
+        "board_score": 0.7811,
+        "trending_count": 41916,
+        "facts": [
+          {
+            "id": "W.usage.11834",
+            "text": "Devaughn Vele played 89% of snaps and took 7 targets last week, up from 87% and 2.",
+            "numbers": [
+              "89",
+              "7",
+              "87",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Devaughn Vele"
+            ]
+          },
+          {
+            "id": "W.env.11834",
+            "text": "NO runs the 3rd fastest offense and passes on 53% of neutral downs.",
+            "numbers": [
+              "53",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Devaughn Vele"
+            ]
+          },
+          {
+            "id": "WV.trending.11834",
+            "text": "Devaughn Vele was added in 41916 Sleeper leagues in the last day.",
+            "numbers": [
+              "41916"
+            ],
+            "teams": [],
+            "players": [
+              "Devaughn Vele"
+            ]
+          },
+          {
+            "id": "WV.research.11834.1",
+            "text": "CBS Sports reports that Vele caught 7 passes for 76 yards on 7 targets in the Saints' 21-13 loss to the Bears on Sunday. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/saints-devaughn-vele-seven-grabs-in-loss-to-chicago/",
+            "numbers": [
+              "7",
+              "76",
+              "7",
+              "21-13",
+              "21",
+              "13"
+            ],
+            "teams": [],
+            "players": [
+              "Devaughn Vele"
+            ]
+          },
+          {
+            "id": "WV.research.11834.2",
+            "text": "RotoWire reports that Vele caught both of his 2 targets for 14 yards in the Saints' 20-17 loss to the Panthers the week before. Source: RotoWire, https://www.rotowire.com/football/headlines/devaughn-vele-news-quiet-in-week-10-loss-648256",
+            "numbers": [
+              "2",
+              "14",
+              "20-17",
+              "20",
+              "17"
+            ],
+            "teams": [],
+            "players": [
+              "Devaughn Vele"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_11834",
+            "text": "Bid $6 to win Devaughn Vele. The top bid of another manager is about $5.34, from Teez Nuts with $57 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.34",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Devaughn Vele"
+            ]
+          },
+          "last_like": {
+            "player_id": "13075",
+            "name": "Myles Price",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "board_score",
+        "bye": 8,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "CBS Sports reports that Vele caught 7 passes for 76 yards on 7 targets in the Saints' 21-13 loss to the Bears on Sunday.",
+            "url": "https://www.cbssports.com/fantasy/football/news/saints-devaughn-vele-seven-grabs-in-loss-to-chicago/",
+            "source": "CBS Sports",
+            "date": "2026-11-22",
+            "stance": "backs"
+          },
+          {
+            "text": "RotoWire reports that Vele caught both of his 2 targets for 14 yards in the Saints' 20-17 loss to the Panthers the week before.",
+            "url": "https://www.rotowire.com/football/headlines/devaughn-vele-news-quiet-in-week-10-loss-648256",
+            "source": "RotoWire",
+            "date": "2026-11-16",
+            "stance": "backs"
+          }
+        ]
+      }
+    ],
+    "trending": [
+      {
+        "player_id": "10219",
+        "name": "Chris Rodriguez Jr.",
+        "position": "RB",
+        "team": "JAX",
+        "week_projection": 6.39,
+        "ros_projection": 33.99,
+        "scores": {
+          "usage": 0.9,
+          "environment": 0.4516,
+          "projection": 1.0
+        },
+        "board_score": 0.7855,
+        "trending_count": 467496,
+        "facts": [
+          {
+            "id": "W.usage.10219",
+            "text": "Chris Rodriguez Jr. played 38% of snaps and took 4 carries last week, up from 14% and 4.",
+            "numbers": [
+              "38",
+              "4",
+              "14",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "W.env.10219",
+            "text": "JAX runs the 22nd fastest offense and succeeds on 44% of runs.",
+            "numbers": [
+              "44",
+              "22"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.trending.10219",
+            "text": "Chris Rodriguez Jr. was added in 467496 Sleeper leagues in the last day.",
+            "numbers": [
+              "467496"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.research.10219.1",
+            "text": "Coach Liam Coen said Bhayshul Tuten re-aggravated his ankle injury against the Giants, and NBC Sports says Rodriguez could get a valuable workload in Week 12 against the Titans if the Jaguars rest Tuten. Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-23/tuten-reaggravates-ankle-business-as-usual",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.research.10219.2",
+            "text": "Ryan Pederson of RotoBaller says Rodriguez is worth adding as a possible injury replacement because Tuten's status for Week 12 against Tennessee is unclear. Source: RotoBaller, https://www.rotoballer.com/player-news/chris-rodriguez-jr-worth-adding-with-tuten-injury-concerns/2001634",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_10219",
+            "text": "Bid $6 to win Chris Rodriguez Jr.. The top bid of another manager is about $5.37, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.37",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Coach Liam Coen said Bhayshul Tuten re-aggravated his ankle injury against the Giants, and NBC Sports says Rodriguez could get a valuable workload in Week 12 against the Titans if the Jaguars rest Tuten.",
+            "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-23/tuten-reaggravates-ankle-business-as-usual",
+            "source": "NBC Sports",
+            "date": "2026-11-23",
+            "stance": "news"
+          },
+          {
+            "text": "Ryan Pederson of RotoBaller says Rodriguez is worth adding as a possible injury replacement because Tuten's status for Week 12 against Tennessee is unclear.",
+            "url": "https://www.rotoballer.com/player-news/chris-rodriguez-jr-worth-adding-with-tuten-injury-concerns/2001634",
+            "source": "RotoBaller",
+            "date": "2026-11-23",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "12483",
+        "name": "Jack Bech",
+        "position": "WR",
+        "team": "LV",
+        "week_projection": 2.74,
+        "ros_projection": 14.92,
+        "scores": {
+          "usage": 0.7619,
+          "environment": 0.371,
+          "projection": 0.8543
+        },
+        "board_score": 0.6631,
+        "trending_count": 129708,
+        "facts": [
+          {
+            "id": "W.usage.12483",
+            "text": "Jack Bech played 79% of snaps and took 9 targets last week, up from 56% and 7.",
+            "numbers": [
+              "79",
+              "9",
+              "56",
+              "7"
+            ],
+            "teams": [],
+            "players": [
+              "Jack Bech"
+            ]
+          },
+          {
+            "id": "W.env.12483",
+            "text": "LV runs the 18th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "18"
+            ],
+            "teams": [],
+            "players": [
+              "Jack Bech"
+            ]
+          },
+          {
+            "id": "WV.trending.12483",
+            "text": "Jack Bech was added in 129708 Sleeper leagues in the last day.",
+            "numbers": [
+              "129708"
+            ],
+            "teams": [],
+            "players": [
+              "Jack Bech"
+            ]
+          },
+          {
+            "id": "WV.research.12483.1",
+            "text": "RotoBaller staff note that with Brock Bowers out, Jack Bech caught 8 of 9 targets for 88 yards and a touchdown. Source: RotoBaller, https://www.rotoballer.com/week-12-waiver-wire-pickups-fantasy-football-targets-rotoballer-staff-picks-2026/2002862",
+            "numbers": [
+              "8",
+              "9",
+              "88"
+            ],
+            "teams": [],
+            "players": [
+              "Jack Bech"
+            ]
+          },
+          {
+            "id": "WV.research.12483.2",
+            "text": "Yahoo Fantasy's Waiver Wired column says Bech filled the gap left by Brock Bowers (knee), and someone has to step up if Bowers misses another game before the Week 13 bye. Source: Yahoo Fantasy, https://sports.yahoo.com/articles/waiver-wired-week-12-085002339.html",
+            "numbers": [
+              "13"
+            ],
+            "teams": [],
+            "players": [
+              "Jack Bech"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 5,
+          "fact": {
+            "id": "waiver_price_12483",
+            "text": "Bid $5 to win Jack Bech. The top bid of another manager is about $4.54, from Teez Nuts with $57 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "5",
+              "4.54",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Jack Bech"
+            ]
+          },
+          "last_like": {
+            "player_id": "13075",
+            "name": "Myles Price",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "RotoBaller staff note that with Brock Bowers out, Jack Bech caught 8 of 9 targets for 88 yards and a touchdown.",
+            "url": "https://www.rotoballer.com/week-12-waiver-wire-pickups-fantasy-football-targets-rotoballer-staff-picks-2026/2002862",
+            "source": "RotoBaller",
+            "date": "2026-11-24",
+            "stance": "backs"
+          },
+          {
+            "text": "Yahoo Fantasy's Waiver Wired column says Bech filled the gap left by Brock Bowers (knee), and someone has to step up if Bowers misses another game before the Week 13 bye.",
+            "url": "https://sports.yahoo.com/articles/waiver-wired-week-12-085002339.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "13317",
+        "name": "Ted Hurst III",
+        "position": "WR",
+        "team": "TB",
+        "week_projection": 1.87,
+        "ros_projection": 9.99,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.371,
+          "projection": 0.7835
+        },
+        "board_score": 0.268,
+        "trending_count": 106584,
+        "facts": [
+          {
+            "id": "W.env.13317",
+            "text": "TB runs the 10th fastest offense and passes on 40% of neutral downs.",
+            "numbers": [
+              "40",
+              "10"
+            ],
+            "teams": [],
+            "players": [
+              "Ted Hurst III"
+            ]
+          },
+          {
+            "id": "WV.trending.13317",
+            "text": "Ted Hurst III was added in 106584 Sleeper leagues in the last day.",
+            "numbers": [
+              "106584"
+            ],
+            "teams": [],
+            "players": [
+              "Ted Hurst III"
+            ]
+          },
+          {
+            "id": "WV.research.13317.1",
+            "text": "On Yahoo Fantasy Forecast, Matt Harmon and Justin Boone say managers should consider picking up Ted Hurst III heading into Week 12. Source: Yahoo Fantasy, https://sports.yahoo.com/video/week-12-waiver-wire-ted-hurst-234048057.html",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Ted Hurst III"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 2,
+          "fact": {
+            "id": "waiver_price_13317",
+            "text": "Bid $2 to win Ted Hurst III. The top bid of another manager is about $1.83, from Teez Nuts with $57 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "2",
+              "1.83",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Ted Hurst III"
+            ]
+          },
+          "last_like": {
+            "player_id": "13075",
+            "name": "Myles Price",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 10,
+            "12": 10,
+            "21": 10,
+            "22": 10,
+            "24": 10,
+            "29": 10,
+            "40": 10,
+            "42": 10,
+            "57": 10
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 10,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "On Yahoo Fantasy Forecast, Matt Harmon and Justin Boone say managers should consider picking up Ted Hurst III heading into Week 12.",
+            "url": "https://sports.yahoo.com/video/week-12-waiver-wire-ted-hurst-234048057.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-23",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "12718",
+        "name": "Konata Mumpfield",
+        "position": "WR",
+        "team": "LAR",
+        "week_projection": 6.73,
+        "ros_projection": 23.14,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.9677,
+          "projection": 0.9331
+        },
+        "board_score": 0.4769,
+        "trending_count": 99108,
+        "facts": [
+          {
+            "id": "W.env.12718",
+            "text": "LAR runs the 2nd fastest offense and passes on 61% of neutral downs.",
+            "numbers": [
+              "61",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Konata Mumpfield"
+            ]
+          },
+          {
+            "id": "WV.trending.12718",
+            "text": "Konata Mumpfield was added in 99108 Sleeper leagues in the last day.",
+            "numbers": [
+              "99108"
+            ],
+            "teams": [],
+            "players": [
+              "Konata Mumpfield"
+            ]
+          },
+          {
+            "id": "WV.research.12718.1",
+            "text": "Yahoo Sports lists Konata Mumpfield among its 5 Week 12 waiver pickups and calls him a strong fantasy starter this week, especially in PPR leagues, because the Rams are short at receiver: Davante Adams is not expected to play against Green Bay, Puka Nacua is out for the season, and tight end Terrance Ferguson had season-ending surgery. Source: Yahoo Sports, https://sports.yahoo.com/articles/5-waiver-wire-pickups-nfl-154020300.html",
+            "numbers": [
+              "5",
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Konata Mumpfield"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 4,
+          "fact": {
+            "id": "waiver_price_12718",
+            "text": "Bid $4 to win Konata Mumpfield. The top bid of another manager is about $3.26, from Teez Nuts with $57 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "4",
+              "3.26",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Konata Mumpfield"
+            ]
+          },
+          "last_like": {
+            "player_id": "13075",
+            "name": "Myles Price",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Yahoo Sports lists Konata Mumpfield among its 5 Week 12 waiver pickups and calls him a strong fantasy starter this week, especially in PPR leagues, because the Rams are short at receiver: Davante Adams is not expected to play against Green Bay, Puka Nacua is out for the season, and tight end Terrance Ferguson had season-ending surgery.",
+            "url": "https://sports.yahoo.com/articles/5-waiver-wire-pickups-nfl-154020300.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "3271",
+        "name": "Tyler Higbee",
+        "position": "TE",
+        "team": "LAR",
+        "week_projection": 6.38,
+        "ros_projection": 33.51,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.9677,
+          "projection": 0.9828
+        },
+        "board_score": 0.4869,
+        "trending_count": 90009,
+        "facts": [
+          {
+            "id": "W.env.3271",
+            "text": "LAR runs the 2nd fastest offense and passes on 61% of neutral downs.",
+            "numbers": [
+              "61",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Tyler Higbee"
+            ]
+          },
+          {
+            "id": "WV.trending.3271",
+            "text": "Tyler Higbee was added in 90009 Sleeper leagues in the last day.",
+            "numbers": [
+              "90009"
+            ],
+            "teams": [],
+            "players": [
+              "Tyler Higbee"
+            ]
+          },
+          {
+            "id": "WV.research.3271.1",
+            "text": "RotoWire reports Tyler Higbee caught 3 of 4 targets for 17 yards and a touchdown in the Rams' 34-6 win over the Cardinals, his 2nd touchdown of the 2026 season. Source: RotoWire, https://www.rotowire.com/football/headlines/tyler-higbee-news-hauls-in-second-td-of-2026-648267",
+            "numbers": [
+              "3",
+              "4",
+              "17",
+              "34-6",
+              "34",
+              "6",
+              "2",
+              "2026"
+            ],
+            "teams": [],
+            "players": [
+              "Tyler Higbee"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_3271",
+            "text": "Bid $6 to win Tyler Higbee. The top bid of another manager is about $3.33, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "6",
+              "3.33",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Tyler Higbee"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "RotoWire reports Tyler Higbee caught 3 of 4 targets for 17 yards and a touchdown in the Rams' 34-6 win over the Cardinals, his 2nd touchdown of the 2026 season.",
+            "url": "https://www.rotowire.com/football/headlines/tyler-higbee-news-hauls-in-second-td-of-2026-648267",
+            "source": "RotoWire",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "4066",
+        "name": "Evan Engram",
+        "position": "TE",
+        "team": "DEN",
+        "week_projection": 4.46,
+        "ros_projection": 28.64,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.3871,
+          "projection": 0.954
+        },
+        "board_score": 0.3069,
+        "trending_count": 62992,
+        "facts": [
+          {
+            "id": "W.env.4066",
+            "text": "DEN runs the 28th fastest offense and passes on 51% of neutral downs.",
+            "numbers": [
+              "51",
+              "28"
+            ],
+            "teams": [],
+            "players": [
+              "Evan Engram"
+            ]
+          },
+          {
+            "id": "WV.trending.4066",
+            "text": "Evan Engram was added in 62992 Sleeper leagues in the last day.",
+            "numbers": [
+              "62992"
+            ],
+            "teams": [],
+            "players": [
+              "Evan Engram"
+            ]
+          },
+          {
+            "id": "WV.research.4066.1",
+            "text": "Evan Engram caught 6 of 8 targets for 74 yards in Denver's 38-24 win over the Raiders on Sunday. Source: CBS Sports, https://www.cbssports.com/fantasy/football/news/broncos-evan-engram-big-line-in-win-over-las-vegas/",
+            "numbers": [
+              "6",
+              "8",
+              "74",
+              "38-24",
+              "38",
+              "24"
+            ],
+            "teams": [],
+            "players": [
+              "Evan Engram"
+            ]
+          },
+          {
+            "id": "WV.research.4066.2",
+            "text": "Bleacher Report lists Engram as a tight end streaming option worth a look after his game against the Raiders, noting he is rostered in 2 percent of leagues. Source: Bleacher Report, https://bleacherreport.com/articles/25537062-chris-rodriguez-jr-and-best-week-12-fantasy-football-waiver-wire-pickups",
+            "numbers": [
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Evan Engram"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_4066",
+            "text": "Bid $6 to win Evan Engram. The top bid of another manager is about $2.1, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "6",
+              "2.1",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Evan Engram"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 10,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Evan Engram caught 6 of 8 targets for 74 yards in Denver's 38-24 win over the Raiders on Sunday.",
+            "url": "https://www.cbssports.com/fantasy/football/news/broncos-evan-engram-big-line-in-win-over-las-vegas/",
+            "source": "CBS Sports",
+            "date": "2026-11-22",
+            "stance": "news"
+          },
+          {
+            "text": "Bleacher Report lists Engram as a tight end streaming option worth a look after his game against the Raiders, noting he is rostered in 2 percent of leagues.",
+            "url": "https://bleacherreport.com/articles/25537062-chris-rodriguez-jr-and-best-week-12-fantasy-football-waiver-wire-pickups",
+            "source": "Bleacher Report",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "4017",
+        "name": "Deshaun Watson",
+        "position": "QB",
+        "team": "CLE",
+        "week_projection": 16.19,
+        "ros_projection": 90.4,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.5,
+          "projection": 0.98
+        },
+        "board_score": 0.346,
+        "trending_count": 60312,
+        "facts": [
+          {
+            "id": "W.env.4017",
+            "text": "CLE runs the 16th fastest offense and passes on 50% of neutral downs.",
+            "numbers": [
+              "50",
+              "16"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          {
+            "id": "WV.trending.4017",
+            "text": "Deshaun Watson was added in 60312 Sleeper leagues in the last day.",
+            "numbers": [
+              "60312"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          {
+            "id": "WV.research.4017.1",
+            "text": "A Week 12 waiver column on Yahoo Sports, credited to SB Nation, says Deshaun Watson has a good matchup against the Raiders, who have allowed the 3rd most fantasy points to opposing QBs, and adds that he is running a little more. Source: Yahoo Sports, https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-231829165.html",
+            "numbers": [
+              "12",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          {
+            "id": "WV.research.4017.2",
+            "text": "RotoBaller lists Deshaun Watson as a Week 12 streaming QB, rostered in 13% of Yahoo leagues; he ranks as the QB19 at 15.9 points per game and has 4 games of 19 or more points. Source: RotoBaller, https://www.rotoballer.com/quarterback-fantasy-football-waiver-wire-pickups-top-qb-adds-for-week-12-include-deshaun-watson-cam-ward-anthony-richardson-sr-and-more/2001243",
+            "numbers": [
+              "12",
+              "13",
+              "19",
+              "15.9",
+              "4",
+              "19"
+            ],
+            "teams": [],
+            "players": [
+              "Deshaun Watson"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 3,
+          "fact": {
+            "id": "waiver_price_4017",
+            "text": "Bid $3 to win Deshaun Watson. The top bid of another manager is about $2.37, from Teez Nuts with $57 left. The last winning QB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "3",
+              "2.37",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Deshaun Watson"
+            ]
+          },
+          "last_like": {
+            "player_id": "12545",
+            "name": "Tyler Shough",
+            "roster_id": 8,
+            "team": "💿 🐑",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "A Week 12 waiver column on Yahoo Sports, credited to SB Nation, says Deshaun Watson has a good matchup against the Raiders, who have allowed the 3rd most fantasy points to opposing QBs, and adds that he is running a little more.",
+            "url": "https://sports.yahoo.com/articles/fantasy-football-2026-waiver-wire-231829165.html",
+            "source": "Yahoo Sports",
+            "date": "2026-11-24",
+            "stance": "news"
+          },
+          {
+            "text": "RotoBaller lists Deshaun Watson as a Week 12 streaming QB, rostered in 13% of Yahoo leagues; he ranks as the QB19 at 15.9 points per game and has 4 games of 19 or more points.",
+            "url": "https://www.rotoballer.com/quarterback-fantasy-football-waiver-wire-pickups-top-qb-adds-for-week-12-include-deshaun-watson-cam-ward-anthony-richardson-sr-and-more/2001243",
+            "source": "RotoBaller",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "1373",
+        "name": "Geno Smith",
+        "position": "QB",
+        "team": "NYJ",
+        "week_projection": 17.82,
+        "ros_projection": 82.6,
+        "scores": {
+          "usage": 1.0,
+          "environment": 0.1613,
+          "projection": 0.92
+        },
+        "board_score": 0.7324,
+        "trending_count": 24608,
+        "facts": [
+          {
+            "id": "W.usage.1373",
+            "text": "Geno Smith played 100% of snaps and took 0 carries last week, up from 48% and 0.",
+            "numbers": [
+              "100",
+              "0",
+              "48",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Geno Smith"
+            ]
+          },
+          {
+            "id": "W.env.1373",
+            "text": "NYJ runs the 26th fastest offense and passes on 47% of neutral downs.",
+            "numbers": [
+              "47",
+              "26"
+            ],
+            "teams": [],
+            "players": [
+              "Geno Smith"
+            ]
+          },
+          {
+            "id": "WV.trending.1373",
+            "text": "Geno Smith was added in 24608 Sleeper leagues in the last day.",
+            "numbers": [
+              "24608"
+            ],
+            "teams": [],
+            "players": [
+              "Geno Smith"
+            ]
+          },
+          {
+            "id": "WV.research.1373.1",
+            "text": "In his Week 12 waiver column, Justin Boone lists Geno Smith, at MIA and 18% rostered, as a quarterback pickup option. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "numbers": [
+              "12",
+              "18"
+            ],
+            "teams": [],
+            "players": [
+              "Geno Smith"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_1373",
+            "text": "Bid $6 to win Geno Smith. The top bid of another manager is about $5.01, from Teez Nuts with $57 left. The last winning QB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.01",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Geno Smith"
+            ]
+          },
+          "last_like": {
+            "player_id": "12545",
+            "name": "Tyler Shough",
+            "roster_id": 8,
+            "team": "💿 🐑",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "trending",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "In his Week 12 waiver column, Justin Boone lists Geno Smith, at MIA and 18% rostered, as a quarterback pickup option.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      }
+    ],
+    "sneaky": [
+      {
+        "player_id": "11593",
+        "name": "Brevyn Spann-Ford",
+        "position": "TE",
+        "team": "DAL",
+        "week_projection": 0.93,
+        "ros_projection": 4.4,
+        "scores": {
+          "usage": 0.04,
+          "environment": 0.7903,
+          "projection": 0.6954
+        },
+        "board_score": 0.3962,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.11593",
+            "text": "Brevyn Spann-Ford played 68% of snaps and took 2 targets last week, up from 66% and 3.",
+            "numbers": [
+              "68",
+              "2",
+              "66",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          {
+            "id": "W.env.11593",
+            "text": "DAL runs the 4th fastest offense and passes on 51% of neutral downs.",
+            "numbers": [
+              "51",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          {
+            "id": "WV.story.11593",
+            "text": "Jake Ferguson is out, and Brevyn Spann-Ford is next on the depth chart.",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford",
+              "Jake Ferguson"
+            ]
+          },
+          {
+            "id": "WV.research.11593.1",
+            "text": "Morgan Rode of RotoBaller calls Spann-Ford only a deep-league streaming option for Week 13 against Philadelphia, noting 2 catches for 5 yards and a touchdown on 2 targets in Week 11. Source: RotoBaller, https://www.rotoballer.com/player-news/brevyn-spann-ford-holds-some-streaming-appeal-after-finding-end-zone/2002710",
+            "numbers": [
+              "13",
+              "2",
+              "5",
+              "2",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          {
+            "id": "WV.research.11593.2",
+            "text": "FantasyPros reports that Jake Ferguson (knee/ankle) missed a second straight practice and says Spann-Ford should again see more snaps, though that may not make him fantasy relevant. Source: FantasyPros, https://www.fantasypros.com/nfl/news/621223/jake-ferguson-kneeankle-doesnt-practice-thursday.php",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_11593",
+            "text": "Bid $6 to win Brevyn Spann-Ford. The top bid of another manager is about $2.71, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "6",
+              "2.71",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Brevyn Spann-Ford"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "behind_injury",
+        "bye": 14,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Morgan Rode of RotoBaller calls Spann-Ford only a deep-league streaming option for Week 13 against Philadelphia, noting 2 catches for 5 yards and a touchdown on 2 targets in Week 11.",
+            "url": "https://www.rotoballer.com/player-news/brevyn-spann-ford-holds-some-streaming-appeal-after-finding-end-zone/2002710",
+            "source": "RotoBaller",
+            "date": "2026-11-24",
+            "stance": "backs"
+          },
+          {
+            "text": "FantasyPros reports that Jake Ferguson (knee/ankle) missed a second straight practice and says Spann-Ford should again see more snaps, though that may not make him fantasy relevant.",
+            "url": "https://www.fantasypros.com/nfl/news/621223/jake-ferguson-kneeankle-doesnt-practice-thursday.php",
+            "source": "FantasyPros",
+            "date": "2026-11-20",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "9482",
+        "name": "Michael Mayer",
+        "position": "TE",
+        "team": "LV",
+        "week_projection": 5.35,
+        "ros_projection": 29.91,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.371,
+          "projection": 0.9655
+        },
+        "board_score": 0.3044,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.9482",
+            "text": "Michael Mayer played 67% of snaps and took 4 targets last week, down from 83% and 3.",
+            "numbers": [
+              "67",
+              "4",
+              "83",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Michael Mayer"
+            ]
+          },
+          {
+            "id": "W.env.9482",
+            "text": "LV runs the 18th fastest offense and passes on 49% of neutral downs.",
+            "numbers": [
+              "49",
+              "18"
+            ],
+            "teams": [],
+            "players": [
+              "Michael Mayer"
+            ]
+          },
+          {
+            "id": "WV.story.9482",
+            "text": "Brock Bowers is out, and Michael Mayer is next on the depth chart.",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Michael Mayer",
+              "Brock Bowers"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_9482",
+            "text": "Bid $6 to win Michael Mayer. The top bid of another manager is about $2.08, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "6",
+              "2.08",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Michael Mayer"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "behind_injury",
+        "bye": 13,
+        "injury_status": null,
+        "return_week": null,
+        "research": []
+      },
+      {
+        "player_id": "5906",
+        "name": "Dawson Knox",
+        "position": "TE",
+        "team": "BUF",
+        "week_projection": 2.52,
+        "ros_projection": 17.12,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.5806,
+          "projection": 0.8793
+        },
+        "board_score": 0.35,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.5906",
+            "text": "Dawson Knox played 60% of snaps and took 3 targets last week, down from 72% and 3.",
+            "numbers": [
+              "60",
+              "3",
+              "72",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Dawson Knox"
+            ]
+          },
+          {
+            "id": "W.env.5906",
+            "text": "BUF runs the 9th fastest offense and passes on 50% of neutral downs.",
+            "numbers": [
+              "50",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Dawson Knox"
+            ]
+          },
+          {
+            "id": "WV.story.5906",
+            "text": "Dalton Kincaid is out, and Dawson Knox is next on the depth chart.",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Dawson Knox",
+              "Dalton Kincaid"
+            ]
+          },
+          {
+            "id": "WV.research.5906.1",
+            "text": "RotoBaller says Dawson Knox has had at least 3 targets in 3 straight games, including 2 catches for 31 yards on 3 targets against the Dolphins in Week 11, which makes him worth a look in deeper leagues. Source: RotoBaller, https://www.rotoballer.com/player-news/dawson-knox-worth-some-deep-league-attention/2002717",
+            "numbers": [
+              "3",
+              "3",
+              "2",
+              "31",
+              "3",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Dawson Knox"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_5906",
+            "text": "Bid $6 to win Dawson Knox. The top bid of another manager is about $2.39, from Teez Nuts with $57 left. The last winning TE claim in the last 3 weeks is $5.",
+            "numbers": [
+              "6",
+              "2.39",
+              "57",
+              "3",
+              "5"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Dawson Knox"
+            ]
+          },
+          "last_like": {
+            "player_id": "5012",
+            "name": "Mark Andrews",
+            "roster_id": 3,
+            "team": "Lil Fridge",
+            "week": 10,
+            "bid": 5
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "behind_injury",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "RotoBaller says Dawson Knox has had at least 3 targets in 3 straight games, including 2 catches for 31 yards on 3 targets against the Dolphins in Week 11, which makes him worth a look in deeper leagues.",
+            "url": "https://www.rotoballer.com/player-news/dawson-knox-worth-some-deep-league-attention/2002717",
+            "source": "RotoBaller",
+            "date": "2026-11-24",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "4177",
+        "name": "Mack Hollins",
+        "position": "WR",
+        "team": "NE",
+        "week_projection": 3.32,
+        "ros_projection": 15.53,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.4194,
+          "projection": 0.8583
+        },
+        "board_score": 0.2975,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.env.4177",
+            "text": "NE runs the 23rd fastest offense and passes on 51% of neutral downs.",
+            "numbers": [
+              "51",
+              "23"
+            ],
+            "teams": [],
+            "players": [
+              "Mack Hollins"
+            ]
+          },
+          {
+            "id": "WV.story.4177",
+            "text": "A.J. Brown is out, and Mack Hollins is next on the depth chart.",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Mack Hollins",
+              "A.J. Brown"
+            ]
+          },
+          {
+            "id": "WV.research.4177.1",
+            "text": "Sports Illustrated says Mack Hollins is stepping up as New England's top receiver and should see more volume while A.J. Brown is out. Source: Sports Illustrated, https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-11-waiver-wire-mack-hollins-malachi-fields",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Mack Hollins"
+            ]
+          },
+          {
+            "id": "WV.research.4177.2",
+            "text": "Sports Illustrated warns that New England's offense has real problems without its starting quarterback, which limits how much Hollins can do. Source: Sports Illustrated, https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-11-waiver-wire-mack-hollins-malachi-fields",
+            "numbers": [],
+            "teams": [],
+            "players": [
+              "Mack Hollins"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 3,
+          "fact": {
+            "id": "waiver_price_4177",
+            "text": "Bid $3 to win Mack Hollins. The top bid of another manager is about $2.03, from Teez Nuts with $57 left. The last winning WR claim in the last 3 weeks is $0.",
+            "numbers": [
+              "3",
+              "2.03",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Mack Hollins"
+            ]
+          },
+          "last_like": {
+            "player_id": "13075",
+            "name": "Myles Price",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "behind_injury",
+        "bye": 11,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Sports Illustrated says Mack Hollins is stepping up as New England's top receiver and should see more volume while A.J. Brown is out.",
+            "url": "https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-11-waiver-wire-mack-hollins-malachi-fields",
+            "source": "Sports Illustrated",
+            "date": "2026-11-17",
+            "stance": "backs"
+          },
+          {
+            "text": "Sports Illustrated warns that New England's offense has real problems without its starting quarterback, which limits how much Hollins can do.",
+            "url": "https://www.si.com/onsi/fantasy/waiver-wire/fantasy-football-week-11-waiver-wire-mack-hollins-malachi-fields",
+            "source": "Sports Illustrated",
+            "date": "2026-11-17",
+            "stance": "news"
+          }
+        ]
+      }
+    ],
+    "stashes": [
+      {
+        "player_id": "10219",
+        "name": "Chris Rodriguez Jr.",
+        "position": "RB",
+        "team": "JAX",
+        "week_projection": 6.39,
+        "ros_projection": 33.99,
+        "scores": {
+          "usage": 0.9,
+          "environment": 0.4516,
+          "projection": 1.0
+        },
+        "board_score": 0.7855,
+        "trending_count": 467496,
+        "facts": [
+          {
+            "id": "W.usage.10219",
+            "text": "Chris Rodriguez Jr. played 38% of snaps and took 4 carries last week, up from 14% and 4.",
+            "numbers": [
+              "38",
+              "4",
+              "14",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "W.env.10219",
+            "text": "JAX runs the 22nd fastest offense and succeeds on 44% of runs.",
+            "numbers": [
+              "44",
+              "22"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.trending.10219",
+            "text": "Chris Rodriguez Jr. was added in 467496 Sleeper leagues in the last day.",
+            "numbers": [
+              "467496"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.research.10219.1",
+            "text": "Coach Liam Coen said Bhayshul Tuten re-aggravated his ankle injury against the Giants, and NBC Sports says Rodriguez could get a valuable workload in Week 12 against the Titans if the Jaguars rest Tuten. Source: NBC Sports, https://www.nbcsports.com/fantasy/football/player-news/2026-11-23/tuten-reaggravates-ankle-business-as-usual",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          {
+            "id": "WV.research.10219.2",
+            "text": "Ryan Pederson of RotoBaller says Rodriguez is worth adding as a possible injury replacement because Tuten's status for Week 12 against Tennessee is unclear. Source: RotoBaller, https://www.rotoballer.com/player-news/chris-rodriguez-jr-worth-adding-with-tuten-injury-concerns/2001634",
+            "numbers": [
+              "12"
+            ],
+            "teams": [],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_10219",
+            "text": "Bid $6 to win Chris Rodriguez Jr.. The top bid of another manager is about $5.37, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.37",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Chris Rodriguez Jr."
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "handcuff",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "Coach Liam Coen said Bhayshul Tuten re-aggravated his ankle injury against the Giants, and NBC Sports says Rodriguez could get a valuable workload in Week 12 against the Titans if the Jaguars rest Tuten.",
+            "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-11-23/tuten-reaggravates-ankle-business-as-usual",
+            "source": "NBC Sports",
+            "date": "2026-11-23",
+            "stance": "news"
+          },
+          {
+            "text": "Ryan Pederson of RotoBaller says Rodriguez is worth adding as a possible injury replacement because Tuten's status for Week 12 against Tennessee is unclear.",
+            "url": "https://www.rotoballer.com/player-news/chris-rodriguez-jr-worth-adding-with-tuten-injury-concerns/2001634",
+            "source": "RotoBaller",
+            "date": "2026-11-23",
+            "stance": "backs"
+          }
+        ]
+      },
+      {
+        "player_id": "9511",
+        "name": "Keaton Mitchell",
+        "position": "RB",
+        "team": "LAC",
+        "week_projection": 4.92,
+        "ros_projection": 28.58,
+        "scores": {
+          "usage": 0.0,
+          "environment": 0.4839,
+          "projection": 0.9848
+        },
+        "board_score": 0.3421,
+        "trending_count": 0,
+        "facts": [
+          {
+            "id": "W.usage.9511",
+            "text": "Keaton Mitchell played 3% of snaps and took 0 carries last week, down from 23% and 3.",
+            "numbers": [
+              "3",
+              "0",
+              "23",
+              "3"
+            ],
+            "teams": [],
+            "players": [
+              "Keaton Mitchell"
+            ]
+          },
+          {
+            "id": "W.env.9511",
+            "text": "LAC runs the 19th fastest offense and succeeds on 42% of runs.",
+            "numbers": [
+              "42",
+              "19"
+            ],
+            "teams": [],
+            "players": [
+              "Keaton Mitchell"
+            ]
+          },
+          {
+            "id": "WV.research.9511.1",
+            "text": "SI's Week 12 sleeper waiver column says Keaton Mitchell was hurt in Week 11 and calls Kimani Vidal a strong pickup as the backup to Omarion Hampton. Source: Sports Illustrated, https://www.si.com/onsi/fantasy/waiver-wire/roman-wilson-and-3-other-week-12-fantasy-football-waiver-wire-sleeper-adds",
+            "numbers": [
+              "12",
+              "11"
+            ],
+            "teams": [],
+            "players": [
+              "Keaton Mitchell"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 3,
+          "fact": {
+            "id": "waiver_price_9511",
+            "text": "Bid $3 to win Keaton Mitchell. The top bid of another manager is about $2.34, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "3",
+              "2.34",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Keaton Mitchell"
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "handcuff",
+        "bye": 7,
+        "injury_status": "Questionable",
+        "return_week": null,
+        "research": [
+          {
+            "text": "SI's Week 12 sleeper waiver column says Keaton Mitchell was hurt in Week 11 and calls Kimani Vidal a strong pickup as the backup to Omarion Hampton.",
+            "url": "https://www.si.com/onsi/fantasy/waiver-wire/roman-wilson-and-3-other-week-12-fantasy-football-waiver-wire-sleeper-adds",
+            "source": "Sports Illustrated",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      },
+      {
+        "player_id": "6039",
+        "name": "Ty Johnson",
+        "position": "RB",
+        "team": "BUF",
+        "week_projection": 4.25,
+        "ros_projection": 28.57,
+        "scores": {
+          "usage": 0.8,
+          "environment": 0.8226,
+          "projection": 0.9773
+        },
+        "board_score": 0.8422,
+        "trending_count": 15312,
+        "facts": [
+          {
+            "id": "W.usage.6039",
+            "text": "Ty Johnson played 36% of snaps and took 1 carries last week, up from 18% and 0.",
+            "numbers": [
+              "36",
+              "1",
+              "18",
+              "0"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "W.env.6039",
+            "text": "BUF runs the 9th fastest offense and succeeds on 48% of runs.",
+            "numbers": [
+              "48",
+              "9"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "WV.trending.6039",
+            "text": "Ty Johnson was added in 15312 Sleeper leagues in the last day.",
+            "numbers": [
+              "15312"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "WV.research.6039.1",
+            "text": "In Justin Boone's Week 12 waiver column, Ty Johnson is listed as a deeper running back option against KC, at 2% rostered. Source: Yahoo Fantasy, https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "numbers": [
+              "12",
+              "2"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          {
+            "id": "WV.research.6039.2",
+            "text": "CBS Sports notes that Ty Johnson had 7 catches for 55 yards on 8 targets in Week 11 against Miami and has scored at least 5.3 PPR points in 3 of his last 4 games. Source: CBS Sports, https://cbssports.com/fantasy/football/news/week-12-fantasy-football-waiver-wire-early-week-action-impacts-lineup-setting-and-players-to-add-on-waivers",
+            "numbers": [
+              "7",
+              "55",
+              "8",
+              "11",
+              "5.3",
+              "3",
+              "4"
+            ],
+            "teams": [],
+            "players": [
+              "Ty Johnson"
+            ]
+          }
+        ],
+        "price": {
+          "bid": 6,
+          "fact": {
+            "id": "waiver_price_6039",
+            "text": "Bid $6 to win Ty Johnson. The top bid of another manager is about $5.76, from Teez Nuts with $57 left. The last winning RB claim in the last 3 weeks is $0.",
+            "numbers": [
+              "6",
+              "5.76",
+              "57",
+              "3",
+              "0"
+            ],
+            "teams": [
+              "Teez Nuts"
+            ],
+            "players": [
+              "Ty Johnson"
+            ]
+          },
+          "last_like": {
+            "player_id": "10219",
+            "name": "Chris Rodriguez Jr.",
+            "roster_id": 6,
+            "team": "Bo Girds",
+            "week": 11,
+            "bid": 0
+          },
+          "outbid": {
+            "0": 11,
+            "3": 10,
+            "10": 9,
+            "12": 9,
+            "21": 9,
+            "22": 9,
+            "24": 9,
+            "29": 9,
+            "40": 9,
+            "42": 9,
+            "57": 9
+          }
+        },
+        "drop": null,
+        "reason": "handcuff",
+        "bye": 7,
+        "injury_status": null,
+        "return_week": null,
+        "research": [
+          {
+            "text": "In Justin Boone's Week 12 waiver column, Ty Johnson is listed as a deeper running back option against KC, at 2% rostered.",
+            "url": "https://sports.yahoo.com/fantasy/article/week-12-fantasy-football-waiver-wire-chris-rodriguez-jr-antonio-williams-among-top-pickups-145212487.html",
+            "source": "Yahoo Fantasy",
+            "date": "2026-11-24",
+            "stance": "news"
+          },
+          {
+            "text": "CBS Sports notes that Ty Johnson had 7 catches for 55 yards on 8 targets in Week 11 against Miami and has scored at least 5.3 PPR points in 3 of his last 4 games.",
+            "url": "https://cbssports.com/fantasy/football/news/week-12-fantasy-football-waiver-wire-early-week-action-impacts-lineup-setting-and-players-to-add-on-waivers",
+            "source": "CBS Sports",
+            "date": "2026-11-24",
+            "stance": "news"
+          }
+        ]
+      }
+    ],
+    "drops": []
+  },
+  "budgets": [
+    {
+      "roster_id": 1,
+      "budget_left": 42,
+      "waiver_order": 9
+    },
+    {
+      "roster_id": 2,
+      "budget_left": 22,
+      "waiver_order": 3
+    },
+    {
+      "roster_id": 3,
+      "budget_left": 21,
+      "waiver_order": 5
+    },
+    {
+      "roster_id": 4,
+      "budget_left": 12,
+      "waiver_order": 1
+    },
+    {
+      "roster_id": 5,
+      "budget_left": 57,
+      "waiver_order": 10
+    },
+    {
+      "roster_id": 6,
+      "budget_left": 10,
+      "waiver_order": 11
+    },
+    {
+      "roster_id": 7,
+      "budget_left": 3,
+      "waiver_order": 8
+    },
+    {
+      "roster_id": 8,
+      "budget_left": 0,
+      "waiver_order": 12
+    },
+    {
+      "roster_id": 9,
+      "budget_left": 24,
+      "waiver_order": 6
+    },
+    {
+      "roster_id": 10,
+      "budget_left": 29,
+      "waiver_order": 7
+    },
+    {
+      "roster_id": 11,
+      "budget_left": 10,
+      "waiver_order": 2
+    },
+    {
+      "roster_id": 12,
+      "budget_left": 40,
+      "waiver_order": 4
+    }
+  ],
+  "experts_missing": false
+}
