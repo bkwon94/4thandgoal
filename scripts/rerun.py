@@ -22,7 +22,8 @@ RUN_LINE = re.compile(
     re.MULTILINE)
 TEXT_BLOCK = re.compile(r"^```text\n(.*?)^```", re.MULTILINE | re.DOTALL)
 # A quoted line with one of these marks is a failure line, such as "AssertionError: ...", "FAILED ...", or "✘ 1 ...".
-FAILURE_MARK = re.compile(r"FAIL|Error|✘|×|\bfailed\b|^E\s")
+# Bun marks a failure with "(fail) <test name>", "error: expect(...)", and a summary such as " 1 fail".
+FAILURE_MARK = re.compile(r"FAIL|Error|✘|×|\bfailed\b|^E\s|\(fail\)|^error:|^[1-9]\d* fail$")
 # A number changes from run to run, such as a time, so the compare treats each number as the same.
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 # A quick file may cut a long line with "...", as pytest does, so a cut matches any text.
