@@ -37,9 +37,27 @@ Test verdict: pending
 
 Done condition: After the Lock of cpc, the Deadline banner button is at least 44 px tall at 1280 px and at 1024 px, so the tap floor of `e2e/floor.spec.ts` passes on `/2026/managers/` and `/analyze/`.
 Method: diagnosing-bugs
-Cause: pending
-Red: pending
-Green: pending
+Cause: the `SheetTrigger` button in `Banner` of `packages/analyzer/site/deadline/deadline-banner.tsx` has no minimum height, and `Grid` in the closed phase holds one line of text, so the button is 43 px tall, under the tap floor of 44 px.
+Red: at `6a57072e`, `cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm check:floor -g "full floor: cpc /(2026/managers|analyze)/ dark 1280px|top band of cpc is one row at 1024px"`
+
+```text
+  ✘  2 [floor] › e2e/floor.spec.ts:379:7 › the top band of cpc is one row at 1024px, with the pill bar (581ms)
+  ✘  1 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/ dark 1280px (1.1s)
+  ✘  3 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /analyze/ dark 1280px (804ms)
+    Error: cpc /2026/managers/ dark 1280px breaks the readability floor
+    +   "button.group \"The trade deadline has passed. Good luck\" is 1280x43px, under the tap floor of 44px",
+    +   "button.group \"The trade deadline has passed. Good luck\" is 1024x43px, under the tap floor of 44px",
+  3 failed
+```
+
+Green: at `08232a91`, `cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm check:floor -g "full floor: cpc /(2026/managers|analyze)/ dark 1280px|top band of cpc is one row at 1024px"`
+
+```text
+  ✓  1 [floor] › e2e/floor.spec.ts:379:7 › the top band of cpc is one row at 1024px, with the pill bar (445ms)
+  ✓  2 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/ dark 1280px (972ms)
+  ✓  3 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /analyze/ dark 1280px (703ms)
+  3 passed (2.9s)
+```
 Test verdict: pending
 
 ## Smoke
