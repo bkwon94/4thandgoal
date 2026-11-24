@@ -36,6 +36,6 @@ Test verdict: pending
 
 ## Smoke
 
-Smoke: pending
+Smoke: none. The change is to the test runner, not to a page, and `pnpm --dir apps/site pick --base main` prints "No flow: no file of the diff matches a glob of the flow list."
 
 ## Comments
