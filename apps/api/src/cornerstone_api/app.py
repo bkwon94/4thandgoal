@@ -47,6 +47,7 @@ from cornerstone_api.miss_log import MissLog
 from cornerstone_api.personal_topics import LIVE_CACHE_SECONDS, LiveCache
 from cornerstone_api.settings import Settings, ask_dir, commissioner_key_env, eggs_dir, passphrase_env, repo_from_env
 from cornerstone_api.sources import Sources
+from cornerstone_api.trades_closed import CLOSED_BODY, TRADE_ROUTES, client_closed
 from cornerstone_api.value_models import VALUE_MODELS
 from eggs import routes as eggs_routes
 from eggs.store import EggStore
@@ -101,6 +102,19 @@ def _guard(request: Request) -> None:
     if retry_after is not None:
         raise _RateLimited(retry_after)
     _check_passphrase(request)
+
+
+class _TradesClosed(Exception):
+    """A trade route called after the Lock of its client. Its handler answers 410 with the closed body."""
+
+
+def _trades_open(request: Request) -> None:
+    """Refuse a trade route of a client past its Lock, before the route runs, so a refused call makes no Jev call and
+    no Claude call. Every other route passes. It runs after the guard, so a stranger learns nothing from the 410."""
+    route = request.scope["route"].path.removeprefix(CLIENT_PREFIX)
+    served = request.app.state.served.get(request.path_params.get("slug", request.app.state.default_slug))
+    if route in TRADE_ROUTES and served is not None and client_closed(served.client):
+        raise _TradesClosed
 
 
 def _read_guard(request: Request) -> None:
@@ -322,6 +336,10 @@ def create_app(
         # No body, so a stranger learns nothing about the routes.
         return Response(status_code=401)
 
+    @app.exception_handler(_TradesClosed)
+    def trades_closed(request: Request, exc: _TradesClosed) -> Response:
+        return JSONResponse(status_code=410, content=CLOSED_BODY)
+
     @app.exception_handler(_RateLimited)
     def rate_limited(request: Request, exc: _RateLimited) -> Response:
         return JSONResponse(status_code=429, content={"detail": "Too many requests. Try again later."},
@@ -329,19 +347,19 @@ def create_app(
 
     # Each route answers at /clients/<slug>/ and at the old path with no client, which answers as DEFAULT_SLUG.
     for prefix in (CLIENT_PREFIX, ""):
-        app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
+        app.include_router(analyzer_routes.router, prefix=prefix, dependencies=[Depends(_guard), Depends(_trades_open)])
         app.include_router(refresh_routes.router, prefix=prefix, dependencies=[Depends(_guard)])
     # No page from before the clients paths calls the ask route, so only the clients paths serve it. It needs the
     # passphrase, so only managers of the league spend the budget.
     app.include_router(ask_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
-    app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
+    app.include_router(trade_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard), Depends(_trades_open)])
     app.include_router(free_routes.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(personal_topics.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     app.include_router(next_matchup.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_guard)])
     # The Suggestions and the key check are reads that cost no Claude call, so they check the passphrase and no limit.
     app.include_router(suggestions.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
     # The phones at the dinner may share one IP, so the Trade Wire checks the passphrase and counts no limit.
-    app.include_router(trade_wire.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard)])
+    app.include_router(trade_wire.router, prefix=CLIENT_PREFIX, dependencies=[Depends(_read_guard), Depends(_trades_open)])
 
     # The egg check and the egg board are open, the claim needs the passphrase, and the drop and the undo need the
     # commissioner key. The check and the board each have their own limit of each address, and each other group keeps

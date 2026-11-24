@@ -11,6 +11,7 @@ from analyzer.fair_cache import FairCache
 from analyzer.finder_search import warm_fair
 from analyzer.jev_waves import PACER, JevWaves, Pacer
 from analyzer.routes import Served
+from cornerstone_api.trades_closed import client_closed
 from league.jev_port import Jev
 from league.snapshot import Snapshot
 
@@ -56,13 +57,13 @@ class FairWarmer:
         """Wake the worker when the snapshot of a press differs from the last warm-up of its client. A client outside
         WARM_SLUGS never gets a signature, so it must never wake the worker: each wake would load the snapshot of cpc."""
         slug = snapshot.client.slug
-        if slug in WARM_SLUGS and signature(snapshot) != self._signatures.get(slug):
+        if slug in WARM_SLUGS and not client_closed(snapshot.client) and signature(snapshot) != self._signatures.get(slug):
             self.wake.set()
 
     def trades_seen(self, slug: str, trade_ids: list[str]) -> None:
         """Wake the worker when the Trade Wire of a client of WARM_SLUGS shows a trade list that differs from the last
         one. A client outside WARM_SLUGS never warms, so its wake would load the snapshot of cpc for nothing."""
-        if slug in WARM_SLUGS and self._trades.get(slug) != trade_ids:
+        if slug in WARM_SLUGS and not client_closed(self.served[slug].client) and self._trades.get(slug) != trade_ids:
             self._trades[slug] = trade_ids
             self.wake.set()
 
@@ -70,7 +71,8 @@ class FairWarmer:
         """Warm the fair cache of one client of WARM_SLUGS from its live snapshot, unless its rosters and chart week are the same as
         at the last warm-up. The waves wait while a press is live."""
         slug = served.client.slug
-        if slug not in WARM_SLUGS:
+        # A closed client takes no trade, so a warm-up of it would spend Jev for nothing.
+        if slug not in WARM_SLUGS or client_closed(served.client):
             return
         snapshot = served.sources.snapshot(served.client.values.latest_season)
         mark = signature(snapshot)

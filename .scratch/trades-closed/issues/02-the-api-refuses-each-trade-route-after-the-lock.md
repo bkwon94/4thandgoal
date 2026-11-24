@@ -10,10 +10,10 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-14, AT-16, AT-17, AT-
 
 **Status:** ready-for-agent
 
-- [ ] A pytest calls each of the 7 routes for `cpc` after the Lock and gets 410 with the closed body (AT-14).
-- [ ] A pytest with a counting fake Jev and fake Claude shows 0 calls for the 7 refused routes (AT-16).
-- [ ] A pytest shows that the fair warm-up never warms a closed client. A start of the local evidence API logs no "Fair warm-up of cpc started" (AT-17).
-- [ ] `POST /clients/cpc/suggestions` for roster 1 holds no trade Topic and no trade fact (AT-18).
-- [ ] A pytest with the clock at 12:00 Eastern on 2026-12-14 shows that the NorCal `/trade-check` still grades (AT-21).
-- [ ] A pytest with the clock at 00:00:01 Eastern on 2026-12-15 shows that the NorCal `/trade-check` returns 410 (AT-22).
-- [ ] The diff of the spec changes no file under `packages/eggs/` (AT-27).
+- [x] A pytest calls each of the 7 routes for `cpc` after the Lock and gets 410 with the closed body (AT-14).
+- [x] A pytest with a counting fake Jev and fake Claude shows 0 calls for the 7 refused routes (AT-16).
+- [x] A pytest shows that the fair warm-up never warms a closed client. A start of the local evidence API logs no "Fair warm-up of cpc started" (AT-17).
+- [x] `POST /clients/cpc/suggestions` for roster 1 holds no trade Topic and no trade fact (AT-18).
+- [x] A pytest with the clock at 12:00 Eastern on 2026-12-14 shows that the NorCal `/trade-check` still grades (AT-21).
+- [x] A pytest with the clock at 00:00:01 Eastern on 2026-12-15 shows that the NorCal `/trade-check` returns 410 (AT-22).
+- [x] The diff of the spec changes no file under `packages/eggs/` (AT-27).
