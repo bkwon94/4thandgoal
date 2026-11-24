@@ -17,6 +17,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { parse } from "smol-toml";
+import { tradesClosed } from "../src/lib/trades-closed.ts";
 import { BRAND_SCHEMA, brandCss, COPY_SCHEMA, setsOf } from "@cpc/design/brand/brand.ts";
 
 /* The repo root, two folders above the site app. */
@@ -399,7 +400,7 @@ function lockOf(values) {
 }
 
 /* The values of the client that the site reads. The site season is the latest season of the client. */
-function clientValuesText(slug, values, brand, copy) {
+function clientValuesText(slug, values, brand, copy, now) {
   const seasons = Object.keys(values.seasons).map(Number);
   const site = {
     slug,
@@ -409,6 +410,9 @@ function clientValuesText(slug, values, brand, copy) {
     finder: values.values?.analyzer?.finder ?? false,
     // The Lock as ms since the epoch, so the site compares it with Date.now(). The schema asks for a UTC offset.
     lock: lockOf(values),
+    // Trades closed is decided here, at build time, so the site needs no second code path in the browser.
+    tradesClosed: tradesClosed(lockOf(values), now),
+    deadlineWeek: values.values?.analyzer?.deadline_week ?? false,
     frontDoor: frontDoorOf(values),
     menu: menuOf(values),
     brand,
@@ -478,7 +482,12 @@ function writeFile(file, text) {
 }
 
 /* Build the client `slug`: check its client.toml, then write the generated files of the site app `site`. */
-export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", "site") }) {
+export function buildClient({
+  slug,
+  root = REPO_ROOT,
+  site = join(root, "apps", "site"),
+  now = Date.now(),
+}) {
   const values = readClient(root, slug);
   const brand = readBrand(root, slug);
   const copy = readCopy(root, slug);
@@ -497,7 +506,7 @@ export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", 
   const logo = copyAssets(root, slug, site);
   writeFile(
     join(site, GENERATED_DIR, "client-values.ts"),
-    clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy),
+    clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy, now),
   );
   writeFile(
     join(site, GENERATED_DIR, "brand.css"),

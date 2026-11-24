@@ -22,6 +22,9 @@ class AnalyzerValues(PackageValues):
     package: ClassVar[str] = "analyzer"
 
     finder: bool = False
-    # The Lock: the time when Sleeper closes trades for the season. With one, the site shows Deadline week until one day
-    # after it. With none, the client has no Deadline week.
+    # The Lock: the time when Sleeper closes trades for the season. After it, trades are closed. With none, trades are
+    # never closed.
     lock: Annotated[AwareDatetime | None, WithJsonSchema(LOCK_SCHEMA)] = None
+    # Turns on the Deadline banner and the Trade Wire. A Lock alone starts no Deadline week: NorCal has a Lock and no
+    # Deadline week.
+    deadline_week: bool = False

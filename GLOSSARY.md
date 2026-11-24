@@ -1262,7 +1262,7 @@ The page of the site that shows the letters of each manager in each egg word, th
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
 
 **Deadline week**:
-The event of the trade deadline on the site of one client. It runs from its deploy until the Lock, then it turns off by itself.
+The event of the trade deadline on the site of one client. It runs from its deploy until the Lock, then it turns off by itself. The value `deadline_week = true` under `[values.analyzer]` turns it on. A Lock alone does not.
 _Avoid_: Deadline event, trade week, promo
 
 **Lock**:

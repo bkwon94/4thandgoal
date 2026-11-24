@@ -13,7 +13,7 @@ import "@cpc/design/ui/sheet-jsdom";
 import { DeadlineBanner } from "@cpc/analyzer/deadline/deadline-banner";
 import { apiTarget, finderOn } from "@/lib/config";
 import { BandPart } from "./_routes/eggs/band";
-import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
+import { deadlineStrip, shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
    sets the folder, and the preload puts the real one back after each test. */
@@ -171,9 +171,20 @@ describe("shellProps of cpc", () => {
       expect(strip.props.api).toEqual(apiTarget);
       expect(strip.props.gradeHref).toBe("/analyze/?mode=grade");
       expect(strip.props.findHref).toBe(finderOn ? "/analyze/?mode=find" : null);
-      // A build one day after the Lock has no Deadline week, so its pages hold no banner.
-      setSystemTime(new Date("2026-11-25T00:00:00-05:00"));
+      // A build at the Lock has trades closed, so its pages hold no banner. No closed day follows the Lock.
+      setSystemTime(new Date("2026-11-23T23:59:59-05:00"));
+      expect(shellProps().strip).not.toBeNull();
+      setSystemTime(new Date("2026-11-24T00:00:00-05:00"));
       expect(shellProps().strip).toBeNull();
+    } finally {
+      setSystemTime();
+    }
+  });
+
+  it("puts no Deadline banner for a client with a Lock and no deadline_week (AT-20)", () => {
+    try {
+      setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
+      expect(deadlineStrip(Date.parse("2026-11-24T00:00:00-05:00"), false)).toBeNull();
     } finally {
       setSystemTime();
     }

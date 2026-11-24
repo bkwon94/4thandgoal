@@ -11,7 +11,7 @@ import { listWeekSummaries } from "@/lib/data/week-data";
 import { analyzeHref, homeHref, logoSrc } from "@/lib/routes";
 import { apiTarget, finderOn } from "@/lib/config";
 import { DeadlineBanner } from "@cpc/analyzer/deadline/deadline-banner";
-import { ENDS_AFTER_MS } from "@cpc/analyzer/lib/deadline";
+import { tradesClosed } from "@/lib/trades-closed";
 
 /* The short label of each package, for a menu that shows no full label. The week item keeps the label of its
    package, "Week N", and the pill bar shows the full label of each item. The menu sheet leaves out the midseason
@@ -59,11 +59,15 @@ export function takesEggs(): boolean {
   return clientValues.packages.includes("eggs");
 }
 
-/* The Deadline banner of a client with a Lock, for a build before Deadline week ends. A build after it holds no banner.
-   A page open across the end hides the banner by itself, because the banner reads the clock of the reader. The banner
-   reads the Trade Wire of the client, and its sheet links to the two modes of the analyzer. Find needs the finder flag. */
-export function deadlineStrip(lock: number | null = clientValues.lock): ReactNode {
-  if (lock === null || Date.now() >= lock + ENDS_AFTER_MS) return null;
+/* The Deadline banner of a client with a Lock and deadline_week on, for a build before the Lock. A build at or after the
+   Lock holds no banner. A page open across the end hides the banner by itself, because the banner reads the clock of
+   the reader. The banner reads the Trade Wire of the client, and its sheet links to the two modes of the analyzer. Find
+   needs the finder flag. */
+export function deadlineStrip(
+  lock: number | null = clientValues.lock,
+  deadlineWeek: boolean = clientValues.deadlineWeek,
+): ReactNode {
+  if (lock === null || !deadlineWeek || tradesClosed(lock, Date.now())) return null;
   return createElement(DeadlineBanner, {
     lock,
     api: apiTarget,

@@ -10,9 +10,9 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-10, AT-20, AT-23, and
 
 **Status:** ready-for-agent
 
-- [ ] A unit test in each app shows that a client with no `lock` is never closed, at 2026-11-24 12:00 and 2027-06-01 12:00 Eastern (AT-23).
-- [ ] A unit test in each app shows closed at the Lock and open 1 s before it.
-- [ ] `clients/norcal/client.toml` holds the NorCal `lock` and no `deadline_week`. `clients/cpc/client.toml` holds `deadline_week = true` (AT-24).
-- [ ] A `cpc` build made today shows no Deadline banner on `/`, `/rankings/`, and `/analyze/` (AT-10).
-- [ ] A `norcal` build made today shows no Deadline banner (AT-20).
+- [x] A unit test in each app shows that a client with no `lock` is never closed, at 2026-11-24 12:00 and 2027-06-01 12:00 Eastern (AT-23).
+- [x] A unit test in each app shows closed at the Lock and open 1 s before it.
+- [x] `clients/norcal/client.toml` holds the NorCal `lock` and no `deadline_week`. `clients/cpc/client.toml` holds `deadline_week = true` (AT-24).
+- [x] A `cpc` build made today shows no Deadline banner on `/`, `/rankings/`, and `/analyze/` (AT-10).
+- [x] A `norcal` build made today shows no Deadline banner (AT-20).
 - [ ] The full site and API suites pass, because some tests read the real `client.toml`.

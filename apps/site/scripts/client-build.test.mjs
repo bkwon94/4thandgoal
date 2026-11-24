@@ -291,7 +291,8 @@ describe("the client build", () => {
     const omitted = tempRepo(
       CPC_TOML.replace('"analyzer", ', "")
         .replaceAll('  { package = "analyzer", label = "Trade Analyzer" },\n', "")
-        .replace(/\[values\.analyzer\]\n(?:.*\n)*?lock = .*\n/, ""),
+        .replace(/\[values\.analyzer\]\n(?:.*\n)*?lock = .*\n/, "")
+        .replace(/deadline_week = .*\n/, ""),
     );
     buildClient(omitted);
     const without = readFileSync(join(omitted.site, "src", "generated", "registry.ts"), "utf8");
@@ -485,6 +486,26 @@ describe("the client build", () => {
     const none = tempRepo(CPC_TOML.replace(/lock = .*\n/, ""));
     buildClient(none);
     expect(clientValuesOf(none.site).lock).toBeNull();
+  });
+
+  it("writes tradesClosed from the Lock and the build clock, and false with no Lock", () => {
+    const repo = tempRepo();
+    buildClient({ ...repo, now: Date.parse("2026-11-23T23:59:59-05:00") });
+    expect(clientValuesOf(repo.site).tradesClosed).toBe(false);
+    buildClient({ ...repo, now: Date.parse("2026-11-24T00:00:00-05:00") });
+    expect(clientValuesOf(repo.site).tradesClosed).toBe(true);
+    const none = tempRepo(CPC_TOML.replace(/lock = .*\n/, ""));
+    buildClient({ ...none, now: Date.parse("2027-06-01T12:00:00-04:00") });
+    expect(clientValuesOf(none.site).tradesClosed).toBe(false);
+  });
+
+  it("writes deadlineWeek from deadline_week, false by default", () => {
+    const repo = tempRepo();
+    buildClient(repo);
+    expect(clientValuesOf(repo.site).deadlineWeek).toBe(true);
+    const plain = tempRepo(CPC_TOML.replace(/deadline_week = .*\n/, ""));
+    buildClient(plain);
+    expect(clientValuesOf(plain.site).deadlineWeek).toBe(false);
   });
 
   it("fails on a Lock with no UTC offset and names the key", () => {
