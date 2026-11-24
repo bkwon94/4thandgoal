@@ -30,8 +30,8 @@ Observation: The generated registry of a cpc build made today with the real cloc
 
 App: site
 Then: The page shows the top band, the line "The trade deadline has passed. Trades open again next season.", and one link to Home with the href `/`.
-Files: `evidence/AT-3/375-dark.png`, `evidence/AT-3/375-light.png`, `evidence/AT-3/768-dark.png`, `evidence/AT-3/768-light.png`, `evidence/AT-3/1280-dark.png`, `evidence/AT-3/1280-light.png`, `evidence/AT-3/iphone-390x660.txt`, `evidence/AT-3/iphone-390x660-light.png`, `evidence/AT-3/steps.json`, `evidence/AT-26/check-trades-closed.txt`
-Observation: Each shot of `/analyze/` shows the top band, then one card with the line "The trade deadline has passed. Trades open again next season." and one "Home" button. The runner steps assert the line and `main >> role=link[name="Home"]`, and the e2e spec in `AT-26/check-trades-closed.txt` asserts one link with the text "Home" and the href `/`. The iPhone 15 check gives no horizontal scroll and no overlap.
+Files: `evidence/AT-3/375-dark.png`, `evidence/AT-3/375-light.png`, `evidence/AT-3/768-dark.png`, `evidence/AT-3/768-light.png`, `evidence/AT-3/1280-dark.png`, `evidence/AT-3/1280-light.png`, `evidence/AT-3/dom.txt`, `evidence/AT-3/iphone-390x660.txt`, `evidence/AT-3/iphone-390x660-light.png`, `evidence/AT-3/steps.json`
+Observation: Each shot of `/analyze/` shows the top band, then one card with the line "The trade deadline has passed. Trades open again next season." and one "Home" button. `dom.txt` reads the DOM of the closed cpc page at 375 and 1280 px: main holds 1 link, named Home, with the href `/`, and the line is a visible `h1`. The accessibility snapshot in `dom.txt` lists main with that heading and one link "Home". The iPhone 15 check gives no horizontal scroll and no overlap.
 
 ## AT-4: A prefill link gives the closed page
 
