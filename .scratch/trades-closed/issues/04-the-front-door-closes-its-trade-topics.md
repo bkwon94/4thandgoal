@@ -8,10 +8,17 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-6, AT-7, AT-9, and AT
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] A closed `cpc` build with roster 1 shows no "Trades", "Check", or "Sell high or buy low" chip or Suggestion, and no trade block strip (AT-6).
 - [x] The typed question "Who should I trade for at RB?" gets the closed line, never "I can't answer that.", and the API log shows no Claude call (AT-7).
 - [x] The Tour step of the ask box has no word "trade" (AT-9).
 - [x] The Topic "Position leaders and recent trades" still answers with the recent trades of 2026 (AT-12).
 - [x] A pytest shows that a trade question for an open client still routes to its trade Topic.
+
+## Comments
+
+The merge: `25db94fa` merged into `trades-closed` on 2026-11-24; review fixes in groups a to k.
+The proof: `make check-fast` passed at each merge, the full check passed by member on 2026-11-24, and the Judge gave PASS to AT-1 to AT-27 after one fix round.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/trades-closed/PRD.md, .scratch/trades-closed/ACCEPTANCE.md, apps/site/src/app/front-door/topics.ts, apps/api/src/cornerstone_api/ask.py.
+Closes with the squash merge of the spec PR.

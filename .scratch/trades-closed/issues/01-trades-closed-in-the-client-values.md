@@ -8,7 +8,7 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-10, AT-20, AT-23, and
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [x] A unit test in each app shows that a client with no `lock` is never closed, at 2026-11-24 12:00 and 2027-06-01 12:00 Eastern (AT-23).
 - [x] A unit test in each app shows closed at the Lock and open 1 s before it.
@@ -16,3 +16,10 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-10, AT-20, AT-23, and
 - [x] A `cpc` build made today shows no Deadline banner on `/`, `/rankings/`, and `/analyze/` (AT-10).
 - [x] A `norcal` build made today shows no Deadline banner (AT-20).
 - [x] The full site and API suites pass, because some tests read the real `client.toml`.
+
+## Comments
+
+The merge: `57ab1c19` and `ce90a5a2` merged into `trades-closed` on 2026-11-24; review fixes in groups a to k.
+The proof: `make check-fast` passed at each merge, the full check passed by member on 2026-11-24, and the Judge gave PASS to AT-1 to AT-27 after one fix round.
+Read at least 5 files: AGENTS.md, apps/site/AGENTS.md, .scratch/trades-closed/PRD.md, .scratch/trades-closed/ACCEPTANCE.md, apps/site/scripts/client-build.mjs, apps/site/src/app/shell-props.ts, packages/analyzer/site/deadline/deadline-banner.tsx.
+Closes with the squash merge of the spec PR.
