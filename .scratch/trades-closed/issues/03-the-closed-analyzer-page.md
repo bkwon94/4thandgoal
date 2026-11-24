@@ -8,7 +8,7 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-1, AT-2, AT-3, AT-4, 
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A `cpc` build made today has no "Trade Analyzer" in the menu (AT-1) and no analyzer home tool in the generated registry (AT-2).
 - [ ] `/analyze/`, the prefill link `/analyze/?team=3&with=6&give=5045&get=8151`, and `/analyze/?mode=find` each show the closed page in WebKit at 375, 768, and 1280 px, both themes, and pass the iPhone 15 check (AT-3, AT-4, AT-5).
