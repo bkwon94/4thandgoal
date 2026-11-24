@@ -8,7 +8,7 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-10, AT-20, AT-23, and
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A unit test in each app shows that a client with no `lock` is never closed, at 2026-11-24 12:00 and 2027-06-01 12:00 Eastern (AT-23).
 - [x] A unit test in each app shows closed at the Lock and open 1 s before it.
