@@ -12,7 +12,7 @@ Boundary: holds. 1 item of one kind; no new term or ADR; no moved seam; each don
 
 Done condition: With no `BUN_TEST_WORKERS` and no `CI` set, `apps/site/scripts/bun-test.mjs` runs `bun test` with `--parallel=3`, and with `CI` set it keeps one worker per CPU core.
 Method: tdd
-Red: at `54ecd484` with `apps/site/scripts/test-scope.test.mjs` of `8fc1a72d`, `cd apps/site && bun test --isolate ./scripts/test-scope.test.mjs`. The parent has no `workerCount`, so a scratch worktree adds the old rule as `workerCount`: `env.BUN_TEST_WORKERS || String(cores)`.
+Red: at `73891f5a` with `apps/site/scripts/test-scope.test.mjs` of `7494375c`, `cd apps/site && bun test --isolate ./scripts/test-scope.test.mjs`
 
 ```text
 error: expect(received).toBe(expected)
@@ -20,11 +20,10 @@ error: expect(received).toBe(expected)
 Expected: "3"
 Received: "10"
 
-(fail) the count of workers of a bun test run > is 3 on a local run, with no BUN_TEST_WORKERS and no CI, so many agents at once do not swap the Mac
  17 pass
  1 fail
 ```
-Green: at `8fc1a72d`, `cd apps/site && bun test --isolate ./scripts/test-scope.test.mjs`
+Green: at `7494375c`, `cd apps/site && bun test --isolate ./scripts/test-scope.test.mjs`
 
 ```text
  18 pass
@@ -32,7 +31,7 @@ Green: at `8fc1a72d`, `cd apps/site && bun test --isolate ./scripts/test-scope.t
  54 expect() calls
 Ran 18 tests across 1 file.
 ```
-Test verdict: PASS
+Test verdict: pending
 
 ## Smoke
 
@@ -43,4 +42,5 @@ Smoke: none. The change is to the test runner, not to a page, and `pnpm --dir ap
 Closes with the squash merge of the PR of `win-bun-worker-cap`. Commits: `54ecd484`, `8fc1a72d`, `b7a30d63`, `b4b32ace`, `f7062107`. Date: 2026-11-24.
 The loop `bun test --isolate ./scripts/test-scope.test.mjs` went red at 17 pass and 1 fail, then green at 18 pass and 0 fail; `make check-fast BASE=main` passed with 1972 tests and 0 fail.
 The red output comes from the old rule in a scratch worktree, because the parent commit has no `workerCount` to call.
+The Red runs at `73891f5a`, a commit that puts back the old default inside `workerCount`, because the first Red used a hand edit in a scratch worktree, and the CI rerun could not run it.
 Read 7 files: AGENTS.md, apps/site/AGENTS.md, Makefile, apps/site/scripts/bun-test.mjs, apps/site/scripts/test-scope.mjs, apps/site/scripts/test-scope.test.mjs, apps/site/playwright.config.ts.
