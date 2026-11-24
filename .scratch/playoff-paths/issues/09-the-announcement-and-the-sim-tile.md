@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-49 and AT-50.
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] A fresh browser with Your team set sees the Announcement on the first load and not after a dismiss.
 - [x] The Sim tile reads "The Race" and links to `/sim/2026/`.
