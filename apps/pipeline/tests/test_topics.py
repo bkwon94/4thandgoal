@@ -225,12 +225,15 @@ def test_the_power_rankings_block_lists_each_team_with_its_rank_and_its_move(tmp
     """AT-26 and AT-40: one row per team of cpc week 9, by rank, with the move in places since week 8."""
     block = _block(tmp_path, "cpc", "power_rankings")
     assert block["kind"] == "rank_movers"
-    assert [(r["rank"], r["name"], r["move"]) for r in block["rows"]] == [
-        (1, "Return of T Mac", 3), (2, "The Blue Tent", 3), (3, "All You Need Is Love", -2), (4, "Bo Girds", 3),
-        (5, "Puka Deez...", 3), (6, "Teehee", -4), (7, "Maye d'force B with U", -4), (8, "Lil Fridge", -2),
-        (9, "To Infinity and Bijan", 0), (10, "Unsolicited Dak Picks", 0), (11, "NFC Least", 1),
-        (12, "behold the lamb", -1)]
-    assert [r["name"] for r in block["rows"] if r["you"]] == ["Bo Girds"]
+    # The test pins roster ids, not names: each publish rewrites the names of rankings.json with the current names.
+    assert [(r["rank"], r["roster_id"], r["move"]) for r in block["rows"]] == [
+        (1, 8, 3), (2, 1, 3), (3, 2, -2), (4, 6, 3), (5, 5, 3), (6, 12, -4), (7, 9, -4), (8, 3, -2), (9, 7, 0),
+        (10, 11, 0), (11, 4, 1), (12, 10, -1)]
+    # Each name is the name of its roster in the week 9 rows of rankings.json, the file that the block reads.
+    rankings = json.loads((CPC / "published" / "2026" / "rankings.json").read_text(encoding="utf-8"))
+    names = {r["roster_id"]: r["name"] for w in rankings["weeks"] if w["week"] == 9 for r in w["rows"]}
+    assert {r["roster_id"]: r["name"] for r in block["rows"]} == names
+    assert [r["roster_id"] for r in block["rows"] if r["you"]] == [int(BO_GIRDS["cpc"])]
     norcal = _block(tmp_path / "norcal", "norcal", "power_rankings")
     assert norcal["kind"] == "rank_movers"
     assert len(norcal["rows"]) == 12
