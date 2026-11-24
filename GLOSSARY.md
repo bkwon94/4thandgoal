@@ -1153,6 +1153,10 @@ _Avoid_: The race (lower case), Season sim (the old name), playoff picture, race
 A team that is neither Clinched nor Out for the Goal of the view, by the plain check on wins. The Race shows it as a quiet yellow label, Clinched as quiet green, and Out as quiet red.
 _Avoid_: Bubble (that is a Race group by odds), alive, in contention
 
+**Live name**:
+The team name and avatar that Sleeper shows now, which the browser reads after the page loads. The page shows the published name first and swaps it only for a renamed team.
+_Avoid_: Current name, fresh name, real name
+
 **Goal**:
 What a team aims at in the weeks left: a playoff spot, a bye, or one seed. The sim page answers for one Goal at a time.
 _Avoid_: Target (a retired word of the finder), aim, objective
