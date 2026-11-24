@@ -103,7 +103,7 @@ function Banner({
 }) {
   const phase = deadline.phase;
   // The poll stops when the banner leaves at the Lock, because the hook ends with the banner.
-  const wire = useTradeWire(api, true);
+  const wire = useTradeWire(api);
   const count = wire.trades === null ? null : wire.trades.length;
   const name = nameOf(count);
   return (

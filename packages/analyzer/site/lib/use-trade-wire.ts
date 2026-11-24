@@ -17,16 +17,13 @@ export type TradeWire = { trades: WireTrade[] | null; failed: boolean; readAt: n
 
 const UNREAD: TradeWire = { trades: null, failed: false, readAt: null };
 
-/* With live true, the hook reads at once and each POLL_MS while the tab shows. It sends no call while the tab hides, so a
-   phone in a pocket does no work, and it reads at once when the tab shows again. With live false, after the trade
-   deadline, it reads once for the final list and polls no more. With live null, before the first tick of the clock, it
-   reads nothing. */
-export function useTradeWire(api: ApiTarget, live: boolean | null): TradeWire {
+/* The hook reads at once and each POLL_MS while the tab shows. It sends no call while the tab hides, so a phone in a
+   pocket does no work, and it reads at once when the tab shows again. */
+export function useTradeWire(api: ApiTarget): TradeWire {
   const [wire, setWire] = useState<TradeWire>(UNREAD);
   const { url, client, season } = api;
 
   useEffect(() => {
-    if (live === null) return;
     let stopped = false;
     let timer: number | undefined;
 
@@ -45,13 +42,6 @@ export function useTradeWire(api: ApiTarget, live: boolean | null): TradeWire {
         if (!stopped) setWire((last) => ({ ...last, failed: true }));
       }
     };
-
-    if (!live) {
-      void read();
-      return () => {
-        stopped = true;
-      };
-    }
 
     const start = () => {
       void read();
@@ -73,7 +63,7 @@ export function useTradeWire(api: ApiTarget, live: boolean | null): TradeWire {
       stop();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [url, client, season, live]);
+  }, [url, client, season]);
 
   return wire;
 }

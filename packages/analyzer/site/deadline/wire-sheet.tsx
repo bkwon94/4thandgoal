@@ -91,7 +91,7 @@ function Links({ links }: { links: TradeLinks }) {
 
 /* The live dot with "Updated Ns ago", which ticks each second while the sheet is open. */
 function LiveLine({ readAt }: { readAt: number }) {
-  const ago = useSecondsSince(readAt, true);
+  const ago = useSecondsSince(readAt);
   return (
     <span
       data-wire-updated
@@ -113,14 +113,13 @@ export function LiveDot({ className }: { className?: string }) {
   );
 }
 
-/* The whole seconds since `since`, read on each whole second after it while `ticks` holds. The tick lines up with the
+/* The whole seconds since `since`, read on each whole second after it. The tick lines up with the
    read and not with the open of the sheet, so the line reads N s at N s after the read, and never up to 1 s late. A new
    read gives a new `since`, and the count starts again from it. */
-function useSecondsSince(since: number, ticks: boolean): number {
+function useSecondsSince(since: number): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     setNow(Date.now());
-    if (!ticks) return;
     let id: number | undefined;
     const next = () => {
       const intoSecond = (((Date.now() - since) % 1000) + 1000) % 1000;
@@ -131,7 +130,7 @@ function useSecondsSince(since: number, ticks: boolean): number {
     };
     next();
     return () => window.clearTimeout(id);
-  }, [since, ticks]);
+  }, [since]);
   return Math.max(0, Math.floor((now - since) / 1000));
 }
 
