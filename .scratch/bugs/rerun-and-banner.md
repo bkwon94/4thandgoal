@@ -1,7 +1,7 @@
 # The rerun check reads no Bun failure, and the closed Deadline banner is under the tap floor
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-rerun-and-banner`.
 Source: the session of 2026-11-24, from the CI run of PR #93.
 Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -65,3 +65,8 @@ Test verdict: PASS
 Smoke: flow `Analyzer`. "Smoke run: 1 flow, 1 passed, 0 failed". Shots in `.scratch/bugs/rerun-and-banner/smoke/`.
 
 ## Comments
+
+Closes with the squash merge of the PR of `bug-rerun-and-banner`. Commits: `5292c3e3`, `efccfa32`, `6a57072e`, `08232a91`, `1ce8c22c`, `81a3b2d2`, `4ddf35a7`. Date: 2026-11-24.
+Item 1 went red at 1 failed, then green at 1 passed; item 2 went red at 3 failed, then green at 3 passed; `make check-fast BASE=main` passed with 267 root tests and 1969 site tests.
+The site test "empties the Thread at once on Clear (AT-36)" in `page.test.tsx` failed once under load with a dialog still open, then passed; a later run can check it for a flake.
+Read 8 files: AGENTS.md, apps/site/AGENTS.md, scripts/rerun.py, scripts/test_rerun.py, packages/analyzer/site/deadline/deadline-banner.tsx, packages/analyzer/site/lib/deadline.ts, apps/site/e2e/floor.spec.ts, clients/cpc/client.toml.
