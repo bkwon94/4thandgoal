@@ -1,6 +1,6 @@
 /**
  * Sets the scope of a `bun test` run: the shard of a CI job, and the full suite or only the tests that the diff can reach.
- * scripts/bun-test.mjs reads BUN_TEST_SHARD and BUN_TEST_BASE, and CI sets them in each job of the unit matrix.
+ * scripts/bun-test.mjs reads BUN_TEST_WORKERS, BUN_TEST_SHARD, and BUN_TEST_BASE, and CI sets them in each job of the unit matrix.
  */
 import { spawnSync } from "node:child_process";
 
@@ -39,6 +39,15 @@ const FULL_SUITE_PATTERNS = FULL_SUITE_FILES.map(patternOf);
 /* True when one of the changed files, as paths from the root of the repo, is in FULL_SUITE_FILES. */
 export function needsFullSuite(changedFiles) {
   return changedFiles.some((file) => FULL_SUITE_PATTERNS.some((pattern) => pattern.test(file)));
+}
+
+/* The count of worker processes of `bun test --parallel`, as a string. BUN_TEST_WORKERS wins. A CI job has the runner to
+   itself, so it uses one worker per CPU core. A local run uses 3, because many agents run the suite at the same time on
+   one Mac, and one worker per core makes it swap. */
+export const LOCAL_WORKERS = 3;
+export function workerCount({ env, cores }) {
+  if (env.BUN_TEST_WORKERS) return env.BUN_TEST_WORKERS;
+  return String(env.CI ? cores : LOCAL_WORKERS);
 }
 
 /* The measured time of each test file, as a path from apps/site. `bun test --shard` splits the files by count with no
