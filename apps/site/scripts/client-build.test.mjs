@@ -18,6 +18,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "bun:test";
 import {
   buildClient,
+  buildNow,
   ClientBuildError,
   clientRoot,
   REPO_ROOT,
@@ -463,6 +464,17 @@ describe("the client build", () => {
   it("reads the clients of the repo, or of the root that CLIENT_ROOT names", () => {
     expect(clientRoot({})).toBe(REPO_ROOT);
     expect(clientRoot({ CLIENT_ROOT: "/tmp/a-test-repo" })).toBe("/tmp/a-test-repo");
+  });
+
+  it("reads the build clock from BUILD_NOW, or the real clock with none", () => {
+    expect(buildNow({ BUILD_NOW: "2026-11-21T09:55:00-05:00" })).toBe(
+      Date.parse("2026-11-21T09:55:00-05:00"),
+    );
+    const before = Date.now();
+    const now = buildNow({});
+    expect(now).toBeGreaterThanOrEqual(before);
+    expect(now).toBeLessThanOrEqual(Date.now());
+    expect(() => buildNow({ BUILD_NOW: "yesterday" })).toThrow(ClientBuildError);
   });
 
   it("writes the finder value, the usage code, and the latest season into the client values", () => {

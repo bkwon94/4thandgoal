@@ -13,7 +13,8 @@ import { findOverlap } from "./smoke";
 
 const OUT = join(process.cwd(), "out");
 // Run it on the export of NorCal built against the local API URL, as the grade-bar project does:
-// CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
+// CLIENT=norcal BUILD_NOW=2026-11-21T09:55:00-05:00 NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
+// BUILD_NOW is the clock of the build as a test input. It keeps the build before each Lock, so the strip stays in the export.
 // The roster of Bo Girds in cpc, as the teams route sends it, and the teams of a real find for him as the partners.
 const FIXTURES = join(process.cwd(), "..", "..", "packages", "analyzer", "site", "lib", "fixtures");
 const BO_GIRDS = JSON.parse(readFileSync(join(FIXTURES, "team-bo-girds.json"), "utf8")) as {

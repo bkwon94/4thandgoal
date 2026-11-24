@@ -22,6 +22,7 @@ import HomePage from "./front-door/door-page";
 // The jsdom stand-ins that the Drawer of the menu sheet needs.
 import "@cpc/design/ui/sheet-jsdom";
 import { standInForAnimate } from "@cpc/design/ui/sheet-drag-jsdom";
+import { pinTradesOpen } from "../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
    sets the folder, and the preload puts the real one back after each test. */
@@ -41,6 +42,9 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
   localStorage.clear();
 });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the front door of cpc", () => {
   it("has no week chip, and the menu button opens the sheet of pages (AT-45, AT-47)", () => {

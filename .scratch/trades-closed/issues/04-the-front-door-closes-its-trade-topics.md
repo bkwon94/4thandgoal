@@ -10,8 +10,8 @@ Spec: `.scratch/trades-closed/PRD.md`. Acceptance tests AT-6, AT-7, AT-9, and AT
 
 **Status:** ready-for-agent
 
-- [ ] A closed `cpc` build with roster 1 shows no "Trades", "Check", or "Sell high or buy low" chip or Suggestion, and no trade block strip (AT-6).
-- [ ] The typed question "Who should I trade for at RB?" gets the closed line, never "I can't answer that.", and the API log shows no Claude call (AT-7).
-- [ ] The Tour step of the ask box has no word "trade" (AT-9).
-- [ ] The Topic "Position leaders and recent trades" still answers with the recent trades of 2026 (AT-12).
-- [ ] A pytest shows that a trade question for an open client still routes to its trade Topic.
+- [x] A closed `cpc` build with roster 1 shows no "Trades", "Check", or "Sell high or buy low" chip or Suggestion, and no trade block strip (AT-6).
+- [x] The typed question "Who should I trade for at RB?" gets the closed line, never "I can't answer that.", and the API log shows no Claude call (AT-7).
+- [x] The Tour step of the ask box has no word "trade" (AT-9).
+- [x] The Topic "Position leaders and recent trades" still answers with the recent trades of 2026 (AT-12).
+- [x] A pytest shows that a trade question for an open client still routes to its trade Topic.

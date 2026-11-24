@@ -9,9 +9,10 @@ import { stubGlobal } from "../../../test/stubs";
 import { readFixtureSite } from "@/fixtures/sites";
 import { StopCard, StopCardContent, StopCardTitle } from "@cpc/design/ui/stop-card";
 import HomePage from "./door-page";
-import { STOPS, dismissStep } from "./tour";
+import { STOPS, dismissStep, stopsOf } from "./tour";
 // The jsdom stand-ins of the browser APIs that the popover and the menu sheet need.
 import "@cpc/design/ui/sheet-jsdom";
+import { pinTradesOpen } from "../../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. */
 beforeEach(() => readFixtureSite("cpc"));
@@ -64,6 +65,9 @@ const queryCard = () =>
 const button = (card: HTMLElement, name: string) => within(card).getByRole("button", { name });
 const queryButton = (card: HTMLElement, name: string) =>
   within(card).queryByRole("button", { name });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the Tour of the front door", () => {
   it("shows Stop 1 on load to a browser with Your team and no seen key, with no team sheet (AT-2)", async () => {
@@ -209,6 +213,14 @@ describe("the Stops of the Tour", () => {
       'button[aria-label="Open the menu"], nav[aria-label="Site menu"]',
     ]);
     expect<unknown>(STOPS.map(({ header, line }) => ({ header, line }))).toEqual(COPY);
+    expect<unknown>(stopsOf(false).map(({ header, line }) => ({ header, line }))).toEqual(COPY);
+  });
+
+  it("name no trade in the Ask Stop when trades are closed (AT-9)", () => {
+    const ask = stopsOf(true).find((stop) => stop.key === "ask");
+    expect(ask?.line).not.toMatch(/trade/i);
+    expect(ask?.line).toContain("start or sit");
+    expect(stopsOf(true).map((stop) => stop.header)).toEqual(COPY.map((stop) => stop.header));
   });
 
   it("maps each refused dismiss: a press outside goes on, or ends at Stop 4, and Escape and Back count as Skip (AT-8, AT-10, AT-11)", () => {

@@ -40,11 +40,11 @@ function sitePageOf(value: string): SiteAnswerPage {
 }
 
 /* The route of one question: a Topic, a free answer, an honest miss, a calm refusal, the calm line of a cap in place
-   of a free answer, or a Site answer. `team` is the roster id of the team that the question names, or null for Your
-   team. `closest` holds the 3 closest Topics of a miss and of a cap. `line` is the line of a cap, else null. `page` is
+   of a free answer, a Site answer, or the closed line of a trade question after the Lock. `team` is the roster id of the team that the question names, or null for Your
+   team. `closest` holds the 3 closest Topics of a miss and of a cap. `line` is the line of a cap or the closed line, else null. `page` is
    the page of a Site answer, else null. */
 export const askAnswerSchema = z.object({
-  route: z.enum(["topic", "free", "miss", "refuse", "cap", "site"]),
+  route: z.enum(["topic", "free", "miss", "refuse", "cap", "site", "closed"]),
   line: z.string().nullable().default(null),
   topic: z.string().nullable(),
   team: z.number().nullable(),

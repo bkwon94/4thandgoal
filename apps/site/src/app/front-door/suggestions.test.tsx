@@ -14,6 +14,43 @@ const props = { facts: {}, moreOpen: false, onMore: () => {}, onPick: () => {} }
 
 const FACTS = { week_recap: "You scored 80.11, 12th of 12", power_rankings: "6th, down 5" };
 
+describe("Suggestions with Trades closed", () => {
+  const all = {
+    week_recap: "A recap",
+    sell_high: "A sell",
+    trade_ideas: "An offer",
+    trade_check: "A check",
+  };
+
+  it("lists no trade Topic in More, and no chip for one (AT-6)", () => {
+    render(
+      <Suggestions
+        picks={["week_recap", "trade_ideas"]}
+        {...props}
+        moreOpen
+        facts={all}
+        tradesClosed
+      />,
+    );
+    const list = screen.getByRole("list", { name: "All Topics" });
+    const names = within(list)
+      .getAllByRole("button")
+      .map((button) => button.getAttribute("aria-label"));
+    expect(names).toContain("Week recap: A recap");
+    expect(names.join("|")).not.toMatch(/Trade|Sell high/);
+    const group = screen.getByRole("group", { name: "Suggestions" });
+    expect(within(group).queryByText("Trades")).toBeNull();
+    expect(within(group).queryByText("Check")).toBeNull();
+  });
+
+  it("lists the trade Topics in More while trades are open", () => {
+    render(<Suggestions picks={["week_recap"]} {...props} moreOpen facts={all} />);
+    const list = screen.getByRole("list", { name: "All Topics" });
+    expect(within(list).getByRole("button", { name: "Trade ideas: An offer" })).toBeTruthy();
+    expect(within(list).getByRole("button", { name: "Sell high or buy low: A sell" })).toBeTruthy();
+  });
+});
+
 describe("Suggestions", () => {
   it("shows each chip with only a short name of its Topic, in one row with More first (AT-42)", () => {
     render(<Suggestions picks={["week_recap", "power_rankings"]} {...props} facts={FACTS} />);

@@ -31,6 +31,12 @@ import {
 } from "./motion";
 import { markTourSeen, tourSeen } from "./tour-store";
 
+/* The line of the Ask Stop. With Trades closed, the front door has no trade Topic, so the line names none. */
+const ASK_LINE =
+  "Type any question about your team or your league, such as start or sit, a trade, or the playoff race.";
+const ASK_LINE_CLOSED =
+  "Type any question about your team or your league, such as start or sit or the playoff race.";
+
 /* The four Stops in order, with the copy of the decision ticket 03 of the Tour, "The line of each Stop". Each target has
    an accessible name already, so the Tour finds it by that name and adds no hook to the control. Stop 4 takes the menu
    button or the pill bar, whichever one shows. */
@@ -44,7 +50,7 @@ export const STOPS = [
   {
     key: "ask",
     header: "Ask",
-    line: "Type any question about your team or your league, such as start or sit, a trade, or the playoff race.",
+    line: ASK_LINE,
     selector: 'form[aria-label="Ask"]',
   },
   {
@@ -61,7 +67,14 @@ export const STOPS = [
   },
 ] as const;
 
-type Stop = (typeof STOPS)[number];
+/* The Stops of a client: the Ask Stop names no trade when Trades closed. */
+export function stopsOf(tradesClosed: boolean): Stop[] {
+  return STOPS.map((stop) =>
+    stop.key === "ask" && tradesClosed ? { ...stop, line: ASK_LINE_CLOSED } : stop,
+  );
+}
+
+type Stop = { key: string; header: string; line: string; selector: string };
 type Target = Stop & { el: HTMLElement };
 type Box = { x: number; y: number; width: number; height: number };
 type Hole = Box & { radius: number };
@@ -107,8 +120,8 @@ function shown(el: HTMLElement): boolean {
   return true;
 }
 
-function findTargets(): Target[] {
-  return STOPS.flatMap((stop) => {
+function findTargets(stops: Stop[]): Target[] {
+  return stops.flatMap((stop) => {
     const el = [...document.querySelectorAll<HTMLElement>(stop.selector)].find(shown);
     return el ? [{ ...stop, el }] : [];
   });
@@ -229,7 +242,7 @@ export function replayTour() {
    first ready render: a browser with the seen key, or with a store that throws, gets no Tour. Then it waits until no
    modal layer is open. A layer leaves the page only after its exit, so the delay counts from the end of the last exit.
    A replay passes the same start gate in the phase "replay", but it does not read the seen key. */
-export function Tour({ ready }: { ready: boolean }) {
+export function Tour({ ready, tradesClosed = false }: { ready: boolean; tradesClosed?: boolean }) {
   const [phase, setPhase] = useState<"wait" | "replay" | "on" | "done">("wait");
   useEffect(() => {
     if (!ready || (phase !== "wait" && phase !== "replay")) return;
@@ -287,7 +300,9 @@ export function Tour({ ready }: { ready: boolean }) {
     window.addEventListener(REPLAY_EVENT, replay);
     return () => window.removeEventListener(REPLAY_EVENT, replay);
   }, [ready]);
-  return phase === "on" ? <Stops onEnd={() => setPhase("done")} /> : null;
+  return phase === "on" ? (
+    <Stops stops={stopsOf(tradesClosed)} onEnd={() => setPhase("done")} />
+  ) : null;
 }
 
 /* Move a control into view, then call `done` once the page holds still. A control that is in view already calls `done`
@@ -378,9 +393,9 @@ function SwapText({ off, children }: { off: boolean; children: ReactNode }) {
   );
 }
 
-function Stops({ onEnd }: { onEnd: () => void }) {
+function Stops({ stops, onEnd }: { stops: Stop[]; onEnd: () => void }) {
   const off = useMotionOff();
-  const [targets] = useState(findTargets);
+  const [targets] = useState(() => findTargets(stops));
   // `index` is the Stop that Next steps through. `at` is the Stop of the hole: it takes `index` once the scroll ends.
   // `cardAt` is the Stop of the card copy: it takes `at` with the glide, or once the card is back after a fade.
   const [index, setIndex] = useState(0);
