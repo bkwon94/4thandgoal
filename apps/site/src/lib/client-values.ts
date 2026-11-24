@@ -17,6 +17,8 @@ export type ClientValues = {
   packages: PackageName[];
   // The latest season of the client. The teams and analyze routes of the API read it.
   season: number;
+  // The Sleeper league of the latest season, or null with none. The Live names read its rosters and users.
+  leagueId: string | null;
   // The GoatCounter site code. With none, the layout loads no count script.
   usageCode: string | null;
   // The trade finder of the analyzer.

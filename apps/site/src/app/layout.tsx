@@ -5,12 +5,14 @@
 import "./globals.css";
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
-import { usageCode } from "@/lib/config";
+import { leagueId, season, usageCode } from "@/lib/config";
+import { publishedTeams } from "@/lib/data/live-names-data";
 import { pageParts } from "@/generated/registry";
 import { stableId } from "@cpc/design/lib/stable-id";
 import { paintOf } from "@cpc/design/lib/theme";
 import { UsageScript } from "@cpc/design/shell/usage-script";
 import { fontVariables } from "./fonts/fonts";
+import { LiveNamesPart } from "./live-names-part";
 import { takesEggs } from "./shell-props";
 import { SITE_VIEWPORT } from "./viewport";
 
@@ -48,6 +50,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {pageParts.map((Part, index) => (
           <Part key={index} />
         ))}
+        {/* The Live names of every page but the midseason report. The published names show until Sleeper answers. */}
+        <LiveNamesPart leagueId={leagueId} teams={publishedTeams(season)} />
       </body>
     </html>
   );
