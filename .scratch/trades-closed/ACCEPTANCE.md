@@ -96,16 +96,16 @@ AT-11: The weekly trade cards stay
 App: site
 Stories: 14
 Given: The site build of `cpc`, made on the day of the run, after the CPC Lock.
-When: The reader opens the week 10 page, `/2026/week-10/`.
-Then: The page shows each trade card of week 10, the same count as `clients/cpc/published/2026/week-10/page.json` holds.
-Evidence: screenshots of the trades chapter of week 10 at 375, 768, and 1280 px, each in the light theme and the dark theme, and the iPhone 15 check result. Also the count of trade cards on the page and in the file.
+When: The reader opens the week 9 page, `/2026/week-09/`.
+Then: The page shows each trade card of week 9, the same count as `clients/cpc/published/2026/week-09/page.json` holds.
+Evidence: screenshots of the trades chapter of week 9 at 375, 768, and 1280 px, each in the light theme and the dark theme, and the iPhone 15 check result. Also the count of trade cards on the page and in the file.
 
 AT-12: The recent trades Topic stays
 App: site
 Stories: 15
 Given: The site build of `cpc`, made on the day of the run, after the CPC Lock. The front door at `/`, with roster 1 chosen.
 When: The reader opens the Topic "Position leaders and recent trades".
-Then: The Answer shows the position leaders and the recent trades of 2026.
+Then: The Answer shows the position leaders of 2026, the same as on `main`.
 Evidence: screenshots of the Answer at 375, 768, and 1280 px, each in the light theme and the dark theme, and the iPhone 15 check result.
 
 AT-13: The transaction history stays
@@ -268,4 +268,4 @@ Out of scope "A change to the trade history": AT-11, AT-12, AT-13
 
 ## Revisions
 
-None yet.
+- 2026-11-24: Brian approved two changes. AT-11 uses week 9, because week 10 holds 0 trades. AT-12 drops "the recent trades", because the pipeline writes that Topic as the leaders and one paragraph, as on `main`.
