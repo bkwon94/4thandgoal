@@ -71,9 +71,32 @@ Test verdict: pending
 
 Done condition: the readability floor of `/2026/managers/7/` at 390px passes on the cpc week 11 build, where a team link shows only "💿 🐑".
 Method: diagnosing-bugs.
-Cause: pending
-Red: pending
-Green: pending
+Cause: `TradeTeam` in `packages/managers/site/page/moves.tsx` gives the team link `min-h-touch` but no `min-w-touch`, so a team named only two emoji gives a link 39px wide, under the tap floor of 44px.
+Red: at `0f3ac7f3`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/managers/7/` after `CLIENT=cpc pnpm build`
+
+```text
+    Error: cpc /2026/managers/7/ light 390px breaks the readability floor
+    + Array [
+    +   "a.min-h-touch \"💿 🐑\" is 39x44px, under the tap floor of 44px",
+    +   "a.min-h-touch \"💿 🐑\" is 39x44px, under the tap floor of 44px",
+    + ]
+  2 failed
+    [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ dark 390px
+    [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ light 390px
+  2 passed (4.3s)
+```
+
+The loop is the floor spec `apps/site/e2e/floor.spec.ts` with no change, so the red commit adds no file. `0f3ac7f3` holds the loop, the week 11 data, and no fix.
+
+Green: at `39cad4d9`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/managers/7/` after `CLIENT=cpc pnpm build`
+
+```text
+  ✓  1 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ dark 390px (1.2s)
+  ✓  2 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ light 390px (1.2s)
+  ✓  4 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ light 1280px (1.2s)
+  ✓  3 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ dark 1280px (1.2s)
+  4 passed (3.3s)
+```
 Test verdict: pending
 
 ### 4. A player name splits a word over two lines on the week page
