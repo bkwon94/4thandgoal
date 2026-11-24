@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-44 to AT-48 and AT-54
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [ ] The week page and The Race of `cpc` week 11 show "Teez Nuts" in every slot and blurb, and "Puka Deez..." nowhere.
 - [x] A test with a stubbed Sleeper answer shows a new avatar and keeps the local image until it loads.
