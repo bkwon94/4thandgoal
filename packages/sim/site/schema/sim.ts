@@ -162,6 +162,21 @@ export const playoffsSchema = z.object({
   champion: z.number().nullable(),
 });
 
+/* The odds of one Goal of The Race in whole percent, and its status by the plain check on wins. */
+export const goalOddsSchema = z.object({
+  odds: z.number().int(),
+  status: z.enum(["in", "out", "open"]),
+});
+
+/* The Goals of one team by key: "spot", "bye" in a league with a bye, and "seed-1" to the last seed. */
+const goalsSchema = z.record(z.string(), goalOddsSchema);
+
+/* One team of the League board: the odds and the status of each Goal. */
+export const boardTeamSchema = z.object({
+  roster_id: z.number(),
+  goals: goalsSchema,
+});
+
 /* The page block of one team. sim.json and the What-if answer share it, so the page reads one shape. */
 export const simPageSchema = z.object({
   you: z.number(),
@@ -178,6 +193,9 @@ export const simPageSchema = z.object({
   weeks: z.array(pageWeekSchema),
   // The playoff part, with no regular week left. Null in the regular season. An older file has no key.
   playoffs: playoffsSchema.nullable().default(null),
+  // The Goals of The Race, empty with no regular week left, and the Goal the page opens on. An older file has neither.
+  goals: goalsSchema.default({}),
+  open_goal: z.string().nullable().default(null),
 });
 
 /* The week file, week-NN/sim.json: the season shape with the run weights, a page for each team, and the league fact. */
@@ -190,4 +208,6 @@ export const weekSimSchema = simSchema.extend({
   fact: z.string().nullable(),
   // The real scores of each played bracket week, by week and roster id. An older file has no key.
   played: z.record(rosterKey, z.record(rosterKey, z.number())).default({}),
+  // The League board: the Goals of each team. Empty with no regular week left. An older file has no key.
+  board: z.array(boardTeamSchema).default([]),
 });

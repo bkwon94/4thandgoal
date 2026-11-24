@@ -23,6 +23,9 @@ SEED_SHOW_AT = 50
 ABOUT_RUNS = 400
 # The playoff odds, in percent, at which the sentence of the ladder says "you're in".
 IN_ODDS = 90
+# The lowest odds, in percent, of a Goal that The Race opens on. Below it the 1 seed or the bye is no real race, so the
+# page opens on the next Goal. A call made without Brian (PRD, Further Notes).
+OPEN_GOAL_ODDS = 5
 # The lowest playoff odds, in percent, of a team that the league fact counts in the race for the last spots.
 RACE_FLOOR = 10
 # The most root-for rows of one week, and the least lift in whole points that keeps a row (PRD, the page block).

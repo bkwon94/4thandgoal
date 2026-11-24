@@ -10,6 +10,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from league.models import OddsStatus
+from sim.goals import GoalOdds, open_goal
 from sim.percent import percent, shown, tenths
 from sim.tunables import ABOUT_RUNS, IN_ODDS, RACE_FLOOR, ROOT_FOR_LIFT, ROOT_FOR_ROWS
 
@@ -163,13 +164,18 @@ class SimPage(BaseModel):
     weeks: list[PageWeek]
     # The playoff part, with no regular week left. None in the regular season.
     playoffs: Playoffs | None = None
+    # The odds and the status of each Goal of The Race, by its key: "spot", "bye", and "seed-1" to the last seed.
+    # Empty with no regular week left. A file written before The Race has none.
+    goals: dict[str, GoalOdds] = {}
+    # The Goal the page opens on. None with no Goal.
+    open_goal: str | None = None
 
 
 def team_page(
     you: int, runs: Sequence[RunRecord], *, playoff: int, status: OddsStatus,
     records: Mapping[int, tuple[int, int, float, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
     effective_runs: int, set_weeks: int = 0, set_wins: int = 0, bracket_weeks: Sequence[int] = (),
-    played: Mapping[int, Mapping[int, float]] | None = None,
+    played: Mapping[int, Mapping[int, float]] | None = None, goals: Mapping[str, GoalOdds] | None = None,
 ) -> SimPage:
     """The page block of `you` by a split of the `runs` of one sim. `schedule` holds the pairs of each regular week
     left, in the order of `RunRecord.weeks`. `playoff` and `status` are the odds of the team over all runs.
@@ -178,7 +184,7 @@ def team_page(
     still counts every win left, and the sentence counts only the wins still open, so it agrees with the set results.
 
     With no regular week left, the block holds the playoffs of `bracket_weeks`, with the real scores of the `played`
-    bracket weeks."""
+    bracket weeks. `goals` holds the Goals of `you`, and the page opens on the best of them."""
     regular = sorted(schedule)
     weeks_left = len(regular)
     per_week = 2 if median_game else 1
@@ -245,7 +251,8 @@ def team_page(
     return SimPage(you=you, playoff=playoff, status=status, record=(records[you][0], records[you][1]),
                    weeks_left=weeks_left, wins_left=wins_left, need=need,
                    sentence=_sentence(status, need, wins_left, steps, set_weeks * per_week, set_wins),
-                   ladder=steps, weeks=weeks, playoffs=playoffs)
+                   ladder=steps, weeks=weeks, playoffs=playoffs, goals=dict(goals or {}),
+                   open_goal=open_goal(goals or {}))
 
 
 def _whole(part: float, total: float) -> int:

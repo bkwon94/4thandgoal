@@ -10,9 +10,9 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-3, AT-4, AT-5, AT-27,
 
 **Status:** ready-for-agent
 
-- [ ] `week-11/sim.json` of `cpc` holds the odds and the status of the spot, the bye, and seeds 1 to 6 for each of 12 teams, and the board block.
-- [ ] The open Goal of each team is the best Goal with odds of 5% or more, in the order 1 seed, bye, spot.
-- [ ] The status of each team for each Goal equals a check by hand.
-- [ ] The Goal switch and the seed picker change the board bars and order.
-- [ ] The page passes the WebKit overlap check at 390x660, 810x980, 1080x740, and 1280x800, in light and dark mode.
-- [ ] `make check-fast` passes.
+- [x] `week-11/sim.json` of `cpc` holds the odds and the status of the spot, the bye, and seeds 1 to 6 for each of 12 teams, and the board block.
+- [x] The open Goal of each team is the best Goal with odds of 5% or more, in the order 1 seed, bye, spot.
+- [x] The status of each team for each Goal equals a check by hand.
+- [x] The Goal switch and the seed picker change the board bars and order.
+- [x] The page passes the WebKit overlap check at 390x660, 810x980, 1080x740, and 1280x800, in light and dark mode.
+- [x] `make check-fast` passes.

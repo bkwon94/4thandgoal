@@ -19,7 +19,7 @@ export function generateStaticParams(): { season: string }[] {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { season } = await params;
-  return { title: pageTitle(undefined, `${season} Season sim`) };
+  return { title: pageTitle(undefined, `The Race ${season}`) };
 }
 
 export default async function SimRoute({ params }: Props) {

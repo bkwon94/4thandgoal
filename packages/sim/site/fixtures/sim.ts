@@ -9,6 +9,7 @@ import norcalWeekJson from "./week-sim-norcal.json";
 import playoffsJson from "./week-sim-playoffs.json";
 import roundTwoJson from "./week-sim-round-2.json";
 import finalJson from "./week-sim-final.json";
+import weekElevenJson from "./week-sim-week-11.json";
 import { simSchema, weekSimSchema } from "../schema/sim";
 
 /* The parse runs at import, so a stale fixture fails at once. */
@@ -16,6 +17,9 @@ export const sim = simSchema.parse(json);
 
 /* CPC 2026 week 10, a league with the median game. */
 export const weekSim = weekSimSchema.parse(weekJson);
+
+/* CPC 2026 week 11, the week of The Race acceptance tests: 3 weeks left, and Bo Girds at 11-11. */
+export const weekElevenSim = weekSimSchema.parse(weekElevenJson);
 
 /* NorCal 2026 week 10, a league with no median game. */
 export const norcalWeekSim = weekSimSchema.parse(norcalWeekJson);

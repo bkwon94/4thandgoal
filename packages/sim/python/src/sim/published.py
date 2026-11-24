@@ -10,6 +10,7 @@ from pydantic import Field
 
 from league.files import write_bytes_atomic
 from league.paths import site_week_dir
+from sim.goals import BoardTeam
 from sim.page import SimPage, playoff_fact
 from sim.season import SimResult
 
@@ -24,12 +25,13 @@ class SimFile(SimResult):
     schema_version: int = SIM_SCHEMA_VERSION
     names: dict[int, str]
     # The season file keeps the shape that the midseason replay reads, so it leaves out the effective runs, the run
-    # weights, the pages, and the league fact.
+    # weights, the pages, the league fact, and the League board.
     effective_runs: int | None = Field(default=None, exclude=True)
     sample_weights: list[float] = Field(default_factory=list, exclude=True)
     pages: dict[int, SimPage] = Field(default_factory=dict, exclude=True)
     fact: str | None = Field(default=None, exclude=True)
     played: dict[int, dict[int, float]] = Field(default_factory=dict, exclude=True)
+    board: list[BoardTeam] = Field(default_factory=list, exclude=True)
 
 
 class WeekSimFile(SimResult):

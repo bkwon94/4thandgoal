@@ -136,6 +136,80 @@ def test_the_reason_names_the_gap_in_real_wins_to_the_loser(sim):
 WIDE = {rid: (rid, 8 - rid, 220.0 + rid, 200.0 + rid) for rid in ROSTERS}
 
 
+GOALS = ["spot", "bye", "seed-1", "seed-2", "seed-3", "seed-4"]
+
+
+def _hand_status(rid: int, records, reach: int, k: int) -> str:
+    """The plain check on wins for the top `k` places, written by hand: Clinched when fewer than k other teams can
+    reach the wins of `rid`, Out when k other teams already hold more wins than `rid` can reach."""
+    wins = records[rid][0]
+    others = [o for o in records if o != rid]
+    if sum(records[o][0] + reach >= wins for o in others) < k:
+        return "in"
+    if sum(records[o][0] > wins + reach for o in others) >= k:
+        return "out"
+    return "open"
+
+
+def _hand_seed_status(rid: int, records, reach: int, k: int) -> str:
+    """Seed k is Clinched when the top k is sure and the top k - 1 is out of reach. It is Out when the top k is out
+    of reach or the top k - 1 is sure."""
+    top = _hand_status(rid, records, reach, k)
+    above = _hand_status(rid, records, reach, k - 1) if k > 1 else "out"
+    if top == "in" and above == "out":
+        return "in"
+    if top == "out" or above == "in":
+        return "out"
+    return "open"
+
+
+@pytest.mark.parametrize("median_game", [True, False])
+def test_each_page_holds_the_odds_and_the_status_of_the_spot_the_bye_and_each_seed(median_game):
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=median_game),
+                      runs=2_000, pages=list(ROSTERS))
+    reach = (2 if median_game else 1) * len(REMAINING)
+    statuses = set()
+    for rid, page in wide.pages.items():
+        assert list(page.goals) == GOALS
+        team = wide.teams[rid]
+        assert page.goals["spot"].odds == team.playoff and page.goals["bye"].odds == team.bye
+        assert page.goals["spot"].status == _hand_status(rid, WIDE, reach, 4)
+        assert page.goals["bye"].status == _hand_status(rid, WIDE, reach, 2)
+        for k in range(1, 5):
+            goal = page.goals[f"seed-{k}"]
+            assert goal.status == _hand_seed_status(rid, WIDE, reach, k)
+            expected = {"in": 100, "out": 0}.get(goal.status)
+            if expected is None:
+                assert abs(goal.odds - min(99, max(1, team.seeds.get(k, 0.0)))) <= 1
+            else:
+                assert goal.odds == expected
+        statuses |= {goal.status for goal in page.goals.values()}
+    # With 1 win in each week left, roster 8 at 8 wins is sure of a spot. With 2, no team is sure of a Goal.
+    assert statuses == ({"out", "open"} if median_game else {"in", "out", "open"})
+
+
+def test_each_page_opens_on_the_best_goal_with_odds_of_5_or_more_in_the_order_1_seed_bye_spot():
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                      runs=2_000, pages=list(ROSTERS))
+    opened = set()
+    for page in wide.pages.values():
+        best = next((goal for goal in ("seed-1", "bye", "spot") if page.goals[goal].odds >= 5), "spot")
+        assert page.open_goal == best
+        opened.add(page.open_goal)
+    assert len(opened) > 1
+
+
+def test_the_board_holds_the_goals_of_every_team_with_no_page_asked():
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                      runs=2_000, pages=list(ROSTERS))
+    plain = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                       runs=2_000)
+    assert [row.roster_id for row in plain.board] == list(ROSTERS)
+    assert plain.board == wide.board
+    for row in wide.board:
+        assert row.goals == wide.pages[row.roster_id].goals
+
+
 def test_the_race_reason_goes_only_to_a_loser_near_the_last_playoff_spot():
     wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
                       runs=4_000, pages=list(ROSTERS))

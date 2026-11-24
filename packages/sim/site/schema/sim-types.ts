@@ -14,3 +14,5 @@ export type WeekSim = z.infer<typeof schema.weekSimSchema>;
 export type SetResult = z.infer<typeof whatIf.setResultSchema>;
 export type WhatIfAnswer = z.infer<typeof whatIf.whatIfAnswerSchema>;
 export type Playoffs = z.infer<typeof schema.playoffsSchema>;
+export type GoalOdds = z.infer<typeof schema.goalOddsSchema>;
+export type BoardTeam = z.infer<typeof schema.boardTeamSchema>;

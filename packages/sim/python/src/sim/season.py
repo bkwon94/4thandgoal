@@ -15,6 +15,7 @@ from pydantic import BaseModel, field_validator
 from league.league_settings import LeagueSettings
 from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
+from sim.goals import BoardTeam, GoalOdds
 from sim.page import RunRecord, SimPage, league_fact, team_page
 from sim.percent import shown, tenths
 from sim.tunables import (
@@ -154,6 +155,8 @@ class SimResult(BaseModel):
     # The real scores of each played bracket week, by week and roster ID. Each run keeps them, so the bracket of a
     # played round is the real one in each run.
     played: dict[int, dict[int, float]] = {}
+    # The League board: the Goals of each team, by roster ID. Empty with no regular week left.
+    board: list[BoardTeam] = []
 
     @field_validator("records", mode="before")
     @classmethod
@@ -367,13 +370,16 @@ def _season_sim(
             mean_wins=round(sum(n * count for n, count in wins_count[rid].items()) / total, 2),
         )
     effective_runs = round(total * total / squares)
+    goals = {rid: team_goals(rid, playoff=teams[rid].playoff, bye=teams[rid].bye, status=teams[rid].status,
+                             seeds=seeds[rid], total=total, records=records, weeks_left=weeks_left, spots=spots,
+                             bye_count=bye_count, median_game=median_game) for rid in rosters}
     blocks = {rid: team_page(rid, log, playoff=teams[rid].playoff, status=teams[rid].status, records=records,
                              schedule={w: list(remaining[w]) for w in regular}, median_game=median_game,
                              effective_runs=effective_runs,
                              set_weeks=len(held_regular) if rid == you else 0,
                              set_wins=sum((r.game == "win") + (r.median == "above") for _, _, r in held_regular)
                              if rid == you else 0,
-                             bracket_weeks=bracket_weeks, played=played)
+                             bracket_weeks=bracket_weeks, played=played, goals=goals[rid])
               for rid in sorted(set(pages))}
     return SimResult(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,
@@ -388,7 +394,42 @@ def _season_sim(
         sample=stored, sample_weights=stored_weights, pages=blocks,
         fact=league_fact({rid: t.playoff for rid, t in teams.items()}, spots, weeks_left),
         played={w: dict(scores) for w, scores in played.items()},
+        board=[BoardTeam(roster_id=rid, goals=goals[rid]) for rid in rosters] if weeks_left else [],
     )
+
+
+def _seed_status(rid: int, records: Mapping[int, tuple[int, int, float, float]], weeks_left: int, seed: int,
+                 median_game: bool) -> OddsStatus:
+    """Seed `seed` is `in` when the top `seed` places are sure and the places above it are out of reach. It is
+    `out` when the top `seed` places are out of reach, or a place above it is sure."""
+    top = roster_status(rid, dict(records), weeks_left, seed, median_game=median_game)
+    above = roster_status(rid, dict(records), weeks_left, seed - 1, median_game=median_game) if seed > 1 else "out"
+    if top == "in" and above == "out":
+        return "in"
+    if top == "out" or above == "in":
+        return "out"
+    return "open"
+
+
+def team_goals(
+    rid: int, *, playoff: int, bye: int, status: OddsStatus, seeds: Mapping[int, float], total: float,
+    records: Mapping[int, tuple[int, int, float, float]], weeks_left: int, spots: int, bye_count: int,
+    median_game: bool,
+) -> dict[str, GoalOdds]:
+    """The Goals of `rid` in the regular season. `playoff` and `bye` are the team odds of the sim, and `seeds`
+    holds the run weight of each seed over the `total` weight. The status of a bye or a seed uses the wins of the last
+    place of the Goal. With no regular week left, the table is final and the Race has no Goal, so it gives none."""
+    if not weeks_left:
+        return {}
+    goals = {"spot": GoalOdds(odds=playoff, status=status)}
+    if bye_count:
+        bye_status = roster_status(rid, dict(records), weeks_left, bye_count, median_game=median_game)
+        goals["bye"] = GoalOdds(odds=bye, status=bye_status)
+    for seed in range(1, spots + 1):
+        seed_status = _seed_status(rid, records, weeks_left, seed, median_game)
+        goals[f"seed-{seed}"] = GoalOdds(odds=shown(seed_status, seeds.get(seed, 0.0), total, weeks_left),
+                                         status=seed_status)
+    return goals
 
 
 def draw_model(

@@ -38,11 +38,13 @@ const cpcPage = weekSim.pages[CPC_YOU];
 describe("the sim page header", () => {
   it("shows the avatar, the name, the record, the weeks left, and the playoff odds of Your team", () => {
     render(<SimPage sim={weekSim} you={CPC_YOU} avatars={AVATARS} />);
+    // Bo Girds opens on the bye in week 10, so the card shows the playoff odds after a tap of Spot.
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     const header = screen.getByRole("region", { name: "Your team" });
-    expect(within(header).getByRole("heading", { level: 1 }).textContent).toBe("Bo Girds");
+    expect(header.textContent).toContain("Bo Girds");
     expect(header.querySelector("img")?.getAttribute("src")).toBe(AVATARS[String(CPC_YOU)]);
     expect(header.textContent).toContain("11-9");
-    expect(header.textContent).toContain("4 weeks left");
+    expect(screen.getByText("After week 10 · 4 weeks left")).toBeTruthy();
     expect(header.textContent).toContain(`${cpcPage.playoff}%`);
   });
 });
@@ -229,6 +231,7 @@ describe("the calls of the page", () => {
     const fetch = spyOn(globalThis, "fetch");
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     for (const label of ["Wk 12", "Wk 13", "Wk 14", "Playoffs", "Wk 11"]) {
       fireEvent.click(within(weekSwitch()).getByRole("button", { name: label }));
     }
@@ -260,6 +263,7 @@ describe("the What-if", () => {
   it("sets a result on a tap, shows the numbers of the API answer, and stays on its week", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     expect(yourTeam().textContent).toContain("58%");
     fireEvent.click(tile("Win, beat median"));
     // The call starts on the tap, with no wait.
@@ -291,6 +295,7 @@ describe("the What-if", () => {
   it("shows the odds of the answer on the Playoffs page after a set result, and the file after a Reset", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     const stats = () => screen.getByRole("article", { name: "Your playoff odds" });
     const stat = (label: string) => within(stats()).getByText(label).parentElement!.textContent;
     fireEvent.click(weekItem("Playoffs"));
@@ -314,6 +319,7 @@ describe("the What-if", () => {
   it("clears the set line on Reset and shows the numbers of the file again, with no call", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     fireEvent.click(tile("Win, beat median"));
     await waitFor(() => expect(yourTeam().textContent).toContain("86%"));
     fireEvent.click(within(setLine()!).getByRole("button", { name: "Reset" }));
@@ -329,6 +335,7 @@ describe("the What-if", () => {
   it("cancels the call before a new tap and shows the answer of the last tap", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     fireEvent.click(tile("Win, beat median"));
     fireEvent.click(tile("Lose, miss median"));
     expect(api.calls.map((call) => call.ask)).toEqual([
@@ -352,6 +359,7 @@ describe("the What-if", () => {
   it("clears the result of a week on a second tap of its tile, with no call", async () => {
     const api = fakeWhatIfApi();
     render(<SimPage sim={weekSim} you={CPC_YOU} whatIf={api} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     fireEvent.click(tile("Win, beat median"));
     fireEvent.click(tile("Win, beat median"));
     expect(api.calls).toHaveLength(1);
@@ -370,6 +378,7 @@ describe("the What-if", () => {
         whatIf={whatIfApi({ url: "http://127.0.0.1:9", client: "cpc" })}
       />,
     );
+    fireEvent.click(screen.getByRole("radio", { name: "Spot" }));
     fireEvent.click(tile("Win, beat median"));
     await screen.findByText("The What-if is not available now.");
     fireEvent.click(weekItem("Wk 11"));

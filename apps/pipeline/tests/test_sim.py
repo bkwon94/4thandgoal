@@ -263,16 +263,17 @@ def test_the_level_mean_of_each_team_is_its_season_average_shrunk_with_5_weeks_a
         assert sim.parameters.level_mean[rid] == pytest.approx(expected, abs=0.005)
 
 
-def _week_10_client(slug: str, at: Path) -> Client:
-    """The real client `slug` with links to its saved week 10 data and history at `at`, and the NFL schedule of the
-    fixtures in the cache, so the sim step calls no network. No test writes under clients/."""
+def _week_10_client(slug: str, at: Path, week: int = 10) -> Client:
+    """The real client `slug` with links to its saved data of `week` and its history at `at`, and the NFL schedule of
+    the fixtures in the cache, so the sim step calls no network. No test writes under clients/."""
     data = client_dir(ROOT, slug) / "data" / "2026"
-    provider = FixtureProvider(raw_dir=data / "week-10" / "raw", history_root=data / "history")
+    folder = f"week-{week:02d}"
+    provider = FixtureProvider(raw_dir=data / folder / "raw", history_root=data / "history")
     real = load_client(ROOT, slug, 2026, provider.fetch_settings, VALUE_MODELS)
     client = real.model_copy(update={"folder": at, "nfl_dir": at / "data"})
-    week_dir(client.folder, 2026, 10).mkdir(parents=True)
+    week_dir(client.folder, 2026, week).mkdir(parents=True)
     for name in ("raw", "facts.json"):
-        (week_dir(client.folder, 2026, 10) / name).symlink_to(data / "week-10" / name)
+        (week_dir(client.folder, 2026, week) / name).symlink_to(data / folder / name)
     history_root(client.folder, 2026).symlink_to(data / "history")
     cache = nflverse_cache_dir(client.nfl_dir)
     cache.mkdir(parents=True)
@@ -440,3 +441,80 @@ def test_the_playoff_fixtures_of_the_site_tests_equal_a_fresh_fixture_build(play
     for name in ("week-sim-playoffs.json", "week-sim-round-2.json", "week-sim-final.json"):
         assert json.loads((SITE_FIXTURES / name).read_text(encoding="utf-8")) == json.loads(
             (out / name).read_text(encoding="utf-8"))
+
+
+@pytest.fixture(scope="module")
+def cpc_week_11_file(tmp_path_factory) -> dict:
+    """The sim step of the weekly build of CPC 2026 week 11, read back from week-11/sim.json."""
+    client = _week_10_client("cpc", tmp_path_factory.mktemp("cpc-11"), week=11)
+    out = run_week_sim(2026, 11, client=client)
+    assert out is not None
+    return json.loads(out.read_text(encoding="utf-8"))
+
+
+CPC_GOALS = ["spot", "bye", "seed-1", "seed-2", "seed-3", "seed-4", "seed-5", "seed-6"]
+
+
+def _top_status(rid: int, wins: dict[int, int], reach: int, k: int) -> str:
+    """The plain check on wins for the top k places, by hand: Clinched when fewer than k other teams can reach the
+    wins of `rid`, Out when k other teams already hold more wins than `rid` can reach."""
+    others = [o for o in wins if o != rid]
+    if sum(wins[o] + reach >= wins[rid] for o in others) < k:
+        return "in"
+    if sum(wins[o] > wins[rid] + reach for o in others) >= k:
+        return "out"
+    return "open"
+
+
+def _hand_goal_status(rid: int, wins: dict[int, int], reach: int, goal: str) -> str:
+    if goal == "spot":
+        return _top_status(rid, wins, reach, 6)
+    if goal == "bye":
+        return _top_status(rid, wins, reach, 2)
+    k = int(goal.split("-")[1])
+    top = _top_status(rid, wins, reach, k)
+    above = _top_status(rid, wins, reach, k - 1) if k > 1 else "out"
+    if top == "in" and above == "out":
+        return "in"
+    return "out" if top == "out" or above == "in" else "open"
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_week_11_sim_json_holds_the_goals_of_each_team_and_the_board(cpc_week_11_file):
+    # AT-3. Each of the 12 pages holds the odds and the status of the spot, the bye, and seeds 1 to 6.
+    sim = cpc_week_11_file
+    assert len(sim["pages"]) == 12 and len(sim["board"]) == 12
+    for rid, page in sim["pages"].items():
+        assert list(page["goals"]) == CPC_GOALS
+        assert page["goals"]["spot"]["odds"] == sim["teams"][rid]["playoff"]
+        board = next(row for row in sim["board"] if row["roster_id"] == int(rid))
+        assert board["goals"] == page["goals"]
+    for rid in ("6", "1"):
+        print(f"AT-3: {sim['names'][rid]} {sim['pages'][rid]['goals']}")
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_each_week_11_page_opens_on_the_best_goal_with_odds_of_5_or_more(cpc_week_11_file):
+    # AT-4. The order is 1 seed, bye, spot.
+    sim = cpc_week_11_file
+    for rid, page in sim["pages"].items():
+        odds = {goal: page["goals"][goal]["odds"] for goal in CPC_GOALS}
+        best = next((goal for goal in ("seed-1", "bye", "spot") if odds[goal] >= 5), "spot")
+        print(f"AT-4: {sim['names'][rid]:<24} {sim['records'][rid][:2]} {odds} open {page['open_goal']}")
+        assert page["open_goal"] == best
+    fridge = next(rid for rid, name in sim["names"].items() if name == "Lil Fridge")
+    assert sim["records"][fridge][:2] == [15, 7]
+    assert sim["pages"][fridge]["open_goal"] in ("seed-1", "bye")
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_each_week_11_status_equals_the_plain_check_on_wins_by_hand(cpc_week_11_file):
+    # AT-5. Three weeks left with the median game give 6 more wins at most.
+    sim = cpc_week_11_file
+    wins = {int(rid): record[0] for rid, record in sim["records"].items()}
+    reach = 2 * len(sim["schedule"])
+    assert reach == 6
+    for rid, page in sim["pages"].items():
+        hand = {goal: _hand_goal_status(int(rid), wins, reach, goal) for goal in CPC_GOALS}
+        print(f"AT-5: {sim['names'][rid]:<24} wins {wins[int(rid)]} hand {hand}")
+        assert {goal: page["goals"][goal]["status"] for goal in CPC_GOALS} == hand

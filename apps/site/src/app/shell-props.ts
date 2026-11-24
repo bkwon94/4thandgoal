@@ -22,7 +22,7 @@ const SHORT: Record<Exclude<NavKind, "home" | "week">, string> = {
   managers: "Managers",
   analyzer: "Trade",
   waiver: "Waiver",
-  sim: "Sim",
+  sim: "Race",
 };
 
 /* One destination per menu item, in the order of the items. An item takes the label of its package unless it sets
