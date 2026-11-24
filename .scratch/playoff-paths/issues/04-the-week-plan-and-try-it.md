@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-12, AT-13, AT-20, AT-
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Week plan of the first Path of the 4-2 Finish of Bo Girds holds 3 rows, weeks 12 to 14.
 - [x] "Try it" odds equal a What-if of the plan within 1 point.
