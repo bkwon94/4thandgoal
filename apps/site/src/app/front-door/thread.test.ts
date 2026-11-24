@@ -3,12 +3,13 @@
  * it when it is not Your team. Also the request of Refresh for a trade Answer, and the request of a typed question
  * of trade ideas.
  */
-import { describe, expect, it } from "bun:test";
-import { type AskAnswer, askAnswerSchema } from "./ask-api";
-import { ideasRequestOf, itemOfRoute, tradeRequestOf } from "./ask-thread";
+import { describe, expect, it, mock } from "bun:test";
+import { stubGlobal } from "../../../test/stubs";
+import { type AskAnswer, AskError, askAnswerSchema } from "./ask-api";
+import { ideasRequestOf, itemOfError, itemOfRoute, RETRY_LINE, tradeRequestOf } from "./ask-thread";
 import ideasStream from "./fixtures/trade-ideas-stream.json";
 import { personalName } from "./thread";
-import type { TradeAnswer } from "./trade-api";
+import { streamTrade, type TradeAnswer } from "./trade-api";
 
 describe("personalName", () => {
   it("gives a typed question as is, and a tapped Topic its name with the team after it when it is not Your team", () => {
@@ -114,5 +115,44 @@ describe("itemOfRoute with Trades closed", () => {
       question: "q",
       closest,
     });
+  });
+});
+
+describe("a trade call after the Lock", () => {
+  const CLOSED_LINE = "The trade deadline has passed. Trades open again next season.";
+  const target = { url: "https://api.test", client: "cpc" };
+  const events = { onStep: () => {}, onKey: () => {}, onAnswer: () => {}, onCap: () => {} };
+
+  it("shows the line of a 410 with closed true as the answer, with no retry", async () => {
+    stubGlobal(
+      "fetch",
+      mock(
+        async () =>
+          new Response(JSON.stringify({ closed: true, line: CLOSED_LINE }), { status: 410 }),
+      ),
+    );
+    const failure = await streamTrade(target, "pw", { mode: "sell", roster_id: 1 }, events).catch(
+      (error: unknown) => error,
+    );
+    expect(failure).toBeInstanceOf(AskError);
+    expect(itemOfError(failure, "Sell high")).toEqual({
+      kind: "note",
+      question: "Sell high",
+      line: CLOSED_LINE,
+      topic: null,
+      team: null,
+      retry: false,
+    });
+  });
+
+  it("keeps the retry for a 410 with no closed body", async () => {
+    stubGlobal(
+      "fetch",
+      mock(async () => new Response("gone", { status: 410 })),
+    );
+    const failure = await streamTrade(target, "pw", { mode: "sell", roster_id: 1 }, events).catch(
+      (error: unknown) => error,
+    );
+    expect(itemOfError(failure, "q")).toMatchObject({ line: RETRY_LINE, retry: true });
   });
 });
