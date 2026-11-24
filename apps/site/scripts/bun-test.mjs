@@ -1,7 +1,7 @@
 /**
  * Runs `bun test` on each test folder of the site app and of the site side of each package, from apps/site, so Bun reads
  * the preload of bunfig.toml. Run it with pnpm test:bun [<bun test flag> ...]. It exits with the code of `bun test`.
- * BUN_TEST_WORKERS=<n> sets the count of worker processes. The default is the count of CPU cores.
+ * BUN_TEST_WORKERS=<n> sets the count of worker processes. With CI set, the default is the count of CPU cores. A local run uses 3.
  * CI sets BUN_TEST_SHARD, such as "2/4", for the shard of each job, and BUN_TEST_BASE on a PR for the tests the diff can reach.
  */
 import { spawnSync } from "node:child_process";
@@ -9,7 +9,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { availableParallelism } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { changedFilesSince, scopeArgs, shardArg } from "./test-scope.mjs";
+import { changedFilesSince, scopeArgs, shardArg, workerCount } from "./test-scope.mjs";
 
 const SITE = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 const PACKAGES = join(SITE, "..", "..", "packages");
@@ -29,9 +29,9 @@ const TEST_FOLDERS = [
 ];
 
 /* --parallel runs the files in worker processes at the same time. In one process the files run one after another, and
-   the suite takes about 3 times as long. The hook sets a lower count, so two commits at the same time leave each test
-   enough CPU for its 5 s timeout. */
-const workers = process.env.BUN_TEST_WORKERS || String(availableParallelism());
+   the suite takes about 3 times as long. A local run uses 3 workers, and CI uses one per CPU core. The hook sets its own
+   count, so two commits at the same time leave each test enough CPU for its 5 s timeout. */
+const workers = workerCount({ env: process.env, cores: availableParallelism() });
 
 // The scope of the run. With no BUN_TEST_BASE, or a diff that names a config file, the run takes the full suite.
 const base = process.env.BUN_TEST_BASE;

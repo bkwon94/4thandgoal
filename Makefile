@@ -11,7 +11,7 @@ site-check = pnpm --dir apps/site check
 # work tree. A site test that runs git from apps/site, such as the tracker rule test, would read apps/site as the top. The
 # env -u calls make git find the work tree from the folder, as it does outside a hook.
 # The hook caps the worker processes of `bun test` at HOOK_TEST_WORKERS. Two commits at the same time then leave each site
-# test enough CPU for its 5 s timeout. A run with no STAGED uses one worker per CPU core.
+# test enough CPU for its 5 s timeout. A run with no STAGED uses 3 workers, or one per CPU core when CI is set.
 HOOK_TEST_WORKERS = 3
 site-check-fast = $(if $(filter 1,$(STAGED)),BUN_TEST_WORKERS=$(HOOK_TEST_WORKERS) )LINT_FILES="$(LINT_FILES)" FMT_FILES="$(FMT_FILES)" env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_PREFIX -u GIT_WORK_TREE pnpm --dir apps/site check:fast
 pipeline-check = make -C apps/pipeline check
