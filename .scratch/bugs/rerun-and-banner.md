@@ -31,7 +31,7 @@ Ran 1 test in 0.236s
 
 OK
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The Deadline banner after the Lock is 43 px tall
 
@@ -58,7 +58,7 @@ Green: at `08232a91`, `cd apps/site && CLIENT=cpc pnpm build && CLIENT=cpc pnpm 
   ✓  3 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /analyze/ dark 1280px (703ms)
   3 passed (2.9s)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
