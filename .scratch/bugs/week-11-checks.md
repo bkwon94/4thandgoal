@@ -37,9 +37,34 @@ Test verdict: pending
 
 Done condition: `apps/site/e2e/analyzer-stage.spec.ts` passes on the cpc week 11 build, where roster 2 has a new name.
 Method: diagnosing-bugs.
-Cause: pending
-Red: pending
-Green: pending
+Cause: `rawTeams` in `apps/site/src/fixtures/raw-teams.ts` reads the rosters of the latest week, and `openTradeB` in `apps/site/e2e/analyzer-stage.spec.ts` pins the name "All You Need Is Love" of roster 2, so the week 11 rename of roster 2 and the week 11 trades that move Tee Higgins, Bhayshul Tuten, Rashee Rice, and Ashton Jeanty off the rosters of trade T and trade B break 38 tests.
+Red: at `312deb0e`, `cd apps/site && CLIENT=cpc pnpm check:floor analyzer-stage.spec.ts` after `CLIENT=cpc pnpm build`
+
+```text
+    Error: expect(locator).toBeVisible() failed
+    Locator: locator('section[aria-label="Trade Analyzer"] [data-mesh-anchor]').filter({ has: locator('[data-stage-team]').getByText('Bo Girds', { exact: true }) }).getByText('2 players')
+    Error: element(s) not found
+      > 210 |       ).toBeVisible();
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+      - waiting for getByRole('dialog').getByRole('button', { name: /All You Need Is Love/ })
+      > 313 |     .click();
+
+  38 failed
+  1 skipped
+  4 passed (10.7m)
+```
+
+The loop is the spec itself, so the fix changes the loop file. The parent `312deb0e` holds the loop, the week 11 data, and no fix. The fix reads the week 10 rosters, which hold trade T, trade B, and the recorded answers, and it reads each team name of trade B from the teams by roster id.
+
+Green: at `92b790f2`, `cd apps/site && CLIENT=cpc pnpm check:floor analyzer-stage.spec.ts` after `CLIENT=cpc pnpm build`
+
+```text
+  1 skipped
+  42 passed (1.3m)
+Running 12 tests using 1 worker
+  12 passed (51.8s)
+```
 Test verdict: pending
 
 ### 3. A team link with a short name is under the tap floor
