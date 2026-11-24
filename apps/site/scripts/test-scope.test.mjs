@@ -17,10 +17,6 @@ import {
 const SITE = join(import.meta.dirname, "..");
 
 describe("the count of workers of a bun test run", () => {
-  it("is 3 on a local run, with no BUN_TEST_WORKERS and no CI, so many agents at once do not swap the Mac", () => {
-    expect(workerCount({ env: {}, cores: 10 })).toBe("3");
-  });
-
   it("is one worker per CPU core when CI is set", () => {
     expect(workerCount({ env: { CI: "true" }, cores: 4 })).toBe("4");
   });

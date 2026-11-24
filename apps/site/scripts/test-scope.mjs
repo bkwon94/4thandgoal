@@ -47,7 +47,7 @@ export function needsFullSuite(changedFiles) {
 export const LOCAL_WORKERS = 3;
 export function workerCount({ env, cores }) {
   if (env.BUN_TEST_WORKERS) return env.BUN_TEST_WORKERS;
-  return String(env.CI ? cores : LOCAL_WORKERS);
+  return String(cores);
 }
 
 /* The measured time of each test file, as a path from apps/site. `bun test --shard` splits the files by count with no
