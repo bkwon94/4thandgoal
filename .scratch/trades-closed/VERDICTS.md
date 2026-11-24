@@ -1,0 +1,31 @@
+ACCEPTANCE.md: 6d44fab8a7baf9a8faca5ad5e6378b21abe9dde5
+EVIDENCE.md: a78c26400562a5f2d6cc8790a81c94196de3d3b4
+
+Test verdicts
+AT-1: PASS
+AT-2: PASS
+AT-3: FAIL The Then line asks for one link to Home with the href `/`, but the shots show only a Home button, the steps assert only a link named "Home", and no file shows its href.
+AT-4: PASS
+AT-5: PASS
+AT-6: PASS
+AT-7: PASS
+AT-8: PASS
+AT-9: PASS
+AT-10: PASS
+AT-11: PASS
+AT-12: PASS
+AT-13: PASS
+AT-14: PASS
+AT-15: PASS
+AT-16: PASS
+AT-17: PASS
+AT-18: PASS
+AT-19: PASS
+AT-20: PASS
+AT-21: PASS
+AT-22: PASS
+AT-23: PASS
+AT-24: PASS
+AT-25: PASS
+AT-26: PASS
+AT-27: PASS
