@@ -13,7 +13,7 @@ import { findOverlap } from "./smoke";
 
 const OUT = join(process.cwd(), "out");
 // Run it on the export of a client with the finder on, built against the local API URL, as the grade-bar project does:
-// CLIENT=norcal NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
+// CLIENT=norcal BUILD_NOW=2026-11-21T09:55:00-05:00 NEXT_PUBLIC_API_URL=http://localhost:8080 pnpm build
 // The recorded find answer of a real press for Bo Girds with the RB chip on the local API, week 11 of cpc: 4 picks of
 // two shapes, and 3 near ideas.
 const FIND = readFileSync(

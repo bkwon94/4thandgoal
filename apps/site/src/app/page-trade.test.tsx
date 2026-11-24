@@ -11,6 +11,7 @@ import formStream from "./front-door/fixtures/trade-form-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
 import sellStream from "./front-door/fixtures/sell-high-stream.json";
 import HomePage from "./front-door/door-page";
+import { pinTradesOpen } from "../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
    sets the folder, and the preload puts the real one back after each test. */
@@ -106,6 +107,9 @@ afterEach(() => {
   fetchStub.mockReset();
   for (const list of Object.values(replies)) list.length = 0;
 });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the trade check of Lil Fridge", () => {
   it("sends the typed trade on to the trade check with Your team and the passphrase", async () => {

@@ -30,6 +30,19 @@ const SITE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 export function clientRoot(env) {
   return env.CLIENT_ROOT ?? REPO_ROOT;
 }
+/* The clock of the build, in ms since the epoch: the real time, or the time that the env value BUILD_NOW names. BUILD_NOW is a
+   test input, never a mock mode. A test build sets it to a time before the Lock, so the page that the test opens does
+   not change with the day. Only the CLI entry reads it. */
+export function buildNow(env) {
+  if (env.BUILD_NOW === undefined) return Date.now();
+  const now = Date.parse(env.BUILD_NOW);
+  if (Number.isNaN(now)) {
+    throw new ClientBuildError(
+      `BUILD_NOW must be a time with a UTC offset, such as 2026-11-21T09:55:00-05:00. Got "${env.BUILD_NOW}".`,
+    );
+  }
+  return now;
+}
 /* The JSON Schema of the kernel keys, which the league package exports from its pydantic model. "make schema" in
    packages/league/python rewrites it. */
 export const SCHEMA_FILE = join(
@@ -527,7 +540,12 @@ function main() {
       "Set CLIENT to the slug of one folder under clients/. Example: CLIENT=cpc pnpm build",
     );
   }
-  buildClient({ slug, root: clientRoot(process.env), site: SITE_DIR });
+  buildClient({
+    slug,
+    root: clientRoot(process.env),
+    site: SITE_DIR,
+    now: buildNow(process.env),
+  });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

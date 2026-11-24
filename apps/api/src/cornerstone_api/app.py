@@ -35,6 +35,7 @@ from analyzer.ratelimit import GradeLimiter, RateLimiter, request_address
 from analyzer.sell_high import pick_sells
 from analyzer.trade_news import NEWS
 from analyzer.tunables import GRADES_PER_DAY, GRADES_PER_MINUTE
+from analyzer.values import AnalyzerValues
 from cornerstone_api import ask as ask_routes
 from cornerstone_api import free_answer as free_routes
 from cornerstone_api import next_matchup, personal_topics, suggestions, trade_topics, trade_wire
@@ -230,7 +231,8 @@ def _asker(settings: Settings, client: Client, served: analyzer_routes.Served, j
     return ask_routes.Asker(season=client.values.latest_season, jev=jev, misses=MissLog(folder / f"{client.slug}.sqlite"),
                             rosters=_rosters(client, served), clock=lambda: datetime.now(client.tz),
                             caps=Caps(folder / f"{client.slug}.caps.sqlite", client.slug),
-                            roster_players=_roster_players(client, served))
+                            roster_players=_roster_players(client, served),
+                            lock=client.values.package(AnalyzerValues).lock)
 
 
 def _hunt(settings: Settings, client: Client, served: analyzer_routes.Served) -> eggs_routes.Hunt:

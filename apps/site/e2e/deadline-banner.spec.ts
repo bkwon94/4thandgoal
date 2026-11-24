@@ -1,6 +1,7 @@
 /**
  * The Deadline banner on the static export in out/ of the current CLIENT, in WebKit, as Safari runs, with a fixed clock.
  * It checks the text of each phase, the band that grows to fit, the even pad, the press, the sheet, and no overlap.
+ * Build the export with BUILD_NOW=2026-11-21T09:55:00-05:00, a build clock before the Lock, so the build keeps the banner.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync, readFileSync } from "node:fs";

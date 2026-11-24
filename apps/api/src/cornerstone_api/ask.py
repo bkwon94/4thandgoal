@@ -25,6 +25,8 @@ from cornerstone_api.ask_wording import (
     SITE_PAGE,
     TEAM,
     TOPIC,
+    TRADE_TOPICS,
+    TRADES_CLOSED_LINE,
     route_questions,
     route_state,
     site_page_line,
@@ -34,6 +36,7 @@ from cornerstone_api.caps import Caps
 from cornerstone_api.chat_turns import Turn, Turns, with_turns
 from cornerstone_api.miss_log import MissLog
 from cornerstone_api.named_players import named_players
+from cornerstone_api.trades_closed import trades_closed
 from league.client import PackageName
 from league.jev_port import Jev, JevError, JevResponse
 
@@ -54,8 +57,9 @@ WEEK_MAX = 18
 FREE_ROUTE_SECONDS = 600
 
 RouteKind = Literal["topic", "free", "miss", "refuse", "site"]
-# The kinds of the answer of the ask route: a route, or the calm line of a cap in place of a free answer.
-AskKind = Literal["topic", "free", "miss", "refuse", "site", "cap"]
+# The kinds of the answer of the ask route: a route, the calm line of a cap in place of a free answer, or the closed line
+# of a trade question after the Lock.
+AskKind = Literal["topic", "free", "miss", "refuse", "site", "cap", "closed"]
 # The team name of each roster of the league, by roster id. The app gives the live rosters of the client.
 Rosters = Callable[[], dict[int, str]]
 # The name of each rostered player by player id, for each roster of the league by roster id.
@@ -186,6 +190,8 @@ class Asker:
     free_routes: FreeRoutes = field(default_factory=FreeRoutes)
     # The rostered players of the league. None reads no names, so a start question always stays with Start or sit.
     roster_players: RosterPlayers | None = None
+    # The Lock of the client: from then on, a trade question gets the closed line. None means the client never closes.
+    lock: datetime | None = None
 
 
 def client_asker(request: Request) -> Asker:
@@ -255,6 +261,12 @@ def ask(body: AskRequest, asker: ClientAsker) -> dict:
         asker.free_routes.put(body.roster_id, body.week, question, route)
     kind: AskKind = route.kind
     line = None
+    # A trade Topic after the Lock gets the closed line from code. The route makes no trade call and no Claude call, and
+    # the question is no miss, because the Topic is the right one and only the tool is closed.
+    if route.kind == "topic" and route.topic in TRADE_TOPICS and trades_closed(asker.lock, asker.clock()):
+        logger.info("A trade question stopped at the Lock, with no Claude call")
+        kind, line = "closed", TRADES_CLOSED_LINE
+        route = dataclasses.replace(route, topic=None, team=None, closest=[], suggestion=None)
     # A free answer is a Claude call, so past a cap the route gives the calm line with the closest Topics instead.
     if route.kind == "free" and (hit := asker.caps.check(body.roster_id, asker.clock())) is not None:
         logger.info("A free answer stopped at the %s cap, with no Claude call", hit.cap)
