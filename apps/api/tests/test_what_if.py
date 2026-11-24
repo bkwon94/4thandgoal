@@ -38,7 +38,7 @@ WEEK_10_SIM = Path(__file__).parent / "fixtures" / "sim" / "cpc-week-10-sim.json
 WHAT_IF = "/clients/cpc/sim/what-if"
 BO_GIRDS = 6
 KEYS = {"schema_version", "season", "week", "runs", "effective_runs", "you", "set", "teams", "sample",
-        "sample_weights", "page"}
+        "sample_weights", "page", "board"}
 WIN_ABOVE_WEEK_11 = {"week": 11, "game": "win", "median": "above"}
 
 
@@ -99,8 +99,26 @@ def test_a_what_if_with_no_set_result_gives_the_page_of_bo_girds_in_the_week_fil
     file = json.loads(WEEK_10_SIM.read_text(encoding="utf-8"))
     assert body["page"] == file["pages"][str(BO_GIRDS)]
     assert body["teams"] == file["teams"]
+    assert body["board"] == [{key: row[key] for key in ("roster_id", "goals")} for row in file["board"]]
     assert body["sample"] == file["sample"]
     assert body["effective_runs"] == body["runs"] == 10_000
+
+
+def test_two_equal_what_ifs_give_the_finish_lists_the_week_plans_the_score_to_beat_and_the_board_twice(api):
+    # AT-20, on the week 10 file of the tests: a win and a median win for Bo Girds in week 11, twice.
+    call = {"you": BO_GIRDS, "set": [WIN_ABOVE_WEEK_11]}
+    first, second = (api.post(WHAT_IF, json=call).json() for _ in range(2))
+    assert first == second
+    page = first["page"]
+    plans = [path["plan"] for finish in page["finishes"]["spot"] for path in finish["paths"]]
+    assert plans and all(plan["weeks"] for plan in plans)
+    assert [s["week"] for s in page["score_to_beat"]] == [11, 12, 13, 14]
+    assert len(first["board"]) == 12
+    file = json.loads(WEEK_10_SIM.read_text(encoding="utf-8"))
+    board = {row["roster_id"]: row["goals"]["spot"]["odds"] for row in first["board"]}
+    assert board[BO_GIRDS] == page["goals"]["spot"]["odds"] == first["teams"][str(BO_GIRDS)]["playoff"]
+    assert board != {row["roster_id"]: row["goals"]["spot"]["odds"] for row in file["board"]}
+    print("AT-20 board spot odds", board, "plans of the spot", len(plans))
 
 
 def test_the_what_if_reads_the_latest_published_week(api, repo):

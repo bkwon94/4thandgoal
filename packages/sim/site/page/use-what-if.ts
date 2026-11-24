@@ -59,6 +59,8 @@ export type WhatIf = {
   pending: boolean;
   down: boolean;
   choose: (week: number, choice: Choice) => void;
+  // Set each week of `set` at once in place of the set results, as "Try it" of a Week plan does.
+  chooseAll: (set: SetResult[]) => void;
   reset: () => void;
 };
 
@@ -76,6 +78,58 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
   const answered = state.set.length > 0 && state.answer !== null ? state.answer : null;
   const shown = answered?.page ?? file;
 
+  /* Start the call of `set`. `heldOf` gives the held blocks after the answer, from the state then and its page. */
+  const start = (
+    set: SetResult[],
+    held: State["held"],
+    heldOf: (was: State, page: SimPage) => State["held"],
+  ) => {
+    setState((was) => ({ ...was, set, held, pending: true }));
+    const controller = new AbortController();
+    call.current = controller;
+    const failed = () =>
+      // The page goes back to the set results of the last answer, so each number on it agrees with its set line.
+      setState((was) => {
+        const kept = was.answer?.set ?? [];
+        const keep = new Set(kept.map((result) => result.week));
+        const left = Object.fromEntries(
+          Object.entries(was.held).filter(([key]) => keep.has(Number(key))),
+        );
+        return { ...was, set: kept, held: left, pending: false, down: true };
+      });
+    if (api === undefined) {
+      failed();
+      return;
+    }
+    api({ you: file.you, set }, controller.signal).then(
+      (answer) => {
+        if (controller.signal.aborted) return;
+        call.current = null;
+        setState((was) => ({
+          ...was,
+          answer: {
+            page: answer.page,
+            set,
+            runs: {
+              teams: answer.teams,
+              sample: answer.sample,
+              sample_weights: answer.sample_weights,
+            },
+          },
+          held: heldOf(was, answer.page),
+          pending: false,
+          down: false,
+        }));
+      },
+      () => {
+        // A cancelled call gives way to the call of the new tap, so only a call that still counts fails the page.
+        if (controller.signal.aborted) return;
+        call.current = null;
+        failed();
+      },
+    );
+  };
+
   const choose = useCallback(
     (week: number, choice: Choice) => {
       cancel();
@@ -92,51 +146,31 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
         setState({ ...EMPTY, down: state.down });
         return;
       }
-      setState((was) => ({ ...was, set, held, pending: true }));
-      const controller = new AbortController();
-      call.current = controller;
-      const failed = () =>
-        // The page goes back to the set results of the last answer, so each number on it agrees with its set line.
-        setState((was) => {
-          const kept = was.answer?.set ?? [];
-          const keep = new Set(kept.map((result) => result.week));
-          const left = Object.fromEntries(
-            Object.entries(was.held).filter(([key]) => keep.has(Number(key))),
-          );
-          return { ...was, set: kept, held: left, pending: false, down: true };
-        });
-      if (api === undefined) {
-        failed();
-        return;
-      }
-      api({ you: file.you, set }, controller.signal).then(
-        (answer) => {
-          if (controller.signal.aborted) return;
-          call.current = null;
-          setState((was) => ({
-            ...was,
-            answer: {
-              page: answer.page,
-              set,
-              runs: {
-                teams: answer.teams,
-                sample: answer.sample,
-                sample_weights: answer.sample_weights,
-              },
-            },
-            held: choice === null ? was.held : withOdds(was.held, week, choice, answer.page),
-            pending: false,
-            down: false,
-          }));
-        },
-        () => {
-          // A cancelled call gives way to the call of the new tap, so only a call that still counts fails the page.
-          if (controller.signal.aborted) return;
-          call.current = null;
-          failed();
-        },
+      start(set, held, (was, page) =>
+        choice === null ? was.held : withOdds(was.held, week, choice, page),
       );
     },
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- start reads only refs, props, and setState
+    [api, file.you, shown, state],
+  );
+
+  const chooseAll = useCallback(
+    (set: SetResult[]) => {
+      cancel();
+      const sorted = [...set].sort((a, b) => a.week - b.week);
+      if (sorted.length === 0) {
+        setState({ ...EMPTY, down: state.down });
+        return;
+      }
+      const held: State["held"] = {};
+      for (const result of sorted) {
+        const block =
+          state.held[result.week] ?? shown.weeks.find((entry) => entry.week === result.week);
+        if (block !== undefined) held[result.week] = block;
+      }
+      start(sorted, held, (was) => was.held);
+    },
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- start reads only refs, props, and setState
     [api, file.you, shown, state],
   );
 
@@ -156,6 +190,7 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
     pending: state.pending,
     down: state.down,
     choose,
+    chooseAll,
     reset,
   };
 }

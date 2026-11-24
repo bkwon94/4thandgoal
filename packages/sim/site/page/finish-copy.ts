@@ -2,7 +2,14 @@
  * The words of the Finish list and its Paths, the copy of decision 06 of playoff-paths: the name and the line of a Finish,
  * the conditions of a Path, and the sentence of each case. Each takes data from the page block and returns a string.
  */
-import type { Finish, FinishPath, WeekSim } from "../schema/sim-types";
+import type {
+  Finish,
+  FinishPath,
+  PlanWeek,
+  ScoreToBeat,
+  WeekPlan,
+  WeekSim,
+} from "../schema/sim-types";
 import { nameOf, recordText } from "./format";
 import { type GoalKey, seedOf } from "./goals";
 
@@ -53,4 +60,52 @@ export function conditionsText(sim: WeekSim, path: FinishPath): string {
 export function happensText(path: FinishPath, goal: GoalKey, mine: boolean): string {
   const odds = reach(goal, mine);
   return `Happens ${Math.round(path.chance)}% · ${odds[0].toLowerCase()}${odds.slice(1)} ${path.odds}%.`;
+}
+
+/* The header of a Week plan with the odds of "Try it", such as "Your plan to 15-13 · you're in 81%". */
+export function planHeader(finish: Finish, plan: WeekPlan, goal: GoalKey, mine: boolean): string {
+  const odds = reach(goal, mine);
+  return `${mine ? "Your" : "Their"} plan to ${recordText(finish.record)} · ${odds[0].toLowerCase()}${odds.slice(1)} ${plan.odds}%`;
+}
+
+/* The order line of a plan whose order does not matter, such as "Any 4 wins of your 6 work. This is the most common
+   order." Null when the order matters. */
+export function orderLine(
+  finish: Finish,
+  plan: WeekPlan,
+  winsLeft: number,
+  mine: boolean,
+): string | null {
+  if (!plan.any_order) return null;
+  const wins = finish.more_wins;
+  return `Any ${wins} ${wins === 1 ? "win" : "wins"} of ${mine ? "your" : "their"} ${winsLeft} ${wins === 1 ? "works" : "work"}. This is the most common order.`;
+}
+
+/* The result of one week of a plan as a sentence, such as "Win and beat the median." or "Lose, but beat the median." */
+export function planResult(week: PlanWeek): string {
+  const win = week.game === "win";
+  if (week.median === null) return win ? "Win." : "Lose.";
+  if (week.median === "above")
+    return win ? "Win and beat the median." : "Lose, but beat the median.";
+  return win ? "Win, but miss the median." : "Lose and miss the median.";
+}
+
+/* The Score to beat of one week of a plan, such as "Score 109 to win, 127 to be sure. Score 107 to beat the median, 114
+   to be sure." A loss names no score for the game, and a median miss names none for the median. */
+export function planScores(week: PlanWeek, beat: ScoreToBeat | undefined): string | null {
+  if (beat === undefined) return null;
+  const parts: string[] = [];
+  if (week.game === "win") parts.push(`Score ${beat.win} to win, ${beat.win_sure} to be sure.`);
+  if (week.median === "above" && beat.median !== null)
+    parts.push(`Score ${beat.median} to beat the median, ${beat.median_sure} to be sure.`);
+  return parts.length > 0 ? parts.join(" ") : null;
+}
+
+/* The games to root for in one week of a plan, such as "Immaculate Concepcion over Bengals Buddies · Nico Collinsizer
+   over Omarion Himpton". Null with none. */
+export function planRootFor(sim: WeekSim, week: PlanWeek): string | null {
+  if (week.root_for.length === 0) return null;
+  return week.root_for
+    .map((game) => `${nameOf(sim, game.winner)} over ${nameOf(sim, game.loser)}`)
+    .join(" · ");
 }

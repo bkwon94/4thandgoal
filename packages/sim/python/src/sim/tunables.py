@@ -33,6 +33,15 @@ PATH_LIFT = 2
 PATH_SKIP_SHARE = 0.85
 # The most Paths of one Finish. Three fit a phone, and each later Path covers fewer runs.
 PATHS_PER_FINISH = 3
+# A Week plan says that any order of its wins works when its most common order holds under this share of the runs of
+# its Path (PRD, the Week plan). Under half, most of the runs take another order.
+ANY_ORDER_SHARE = 0.5
+# The most games to root for in one week of a Week plan, and the least runs of the plan that a side of a game needs.
+# At 100 runs a share moves about 4 points between seeds, so a root-for row with fewer runs is noise.
+PLAN_ROOT_FOR = 2
+PLAN_ROOT_RUNS = 100
+# The chance of "to be sure" in the Score to beat (decision 06).
+SURE_BEAT = 0.8
 # A Finish at this share of runs or more is sure, and one under 1 minus it has no way in (decision 06).
 SURE_FINISH = 0.995
 # The lowest odds, in percent, of a Goal that The Race opens on. Below it the 1 seed or the bye is no real race, so the

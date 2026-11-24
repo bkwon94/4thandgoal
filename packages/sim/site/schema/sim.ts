@@ -183,12 +183,49 @@ export const conditionSchema = z.object({
   record: z.tuple([z.number(), z.number()]),
 });
 
-/* A Path of 1 to 3 conditions at one Finish: how often it happens there, the odds of the Goal on it, and its runs. */
+/* One game to root for in one week of a Week plan, with the odds of the Goal on the plan when its winner wins. */
+export const planGameSchema = z.object({
+  winner: z.number(),
+  loser: z.number(),
+  odds: z.number().int(),
+});
+
+/* One week of a Week plan: the result of the team, and the 1 or 2 games of the week to root for. */
+export const planWeekSchema = z.object({
+  week: z.number(),
+  opponent: z.number(),
+  game: z.enum(["win", "loss"]),
+  median: z.enum(["above", "below"]).nullable(),
+  root_for: z.array(planGameSchema),
+});
+
+/* The results week by week on one Path or one Finish, in the most common order. `odds` are the odds of "Try it", and
+   `any_order` is true when other orders of the same wins work too. */
+export const weekPlanSchema = z.object({
+  weeks: z.array(planWeekSchema),
+  any_order: z.boolean(),
+  odds: z.number().int(),
+});
+
+/* The scores a team needs in one week left, in whole points: a coin flip and "to be sure", against the opponent and the
+   median. The median scores are null in a league with no median game. */
+export const scoreToBeatSchema = z.object({
+  week: z.number(),
+  opponent: z.number(),
+  win: z.number(),
+  win_sure: z.number(),
+  median: z.number().nullable(),
+  median_sure: z.number().nullable(),
+});
+
+/* A Path of 1 to 3 conditions at one Finish: how often it happens there, the odds of the Goal on it, its runs, and its
+   Week plan. An older file has no plan. */
 export const pathSchema = z.object({
   conditions: z.array(conditionSchema).min(1).max(3),
   chance: z.number(),
   odds: z.number().int(),
   runs: z.number().int(),
+  plan: weekPlanSchema.nullable().default(null),
 });
 
 /* The case of a Finish, which sets its copy: sure at 99.5% or more, none under 0.5%, Paths at 90%, one best chance below
@@ -204,6 +241,8 @@ export const finishSchema = z.object({
   about: z.boolean(),
   case: finishCaseSchema,
   paths: z.array(pathSchema),
+  // The Week plan of a Finish of a seed, which holds no Path. Null for the spot and the bye. An older file has none.
+  plan: weekPlanSchema.nullable().default(null),
 });
 
 /* The page block of one team. sim.json and the What-if answer share it, so the page reads one shape. */
@@ -227,6 +266,8 @@ export const simPageSchema = z.object({
   open_goal: z.string().nullable().default(null),
   // The Finish list of each Goal by key, best Finish first. The spot and the bye hold the Paths. An older file has none.
   finishes: z.record(z.string(), z.array(finishSchema)).default({}),
+  // The Score to beat of each regular week left, in week order. An older file has none.
+  score_to_beat: z.array(scoreToBeatSchema).default([]),
 });
 
 /* The week file, week-NN/sim.json: the season shape with the run weights, a page for each team, and the league fact. */
