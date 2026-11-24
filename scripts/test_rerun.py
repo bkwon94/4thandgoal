@@ -21,6 +21,12 @@ FIX = "def add(a, b):\n    return a + b\n"
 FAILURE_LINE = "AssertionError: add(2, 2) gave 5"
 COMMAND = "python3 -B loop.py"
 # A loop that prints its failure line with the ANSI color codes of Vitest on GitHub Actions.
+# A loop that prints its failure lines as Bun does: the failed expect, and the "(fail)" line of the test.
+BUN_LOOP = ("import sys\nfrom calc import add\nif add(2, 2) != 4:\n"
+            "    print('error: expect(received).toBe(expected)')\n"
+            "    print('(fail) add > gives the sum')\n"
+            "    print(' 0 pass')\n    print(' 1 fail')\n"
+            "    sys.exit(1)\nprint('loop passed')\n")
 COLOR_LOOP = ("import sys\nfrom calc import add\nif add(2, 2) != 4:\n"
               "    print('\\x1b[2m Test Files \\x1b[22m \\x1b[1m\\x1b[31m1 failed\\x1b[39m\\x1b[22m\\x1b[90m (1)\\x1b[39m')\n"
               "    sys.exit(1)\nprint('loop passed')\n")
@@ -171,6 +177,16 @@ class TheRerun(unittest.TestCase):
         red = self.commit({"loop.py": COLOR_LOOP})
         fix = self.commit({"calc.py": FIX})
         self.commit({".scratch/bugs/add.md": quick_file(red, fix, "Test Files  1 failed (1)")})
+        result = self.rerun()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+
+    def test_the_bun_lines_of_a_failed_test_are_failure_lines(self):
+        # Bun prints "error: expect(...)" and "(fail) <test name>", with no FAIL and no Error in either line.
+        red = self.commit({"loop.py": BUN_LOOP})
+        fix = self.commit({"calc.py": FIX})
+        lines = "error: expect(received).toBe(expected)\n(fail) add > gives the sum\n 1 fail"
+        self.commit({".scratch/bugs/add.md": quick_file(red, fix, lines)})
         result = self.rerun()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
