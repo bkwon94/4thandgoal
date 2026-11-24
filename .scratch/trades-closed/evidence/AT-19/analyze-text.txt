@@ -1,1 +1,1 @@
-norcal /analyze/ after the passphrase: the Mode switch: Mode switch: Grade a trade · Find a trade; Grade the Trade buttons: 1
+norcal /analyze/ 5 s after the passphrase: Mode switch: Grade a trade · Find a trade; Grade the Trade buttons: 1; "The API did not answer" in the page: false; "Loading the teams" in the page: false; hero eyebrow: TRADE ANALYZER

@@ -1,3 +1,11 @@
 {
-  "route": "/2026/week-10/"
+  "route": "/2026/week-09/",
+  "steps": [
+    {
+      "scroll": "#trades"
+    },
+    {
+      "wait": 800
+    }
+  ]
 }

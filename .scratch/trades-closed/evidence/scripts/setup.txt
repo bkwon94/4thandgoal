@@ -29,3 +29,12 @@ The builds of the scratch worktree, one at a time, each with NEXT_PUBLIC_API_URL
 Spend of the round
 - Claude: one call, "The personal Topic weak_spots ended as checked, ... a cost of $0.0061", in the log of the agent API. The round API log has no call to api.anthropic.com.
 - TypeSafe: 12 Jev requests on the agent API and 30 on the round API, each a small read of the routing or the lifts. No fair warm-up ran, because WARM_SLUGS holds only cpc and cpc is closed.
+
+The re-record of AT-11, AT-12, AT-15, and AT-19 at c477cb22
+- ACCEPTANCE.md was revised in 9c3a7c22 (AT-11 uses week 9; AT-12 compares with main). EYEBROW-1 (22e03847) and NULLTEAM-1 (c477cb22) merged before the re-record.
+- Runner rounds in the Spec worktree: round-output-2.txt, round2-api.log.txt, round3-api.log.txt.
+- A new detached scratch worktree of c477cb22 held the same scripts. Its builds, each with NEXT_PUBLIC_API_URL=http://127.0.0.1:18601: cpc with the real clock (AT-11 and AT-12 iPhone check and facts), norcal with the real clock (AT-19 iPhone check and facts), and cpc with BUILD_NOW=2026-11-21T09:55:00-05:00 (AT-15). The job lists are scripts/facts-r3.json, scripts/facts-r3b.json, and scripts/pages15b.json.
+- The agent API on 18601 was started again from the Spec worktree at c477cb22 with the same command.
+- For AT-12, a detached scratch worktree of 671e9f24, the merge base with main, ran its own API on 18621 and its own cpc build (AT-12/main-compare.txt, scripts/facts-main.json).
+- The 1-minute load was over 12 at times from other sessions; each build waited for it where the brief asks, and the build of 671e9f24 ran at a load of 11.61.
+- Spend of the re-record: two Claude calls for the personal Topic weak_spots, $0.0088 and $0.0085; 14 TypeSafe requests. The fair warm-up of the merge-base API asked 0 questions, $0.0000.

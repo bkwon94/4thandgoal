@@ -1,0 +1,33 @@
+AT-12: how the main side of answer-text.txt was made, and what the two sides share.
+main side: a detached scratch worktree of 671e9f24, the merge base of main and the Spec branch, with its own local evidence API started from that worktree:
+$ source ~/.secrets; CORNERSTONE_RESULT_CACHE_DIR=<scratch>/cache/results-main make -C apps/api api-evidence API_PORT=18621 API_ORIGIN=http://127.0.0.1:18622
+$ CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:18621 pnpm --dir apps/site build
+The export was served on 127.0.0.1:18622. The same steps as AT-12/steps.json ran in WebKit at 390x660 (scripts/zz-tc.spec.ts.txt, mode facts).
+Spec side: the cpc build of c477cb22 with the agent API on 18601.
+The merge base is used because main after it adds the Week 11 report, so the head of main shows week 11 data, not week 10.
+
+$ git diff --stat 671e9f24 c477cb22 -- apps/pipeline/src/cornerstone/topics.py clients/cpc/published/2026/week-10/topics.json
+(no output: neither file differs)
+
+$ git log --oneline 671e9f24..main   (main after the merge base)
+5dd0ba74 Week 11 report
+3646f2b0 Quick win: Cap the bun test workers of a local run (#93)
+839520ed Bug: The rerun check reads no Bun failure, and the closed Deadline banner is under the tap floor (#94)
+
+$ sed -n 198,213p apps/pipeline/src/cornerstone/topics.py
+def _leaders_trades(rid: int, page: dict) -> TopicAnswer:
+    name = page["teams"][str(rid)]["name"]
+    trades = page["trades"]
+    mine = sorted(((row, group["position"]) for group in page["leaders"] for row in group["rows"]
+                   if row["team"] == name), key=lambda pair: pair[0]["rank"])
+    # A leader of Your team makes the fact. With none, the count of trades does.
+    fact = (f"{mine[0][0]['player']}, {ordinal(mine[0][0]['rank'])} at {mine[0][1]}" if mine
+            else f"{len(trades)} {'trade' if len(trades) == 1 else 'trades'} this week")
+    # The Topic has no block and no stats, because the stats row counts as a block. Its text opens with a markdown list of the top scorer at each position, which the text
+    # block of the site draws as a list, so the list takes the place of the rows and the leaders show once.
+    leaders = "\n".join(f"- **{group['position']}** {group['rows'][0]['player']}, "
+                         f"{_points(group['rows'][0]['points'])}, {group['rows'][0]['team']}"
+                         for group in page["leaders"] if group["rows"])
+    blurb = page["blurbs"].get("position_leaders")
+    text = [part for part in (leaders, blurb) if part]
+    return TopicAnswer(topic="leaders_trades", fact=fact, text=text)

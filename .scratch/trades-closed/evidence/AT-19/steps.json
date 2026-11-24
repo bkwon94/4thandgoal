@@ -53,6 +53,9 @@
       "wait": 800
     },
     {
+      "wait": 5000
+    },
+    {
       "shot": "analyze"
     }
   ]

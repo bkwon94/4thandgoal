@@ -49,4 +49,4 @@ Action: recorded again
 Question: the facts
 Probability: 0.94
 Reason: No file may show this fact of the Then line: "The Answer shows the position leaders and the recent trades of 2026." (shown at 0.06).
-Action: fix group
+Action: recorded again
