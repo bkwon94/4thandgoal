@@ -39,4 +39,8 @@ Ran 3 tests across 1 file.
 `make check-fast BASE=main` at `8d75c843` passes: 1972 pass, 0 fail, across 204 files.
 Test verdict: pending
 
+## Smoke
+
+Smoke: flow `Analyzer`. "Smoke run: 1 flow, 1 passed, 0 failed". Shots in `.scratch/bugs/idle-stage-team-name/smoke/`.
+
 ## Comments
