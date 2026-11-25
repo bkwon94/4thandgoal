@@ -1,5 +1,5 @@
-ACCEPTANCE.md: be24e81c88be677300b327048f5cf39d9947c4cd
-EVIDENCE.md: c87f0ffc4c716965fd5cb40e6c17a27dda51990b
+ACCEPTANCE.md: aea7204695471ad1078ac2e1fcc8809887b6caaf
+EVIDENCE.md: bf044511723d6120252b2471d3e38261462d4933
 
 Test verdicts
 AT-1: PASS
@@ -13,7 +13,7 @@ AT-8: PASS
 AT-9: PASS
 AT-10: PASS
 AT-11: PASS
-AT-12: FAIL The Then line asks each Week plan row to hold its Score to beat and a loss row to hold no score against the opponent, but AT-12/output.txt shows rows with no score and a score_to_beat entry for the week 14 loss with win 113 and win_sure 131 against Lil Fridge.
+AT-12: PASS
 AT-13: PASS
 AT-14: PASS
 AT-15: PASS
@@ -26,8 +26,8 @@ AT-21: PASS
 AT-22: PASS
 AT-24: PASS
 AT-25: PASS
-AT-26: FAIL The site evidence set asks for no overlapping text, but site-5f26bcb0-answer-view1-390x660-light.png and -810x980-dark.png show the "Playoff race" bubble text under "Clear" in the sticky team bar, and site-5f26bcb0-overlap.txt checks only the full-page shots.
-AT-27: FAIL The Then line asks the short label to read "Race", but no shot shows it, and the rg of the export in short-label.txt prints no match, so the files do not show the claim of the Observation.
+AT-26: PASS
+AT-27: PASS
 AT-28: PASS
 AT-29: PASS
 AT-30: PASS
@@ -40,7 +40,7 @@ AT-36: PASS
 AT-37: PASS
 AT-38: PASS
 AT-39: PASS
-AT-40: PASS
+AT-40: FAIL The Then line says each Clinch line names the Goal, but clinch-lines.txt and the board shots show the spot line of Immaculate Concepcion as "Out with a loss, a median miss, ..." with no Goal named.
 AT-41: PASS
 AT-42: PASS
 AT-43: PASS
