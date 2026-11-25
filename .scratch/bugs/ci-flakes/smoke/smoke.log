@@ -1,0 +1,17 @@
+PASS Front door 390x660 webkit in 15.6 s
+PASS Passphrase 390x660 webkit in 4.9 s
+PASS Passphrase 1280x800 chromium in 4.9 s
+PASS Week report 390x660 webkit in 4.2 s
+PASS Week report 810x980 webkit in 3.4 s
+PASS Week report 1080x740 webkit in 3.7 s
+PASS Week report 1280x800 chromium in 3.5 s
+PASS Manager page 390x660 webkit in 3.9 s
+PASS Manager page 810x980 webkit in 3.6 s
+PASS Manager page 1080x740 webkit in 3.9 s
+PASS Manager page 1280x800 chromium in 3.4 s
+PASS Analyzer 390x660 webkit in 2.2 s
+PASS Power rankings 390x660 webkit in 2.9 s
+PASS Power rankings 1280x800 chromium in 2.8 s
+PASS Midseason report 390x660 webkit in 5.8 s
+PASS Midseason report 1280x800 chromium in 4.5 s
+Smoke run: 7 flows, 7 passed, 0 failed

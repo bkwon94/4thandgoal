@@ -55,6 +55,6 @@ Test verdict: none
 
 ## Smoke
 
-Smoke: pending
+Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 7 passed, 0 failed". Shots in `.scratch/bugs/ci-flakes/smoke/`.
 
 ## Comments
