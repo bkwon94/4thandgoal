@@ -1,0 +1,18 @@
+From the network log of AT-44 (evidence/AT-44/network.txt), 8 contexts.
+
+Each distinct Sleeper API URL:
+https://api.sleeper.app/v1/league/1386167364424318976/rosters
+https://api.sleeper.app/v1/league/1386167364424318976/users
+
+Sleeper API URLs with matchups, projections, players, stats, or state: 0
+
+Each outside host of the log:
+127.0.0.1:8291
+api.sleeper.app
+gc.zgo.at
+
+Each distinct outside URL:
+http://127.0.0.1:8291/clients/cpc/eggs/board
+https://api.sleeper.app/v1/league/1386167364424318976/rosters
+https://api.sleeper.app/v1/league/1386167364424318976/users
+https://gc.zgo.at/count.js

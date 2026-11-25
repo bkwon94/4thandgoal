@@ -1,0 +1,6 @@
+$ cd /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head && python3 -c "import gzip,pathlib
+for p in ['clients/cpc/build/2026/week-11/sim.json','clients/norcal/build/2026/week-10/sim.json','clients/cpc/build/2026/week-10/sim.json']:
+    b=pathlib.Path(p).read_bytes(); print(p, 'raw', len(b), 'gzip', len(gzip.compress(b)))"
+clients/cpc/build/2026/week-11/sim.json raw 337076 gzip 44959
+clients/norcal/build/2026/week-10/sim.json raw 306656 gzip 47875
+clients/cpc/build/2026/week-10/sim.json raw 401537 gzip 52300

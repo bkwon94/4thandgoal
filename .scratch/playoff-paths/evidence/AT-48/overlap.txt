@@ -1,0 +1,8 @@
+390x660-light: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1416, fixed or sticky parts 28, modal layers 0)
+390x660-dark: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1416, fixed or sticky parts 28, modal layers 0)
+810x980-light: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1394, fixed or sticky parts 28, modal layers 0)
+810x980-dark: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1394, fixed or sticky parts 28, modal layers 0)
+1080x740-light: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1401, fixed or sticky parts 28, modal layers 0)
+1080x740-dark: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1401, fixed or sticky parts 28, modal layers 0)
+1280x800-light: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1401, fixed or sticky parts 28, modal layers 0)
+1280x800-dark: overlaps 0, bar covers content 0, sideways scroll no (text boxes 1401, fixed or sticky parts 28, modal layers 0)

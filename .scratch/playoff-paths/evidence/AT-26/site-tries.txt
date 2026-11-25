@@ -1,0 +1,17 @@
+Recording of AT-26 on 5f26bcb0 with the fixed tap (site-tap-cause.txt). This file replaces the tries file of the ce601c12 run.
+--- 390x660 light
+the Answer showed after the first tap; quick chip "Playoffs" in the row: no
+--- 390x660 dark
+the Answer showed after the first tap; quick chip "Playoffs" in the row: no
+--- 810x980 light
+the Answer showed after the first tap; quick chip "Playoffs" in the row: no
+--- 810x980 dark
+the Answer showed after the first tap; quick chip "Playoffs" in the row: no
+--- 1080x740 light
+the Answer showed after the first tap; quick chip "Playoffs" in the row: no
+--- 1080x740 dark
+the Answer showed after the first tap; quick chip "Playoffs" in the row: no
+--- 1280x800 light
+the Answer showed after the first tap; quick chip "Playoffs" in the row: yes
+--- 1280x800 dark
+the Answer showed after the first tap; quick chip "Playoffs" in the row: yes

@@ -1,0 +1,8 @@
+390x660-light: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+390x660-dark: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+810x980-light: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+810x980-dark: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+1080x740-light: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+1080x740-dark: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+1280x800-light: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}
+1280x800-dark: playoff fixture export {"bracketRegion":1,"goalSwitch":0,"leagueBoard":0,"heading":"Bo Girds"}; week 11 export, for comparison {"bracketRegion":0,"goalSwitch":1,"leagueBoard":1,"heading":"The Race"}

@@ -1,0 +1,19 @@
+{
+ "roster_id": 6,
+ "order": [
+  "week_recap",
+  "last_matchup",
+  "power_rankings",
+  "playoff_race",
+  "next_matchup",
+  "your_season",
+  "leaders_trades",
+  "waiver_targets",
+  "stack_up",
+  "weak_spots",
+  "sell_high",
+  "trade_ideas",
+  "trade_check"
+ ],
+ "opened": {}
+}

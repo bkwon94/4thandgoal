@@ -1,0 +1,56 @@
+--- 390x660 light
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 390x660 dark
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 810x980 light
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 810x980 dark
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 1080x740 light
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 1080x740 dark
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 1280x800 light
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+
+--- 1280x800 dark
+Week 12 vs Teez Nuts
+SCORE TO BEAT	TO WIN	TO BE SURE
+Beat Teez Nuts	109	127
+Beat the median	107	114
+
+

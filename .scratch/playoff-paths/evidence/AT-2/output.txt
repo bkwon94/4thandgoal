@@ -1,0 +1,137 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-1/check.py cpc:6 cpc:7 cpc:8 cpc:9 cpc:10 norcal:8 norcal:9 norcal:10
+== cpc 2026 week 6 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-06/raw/bracket.json)
+Sleeper seeds 1-6: [3, 5, 6, 9, 2, 1]
+standings order 1-6: [3, 5, 6, 9, 2, 1]
+sim order 1-6:       [3, 5, 6, 9, 2, 1]
+place  roster  record   PF        PA        Sleeper seed
+1      3       (10, 2, 739.67, 575.14)  seed 1
+2      5       (9, 3, 721.96, 594.71)  seed 2
+3      6       (8, 4, 723.15, 627.21)  seed 3
+4      9       (7, 5, 698.3, 514.79)  seed 4
+5      2       (7, 5, 611.71, 585.1)  seed 5
+6      1       (6, 6, 685.01, 664.81)  seed 6
+7      8       (6, 6, 618.97, 658.86)  seed -
+8      10      (6, 6, 588.01, 660.64)  seed -
+9      12      (4, 8, 603.75, 638.55)  seed -
+10     11      (4, 8, 594.91, 708.75)  seed -
+11     7       (4, 8, 543.88, 736.57)  seed -
+12     4       (1, 11, 493.39, 657.58)  seed -
+== cpc 2026 week 7 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-07/raw/bracket.json)
+Sleeper seeds 1-6: [3, 6, 5, 2, 9, 1]
+standings order 1-6: [3, 6, 5, 2, 9, 1]
+sim order 1-6:       [3, 6, 5, 2, 9, 1]
+place  roster  record   PF        PA        Sleeper seed
+1      3       (10, 4, 829.44, 676.75)  seed 1
+2      6       (9, 5, 833.42, 748.84)  seed 2
+3      5       (9, 5, 820.11, 742.84)  seed 3
+4      2       (9, 5, 733.34, 695.37)  seed 4
+5      9       (7, 7, 779.49, 600.66)  seed 5
+6      1       (7, 7, 770.88, 746.0)  seed 6
+7      8       (7, 7, 720.58, 748.63)  seed -
+8      12      (6, 8, 751.88, 736.7)  seed -
+9      11      (6, 8, 701.03, 800.4)  seed -
+10     10      (6, 8, 679.66, 766.76)  seed -
+11     7       (5, 9, 650.2, 859.07)  seed -
+12     4       (3, 11, 615.89, 763.9)  seed -
+== cpc 2026 week 8 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-08/raw/bracket.json)
+Sleeper seeds 1-6: [2, 3, 6, 5, 9, 1]
+standings order 1-6: [2, 3, 6, 5, 9, 1]
+sim order 1-6:       [2, 3, 6, 5, 9, 1]
+place  roster  record   PF        PA        Sleeper seed
+1      2       (11, 5, 850.17, 787.92)  seed 1
+2      3       (10, 6, 909.55, 797.91)  seed 2
+3      6       (9, 7, 921.62, 867.73)  seed 3
+4      5       (9, 7, 918.99, 843.15)  seed 4
+5      9       (9, 7, 900.65, 680.77)  seed 5
+6      1       (9, 7, 871.19, 844.88)  seed 6
+7      8       (9, 7, 832.55, 834.39)  seed -
+8      12      (8, 8, 885.98, 821.78)  seed -
+9      7       (7, 9, 769.09, 947.27)  seed -
+10     11      (6, 10, 793.58, 917.23)  seed -
+11     10      (6, 10, 765.42, 878.73)  seed -
+12     4       (3, 13, 700.97, 898.0)  seed -
+== cpc 2026 week 9 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-09/raw/bracket.json)
+Sleeper seeds 1-6: [2, 6, 5, 3, 1, 8]
+standings order 1-6: [2, 6, 5, 3, 1, 8]
+sim order 1-6:       [2, 6, 5, 3, 1, 8]
+place  roster  record   PF        PA        Sleeper seed
+1      2       (12, 6, 956.56, 931.95)  seed 1
+2      6       (11, 7, 1035.69, 968.36)  seed 2
+3      5       (11, 7, 1030.45, 949.86)  seed 3
+4      3       (11, 7, 1004.64, 890.62)  seed 4
+5      1       (11, 7, 1003.87, 931.67)  seed 5
+6      8       (11, 7, 976.58, 940.78)  seed 6
+7      9       (10, 8, 1007.36, 792.23)  seed -
+8      12      (8, 10, 986.61, 935.85)  seed -
+9      7       (8, 10, 852.17, 1011.92)  seed -
+10     11      (6, 12, 858.23, 1000.31)  seed -
+11     10      (6, 12, 858.13, 973.82)  seed -
+12     4       (3, 15, 787.76, 1030.68)  seed -
+== cpc 2026 week 10 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-10/raw/bracket.json)
+Sleeper seeds 1-6: [3, 2, 5, 9, 1, 6]
+standings order 1-6: [3, 2, 5, 9, 1, 6]
+sim order 1-6:       [3, 2, 5, 9, 1, 6]
+place  roster  record   PF        PA        Sleeper seed
+1      3       (13, 7, 1131.99, 1015.11)  seed 1
+2      2       (13, 7, 1074.02, 1052.76)  seed 2
+3      5       (12, 8, 1154.94, 1077.21)  seed 3
+4      9       (12, 8, 1127.43, 899.27)  seed 4
+5      1       (12, 8, 1099.68, 1024.99)  seed 5
+6      6       (11, 9, 1129.01, 1064.17)  seed 6
+7      8       (11, 9, 1051.58, 1044.15)  seed -
+8      12      (10, 10, 1122.04, 1052.84)  seed -
+9      7       (9, 11, 955.54, 1086.92)  seed -
+10     10      (8, 12, 978.94, 1091.28)  seed -
+11     11      (6, 14, 975.22, 1135.74)  seed -
+12     4       (3, 17, 894.8, 1150.75)  seed -
+== norcal 2026 week 8 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-08/raw/bracket.json)
+Sleeper seeds 1-6: [6, 9, 1, 8, 10, 11]
+standings order 1-6: [6, 9, 1, 8, 10, 11]
+sim order 1-6:       [6, 9, 1, 8, 10, 11]
+place  roster  record   PF        PA        Sleeper seed
+1      6       (6, 2, 1130.34, 1063.3)  seed 1
+2      9       (5, 3, 1010.86, 980.3)  seed 2
+3      1       (5, 3, 1010.86, 978.84)  seed 3
+4      8       (5, 3, 1006.98, 1006.76)  seed 4
+5      10      (5, 3, 972.32, 991.78)  seed 5
+6      11      (4, 4, 1055.74, 1012.4)  seed 6
+7      3       (4, 4, 1014.38, 904.24)  seed -
+8      5       (3, 5, 1089.82, 1044.74)  seed -
+9      7       (3, 5, 983.36, 959.48)  seed -
+10     2       (3, 5, 927.22, 951.46)  seed -
+11     4       (3, 5, 883.14, 993.38)  seed -
+12     12      (2, 6, 790.8, 989.14)  seed -
+== norcal 2026 week 9 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-09/raw/bracket.json)
+Sleeper seeds 1-6: [6, 8, 1, 10, 11, 9]
+standings order 1-6: [6, 8, 1, 10, 11, 9]
+sim order 1-6:       [6, 8, 1, 10, 11, 9]
+place  roster  record   PF        PA        Sleeper seed
+1      6       (6, 3, 1251.74, 1220.18)  seed 1
+2      8       (6, 3, 1163.86, 1128.16)  seed 2
+3      1       (6, 3, 1121.3, 1061.94)  seed 3
+4      10      (6, 3, 1089.78, 1096.56)  seed 4
+5      11      (5, 4, 1171.6, 1103.6)  seed 5
+6      9       (5, 4, 1138.92, 1135.68)  seed 6
+7      5       (4, 5, 1226.06, 1133.4)  seed -
+8      7       (4, 5, 1138.74, 1087.54)  seed -
+9      3       (4, 5, 1103.04, 1040.48)  seed -
+10     2       (3, 6, 1010.32, 1061.9)  seed -
+11     4       (3, 6, 987.92, 1110.84)  seed -
+12     12      (2, 7, 882.0, 1105.0)  seed -
+== norcal 2026 week 10 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-10/raw/bracket.json)
+Sleeper seeds 1-6: [8, 1, 6, 10, 5, 11]
+standings order 1-6: [8, 1, 6, 10, 5, 11]
+sim order 1-6:       [8, 1, 6, 10, 5, 11]
+place  roster  record   PF        PA        Sleeper seed
+1      8       (7, 3, 1357.38, 1252.16)  seed 1
+2      1       (7, 3, 1269.78, 1197.94)  seed 2
+3      6       (6, 4, 1333.36, 1342.72)  seed 3
+4      10      (6, 4, 1210.92, 1243.24)  seed 4
+5      5       (5, 5, 1360.48, 1231.66)  seed 5
+6      11      (5, 5, 1295.6, 1297.12)  seed 6
+7      7       (5, 5, 1285.42, 1208.68)  seed -
+8      9       (5, 5, 1274.92, 1284.16)  seed -
+9      3       (5, 5, 1225.58, 1122.1)  seed -
+10     2       (3, 7, 1116.54, 1184.1)  seed -
+11     4       (3, 7, 1086.18, 1245.26)  seed -
+12     12      (3, 7, 1004.2, 1211.22)  seed -

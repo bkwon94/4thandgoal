@@ -1,0 +1,153 @@
+CORNERSTONE_PASSPHRASE_CPC=localtest CORNERSTONE_COMMISSIONER_KEY_CPC=localkey CORNERSTONE_PASSPHRASE_NORCAL=localtest CORNERSTONE_COMMISSIONER_KEY_NORCAL=localkey CORNERSTONE_RATE_LIMIT_PER_MINUTE=600 CORNERSTONE_ALLOWED_ORIGINS=http://127.0.0.1:65461 CORNERSTONE_REPO=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths UV_PROJECT_ENVIRONMENT=/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.venv-api-evidence uv run --exact --package cpc-api uvicorn --factory cornerstone_api.app:app_from_env --host 127.0.0.1 --port 65462
+Using CPython 3.11.10 interpreter at: [36m/Users/brian.kwon/.pyenv/versions/3.11.10/bin/python3.11[39m
+Creating virtual environment at: [36m/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.venv-api-evidence[39m
+[2mInstalled [1m51 packages[0m [2min 220ms[0m[0m
+INFO:     Started server process [97728]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:65462 (Press CTRL+C to quit)
+INFO:     127.0.0.1:65466 - "GET /health HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/players/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/cc7c1f12-89d6-4c63-a0fa-7c40e6d2f12e?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A37%3A49Z&rscd=attachment%3B+filename%3Ddepth_charts_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A37%3A46Z&ske=2026-11-25T04%3A37%3A49Z&sks=b&skv=2018-11-09&sig=lu9YiIIKDefTnK0TIsr3jVu%2Fm2QL3huKHIRgLNxftBM%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU4MDk5NSwibmJmIjoxNzk1NTc5MTk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.i4oMXIxB3qoE9D_SPOCGix3VncOe07BOkM8ctSgCaG0&response-content-disposition=attachment%3B%20filename%3Ddepth_charts_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/dynastyprocess/data/raw/master/files/db_playerids.csv "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://raw.githubusercontent.com/dynastyprocess/data/master/files/db_playerids.csv "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/3925370f-c09e-496f-ab1a-31f8a133e542?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A59%3A03Z&rscd=attachment%3B+filename%3Dinjuries_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A58%3A32Z&ske=2026-11-25T04%3A59%3A03Z&sks=b&skv=2018-11-09&sig=Dxx1Kvk14sfqxQID0Eo93h1Hx85BCt0sp2gQ%2BXhviW0%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU0NiwibmJmIjoxNzk1NTc5MjQ2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1RbMvyi7S_ZJRkqzEKCqofKfuB9qMTFKUxgYiQtYj8I&response-content-disposition=attachment%3B%20filename%3Dinjuries_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/ffverse/ffopportunity/releases/download/latest-data/ep_weekly_2026.csv "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/372253066/6a2b0485-6e0d-4422-ac8b-75aa480c97b5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A39%3A34Z&rscd=attachment%3B+filename%3Dep_weekly_2026.csv&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A39%3A32Z&ske=2026-11-25T04%3A39%3A34Z&sks=b&skv=2018-11-09&sig=xdTiXdlB51XVzAxtxPahhe8u7E4m6ELfy4CSgGXEtME%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU5NCwibmJmIjoxNzk1NTc5Mjk0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.2pqzCKTl8jTmt9LICz0W5a6fXCd4BCWoTPApqU-UWXg&response-content-disposition=attachment%3B%20filename%3Dep_weekly_2026.csv&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/5faa0e3f-f2a1-4c68-9fbd-00f57536730f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A44%3A25Z&rscd=attachment%3B+filename%3Dstats_player_week_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A43%3A47Z&ske=2026-11-25T04%3A44%3A25Z&sks=b&skv=2018-11-09&sig=692GbZHxWfbGrNaIMyUY%2BqQv%2BoTJU7CehiYkI%2B2bC5A%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU1NywibmJmIjoxNzk1NTc5MjU3LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.hh_QccYBoFDGaX9-oPnC7pwyqmNi9xtXvfRE4ZEDW5c&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_2026.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/e5b03258-97a9-4ac9-8abd-3b0a587294d3?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A38%3A21Z&rscd=attachment%3B+filename%3Dstats_team_week_2026.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A37%3A29Z&ske=2026-11-25T04%3A38%3A21Z&sks=b&skv=2018-11-09&sig=vcsfJzQw%2BIFWiT21nNNFaDviI5xh1%2BkzfAoL%2BUwzjYY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU5NSwibmJmIjoxNzk1NTc5Mjk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.sJYiwTVX1tRmgUCSGbmflvPFjxhpCVz4Fnq1mQuq2K8&response-content-disposition=attachment%3B%20filename%3Dstats_team_week_2026.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     league.past_seasons: Downloading the past season file of 2023
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2023.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/c39fbe06-91c6-4a1b-ae5c-84d3f9927d11?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A54%3A24Z&rscd=attachment%3B+filename%3Dstats_player_week_2023.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A53%3A27Z&ske=2026-11-25T04%3A54%3A24Z&sks=b&skv=2018-11-09&sig=fjrbjh8nb237vGQVCOOaLcuRyojum67Z%2BbumemHXbhs%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU5NSwibmJmIjoxNzk1NTc5Mjk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.sJYiwTVX1tRmgUCSGbmflvPFjxhpCVz4Fnq1mQuq2K8&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2023.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     league.past_seasons: Downloading the past season file of 2024
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2024.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/b568c3cc-d1e1-49e7-a8ff-f56c17b639bf?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A37%3A48Z&rscd=attachment%3B+filename%3Dstats_player_week_2024.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A37%3A29Z&ske=2026-11-25T04%3A37%3A48Z&sks=b&skv=2018-11-09&sig=fcZ8meK8yQt4igYg249q35HGWpFur%2BJk2DmzQdLLHmg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU5NSwibmJmIjoxNzk1NTc5Mjk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.sJYiwTVX1tRmgUCSGbmflvPFjxhpCVz4Fnq1mQuq2K8&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2024.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     league.past_seasons: Downloading the past season file of 2025
+INFO:     httpx: HTTP Request: GET https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2025.csv.gz "HTTP/1.1 302 Found"
+INFO:     httpx: HTTP Request: GET https://release-assets.githubusercontent.com/github-production-release-asset/452908115/0c7a72e0-1eb5-44fa-b60d-4f3dafd9e6f1?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-11-25T04%3A51%3A47Z&rscd=attachment%3B+filename%3Dstats_player_week_2025.csv.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-11-25T03%3A51%3A37Z&ske=2026-11-25T04%3A51%3A47Z&sks=b&skv=2018-11-09&sig=Whb46JlNdHb%2FQk30dew2AYtX6z3cu6O3obKZIfXdb7Y%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc5NTU3OTU5NSwibmJmIjoxNzk1NTc5Mjk1LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.sJYiwTVX1tRmgUCSGbmflvPFjxhpCVz4Fnq1mQuq2K8&response-content-disposition=attachment%3B%20filename%3Dstats_player_week_2025.csv.gz&response-content-type=application%2Foctet-stream "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 12, so the week gets no trade values
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1402948824305049600/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB1.0PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 12, so the week gets no trade values
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65508 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65508 - "OPTIONS /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65517 - "OPTIONS /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 159ms (request req_01a210dded627263a13e3071844cd226)
+INFO:     127.0.0.1:65508 - "POST /clients/cpc/ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65508 - "OPTIONS /clients/cpc/ask/free HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65508 - "POST /clients/cpc/ask/free HTTP/1.1" 200 OK
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+                 pydantic-ai v2.66.0 • Python 3.11.10
+
+      / \        agent: free_answer • model: anthropic:claude-sonnet-5-5 • tools: 11
+     /   \         capabilities: 2
+   /___.___\
+  /    |    \    observability: off — see every model and tool call live, with cost
+/      |      \    set it up free with Pydantic Logfire: uvx logfire-cli wizard --task pydantic-ai
+`---.._|_..---'    or use any OpenTelemetry backend: https://pydantic.dev/docs/ai/logfire/#otel
+
+                 goes away once observability is on — or PYDANTIC_AI_NO_BANNER=1
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://peakedinhighskool.com/wp-json/wp/v2/media?search=1QB0.5PPR4pt&_fields=date,source_url&per_page=100 "HTTP/1.1 200 OK"
+WARNING:     league.chart: The site lists no chart for week 12, so the week gets no trade values
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/12?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/13?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/14?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/players/nfl/trending/add?lookback_hours=24&limit=50 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/state/nfl "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/rosters "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/stats/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/users "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/matchups/12 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/transactions/11 "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/projections/nfl/2026/11?season_type=regular&position%5B%5D=QB&position%5B%5D=RB&position%5B%5D=WR&position%5B%5D=TE&position%5B%5D=K&position%5B%5D=DEF "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: GET https://api.sleeper.app/v1/league/1386167364424318976/winners_bracket "HTTP/1.1 200 OK"
+INFO:     httpx: HTTP Request: POST https://sleeper.com/graphql "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 57ms (request req_01a210ddfaf57f9a9e984f85b056b3d0)
+INFO:     127.0.0.1:65517 - "POST /clients/cpc/suggestions HTTP/1.1" 200 OK
+INFO:     cornerstone_api.suggestions: The head start builds the personal Topic weak_spots on open
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 91ms (request req_01a210ddfdee758da70991e963e41b19)
+INFO:     cornerstone_api.claude_stream: The free answer ended as checked, with 1 tool calls, 1 texts, 10719 input tokens, 157 output tokens, and a cost of $0.0174
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 65ms (request req_01a210de048974e4bd6b6cd7fd6e45db)
+INFO:     cornerstone_api.claude_stream: A sentence of the personal Topic weak_spots failed the check at 0.69: The one hole in your lineup is the FLEX2 slot, where Jaylen Waddle plays as WR 56 at his position.
+INFO:     cornerstone_api.claude_stream: A sentence of the personal Topic weak_spots failed the check at 0.67: All your other starters are above the starter line, so that slot is the only one to fix.
+INFO:     127.0.0.1:49160 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     httpx2: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+INFO:     httpx2: HTTP Request: POST https://api.typesafe.ai/v1/systemone "HTTP/1.1 200 OK"
+INFO:     typesafe_sdk: POST https://api.typesafe.ai/v1/systemone <- 200 in 68ms (request req_01a210de0ed2736d9c8a91fa220a7aa2)
+INFO:     cornerstone_api.claude_stream: A sentence of the personal Topic weak_spots failed the check at 0.62: In the starters list no one is a hole, but the FLEX2 slot is a weak spot because Jaylen Waddle fills it, and he is projected 56th among WRs.
+INFO:     cornerstone_api.claude_stream: The personal Topic weak_spots ended as an honest miss, with 2 texts, 3962 input tokens, 285 output tokens, and a cost of $0.0083
+INFO:     127.0.0.1:49175 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49196 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49208 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49219 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49230 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49253 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49253 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49266 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49266 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49283 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49283 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49295 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49295 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49322 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49331 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49343 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49355 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49372 - "GET /clients/cpc/eggs/board HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [97728]
+make: *** [api-evidence] Error 143

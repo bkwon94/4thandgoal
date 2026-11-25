@@ -1,0 +1,13 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone cornerstone sim-fixtures --client cpc --season 2026 --week 10 --out /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/at53-fixtures && env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-53/check.py /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/at53-fixtures
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/at53-fixtures/week-sim-playoffs.json: week 14, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/at53-fixtures/week-sim-round-2.json: week 15, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion not yet; run 1 champion Lil Fridge
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/at53-fixtures/week-sim-final.json: week 17, seeds 1 All You Need Is Love, 2 Lil Fridge, 3 Maye d'force B with U, 4 Return of T Mac, 5 Teehee, 6 The Blue Tent; champion Lil Fridge; run 1 champion Lil Fridge
+week-sim-final.json: week 17, board [], pages with a Finish list 0, pages with goals 0, Paths 0
+  keys of page 1: ['finishes', 'goals', 'need', 'open_goal', 'playoff', 'playoffs', 'record', 'score_to_beat', 'sentence', 'status', 'week_card', 'weeks_left', 'wins_left', 'you']
+  finishes of page 1: {}
+week-sim-playoffs.json: week 14, board [], pages with a Finish list 0, pages with goals 0, Paths 0
+  keys of page 1: ['finishes', 'goals', 'need', 'open_goal', 'playoff', 'playoffs', 'record', 'score_to_beat', 'sentence', 'status', 'week_card', 'weeks_left', 'wins_left', 'you']
+  finishes of page 1: {}
+week-sim-round-2.json: week 15, board [], pages with a Finish list 0, pages with goals 0, Paths 0
+  keys of page 1: ['finishes', 'goals', 'need', 'open_goal', 'playoff', 'playoffs', 'record', 'score_to_beat', 'sentence', 'status', 'week_card', 'weeks_left', 'wins_left', 'you']
+  finishes of page 1: {}

@@ -1,0 +1,63 @@
+$ python3 scripts/rebuild.py --base /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base --head /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head --approved /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/REBUILD.md
+INFO cornerstone.pipeline: facts-only rebuild of week 11 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base/clients/cpc/data/2026/week-11/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base/clients/cpc/data/2026/week-11/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base/clients/cpc/data/2026/week-11/raw/news.json, the clock of verify.json, and the research of facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 11 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-11/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-11/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/data/2026/week-11/raw/news.json, the clock of verify.json, and the research of facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 11 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base/clients/norcal/data/2026/week-11/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base/clients/norcal/data/2026/week-11/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-base/clients/norcal/data/2026/week-11/raw/news.json, the clock of verify.json, and the research of facts.json
+INFO cornerstone.pipeline: facts-only rebuild of week 11 reads /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-11/raw/nflverse.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-11/raw/slow_sources.json, /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-11/raw/news.json, the clock of verify.json, and the research of facts.json
+approved diffs: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/REBUILD.md
+cpc 2026 week 11 facts.json: 0 diffs
+cpc 2026 week 11 page.json: 0 diffs
+cpc 2026 week 11 topics.json: 24 diffs
+  $.teams.1[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.1[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.2[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.2[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.3[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.3[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.4[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.4[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.5[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.5[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.6[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.6[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.7[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.7[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.8[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.8[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.9[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.9[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.10[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.10[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.11[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.11[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.12[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.12[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+cpc 2026 week 11 waiver.json: 0 diffs
+norcal 2026 week 11 facts.json: 0 diffs
+norcal 2026 week 11 page.json: 0 diffs
+norcal 2026 week 11 topics.json: 24 diffs
+  $.teams.1[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.1[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.2[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.2[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.3[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.3[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.4[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.4[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.5[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.5[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.6[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.6[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.7[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.7[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.8[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.8[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.9[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.9[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.10[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.10[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.11[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.11[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+  $.teams.12[4].block.finishes  (approved: the race Answer adds the top 3 Finishes of the team for a playoff spot (story 60, AT-26))
+  $.teams.12[4].block.pill  (approved: the race Answer adds the status pill of the team, null for a team In the hunt (story 60, AT-26))
+norcal 2026 week 11 waiver.json: 0 diffs
+rebuild diff: 48 diffs, 48 listed, 0 not listed, 0 listed but not changed

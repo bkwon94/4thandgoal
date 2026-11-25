@@ -1,0 +1,16 @@
+Reading of AT-31 (ce601c12 recording), from paths.txt: the visible text of the opened 4-2 Finish, as innerText.
+Each of the 8 runs (4 sizes, light and dark) holds the same text (each line shows 16
+8 times in paths.txt).
+--- 390x660 light
+4-2 · ends 15-13 · 26% likely
+
+If 💿 🐑 ends 15-13 or worse.
+Happens 44% · you're in 94%.
+If The Blue Tent ends 15-13 or worse.
+Happens 30% · you're in 91%.
+If Bengals Buddies ends 15-13 or worse.
+Happens 46% · you're in 93%.
+
+Finish line shown: "4-2 · ends 15-13 · 26% likely" (the chance is "26% likely").
+Path lines shown (3 Paths): "If 💿 🐑 ends 15-13 or worse." + "Happens 44% · you're in 94%."; "If The Blue Tent ends 15-13 or worse." + "Happens 30% · you're in 91%."; "If Bengals Buddies ends 15-13 or worse." + "Happens 46% · you're in 93%."
+Each Path line ends with "." and not with "…".

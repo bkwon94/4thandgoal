@@ -1,0 +1,4 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-30 in evidence/site-set/a/tests.mjs. Build and serve: evidence/site-set/a/build.txt.
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-30
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context:
+open /sim/2026/ ; save aria-expanded of the card, the count of open dialogs, and the text order to state.txt; shot "loaded"; tap the card; save; shot "tap-1"; tap the card again; save; shot "tap-2"

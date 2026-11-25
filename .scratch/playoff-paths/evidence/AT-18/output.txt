@@ -1,0 +1,16 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-18/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+order: [(3, 15, 1244.43), (9, 14, 1277.45), (5, 13, 1248.15), (1, 13, 1180.43), (2, 13, 1166.22), (8, 13, 1151.51), (6, 11, 1205.76), (12, 10, 1191.28), (10, 10, 1078.3), (7, 9, 1045.3), (11, 6, 1055.83), (4, 5, 1001.11)]
+gap: The Blue Tent seed-4 status open: {"roster_id": 2, "points": 14.2}; close teams by hand [2, 8]
+gap: The Blue Tent seed-5 status open: {"roster_id": 8, "points": 28.9}; close teams by hand [8]
+gap: Bengals Buddies seed-4 status open: {"roster_id": 1, "points": -14.2}; close teams by hand [1]
+gap: Bengals Buddies seed-5 status open: {"roster_id": 8, "points": 14.7}; close teams by hand [8]
+gap: Lil Fridge seed-1 status open: {"roster_id": 9, "points": -33.0}; close teams by hand [9]
+gap: Teez Nuts bye status open: {"roster_id": 9, "points": -29.3}; close teams by hand [9]
+gap: Teez Nuts seed-2 status open: {"roster_id": 9, "points": -29.3}; close teams by hand [9]
+gap: 💿 🐑 seed-4 status open: {"roster_id": 1, "points": -28.9}; close teams by hand [1]
+gap: 💿 🐑 seed-5 status open: {"roster_id": 2, "points": -14.7}; close teams by hand [1, 2]
+gap: Maye d'force B with U bye status open: {"roster_id": 5, "points": 29.3}; close teams by hand [5]
+gap: Maye d'force B with U seed-1 status open: {"roster_id": 3, "points": 33.0}; close teams by hand [3]
+gap: Maye d'force B with U seed-2 status open: {"roster_id": 5, "points": 29.3}; close teams by hand [5]
+gaps shown 12; Goals with no gap 84

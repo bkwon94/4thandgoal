@@ -1,0 +1,2554 @@
+{
+ "page": {
+  "finishes": {
+   "spot": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 99,
+     "about": false,
+     "case": "sure",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 99,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 82,
+     "about": false,
+     "case": "paths",
+     "paths": [
+      {
+       "conditions": [
+        {
+         "roster_id": 8,
+         "record": [
+          15,
+          13
+         ]
+        }
+       ],
+       "chance": 43.7,
+       "odds": 95,
+       "runs": 1469,
+       "plan": {
+        "weeks": [
+         {
+          "week": 12,
+          "opponent": 5,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 8,
+            "loser": 1,
+            "odds": 97
+           },
+           {
+            "winner": 10,
+            "loser": 12,
+            "odds": 97
+           }
+          ]
+         },
+         {
+          "week": 13,
+          "opponent": 4,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 11,
+            "loser": 5,
+            "odds": 98
+           }
+          ]
+         },
+         {
+          "week": 14,
+          "opponent": 3,
+          "game": "loss",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 7,
+            "loser": 12,
+            "odds": 99
+           },
+           {
+            "winner": 8,
+            "loser": 5,
+            "odds": 97
+           }
+          ]
+         }
+        ],
+        "any_order": false,
+        "odds": 82
+       }
+      },
+      {
+       "conditions": [
+        {
+         "roster_id": 1,
+         "record": [
+          15,
+          13
+         ]
+        }
+       ],
+       "chance": 31.0,
+       "odds": 92,
+       "runs": 1046,
+       "plan": {
+        "weeks": [
+         {
+          "week": 12,
+          "opponent": 5,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 7,
+            "loser": 2,
+            "odds": 96
+           },
+           {
+            "winner": 4,
+            "loser": 3,
+            "odds": 95
+           }
+          ]
+         },
+         {
+          "week": 13,
+          "opponent": 4,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 11,
+            "loser": 5,
+            "odds": 98
+           },
+           {
+            "winner": 2,
+            "loser": 12,
+            "odds": 96
+           }
+          ]
+         },
+         {
+          "week": 14,
+          "opponent": 3,
+          "game": "loss",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 7,
+            "loser": 12,
+            "odds": 98
+           },
+           {
+            "winner": 1,
+            "loser": 2,
+            "odds": 95
+           }
+          ]
+         }
+        ],
+        "any_order": false,
+        "odds": 82
+       }
+      },
+      {
+       "conditions": [
+        {
+         "roster_id": 2,
+         "record": [
+          15,
+          13
+         ]
+        },
+        {
+         "roster_id": 5,
+         "record": [
+          15,
+          13
+         ]
+        }
+       ],
+       "chance": 19.7,
+       "odds": 94,
+       "runs": 672,
+       "plan": {
+        "weeks": [
+         {
+          "week": 12,
+          "opponent": 5,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 10,
+            "loser": 12,
+            "odds": 98
+           },
+           {
+            "winner": 7,
+            "loser": 2,
+            "odds": 96
+           }
+          ]
+         },
+         {
+          "week": 13,
+          "opponent": 4,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 11,
+            "loser": 5,
+            "odds": 96
+           },
+           {
+            "winner": 10,
+            "loser": 1,
+            "odds": 95
+           }
+          ]
+         },
+         {
+          "week": 14,
+          "opponent": 3,
+          "game": "loss",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 7,
+            "loser": 12,
+            "odds": 98
+           },
+           {
+            "winner": 10,
+            "loser": 9,
+            "odds": 96
+           }
+          ]
+         }
+        ],
+        "any_order": true,
+        "odds": 82
+       }
+      }
+     ],
+     "plan": null
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 26,
+     "about": false,
+     "case": "best",
+     "paths": [
+      {
+       "conditions": [
+        {
+         "roster_id": 12,
+         "record": [
+          13,
+          15
+         ]
+        }
+       ],
+       "chance": 38.8,
+       "odds": 37,
+       "runs": 679,
+       "plan": {
+        "weeks": [
+         {
+          "week": 12,
+          "opponent": 5,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 9,
+            "loser": 11,
+            "odds": 28
+           }
+          ]
+         },
+         {
+          "week": 13,
+          "opponent": 4,
+          "game": "win",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 9,
+            "loser": 8,
+            "odds": 35
+           },
+           {
+            "winner": 3,
+            "loser": 7,
+            "odds": 28
+           }
+          ]
+         },
+         {
+          "week": 14,
+          "opponent": 3,
+          "game": "loss",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 9,
+            "loser": 10,
+            "odds": 30
+           },
+           {
+            "winner": 7,
+            "loser": 12,
+            "odds": 28
+           }
+          ]
+         }
+        ],
+        "any_order": true,
+        "odds": 17
+       }
+      }
+     ],
+     "plan": null
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 2,
+     "about": false,
+     "case": "best",
+     "paths": [
+      {
+       "conditions": [
+        {
+         "roster_id": 12,
+         "record": [
+          13,
+          15
+         ]
+        }
+       ],
+       "chance": 35.9,
+       "odds": 5,
+       "runs": 516,
+       "plan": {
+        "weeks": [
+         {
+          "week": 12,
+          "opponent": 5,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 1,
+            "loser": 8,
+            "odds": 7
+           },
+           {
+            "winner": 7,
+            "loser": 2,
+            "odds": 7
+           }
+          ]
+         },
+         {
+          "week": 13,
+          "opponent": 4,
+          "game": "loss",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 9,
+            "loser": 8,
+            "odds": 9
+           },
+           {
+            "winner": 11,
+            "loser": 5,
+            "odds": 6
+           }
+          ]
+         },
+         {
+          "week": 14,
+          "opponent": 3,
+          "game": "loss",
+          "median": "below",
+          "root_for": [
+           {
+            "winner": 9,
+            "loser": 10,
+            "odds": 8
+           },
+           {
+            "winner": 5,
+            "loser": 8,
+            "odds": 7
+           }
+          ]
+         }
+        ],
+        "any_order": false,
+        "odds": 2
+       }
+      }
+     ],
+     "plan": null
+    }
+   ],
+   "bye": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 28,
+     "about": false,
+     "case": "best",
+     "paths": [
+      {
+       "conditions": [
+        {
+         "roster_id": 1,
+         "record": [
+          17,
+          11
+         ]
+        },
+        {
+         "roster_id": 3,
+         "record": [
+          17,
+          11
+         ]
+        }
+       ],
+       "chance": 31.8,
+       "odds": 60,
+       "runs": 527,
+       "plan": {
+        "weeks": [
+         {
+          "week": 12,
+          "opponent": 5,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 7,
+            "loser": 2,
+            "odds": 75
+           },
+           {
+            "winner": 11,
+            "loser": 9,
+            "odds": 68
+           }
+          ]
+         },
+         {
+          "week": 13,
+          "opponent": 4,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 11,
+            "loser": 5,
+            "odds": 71
+           },
+           {
+            "winner": 12,
+            "loser": 2,
+            "odds": 71
+           }
+          ]
+         },
+         {
+          "week": 14,
+          "opponent": 3,
+          "game": "win",
+          "median": "above",
+          "root_for": [
+           {
+            "winner": 10,
+            "loser": 9,
+            "odds": 70
+           },
+           {
+            "winner": 1,
+            "loser": 2,
+            "odds": 66
+           }
+          ]
+         }
+        ],
+        "any_order": false,
+        "odds": 28
+       }
+      }
+     ],
+     "plan": null
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 1,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    }
+   ],
+   "seed-1": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 3,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 4,
+          "loser": 3,
+          "odds": 7
+         },
+         {
+          "winner": 11,
+          "loser": 9,
+          "odds": 6
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 3,
+          "odds": 7
+         },
+         {
+          "winner": 8,
+          "loser": 9,
+          "odds": 5
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 10,
+          "loser": 9,
+          "odds": 7
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 3
+     }
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    }
+   ],
+   "seed-2": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 24,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 4,
+          "loser": 3,
+          "odds": 38
+         },
+         {
+          "winner": 11,
+          "loser": 9,
+          "odds": 33
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 3,
+          "odds": 37
+         },
+         {
+          "winner": 11,
+          "loser": 5,
+          "odds": 30
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 10,
+          "loser": 9,
+          "odds": 32
+         },
+         {
+          "winner": 8,
+          "loser": 5,
+          "odds": 26
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 24
+     }
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 1,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": []
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": []
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "above",
+        "root_for": []
+       }
+      ],
+      "any_order": true,
+      "odds": 1
+     }
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    }
+   ],
+   "seed-3": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 43,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 8,
+          "loser": 1,
+          "odds": 46
+         },
+         {
+          "winner": 3,
+          "loser": 4,
+          "odds": 46
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 9,
+          "loser": 8,
+          "odds": 46
+         },
+         {
+          "winner": 3,
+          "loser": 7,
+          "odds": 45
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 11,
+          "loser": 4,
+          "odds": 46
+         },
+         {
+          "winner": 8,
+          "loser": 5,
+          "odds": 45
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 43
+     }
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 13,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 2,
+          "odds": 18
+         },
+         {
+          "winner": 11,
+          "loser": 9,
+          "odds": 18
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 11,
+          "loser": 5,
+          "odds": 22
+         },
+         {
+          "winner": 10,
+          "loser": 1,
+          "odds": 18
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 20
+         },
+         {
+          "winner": 10,
+          "loser": 9,
+          "odds": 18
+         }
+        ]
+       }
+      ],
+      "any_order": true,
+      "odds": 14
+     }
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    }
+   ],
+   "seed-4": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 25,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 3,
+          "loser": 4,
+          "odds": 30
+         },
+         {
+          "winner": 1,
+          "loser": 8,
+          "odds": 28
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 12,
+          "odds": 30
+         },
+         {
+          "winner": 1,
+          "loser": 10,
+          "odds": 28
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 9,
+          "loser": 10,
+          "odds": 28
+         },
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 27
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 25
+     }
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 36,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 2,
+          "odds": 45
+         },
+         {
+          "winner": 1,
+          "loser": 8,
+          "odds": 44
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 10,
+          "loser": 1,
+          "odds": 45
+         },
+         {
+          "winner": 9,
+          "loser": 8,
+          "odds": 44
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 8,
+          "loser": 5,
+          "odds": 44
+         },
+         {
+          "winner": 1,
+          "loser": 2,
+          "odds": 43
+         }
+        ]
+       }
+      ],
+      "any_order": true,
+      "odds": 40
+     }
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 7,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 2,
+          "odds": 11
+         },
+         {
+          "winner": 10,
+          "loser": 12,
+          "odds": 8
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 11,
+          "loser": 5,
+          "odds": 12
+         },
+         {
+          "winner": 10,
+          "loser": 1,
+          "odds": 9
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 10
+         },
+         {
+          "winner": 10,
+          "loser": 9,
+          "odds": 8
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 6
+     }
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    }
+   ],
+   "seed-5": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 5,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 3,
+          "loser": 4,
+          "odds": 7
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 12,
+          "odds": 7
+         },
+         {
+          "winner": 1,
+          "loser": 10,
+          "odds": 7
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 9,
+          "loser": 10,
+          "odds": 6
+         },
+         {
+          "winner": 5,
+          "loser": 8,
+          "odds": 6
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 5
+     }
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 38,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 7,
+          "odds": 42
+         },
+         {
+          "winner": 8,
+          "loser": 1,
+          "odds": 41
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 12,
+          "odds": 42
+         },
+         {
+          "winner": 1,
+          "loser": 10,
+          "odds": 42
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 1,
+          "odds": 43
+         },
+         {
+          "winner": 12,
+          "loser": 7,
+          "odds": 40
+         }
+        ]
+       }
+      ],
+      "any_order": true,
+      "odds": 38
+     }
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 31,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 2,
+          "odds": 39
+         },
+         {
+          "winner": 11,
+          "loser": 9,
+          "odds": 36
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 11,
+          "loser": 5,
+          "odds": 42
+         },
+         {
+          "winner": 10,
+          "loser": 1,
+          "odds": 39
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 35
+         },
+         {
+          "winner": 5,
+          "loser": 8,
+          "odds": 32
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 31
+     }
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 3,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 2,
+          "odds": 3
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 11,
+          "loser": 5,
+          "odds": 3
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 3
+         }
+        ]
+       }
+      ],
+      "any_order": true,
+      "odds": 1
+     }
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    }
+   ],
+   "seed-6": [
+    {
+     "more_wins": 6,
+     "record": [
+      17,
+      11
+     ],
+     "chance": 17.4,
+     "odds": 1,
+     "about": false,
+     "case": "none",
+     "paths": [],
+     "plan": null
+    },
+    {
+     "more_wins": 5,
+     "record": [
+      16,
+      12
+     ],
+     "chance": 18.8,
+     "odds": 11,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 7,
+          "odds": 10
+         },
+         {
+          "winner": 4,
+          "loser": 3,
+          "odds": 10
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 12,
+          "odds": 12
+         },
+         {
+          "winner": 8,
+          "loser": 9,
+          "odds": 11
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "above",
+        "root_for": []
+       }
+      ],
+      "any_order": true,
+      "odds": 7
+     }
+    },
+    {
+     "more_wins": 4,
+     "record": [
+      15,
+      13
+     ],
+     "chance": 34.1,
+     "odds": 43,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 2,
+          "loser": 7,
+          "odds": 48
+         },
+         {
+          "winner": 1,
+          "loser": 8,
+          "odds": 47
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 1,
+          "loser": 10,
+          "odds": 49
+         },
+         {
+          "winner": 2,
+          "loser": 12,
+          "odds": 48
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 8,
+          "loser": 5,
+          "odds": 47
+         },
+         {
+          "winner": 2,
+          "loser": 1,
+          "odds": 46
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 45
+     }
+    },
+    {
+     "more_wins": 3,
+     "record": [
+      14,
+      14
+     ],
+     "chance": 17.1,
+     "odds": 22,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 2,
+          "odds": 24
+         },
+         {
+          "winner": 10,
+          "loser": 12,
+          "odds": 18
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "win",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 9,
+          "loser": 8,
+          "odds": 23
+         },
+         {
+          "winner": 11,
+          "loser": 5,
+          "odds": 22
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 22
+         },
+         {
+          "winner": 9,
+          "loser": 10,
+          "odds": 18
+         }
+        ]
+       }
+      ],
+      "any_order": true,
+      "odds": 16
+     }
+    },
+    {
+     "more_wins": 2,
+     "record": [
+      13,
+      15
+     ],
+     "chance": 12.7,
+     "odds": 2,
+     "about": false,
+     "case": "open",
+     "paths": [],
+     "plan": {
+      "weeks": [
+       {
+        "week": 12,
+        "opponent": 5,
+        "game": "win",
+        "median": "above",
+        "root_for": [
+         {
+          "winner": 10,
+          "loser": 12,
+          "odds": 3
+         }
+        ]
+       },
+       {
+        "week": 13,
+        "opponent": 4,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 9,
+          "loser": 8,
+          "odds": 4
+         }
+        ]
+       },
+       {
+        "week": 14,
+        "opponent": 3,
+        "game": "loss",
+        "median": "below",
+        "root_for": [
+         {
+          "winner": 7,
+          "loser": 12,
+          "odds": 3
+         }
+        ]
+       }
+      ],
+      "any_order": false,
+      "odds": 2
+     }
+    }
+   ]
+  },
+  "week_card": {
+   "week": 12,
+   "opponent": 5,
+   "results": [
+    {
+     "game": "win",
+     "median": "above",
+     "chance": 100.0,
+     "about": false
+    },
+    {
+     "game": "win",
+     "median": "below",
+     "chance": 0.0,
+     "about": true
+    },
+    {
+     "game": "loss",
+     "median": "above",
+     "chance": 0.0,
+     "about": true
+    },
+    {
+     "game": "loss",
+     "median": "below",
+     "chance": 0.0,
+     "about": true
+    }
+   ],
+   "goals": {
+    "spot": {
+     "odds": [
+      69,
+      null,
+      null,
+      null
+     ],
+     "root_for": [
+      [
+       {
+        "winner": 7,
+        "loser": 2,
+        "odds": 74,
+        "other": 66
+       },
+       {
+        "winner": 10,
+        "loser": 12,
+        "odds": 72,
+        "other": 66
+       },
+       {
+        "winner": 1,
+        "loser": 8,
+        "odds": 71,
+        "other": 66
+       },
+       {
+        "winner": 11,
+        "loser": 9,
+        "odds": 69,
+        "other": 68
+       },
+       {
+        "winner": 3,
+        "loser": 4,
+        "odds": 69,
+        "other": 68
+       }
+      ],
+      [],
+      [],
+      []
+     ],
+     "median_root": [
+      [
+       {
+        "roster_id": 12,
+        "odds": 72
+       },
+       {
+        "roster_id": 2,
+        "odds": 71
+       }
+      ],
+      [],
+      [],
+      []
+     ],
+     "tiebreak": null
+    },
+    "bye": {
+     "odds": [
+      5,
+      null,
+      null,
+      null
+     ],
+     "root_for": [
+      [
+       {
+        "winner": 4,
+        "loser": 3,
+        "odds": 8,
+        "other": 3
+       },
+       {
+        "winner": 11,
+        "loser": 9,
+        "odds": 7,
+        "other": 4
+       },
+       {
+        "winner": 8,
+        "loser": 1,
+        "odds": 5,
+        "other": 5
+       },
+       {
+        "winner": 7,
+        "loser": 2,
+        "odds": 5,
+        "other": 5
+       },
+       {
+        "winner": 10,
+        "loser": 12,
+        "odds": 5,
+        "other": 5
+       }
+      ],
+      [],
+      [],
+      []
+     ],
+     "median_root": [
+      [
+       {
+        "roster_id": 3,
+        "odds": 7
+       },
+       {
+        "roster_id": 9,
+        "odds": 6
+       }
+      ],
+      [],
+      [],
+      []
+     ],
+     "tiebreak": null
+    },
+    "seed-1": {
+     "odds": [
+      1,
+      null,
+      null,
+      null
+     ],
+     "root_for": [],
+     "median_root": [],
+     "tiebreak": null
+    },
+    "seed-2": {
+     "odds": [
+      4,
+      null,
+      null,
+      null
+     ],
+     "root_for": [],
+     "median_root": [],
+     "tiebreak": null
+    },
+    "seed-3": {
+     "odds": [
+      10,
+      null,
+      null,
+      null
+     ],
+     "root_for": [],
+     "median_root": [],
+     "tiebreak": null
+    },
+    "seed-4": {
+     "odds": [
+      13,
+      null,
+      null,
+      null
+     ],
+     "root_for": [],
+     "median_root": [],
+     "tiebreak": null
+    },
+    "seed-5": {
+     "odds": [
+      19,
+      null,
+      null,
+      null
+     ],
+     "root_for": [],
+     "median_root": [],
+     "tiebreak": null
+    },
+    "seed-6": {
+     "odds": [
+      21,
+      null,
+      null,
+      null
+     ],
+     "root_for": [],
+     "median_root": [],
+     "tiebreak": null
+    }
+   }
+  },
+  "goals": {
+   "spot": {
+    "odds": 69,
+    "status": "open"
+   },
+   "bye": {
+    "odds": 5,
+    "status": "open"
+   },
+   "seed-1": {
+    "odds": 1,
+    "status": "open"
+   },
+   "seed-2": {
+    "odds": 4,
+    "status": "open"
+   },
+   "seed-3": {
+    "odds": 10,
+    "status": "open"
+   },
+   "seed-4": {
+    "odds": 13,
+    "status": "open"
+   },
+   "seed-5": {
+    "odds": 19,
+    "status": "open"
+   },
+   "seed-6": {
+    "odds": 21,
+    "status": "open"
+   }
+  }
+ },
+ "board": [
+  {
+   "roster_id": 1,
+   "goals": {
+    "spot": {
+     "odds": 81,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 19,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 5,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 14,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 20,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 17,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 13,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 12,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 2,
+   "goals": {
+    "spot": {
+     "odds": 66,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 9,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 2,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 7,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 12,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 14,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 15,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 16,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 3,
+   "goals": {
+    "spot": {
+     "odds": 99,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 77,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 52,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 25,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 11,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 6,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 3,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 2,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 4,
+   "goals": {
+    "spot": {
+     "odds": 0,
+     "status": "out"
+    },
+    "bye": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-1": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-2": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-3": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-4": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-5": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-6": {
+     "odds": 0,
+     "status": "out"
+    }
+   }
+  },
+  {
+   "roster_id": 5,
+   "goals": {
+    "spot": {
+     "odds": 82,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 14,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 3,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 11,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 17,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 18,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 18,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 14,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 6,
+   "goals": {
+    "spot": {
+     "odds": 69,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 5,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 4,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 10,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 13,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 19,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 21,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 7,
+   "goals": {
+    "spot": {
+     "odds": 1,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 1,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 8,
+   "goals": {
+    "spot": {
+     "odds": 67,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 12,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 3,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 9,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 12,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 14,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 13,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 15,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 9,
+   "goals": {
+    "spot": {
+     "odds": 97,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 64,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 34,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 30,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 15,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 9,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 6,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 3,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 10,
+   "goals": {
+    "spot": {
+     "odds": 5,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 3,
+     "status": "open"
+    }
+   }
+  },
+  {
+   "roster_id": 11,
+   "goals": {
+    "spot": {
+     "odds": 0,
+     "status": "out"
+    },
+    "bye": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-1": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-2": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-3": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-4": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-5": {
+     "odds": 0,
+     "status": "out"
+    },
+    "seed-6": {
+     "odds": 0,
+     "status": "out"
+    }
+   }
+  },
+  {
+   "roster_id": 12,
+   "goals": {
+    "spot": {
+     "odds": 34,
+     "status": "open"
+    },
+    "bye": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-1": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-2": {
+     "odds": 1,
+     "status": "open"
+    },
+    "seed-3": {
+     "odds": 2,
+     "status": "open"
+    },
+    "seed-4": {
+     "odds": 7,
+     "status": "open"
+    },
+    "seed-5": {
+     "odds": 11,
+     "status": "open"
+    },
+    "seed-6": {
+     "odds": 13,
+     "status": "open"
+    }
+   }
+  }
+ ]
+}

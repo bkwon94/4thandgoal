@@ -1,0 +1,4 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-27 in evidence/site-set/a/tests.mjs. Build and serve: evidence/site-set/a/build.txt.
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-27
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context:
+open /sim/2026/ ; shot "page"; tap "Open the menu" where it shows (390, 810) and shot "menu"; at 1080 and 1280 the menu button is hidden, so "menu" is a viewport shot of the header pill bar; save title, h1, and menu links to labels.txt

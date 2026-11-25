@@ -1,0 +1,47 @@
+/**
+ * Probe of the first tap on the Suggestion "Playoff race" of the front door, for the evidence of AT-26.
+ * Each trial logs the API calls with times, what sits on top of the chip at the tap, and which topic the thread opened.
+ */
+import { createRequire } from "node:module";
+const require = createRequire(process.env.SITE_APP + "/package.json");
+const { webkit, devices } = require("@playwright/test");
+const [site, trials, w, h, theme, mode] = process.argv.slice(2);
+const browser = await webkit.launch();
+for (let t = 1; t <= +trials; t++) {
+  const ctx = await browser.newContext({ ...devices[+w < 500 ? "iPhone 15" : "iPad Pro 11"], viewport: { width: +w, height: +h }, reducedMotion: "no-preference" });
+  await ctx.addInitScript((theme) => { localStorage.setItem("cpc.theme", theme); localStorage.setItem("cpc.your-team", "6"); localStorage.setItem("cpc.tour-seen", "1"); localStorage.setItem("cpc.passphrase", "localtest"); localStorage.setItem("cpc.announcement.the-race-2026", "seen"); }, theme);
+  const page = await ctx.newPage();
+  const t0 = Date.now(); const log = [];
+  page.on("request", (r) => { if (r.url().includes(":8391")) log.push(`${Date.now() - t0}ms req ${r.method()} ${new URL(r.url()).pathname}`); });
+  page.on("response", (r) => { if (r.url().includes(":8391")) log.push(`${Date.now() - t0}ms res ${r.status()} ${new URL(r.url()).pathname}`); });
+  await page.goto(site + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1000);
+  await page.locator("button", { hasText: "More" }).first().click();
+  log.push(`${Date.now() - t0}ms tap More`);
+  const chip = page.locator("button[aria-label^='Playoff race']").first();
+  await chip.waitFor({ state: "visible" });
+  if (mode === "settled") { await page.waitForLoadState("networkidle"); await page.waitForTimeout(800); }
+  const before = await page.evaluate(() => [...document.querySelectorAll("button[aria-label]")].filter((b) => b.getBoundingClientRect().height > 0).map((b) => b.getAttribute("aria-label").split(":")[0]).slice(0, 30));
+  const box0 = await chip.boundingBox();
+  const sy0 = await page.evaluate(() => scrollY);
+  await page.waitForTimeout(300);
+  const box = await chip.boundingBox();
+  const sy1 = await page.evaluate(() => scrollY);
+  log.push(`chip box before ${JSON.stringify(box0)} scrollY ${sy0}; 300 ms later ${JSON.stringify(box)} scrollY ${sy1}`);
+  await page.screenshot({ path: `${process.env.OUT}/trial-${t}-before-tap.png` });
+  const top = await page.evaluate(({ x, y }) => { const e = document.elementFromPoint(x, y); const b = e?.closest("button"); return { tag: e?.tagName, button: b?.getAttribute("aria-label") ?? b?.innerText?.slice(0, 40) ?? null, overlay: !!e?.closest("[role=dialog]") }; }, { x: box.x + box.width / 2, y: box.y + box.height / 2 });
+  const hydrated = await chip.evaluate((el) => Object.keys(el).some((k) => k.startsWith("__reactProps")));
+  log.push(`${Date.now() - t0}ms tap Playoff race at ${Math.round(box.x)},${Math.round(box.y)}; top element: ${JSON.stringify(top)}; react props on chip: ${hydrated}`);
+  await chip.click();
+  const shown = await page.locator("a", { hasText: "Open The Race" }).first().waitFor({ state: "visible", timeout: 15000 }).then(() => true, () => false);
+  if (!shown) {
+    await page.screenshot({ path: `${process.env.OUT}/trial-${t}-after-tap.png` });
+    const after = await chip.boundingBox().catch(() => null);
+    log.push(`no Answer in 15 s; chip box now ${JSON.stringify(after)}, scrollY ${await page.evaluate(() => scrollY)}, panel text: ${JSON.stringify(await page.evaluate(() => document.body.innerText.slice(0, 600)))}`);
+  }
+  const thread = await page.evaluate(() => localStorage.getItem("cpc.thread"));
+  const asked = await page.evaluate(() => [...document.querySelectorAll("*")].filter((e) => e.children.length === 0 && /^(Playoff race|Your next matchup|Your season|Power rankings|Week recap|Your last matchup|Position leaders and recent trades|Waiver targets|How you stack up|Weak spots|Start or sit)$/.test(e.textContent.trim()) && !e.closest("button")).map((e) => e.textContent.trim()));
+  console.log(JSON.stringify({ trial: t, mode, size: w + "x" + h, theme, answerShown: shown, threadTopics: JSON.parse(thread ?? "{}")?.["6"]?.entries?.map((e) => e.key), bubbles: asked, visibleButtonsAtTap: before.join(" | "), log }, null, 1));
+  await ctx.close();
+}
+await browser.close();

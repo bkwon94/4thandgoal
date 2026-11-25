@@ -1,0 +1,10 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-39 in evidence/site-set/a/tests.mjs. Build and serve: evidence/site-set/a/build.txt.
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-39
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context:
+open /sim/2026/ ; measure each pill of the board (text color over the pill color composited on the colors behind it, WCAG ratio) to pill-contrast.txt; shot "board"
+
+Variant run on 5f26bcb0 (a changed copy, not the real data): build cpc with sim-variant-clinched.json in place of week-11/sim.json
+(variant-clinched-diff.txt), serve it on 127.0.0.1:4391, then
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-39-variant
+open /sim/2026/; measure each pill to variant-clinched-pill-contrast.txt; shot "variant-clinched-board".
+Unit tests: pill-tests.txt.

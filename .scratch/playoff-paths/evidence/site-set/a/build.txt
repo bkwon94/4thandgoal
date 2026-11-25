@@ -1,0 +1,27 @@
+Site evidence set A of playoff-paths, tests AT-26 to AT-43. Built from ce601c12 on 2026-11-24.
+
+The Spec worktree runs a background make check that uses apps/site/out, so this set builds in a detached worktree of the same head:
+  git worktree add --detach <scratch>/site-a/wt HEAD
+  copy of the uncommitted client files of the Spec worktree (clients/cpc/published/2026/week-11/sim.json and topics.json,
+  clients/norcal/published/2026/week-10/sim.json and topics.json, the cpc week-11 history files, clients/cpc/build/2026/week-10/sim.json)
+  pnpm install --frozen-lockfile --prefer-offline
+
+API (local evidence API, real Sleeper data): source ~/.secrets; make -C apps/api api-evidence API_PORT=8391 API_ORIGIN=http://127.0.0.1:4391
+cpc build:    CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:8391 pnpm build      (exit 0, 10.7 s), served by serve.mjs on 127.0.0.1:4391
+norcal build: CLIENT=norcal NEXT_PUBLIC_API_URL=http://127.0.0.1:8391 pnpm build   (exit 0, 5.5 s), served on 127.0.0.1:4392
+  For norcal, the folder clients/norcal/published/2026/week-11/ was moved out of the copy during the build only, so the newest
+  sim week is week 10, as the Given line of AT-43 names. Its week-11 sim.json has the old shape (no "board" key).
+serve.mjs answers a missing path with 404.html and the status 404, as the Worker does.
+
+Shots: node run.mjs <client> <site url> <api url> AT-<n> ...   (SITE_APP=<worktree>/apps/site for Playwright 1.64.1)
+  Playwright WebKit. 390x660 with the "iPhone 15" profile, 810x980 with "iPad Pro 11", 1080x740 with "iPad Pro 11 landscape",
+  1280x800 with "Desktop Safari". Light and dark. Local storage per page: cpc.theme, cpc.your-team (cpc 6 = Bo Girds, norcal 7 = Bo Girds),
+  cpc.tour-seen 1, cpc.passphrase localtest, cpc.announcement.the-race-2026 seen.
+  A page shot is full page after a scroll pass to the end and back. A sheet shot is the viewport; a sheet with more content gets
+  a second "-end" shot after a scroll of the sheet. A full-page shot taken after the page scrolled draws the sticky header at the
+  scroll position, so the header band can show in the middle of the image.
+  Each shot appends one line to overlap.txt of its test (the rule is on the first line of the file).
+AT-42 ran after the API process was stopped (curl to /health gave 000), against the same cpc build.
+
+Runner times: AT-34 to AT-41 511 s; AT-27 to AT-33 540 s (the two ran partly at the same time); AT-43 44 s; AT-42 102 s; AT-26 122 s.
+Wall time of the round: about 23 min for 18 tests.

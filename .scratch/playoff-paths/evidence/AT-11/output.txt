@@ -1,0 +1,7 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-11/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Finishes whose best Path is under 90: 21
+their Path counts: {1: 21} ; their cases: {'best': 21}
+path keys: ['chance', 'conditions', 'odds', 'plan', 'runs']
+example: The Blue Tent spot 1 more wins: {"more_wins": 1, "record": [14, 14], "chance": 7.4, "odds": 14, "about": false, "case": "best", "paths": [{"conditions": [{"roster_id": 12, "record": [14, 14]}], "chance": 64.1, "odds": 20, "runs": 475, "plan": {"weeks": [{"week": 12, "opponent": 8, "game": "loss", "median": "below", "root_for": []}, {"week": 13, "opponent": 10, "game": "loss", "median": "below", "root_for": []}, {"week": 14, "opponent": 2, "game": "win", "median": "below", "root_for": []}], "any_order": true, "odds": 13}}], "plan": null}
+example: The Blue Tent bye 4 more wins: {"more_wins": 4, "record": [17, 11], "chance": 26.0, "odds": 9, "about": false, "case": "best", "paths": [{"conditions": [{"roster_id": 5, "record": [17, 11]}, {"roster_id": 9, "record": [16, 12]}], "chance": 16.5, "odds": 40, "runs": 429, "plan": {"weeks": [{"week": 12, "opponent": 8, "game": "loss", "median": "below", "root_for": []}, {"week": 13, "opponent": 10, "game": "win", "median": "above", "root_for": []}, {"week": 14, "opponent": 2, "game": "win", "median": "above", "root_for": []}], "any_order": true, "odds": 8}}], "plan": null}

@@ -1,0 +1,16 @@
+$ cd apps/site && bun test --isolate test/no-push.test.ts
+bun test v1.4.5 (a7733435c)
+
+ 1 pass
+ 0 fail
+ 2 expect() calls
+Ran 1 test across 1 file. [501.00ms]
+$ rg -n "serviceWorker|PushManager|\bNotification\b|service-worker|sw\.js" apps/site packages/*/site --glob '!**/node_modules/**' --glob '!apps/site/out/**' --glob '!apps/site/.next/**' --glob '!apps/site/public/**'
+apps/site/test/no-push.test.ts:3: * folder names a service worker, `Notification`, or `PushManager`.
+apps/site/test/no-push.test.ts:22:const PUSH = /serviceWorker|PushManager|\bNotification\b/;
+apps/site/test/no-push.test.ts:40:  it("names no service worker, Notification, or PushManager in its code", () => {
+(rg exit 0. Each hit is in the test file apps/site/test/no-push.test.ts itself.)
+
+$ rg -l "serviceWorker|PushManager|\bNotification\b" <the cpc export of the Spec head, apps/site/out>
+(no output)
+rg exit 1

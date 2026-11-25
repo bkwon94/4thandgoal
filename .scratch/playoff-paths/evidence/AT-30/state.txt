@@ -1,0 +1,240 @@
+--- 390x660 light
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 390x660 light
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 390x660 light
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 390x660 dark
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 390x660 dark
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 390x660 dark
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 810x980 light
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 810x980 light
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 810x980 light
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 810x980 dark
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 810x980 dark
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 810x980 dark
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 282,
+  "weekCard": 524
+ }
+}
+--- 1080x740 light
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1080x740 light
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 1080x740 light
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1080x740 dark
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1080x740 dark
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 1080x740 dark
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1280x800 light
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1280x800 light
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 1280x800 light
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1280x800 dark
+{
+ "when": "as loaded",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}
+--- 1280x800 dark
+{
+ "when": "after one tap on the card",
+ "expanded": "false",
+ "dialogs": 0,
+ "order": {
+  "finishList": -1,
+  "weekCard": -1
+ }
+}
+--- 1280x800 dark
+{
+ "when": "after a second tap on the card",
+ "expanded": "true",
+ "dialogs": 0,
+ "order": {
+  "finishList": 328,
+  "weekCard": 570
+ }
+}

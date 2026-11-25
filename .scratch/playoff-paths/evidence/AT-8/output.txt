@@ -1,0 +1,10 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-8/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Paths: 46
+teams per Path: {1: 23, 2: 21, 3: 2}
+fewest runs of a Path: 403
+Paths outside 1 to 3 teams: 0
+Paths with fewer than 3 teams and odds under 90: 21; their Finish cases: {'best': 21}
+conditions that are not a final record with at most 5 more wins: 0
+condition keys: ['record', 'roster_id']
+example Path: {"conditions": [{"roster_id": 6, "record": [14, 14]}, {"roster_id": 12, "record": [14, 14]}], "chance": 33.1, "odds": 97, "runs": 617, "plan": {"weeks": [{"week": 12, "opponent": 8, "game": "loss", "median": "below", "root_for": [{"winner": 3, "loser": 4, "odds": 96}]}, {"week": 13, "opponent": 10, "game": "loss", "median": "below", "root_for": [{"winner": 4, "loser": 6, "odds": 97}, {"winner": 9, "loser": 8, "odds": 96}]}, {"week": 14, "opponent": 2, "game": "win", "median": "above", "root_for": [{"winner": 9, "loser": 10, "odds": 99}, {"winner": 7, "loser": 12, "odds": 97}]}], "any_order": t

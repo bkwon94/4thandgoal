@@ -1,0 +1,132 @@
+{
+ "trial": 1,
+ "mode": "fast",
+ "size": "810x980",
+ "theme": "dark",
+ "answerShown": true,
+ "threadTopics": [
+  "playoff_race"
+ ],
+ "bubbles": [
+  "Playoff race"
+ ],
+ "visibleButtonsAtTap": "Switch to light theme | Open the menu | Weak spots | How you stack up | Week recap | Week recap | Your last matchup | Your next matchup | Power rankings | Playoff race | Your season | Position leaders and recent trades | Waiver targets | How you stack up | Weak spots | Start or sit | Send | Your team",
+ "log": [
+  "225ms req GET /clients/cpc/eggs/board",
+  "269ms req POST /clients/cpc/suggestions",
+  "4678ms res 200 /clients/cpc/eggs/board",
+  "7910ms res 200 /clients/cpc/suggestions",
+  "9498ms tap More",
+  "9537ms tap Playoff race at 146,698; top element: {\"tag\":\"BUTTON\",\"button\":\"Playoff race: 48% playoff odds\",\"overlay\":false}; react props on chip: true"
+ ]
+}
+{
+ "trial": 2,
+ "mode": "fast",
+ "size": "810x980",
+ "theme": "dark",
+ "answerShown": true,
+ "threadTopics": [
+  "playoff_race"
+ ],
+ "bubbles": [
+  "Playoff race"
+ ],
+ "visibleButtonsAtTap": "Switch to light theme | Open the menu | Weak spots | How you stack up | Week recap | Week recap | Your last matchup | Your next matchup | Power rankings | Playoff race | Your season | Position leaders and recent trades | Waiver targets | How you stack up | Weak spots | Start or sit | Send | Your team",
+ "log": [
+  "122ms req GET /clients/cpc/eggs/board",
+  "136ms res 200 /clients/cpc/eggs/board",
+  "145ms req POST /clients/cpc/suggestions",
+  "1039ms res 200 /clients/cpc/suggestions",
+  "2608ms tap More",
+  "2653ms tap Playoff race at 146,688; top element: {\"tag\":\"BUTTON\",\"button\":\"Playoff race: 48% playoff odds\",\"overlay\":false}; react props on chip: true"
+ ]
+}
+{
+ "trial": 3,
+ "mode": "fast",
+ "size": "810x980",
+ "theme": "dark",
+ "answerShown": true,
+ "threadTopics": [
+  "playoff_race"
+ ],
+ "bubbles": [
+  "Playoff race"
+ ],
+ "visibleButtonsAtTap": "Switch to light theme | Open the menu | Weak spots | How you stack up | Week recap | Week recap | Your last matchup | Your next matchup | Power rankings | Playoff race | Your season | Position leaders and recent trades | Waiver targets | How you stack up | Weak spots | Start or sit | Send | Your team",
+ "log": [
+  "115ms req GET /clients/cpc/eggs/board",
+  "128ms res 200 /clients/cpc/eggs/board",
+  "137ms req POST /clients/cpc/suggestions",
+  "946ms res 200 /clients/cpc/suggestions",
+  "2497ms tap More",
+  "2525ms tap Playoff race at 146,713; top element: {\"tag\":\"BUTTON\",\"button\":\"Playoff race: 48% playoff odds\",\"overlay\":false}; react props on chip: true"
+ ]
+}
+{
+ "trial": 4,
+ "mode": "fast",
+ "size": "810x980",
+ "theme": "dark",
+ "answerShown": true,
+ "threadTopics": [
+  "playoff_race"
+ ],
+ "bubbles": [
+  "Playoff race"
+ ],
+ "visibleButtonsAtTap": "Switch to light theme | Open the menu | Weak spots | How you stack up | Week recap | Week recap | Your last matchup | Your next matchup | Power rankings | Playoff race | Your season | Position leaders and recent trades | Waiver targets | How you stack up | Weak spots | Start or sit | Send | Your team",
+ "log": [
+  "116ms req GET /clients/cpc/eggs/board",
+  "129ms res 200 /clients/cpc/eggs/board",
+  "141ms req POST /clients/cpc/suggestions",
+  "995ms res 200 /clients/cpc/suggestions",
+  "2547ms tap More",
+  "2580ms tap Playoff race at 146,706; top element: {\"tag\":\"BUTTON\",\"button\":\"Playoff race: 48% playoff odds\",\"overlay\":false}; react props on chip: true"
+ ]
+}
+{
+ "trial": 5,
+ "mode": "fast",
+ "size": "810x980",
+ "theme": "dark",
+ "answerShown": true,
+ "threadTopics": [
+  "playoff_race"
+ ],
+ "bubbles": [
+  "Playoff race"
+ ],
+ "visibleButtonsAtTap": "Switch to light theme | Open the menu | Weak spots | How you stack up | Week recap | Week recap | Your last matchup | Your next matchup | Power rankings | Playoff race | Your season | Position leaders and recent trades | Waiver targets | How you stack up | Weak spots | Start or sit | Send | Your team",
+ "log": [
+  "109ms req GET /clients/cpc/eggs/board",
+  "123ms res 200 /clients/cpc/eggs/board",
+  "131ms req POST /clients/cpc/suggestions",
+  "945ms res 200 /clients/cpc/suggestions",
+  "2508ms tap More",
+  "2541ms tap Playoff race at 146,703; top element: {\"tag\":\"BUTTON\",\"button\":\"Playoff race: 48% playoff odds\",\"overlay\":false}; react props on chip: true"
+ ]
+}
+{
+ "trial": 6,
+ "mode": "fast",
+ "size": "810x980",
+ "theme": "dark",
+ "answerShown": true,
+ "threadTopics": [
+  "playoff_race"
+ ],
+ "bubbles": [
+  "Playoff race"
+ ],
+ "visibleButtonsAtTap": "Switch to light theme | Open the menu | Weak spots | How you stack up | Week recap | Week recap | Your last matchup | Your next matchup | Power rankings | Playoff race | Your season | Position leaders and recent trades | Waiver targets | How you stack up | Weak spots | Start or sit | Send | Your team",
+ "log": [
+  "110ms req GET /clients/cpc/eggs/board",
+  "123ms res 200 /clients/cpc/eggs/board",
+  "131ms req POST /clients/cpc/suggestions",
+  "845ms res 200 /clients/cpc/suggestions",
+  "2415ms tap More",
+  "2448ms tap Playoff race at 146,706; top element: {\"tag\":\"BUTTON\",\"button\":\"Playoff race: 48% playoff odds\",\"overlay\":false}; react props on chip: true"
+ ]
+}

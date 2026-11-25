@@ -1,0 +1,13 @@
+$ cp /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-25/check.py apps/api/tests/test_at25_evidence.py && cd apps/api && env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cpc-api pytest -s -q -p no:xdist tests/test_at25_evidence.py tests/test_suggestions.py::test_after_week_14_the_race_topic_ranks_as_usual tests/test_suggestions.py::test_the_race_topic_leads_each_week_of_the_regular_season_above_an_urgent_lift
+== the league runs as week 14
+request: POST /clients/cpc/suggestions {"roster_id": 6, "order": ["week_recap", "last_matchup", "power_rankings", "playoff_race", "next_matchup", "your_season", "leaders_trades", "waiver_targets", "stack_up", "weak_spots", "sell_high", "trade_ideas", "trade_check"], "opened": {}}
+response: 200 picks ['playoff_race', 'week_recap', 'last_matchup'] urgent [] head_start None
+response facts keys: ['last_matchup', 'leaders_trades', 'next_matchup', 'playoff_race', 'power_rankings', 'sell_high', 'stack_up', 'waiver_targets', 'weak_spots', 'week_recap', 'your_season']
+rank of playoff_race in the order of the day: 4; rank among the Topics with a fact: 4; place in the picks: 1
+== the league runs as week 15
+request: POST /clients/cpc/suggestions {"roster_id": 6, "order": ["week_recap", "last_matchup", "power_rankings", "playoff_race", "next_matchup", "your_season", "leaders_trades", "waiver_targets", "stack_up", "weak_spots", "sell_high", "trade_ideas", "trade_check"], "opened": {}}
+response: 200 picks ['week_recap', 'last_matchup', 'power_rankings'] urgent [] head_start None
+response facts keys: ['last_matchup', 'leaders_trades', 'next_matchup', 'playoff_race', 'power_rankings', 'sell_high', 'stack_up', 'waiver_targets', 'weak_spots', 'week_recap', 'your_season']
+rank of playoff_race in the order of the day: 4; rank among the Topics with a fact: 4; place in the picks: not in the 3 picks
+...
+3 passed in 2.79s

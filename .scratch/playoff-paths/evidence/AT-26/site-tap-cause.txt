@@ -1,0 +1,32 @@
+AT-26: the cause of the second tap in 2 of 8 runs of the ce601c12 recording
+
+Cause: the script. The site needs no code fix.
+
+The front door shows a row of 3 quick chips beside "More". The API picks the 3 chips for each load, so the row changes:
+"Holes, Roster, Recap" on most loads, and "Holes, Roster, Playoffs" on some loads. The quick chip "Playoffs" has the
+aria-label "Playoff race: 48% playoff odds", the same as the Suggestion "Playoff race" in the More list, and it comes first
+in the page. The old selector button[aria-label^='Playoff race'] with .first() then took the quick chip. A first tap on a
+quick chip only opens a strip "Playoff race 48% playoff odds  Open →" and closes the More list. This is the design of
+apps/site/src/app/front-door/suggestions.tsx, lines 3-4 of its header: "A first tap on a chip shows the full name and the fact
+in a strip under the row, and a second tap opens the Topic." So the Answer showed only after the second tap of the retry.
+
+Proof (probe on 5f26bcb0, WebKit, files in this folder):
+- site-tap-probe.mjs.txt: the probe. Each trial logs the API calls with times, the box of the tapped element, the element on
+  top at the tap point, the React props on the chip, and the topic the thread opened.
+- site-tap-probe-390x660-dark.log, trial 1 of 12: the tapped element is 89x44 at 278,233 (the quick chip), not 348x48 at
+  21,481 (the More list row). After the tap: "no Answer in 15 s", the page text holds "More Holes Roster Playoffs / Playoff
+  race 48% playoff odds / Open →", and the thread opened no topic. Trials 2 to 12 tapped the list row and the Answer showed.
+- site-tap-probe-390x660-dark-first.log: the same, trial 5 of 6.
+- site-tap-probe-810x980-dark.log: 6 of 6 trials with a tap 30 ms after "More" opened, with no wait: each Answer showed.
+- site-tap-probe-trial1-before-tap.png and site-tap-probe-trial1-after-tap.png: the row with "Playoffs" before the tap,
+  and the strip with "Open →" after it.
+What is not the cause:
+- An overlay: elementFromPoint at the tap point is the chip itself in every trial ("overlay": false). The Announcement and
+  the Tour are off by their stored keys, and no dialog is open.
+- A hydration delay: the chip has React props at the tap in every trial, and a tap 30 ms after "More" opened works.
+
+Fix of the script (evidence/site-set/a/tests.mjs, AT-26): the tap takes the button whose aria-label starts with "Playoff race"
+and whose text holds "Playoff race" (the More list row). The quick chip text is "Playoffs", so it no longer matches. The retry
+is gone; the run records if the first tap showed the Answer.
+Recording again on 5f26bcb0 (files site-5f26bcb0-*): the Answer showed after the first tap in 8 of 8 runs, and 2 of the 8 runs
+(1280x800 light and dark) had the quick chip "Playoffs" in the row (site-tries.txt).

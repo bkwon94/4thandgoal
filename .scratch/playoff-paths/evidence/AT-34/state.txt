@@ -1,0 +1,96 @@
+--- 390x660 light
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 390x660 dark
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 810x980 light
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 810x980 dark
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 1080x740 light
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 1080x740 dark
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 1280x800 light
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}
+--- 1280x800 dark
+{
+ "planSheet": "Your plan to 15-13 · you're in 81%",
+ "tryIt": "Try it: you're in 81%",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "dialogsOpen": 0,
+ "card": "YOUR TEAM Bo Girds 11-11 81% SPOT ODDS",
+ "setLine": "80%\nThe Blue Tent beats 💿 🐑\n→ 82%\n💿 🐑 wins\n→ 80%\nNFC Least beats Lil Fridge\n→ 82%\nLil Fridge wins\n→ 81%\nOmarion Himpton misses the median\n→ 87%\nBengals Buddies misses the median\n→ 86%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median\n\nReset\nLeague board\n\n"
+}

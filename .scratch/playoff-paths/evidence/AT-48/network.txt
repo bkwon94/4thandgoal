@@ -1,0 +1,209 @@
+Each request to a host other than the local export. No route blocks Sleeper.
+
+== 390x660-light ==
+0.43s request GET https://gc.zgo.at/count.js
+0.55s response 200 https://gc.zgo.at/count.js
+0.86s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.92s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.17s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+7.17s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+7.17s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+7.22s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+7.22s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+7.22s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+7.23s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+7.23s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+7.23s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+7.23s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+7.23s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+7.23s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+7.26s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+7.26s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+7.26s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+7.26s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+7.27s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+7.27s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+7.31s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+7.34s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+
+== 390x660-dark ==
+0.19s request GET https://gc.zgo.at/count.js
+0.30s response 200 https://gc.zgo.at/count.js
+0.52s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.57s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.82s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.82s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.82s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.87s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.87s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.88s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.88s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.88s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.88s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.88s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.88s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.90s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.91s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+6.91s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+6.91s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+6.91s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+6.91s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+6.93s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.96s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.98s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+
+== 810x980-light ==
+0.18s request GET https://gc.zgo.at/count.js
+0.29s response 200 https://gc.zgo.at/count.js
+0.63s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.64s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.40s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.40s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.40s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.40s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.40s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.45s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.45s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.45s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+6.46s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.46s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.46s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.46s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.46s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.46s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.46s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.47s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+6.47s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+6.47s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+6.49s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+6.49s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+
+== 810x980-dark ==
+0.17s request GET https://gc.zgo.at/count.js
+0.28s response 200 https://gc.zgo.at/count.js
+0.59s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.60s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.35s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.35s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.35s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.35s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.35s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.40s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.40s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.41s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.41s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+6.41s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.41s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.41s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.41s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.41s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.42s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.43s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+6.43s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+6.43s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+6.43s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+6.44s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+
+== 1080x740-light ==
+0.18s request GET https://gc.zgo.at/count.js
+0.30s response 200 https://gc.zgo.at/count.js
+0.64s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.65s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.57s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.57s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.57s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.62s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.62s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.65s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.67s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.67s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+6.67s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+6.68s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+6.68s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+6.68s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+6.68s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+
+== 1080x740-dark ==
+0.18s request GET https://gc.zgo.at/count.js
+0.29s response 200 https://gc.zgo.at/count.js
+0.60s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.60s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.54s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.54s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.54s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.59s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.59s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.60s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.60s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+6.63s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+6.64s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+
+== 1280x800-light ==
+0.16s request GET https://gc.zgo.at/count.js
+0.27s response 200 https://gc.zgo.at/count.js
+0.61s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.62s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.49s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.49s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.49s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.49s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.54s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.55s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.55s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.55s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.55s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.55s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.55s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.55s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.55s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.57s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+6.57s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg
+6.57s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+6.57s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+6.57s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.58s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+6.59s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+
+== 1280x800-dark ==
+0.24s request GET https://gc.zgo.at/count.js
+0.42s response 200 https://gc.zgo.at/count.js
+0.78s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.78s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+6.71s request GET https://sleepercdn.com/content/nfl/players/9221.jpg
+6.71s request GET https://sleepercdn.com/content/nfl/players/8151.jpg
+6.71s request GET https://sleepercdn.com/content/nfl/players/9509.jpg
+6.71s request GET https://sleepercdn.com/content/nfl/players/6790.jpg
+6.77s request GET https://sleepercdn.com/content/nfl/players/6813.jpg
+6.77s request GET https://sleepercdn.com/content/nfl/players/8150.jpg
+6.77s request GET https://sleepercdn.com/content/nfl/players/3198.jpg
+6.77s request GET https://sleepercdn.com/content/nfl/players/8228.jpg
+6.77s request GET https://sleepercdn.com/content/nfl/players/4034.jpg
+6.77s request GET https://sleepercdn.com/content/nfl/players/7588.jpg
+6.78s response 200 https://sleepercdn.com/content/nfl/players/9221.jpg
+6.78s response 200 https://sleepercdn.com/content/nfl/players/8151.jpg
+6.79s response 200 https://sleepercdn.com/content/nfl/players/9509.jpg
+6.79s response 200 https://sleepercdn.com/content/nfl/players/6813.jpg
+6.80s response 200 https://sleepercdn.com/content/nfl/players/8228.jpg
+6.80s response 200 https://sleepercdn.com/content/nfl/players/3198.jpg
+6.80s response 200 https://sleepercdn.com/content/nfl/players/4034.jpg
+6.81s response 200 https://sleepercdn.com/content/nfl/players/7588.jpg
+6.81s response 200 https://sleepercdn.com/content/nfl/players/6790.jpg
+6.82s response 200 https://sleepercdn.com/content/nfl/players/8150.jpg

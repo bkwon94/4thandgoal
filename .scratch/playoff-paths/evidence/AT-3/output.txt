@@ -1,0 +1,19 @@
+$ make -C apps/pipeline sim CLIENT=cpc WEEK=11 && env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-3/check.py
+uv run --exact --package cornerstone cornerstone sim --client cpc --season 2026 --week 11
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/build/2026/week-11/sim.json
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Bo Girds (roster 6) goals: {"spot": {"odds": 48, "status": "open"}, "bye": {"odds": 2, "status": "open"}, "seed-1": {"odds": 1, "status": "open"}, "seed-2": {"odds": 2, "status": "open"}, "seed-3": {"odds": 6, "status": "open"}, "seed-4": {"odds": 9, "status": "open"}, "seed-5": {"odds": 13, "status": "open"}, "seed-6": {"odds": 18, "status": "open"}}
+The Blue Tent (roster 1) goals: {"spot": {"odds": 83, "status": "open"}, "bye": {"odds": 18, "status": "open"}, "seed-1": {"odds": 5, "status": "open"}, "seed-2": {"odds": 13, "status": "open"}, "seed-3": {"odds": 18, "status": "open"}, "seed-4": {"odds": 19, "status": "open"}, "seed-5": {"odds": 15, "status": "open"}, "seed-6": {"odds": 13, "status": "open"}}
+pages: 12
+roster  1 The Blue Tent            goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 83 teams.playoff 83
+roster  2 Bengals Buddies          goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 69 teams.playoff 69
+roster  3 Lil Fridge               goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 99 teams.playoff 99
+roster  4 NFC Least                goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 0 teams.playoff 0
+roster  5 Teez Nuts                goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 88 teams.playoff 88
+roster  6 Bo Girds                 goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 48 teams.playoff 48
+roster  7 Immaculate Concepcion    goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 1 teams.playoff 1
+roster  8 💿 🐑                      goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 71 teams.playoff 71
+roster  9 Maye d'force B with U    goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 98 teams.playoff 98
+roster 10 Nico Collinsizer         goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 6 teams.playoff 6
+roster 11 Unsolicited Dak Picks    goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 0 teams.playoff 0
+roster 12 Omarion Himpton          goal keys ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6'] spot odds 36 teams.playoff 36

@@ -1,0 +1,25 @@
+Overlap check of AT-30, WebKit, client cpc. Rule: no visible text box overlaps another by more than 3 px both ways; at the top of the page no text sits under a fixed or sticky bar; at the end of the page no text sits under a bar in the lower half of the viewport; in an open sheet no text sits under a fixed bar outside the sheet.
+loaded-390x660-light.png: scope page, 156 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-390x660-light.png: scope page, 58 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-390x660-light.png: scope page, 156 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-390x660-dark.png: scope page, 156 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-390x660-dark.png: scope page, 58 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-390x660-dark.png: scope page, 156 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-810x980-light.png: scope page, 144 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-810x980-light.png: scope page, 56 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-810x980-light.png: scope page, 144 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-810x980-dark.png: scope page, 144 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-810x980-dark.png: scope page, 56 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-810x980-dark.png: scope page, 144 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-1080x740-light.png: scope page, 148 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-1080x740-light.png: scope page, 60 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-1080x740-light.png: scope page, 148 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-1080x740-dark.png: scope page, 148 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-1080x740-dark.png: scope page, 60 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-1080x740-dark.png: scope page, 148 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-1280x800-light.png: scope page, 149 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-1280x800-light.png: scope page, 61 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-1280x800-light.png: scope page, 149 text boxes, 0 overlaps, 0 covered by a fixed bar
+loaded-1280x800-dark.png: scope page, 149 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-1-1280x800-dark.png: scope page, 61 text boxes, 0 overlaps, 0 covered by a fixed bar
+tap-2-1280x800-dark.png: scope page, 149 text boxes, 0 overlaps, 0 covered by a fixed bar

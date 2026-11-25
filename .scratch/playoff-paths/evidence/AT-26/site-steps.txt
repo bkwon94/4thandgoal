@@ -1,0 +1,7 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-26 in evidence/site-set/a/tests.mjs. Build and serve: evidence/site-set/a/build.txt.
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-26
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context:
+open / ; tap "More"; tap the Suggestion "Playoff race" (button[aria-label^="Playoff race"]); wait for the link "Open The Race"; full-page shot "site-answer"; viewport shots "site-answer-view<N>" step through the Answer; save the Answer text and the link href to site-answer.txt; save each POST to the API to site-api-<size>-<theme>.json
+
+Recording again on 5f26bcb0 (files site-5f26bcb0-*): PREFIX=site-5f26bcb0- with the fixed tap of site-tap-cause.txt:
+the tap takes button[aria-label^='Playoff race'] whose text holds "Playoff race" (the More list row), and the run has no retry.
