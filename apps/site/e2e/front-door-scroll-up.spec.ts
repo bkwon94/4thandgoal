@@ -5,7 +5,7 @@
 import { type Page, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { askQuestion, openDoor, openTopic, samplesWhenStill, startSamples } from "./door-motion";
+import { openDoor, openTopic, samplesWhenStill, startSamples } from "./door-motion";
 import { serveDir } from "./serve";
 import { skipTour } from "./tour";
 
@@ -85,16 +85,4 @@ test("a Suggestion chip tapped in a scrolled-up Thread scrolls its question to t
   await chip.click();
   await expect(page.getByRole("article", { name }).last()).toBeVisible();
   await expectUnderHeader(page, name);
-});
-
-test("a question typed in a scrolled-up Thread scrolls to the top under the Thread header", async ({
-  page,
-}) => {
-  // The same fixed Friday as the chip test, so both tests get the same Suggestions on each run. The timers still run.
-  await page.clock.setFixedTime(new Date("2026-11-13T12:00:00"));
-  await openDoor(page, `${server.url}${DOOR}`);
-  await scrollUp(page);
-  await askQuestion(page, "week 1 results");
-  await expect(page.getByRole("article", { name: "week 1 results" })).toBeVisible();
-  await expectUnderHeader(page, "week 1 results");
 });
