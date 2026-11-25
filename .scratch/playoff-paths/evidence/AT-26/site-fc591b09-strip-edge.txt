@@ -1,0 +1,17 @@
+AT-26 on fc591b09: the edge of the sticky Thread header (the team strip with "Clear") against the "Playoff race" bubble.
+Probe: site-fc591b09-strip-edge.mjs.txt. It opens the Answer as run.mjs does, scrolls to the scroll of the "view1" shot (the
+bubble top minus 80 px), reads the boxes of <header aria-label="Thread header"> and of the bubble, and takes a crop of the top
+260 px: site-fc591b09-strip-edge-<size>-<theme>.png.
+390x660 light: scrollY 41; Thread header 61-113 px, background rgb(244, 244, 244); "Playoff race" bubble 80-112.1 px, x 261.2-374, background rgb(20, 20, 20); bubble edge below the header: none
+390x660 dark: scrollY 41; Thread header 61-113 px, background rgb(20, 20, 20); "Playoff race" bubble 80-112.1 px, x 261.2-374, background rgb(255, 255, 255); bubble edge below the header: none
+810x980 light: scrollY 41; Thread header 61-113 px, background rgb(244, 244, 244); "Playoff race" bubble 80-113.3 px, x 550.4-669, background rgb(20, 20, 20); bubble edge below the header: 0.3 px
+810x980 dark: scrollY 41; Thread header 61-113 px, background rgb(20, 20, 20); "Playoff race" bubble 80-113.3 px, x 550.4-669, background rgb(255, 255, 255); bubble edge below the header: 0.3 px
+1080x740 light: scrollY 41; Thread header 61-113 px, background rgb(244, 244, 244); "Playoff race" bubble 80-114.4 px, x 679.7-804, background rgb(20, 20, 20); bubble edge below the header: 1.4 px
+1080x740 dark: scrollY 41; Thread header 61-113 px, background rgb(20, 20, 20); "Playoff race" bubble 80-114.4 px, x 679.7-804, background rgb(255, 255, 255); bubble edge below the header: 1.4 px
+1280x800 light: scrollY 41; Thread header 61-113 px, background rgb(244, 244, 244); "Playoff race" bubble 80-114.4 px, x 779.7-904, background rgb(20, 20, 20); bubble edge below the header: 1.4 px
+1280x800 dark: scrollY 41; Thread header 61-113 px, background rgb(20, 20, 20); "Playoff race" bubble 80-114.4 px, x 779.7-904, background rgb(255, 255, 255); bubble edge below the header: 1.4 px
+
+Reading: the header has a solid page color in each run, and the text "Playoff race" of the bubble sits under it and does not show
+(the viewport check in site-fc591b09-overlap.txt lists it as "hidden" with 0 that show through). At 810x980 the bottom 0.3 px of the
+bubble lies below the header, and at 1080x740 and 1280x800 the bottom 1.4 px does. The crops at those sizes show this edge as a thin
+bar under "Clear", dark in light theme and white in dark theme. At 390x660 the bubble ends above the header bottom, and no edge shows.

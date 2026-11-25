@@ -1,0 +1,253 @@
+Overlap check of AT-26, WebKit, client cpc. Rule: no visible text box overlaps another by more than 3 px both ways; at the top of the page no text sits under a bar in the upper half of the viewport; at the end of the page no text sits under a bar in the lower half of the viewport; in an open sheet no text sits under a fixed bar outside the sheet.
+site-fc591b09-answer-390x660-light.png: scope page, 76 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-390x660-light.png: scope viewport at scrollY 41, 62 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 19 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 318,96
+  hidden: "6" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,544
+  hidden: "💿 🐑" under <div .gap-sp-3.flex.flex-col> (sticky) at 88,544
+  hidden: "71%" under <div .gap-sp-3.flex.flex-col> (sticky) at 290,544
+  hidden: "13-9" under <div .gap-sp-3.flex.flex-col> (sticky) at 343,544
+  hidden: "Playoff line" under <div .gap-sp-3.flex.flex-col> (sticky) at 307,559
+  hidden: "7" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,577
+  hidden: "Bo Girds" under <div .gap-sp-3.flex.flex-col> (sticky) at 95,577
+  hidden: "You" under <div .gap-sp-3.flex.flex-col> (sticky) at 141,577
+  hidden: "48%" under <div .gap-sp-3.flex.flex-col> (sticky) at 290,577
+  hidden: "11-11" under <div .gap-sp-3.flex.flex-col> (sticky) at 339,577
+  hidden: "8" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,609
+  hidden: "Omarion Himpton" under <div .gap-sp-3.flex.flex-col> (sticky) at 123,609
+  hidden: "36%" under <div .gap-sp-3.flex.flex-col> (sticky) at 290,609
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 339,609
+  hidden: "9" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,641
+  hidden: "Nico Collinsizer" under <div .gap-sp-3.flex.flex-col> (sticky) at 116,641
+  hidden: "6%" under <div .gap-sp-3.flex.flex-col> (sticky) at 294,641
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 339,641
+site-fc591b09-answer-view2-390x660-light.png: scope viewport at scrollY 401, 58 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 12 hidden under an opaque bar
+  hidden: "1" under <header .border-rule.bg-page.text-ink> (sticky) at 37,24
+  hidden: "Lil Fridge" under <header .border-rule.bg-page.text-ink> (sticky) at 97,24
+  hidden: "99%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,24
+  hidden: "15-7" under <header .border-rule.bg-page.text-ink> (sticky) at 343,24
+  hidden: "2" under <header .border-rule.bg-page.text-ink> (sticky) at 37,56
+  hidden: "Maye d'force B with U" under <header .border-rule.bg-page.text-ink> (sticky) at 127,56
+  hidden: "98%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,56
+  hidden: "14-8" under <header .border-rule.bg-page.text-ink> (sticky) at 343,56
+  hidden: "3" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 37,88
+  hidden: "Teez Nuts" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 99,88
+  hidden: "88%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 290,88
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 343,88
+site-fc591b09-answer-view3-390x660-light.png: scope viewport at scrollY 441, 54 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 16 hidden under an opaque bar
+  hidden: "2" under <header .border-rule.bg-page.text-ink> (sticky) at 37,16
+  hidden: "Maye d'force B with U" under <header .border-rule.bg-page.text-ink> (sticky) at 127,16
+  hidden: "98%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,16
+  hidden: "14-8" under <header .border-rule.bg-page.text-ink> (sticky) at 343,16
+  hidden: "3" under <header .border-rule.bg-page.text-ink> (sticky) at 37,48
+  hidden: "Teez Nuts" under <header .border-rule.bg-page.text-ink> (sticky) at 99,48
+  hidden: "88%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,48
+  hidden: "13-9" under <header .border-rule.bg-page.text-ink> (sticky) at 343,48
+  hidden: "4" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 37,80
+  hidden: "The Blue Tent" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 112,80
+  hidden: "83%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 290,80
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 343,80
+  hidden: "5" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 37,112
+  hidden: "Bengals Buddies" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 121,112
+  hidden: "69%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 290,112
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 343,112
+site-fc591b09-answer-390x660-dark.png: scope page, 76 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-390x660-dark.png: scope viewport at scrollY 41, 62 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 19 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 318,96
+  hidden: "6" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,544
+  hidden: "💿 🐑" under <div .gap-sp-3.flex.flex-col> (sticky) at 88,544
+  hidden: "71%" under <div .gap-sp-3.flex.flex-col> (sticky) at 290,544
+  hidden: "13-9" under <div .gap-sp-3.flex.flex-col> (sticky) at 343,544
+  hidden: "Playoff line" under <div .gap-sp-3.flex.flex-col> (sticky) at 307,559
+  hidden: "7" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,577
+  hidden: "Bo Girds" under <div .gap-sp-3.flex.flex-col> (sticky) at 95,577
+  hidden: "You" under <div .gap-sp-3.flex.flex-col> (sticky) at 141,577
+  hidden: "48%" under <div .gap-sp-3.flex.flex-col> (sticky) at 290,577
+  hidden: "11-11" under <div .gap-sp-3.flex.flex-col> (sticky) at 339,577
+  hidden: "8" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,609
+  hidden: "Omarion Himpton" under <div .gap-sp-3.flex.flex-col> (sticky) at 123,609
+  hidden: "36%" under <div .gap-sp-3.flex.flex-col> (sticky) at 290,609
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 339,609
+  hidden: "9" under <div .gap-sp-3.flex.flex-col> (sticky) at 37,641
+  hidden: "Nico Collinsizer" under <div .gap-sp-3.flex.flex-col> (sticky) at 116,641
+  hidden: "6%" under <div .gap-sp-3.flex.flex-col> (sticky) at 294,641
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 339,641
+site-fc591b09-answer-view2-390x660-dark.png: scope viewport at scrollY 401, 58 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 12 hidden under an opaque bar
+  hidden: "1" under <header .border-rule.bg-page.text-ink> (sticky) at 37,24
+  hidden: "Lil Fridge" under <header .border-rule.bg-page.text-ink> (sticky) at 97,24
+  hidden: "99%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,24
+  hidden: "15-7" under <header .border-rule.bg-page.text-ink> (sticky) at 343,24
+  hidden: "2" under <header .border-rule.bg-page.text-ink> (sticky) at 37,56
+  hidden: "Maye d'force B with U" under <header .border-rule.bg-page.text-ink> (sticky) at 127,56
+  hidden: "98%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,56
+  hidden: "14-8" under <header .border-rule.bg-page.text-ink> (sticky) at 343,56
+  hidden: "3" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 37,88
+  hidden: "Teez Nuts" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 99,88
+  hidden: "88%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 290,88
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 343,88
+site-fc591b09-answer-view3-390x660-dark.png: scope viewport at scrollY 441, 54 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 16 hidden under an opaque bar
+  hidden: "2" under <header .border-rule.bg-page.text-ink> (sticky) at 37,16
+  hidden: "Maye d'force B with U" under <header .border-rule.bg-page.text-ink> (sticky) at 127,16
+  hidden: "98%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,16
+  hidden: "14-8" under <header .border-rule.bg-page.text-ink> (sticky) at 343,16
+  hidden: "3" under <header .border-rule.bg-page.text-ink> (sticky) at 37,48
+  hidden: "Teez Nuts" under <header .border-rule.bg-page.text-ink> (sticky) at 99,48
+  hidden: "88%" under <header .border-rule.bg-page.text-ink> (sticky) at 290,48
+  hidden: "13-9" under <header .border-rule.bg-page.text-ink> (sticky) at 343,48
+  hidden: "4" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 37,80
+  hidden: "The Blue Tent" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 112,80
+  hidden: "83%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 290,80
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 343,80
+  hidden: "5" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 37,112
+  hidden: "Bengals Buddies" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 121,112
+  hidden: "69%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 290,112
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 343,112
+site-fc591b09-answer-810x980-light.png: scope page, 76 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-810x980-light.png: scope viewport at scrollY 41, 76 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 2 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 610,97
+  hidden: "Read the full report" under <div .gap-sp-3.flex.flex-col> (sticky) at 229,867
+site-fc591b09-answer-view2-810x980-light.png: scope viewport at scrollY 146, 76 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 5 hidden under an opaque bar
+  hidden: "Playoff race" under <header .border-rule.bg-page.text-ink> (sticky) at 610,1
+  hidden: "Playoff odds" under <header .border-rule.bg-page.text-ink> (sticky) at 213,50
+  hidden: "48%" under <header .border-rule.bg-page.text-ink> (sticky) at 288,49
+  hidden: "Rest of season" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 222,77
+  hidden: "4-2" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 171,110
+site-fc591b09-answer-810x980-dark.png: scope page, 76 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-810x980-dark.png: scope viewport at scrollY 41, 76 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 2 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 610,97
+  hidden: "Read the full report" under <div .gap-sp-3.flex.flex-col> (sticky) at 229,867
+site-fc591b09-answer-view2-810x980-dark.png: scope viewport at scrollY 146, 76 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 5 hidden under an opaque bar
+  hidden: "Playoff race" under <header .border-rule.bg-page.text-ink> (sticky) at 610,1
+  hidden: "Playoff odds" under <header .border-rule.bg-page.text-ink> (sticky) at 213,50
+  hidden: "48%" under <header .border-rule.bg-page.text-ink> (sticky) at 288,49
+  hidden: "Rest of season" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 222,77
+  hidden: "4-2" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 171,110
+site-fc591b09-answer-1080x740-light.png: scope page, 81 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-1080x740-light.png: scope viewport at scrollY 41, 71 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 18 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 742,97
+  hidden: "7" under <div .gap-sp-3.flex.flex-col> (sticky) at 297,614
+  hidden: "Bo Girds" under <div .gap-sp-3.flex.flex-col> (sticky) at 359,614
+  hidden: "You" under <div .gap-sp-3.flex.flex-col> (sticky) at 412,614
+  hidden: "48%" under <div .gap-sp-3.flex.flex-col> (sticky) at 718,614
+  hidden: "11-11" under <div .gap-sp-3.flex.flex-col> (sticky) at 766,614
+  hidden: "8" under <div .gap-sp-3.flex.flex-col> (sticky) at 297,648
+  hidden: "Omarion Himpton" under <div .gap-sp-3.flex.flex-col> (sticky) at 391,648
+  hidden: "36%" under <div .gap-sp-3.flex.flex-col> (sticky) at 718,648
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 766,648
+  hidden: "9" under <div .gap-sp-3.flex.flex-col> (sticky) at 297,682
+  hidden: "Nico Collinsizer" under <div .gap-sp-3.flex.flex-col> (sticky) at 384,682
+  hidden: "6%" under <div .gap-sp-3.flex.flex-col> (sticky) at 723,682
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 766,682
+  hidden: "10" under <div .gap-sp-3.flex.flex-col> (sticky) at 301,717
+  hidden: "Immaculate Concepcion" under <div .gap-sp-3.flex.flex-col> (sticky) at 416,717
+  hidden: "1%" under <div .gap-sp-3.flex.flex-col> (sticky) at 723,717
+  hidden: "9-13" under <div .gap-sp-3.flex.flex-col> (sticky) at 770,717
+site-fc591b09-answer-view2-1080x740-light.png: scope viewport at scrollY 411, 65 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 14 hidden under an opaque bar
+  hidden: "Odds" under <header .border-rule.bg-page.text-ink> (sticky) at 570,6
+  hidden: "W-L" under <header .border-rule.bg-page.text-ink> (sticky) at 772,6
+  hidden: "1" under <header .border-rule.bg-page.text-ink> (sticky) at 297,37
+  hidden: "Lil Fridge" under <header .border-rule.bg-page.text-ink> (sticky) at 362,37
+  hidden: "99%" under <header .border-rule.bg-page.text-ink> (sticky) at 718,37
+  hidden: "15-7" under <header .border-rule.bg-page.text-ink> (sticky) at 770,37
+  hidden: "2" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 297,72
+  hidden: "Maye d'force B with U" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 409,72
+  hidden: "98%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 718,72
+  hidden: "14-8" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 770,72
+  hidden: "3" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 297,106
+  hidden: "Teez Nuts" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 364,106
+  hidden: "88%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 718,106
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 770,106
+site-fc591b09-answer-1080x740-dark.png: scope page, 81 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-1080x740-dark.png: scope viewport at scrollY 41, 71 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 18 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 742,97
+  hidden: "7" under <div .gap-sp-3.flex.flex-col> (sticky) at 297,614
+  hidden: "Bo Girds" under <div .gap-sp-3.flex.flex-col> (sticky) at 359,614
+  hidden: "You" under <div .gap-sp-3.flex.flex-col> (sticky) at 412,614
+  hidden: "48%" under <div .gap-sp-3.flex.flex-col> (sticky) at 718,614
+  hidden: "11-11" under <div .gap-sp-3.flex.flex-col> (sticky) at 766,614
+  hidden: "8" under <div .gap-sp-3.flex.flex-col> (sticky) at 297,648
+  hidden: "Omarion Himpton" under <div .gap-sp-3.flex.flex-col> (sticky) at 391,648
+  hidden: "36%" under <div .gap-sp-3.flex.flex-col> (sticky) at 718,648
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 766,648
+  hidden: "9" under <div .gap-sp-3.flex.flex-col> (sticky) at 297,682
+  hidden: "Nico Collinsizer" under <div .gap-sp-3.flex.flex-col> (sticky) at 384,682
+  hidden: "6%" under <div .gap-sp-3.flex.flex-col> (sticky) at 723,682
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 766,682
+  hidden: "10" under <div .gap-sp-3.flex.flex-col> (sticky) at 301,717
+  hidden: "Immaculate Concepcion" under <div .gap-sp-3.flex.flex-col> (sticky) at 416,717
+  hidden: "1%" under <div .gap-sp-3.flex.flex-col> (sticky) at 723,717
+  hidden: "9-13" under <div .gap-sp-3.flex.flex-col> (sticky) at 770,717
+site-fc591b09-answer-view2-1080x740-dark.png: scope viewport at scrollY 411, 65 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 14 hidden under an opaque bar
+  hidden: "Odds" under <header .border-rule.bg-page.text-ink> (sticky) at 570,6
+  hidden: "W-L" under <header .border-rule.bg-page.text-ink> (sticky) at 772,6
+  hidden: "1" under <header .border-rule.bg-page.text-ink> (sticky) at 297,37
+  hidden: "Lil Fridge" under <header .border-rule.bg-page.text-ink> (sticky) at 362,37
+  hidden: "99%" under <header .border-rule.bg-page.text-ink> (sticky) at 718,37
+  hidden: "15-7" under <header .border-rule.bg-page.text-ink> (sticky) at 770,37
+  hidden: "2" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 297,72
+  hidden: "Maye d'force B with U" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 409,72
+  hidden: "98%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 718,72
+  hidden: "14-8" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 770,72
+  hidden: "3" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 297,106
+  hidden: "Teez Nuts" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 364,106
+  hidden: "88%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 718,106
+  hidden: "13-9" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 770,106
+site-fc591b09-answer-1280x800-light.png: scope page, 82 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-1280x800-light.png: scope viewport at scrollY 41, 80 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 17 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 842,97
+  hidden: "9" under <div .gap-sp-3.flex.flex-col> (sticky) at 397,682
+  hidden: "Nico Collinsizer" under <div .gap-sp-3.flex.flex-col> (sticky) at 484,682
+  hidden: "6%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,682
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 866,682
+  hidden: "10" under <div .gap-sp-3.flex.flex-col> (sticky) at 401,717
+  hidden: "Immaculate Concepcion" under <div .gap-sp-3.flex.flex-col> (sticky) at 516,717
+  hidden: "1%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,717
+  hidden: "9-13" under <div .gap-sp-3.flex.flex-col> (sticky) at 870,717
+  hidden: "11" under <div .gap-sp-3.flex.flex-col> (sticky) at 401,751
+  hidden: "Unsolicited Dak Picks" under <div .gap-sp-3.flex.flex-col> (sticky) at 506,751
+  hidden: "0%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,751
+  hidden: "6-16" under <div .gap-sp-3.flex.flex-col> (sticky) at 870,751
+  hidden: "12" under <div .gap-sp-3.flex.flex-col> (sticky) at 401,785
+  hidden: "NFC Least" under <div .gap-sp-3.flex.flex-col> (sticky) at 465,785
+  hidden: "0%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,785
+  hidden: "5-17" under <div .gap-sp-3.flex.flex-col> (sticky) at 870,785
+site-fc591b09-answer-view2-1280x800-light.png: scope viewport at scrollY 351, 70 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 10 hidden under an opaque bar
+  hidden: "2-4" under <header .border-rule.bg-page.text-ink> (sticky) at 406,13
+  hidden: "ends 13-15" under <header .border-rule.bg-page.text-ink> (sticky) at 432,32
+  hidden: "20% likely" under <header .border-rule.bg-page.text-ink> (sticky) at 526,26
+  hidden: "3%" under <header .border-rule.bg-page.text-ink> (sticky) at 878,21
+  hidden: "Odds" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 670,64
+  hidden: "W-L" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 872,64
+  hidden: "1" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 397,97
+  hidden: "Lil Fridge" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 462,97
+  hidden: "99%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 818,97
+  hidden: "15-7" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 870,97
+site-fc591b09-answer-1280x800-dark.png: scope page, 82 text boxes, 0 overlaps, 0 covered by a fixed bar
+site-fc591b09-answer-view1-1280x800-dark.png: scope viewport at scrollY 41, 80 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 17 hidden under an opaque bar
+  hidden: "Playoff race" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 842,97
+  hidden: "9" under <div .gap-sp-3.flex.flex-col> (sticky) at 397,682
+  hidden: "Nico Collinsizer" under <div .gap-sp-3.flex.flex-col> (sticky) at 484,682
+  hidden: "6%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,682
+  hidden: "10-12" under <div .gap-sp-3.flex.flex-col> (sticky) at 866,682
+  hidden: "10" under <div .gap-sp-3.flex.flex-col> (sticky) at 401,717
+  hidden: "Immaculate Concepcion" under <div .gap-sp-3.flex.flex-col> (sticky) at 516,717
+  hidden: "1%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,717
+  hidden: "9-13" under <div .gap-sp-3.flex.flex-col> (sticky) at 870,717
+  hidden: "11" under <div .gap-sp-3.flex.flex-col> (sticky) at 401,751
+  hidden: "Unsolicited Dak Picks" under <div .gap-sp-3.flex.flex-col> (sticky) at 506,751
+  hidden: "0%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,751
+  hidden: "6-16" under <div .gap-sp-3.flex.flex-col> (sticky) at 870,751
+  hidden: "12" under <div .gap-sp-3.flex.flex-col> (sticky) at 401,785
+  hidden: "NFC Least" under <div .gap-sp-3.flex.flex-col> (sticky) at 465,785
+  hidden: "0%" under <div .gap-sp-3.flex.flex-col> (sticky) at 823,785
+  hidden: "5-17" under <div .gap-sp-3.flex.flex-col> (sticky) at 870,785
+site-fc591b09-answer-view2-1280x800-dark.png: scope viewport at scrollY 351, 70 text boxes, 0 overlaps, 0 show through a fixed or sticky bar, 10 hidden under an opaque bar
+  hidden: "2-4" under <header .border-rule.bg-page.text-ink> (sticky) at 406,13
+  hidden: "ends 13-15" under <header .border-rule.bg-page.text-ink> (sticky) at 432,32
+  hidden: "20% likely" under <header .border-rule.bg-page.text-ink> (sticky) at 526,26
+  hidden: "3%" under <header .border-rule.bg-page.text-ink> (sticky) at 878,21
+  hidden: "Odds" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 670,64
+  hidden: "W-L" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 872,64
+  hidden: "1" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 397,97
+  hidden: "Lil Fridge" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 462,97
+  hidden: "99%" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 818,97
+  hidden: "15-7" under <header Thread header .top-band-height.-mx-gutter.min-h-door-head> (sticky) at 870,97

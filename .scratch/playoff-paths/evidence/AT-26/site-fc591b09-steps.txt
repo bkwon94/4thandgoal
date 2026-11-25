@@ -1,0 +1,13 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-26 in evidence/site-set/a/tests.mjs.
+Build: a detached worktree of fc591b09 in the scratchpad, with the rebuilt client files of wt-mods.tar extracted into that worktree only
+(cpc week-11 sim.json sha256 153af695...6f55); pnpm install --frozen-lockfile --prefer-offline;
+API: source ~/.secrets; make -C apps/api api-evidence API_PORT=8391 API_ORIGIN=http://127.0.0.1:4391 (in the worktree);
+cpc build: CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:8391 pnpm build (exit 0), served by serve.mjs on 127.0.0.1:4391.
+$ PREFIX=site-fc591b09- SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-26
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context: open / ; tap "More"; tap the More-list
+Suggestion "Playoff race" (aria-label starts with "Playoff race" and the text holds "Playoff race"); wait for "Open The Race";
+full-page shot "answer" with the page overlap check; viewport shots "answer-view<N>" from the bubble top minus 80 px, one step of
+(viewport height - 300 px) each, each with the viewport check of viewCheck() in run.mjs: (a) no two visible text boxes overlap by
+more than 3 px both ways, a box under an opaque bar not counted as visible; (b) each text box of the page under a fixed or sticky bar
+is listed as "hidden" (a layer above it has a background of alpha 1 and opacity 1) or as "shows through".
+Extra probe of the strip edge: site-fc591b09-strip-edge.txt.

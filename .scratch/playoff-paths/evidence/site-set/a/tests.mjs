@@ -67,7 +67,7 @@ export default {
     prefix: process.env.PREFIX ?? "site-",
     route: "/",
     calls: true,
-    async run({ page, shot, note, view, theme, folder, prefix }) {
+    async run({ page, shot, viewShot, note, view, theme, folder, prefix }) {
       await page.locator("button", { hasText: "More" }).first().click();
       // The Suggestions list loads its order from the API, so the tap waits until the list is still.
       // The quick chip "Playoffs" in the row above carries the same aria-label, and its first tap only opens a strip with
@@ -90,7 +90,7 @@ export default {
       for (let i = 0, y = top; i < 6; i++, y += stepPx) {
         await page.evaluate((y) => window.scrollTo(0, y), y);
         await page.waitForTimeout(600);
-        await page.screenshot({ path: `${folder}/${prefix}answer-view${i + 1}-${view.w}x${view.h}-${theme}.png` });
+        await viewShot(`answer-view${i + 1}`);
         const end = await page.evaluate(() => scrollY + innerHeight >= document.documentElement.scrollHeight - 2);
         if (end) break;
       }

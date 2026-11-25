@@ -1,0 +1,64 @@
+--- 390x660 light
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 390x660 dark
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 810x980 light
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 810x980 dark
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 1080x740 light
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 1080x740 dark
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 1280x800 light
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}
+--- 1280x800 dark
+{
+ "link": {
+  "text": "Open The Race",
+  "href": "/sim/2026/"
+ },
+ "answerText": "Playoff race\n\nPLAYOFF ODDS\n48%\n\nREST OF SEASON\n\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n\nODDS\nW-L\n\n1\nLil Fridge\n99%\n15-7\n2\nMaye d'force B with U\n98%\n14-8\n3\nTeez Nuts\n88%\n13-9\n4\nThe Blue Tent\n83%\n13-9\n5\nBengals Buddies\n69%\n13-9\n6\n💿 🐑\n71%\n13-9\nPLAYOFF LINE\n7\nBo Girds\nYOU\n48%\n11-11\n8\nOmarion Himpton\n36%\n10-12\n9\nNico Collinsizer\n6%\n10-12\n10\nImmaculate Concepcion\n1%\n9-13\n11\nUnsolicited Dak Picks\n0%\n6-16\n12\nNFC Least\n0%\n5-17\nOpen The Race\nRead the full report"
+}

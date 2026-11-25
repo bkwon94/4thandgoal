@@ -1,0 +1,8 @@
+[
+ {
+  "url": "http://127.0.0.1:8391/clients/cpc/suggestions",
+  "status": 200,
+  "request": "{\"roster_id\":6,\"order\":[\"waiver_targets\",\"weak_spots\",\"start_sit\",\"power_rankings\",\"week_recap\",\"playoff_race\",\"last_matchup\",\"next_matchup\",\"your_season\",\"leaders_trades\",\"stack_up\"],\"opened\":{}}",
+  "response": "{\"picks\":[\"playoff_race\",\"weak_spots\",\"stack_up\"],\"facts\":{\"week_recap\":\"You scored 76.75, 11th of 12\",\"last_matchup\":\"Lost 76.75 to 150.02\",\"next_matchup\":\"Next: Teez Nuts, 13-9\",\"power_rankings\":\"9th, down 1\",\"playoff_race\":\"48% playoff odds\",\"your_season\":\"11-11, 7th of 12\",\"leaders_trades\":\"6 trades this week\",\"weak_spots\":\"QB ranks 11th of 12\",\"stack_up\":\"Grade A, QB ranks 11th of 12\",\"waiver_targets\":\"Free agents to stash\",\"start_sit\":\"1 Q\"},\"kickoffs\":{},\"lifts\":{\"week_recap\":0.73,\"last_matchup\":0.66,\"next_matchup\":0.23,\"power_rankings\":0.5,\"playoff_race\":0.74,\"your_season\":0.34,\"leaders_trades\":0.11,\"weak_spots\":0.95,\"stack_up\":0.91,\"waiver_targets\":0.34,\"start_sit\":0.69},\"urgent\":[\"weak_spots\",\"stack_up\",\"playoff_race\",\"week_recap\"],\"head_start\":\"weak_spots\",\"jev\":{\"model\":\"jev-1.14.0\",\"nouls\":{\"lift_week_recap\":0.73,\"lift_last_matchup\":0.66,\"lift_next_matchup\":0.23,\"lift_power_rankings\":0.5,\"lift_playoff_race\":0.74,\"lift_your_season\":0.34,\"lift_leaders_trades\":0.11,\"lift_weak_spots\":0.95,\"lift_stack_up\":0.91,\"lift_waiver_targets\":0.34,\"lift_start_sit\":0.69},\"choices\":{\"sell_high_player\":{}}}}"
+ }
+]
