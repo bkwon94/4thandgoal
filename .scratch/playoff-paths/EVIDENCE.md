@@ -200,7 +200,7 @@ Observation: On fc591b09, after a tap on the More-list Suggestion "Playoff race"
 ## AT-27: The page is The Race
 
 App: site
-Then: the page title reads "The Race", the menu item reads "The Race", and the short label reads "Race".
+Then: the page title reads "The Race", and the menu item reads "The Race".
 Files: `evidence/AT-27/steps.txt`, `evidence/AT-27/page-{390x660,810x980,1080x740,1280x800}-{light,dark}.png`, `evidence/AT-27/menu-{390x660,810x980,1080x740,1280x800}-{light,dark}.png`, `evidence/AT-27/labels.txt`, `evidence/AT-27/short-label.txt`, `evidence/AT-27/overlap.txt`
 Observation: The page shows the heading "The Race" and the document title "The Race 2026 · Cornerstone Fantasy Football League". The menu sheet at 390 and 810 and the header pill bar at 1080 and 1280 show the item "The Race", checked as the current page, with 0 overlaps and 0 covered text in all 16 shots. No screen shows the short label "Race" at any size, so I took no extra shot (`short-label.txt`). The label is held in `SHORT.sim` of `apps/site/src/app/shell-props.ts` line 24 and set on each `NavItem.short` (`packages/design/site/shell/nav.ts` line 14). No component reads `.short`: the pill bar and the menu sheet render `.label`. The built export holds `"label":"The Race","short":"Race"`, and the run of the unit test "with the short label Race (AT-50)" prints "1 pass, 0 fail".
 

@@ -227,7 +227,7 @@ App: site
 Stories: 57
 Given: `cpc` 2026 week 11.
 When: the reader opens `/sim/2026/` and the menu.
-Then: the page title reads "The Race", the menu item reads "The Race", and the short label reads "Race".
+Then: the page title reads "The Race", and the menu item reads "The Race".
 Evidence: The site evidence set, with the overlap check.
 
 AT-28: The Goal switch changes every part
@@ -533,3 +533,4 @@ Out of scope "A bigger API machine": AT-23 runs on the existing machine. No othe
 - 2026-11-24: AT-8 lets the Best chance Path of a Finish stay under 90%, as the PRD says. Brian approved it.
 - 2026-11-25: AT-19 sets the 50 KB bar on the latest week only, and records the size of week 10. Brian chose option D.
 - 2026-11-25: AT-23 is retired. It needs the merged branch on Fly, so no evidence can exist before the merge. The PR lists the Fly timing as a check after the merge. Brian chose it.
+- 2026-11-25: AT-27 drops the short label "Race". No part of the site shows a short label on any page, so no shot can show it. The nav data keeps "Race" for a later narrow menu. Brian chose it.
