@@ -103,9 +103,30 @@ Test verdict: pending
 
 Done condition: the no-split-word check of `/2026/week-11/` passes at 375px and 1280px on the cpc week 11 build, with "David Montgomery" on the page.
 Method: diagnosing-bugs.
-Cause: pending
-Red: pending
-Green: pending
+Cause: the player name span of `Side` in `packages/week/site/chapters/trades.tsx` has `min-w-0`, so in the 132px column of a pair card it shrinks to 80px beside the 44px photo, under the width of "Montgomery", and the `overflow-wrap: break-word` of `body` splits the word.
+Red: at `38492802`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/week-11/` after `CLIENT=cpc pnpm build`
+
+```text
+  1) [floor] › e2e/floor.spec.ts:301:7 › no split word: cpc /2026/week-11/ 375px
+    Error: cpc /2026/week-11/ 375px splits a word
+    +   "span.text-body \"David Montgomery\": the word \"Montgomery\" breaks over 2 lines",
+  2) [floor] › e2e/floor.spec.ts:301:7 › no split word: cpc /2026/week-11/ 1280px
+    Error: cpc /2026/week-11/ 1280px splits a word
+    +   "span.text-body \"David Montgomery\": the word \"Montgomery\" breaks over 2 lines",
+  2 failed
+  11 passed (8.1s)
+```
+
+The loop is the floor spec `apps/site/e2e/floor.spec.ts` with no change, so the red commit adds no file. `38492802` holds the loop, the week 11 data, and no fix. The fix gives the span `min-w-min grow basis-0` and the row `flex-wrap`, so a longest word that does not fit beside the photo moves the name under the photo.
+
+Green: at `8da7ab95`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/week-11/` after `CLIENT=cpc pnpm build`
+
+```text
+  ✓   4 [floor] › e2e/floor.spec.ts:301:7 › no split word: cpc /2026/week-11/ 375px (224ms)
+  ✓   5 [floor] › e2e/floor.spec.ts:301:7 › no split word: cpc /2026/week-11/ 768px (228ms)
+  ✓   6 [floor] › e2e/floor.spec.ts:301:7 › no split word: cpc /2026/week-11/ 1280px (233ms)
+  13 passed (7.9s)
+```
 Test verdict: pending
 
 ## Comments
