@@ -19,6 +19,9 @@ from league.matchup_card import (
 )
 from league.models import PlayerLine, Week
 
+# The count of Finishes in the race Answer (decision 05 of playoff-paths). The full Finish list lives on The Race.
+RACE_FINISHES = 3
+
 
 class RecapMark(BaseModel):
     """One team on the strip of the recap card. `you` marks the team of the Answer."""
@@ -79,12 +82,32 @@ class LadderRow(BaseModel):
     you: bool = False
 
 
+class LadderFinish(BaseModel):
+    """One Finish of the team for a playoff spot, from the sim page of the week: its name by the results left such as
+    4-2, its final record such as 15-13, its chance in percent with one decimal, and its odds of a spot."""
+    name: str
+    record: str
+    chance: float
+    odds: int
+    about: bool
+
+
+class RacePill(BaseModel):
+    """The status pill of The Race for a playoff spot, by the plain check on wins. The label of a Clinched pill names
+    the best Goal locked, such as "Clinched 1 seed", "Clinched bye", or "Clinched spot"."""
+    kind: Literal["clinched", "out"]
+    label: str
+
+
 class LadderBlock(BaseModel):
     """The standings ladder of Playoff race: one row per team, by standing. The playoff line sits after the row of
-    rank `playoff_teams`, the playoff spots of `settings.playoff_teams` in the league file."""
+    rank `playoff_teams`, the playoff spots of `settings.playoff_teams` in the league file. A week with a sim page
+    adds the top Finishes of the team for a spot and its pill. A team In the hunt has no pill (decision 05)."""
     kind: Literal["ladder"] = "ladder"
     playoff_teams: int
     rows: list[LadderRow]
+    finishes: list[LadderFinish] = []
+    pill: RacePill | None = None
 
 
 class ScheduleRow(BaseModel):
@@ -204,10 +227,38 @@ def rank_movers_block(rid: int, ranked: dict) -> RankMoversBlock:
         for r in sorted(ranked["rows"], key=lambda r: r["rank"])])
 
 
-def ladder_block(rid: int, page: dict, ranked: dict | None) -> LadderBlock:
+def _race_finishes(sim_page: dict) -> list[LadderFinish]:
+    """The RACE_FINISHES likeliest Finishes for a spot, best Finish first, as the Finish list of the sim page orders
+    them. The likeliest Finishes are the ones a manager can plan on, so the short Answer shows them."""
+    finishes = sim_page.get("finishes", {}).get("spot", [])
+    likeliest = sorted(finishes, key=lambda f: (-f["chance"], -f["more_wins"]))[:RACE_FINISHES]
+    wins_left = sim_page["wins_left"]
+    return [LadderFinish(name=f"{f['more_wins']}-{wins_left - f['more_wins']}", record=f"{f['record'][0]}-{f['record'][1]}",
+                         chance=f["chance"], odds=f["odds"], about=f["about"])
+            for f in sorted(likeliest, key=lambda f: -f["more_wins"])]
+
+
+def _race_pill(sim_page: dict) -> RacePill | None:
+    """The pill of the spot Goal, the Goal of the race Answer. Clinched names the best Goal locked: the 1 seed, then the
+    bye, then the spot. None for a team In the hunt."""
+    goals = sim_page.get("goals", {})
+    spot = goals.get("spot")
+    if spot is None or spot["status"] == "open":
+        return None
+    if spot["status"] == "out":
+        return RacePill(kind="out", label="Out")
+    if goals.get("seed-1", {}).get("status") == "in":
+        return RacePill(kind="clinched", label="Clinched 1 seed")
+    if goals.get("bye", {}).get("status") == "in":
+        return RacePill(kind="clinched", label="Clinched bye")
+    return RacePill(kind="clinched", label="Clinched spot")
+
+
+def ladder_block(rid: int, page: dict, ranked: dict | None, sim_page: dict | None = None) -> LadderBlock:
     """The standings ladder of one team, from the table of page.json and the odds of the week of rankings.json.
     The table marks each team over the playoff line with `in_playoffs`, from `settings.playoff_teams`, so their count
-    is the playoff line."""
+    is the playoff line. `sim_page` is the page of the team in week-NN/sim.json, which gives the Finishes and the
+    pill. None, as for a client with no sim package, gives neither."""
     odds = {r["roster_id"]: r["odds"]["playoff"] for r in (ranked or {}).get("rows", []) if r.get("odds")}
     standings = sorted((entry["standing"] for entry in page["table"]), key=lambda s: s["rank"])
     names = {entry["team"]["roster_id"]: entry["team"]["name"] for entry in page["table"]}
@@ -215,7 +266,9 @@ def ladder_block(rid: int, page: dict, ranked: dict | None) -> LadderBlock:
         playoff_teams=sum(1 for s in standings if s["in_playoffs"]),
         rows=[LadderRow(roster_id=s["roster_id"], name=names[s["roster_id"]], rank=s["rank"],
                         record=f"{s['wins']}-{s['losses']}", odds=odds.get(s["roster_id"]), you=s["roster_id"] == rid)
-              for s in standings])
+              for s in standings],
+        finishes=_race_finishes(sim_page) if sim_page else [],
+        pill=_race_pill(sim_page) if sim_page else None)
 
 
 def schedule_block(rid: int, page: dict, week: Week) -> ScheduleBlock | None:

@@ -438,6 +438,8 @@ function clientValuesText(slug, values, brand, copy, now) {
     slug,
     packages: values.packages,
     season: Math.max(...seasons),
+    // The Sleeper league of the latest season. The Live names read its rosters and users in the browser.
+    leagueId: values.seasons[String(Math.max(...seasons))].league_id ?? null,
     usageCode: values.usage_code ?? null,
     finder: values.values?.analyzer?.finder ?? false,
     // The Lock as ms since the epoch, so the site compares it with Date.now(). The schema asks for a UTC offset.

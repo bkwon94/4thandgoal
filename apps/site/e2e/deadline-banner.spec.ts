@@ -120,7 +120,7 @@ async function openAt(
       localStorage.setItem("cpc.theme", theme);
       localStorage.setItem("cpc.passphrase", "test");
       localStorage.setItem("cpc.your-team", team);
-      localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
+      localStorage.setItem("cpc.announcement.the-race-2026", "seen");
       if (!tour) localStorage.setItem("cpc.tour-seen", "1");
     },
     { theme, team: BO_GIRDS, tour },

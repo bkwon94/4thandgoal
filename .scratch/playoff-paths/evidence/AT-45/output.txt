@@ -1,0 +1,41 @@
+$ cd apps/site && bun test --isolate ../../packages/league/site/live-names.test.tsx --reporter=junit --reporter-outfile=<scratch>/at45.xml
+bun test v1.4.5 (a7733435c)
+
+ 7 pass
+ 0 fail
+ 29 expect() calls
+Ran 7 tests across 1 file. [555.00ms]
+
+The JUnit report of the same run (test names):
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="bun test" tests="7" assertions="29" failures="0" skipped="0" time="0.556007">
+  <testsuite name="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" tests="7" assertions="29" failures="0" skipped="0" time="0.513809" hostname="BUOY-C-L0RMQD4QML">
+    <testsuite name="LiveNames" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="79" tests="7" assertions="29" failures="0" skipped="0" time="0.187" hostname="BUOY-C-L0RMQD4QML">
+      <testcase name="swaps a renamed team in a name slot and in text, and keeps an unchanged team" classname="LiveNames" time="0.025503" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="80" assertions="7" />
+      <testcase name="swaps an old name that a later render writes again" classname="LiveNames" time="0.01668" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="97" assertions="4" />
+      <testcase name="keeps the published names with no error when both calls fail" classname="LiveNames" time="0.03328" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="105" assertions="3" />
+      <testcase name="keeps the published names when Sleeper waits past the limit" classname="LiveNames" time="0.054365" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="117" assertions="3" />
+      <testcase name="serves a second page from the cache for 5 minutes, then calls Sleeper again" classname="LiveNames" time="0.02736" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="133" assertions="6" />
+      <testcase name="makes no call when it is off" classname="LiveNames" time="0.022636" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="153" assertions="2" />
+      <testcase name="shows a changed avatar from Sleeper only after it loads" classname="LiveNames" time="0.010643" file="/Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/packages/league/site/live-names.test.tsx" line="162" assertions="4" />
+    </testsuite>
+  </testsuite>
+</testsuites>
+
+The test of AT-45, packages/league/site/live-names.test.tsx lines 162 to 177:
+  it("shows a changed avatar from Sleeper only after it loads", async () => {
+    spyOn(globalThis, "fetch").mockImplementation(
+      sleeper(users(NEW_AVATAR)) as unknown as typeof globalThis.fetch,
+    );
+    const { getByTestId } = page();
+    const local = getByTestId("avatar3") as HTMLImageElement;
+    let preload: HTMLImageElement | null = null;
+    await waitFor(() => {
+      preload = document.querySelector(`img[data-live-avatar][src="${NEW_AVATAR}"]`);
+      expect(preload).not.toBeNull();
+    });
+    // The local image stays until the new one loads.
+    expect(local.getAttribute("src")).toBe("/2026/week-10/avatars/3.jpg");
+    fireEvent.load(preload!);
+    await waitFor(() => expect(local.getAttribute("src")).toBe(NEW_AVATAR));
+  });

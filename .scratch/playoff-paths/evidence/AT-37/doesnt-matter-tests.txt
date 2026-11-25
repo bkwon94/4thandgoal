@@ -1,0 +1,44 @@
+$ cd apps/site && bun test --isolate ../../packages/sim/site/page/week-card.test.tsx
+(run in a detached worktree of 5f26bcb0; the junit names of each test follow the output)
+bun test v1.4.5 (a7733435c)
+
+ 9 pass
+ 0 fail
+ 68 expect() calls
+Ran 9 tests across 1 file. [970.00ms]
+
+Tests (junit reporter, failures: 0; filtered-out tests left out):
+(pass) the week card > names the opponent and shows the Score to beat against it and the median, to win and to be sure
+(pass) the week card > shows four tiles with the odds of the Goal after each result and how likely it is
+(pass) the week card > roots for every other game of the week for the most likely result before a tap
+(pass) a tap on a result tile > lists the 5 other games with both results, a gray tag on a game under 1 point, and 1 or 2 median rows
+(pass) a tap on a result tile > sets a What-if, and the Finish list and the board take the numbers of the response
+(pass) a tap on a result tile > keeps the numbers of the file with the API down, shows a quiet note, and roots for the tapped result
+(pass) the root-for list of a Goal > holds no list on a seed, and points to the spot and the bye
+(pass) the week card of NorCal > shows 2 tiles, no median score, and no median rooting
+(pass) the week card of NorCal > shows the tiebreak gap when another team sits close across the edge of the Goal
+
+The test of the tag, packages/sim/site/page/week-card.test.tsx lines 108-130:
+  it("lists the 5 other games with both results, a gray tag on a game under 1 point, and 1 or 2 median rows", async () => {
+    const api = fakeWhatIfApi();
+    render(<SimPage sim={sim} you={YOU} whatIf={api} />);
+    fireEvent.click(tile("Win and beat the median"));
+    await waitFor(() => expect(cardOdds()).toBe(`${elevenWinAbove.page.playoff}%`));
+    const rows = within(rootFor()).getAllByRole("listitem");
+    expect(rows).toHaveLength(5);
+    const roots = elevenWinAbove.page.week_card!.goals.spot.root_for[0];
+    expect(roots).toHaveLength(5);
+    roots.forEach((root, i) => {
+      const text = rows[i].textContent!;
+      if (root.odds - root.other < 1) {
+        expect(text).toContain(`${sim.names[root.winner]} vs ${sim.names[root.loser]}`);
+        expect(within(rows[i]).getByText("Doesn't matter")).toBeTruthy();
+      } else {
+        expect(text).toContain(
+          `${sim.names[root.winner]} beats ${sim.names[root.loser]}→ ${root.odds}%`,
+        );
+        expect(text).toContain(`${sim.names[root.loser]} wins→ ${root.other}%`);
+        expect(within(rows[i]).queryByText("Doesn't matter")).toBeNull();
+      }
+    });
+    const medians = within(medianRoot()!).getAllByRole("listitem");

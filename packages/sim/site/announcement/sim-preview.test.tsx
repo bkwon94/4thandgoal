@@ -1,104 +1,77 @@
 /**
- * Tests for the art of the sim Announcement on the real week 10 files of CPC and NorCal: three standings rows around
- * Your team with the playoff line, the odds, and the What-if chip that a tap turns on and off (AT-51 to AT-53).
+ * Tests for the art of The Race Announcement on the real week 11 file of CPC: the League board rows around Your team in
+ * odds order of a playoff spot, with the "You" tag, the odds of Your team, and a pill for a team that is Clinched or Out.
  */
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
-import { norcalWeekSim, weekSim } from "../fixtures/sim";
+import { render, screen, within } from "@testing-library/react";
+import { describe, expect, it } from "bun:test";
+import { weekElevenSim } from "../fixtures/sim";
+import type { WeekSim } from "../schema/sim-types";
 import { previewOf } from "./preview";
-import { AUTO_WHAT_IF_MS, SimPreview } from "./sim-preview";
+import { SimPreview } from "./sim-preview";
 
-beforeEach(() => {
-  jest.useFakeTimers();
-});
-afterEach(() => {
-  cleanup();
-  jest.useRealTimers();
-});
-
-const BO_GIRDS_CPC = 6;
-const BO_GIRDS_NORCAL = 7;
+const BO_GIRDS = 6;
+const NFC_LEAST = 4;
+const LIL_FRIDGE = 3;
 
 const rows = () =>
-  within(screen.getByRole("list", { name: "Standings near your team" })).getAllByRole("listitem");
+  within(screen.getByRole("list", { name: "League board near your team" })).getAllByRole(
+    "listitem",
+  );
 const rowNames = () => rows().map((row) => row.querySelector("[data-team]")?.textContent);
-const chip = () => screen.getByRole("button", { name: /^What-if:/ });
-// The live line names the odds that the count lands on, so the test reads the number, not a frame of the count.
-const odds = () => screen.getByRole("status").textContent;
+const pills = () => rows().map((row) => row.querySelector("[data-pill]")?.textContent ?? null);
 
-describe("the art of the sim Announcement", () => {
+/* The week 11 file with each Goal of one team set to `status` for the Goals in `goals`. */
+function withStatus(sim: WeekSim, id: number, goals: string[]): WeekSim {
+  return {
+    ...sim,
+    board: sim.board.map((team) =>
+      team.roster_id !== id
+        ? team
+        : {
+            ...team,
+            goals: Object.fromEntries(
+              Object.entries(team.goals).map(([key, value]) => [
+                key,
+                goals.includes(key) ? { ...value, status: "in" as const } : value,
+              ]),
+            ),
+          },
+    ),
+  };
+}
+
+describe("the art of The Race Announcement", () => {
   it("takes a data shape of under 2 KB from the week sim file, so the home page does not ship the file", () => {
-    expect(JSON.stringify(previewOf(weekSim)).length).toBeLessThan(2000);
+    expect(JSON.stringify(previewOf(weekElevenSim)).length).toBeLessThan(2000);
   });
 
-  it("shows The Blue Tent, Bo Girds, and Return of T Mac, with the playoff line under Bo Girds, in CPC (AT-51)", () => {
-    render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />);
-    expect(rowNames()).toEqual(["The Blue Tent", "Bo Girds", "Return of T Mac"]);
-    // The odds of Your team count up on the screen, so the live line gives its number below.
-    expect(rows()[0].textContent).toBe("5The Blue Tent81%");
-    expect(rows()[1].textContent).toMatch(/^6Bo Girds\d+%Playoff line$/);
-    expect(rows()[2].textContent).toBe("7Return of T Mac39%");
-    expect(screen.getByText("Your team").nextSibling?.textContent).toBe("Bo Girds");
-    expect(odds()).toBe("Playoff odds 58%");
+  it("shows the board rows around Bo Girds in odds order, with the You tag and the odds of a spot (AT-49)", () => {
+    render(<SimPreview data={previewOf(weekElevenSim)} you={BO_GIRDS} />);
+    expect(rowNames()).toEqual(["Bengals Buddies", "Bo Girds", "Omarion Himpton"]);
+    expect(rows()[1].textContent).toContain("You");
+    expect(rows()[1].textContent).toContain("11-11");
+    expect(rows()[0].textContent).not.toContain("You");
+    expect(screen.getByRole("status").textContent).toBe("Odds of a playoff spot 48%");
+    expect(pills()).toEqual([null, null, null]);
   });
 
-  it("shows the chip of a win and a median win in a league with the median game", () => {
-    render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />);
-    expect(chip().textContent).toContain("What-if: Bo Girds win both");
-    expect(chip().getAttribute("aria-pressed")).toBe("false");
+  it("shows the first three rows of the board for the favorite", () => {
+    render(<SimPreview data={previewOf(weekElevenSim)} you={LIL_FRIDGE} />);
+    expect(rowNames()).toEqual(["Lil Fridge", "Maye d'force B with U", "Puka Deez..."]);
   });
 
-  it("shows the chip of one win, and the playoff line above Bo Girds, in NorCal with no median game", () => {
-    render(<SimPreview data={previewOf(norcalWeekSim)} you={BO_GIRDS_NORCAL} settled={false} />);
-    expect(rowNames()).toEqual(["Breece Mode", "Bo Girds", "kaiedmonds"]);
-    expect(rows()[0].textContent).toContain("Playoff line");
-    expect(chip().textContent).toContain("What-if: Bo Girds win");
-    expect(chip().textContent).not.toContain("both");
+  it("shows the Out pill on each team that is out, and no pill on a team in the hunt", () => {
+    render(<SimPreview data={previewOf(weekElevenSim)} you={NFC_LEAST} />);
+    expect(rowNames()).toEqual(["Immaculate Concepcion", "Unsolicited Dak Picks", "NFC Least"]);
+    expect(pills()).toEqual([null, "Out", "Out"]);
   });
 
-  it("shows the first three rows for the team in first place", () => {
-    render(<SimPreview data={previewOf(weekSim)} you={3} settled={false} />);
-    expect(rowNames()).toEqual(["Lil Fridge", "All You Need Is Love", "Puka Deez..."]);
-  });
-
-  it("turns the chip off and on with a tap, and the odds go to the odds of the week and back (AT-52)", () => {
-    render(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />);
-    fireEvent.click(chip());
-    expect(chip().getAttribute("aria-pressed")).toBe("true");
-    expect(odds()).toBe("Playoff odds 86%");
-    fireEvent.click(chip());
-    expect(chip().getAttribute("aria-pressed")).toBe("false");
-    expect(odds()).toBe("Playoff odds 58%");
-  });
-
-  it("turns the chip on by itself once, only after the sheet settles (AT-53)", () => {
-    const { rerender } = render(
-      <SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled={false} />,
-    );
-    act(() => jest.advanceTimersByTime(5000));
-    expect(chip().getAttribute("aria-pressed")).toBe("false");
-
-    rerender(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);
-    act(() => jest.advanceTimersByTime(AUTO_WHAT_IF_MS - 1));
-    expect(chip().getAttribute("aria-pressed")).toBe("false");
-    act(() => jest.advanceTimersByTime(1));
-    expect(chip().getAttribute("aria-pressed")).toBe("true");
-    expect(odds()).toBe("Playoff odds 86%");
-
-    // A tap turns it off, and it never turns on by itself again.
-    fireEvent.click(chip());
-    act(() => jest.advanceTimersByTime(5000));
-    expect(chip().getAttribute("aria-pressed")).toBe("false");
-  });
-
-  it("leaves the chip alone when the manager taps it before the automatic turn", () => {
-    const { rerender } = render(
-      <SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />,
-    );
-    fireEvent.click(chip());
-    fireEvent.click(chip());
-    rerender(<SimPreview data={previewOf(weekSim)} you={BO_GIRDS_CPC} settled />);
-    act(() => jest.advanceTimersByTime(5000));
-    expect(chip().getAttribute("aria-pressed")).toBe("false");
+  it("names the best Goal locked on the pill of a team that clinched", () => {
+    const bye = previewOf(withStatus(weekElevenSim, LIL_FRIDGE, ["spot", "bye"]));
+    expect(bye.rows.find((row) => row.id === LIL_FRIDGE)?.pill).toBe("Clinched bye");
+    const spot = previewOf(withStatus(weekElevenSim, LIL_FRIDGE, ["spot"]));
+    expect(spot.rows.find((row) => row.id === LIL_FRIDGE)?.pill).toBe("Clinched spot");
+    const seed = previewOf(withStatus(weekElevenSim, LIL_FRIDGE, ["spot", "bye", "seed-1"]));
+    expect(seed.rows.find((row) => row.id === LIL_FRIDGE)?.pill).toBe("Clinched 1 seed");
   });
 });

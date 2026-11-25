@@ -1,0 +1,4 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-34 in evidence/site-set/a/tests.mjs. Build and serve: evidence/site-set/a/build.txt.
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-34
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context:
+open /sim/2026/ ; tap "4-2"; tap the first Path; viewport shot "plan"; tap "Try it"; wait for the POST /clients/cpc/sim/what-if answer; save the header, the "Try it" line, the card, and the set line to state.txt; save the request and the response to api-<size>-<theme>.json; full-page shot "after-try"

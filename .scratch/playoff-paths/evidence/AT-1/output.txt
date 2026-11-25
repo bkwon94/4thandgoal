@@ -1,0 +1,18 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-1/check.py norcal:8
+== norcal 2026 week 8 (/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/norcal/data/2026/week-08/raw/bracket.json)
+Sleeper seeds 1-6: [6, 9, 1, 8, 10, 11]
+standings order 1-6: [6, 9, 1, 8, 10, 11]
+sim order 1-6:       [6, 9, 1, 8, 10, 11]
+place  roster  record   PF        PA        Sleeper seed
+1      6       (6, 2, 1130.34, 1063.3)  seed 1
+2      9       (5, 3, 1010.86, 980.3)  seed 2
+3      1       (5, 3, 1010.86, 978.84)  seed 3
+4      8       (5, 3, 1006.98, 1006.76)  seed 4
+5      10      (5, 3, 972.32, 991.78)  seed 5
+6      11      (4, 4, 1055.74, 1012.4)  seed 6
+7      3       (4, 4, 1014.38, 904.24)  seed -
+8      5       (3, 5, 1089.82, 1044.74)  seed -
+9      7       (3, 5, 983.36, 959.48)  seed -
+10     2       (3, 5, 927.22, 951.46)  seed -
+11     4       (3, 5, 883.14, 993.38)  seed -
+12     12      (2, 6, 790.8, 989.14)  seed -

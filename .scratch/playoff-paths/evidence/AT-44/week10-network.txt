@@ -1,0 +1,49 @@
+Each Sleeper request, response, and failed request of the week 10 page, per size and theme.
+
+== 390x660-light ==
+0.47s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.47s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.52s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.52s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+
+== 390x660-dark ==
+0.43s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.43s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.48s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.48s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+
+== 810x980-light ==
+0.41s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.41s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.45s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+0.45s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+
+== 810x980-dark ==
+0.42s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.42s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.79s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+0.79s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+
+== 1080x740-light ==
+0.43s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.43s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.47s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+0.47s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+
+== 1080x740-dark ==
+0.41s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.41s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.46s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.46s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+
+== 1280x800-light ==
+0.42s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.42s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.47s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.47s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+
+== 1280x800-dark ==
+0.40s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.40s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.45s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.45s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users

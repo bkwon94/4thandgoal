@@ -1145,6 +1145,46 @@ _Avoid_: Simulation, sample, scenario
 A set of results that a manager sets for Your team in the weeks left: a win or a loss, and above or below the median. The sim draws every other game.
 _Avoid_: Scenario, simulation, prediction
 
+**The Race**:
+The name of the sim page on the site, with the short label "Race". Use "sim" in code and "the sim page" in the docs. The route is `/sim/<season>/`.
+_Avoid_: The race (lower case), Season sim (the old name), playoff picture, race page
+
+**In the hunt**:
+A team that is neither Clinched nor Out for the Goal of the view, by the plain check on wins. The Race shows it as a quiet yellow label, Clinched as quiet green, and Out as quiet red.
+_Avoid_: Bubble (that is a Race group by odds), alive, in contention
+
+**Live name**:
+The team name and avatar that Sleeper shows now, which the browser reads after the page loads. The page shows the published name first and swaps it only for a renamed team.
+_Avoid_: Current name, fresh name, real name
+
+**Goal**:
+What a team aims at in the weeks left: a playoff spot, a bye, or one seed. The sim page answers for one Goal at a time.
+_Avoid_: Target (a retired word of the finder), aim, objective
+
+**Finish**:
+One final record of a team for the weeks left, such as 5-1, with the median game counted. The Finish list holds each Finish with its odds of the Goal.
+_Avoid_: Rung, ladder (that is the layout of the rankings page), outcome
+
+**Path**:
+One set of results of other teams that, with a Finish, reaches the Goal, with the odds that it happens. A Path names up to 3 teams.
+_Avoid_: Scenario, route, way in
+
+**Week plan**:
+The weeks of one Path, one row per week left: the results of the team, the Score to beat, and the games to root for.
+_Avoid_: Schedule, roadmap, plan (alone)
+
+**Score to beat**:
+The score that a team needs in one week to beat its opponent or the median, at 50% and at 80%.
+_Avoid_: Target score, points needed, threshold
+
+**League board**:
+The view of the sim page with one row per team: the odds of each Goal and the Clinch lines of this week.
+_Avoid_: Playoff picture, scoreboard, race board
+
+**Clinch line**:
+One plain sentence of the results this week that make a team Clinched or Out for one Goal.
+_Avoid_: Scenario, clinch scenario, magic number
+
 **Announcement**:
 The modal that introduces one new feature, once per browser, until the visitor dismisses it or follows its link.
 _Avoid_: Popup, banner, promo

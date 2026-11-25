@@ -1,0 +1,6 @@
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-24/check.py http://127.0.0.1:8093
+POST http://127.0.0.1:8093/clients/cpc/suggestions {"roster_id": 6, "order": ["week_recap", "last_matchup", "power_rankings", "playoff_race", "next_matchup", "your_season", "leaders_trades", "waiver_targets", "stack_up", "weak_spots", "sell_high", "trade_ideas", "trade_check"], "opened": {}} -> 200
+picks: ['playoff_race', 'weak_spots', 'stack_up']
+urgent: ['weak_spots', 'stack_up', 'week_recap', 'playoff_race'] head_start: weak_spots
+fact of playoff_race: 48% playoff odds
+lifts: {"week_recap": 0.77, "last_matchup": 0.65, "next_matchup": 0.24, "power_rankings": 0.49, "playoff_race": 0.73, "your_season": 0.31, "leaders_trades": 0.11, "weak_spots": 0.95, "stack_up": 0.93, "waiver_targets": 0.54}

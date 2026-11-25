@@ -1,0 +1,12 @@
+[
+ {
+  "url": "http://127.0.0.1:8391/clients/cpc/eggs/board",
+  "failed": "Could not connect to the server.",
+  "request": null
+ },
+ {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "failed": "Could not connect to the server.",
+  "request": "{\"you\":6,\"set\":[{\"week\":12,\"game\":\"loss\",\"median\":\"below\"}]}"
+ }
+]

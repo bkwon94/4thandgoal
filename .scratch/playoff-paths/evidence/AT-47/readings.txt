@@ -1,0 +1,8 @@
+390x660-light: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+390x660-dark: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+810x980-light: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+810x980-dark: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+1080x740-light: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+1080x740-dark: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+1280x800-light: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page
+1280x800-dark: rankings at the load event {"Teez Nuts":1,"Puka Deez":0}, after 2.3 s {"Teez Nuts":1,"Puka Deez":0}; new Sleeper requests on the rankings page 0; the cache key holds from the week page

@@ -1,6 +1,6 @@
 """
 Writes topics.json beside page.json: the Answer of each of the 7 league Topics of the front door for each team.
-An Answer may carry one block, the data of its card, from topic_blocks.py. It reads the published files of the build, page.json, rankings.json, and managers.json, and writes no new prose.
+An Answer may carry one block, the data of its card, from topic_blocks.py. It reads the published files of the build, page.json, rankings.json, managers.json, and sim.json, and writes no new prose.
 """
 import json
 import logging
@@ -21,6 +21,7 @@ from league.files import write_bytes_atomic
 from league.models import Week
 from league.numbers import ordinal
 from league.paths import site_week_dir
+from sim.published import SIM_FILE
 
 # The Topics file has its own version, so a change to it never breaks the reader of another file.
 # Version 2 adds the optional `block` of each Answer. The site still reads version 1, with no block.
@@ -151,7 +152,7 @@ def _power_rankings(rid: int, ranked: dict | None) -> TopicAnswer | None:
                        stats=stats, rows=rows, text=[text] if text else [], block=rank_movers_block(rid, ranked))
 
 
-def _playoff_race(rid: int, ranked: dict | None, page: dict) -> TopicAnswer | None:
+def _playoff_race(rid: int, ranked: dict | None, page: dict, sim: dict | None) -> TopicAnswer | None:
     if ranked is None:
         return None
     with_odds = sorted((r for r in ranked["rows"] if r.get("odds")), key=lambda r: -r["odds"]["playoff"])
@@ -170,7 +171,9 @@ def _playoff_race(rid: int, ranked: dict | None, page: dict) -> TopicAnswer | No
     near = with_odds[max(at - 1, 0):at + 2]
     rows = [Row(label=r["name"], value=f"{r['odds']['playoff']}%", note=f"Seed {r['odds']['seed']}",
                 roster_id=r["roster_id"], you=r is row) for r in near]
-    return TopicAnswer(topic="playoff_race", fact=fact, stats=stats, rows=rows, block=ladder_block(rid, page, ranked))
+    sim_page = (sim or {}).get("pages", {}).get(str(rid))
+    return TopicAnswer(topic="playoff_race", fact=fact, stats=stats, rows=rows,
+                       block=ladder_block(rid, page, ranked, sim_page))
 
 
 def _your_season(rid: int, page: dict, managers: dict | None, league_week: Week | None) -> TopicAnswer | None:
@@ -214,12 +217,13 @@ def _leaders_trades(rid: int, page: dict) -> TopicAnswer:
 
 
 def team_answers(rid: int, page: dict, rankings: dict | None, managers: dict | None,
-                 league_week: Week | None = None) -> list[TopicAnswer]:
+                 league_week: Week | None = None, sim: dict | None = None) -> list[TopicAnswer]:
     """The league Answers of one team. A Topic with no data in the build, such as no next game, has no Answer.
-    The matchup cards and the schedule strip read the parsed raw `league_week`. With None, those Topics have no block."""
+    The matchup cards and the schedule strip read the parsed raw `league_week`. With None, those Topics have no block.
+    The race Answer reads the Finishes and the pill from `sim`, the week-NN/sim.json of the week, when it exists."""
     ranked = _rankings_week(rankings, page["week"])
     answers = [_week_recap(rid, page), _last_matchup(rid, page, league_week), _next_matchup(rid, page, league_week),
-               _power_rankings(rid, ranked), _playoff_race(rid, ranked, page), _your_season(rid, page, managers, league_week),
+               _power_rankings(rid, ranked), _playoff_race(rid, ranked, page, sim), _your_season(rid, page, managers, league_week),
                _leaders_trades(rid, page)]
     return [answer for answer in answers if answer is not None]
 
@@ -233,8 +237,11 @@ def write_topics(site_dir: Path, season: int, week: int, league_week: Week | Non
         return None
     rankings = _read(site_dir / str(season) / "rankings.json")
     managers = _read(site_dir / str(season) / "managers.json")
+    # The sim step writes sim.json before this step, and a client with no sim package has none.
+    sim = _read(folder / SIM_FILE)
     body = TopicsFile(season=season, week=week, teams={
-        key: team_answers(int(key), page, rankings, managers, league_week) for key in sorted(page["teams"], key=int)})
+        key: team_answers(int(key), page, rankings, managers, league_week, sim)
+        for key in sorted(page["teams"], key=int)})
     out = folder / TOPICS_FILE
     write_bytes_atomic(out, (body.model_dump_json(indent=2) + "\n").encode("utf-8"))
     return out

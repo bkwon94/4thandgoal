@@ -565,6 +565,17 @@ describe("the client build", () => {
     expect(clientValuesOf(none.site).lock).toBeNull();
   });
 
+  it("writes the league id of the latest season into the client values, for the Live names", () => {
+    const repo = tempRepo(
+      CPC_TOML.replace(
+        "[seasons.2026]",
+        '[seasons.2025]\nprovider = "sleeper"\nleague_id = "1"\n\n[seasons.2026]',
+      ),
+    );
+    buildClient(repo);
+    expect(clientValuesOf(repo.site).leagueId).toBe("1386167364424318976");
+  });
+
   it("writes tradesClosed from the Lock and the build clock, and false with no Lock", () => {
     const repo = tempRepo();
     buildClient({ ...repo, now: Date.parse("2026-11-23T23:59:59-05:00") });

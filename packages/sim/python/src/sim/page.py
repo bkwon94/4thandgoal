@@ -7,11 +7,14 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from league.models import OddsStatus
+from sim.goals import GoalOdds, open_goal
+from sim.paths import Finish, ScoreToBeat
 from sim.percent import percent, shown, tenths
 from sim.tunables import ABOUT_RUNS, IN_ODDS, RACE_FLOOR, ROOT_FOR_LIFT, ROOT_FOR_ROWS
+from sim.week_card import WeekCard
 
 Pair = tuple[int, int]
 Reason = Literal["2 wins ahead of you", "1 win ahead of you", "Level with you", "1 win behind you",
@@ -159,17 +162,35 @@ class SimPage(BaseModel):
     # The smallest count of more wins with playoff odds of IN_ODDS or more. None when no count reaches it.
     need: int | None
     sentence: str
-    ladder: list[LadderStep]
-    weeks: list[PageWeek]
+    # The ladder feeds the sentence, and the weeks hold the results of each regular week left. The page has no week
+    # switch and reads the week card, so the dump leaves both out to keep the week file small. A file read back has none.
+    ladder: list[LadderStep] = Field(default_factory=list, exclude=True)
+    weeks: list[PageWeek] = Field(default_factory=list, exclude=True)
     # The playoff part, with no regular week left. None in the regular season.
     playoffs: Playoffs | None = None
+    # The odds and the status of each Goal of The Race, by its key: "spot", "bye", and "seed-1" to the last seed.
+    # Empty with no regular week left. A file written before The Race has none.
+    goals: dict[str, GoalOdds] = {}
+    # The Goal the page opens on. None with no Goal.
+    open_goal: str | None = None
+    # The Finish list of each Goal by its key, best Finish first. The spot and the bye hold the Paths of each Finish.
+    # Empty with no regular week left. A file written before the Finish lists has none.
+    finishes: dict[str, list[Finish]] = {}
+    # The Score to beat of each regular week left, in week order. The Week plans and the week card read it. A file
+    # written before the Week plans has none.
+    score_to_beat: list[ScoreToBeat] = []
+    # The week card of the next regular week: the results, the root-for list, and the tiebreak gap of each Goal. None
+    # with no regular week left, and in a file written before the week card.
+    week_card: WeekCard | None = None
 
 
 def team_page(
     you: int, runs: Sequence[RunRecord], *, playoff: int, status: OddsStatus,
-    records: Mapping[int, tuple[int, int, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
+    records: Mapping[int, tuple[int, int, float, float]], schedule: Mapping[int, list[Pair]], median_game: bool,
     effective_runs: int, set_weeks: int = 0, set_wins: int = 0, bracket_weeks: Sequence[int] = (),
-    played: Mapping[int, Mapping[int, float]] | None = None,
+    played: Mapping[int, Mapping[int, float]] | None = None, goals: Mapping[str, GoalOdds] | None = None,
+    finishes: Mapping[str, list[Finish]] | None = None, score_to_beat: Sequence[ScoreToBeat] = (),
+    week_card: WeekCard | None = None,
 ) -> SimPage:
     """The page block of `you` by a split of the `runs` of one sim. `schedule` holds the pairs of each regular week
     left, in the order of `RunRecord.weeks`. `playoff` and `status` are the odds of the team over all runs.
@@ -178,7 +199,7 @@ def team_page(
     still counts every win left, and the sentence counts only the wins still open, so it agrees with the set results.
 
     With no regular week left, the block holds the playoffs of `bracket_weeks`, with the real scores of the `played`
-    bracket weeks."""
+    bracket weeks. `goals` holds the Goals of `you`, and the page opens on the best of them."""
     regular = sorted(schedule)
     weeks_left = len(regular)
     per_week = 2 if median_game else 1
@@ -218,7 +239,7 @@ def team_page(
     steps = [LadderStep(more_wins=k, playoff=odds(part), chance=tenths(part[0], total), about=about(part[0]))
              for k, part in enumerate(ladder)]
     need = next((s.more_wins for s in steps if s.playoff is not None and s.playoff >= IN_ODDS), None)
-    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
+    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], -records[rid][3], rid))
     place = {rid: n for n, rid in enumerate(table, start=1)}
     # Each run puts the same count of teams in the playoffs, so the first run gives the count of playoff spots.
     spots = len(runs[0].made) if runs else 0
@@ -245,7 +266,9 @@ def team_page(
     return SimPage(you=you, playoff=playoff, status=status, record=(records[you][0], records[you][1]),
                    weeks_left=weeks_left, wins_left=wins_left, need=need,
                    sentence=_sentence(status, need, wins_left, steps, set_weeks * per_week, set_wins),
-                   ladder=steps, weeks=weeks, playoffs=playoffs)
+                   ladder=steps, weeks=weeks, playoffs=playoffs, goals=dict(goals or {}),
+                   open_goal=open_goal(goals or {}), finishes=dict(finishes or {}),
+                   score_to_beat=list(score_to_beat), week_card=week_card)
 
 
 def _whole(part: float, total: float) -> int:
@@ -337,7 +360,7 @@ def _playoff_game(
 
 def _root_for(
     you: int, pairs: list[Pair], winners: Mapping[int, list[float]], loss_playoff: int | None, odds, about,
-    records: Mapping[int, tuple[int, int, float]], place: Mapping[int, int], last_wins: int | None,
+    records: Mapping[int, tuple[int, int, float, float]], place: Mapping[int, int], last_wins: int | None,
 ) -> list[RootFor]:
     """The root-for rows of one week: for each other game, the side whose win lifts the odds after a loss the most.
     A row stays when it lifts them by ROOT_FOR_LIFT whole points or more and its loser has a true reason. The rows

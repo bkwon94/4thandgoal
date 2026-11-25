@@ -1,13 +1,20 @@
 /**
- * The standings ladder of Playoff race, in the Ledger look: one row per team with its rank, its name, a bar of its
- * playoff odds, and its record, with a rule at the playoff line, then a link to the sim page. Its schema is in lib/data/blocks/.
+ * The standings ladder of Playoff race, in the Ledger look: the top Finishes of Your team with its status pill, then one
+ * row per team with its rank, its name, a bar of its playoff odds, and its record, with a rule at the playoff line, then
+ * a link to The Race. Its schema is in lib/data/blocks/.
  */
 "use client";
 
 import { motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
-import { type LadderBlock, oddsWords } from "@/lib/data/blocks/ladder-schema";
+import {
+  type LadderBlock,
+  type LadderFinish,
+  finishOdds,
+  finishWords,
+  oddsWords,
+} from "@/lib/data/blocks/ladder-schema";
 import { SLOW, VERY_SLOW, fadeIn, riseIn, staggerOf } from "./motion";
 import { useSimLink } from "./sim-link";
 
@@ -50,11 +57,109 @@ function OddsBar({
   );
 }
 
+/* The quiet tint of the status pill of The Race: green for Clinched, red for Out. A team In the hunt has no pill. */
+const PILL_TINT = {
+  clinched: "bg-status-in-tint text-status-in-ink",
+  out: "bg-status-out-tint text-status-out-ink",
+} as const;
+
+function StatusPill({ pill }: { pill: NonNullable<LadderBlock["pill"]> }) {
+  return (
+    <span
+      data-status-pill={pill.kind}
+      className={`rounded-pill px-sp-2 text-meta py-sp-0 inline-flex flex-none items-center leading-tight font-bold whitespace-nowrap ${PILL_TINT[pill.kind]}`}
+    >
+      {pill.label}
+    </span>
+  );
+}
+
+/* The top Finishes of Your team for a playoff spot, in the look of the Finish list of The Race: the Finish and its final
+   record, a bar of its odds with its chance, and the odds. The full list and its Paths live on The Race. */
+function RaceFinishes({
+  finishes,
+  pill,
+  odds,
+  live,
+}: {
+  finishes: LadderFinish[];
+  pill: LadderBlock["pill"];
+  odds: number | null;
+  live: boolean;
+}) {
+  const off = useMotionOff();
+  const grid = finishes.some((finish) => finish.about)
+    ? "grid-cols-[5.5rem_minmax(0,1fr)_5.75rem]"
+    : "grid-cols-[5.5rem_minmax(0,1fr)_3.25rem]";
+  return (
+    <div className="gap-sp-2 flex min-w-0 flex-col" data-race-finishes="">
+      <div className="gap-sp-2 flex min-h-6 items-center justify-between">
+        {odds !== null && (
+          <p className="gap-sp-2 m-0 flex items-baseline">
+            <span className="text-meta tracking-caps text-mute font-mono leading-tight uppercase">
+              Playoff odds
+            </span>
+            <span className="text-row text-accent-ink font-mono leading-tight font-bold tabular-nums">
+              {`${odds}%`}
+            </span>
+          </p>
+        )}
+        {pill !== null && <StatusPill pill={pill} />}
+      </div>
+      <p
+        aria-hidden
+        className="text-meta tracking-caps text-mute m-0 font-mono leading-tight uppercase"
+      >
+        Rest of season
+      </p>
+      <ul aria-label="Rest of season" className="m-0 flex list-none flex-col p-0">
+        {finishes.map((finish, index) => (
+          <motion.li
+            key={finish.name}
+            aria-label={finishWords(finish)}
+            className={`gap-x-sp-3 py-sp-2 grid items-center ${grid}`}
+            {...(live ? riseIn(off, { delay: staggerOf(index) }) : {})}
+          >
+            <span aria-hidden className="flex min-w-0 flex-col">
+              <span className="text-row text-ink font-mono leading-snug font-bold tabular-nums">
+                {finish.name}
+              </span>
+              <span className="text-meta text-mute leading-tight whitespace-nowrap tabular-nums">
+                {`ends ${finish.record}`}
+              </span>
+            </span>
+            <span aria-hidden className="gap-sp-1 flex min-w-0 flex-col">
+              <OddsBar odds={finish.odds} you index={index} live={live} />
+              <span className="text-meta text-mute leading-tight tabular-nums">
+                {`${Math.round(finish.chance)}% likely`}
+              </span>
+            </span>
+            <span
+              aria-hidden
+              className="text-row text-ink text-right font-mono leading-tight font-bold whitespace-nowrap tabular-nums"
+            >
+              {finishOdds(finish)}
+            </span>
+          </motion.li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function StandingsLadder({ block, live }: { block: LadderBlock; live: boolean }) {
   const off = useMotionOff();
   const simHref = useSimLink();
   return (
     <div className="gap-sp-2 flex min-w-0 flex-col" data-block="ladder">
+      {block.finishes.length > 0 && (
+        <RaceFinishes
+          finishes={block.finishes}
+          pill={block.pill}
+          odds={block.rows.find((row) => row.you)?.odds ?? null}
+          live={live}
+        />
+      )}
       {/* The heads of the two number columns, so "62%" and "11-7" read without a guess. On a phone the odds bar is
           narrower, so a team name such as "The Blue Tent" keeps more of its letters. */}
       <p
@@ -135,7 +240,7 @@ export function StandingsLadder({ block, live }: { block: LadderBlock; live: boo
               }
             : {})}
         >
-          <span>Open the season sim</span>
+          <span>Open The Race</span>
           <ArrowRightIcon
             aria-hidden
             className="size-sp-4 group-hover:translate-x-sp-0 transition-transform duration-150 ease-out motion-reduce:transition-none"

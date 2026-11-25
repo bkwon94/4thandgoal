@@ -21,6 +21,7 @@ describe("the Sim tile in the regular season", () => {
     render(<SimTile tile={data.teams[6]} fact={data.fact} href={HREF} />);
     const link = tileLink();
     expect(link.getAttribute("href")).toBe(HREF);
+    expect(link.textContent).toContain("Open The Race");
     expect(link.textContent).toContain("Playoff odds");
     expect(link.textContent).toContain("58%");
     expect(link.textContent).toContain("Win 5 of the 8 left and you're in.");

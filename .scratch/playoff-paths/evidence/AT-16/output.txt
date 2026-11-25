@@ -1,0 +1,10 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-16/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+win above: 2 teams: Omarion Himpton misses the median -> 73%; Bengals Buddies misses the median -> 71%
+  fields: [{"roster_id": 12, "odds": 73}, {"roster_id": 2, "odds": 71}]
+win below: 2 teams: The Blue Tent misses the median -> 42%; Bengals Buddies misses the median -> 42%
+  fields: [{"roster_id": 1, "odds": 42}, {"roster_id": 2, "odds": 42}]
+loss above: 2 teams: Omarion Himpton misses the median -> 44%; Bengals Buddies misses the median -> 42%
+  fields: [{"roster_id": 12, "odds": 44}, {"roster_id": 2, "odds": 42}]
+loss below: 2 teams: 💿 🐑 misses the median -> 19%; Omarion Himpton misses the median -> 19%
+  fields: [{"roster_id": 8, "odds": 19}, {"roster_id": 12, "odds": 19}]

@@ -206,8 +206,8 @@ function paint(
 
 /*
  * Starts the scene on the canvas and returns the function that stops it. The canvas shows its state in data attributes,
- * so a check of the built page reads the phase, the label that shows, and the hint: `data-scene-state`,
- * `data-scene-label`, and `data-scene-hint`.
+ * so a check of the built page reads the phase, the label that shows, the hint, and the start of the play: `data-scene-state`,
+ * `data-scene-label`, `data-scene-hint`, and `data-scene-start`.
  */
 export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: SceneParts): () => void {
   const colors = colorsOf(probe);
@@ -333,6 +333,9 @@ export function runScene({ canvas, ctx, holder, probe, scene, motionOff }: Scene
     scatter = scatterOf(scene.lights.length, box, plays);
     selected = null;
     startedAt = performance.now();
+    // The start of the play, on the clock of performance.now(). A check that reads the time of the first "settle" gets
+    // it only after the first frame draws, so a slow first frame makes the settle look short.
+    canvas.dataset.sceneStart = String(startedAt);
     state = settles ? "settle" : "drift";
     stop();
     tick();

@@ -605,7 +605,7 @@ export function FrontDoor({
                     away while the Answers scroll under it. */}
                 <header
                   aria-label="Thread header"
-                  className="top-band-height -mx-gutter min-h-door-head gap-sp-3 bg-page/90 px-gutter sticky z-10 flex items-center justify-between backdrop-blur-md"
+                  className="top-band-height -mx-gutter min-h-door-head gap-sp-3 bg-page px-gutter sticky z-10 flex items-center justify-between"
                 >
                   {changeTeam}
                   <Button

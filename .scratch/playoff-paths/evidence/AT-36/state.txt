@@ -1,0 +1,1624 @@
+--- 390x660 light
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 321
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 318
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 285
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 269
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 230
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 224
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 156
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 117
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 19
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 324
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 324
+   }
+  }
+ ]
+}
+--- 390x660 light
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 321
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 318
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 318
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 279
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 253
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 243
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 133
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 49
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 23
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 324
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 324
+   }
+  }
+ ]
+}
+--- 390x660 dark
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 321
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 318
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 285
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 269
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 230
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 224
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 156
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 117
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 19
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 324
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 324
+   }
+  }
+ ]
+}
+--- 390x660 dark
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 321
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 318
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 318
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 279
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 253
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 243
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 133
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 49
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 23
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 324
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 324
+   }
+  }
+ ]
+}
+--- 810x980 light
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 600
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 594
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 533
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 503
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 430
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 418
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 291
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 218
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 606
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 606
+   }
+  }
+ ]
+}
+--- 810x980 light
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 600
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 594
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 594
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 521
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 473
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 455
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 248
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 91
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 42
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 606
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 606
+   }
+  }
+ ]
+}
+--- 810x980 dark
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 600
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 594
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 533
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 503
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 430
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 418
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 291
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 218
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 606
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 606
+   }
+  }
+ ]
+}
+--- 810x980 dark
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 600
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 594
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 594
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 521
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 473
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 455
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 248
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 91
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 42
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 606
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 606
+   }
+  }
+ ]
+}
+--- 1080x740 light
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 604
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 569
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 487
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 473
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 329
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 247
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1080x740 light
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 590
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 535
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 515
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 281
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 103
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 48
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1080x740 dark
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 604
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 569
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 487
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 473
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 329
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 247
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1080x740 dark
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 590
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 535
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 515
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 281
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 103
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 48
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1280x800 light
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 604
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 569
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 487
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 473
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 329
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 247
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1280x800 light
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 590
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 535
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 515
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 281
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 103
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 48
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1280x800 dark
+{
+ "when": "before the tap",
+ "card": "YOUR TEAM Bo Girds 11-11 48% SPOT ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 99% odds of a playoff spot",
+  "5-1, ends 16-12, 13% likely: 99% odds of a playoff spot",
+  "4-2, ends 15-13, 26% likely: 80% odds of a playoff spot",
+  "3-3, ends 14-14, 20% likely: 25% odds of a playoff spot",
+  "2-4, ends 13-15, 20% likely: 3% odds of a playoff spot",
+  "1-5, ends 12-16, 8% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 4% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot. Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot. Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 88% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 604
+   }
+  },
+  {
+   "label": "The Blue Tent: 83% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 569
+   }
+  },
+  {
+   "label": "💿 🐑: 71% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 487
+   }
+  },
+  {
+   "label": "Bengals Buddies: 69% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 473
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 48% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 329
+   }
+  },
+  {
+   "label": "Omarion Himpton: 36% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 247
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 6% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot. Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  }
+ ]
+}
+--- 1280x800 dark
+{
+ "when": "after the tap on Lose and miss the median",
+ "answer": {
+  "url": "http://127.0.0.1:8391/clients/cpc/sim/what-if",
+  "status": 200
+ },
+ "setLine": "Tent beats 💿 🐑\n→ 16%\n💿 🐑 wins\n→ 14%\nUnsolicited Dak Picks beats Maye d'force B with U\n→ 16%\nMaye d'force B with U wins\n→ 15%\nNFC Least vs Lil Fridge\nDOESN'T MATTER\nBengals Buddies misses the median\n→ 17%\n💿 🐑 misses the median\n→ 17%\nSim week 12\nSim the season\n\nWhat-if: Wk 12 lose, miss median\n\nReset\nLeague board\n\n",
+ "card": "YOUR TEAM Bo Girds 11-11 15% SPOT ODDS",
+ "finishes": [
+  "4-2, ends 15-13, 14% likely: 74% odds of a playoff spot",
+  "3-3, ends 14-14, 17% likely: 22% odds of a playoff spot",
+  "2-4, ends 13-15, 34% likely: 2% odds of a playoff spot",
+  "1-5, ends 12-16, 18% likely: 1% odds of a playoff spot",
+  "0-6, ends 11-17, 16% likely: 1% odds of a playoff spot"
+ ],
+ "board": [
+  {
+   "label": "Lil Fridge: 99% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 679
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "Teez Nuts: 98% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 672
+   }
+  },
+  {
+   "label": "The Blue Tent: 86% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 590
+   }
+  },
+  {
+   "label": "💿 🐑: 78% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 535
+   }
+  },
+  {
+   "label": "Bengals Buddies: 75% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 515
+   }
+  },
+  {
+   "label": "Omarion Himpton: 41% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 281
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 15% odds of a playoff spot.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 103
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 7% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 48
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of a playoff spot.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of a playoff spot. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  }
+ ]
+}

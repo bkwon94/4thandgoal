@@ -1,0 +1,23 @@
+== 390x660-light (rankings page only) ==
+(no Sleeper request)
+
+== 390x660-dark (rankings page only) ==
+(no Sleeper request)
+
+== 810x980-light (rankings page only) ==
+(no Sleeper request)
+
+== 810x980-dark (rankings page only) ==
+(no Sleeper request)
+
+== 1080x740-light (rankings page only) ==
+(no Sleeper request)
+
+== 1080x740-dark (rankings page only) ==
+(no Sleeper request)
+
+== 1280x800-light (rankings page only) ==
+(no Sleeper request)
+
+== 1280x800-dark (rankings page only) ==
+(no Sleeper request)

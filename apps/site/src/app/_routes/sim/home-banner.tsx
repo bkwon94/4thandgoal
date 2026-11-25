@@ -1,5 +1,5 @@
 /**
- * The home part of the sim package: the Announcement of the season sim on the home page. It reads the newest week sim
+ * The home part of the sim package: the Announcement of The Race on the home page. It reads the newest week sim
  * file at build time and passes the browser only the few numbers of the art. The registry imports it only when the client takes sim.
  */
 import { previewOf } from "@cpc/sim/announcement/preview";

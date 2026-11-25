@@ -20,10 +20,10 @@ function publicWithSims(latest: number, simWeeks: number[]) {
 }
 
 describe("the menu link of the sim package", () => {
-  it("links the sim page of the season of the latest week", async () => {
+  it("links The Race, the sim page of the season of the latest week", async () => {
     publicWithSims(10, [10]);
     expect((await import("./menu")).menuLink()).toEqual({
-      label: "Season Sim",
+      label: "The Race",
       href: "/sim/2026/",
     });
   });

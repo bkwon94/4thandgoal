@@ -11,6 +11,7 @@ from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 from test_pipeline import _fake, _no_bytes, _repo_with_history
 
 from cornerstone.pipeline import run_build, run_page_json
+from cornerstone.topic_blocks import _race_pill
 from cornerstone.topics import write_topics
 from league.models import Week
 from league.parse import parse_week
@@ -329,3 +330,53 @@ def test_position_leaders_lists_one_leader_per_position_in_its_text_and_has_no_b
     # In cpc, Kenneth Walker III of Bo Girds led the backs with 34.3.
     cpc = next(a for a in _topics(tmp_path / "cpc", 2026, 9)["teams"]["6"] if a["topic"] == "leaders_trades")
     assert "- **RB** Kenneth Walker III, 34.3, Bo Girds" in cpc["text"][0].split("\n")
+
+
+# The race Answer of cpc week 11: page.json and the week 11 rows of rankings.json as the build wrote them, and the
+# week-11/sim.json of the sim step, cut to the pages of NFC Least and Bo Girds with no stored runs.
+WEEK_11 = Path(__file__).parent / "fixtures" / "topics-week-11"
+
+
+def _race_week_11(tmp_path: Path, rid: str) -> dict:
+    week = tmp_path / "2026" / "week-11"
+    week.mkdir(parents=True)
+    for name in ("page.json", "sim.json"):
+        shutil.copy(WEEK_11 / name, week / name)
+    shutil.copy(WEEK_11 / "rankings.json", tmp_path / "2026" / "rankings.json")
+    write_topics(tmp_path, 2026, 11)
+    return next(a for a in _topics(tmp_path, 2026, 11)["teams"][rid] if a["topic"] == "playoff_race")
+
+
+def test_the_race_answer_of_bo_girds_adds_the_top_3_finishes_and_no_pill_in_the_hunt(tmp_path):
+    """AT-26: the race Answer keeps its odds and its near rows, and adds the 3 likeliest Finishes for a playoff spot,
+    best Finish first. Bo Girds is In the hunt, so it has no pill."""
+    answer = _race_week_11(tmp_path, BO_GIRDS["cpc"])
+    assert answer["fact"] == "48% playoff odds"
+    assert answer["stats"][0] == {"label": "Playoff odds", "value": "48%"}
+    assert [row["you"] for row in answer["rows"]].count(True) == 1
+    block = answer["block"]
+    assert block["kind"] == "ladder"
+    assert [(f["name"], f["record"], f["chance"], f["odds"]) for f in block["finishes"]] == [
+        ("4-2", "15-13", 25.7, 80), ("3-3", "14-14", 20.0, 25), ("2-4", "13-15", 20.0, 3)]
+    assert block["pill"] is None
+
+
+def test_the_race_answer_of_a_team_out_of_the_race_has_the_out_pill(tmp_path):
+    """NFC Least cannot reach the last playoff spot by the plain check on wins, so its pill reads Out."""
+    block = _race_week_11(tmp_path, "4")["block"]
+    assert block["pill"] == {"kind": "out", "label": "Out"}
+    assert [f["name"] for f in block["finishes"]] == ["4-2", "3-3", "2-4"]
+
+
+def test_a_week_with_no_sim_file_has_no_finishes_and_no_pill(tmp_path):
+    """A client with no sim package writes no sim.json, so the race Answer keeps only the ladder."""
+    block = _block(tmp_path, "cpc", "playoff_race")
+    assert (block["finishes"], block["pill"]) == ([], None)
+
+
+def test_the_pill_of_a_team_with_a_locked_2_seed_and_a_locked_bye_reads_clinched_bye():
+    """The best Clinched label is the 1 seed, then the bye, then the spot, as the site rule pillOf reads it."""
+    goals = {"spot": {"status": "in"}, "bye": {"status": "in"}, "seed-1": {"status": "out"},
+             "seed-2": {"status": "in"}}
+    pill = _race_pill({"goals": goals})
+    assert (pill.kind, pill.label) == ("clinched", "Clinched bye")

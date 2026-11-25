@@ -1,0 +1,100 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-5/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+weeks left 3, most more wins 6
+The Blue Tent            wins 13 spot    file open  hand open  same
+The Blue Tent            wins 13 bye     file open  hand open  same
+The Blue Tent            wins 13 seed-1  file open  hand open  same
+The Blue Tent            wins 13 seed-2  file open  hand open  same
+The Blue Tent            wins 13 seed-3  file open  hand open  same
+The Blue Tent            wins 13 seed-4  file open  hand open  same
+The Blue Tent            wins 13 seed-5  file open  hand open  same
+The Blue Tent            wins 13 seed-6  file open  hand open  same
+Bengals Buddies          wins 13 spot    file open  hand open  same
+Bengals Buddies          wins 13 bye     file open  hand open  same
+Bengals Buddies          wins 13 seed-1  file open  hand open  same
+Bengals Buddies          wins 13 seed-2  file open  hand open  same
+Bengals Buddies          wins 13 seed-3  file open  hand open  same
+Bengals Buddies          wins 13 seed-4  file open  hand open  same
+Bengals Buddies          wins 13 seed-5  file open  hand open  same
+Bengals Buddies          wins 13 seed-6  file open  hand open  same
+Lil Fridge               wins 15 spot    file open  hand open  same
+Lil Fridge               wins 15 bye     file open  hand open  same
+Lil Fridge               wins 15 seed-1  file open  hand open  same
+Lil Fridge               wins 15 seed-2  file open  hand open  same
+Lil Fridge               wins 15 seed-3  file open  hand open  same
+Lil Fridge               wins 15 seed-4  file open  hand open  same
+Lil Fridge               wins 15 seed-5  file open  hand open  same
+Lil Fridge               wins 15 seed-6  file open  hand open  same
+NFC Least                wins  5 spot    file out   hand out   same
+NFC Least                wins  5 bye     file out   hand out   same
+NFC Least                wins  5 seed-1  file out   hand out   same
+NFC Least                wins  5 seed-2  file out   hand out   same
+NFC Least                wins  5 seed-3  file out   hand out   same
+NFC Least                wins  5 seed-4  file out   hand out   same
+NFC Least                wins  5 seed-5  file out   hand out   same
+NFC Least                wins  5 seed-6  file out   hand out   same
+Teez Nuts                wins 13 spot    file open  hand open  same
+Teez Nuts                wins 13 bye     file open  hand open  same
+Teez Nuts                wins 13 seed-1  file open  hand open  same
+Teez Nuts                wins 13 seed-2  file open  hand open  same
+Teez Nuts                wins 13 seed-3  file open  hand open  same
+Teez Nuts                wins 13 seed-4  file open  hand open  same
+Teez Nuts                wins 13 seed-5  file open  hand open  same
+Teez Nuts                wins 13 seed-6  file open  hand open  same
+Bo Girds                 wins 11 spot    file open  hand open  same
+Bo Girds                 wins 11 bye     file open  hand open  same
+Bo Girds                 wins 11 seed-1  file open  hand open  same
+Bo Girds                 wins 11 seed-2  file open  hand open  same
+Bo Girds                 wins 11 seed-3  file open  hand open  same
+Bo Girds                 wins 11 seed-4  file open  hand open  same
+Bo Girds                 wins 11 seed-5  file open  hand open  same
+Bo Girds                 wins 11 seed-6  file open  hand open  same
+Immaculate Concepcion    wins  9 spot    file open  hand open  same
+Immaculate Concepcion    wins  9 bye     file open  hand open  same
+Immaculate Concepcion    wins  9 seed-1  file open  hand open  same
+Immaculate Concepcion    wins  9 seed-2  file open  hand open  same
+Immaculate Concepcion    wins  9 seed-3  file open  hand open  same
+Immaculate Concepcion    wins  9 seed-4  file open  hand open  same
+Immaculate Concepcion    wins  9 seed-5  file open  hand open  same
+Immaculate Concepcion    wins  9 seed-6  file open  hand open  same
+💿 🐑                      wins 13 spot    file open  hand open  same
+💿 🐑                      wins 13 bye     file open  hand open  same
+💿 🐑                      wins 13 seed-1  file open  hand open  same
+💿 🐑                      wins 13 seed-2  file open  hand open  same
+💿 🐑                      wins 13 seed-3  file open  hand open  same
+💿 🐑                      wins 13 seed-4  file open  hand open  same
+💿 🐑                      wins 13 seed-5  file open  hand open  same
+💿 🐑                      wins 13 seed-6  file open  hand open  same
+Maye d'force B with U    wins 14 spot    file open  hand open  same
+Maye d'force B with U    wins 14 bye     file open  hand open  same
+Maye d'force B with U    wins 14 seed-1  file open  hand open  same
+Maye d'force B with U    wins 14 seed-2  file open  hand open  same
+Maye d'force B with U    wins 14 seed-3  file open  hand open  same
+Maye d'force B with U    wins 14 seed-4  file open  hand open  same
+Maye d'force B with U    wins 14 seed-5  file open  hand open  same
+Maye d'force B with U    wins 14 seed-6  file open  hand open  same
+Nico Collinsizer         wins 10 spot    file open  hand open  same
+Nico Collinsizer         wins 10 bye     file open  hand open  same
+Nico Collinsizer         wins 10 seed-1  file open  hand open  same
+Nico Collinsizer         wins 10 seed-2  file open  hand open  same
+Nico Collinsizer         wins 10 seed-3  file open  hand open  same
+Nico Collinsizer         wins 10 seed-4  file open  hand open  same
+Nico Collinsizer         wins 10 seed-5  file open  hand open  same
+Nico Collinsizer         wins 10 seed-6  file open  hand open  same
+Unsolicited Dak Picks    wins  6 spot    file out   hand out   same
+Unsolicited Dak Picks    wins  6 bye     file out   hand out   same
+Unsolicited Dak Picks    wins  6 seed-1  file out   hand out   same
+Unsolicited Dak Picks    wins  6 seed-2  file out   hand out   same
+Unsolicited Dak Picks    wins  6 seed-3  file out   hand out   same
+Unsolicited Dak Picks    wins  6 seed-4  file out   hand out   same
+Unsolicited Dak Picks    wins  6 seed-5  file out   hand out   same
+Unsolicited Dak Picks    wins  6 seed-6  file out   hand out   same
+Omarion Himpton          wins 10 spot    file open  hand open  same
+Omarion Himpton          wins 10 bye     file open  hand open  same
+Omarion Himpton          wins 10 seed-1  file open  hand open  same
+Omarion Himpton          wins 10 seed-2  file open  hand open  same
+Omarion Himpton          wins 10 seed-3  file open  hand open  same
+Omarion Himpton          wins 10 seed-4  file open  hand open  same
+Omarion Himpton          wins 10 seed-5  file open  hand open  same
+Omarion Himpton          wins 10 seed-6  file open  hand open  same
+statuses: 96 same, 0 different, of 96

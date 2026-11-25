@@ -1,0 +1,808 @@
+--- 390x660 light
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 71
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 58
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 55
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 42
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 39
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 19
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 324
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 324
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 390x660 dark
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 71
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 58
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 55
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 42
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 39
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 19
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 324
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 324
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 810x980 light
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 133
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 109
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 103
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 79
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 73
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 67
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 12
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 606
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 606
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 810x980 dark
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 133
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 109
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 103
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 79
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 73
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 67
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 12
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 606
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 606
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 1080x740 light
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 151
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 123
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 117
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 89
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 82
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 75
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 14
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 1080x740 dark
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 151
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 123
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 117
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 89
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 82
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 75
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 14
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 1280x800 light
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 151
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 123
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 117
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 89
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 82
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 75
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 14
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(0.191251 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(221, 221, 221)",
+    "width": 686
+   }
+  }
+ ],
+ "clinchLines": []
+}
+--- 1280x800 dark
+{
+ "when": "after Seed, then 3",
+ "card": "YOUR TEAM Bo Girds 11-11 6% SEED 3 ODDS",
+ "finishes": [
+  "6-0, ends 17-11, 9% likely: 47% odds of the 3 seed",
+  "5-1, ends 16-12, 13% likely: 12% odds of the 3 seed",
+  "4-2, ends 15-13, 26% likely: 1% odds of the 3 seed",
+  "3-3, ends 14-14, 20% likely: 1% odds of the 3 seed",
+  "2-4, ends 13-15, 20% likely: 1% odds of the 3 seed",
+  "1-5, ends 12-16, 8% likely: 1% odds of the 3 seed",
+  "0-6, ends 11-17, 4% likely: 1% odds of the 3 seed"
+ ],
+ "board": [
+  {
+   "label": "Teez Nuts: 22% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 151
+   }
+  },
+  {
+   "label": "The Blue Tent: 18% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 123
+   }
+  },
+  {
+   "label": "Maye d'force B with U: 17% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 117
+   }
+  },
+  {
+   "label": "Lil Fridge: 13% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 89
+   }
+  },
+  {
+   "label": "💿 🐑: 12% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 82
+   }
+  },
+  {
+   "label": "Bengals Buddies: 11% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 75
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 6% odds of the 3 seed.",
+   "bar": {
+    "color": "rgb(184, 52, 42)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Omarion Himpton: 2% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 14
+   }
+  },
+  {
+   "label": "Nico Collinsizer: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Immaculate Concepcion: 1% odds of the 3 seed.",
+   "bar": {
+    "color": "oklab(1 0 0 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "Unsolicited Dak Picks: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  },
+  {
+   "label": "NFC Least: 0% odds of the 3 seed. Out.",
+   "bar": {
+    "color": "rgb(119, 119, 119)",
+    "width": 686
+   }
+  }
+ ],
+ "clinchLines": []
+}

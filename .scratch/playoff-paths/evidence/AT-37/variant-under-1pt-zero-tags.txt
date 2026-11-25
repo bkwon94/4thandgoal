@@ -1,0 +1,104 @@
+--- 390x660 light
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ }
+]
+--- 390x660 dark
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ }
+]
+--- 810x980 light
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ }
+]
+--- 810x980 dark
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ }
+]
+--- 1080x740 light
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ }
+]
+--- 1080x740 dark
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ }
+]
+--- 1280x800 light
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(102, 102, 102)",
+  "background": "rgb(235, 235, 235)"
+ }
+]
+--- 1280x800 dark
+[
+ {
+  "row": "Unsolicited Dak Picks vs Maye d'force B with U DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ },
+ {
+  "row": "NFC Least vs Lil Fridge DOESN'T MATTER",
+  "color": "rgb(153, 153, 153)",
+  "background": "rgb(38, 38, 38)"
+ }
+]

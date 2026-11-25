@@ -1,0 +1,6 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-13/check.py
+file: clients/cpc/build/2026/week-11/sim.json
+rerun(week-11/sim.json, you=6, set=[{'week': 12, 'game': 'win', 'median': 'above'}, {'week': 13, 'game': 'win', 'median': 'above'}, {'week': 14, 'game': 'loss', 'median': 'below'}])
+Try it odds of the plan: 81
+What-if odds of the spot Goal: 81 (runs 10000, effective runs 7582)
+difference: 0 points

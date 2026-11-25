@@ -1,0 +1,120 @@
+--- 390x660 light
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 390x660 light
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 390x660 light
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 390x660 dark
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 390x660 dark
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 390x660 dark
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 810x980 light
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 810x980 light
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 810x980 light
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 810x980 dark
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 810x980 dark
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 810x980 dark
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1080x740 light
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1080x740 light
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 1080x740 light
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1080x740 dark
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1080x740 dark
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 1080x740 dark
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1280x800 light
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1280x800 light
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 1280x800 light
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1280x800 dark
+{
+ "tapped": "6-0",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n\n6-0 · ends 17-11 · 9% likely\n\nYou're in whatever the others do.\n\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}
+--- 1280x800 dark
+{
+ "tapped": "0-6",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n\n0-6 · ends 11-17 · 4% likely\n\nNo way in at this record.\n\n"
+}
+--- 1280x800 dark
+{
+ "tapped": "3-3",
+ "text": "REST OF SEASON\nODDS OF A PLAYOFF SPOT\n6-0\nends 17-11\n9% likely\n99%\n5-1\nends 16-12\n13% likely\n99%\n4-2\nends 15-13\n26% likely\n80%\n3-3\nends 14-14\n20% likely\n25%\n\n3-3 · ends 14-14 · 20% likely\n\nBEST CHANCE\n\nIf 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse.\nHappens 28% · you're in 45%.\n2-4\nends 13-15\n20% likely\n3%\n1-5\nends 12-16\n8% likely\n1%\n0-6\nends 11-17\n4% likely\n1%\n"
+}

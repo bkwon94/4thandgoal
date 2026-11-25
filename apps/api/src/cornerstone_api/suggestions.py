@@ -43,6 +43,9 @@ router = APIRouter()
 
 # The front door shows 3 Suggestions plus "More" (decision 02).
 SUGGESTION_COUNT = 3
+# The league Topic of the race, first of the Suggestions in each week of the regular season (decision 05 of
+# playoff-paths), because the race matters most then. The pin stops when the last regular week is final.
+RACE_TOPIC = "playoff_race"
 # The 3 personal Topics, which the API builds live. The head start builds only one of them.
 PERSONAL: tuple[PersonalTopic, ...] = ("weak_spots", "stack_up", "waiver_targets")
 # The file of the weekly build with the Answers and the facts of the 7 league Topics of each team.
@@ -131,10 +134,18 @@ def sell_high_fact(jev: Jev, live: Live, roster_id: int) -> tuple[str | None, di
     return fact, probabilities, clear
 
 
-def pick(order: list[str], urgent: list[str], facts: dict[str, str], opened: dict[str, str]) -> list[str]:
-    """The hard rule of the pick: the urgent Topics first, then the order of the day. A Topic needs a fact to show, and
-    a Topic opened at the same fact waits until its fact changes."""
-    ranked = [*urgent, *(key for key in order if key not in urgent)]
+def race_pinned(snapshot) -> bool:
+    """True while a regular week is still to play. The trade week N follows the last final week, so week N past the
+    last regular week means that week is final."""
+    return snapshot.week <= snapshot.client.settings.last_regular_week
+
+
+def pick(order: list[str], urgent: list[str], facts: dict[str, str], opened: dict[str, str],
+         pinned: str | None = None) -> list[str]:
+    """The hard rule of the pick: the pinned Topic first, then the urgent Topics, then the order of the day. A Topic
+    needs a fact to show, and a Topic opened at the same fact waits until its fact changes."""
+    lead = [pinned] if pinned is not None else []
+    ranked = list(dict.fromkeys([*lead, *urgent, *order]))
     return [key for key in ranked if key in facts and opened.get(key) != facts[key]][:SUGGESTION_COUNT]
 
 
@@ -213,8 +224,10 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     lifts = {topic: answers.nouls[lift_key(topic)] for topic in facts}
     # The cutoff is the hard rule of the spec: only a lift above YES is urgent. The most urgent leads.
     urgent = sorted((topic for topic, p in lifts.items() if p > YES), key=lambda topic: -lifts[topic])
-    picks = pick(body.order, urgent, facts, body.opened)
-    top = picks[0] if picks else None
+    pinned = RACE_TOPIC if race_pinned(live.snapshot) else None
+    picks = pick(body.order, urgent, facts, body.opened, pinned)
+    # The pin is a league Topic, so the head start reads the top pick of the day below it.
+    top = next((key for key in picks if key != pinned), None)
     start = top if top in PERSONAL else None
     # The head start counts toward the league cap only, so only the league cap stops it (decision 04). A check with no
     # team reads only the league cap, because no roster has the id None.

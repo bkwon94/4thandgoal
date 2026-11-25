@@ -1,0 +1,19 @@
+Changed copy of clients/cpc/published/2026/week-11/sim.json (5f26bcb0 worktree with the rebuilt file of the Spec worktree).
+Made by evidence/site-set/a/make-variants.py: sim-variant-clinched.json.
+Changes: board entry of roster 3 (Lil Fridge): goals.spot.status "open" -> "in".
+         board entry of roster 9 (Maye d'force B with U): goals.spot.status "open" -> "in" and goals."seed-1".status "open" -> "in".
+The pill shows on the spot Goal only when the spot status is "in", and it names the 1 seed when seed-1 is "in"
+(packages/sim/site/page/goals.ts lines 71-80), so roster 9 needs both changes.
+$ diff <(python3 -m json.tool sim-original.json) <(python3 -m json.tool sim-variant-clinched.json)
+56220c56220
+<                     "status": "open"
+---
+>                     "status": "in"
+56751c56751
+<                     "status": "open"
+---
+>                     "status": "in"
+56759c56759
+<                     "status": "open"
+---
+>                     "status": "in"

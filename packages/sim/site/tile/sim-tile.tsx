@@ -1,5 +1,5 @@
 /**
- * The Sim tile of the week page: one card link to the sim page with the odds of Your team and one line under them,
+ * The Sim tile of the week page: one card link to The Race with the odds of Your team and one line under them,
  * or the league fact of the build when the browser keeps no team, the team is out, or the season is over.
  */
 import { ArrowRightIcon } from "lucide-react";
@@ -44,7 +44,7 @@ export function SimTile({
       )}
       {/* The whole card takes the tap, so this row needs no touch height of its own. */}
       <span className="gap-sp-2 text-body text-accent-ink flex items-center self-start leading-tight font-semibold">
-        <span>Open the season sim</span>
+        <span>Open The Race</span>
         <ArrowRightIcon
           aria-hidden
           className="size-sp-4 group-hover:translate-x-sp-0 transition-transform duration-150 ease-out motion-reduce:transition-none"

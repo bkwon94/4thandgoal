@@ -495,6 +495,7 @@ describe("WeekPage Sim tile", () => {
     expect(sim.compareDocumentPosition(next) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const link = within(sim).getByRole("link");
     expect(link.getAttribute("href")).toBe("/sim/2026/");
+    expect(link.textContent).toContain("Open The Race");
     expect(link.textContent).toContain("58%");
     expect(link.textContent).toContain("Win 5 of the 8 left and you're in.");
     // The rail links the tile between the two chapters, with the words of its heading.
@@ -503,7 +504,7 @@ describe("WeekPage Sim tile", () => {
       .map((item) => item.textContent);
     expect(labels.slice(labels.indexOf("Standings"), labels.indexOf("Standings") + 3)).toEqual([
       "Standings",
-      "Season sim",
+      "The Race",
       "Next week",
     ]);
   });
@@ -518,6 +519,6 @@ describe("WeekPage Sim tile", () => {
   it("has no tile and no rail link on a week with no sim file", async () => {
     await renderWeek7();
     expect(document.getElementById("sim")).toBeNull();
-    expect(screen.queryByText("Season sim")).toBeNull();
+    expect(screen.queryByText("The Race")).toBeNull();
   });
 });

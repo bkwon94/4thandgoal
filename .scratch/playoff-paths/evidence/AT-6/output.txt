@@ -1,0 +1,11 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-6/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Bo Girds roster 6 record [11, 11]
+6-0  final 17-11  chance 9.1  odds 99  case sure  paths 0
+5-1  final 16-12  chance 12.9  odds 99  case open  paths 0
+4-2  final 15-13  chance 25.7  odds 80  case paths  paths 3
+3-3  final 14-14  chance 20.0  odds 25  case best  paths 1
+2-4  final 13-15  chance 20.0  odds 3  case best  paths 1
+1-5  final 12-16  chance 8.0  odds 1  case none  paths 0
+0-6  final 11-17  chance 4.4  odds 1  case none  paths 0
+Finishes: 7, sum of chances 100.1

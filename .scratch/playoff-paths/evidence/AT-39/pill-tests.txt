@@ -1,0 +1,84 @@
+$ cd apps/site && bun test --isolate ../../packages/sim/site/page/race.test.tsx ../../packages/sim/site/announcement/sim-preview.test.tsx -t "pill|Clinch|clinched"
+(run in a detached worktree of 5f26bcb0; the junit names of each test follow the output)
+bun test v1.4.5 (a7733435c)
+
+ 9 pass
+ 15 filtered out
+ 0 fail
+ 37 expect() calls
+Ran 9 tests across 2 files. [504.00ms]
+
+Tests (junit reporter, failures: 0; filtered-out tests left out):
+(pass) the status pill of the Your team card > shows no pill for Bo Girds in the hunt for a spot after week 11
+(pass) the status pill of the Your team card > shows a red Out pill when Your team is out of the Goal
+(pass) the status pill of the Your team card > names the best Goal locked on the green pill when Your team clinched
+(pass) the pills and the Clinch lines of the League board > shows a red Out pill for a team out of a spot and no pill for a team in the hunt
+(pass) the pills and the Clinch lines of the League board > names the best Goal locked on the green pill of a team that clinched
+(pass) the pills and the Clinch lines of the League board > shows each Clinch line of a spot under its team, with the Goal named
+(pass) the pills and the Clinch lines of the League board > shows the Clinch lines of a bye on a tap of Bye, and none on a Seed Goal
+(pass) the art of The Race Announcement > shows the Out pill on each team that is out, and no pill on a team in the hunt
+(pass) the art of The Race Announcement > names the best Goal locked on the pill of a team that clinched
+
+The pill tests, packages/sim/site/page/race.test.tsx lines 274-336:
+describe("the status pill of the Your team card", () => {
+  const cardPill = () =>
+    within(screen.getByRole("region", { name: "Your team" }))
+      .getAllByRole("button")[0]
+      .querySelector("[data-status-pill]");
+
+  it("shows no pill for Bo Girds in the hunt for a spot after week 11", () => {
+    expect(sim.board.find((row) => row.roster_id === YOU)!.goals.spot.status).toBe("open");
+    render(<SimPage sim={sim} you={YOU} />);
+    expect(cardPill()).toBeNull();
+  });
+
+  it("shows a red Out pill when Your team is out of the Goal", () => {
+    const out = structuredClone(sim);
+    out.board.find((row) => row.roster_id === YOU)!.goals.spot.status = "out";
+    render(<SimPage sim={out} you={YOU} />);
+    expect(cardPill()?.textContent).toBe("Out");
+    expect(cardPill()?.getAttribute("data-status-pill")).toBe("out");
+  });
+
+  it("names the best Goal locked on the green pill when Your team clinched", () => {
+    const clinched = structuredClone(sim);
+    const mine = clinched.board.find((row) => row.roster_id === YOU)!;
+    mine.goals.spot.status = "in";
+    mine.goals.bye.status = "in";
+    render(<SimPage sim={clinched} you={YOU} />);
+    expect(cardPill()?.textContent).toBe("Clinched bye");
+    expect(cardPill()?.getAttribute("data-status-pill")).toBe("clinched");
+  });
+});
+
+describe("the pills and the Clinch lines of the League board", () => {
+  const rowOf = (id: number) =>
+    within(screen.getByRole("group", { name: /^League board/ }))
+      .getAllByRole("button")
+      .find((bar) => Number(bar.getAttribute("data-roster")) === id)!;
+  const pillOf = (id: number) => rowOf(id).querySelector("[data-status-pill]");
+
+  it("shows a red Out pill for a team out of a spot and no pill for a team in the hunt", () => {
+    render(<SimPage sim={sim} you={YOU} />);
+    for (const team of sim.board) {
+      const pill = pillOf(team.roster_id);
+      const status = team.goals.spot.status;
+      if (status === "open") expect(pill).toBeNull();
+      else expect(pill?.textContent).toBe(status === "out" ? "Out" : "Clinched spot");
+    }
+    // The name of the bar reads the pill too, so a screen reader hears it.
+    expect(rowOf(4).getAttribute("aria-label")).toContain("Out.");
+    // NFC Least and Unsolicited Dak Picks are out of a spot after week 11.
+    expect(pillOf(4)?.getAttribute("data-status-pill")).toBe("out");
+    expect(pillOf(11)?.getAttribute("data-status-pill")).toBe("out");
+  });
+
+  it("names the best Goal locked on the green pill of a team that clinched", () => {
+    const clinched = structuredClone(sim);
+    const fridge = clinched.board.find((row) => row.roster_id === 3)!;
+    fridge.goals.spot.status = "in";
+    fridge.goals.bye.status = "in";
+    render(<SimPage sim={clinched} you={YOU} />);
+    expect(pillOf(3)?.textContent).toBe("Clinched bye");
+    expect(pillOf(3)?.getAttribute("data-status-pill")).toBe("clinched");
+  });

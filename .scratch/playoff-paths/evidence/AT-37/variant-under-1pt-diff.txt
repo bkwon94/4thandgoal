@@ -1,0 +1,19 @@
+Changed copies of clients/cpc/published/2026/week-11/sim.json (5f26bcb0 worktree with the rebuilt file of the Spec worktree).
+Made by evidence/site-set/a/make-variants.py. The game: pages."6".week_card.goals.spot.root_for[0] (the list of "Win and beat the median"),
+the row {"winner": 11, "loser": 9, "odds": 70, "other": 68} (Unsolicited Dak Picks beats Maye d'force B with U).
+
+1. sim-variant-under-1pt-half.json: odds 70 -> 68.5, so the two odds are 0.5 point apart. The build fails: the schema
+   cardRootSchema (packages/sim/site/schema/sim.ts lines 229-236) takes only whole numbers for "odds" and "other".
+   Build output: variant-under-1pt-half-build.txt ("Invalid input: expected int, received number"). No shot exists for it.
+$ diff <(python3 -m json.tool sim-original.json) <(python3 -m json.tool sim-variant-under-1pt-half.json)
+44093c44093
+<                                     "odds": 70,
+---
+>                                     "odds": 68.5,
+2. sim-variant-under-1pt-zero.json: odds 70 -> 68, so the two odds are 0 points apart, the closest whole-number case under 1 point.
+   The build passes. Shots: variant-under-1pt-zero-root-for-<size>-<theme>.png.
+$ diff <(python3 -m json.tool sim-original.json) <(python3 -m json.tool sim-variant-under-1pt-zero.json)
+44093c44093
+<                                     "odds": 70,
+---
+>                                     "odds": 68,

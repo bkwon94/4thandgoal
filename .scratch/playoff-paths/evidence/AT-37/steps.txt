@@ -1,0 +1,12 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of AT-37 in evidence/site-set/a/tests.mjs. Build and serve: evidence/site-set/a/build.txt.
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-37
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context:
+open /sim/2026/ ; tap "Win and beat the median"; wait for the What-if answer; save the root-for list and the "Doesn't matter" tag to root-for.txt; save the request and the response; shot "root-for"
+
+Variant run on 5f26bcb0 (a changed copy, not the real data): build cpc with sim-variant-under-1pt-zero.json in place of week-11/sim.json
+(variant-under-1pt-diff.txt), serve it on 127.0.0.1:4391, then
+$ SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-37-variant
+open /sim/2026/ with no tap (the list shows "Win and beat the median"); save the list to variant-under-1pt-zero-root-for.txt and each
+"Doesn't matter" tag with its colors to variant-under-1pt-zero-tags.txt; shot "variant-under-1pt-zero-root-for".
+The copy with odds 0.5 apart (sim-variant-under-1pt-half.json) failed its build: variant-under-1pt-half-build.txt.
+Unit tests: doesnt-matter-tests.txt.

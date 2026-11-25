@@ -9,13 +9,13 @@ import pytest
 
 from league.league_settings import LeagueSettings
 from sim.published import read_week_sim, sim_file, week_sim_file, write_sim, write_week_sim
-from sim.season import SetResult, rerun, season_sim
+from sim.season import SetResult, SimResult, rerun, season_sim
 
 SEASON = 2026
 ROSTERS = range(1, 9)
 # A league in its regular season: 2 weeks played, 2 weeks left. The records put roster 5 at 4-0 and roster 3 at 0-4.
 SCORES = {rid: [100.0 + 7 * rid, 120.0 - 5 * rid] for rid in ROSTERS}
-RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid) for rid in ROSTERS}
+RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid, 200.0 + rid) for rid in ROSTERS}
 REMAINING = {3: [(1, 2), (3, 4), (5, 6), (7, 8)], 4: [(1, 3), (2, 4), (5, 7), (6, 8)]}
 REASONS = {"2 wins ahead of you", "1 win ahead of you", "Level with you", "1 win behind you",
            "In the race for the last spot"}
@@ -120,7 +120,7 @@ def _true_reason(you: int, loser: int, records, spots: int) -> str | None:
     gap = records[loser][0] - records[you][0]
     if gap in NAMED:
         return NAMED[gap]
-    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], rid))
+    table = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], -records[rid][3], rid))
     last = records[table[spots - 1]][0]
     return "In the race for the last spot" if abs(records[loser][0] - last) <= 1 else None
 
@@ -133,7 +133,81 @@ def test_the_reason_names_the_gap_in_real_wins_to_the_loser(sim):
 
 
 # A spread of real wins from 1 to 8, so some losers sit 3 or more wins from roster 1 and roster 8.
-WIDE = {rid: (rid, 8 - rid, 220.0 + rid) for rid in ROSTERS}
+WIDE = {rid: (rid, 8 - rid, 220.0 + rid, 200.0 + rid) for rid in ROSTERS}
+
+
+GOALS = ["spot", "bye", "seed-1", "seed-2", "seed-3", "seed-4"]
+
+
+def _hand_status(rid: int, records, reach: int, k: int) -> str:
+    """The plain check on wins for the top `k` places, written by hand: Clinched when fewer than k other teams can
+    reach the wins of `rid`, Out when k other teams already hold more wins than `rid` can reach."""
+    wins = records[rid][0]
+    others = [o for o in records if o != rid]
+    if sum(records[o][0] + reach >= wins for o in others) < k:
+        return "in"
+    if sum(records[o][0] > wins + reach for o in others) >= k:
+        return "out"
+    return "open"
+
+
+def _hand_seed_status(rid: int, records, reach: int, k: int) -> str:
+    """Seed k is Clinched when the top k is sure and the top k - 1 is out of reach. It is Out when the top k is out
+    of reach or the top k - 1 is sure."""
+    top = _hand_status(rid, records, reach, k)
+    above = _hand_status(rid, records, reach, k - 1) if k > 1 else "out"
+    if top == "in" and above == "out":
+        return "in"
+    if top == "out" or above == "in":
+        return "out"
+    return "open"
+
+
+@pytest.mark.parametrize("median_game", [True, False])
+def test_each_page_holds_the_odds_and_the_status_of_the_spot_the_bye_and_each_seed(median_game):
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=median_game),
+                      runs=2_000, pages=list(ROSTERS))
+    reach = (2 if median_game else 1) * len(REMAINING)
+    statuses = set()
+    for rid, page in wide.pages.items():
+        assert list(page.goals) == GOALS
+        team = wide.teams[rid]
+        assert page.goals["spot"].odds == team.playoff and page.goals["bye"].odds == team.bye
+        assert page.goals["spot"].status == _hand_status(rid, WIDE, reach, 4)
+        assert page.goals["bye"].status == _hand_status(rid, WIDE, reach, 2)
+        for k in range(1, 5):
+            goal = page.goals[f"seed-{k}"]
+            assert goal.status == _hand_seed_status(rid, WIDE, reach, k)
+            expected = {"in": 100, "out": 0}.get(goal.status)
+            if expected is None:
+                assert abs(goal.odds - min(99, max(1, team.seeds.get(k, 0.0)))) <= 1
+            else:
+                assert goal.odds == expected
+        statuses |= {goal.status for goal in page.goals.values()}
+    # With 1 win in each week left, roster 8 at 8 wins is sure of a spot. With 2, no team is sure of a Goal.
+    assert statuses == ({"out", "open"} if median_game else {"in", "out", "open"})
+
+
+def test_each_page_opens_on_the_best_goal_with_odds_of_5_or_more_in_the_order_1_seed_bye_spot():
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                      runs=2_000, pages=list(ROSTERS))
+    opened = set()
+    for page in wide.pages.values():
+        best = next((goal for goal in ("seed-1", "bye", "spot") if page.goals[goal].odds >= 5), "spot")
+        assert page.open_goal == best
+        opened.add(page.open_goal)
+    assert len(opened) > 1
+
+
+def test_the_board_holds_the_goals_of_every_team_with_no_page_asked():
+    wide = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                      runs=2_000, pages=list(ROSTERS))
+    plain = season_sim(SCORES, WIDE, REMAINING, season=SEASON, week=2, settings=_settings(median_game=True),
+                       runs=2_000)
+    assert [row.roster_id for row in plain.board] == list(ROSTERS)
+    assert plain.board == wide.board
+    for row in wide.board:
+        assert row.goals == wide.pages[row.roster_id].goals
 
 
 def test_the_race_reason_goes_only_to_a_loser_near_the_last_playoff_spot():
@@ -157,7 +231,9 @@ def test_each_reason_of_the_real_cpc_week_10_file_is_true():
     sim = json.loads(CPC_WEEK_10.read_text(encoding="utf-8"))
     records = {int(rid): tuple(record) for rid, record in sim["records"].items()}
     spots = sim["parameters"]["playoff_spots"]
-    rows = [(int(you), row) for you, page in sim["pages"].items() for week in page["weeks"] for row in week["root_for"]]
+    # The file leaves out the weeks of each page, so the sim runs again on the numbers of its draw to give them.
+    pages = rerun(SimResult.model_validate(sim), pages=[int(rid) for rid in sim["pages"]]).pages
+    rows = [(you, row.model_dump()) for you, page in pages.items() for week in page.weeks for row in week.root_for]
     assert rows
     assert [row["reason"] for _, row in rows] == [_true_reason(you, row["loser"], records, spots) for you, row in rows]
 
@@ -206,7 +282,9 @@ def test_the_week_file_holds_the_pages_and_the_season_file_keeps_its_shape(sim, 
     data = json.loads(out.read_text(encoding="utf-8"))
     assert {"schema_version", "effective_runs", "sample", "sample_weights", "pages", "fact", "names"} <= set(data)
     assert sorted(data["pages"]) == [str(rid) for rid in ROSTERS]
-    assert read_week_sim(out) == week_sim_file(sim, names)
+    # The file leaves out the weeks and the ladder of each page, so the file reads back as the dump of the result.
+    assert all("weeks" not in page and "ladder" not in page for page in data["pages"].values())
+    assert read_week_sim(out).model_dump() == week_sim_file(sim, names).model_dump()
     season = write_sim(sim_file(sim, names), tmp_path).read_text(encoding="utf-8")
     for key in ("effective_runs", "sample_weights", "pages", "fact"):
         assert f'"{key}"' not in season
@@ -236,7 +314,7 @@ def test_the_sentence_with_every_week_left_set_says_so():
 
 # The same league after its regular season: no regular week left, and a bracket of 4 in weeks 5 and 6. The records
 # set the seeds: roster 8 first, then 7, 6, and 5. Roster 1 is out.
-FINAL_RECORDS = {rid: (rid, 8 - rid, 400.0 + rid) for rid in ROSTERS}
+FINAL_RECORDS = {rid: (rid, 8 - rid, 400.0 + rid, 380.0 + rid) for rid in ROSTERS}
 
 
 def _near(whole: int, tenth: float) -> bool:

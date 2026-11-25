@@ -23,8 +23,41 @@ SEED_SHOW_AT = 50
 ABOUT_RUNS = 400
 # The playoff odds, in percent, at which the sentence of the ladder says "you're in".
 IN_ODDS = 90
+# The Path search of decision 03. A Path stops at PATH_ODDS percent or at PATH_TEAMS teams, and needs PATH_RUNS runs,
+# because at 100 runs its odds move up to 19 points between seeds. A condition must lift the odds by PATH_LIFT points,
+# and a condition true in more than PATH_SKIP_SHARE of the runs of the Finish says almost nothing, so the search skips it.
+PATH_ODDS = 90
+PATH_TEAMS = 3
+PATH_RUNS = 400
+PATH_LIFT = 2
+PATH_SKIP_SHARE = 0.85
+# The most Paths of one Finish. Three fit a phone, and each later Path covers fewer runs.
+PATHS_PER_FINISH = 3
+# A Week plan says that any order of its wins works when its most common order holds under this share of the runs of
+# its Path (PRD, the Week plan). Under half, most of the runs take another order.
+ANY_ORDER_SHARE = 0.5
+# The most games to root for in one week of a Week plan, and the least runs of the plan that a side of a game needs.
+# At 100 runs a share moves about 4 points between seeds, so a root-for row with fewer runs is noise.
+PLAN_ROOT_FOR = 2
+PLAN_ROOT_RUNS = 100
+# The chance of "to be sure" in the Score to beat (decision 06).
+SURE_BEAT = 0.8
+# A Finish at this share of runs or more is sure, and one under 1 minus it has no way in (decision 06).
+SURE_FINISH = 0.995
+# The lowest odds, in percent, of a Goal that The Race opens on. Below it the 1 seed or the bye is no real race, so the
+# page opens on the next Goal. The 5% bar is a call the spec records for review (PRD, Further Notes, call 1).
+OPEN_GOAL_ODDS = 5
+# The most ways of one Clinch line. A line shows its most likely way, and a sheet lists the rest, so a few keep sim.json
+# small.
+CLINCH_WAYS = 8
 # The lowest playoff odds, in percent, of a team that the league fact counts in the race for the last spots.
 RACE_FLOOR = 10
+# The tiebreak gap of the week card shows when another team across the edge of the Goal sits within TIE_WINS wins and
+# TIE_POINTS Points For of Your team (PRD, the week card). Closer than that, the points of one week can decide a tie.
+TIE_WINS = 1
+TIE_POINTS = 50
+# The most median rows of the week card. The first always shows, and the second needs a lift of ROOT_FOR_LIFT.
+MEDIAN_ROWS = 2
 # The most root-for rows of one week, and the least lift in whole points that keeps a row (PRD, the page block).
 ROOT_FOR_ROWS = 3
 ROOT_FOR_LIFT = 1

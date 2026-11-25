@@ -103,6 +103,9 @@ LAYER_OF: dict[str, str] = {
     "sim.tunables": "model",
     "sim.percent": "model",
     "sim.page": "model",
+    "sim.goals": "model",
+    "sim.paths": "model",
+    "sim.week_card": "model",
     "midseason": "model",
     "midseason.values": "model",
     # provider
@@ -131,6 +134,7 @@ LAYER_OF: dict[str, str] = {
     "league.history": "load",
     "league.ranks": "load",
     "league.standings_table": "load",
+    "sim.clinch": "load",
     "league.snapshot": "load",
     "league.season_inputs": "load",
     "league.live": "load",

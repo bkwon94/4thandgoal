@@ -1,0 +1,88 @@
+--- 390x660 light
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 390x660 dark
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 810x980 light
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 810x980 dark
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 1080x740 light
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 1080x740 dark
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 1280x800 light
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3
+--- 1280x800 dark
+file: Lil Fridge, goal spot, status in, 4 ways; first way: own game win, own median above, 1 other results
+board row of Lil Fridge: Lil Fridge | 15-7 | 99% | Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+Clinch line under Lil Fridge: Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.
+file: Immaculate Concepcion, goal spot, status out, 2 ways; first way: own game loss, own median below, 3 other results
+board row of Immaculate Concepcion: Immaculate Concepcion | 9-13 | 1% | Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+Clinch line under Immaculate Concepcion: Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.
+file: Maye d'force B with U, goal spot, status in, 1 ways; first way: own game win, own median above, 4 other results
+board row of Maye d'force B with U: Maye d'force B with U | 14-8 | 98% | Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+Clinch line under Maye d'force B with U: Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.
+rows on the spot Goal with a Clinch line: 3

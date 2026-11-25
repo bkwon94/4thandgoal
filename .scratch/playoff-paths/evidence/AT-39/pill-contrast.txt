@@ -1,0 +1,296 @@
+--- 390x660 light
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ }
+]
+--- 390x660 dark
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ }
+]
+--- 810x980 light
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ }
+]
+--- 810x980 dark
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ }
+]
+--- 1080x740 light
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ }
+]
+--- 1080x740 dark
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ }
+]
+--- 1280x800 light
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(165, 46, 37)",
+  "background": "rgb(251, 228, 225)",
+  "seenText": [
+   165,
+   46,
+   37
+  ],
+  "seenBackground": [
+   251,
+   228,
+   225
+  ],
+  "contrast": 5.73
+ }
+]
+--- 1280x800 dark
+[
+ {
+  "team": "Unsolicited Dak Picks",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ },
+ {
+  "team": "NFC Least",
+  "pill": "Out",
+  "text": "rgb(242, 165, 158)",
+  "background": "rgb(58, 26, 24)",
+  "seenText": [
+   242,
+   165,
+   158
+  ],
+  "seenBackground": [
+   58,
+   26,
+   24
+  ],
+  "contrast": 7.94
+ }
+]

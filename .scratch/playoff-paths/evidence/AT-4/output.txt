@@ -1,0 +1,15 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-4/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+team                     W-L     seed-1   bye  spot  open_goal
+The Blue Tent            13-9          5    18    83  seed-1
+Bengals Buddies          13-9          2     9    69  bye
+Lil Fridge               15-7         49    75    99  seed-1
+NFC Least                5-17         0     0     0  spot
+Teez Nuts                13-9          8    23    88  seed-1
+Bo Girds                 11-11         1     2    48  spot
+Immaculate Concepcion    9-13         1     1     1  spot
+💿 🐑                      13-9          3    11    71  bye
+Maye d'force B with U    14-8         33    62    98  seed-1
+Nico Collinsizer         10-12         1     1     6  spot
+Unsolicited Dak Picks    6-16         0     0     0  spot
+Omarion Himpton          10-12         1     1    36  spot

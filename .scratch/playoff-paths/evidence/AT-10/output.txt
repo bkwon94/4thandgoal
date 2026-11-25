@@ -1,0 +1,6 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-10/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Finishes with odds of 99.5 or more: 0; under 0.5: 112; of those, Finishes with a Path: 0
+Finishes by (case, has a Path): {('best', True): 21, ('none', False): 407, ('open', False): 203, ('paths', True): 12, ('sure', False): 29}
+odds field of the sure Finishes: {99: 29} ; of the none Finishes: {1: 295, 0: 112}
+Finishes by case: {'sure': 29, 'open': 203, 'paths': 12, 'best': 21, 'none': 407}

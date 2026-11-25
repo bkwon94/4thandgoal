@@ -5,6 +5,7 @@
 import { type Page, expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { SIM_ANNOUNCEMENT } from "../src/app/_routes/sim/announcement";
 import { serveDir } from "./serve";
 
 const OUT = join(process.cwd(), "out");
@@ -36,8 +37,8 @@ async function openTour(page: Page, width: number, height = 900) {
   await page.addInitScript((team) => {
     localStorage.setItem("cpc.passphrase", "test");
     localStorage.setItem("cpc.your-team", team);
-    // A kept team lets the season-sim Announcement open first and cover the page, so the setup marks it seen.
-    localStorage.setItem("cpc.announcement.season-sim-2026", "seen");
+    // A kept team lets The Race Announcement open first and cover the page, so the setup marks it seen.
+    localStorage.setItem("cpc.announcement.the-race-2026", "seen");
   }, BO_GIRDS);
   await page.setViewportSize({ width, height });
   await page.goto(`${server.url}${DOOR}`);
@@ -373,8 +374,10 @@ test("a new browser shows no Tour over the team sheet, then Stop 1 on the Sugges
 });
 
 /* A browser with Your team set to Bo Girds, a kept passphrase, and no seen key of the Tour or of the Announcement. From
-   the load, each frame counts whether the Announcement and a Stop card show at the same time. */
+   the load, each frame counts whether the Announcement and a Stop card show at the same time. The date of the page is
+   the release day of the Announcement, so it opens on each run, whatever the date of the run. The timers keep running. */
 async function openWithAnnouncement(page: Page) {
+  await page.clock.setFixedTime(new Date(`${SIM_ANNOUNCEMENT.release}T12:00:00`));
   await page.route(
     (url) => url.hostname !== "127.0.0.1",
     (route) => route.abort(),
@@ -399,11 +402,11 @@ async function openWithAnnouncement(page: Page) {
   await page.goto(`${server.url}${DOOR}`);
 }
 
-test("on a fresh load the season-sim Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38)", async ({
+test("on a fresh load The Race Announcement opens first, the Tour waits, and Stop 1 shows after its exit (AT-38)", async ({
   page,
 }) => {
   await openWithAnnouncement(page);
-  const announcement = page.getByRole("dialog", { name: "See your path to the playoffs" });
+  const announcement = page.getByRole("dialog", { name: "The Race is on" });
   await expect(announcement).toBeVisible();
   const layer = await page
     .locator('[aria-modal="true"]')
@@ -496,7 +499,7 @@ test("on a fresh load the season-sim Announcement opens first, the Tour waits, a
   );
   const seen = await page.evaluate(() => ({
     tour: localStorage.getItem("cpc.tour-seen"),
-    announcement: localStorage.getItem("cpc.announcement.season-sim-2026"),
+    announcement: localStorage.getItem("cpc.announcement.the-race-2026"),
   }));
   console.log(
     `AT-38 layer: ${layer[0]}; tap on Not now: ${run.tapAt.toFixed(1)} ms; exit end: ${run.exitEnd.toFixed(1)} ms; exit duration: ${(run.exitEnd - run.tapAt).toFixed(1)} ms; Stop 1 shows: ${run.stop1At.toFixed(1)} ms; gap: ${(run.stop1At - run.exitEnd).toFixed(1)} ms; frames in exit with no card: ${run.framesInExit - run.cardFrames} of ${run.framesInExit}`,

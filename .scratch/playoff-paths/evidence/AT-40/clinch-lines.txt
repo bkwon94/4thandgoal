@@ -1,0 +1,48 @@
+--- 390x660 light
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 390x660 dark
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 810x980 light
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 810x980 dark
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 1080x740 light
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 1080x740 dark
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 1280x800 light
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]
+--- 1280x800 dark
+[
+ "Clinches a spot with a win, a median win, and a Bo Girds loss to Teez Nuts.",
+ "Clinches a spot with a win, a median win, a Bo Girds loss to Teez Nuts, a Nico Collinsizer median miss, and 2 more results.",
+ "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result."
+]

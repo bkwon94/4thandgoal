@@ -1,0 +1,72 @@
+--- 390x660 light
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 390x660 dark
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 810x980 light
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 810x980 dark
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 1080x740 light
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 1080x740 dark
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 1280x800 light
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset
+--- 1280x800 dark
+sheet header: Your plan to 15-13 · you're in 81%
+sheet button: Try it: you're in 81%
+request: POST /clients/cpc/sim/what-if {"you":6,"set":[{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]}
+response status: 200
+response page.playoff: 81; response set: [{"week":12,"game":"win","median":"above"},{"week":13,"game":"win","median":"above"},{"week":14,"game":"loss","median":"below"}]
+open dialogs after the tap: 0
+card after the tap: YOUR TEAM Bo Girds 11-11 81% SPOT ODDS
+set line after the tap: What-if: Wk 12 win, beat median · Wk 13 win, beat median · Wk 14 lose, miss median Reset

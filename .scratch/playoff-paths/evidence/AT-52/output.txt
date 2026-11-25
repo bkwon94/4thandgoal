@@ -1,0 +1,4 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-52/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Paths by count of teams named: {1: 23, 2: 21, 3: 2}
+Paths that name more than 3 teams: 0

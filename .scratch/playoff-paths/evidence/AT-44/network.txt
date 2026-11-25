@@ -1,0 +1,177 @@
+Each request of the week page and The Race to a host other than the local export, per size and theme. One fresh context each.
+
+== 390x660-light ==
+0.22s request GET https://gc.zgo.at/count.js
+0.31s response 200 https://gc.zgo.at/count.js
+0.57s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.59s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.59s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.60s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.64s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.65s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+5.09s request GET https://gc.zgo.at/count.js
+5.09s response 200 https://gc.zgo.at/count.js
+5.14s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+5.19s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+9.94s request GET https://gc.zgo.at/count.js
+9.94s response 200 https://gc.zgo.at/count.js
+10.07s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+10.09s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 390x660-dark ==
+0.17s request GET https://gc.zgo.at/count.js
+0.24s response 200 https://gc.zgo.at/count.js
+0.50s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.51s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.51s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.52s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+4.98s request GET https://gc.zgo.at/count.js
+4.99s response 200 https://gc.zgo.at/count.js
+5.03s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+5.08s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+9.83s request GET https://gc.zgo.at/count.js
+9.83s response 200 https://gc.zgo.at/count.js
+9.98s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.98s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 810x980-light ==
+0.16s request GET https://gc.zgo.at/count.js
+0.23s response 200 https://gc.zgo.at/count.js
+0.49s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.51s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.51s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.52s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+4.32s request GET https://gc.zgo.at/count.js
+4.32s response 200 https://gc.zgo.at/count.js
+4.36s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+4.41s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+8.97s request GET https://gc.zgo.at/count.js
+8.97s response 200 https://gc.zgo.at/count.js
+9.11s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.12s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 810x980-dark ==
+0.17s request GET https://gc.zgo.at/count.js
+0.25s response 200 https://gc.zgo.at/count.js
+0.47s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.52s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.52s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.53s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.57s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.57s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+4.30s request GET https://gc.zgo.at/count.js
+4.30s response 200 https://gc.zgo.at/count.js
+4.35s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+4.40s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+8.98s request GET https://gc.zgo.at/count.js
+8.98s response 200 https://gc.zgo.at/count.js
+9.11s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.13s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 1080x740-light ==
+0.17s request GET https://gc.zgo.at/count.js
+0.24s response 200 https://gc.zgo.at/count.js
+0.47s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.51s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.51s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.52s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+4.57s request GET https://gc.zgo.at/count.js
+4.57s response 200 https://gc.zgo.at/count.js
+4.61s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+4.66s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+9.37s request GET https://gc.zgo.at/count.js
+9.37s response 200 https://gc.zgo.at/count.js
+9.52s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.52s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 1080x740-dark ==
+0.17s request GET https://gc.zgo.at/count.js
+0.24s response 200 https://gc.zgo.at/count.js
+0.51s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.53s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.57s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+0.57s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+4.58s request GET https://gc.zgo.at/count.js
+4.58s response 200 https://gc.zgo.at/count.js
+4.63s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+4.68s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+9.39s request GET https://gc.zgo.at/count.js
+9.39s response 200 https://gc.zgo.at/count.js
+9.54s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.54s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 1280x800-light ==
+0.18s request GET https://gc.zgo.at/count.js
+0.26s response 200 https://gc.zgo.at/count.js
+0.48s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.54s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.58s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.58s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+4.56s request GET https://gc.zgo.at/count.js
+4.56s response 200 https://gc.zgo.at/count.js
+4.61s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+4.66s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+9.31s request GET https://gc.zgo.at/count.js
+9.31s response 200 https://gc.zgo.at/count.js
+9.46s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.46s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+
+== 1280x800-dark ==
+0.18s request GET https://gc.zgo.at/count.js
+0.25s response 200 https://gc.zgo.at/count.js
+0.50s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.52s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.52s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.53s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s response 200 https://api.sleeper.app/v1/league/1386167364424318976/users
+4.53s request GET https://gc.zgo.at/count.js
+4.53s response 200 https://gc.zgo.at/count.js
+4.58s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+4.63s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+9.27s request GET https://gc.zgo.at/count.js
+9.27s response 200 https://gc.zgo.at/count.js
+9.40s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+9.42s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+errors:
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.
+console: Failed to load resource: Could not connect to the server.

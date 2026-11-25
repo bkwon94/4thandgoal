@@ -1,0 +1,29 @@
+$ make -C apps/pipeline sim CLIENT=cpc WEEK=11 && env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-15/check.py
+uv run --exact --package cornerstone cornerstone sim --client cpc --season 2026 --week 11
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-head/clients/cpc/build/2026/week-11/sim.jsonfile: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Bo Girds week 12 results [('win', 'above'), ('win', 'below'), ('loss', 'above'), ('loss', 'below')]
+other games of week 12: [[3, 4], [2, 7], [10, 12], [9, 11], [1, 8]]
+== win above -> 68%: 5 rows
+  Immaculate Concepcion beats Bengals Buddies -> 75%; other result -> 65%; lift 10; fields {"winner": 7, "loser": 2, "odds": 75, "other": 65}
+  Nico Collinsizer beats Omarion Himpton -> 73%; other result -> 65%; lift 8; fields {"winner": 10, "loser": 12, "odds": 73, "other": 65}
+  Unsolicited Dak Picks beats Maye d'force B with U -> 70%; other result -> 68%; lift 2; fields {"winner": 11, "loser": 9, "odds": 70, "other": 68}
+  The Blue Tent beats 💿 🐑 -> 69%; other result -> 67%; lift 2; fields {"winner": 1, "loser": 8, "odds": 69, "other": 67}
+  NFC Least beats Lil Fridge -> 68%; other result -> 68%; lift 0; fields {"winner": 4, "loser": 3, "odds": 68, "other": 68}
+== win below -> 39%: 5 rows
+  Immaculate Concepcion beats Bengals Buddies -> 41%; other result -> 37%; lift 4; fields {"winner": 7, "loser": 2, "odds": 41, "other": 37}
+  Nico Collinsizer beats Omarion Himpton -> 41%; other result -> 37%; lift 4; fields {"winner": 10, "loser": 12, "odds": 41, "other": 37}
+  💿 🐑 beats The Blue Tent -> 39%; other result -> 38%; lift 1; fields {"winner": 8, "loser": 1, "odds": 39, "other": 38}
+  NFC Least beats Lil Fridge -> 39%; other result -> 39%; lift 0; fields {"winner": 4, "loser": 3, "odds": 39, "other": 39}
+  Unsolicited Dak Picks beats Maye d'force B with U -> 39%; other result -> 39%; lift 0; fields {"winner": 11, "loser": 9, "odds": 39, "other": 39}
+== loss above -> 40%: 5 rows
+  Nico Collinsizer beats Omarion Himpton -> 44%; other result -> 37%; lift 7; fields {"winner": 10, "loser": 12, "odds": 44, "other": 37}
+  Immaculate Concepcion beats Bengals Buddies -> 43%; other result -> 37%; lift 6; fields {"winner": 7, "loser": 2, "odds": 43, "other": 37}
+  The Blue Tent beats 💿 🐑 -> 42%; other result -> 37%; lift 5; fields {"winner": 1, "loser": 8, "odds": 42, "other": 37}
+  Maye d'force B with U beats Unsolicited Dak Picks -> 41%; other result -> 37%; lift 4; fields {"winner": 9, "loser": 11, "odds": 41, "other": 37}
+  Lil Fridge beats NFC Least -> 40%; other result -> 39%; lift 1; fields {"winner": 3, "loser": 4, "odds": 40, "other": 39}
+== loss below -> 15%: 5 rows
+  Immaculate Concepcion beats Bengals Buddies -> 18%; other result -> 13%; lift 5; fields {"winner": 7, "loser": 2, "odds": 18, "other": 13}
+  The Blue Tent beats 💿 🐑 -> 17%; other result -> 12%; lift 5; fields {"winner": 1, "loser": 8, "odds": 17, "other": 12}
+  Nico Collinsizer beats Omarion Himpton -> 17%; other result -> 13%; lift 4; fields {"winner": 10, "loser": 12, "odds": 17, "other": 13}
+  Maye d'force B with U beats Unsolicited Dak Picks -> 15%; other result -> 14%; lift 1; fields {"winner": 9, "loser": 11, "odds": 15, "other": 14}
+  NFC Least beats Lil Fridge -> 15%; other result -> 15%; lift 0; fields {"winner": 4, "loser": 3, "odds": 15, "other": 15}

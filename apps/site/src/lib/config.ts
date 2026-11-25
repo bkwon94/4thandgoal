@@ -15,6 +15,9 @@ export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://api.4thandgoal
 // The league season the teams and analyze routes read: the latest season of the client.
 export const season = clientValues.season;
 
+// The Sleeper league of the latest season, for the Live names of every page.
+export const leagueId = clientValues.leagueId;
+
 // The API of the analyzer: the base URL, the slug of the client of the build, and the season. Each call goes to
 // /clients/<slug>/ of the API.
 export const apiTarget: ApiTarget = { url: apiUrl, client: clientValues.slug, season };

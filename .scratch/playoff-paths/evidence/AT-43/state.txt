@@ -1,0 +1,784 @@
+--- 390x660 light
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 227
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 181
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 84
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 45
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 32
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 26
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 26
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 19
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 10
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 3
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 390x660 dark
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 227
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 181
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 84
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 45
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 32
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 26
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 26
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 19
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 10
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 3
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 3
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 810x980 light
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 424
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 339
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 158
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 85
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 61
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 48
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 48
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 18
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 6
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 810x980 dark
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 424
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 339
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 158
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 85
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 61
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 48
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 48
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 36
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 18
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 6
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 6
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 1080x740 light
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 480
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 384
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 178
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 96
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 69
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 55
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 55
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 21
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 7
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 1080x740 dark
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 480
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 384
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 178
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 96
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 69
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 55
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 55
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 21
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 7
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 1280x800 light
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 480
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 384
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 178
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 96
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 69
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 55
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 55
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 21
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.216115 0.003422 0.005081 / 0.8)",
+    "width": 7
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}
+--- 1280x800 dark
+{
+ "card": "YOUR TEAM Bo Girds 5-5 8% BYE ODDS",
+ "finishes": [
+  "4-0, ends 9-5, 11% likely: 63% odds of a bye",
+  "3-1, ends 8-6, 33% likely: 3% odds of a bye",
+  "2-2, ends 7-7, 36% likely: 1% odds of a bye",
+  "1-3, ends 6-8, 18% likely: 1% odds of a bye",
+  "0-4, ends 5-9, 3% likely: about 1% odds of a bye"
+ ],
+ "board": [
+  {
+   "label": "Hock Tua 💦: 70% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 480
+   }
+  },
+  {
+   "label": "puurdygood: 56% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 384
+   }
+  },
+  {
+   "label": "Mitseeker5000: 26% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 178
+   }
+  },
+  {
+   "label": "Davlionman: 14% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 96
+   }
+  },
+  {
+   "label": "Skol Daddy: 10% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 69
+   }
+  },
+  {
+   "label": "Bo Girds, your team: 8% odds of a bye.",
+   "bar": {
+    "color": "rgb(194, 65, 12)",
+    "width": 55
+   }
+  },
+  {
+   "label": "kaiedmonds: 8% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 55
+   }
+  },
+  {
+   "label": "BobBuckstein: 6% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 41
+   }
+  },
+  {
+   "label": "Breece Mode: 3% odds of a bye.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 21
+   }
+  },
+  {
+   "label": "VarsityBlue2: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Mean Machine: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 7
+   }
+  },
+  {
+   "label": "The Dart Side: 1% odds of a bye. Out of the bye race with a loss.",
+   "bar": {
+    "color": "oklab(0.956283 0.001352 0.014263 / 0.8)",
+    "width": 7
+   }
+  }
+ ],
+ "weekCard": "Week 11 vs The Mean Machine\nSCORE TO BEAT\tTO WIN\tTO BE SURE\nBeat The Mean Machine\t109\t130\n\nTap a result to see your odds of a bye after it.\n\nWin\n10%\n72% likely\nLose\n1%\n28% likely\n\nIf you win, you sit at 10%. Root for:\n\nVarsityBlue2 beats Hock Tua 💦\n→ 13%\nHock Tua 💦 wins\n→ 8%\nDavlionman beats puurdygood\n→ 11%\npuurdygood wins\n→ 9%\nThe Dart Side beats kaiedmonds\n→ 12%\nkaiedmonds wins\n→ 10%\nSkol Daddy beats Mitseeker5000\n→ 11%\nMitseeker5000 wins\n→ 10%\nBobBuckstein vs Breece Mode\nDOESN'T MATTER\nSim week 11\nSim the season\n"
+}

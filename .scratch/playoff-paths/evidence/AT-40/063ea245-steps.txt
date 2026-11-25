@@ -1,0 +1,10 @@
+Instrument: evidence/site-set/a/run.mjs with the steps of "AT-40-reading" in evidence/site-set/a/tests.mjs.
+Build: a detached worktree of 063ea245 in the scratchpad, with the rebuilt client files of wt-mods.tar extracted into that worktree only
+(cpc week-11 sim.json sha256 153af695...6f55); pnpm install --frozen-lockfile --prefer-offline;
+API: source ~/.secrets; make -C apps/api api-evidence API_PORT=8391 API_ORIGIN=http://127.0.0.1:4391 (in the worktree);
+cpc build: CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:8391 pnpm build (exit 0), served by serve.mjs on 127.0.0.1:4391.
+$ PREFIX=063ea245- SITE_APP=<worktree>/apps/site node run.mjs cpc http://127.0.0.1:4391 http://127.0.0.1:8391 AT-40-reading
+Each of 390x660, 810x980, 1080x740, 1280x800 in light and dark, in a fresh WebKit context: open /sim/2026/ (spot Goal, the default);
+fetch /2026/week-11/sim.json in the page; for each spot Clinch entry of "board", write the team, the status, and the count of ways,
+the text of the board row of that team, the full Clinch line under it, and the Goal words at the start of the line, to
+063ea245-reading.txt; full-page shot "board" with the overlap check (063ea245-overlap.txt).

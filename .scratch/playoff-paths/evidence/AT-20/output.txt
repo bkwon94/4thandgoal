@@ -1,0 +1,14 @@
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-20/check.py http://127.0.0.1:8093
+call 1: POST http://127.0.0.1:8093/clients/cpc/sim/what-if {"you": 6, "set": [{"week": 12, "game": "win", "median": "above"}]} -> 200, 142299 bytes, 1.23 s
+call 2: POST http://127.0.0.1:8093/clients/cpc/sim/what-if {"you": 6, "set": [{"week": 12, "game": "win", "median": "above"}]} -> 200, 142299 bytes, 1.26 s
+top keys: ['board', 'effective_runs', 'page', 'runs', 'sample', 'sample_weights', 'schema_version', 'season', 'set', 'teams', 'week', 'you']
+page keys: ['finishes', 'goals', 'need', 'open_goal', 'playoff', 'playoffs', 'record', 'score_to_beat', 'sentence', 'status', 'week_card', 'weeks_left', 'wins_left', 'you']
+Finish list goals: ['spot', 'bye', 'seed-1', 'seed-2', 'seed-3', 'seed-4', 'seed-5', 'seed-6']; spot Finishes 5; Paths 6; Week plans 6
+spot Finishes: [(6, 17.4, 99, 'sure', 0), (5, 18.8, 99, 'open', 0), (4, 34.1, 82, 'paths', 3), (3, 17.1, 26, 'best', 1), (2, 12.7, 2, 'best', 1)]
+example Week plan: {"weeks": [{"week": 12, "opponent": 5, "game": "win", "median": "above", "root_for": [{"winner": 8, "loser": 1, "odds": 97}, {"winner": 10, "loser": 12, "odds": 97}]}, {"week": 13, "opponent": 4, "game": "win", "median": "above", "root_for": [{"winner": 11, "loser": 5, "odds": 98}]}, {"week": 14, "opponent": 3, "game": "loss", "median": "below", "root_for": [{"winner": 7, "loser": 12, "odds": 99}, {"winner": 8, "loser": 5, "odds": 97}]}], "any_order": false, "odds": 82}
+week card: {"week": 12, "opponent": 5, "results": [{"game": "win", "median": "above", "chance": 100.0, "about": false}, {"game": "win", "median": "below", "chance": 0.0, "about": true}, {"game": "loss", "median": "above", "chance": 0.0, "about": true}, {"game": "loss", "median": "below", "chance": 0.0, "about": true}], "goals": {"spot": {"odds": [69, null, null, null], "root_for": [[{"winner": 7, "loser": 2, "odds": 74, "other": 66}, {"winner": 10, "loser": 12, "odds": 72, "other": 66}, {"winner": 1, "loser": 8, "odds": 71, "other": 66}, {"winner": 11, "loser": 9, "odds": 69, "other": 68}, {"winner": 3, "loser": 4, "odds": 69, "other": 68}], [], [], []], "median_root": [[{"roster_id": 12, "odds": 72}, {"roster_id": 2, "odds": 71}], [], [], []], "tiebreak": null}, "bye": {"odds": [5, null, null, null]
+board rows 12; keys of a row ['goals', 'roster_id']
+board odds: [(1, 81, 19), (2, 66, 9), (3, 99, 77), (4, 0, 0), (5, 82, 14), (6, 69, 5), (7, 1, 1), (8, 67, 12), (9, 97, 64), (10, 5, 1), (11, 0, 0), (12, 34, 1)]
+set: [{'week': 12, 'game': 'win', 'median': 'above'}] runs 10000 effective_runs 8972
+the two responses are byte-equal: True
+the two responses are JSON-equal: True

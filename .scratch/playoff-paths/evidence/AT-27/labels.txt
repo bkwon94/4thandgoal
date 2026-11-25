@@ -1,0 +1,124 @@
+--- 390x660 light
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  },
+  {
+   "text": "The Race Your path to the playoffs",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 390x660 dark
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  },
+  {
+   "text": "The Race Your path to the playoffs",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 810x980 light
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  },
+  {
+   "text": "The Race Your path to the playoffs",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 810x980 dark
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  },
+  {
+   "text": "The Race Your path to the playoffs",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 1080x740 light
+the menu button is hidden at this width; the header pill bar is the menu: ["CORNERSTONE FANTASY FOOTBALL LEAGUE","Home","Week 11","Power Rankings","The Race","Managers"]
+--- 1080x740 light
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 1080x740 dark
+the menu button is hidden at this width; the header pill bar is the menu: ["CORNERSTONE FANTASY FOOTBALL LEAGUE","Home","Week 11","Power Rankings","The Race","Managers"]
+--- 1080x740 dark
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 1280x800 light
+the menu button is hidden at this width; the header pill bar is the menu: ["CORNERSTONE FANTASY FOOTBALL LEAGUE","Home","Week 11","Power Rankings","The Race","Managers"]
+--- 1280x800 light
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}
+--- 1280x800 dark
+the menu button is hidden at this width; the header pill bar is the menu: ["CORNERSTONE FANTASY FOOTBALL LEAGUE","Home","Week 11","Power Rankings","The Race","Managers"]
+--- 1280x800 dark
+{
+ "title": "The Race 2026 · Cornerstone Fantasy Football League",
+ "h1": "The Race",
+ "menu": [
+  {
+   "text": "The Race",
+   "aria": null,
+   "href": "/sim/2026/"
+  }
+ ]
+}

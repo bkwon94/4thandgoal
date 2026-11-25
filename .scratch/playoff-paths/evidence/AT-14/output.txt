@@ -1,0 +1,6 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-14/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Bo Girds week card week 12 opponent 5 (Teez Nuts)
+{"week": 12, "opponent": 5, "win": 109, "win_sure": 127, "median": 107, "median_sure": 114} opponent name Teez Nuts
+{"week": 13, "opponent": 4, "win": 102, "win_sure": 120, "median": 107, "median_sure": 114} opponent name NFC Least
+{"week": 14, "opponent": 3, "win": 113, "win_sure": 131, "median": 107, "median_sure": 114} opponent name Lil Fridge

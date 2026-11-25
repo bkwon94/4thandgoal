@@ -10,7 +10,7 @@ import { simHref } from "@/lib/routes";
 import { YourSimTile } from "./your-sim-tile";
 
 /* The id and the heading of the tile, so the rail link and the chapter share one set of words. */
-const CHAPTER = { id: "sim", label: "Season sim" };
+const CHAPTER = { id: "sim", label: "The Race" };
 
 /* A week with no week sim file, such as a week before the sim, has no tile. */
 export const weekTile: WeekTile = (season, week) => {

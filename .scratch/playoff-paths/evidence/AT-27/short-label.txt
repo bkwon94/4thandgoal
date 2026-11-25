@@ -1,0 +1,34 @@
+$ rg -o '"kind":"sim","label":"The Race","short":"Race"' apps/site/out/sim/2026/index.html   (cpc export of ce601c12)
+
+
+The short label lives in the menu props of the shell (apps/site/src/app/shell-props.ts, SHORT.sim = "Race"). The menu sheet at 390 and 810 and the pill bar at 1080 and 1280 show the full label "The Race"; no menu in these shots shows the short label.
+
+--- Search on 5f26bcb0: where the short label "Race" shows
+$ rg -n "\bshort\b" packages/design/site/shell/nav.ts apps/site/src/app/shell-props.ts
+apps/site/src/app/shell-props.ts:15:/* The short label of each package, for a menu that shows no full label. The week item keeps the label of its
+apps/site/src/app/shell-props.ts:17:   item, so its short label serves only a menu with no pill bar. */
+apps/site/src/app/shell-props.ts:32:      return [{ kind: "home", label: item.label ?? "Home", short: "Home", href: home }];
+apps/site/src/app/shell-props.ts:40:    const short = item.package === "week" ? link.label : SHORT[item.package];
+apps/site/src/app/shell-props.ts:41:    return [{ kind: item.package, label: item.label ?? link.label, short, href: link.href }];
+packages/design/site/shell/nav.ts:13:/* One destination of the menu. The pill bar shows the full label, and the short label is for a menu with little room. */
+packages/design/site/shell/nav.ts:14:export type NavItem = Destination & { kind: NavKind; short: string };
+$ rg -n "\.short\b|{ ... short ... } =" apps/site/src packages/*/site (ts and tsx, tests left out)
+(none)
+$ rg -n "item\.label|\.label\b" packages/design/site/shell/pill-bar.tsx menu-sheet.tsx top-band.tsx
+packages/design/site/shell/pill-bar.tsx:32:          {item.label}
+packages/design/site/shell/menu-sheet.tsx:208:                        {item.label}
+$ cd apps/site && bun test --isolate src/app/shell-props.test.ts -t "short label Race"
+bun test v1.4.5 (a7733435c)
+
+ 1 pass
+ 19 filtered out
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [440.00ms]
+(the test "gives the sim page a destination, The Race, with the short label Race (AT-50)", shell-props.test.ts line 49)
+
+Result: no screen shows the short label "Race" at any size. The code path that holds it: SHORT.sim = "Race" in
+apps/site/src/app/shell-props.ts line 24, set on each NavItem by menuPages() (lines 40-41), typed as NavItem.short in
+packages/design/site/shell/nav.ts line 14. No component reads .short: the pill bar and the menu sheet render .label
+("The Race"), and the tab of the page is the document title "The Race 2026 · Cornerstone Fantasy Football League"
+(labels.txt). So no extra shot was taken.

@@ -1,0 +1,179 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-26/check.py
+file: clients/cpc/build/2026/week-11/topics.json (week 11, schema 2)
+Bo Girds playoff_race Answer:
+{
+ "topic": "playoff_race",
+ "fact": "48% playoff odds",
+ "stats": [
+  {
+   "label": "Playoff odds",
+   "value": "48%"
+  },
+  {
+   "label": "Bye odds",
+   "value": "2%"
+  },
+  {
+   "label": "Seed",
+   "value": "None"
+  },
+  {
+   "label": "Games from the cut",
+   "value": "-2"
+  }
+ ],
+ "rows": [
+  {
+   "label": "Bengals Buddies",
+   "value": "69%",
+   "note": "Seed 5",
+   "roster_id": 2,
+   "you": false
+  },
+  {
+   "label": "Bo Girds",
+   "value": "48%",
+   "note": "Seed None",
+   "roster_id": 6,
+   "you": true
+  },
+  {
+   "label": "Omarion Himpton",
+   "value": "36%",
+   "note": "Seed None",
+   "roster_id": 12,
+   "you": false
+  }
+ ],
+ "text": [],
+ "block": {
+  "kind": "ladder",
+  "playoff_teams": 6,
+  "rows": [
+   {
+    "roster_id": 3,
+    "name": "Lil Fridge",
+    "rank": 1,
+    "record": "15-7",
+    "odds": 99,
+    "you": false
+   },
+   {
+    "roster_id": 9,
+    "name": "Maye d'force B with U",
+    "rank": 2,
+    "record": "14-8",
+    "odds": 98,
+    "you": false
+   },
+   {
+    "roster_id": 5,
+    "name": "Teez Nuts",
+    "rank": 3,
+    "record": "13-9",
+    "odds": 88,
+    "you": false
+   },
+   {
+    "roster_id": 1,
+    "name": "The Blue Tent",
+    "rank": 4,
+    "record": "13-9",
+    "odds": 83,
+    "you": false
+   },
+   {
+    "roster_id": 2,
+    "name": "Bengals Buddies",
+    "rank": 5,
+    "record": "13-9",
+    "odds": 69,
+    "you": false
+   },
+   {
+    "roster_id": 8,
+    "name": "💿 🐑",
+    "rank": 6,
+    "record": "13-9",
+    "odds": 71,
+    "you": false
+   },
+   {
+    "roster_id": 6,
+    "name": "Bo Girds",
+    "rank": 7,
+    "record": "11-11",
+    "odds": 48,
+    "you": true
+   },
+   {
+    "roster_id": 12,
+    "name": "Omarion Himpton",
+    "rank": 8,
+    "record": "10-12",
+    "odds": 36,
+    "you": false
+   },
+   {
+    "roster_id": 10,
+    "name": "Nico Collinsizer",
+    "rank": 9,
+    "record": "10-12",
+    "odds": 6,
+    "you": false
+   },
+   {
+    "roster_id": 7,
+    "name": "Immaculate Concepcion",
+    "rank": 10,
+    "record": "9-13",
+    "odds": 1,
+    "you": false
+   },
+   {
+    "roster_id": 11,
+    "name": "Unsolicited Dak Picks",
+    "rank": 11,
+    "record": "6-16",
+    "odds": 0,
+    "you": false
+   },
+   {
+    "roster_id": 4,
+    "name": "NFC Least",
+    "rank": 12,
+    "record": "5-17",
+    "odds": 0,
+    "you": false
+   }
+  ],
+  "finishes": [
+   {
+    "name": "4-2",
+    "record": "15-13",
+    "chance": 25.7,
+    "odds": 80,
+    "about": false
+   },
+   {
+    "name": "3-3",
+    "record": "14-14",
+    "chance": 20.0,
+    "odds": 25,
+    "about": false
+   },
+   {
+    "name": "2-4",
+    "record": "13-15",
+    "chance": 20.0,
+    "odds": 3,
+    "about": false
+   }
+  ],
+  "pill": null
+ }
+}
+fact: 48% playoff odds; block kind ladder; finishes 3; pill None
+  Finish 4-2 ends 15-13: chance 25.7%, odds 80%
+  Finish 3-3 ends 14-14: chance 20.0%, odds 25%
+  Finish 2-4 ends 13-15: chance 20.0%, odds 3%

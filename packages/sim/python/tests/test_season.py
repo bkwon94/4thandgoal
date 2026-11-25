@@ -7,7 +7,7 @@ from rejection import rejection_odds
 
 from league.league_settings import LeagueSettings
 from sim.published import SIM_FILE, read_sim, read_week_sim, sim_file, week_sim_file, write_sim, write_week_sim
-from sim.season import SetResult, SimStopped, rerun, season_sim
+from sim.season import SetResult, SimResult, SimStopped, rerun, season_sim
 
 SEASON = 2026
 # Eight rosters, 6 playoff spots and 2 byes, as in CPC and NorCal. The regular season ends at week 4.
@@ -28,7 +28,7 @@ def _flat(levels: dict[int, float], weeks: int = 4) -> dict[int, list[float]]:
 
 # The seeds follow the roster ID: roster 1 has the most wins. Roster 6, the 6th seed, scores the most each week, so
 # it wins every game it plays. Then roster 5 scores more than roster 4, so seed 5 beats seed 4.
-FINAL_RECORDS = {rid: (9 - rid, rid - 1, 400.0) for rid in ROSTERS}
+FINAL_RECORDS = {rid: (9 - rid, rid - 1, 400.0, 380.0) for rid in ROSTERS}
 LEVELS = {1: 100.0, 2: 99.0, 3: 98.0, 4: 90.0, 5: 95.0, 6: 150.0, 7: 80.0, 8: 70.0}
 
 
@@ -55,7 +55,7 @@ def test_a_fixed_bracket_gives_seed_1_the_winner_of_4_v_5():
 
 # A league in its regular season: 2 weeks played, 2 weeks left, real spread, and a median game.
 SCORES = {rid: [100.0 + 7 * rid, 120.0 - 5 * rid] for rid in ROSTERS}
-RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid) for rid in ROSTERS}
+RECORDS = {rid: (2 + rid % 3, 2 - rid % 3, 220.0 + rid, 200.0 + rid) for rid in ROSTERS}
 REMAINING = {3: [(1, 2), (3, 4), (5, 6), (7, 8)], 4: [(1, 3), (2, 4), (5, 7), (6, 8)]}
 
 
@@ -94,11 +94,14 @@ def test_the_sample_holds_the_first_runs_and_each_replays_from_its_scores():
         # Replay the regular season from the stored scores: the head-to-head game and the median game.
         wins = {rid: r[0] for rid, r in RECORDS.items()}
         points = {rid: r[2] for rid, r in RECORDS.items()}
+        against = {rid: r[3] for rid, r in RECORDS.items()}
         for column, week in enumerate((3, 4)):
             # A regular week holds a score for every roster. Only a bracket week holds None.
             scores = {rid: float(run.scores[rid][column] or 0.0) for rid in ROSTERS}
             assert all(run.scores[rid][column] is not None for rid in ROSTERS)
             for a, b in REMAINING[week]:
+                against[a] += scores[b]
+                against[b] += scores[a]
                 wins[a] += scores[a] > scores[b]
                 wins[b] += scores[b] > scores[a]
             ordered = sorted(scores.values(), reverse=True)
@@ -106,8 +109,23 @@ def test_the_sample_holds_the_first_runs_and_each_replays_from_its_scores():
             for rid, score in scores.items():
                 wins[rid] += score > median
                 points[rid] += score
-        assert run.table == sorted(ROSTERS, key=lambda rid: (-wins[rid], -points[rid], rid))
+        assert run.table == sorted(ROSTERS, key=lambda rid: (-wins[rid], -points[rid], -against[rid], rid))
         assert run.bracket[-1][0] in {(run.champion, x) for x in ROSTERS} | {(x, run.champion) for x in ROSTERS}
+
+
+def test_a_tie_on_wins_and_points_for_goes_to_the_higher_points_against():
+    # Rosters 6 and 7 tie on wins and points for. Roster 7 has the higher points against, so it takes the 6th seed.
+    records = {**FINAL_RECORDS, 7: (3, 5, 400.0, 390.0)}
+    result = season_sim(_flat(LEVELS), records, {}, season=SEASON, week=4, settings=_settings(reseed=True), runs=1,
+                        sample=1)
+    assert result.sample[0].table[5:7] == [7, 6]
+
+
+def test_a_sim_file_with_three_values_in_each_record_reads_with_no_points_against():
+    result = _sim(runs=10)
+    old = result.model_dump(mode="json")
+    old["records"] = {rid: record[:3] for rid, record in old["records"].items()}
+    assert SimResult.model_validate(old).records[1] == (*RECORDS[1][:3], 0.0)
 
 
 def test_a_tie_in_a_bracket_game_goes_to_the_higher_seed():
@@ -247,7 +265,9 @@ def _week_file(tmp_path, **kwargs):
 def test_a_rerun_of_the_week_file_with_no_set_result_gives_the_numbers_of_the_file(tmp_path):
     result, file = _week_file(tmp_path)
     again = rerun(file, pages=[1])
-    assert again.pages[1] == result.pages[1] == file.pages[1]
+    # The file leaves out the weeks and the ladder of each page, so the file page equals the dump of the page.
+    assert again.pages[1] == result.pages[1]
+    assert again.pages[1].model_dump() == file.pages[1].model_dump()
     assert again.teams == result.teams
     assert again.sample == result.sample
 

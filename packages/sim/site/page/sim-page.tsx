@@ -1,55 +1,77 @@
 /**
- * The sim page of Your team, layout D "Cards" (decision 04): the header with the odds, the sentence that opens the ladder, the set
- * line of the What-if, the week switch, one page per week with the week card and the root-for card, and the two replay buttons.
+ * The sim page of Your team. In the regular season it is The Race, variant D of decision 04 of playoff-paths: the title, the Goal
+ * switch, the Your team card that opens in place with the Finish list, the week card, and the replay, then the League board.
+ * A tap on another team of the board opens its Finish list in a sheet.
  */
 "use client";
 
 import { Button } from "@cpc/design/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { Play, RotateCcw, Shuffle } from "lucide-react";
+import { ChevronDown, Play, RotateCcw, Shuffle } from "lucide-react";
 import { useState } from "react";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { PhotoFrame } from "@cpc/design/parts/photo-frame";
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@cpc/design/ui/collapsible";
 import { cn } from "@cpc/design/lib/utils";
 import type { SetResult, WeekSim } from "../schema/sim-types";
 import type { WhatIfApi } from "../lib/what-if-api";
 import { SimStage, type StageAsk } from "../stage/sim-stage";
 import { LABEL, PRESS, nameOf, oddsText, recordText, resultName } from "./format";
+import { GoalSwitch } from "./goal-switch";
+import {
+  type GoalKey,
+  boardOf,
+  goalName,
+  goalShort,
+  hasBye,
+  openGoal,
+  pageGoals,
+  pillOf,
+} from "./goals";
+import { FinishList } from "./finish-list";
 import { InPlayoffs, seasonLine } from "./in-playoffs";
-import { LadderSheet } from "./ladder-sheet";
+import { LeagueBoard, StatusPill } from "./league-board";
 import { SoftText } from "./parts";
-import { PlayoffsPage } from "./playoffs-page";
+import { TeamSheet } from "./team-sheet";
 import { useWhatIf } from "./use-what-if";
-import { PLAYOFFS, WeekSwitch, type WeekItem } from "./week-switch";
-import { WeekPage } from "./week-page";
+import { WeekCard } from "./week-card";
 
 /* The avatar src of each team by roster id, with the base path, from the latest week. */
 export type Avatars = Record<string, string>;
-
-/* The entry of a week page: the page slide of transitions-dev, a short move from the side of the item with a soft blur. */
-const ENTER = { duration: 0.25, ease: [0.22, 1, 0.36, 1] } as const;
 
 /* The line of the set results, such as "Wk 11 win, beat median · Wk 12 lose". */
 const setText = (set: SetResult[]) =>
   set.map((result) => `Wk ${result.week} ${resultName(result).toLowerCase()}`).join(" · ");
 
-/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it. */
+/* `random` gives a number in [0, 1), as Math.random does. The replay draws its run with it, so a test can set it.
+   `onYou` makes another team Your team, from its sheet. The app keeps the choice. */
 export function SimPage({
   sim,
   you,
   avatars = {},
   whatIf,
   random = Math.random,
+  onYou,
 }: {
   sim: WeekSim;
   you: number;
   avatars?: Avatars;
   whatIf?: WhatIfApi;
   random?: () => number;
+  onYou?: (id: number) => void;
 }) {
   if (sim.pages[you].playoffs)
     return <PlayoffSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
-  return <RegularSimPage sim={sim} you={you} avatars={avatars} whatIf={whatIf} random={random} />;
+  return (
+    <RegularSimPage
+      sim={sim}
+      you={you}
+      avatars={avatars}
+      whatIf={whatIf}
+      random={random}
+      onYou={onYou}
+    />
+  );
 }
 
 /* The sim page with no regular week left: Your team with its title odds, then the playoff cards. No week switch and no
@@ -147,75 +169,163 @@ function RegularSimPage({
   avatars,
   whatIf,
   random,
+  onYou,
 }: {
   sim: WeekSim;
   you: number;
   avatars: Avatars;
   whatIf?: WhatIfApi;
   random: () => number;
+  onYou?: (id: number) => void;
 }) {
   const file = sim.pages[you];
   const name = nameOf(sim, you);
   const what = useWhatIf(file, whatIf);
   const page = what.page;
-  const items: WeekItem[] = [...file.weeks.map((week) => week.week), PLAYOFFS];
-  // The side the open page came from: 1 from the right for a later item, -1 from the left, and 0 for the first page,
-  // which shows at rest.
-  const [{ open, side }, setView] = useState<{ open: WeekItem; side: number }>({
-    open: items[0],
-    side: 0,
-  });
+  const [goal, setGoal] = useState<GoalKey>(() => openGoal(file));
+  const [cardOpen, setCardOpen] = useState(true);
   const off = useMotionOff();
   const [replay, setReplay] = useState<StageAsk | null>(null);
+  const [other, setOther] = useState<number | null>(null);
+  // The Finish list follows the page of a What-if answer, and the file when the answer holds none.
+  const finishes = page.finishes[goal] ?? file.finishes[goal] ?? [];
 
-  const openItem = (item: WeekItem) => {
-    setView((was) =>
-      item === was.open
-        ? was
-        : { open: item, side: items.indexOf(item) > items.indexOf(was.open) ? 1 : -1 },
-    );
+  const card = what.card;
+  const nextWeek = file.week_card?.week ?? null;
+  // The spot odds follow the What-if through the playoff odds of the page. Another Goal reads the Goals of the page, and
+  // the file when the answer holds none.
+  const goalOdds =
+    goal === "spot"
+      ? page.playoff
+      : ((pageGoals(page)[goal] ?? pageGoals(file)[goal])?.odds ?? null);
+  // The status pill of Your team reads the same board as the League board, so the card and its bar always agree.
+  const yourRow = (what.board ?? boardOf(sim)).find((team) => team.roster_id === you);
+  const pill = yourRow ? pillOf(yourRow, goal) : null;
+  const openCard = () => {
+    setCardOpen(true);
+    document
+      .getElementById("race-you")
+      ?.scrollIntoView({ behavior: off ? "auto" : "smooth", block: "start" });
   };
-  const week = typeof open === "number" ? what.weekOf(open) : undefined;
-  const chosen =
-    typeof open === "number" ? what.set.find((result) => result.week === open) : undefined;
 
   return (
-    <div className="gap-sp-3 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
+    <div className="gap-sp-4 px-gutter pt-sp-4 pb-sp-6 tablet:px-0 flex flex-col">
+      <header className="gap-sp-1 flex flex-col">
+        <h1 className="text-headline m-0 leading-none font-bold tracking-tight text-balance">
+          The Race
+        </h1>
+        <p className="text-meta text-mute m-0 tabular-nums">
+          {`After week ${sim.week} · ${file.weeks_left} weeks left`}
+        </p>
+      </header>
+      <GoalSwitch
+        goal={goal}
+        onGoal={setGoal}
+        spots={sim.parameters.playoff_spots}
+        bye={hasBye(sim)}
+      />
       <section
+        id="race-you"
         aria-label="Your team"
         aria-busy={what.pending}
-        className="gap-sp-3 flex w-full flex-col"
+        className="gap-sp-3 flex w-full scroll-mt-24 flex-col"
       >
-        <div className="gap-sp-3 flex items-center">
-          <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
-          <div className="min-w-0 flex-1">
-            <h1 className="text-stat m-0 leading-tight font-bold text-balance">{name}</h1>
-            <p className="text-meta text-mute m-0 tabular-nums">{`${recordText(file.record)} · ${file.weeks_left} weeks left`}</p>
-          </div>
-          <div className="flex flex-none flex-col items-end">
-            <SoftText
-              text={oddsText(page.playoff)}
-              className={cn(
-                "text-score justify-items-end font-mono leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
-                what.pending && "opacity-50",
-              )}
+        <Collapsible
+          open={cardOpen}
+          onOpenChange={setCardOpen}
+          className="rounded-card border-ink bg-card flex min-w-0 flex-col border-2"
+        >
+          <CollapsibleTrigger
+            className={cn(
+              PRESS,
+              "group rounded-card px-sp-3 py-sp-3 gap-sp-3 flex w-full items-center text-left",
+            )}
+          >
+            <PhotoFrame src={avatars[String(you)] ?? null} name={name} size="md" decorative />
+            <span className="gap-sp-1 flex min-w-0 flex-1 flex-col">
+              <span className={cn(LABEL, "text-mute")}>Your team</span>
+              <span className="text-lead leading-tight font-bold text-pretty">{name}</span>
+              <span className="gap-x-sp-2 gap-y-sp-1 flex flex-wrap items-center">
+                {pill && <StatusPill pill={pill} />}
+                <span className="text-meta text-mute tabular-nums">{recordText(file.record)}</span>
+              </span>
+            </span>
+            <span className="flex flex-none flex-col items-end">
+              <span data-goal-odds={oddsText(goalOdds)} className="flex">
+                <SoftText
+                  text={oddsText(goalOdds)}
+                  className={cn(
+                    "text-score text-accent-ink justify-items-end font-mono leading-none font-bold tabular-nums transition-opacity duration-150 ease-out",
+                    what.pending && "opacity-50",
+                  )}
+                />
+              </span>
+              <span className={cn(LABEL, "pt-sp-1 text-mute")}>{`${goalShort(goal)} odds`}</span>
+            </span>
+            <ChevronDown
+              aria-hidden
+              className="text-mute size-5 flex-none transition-transform duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] group-data-[open]:-scale-y-100 motion-reduce:transition-none"
             />
-            <span className={cn(LABEL, "pt-sp-1 text-mute")}>Playoff odds</span>
-          </div>
-        </div>
-        <LadderSheet
-          page={page}
-          medianGame={sim.parameters.median_game}
-          sentence={
-            <SoftText
-              text={page.sentence}
-              className={cn(
-                "transition-opacity duration-150 ease-out",
-                what.pending && "opacity-50",
+          </CollapsibleTrigger>
+          <CollapsiblePanel>
+            <div className="gap-sp-3 px-sp-3 pb-sp-4 flex flex-col">
+              <section aria-labelledby="race-finish-title" className="gap-sp-2 flex flex-col">
+                <div className="gap-sp-1 flex flex-col">
+                  <h2
+                    id="race-finish-title"
+                    className="text-lead m-0 leading-tight font-bold text-balance"
+                  >
+                    {`Your odds of ${goalName(goal)} by final record`}
+                  </h2>
+                  {goal === "spot" && (
+                    <SoftText
+                      text={page.sentence}
+                      className={cn(
+                        "text-body transition-opacity duration-150 ease-out",
+                        what.pending && "opacity-50",
+                      )}
+                    />
+                  )}
+                  <p className="text-meta text-mute m-0 text-pretty">
+                    {sim.parameters.median_game
+                      ? "Your game and the median each count. Tap a record to see what you need."
+                      : "Tap a record to see what you need."}
+                  </p>
+                </div>
+                <div
+                  className={cn(
+                    "-mx-sp-2 transition-opacity duration-150 ease-out",
+                    what.pending && "opacity-50",
+                  )}
+                >
+                  <FinishList
+                    key={goal}
+                    sim={sim}
+                    finishes={finishes}
+                    winsLeft={page.wins_left}
+                    goal={goal}
+                    mine
+                    onTry={what.chooseAll}
+                  />
+                </div>
+              </section>
+              {card !== null && (
+                <WeekCard
+                  sim={sim}
+                  card={card}
+                  goal={goal}
+                  status={(pageGoals(page)[goal] ?? pageGoals(file)[goal])?.status ?? "open"}
+                  scoreToBeat={page.score_to_beat.find((beat) => beat.week === card.week)}
+                  set={what.set}
+                  pending={what.pending}
+                  onChoose={(choice) => what.choose(card.week, choice)}
+                />
               )}
-            />
-          }
-        />
+
+              <SimButtons week={nextWeek} waiting={what.pending} onAsk={setReplay} />
+            </div>
+          </CollapsiblePanel>
+        </Collapsible>
         <SetLine set={what.set} onReset={what.reset} />
         {what.down && (
           <p role="status" className="text-meta text-mute m-0 text-pretty">
@@ -224,47 +334,28 @@ function RegularSimPage({
         )}
       </section>
 
-      <WeekSwitch
-        items={items}
-        open={open}
-        onOpen={openItem}
-        setWeeks={what.set.map((result) => result.week)}
+      <LeagueBoard
+        sim={sim}
+        board={what.board ?? undefined}
+        you={you}
+        goal={goal}
+        onYou={openCard}
+        onOther={setOther}
       />
-
-      <motion.div
-        key={String(open)}
-        initial={
-          side === 0
-            ? false
-            : off
-              ? { opacity: 0 }
-              : { opacity: 0, x: side * 8, filter: "blur(3px)" }
+      <TeamSheet
+        sim={sim}
+        team={other}
+        goal={goal}
+        onClose={() => setOther(null)}
+        onYou={
+          onYou &&
+          ((id) => {
+            setOther(null);
+            onYou(id);
+          })
         }
-        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-        transition={off ? { duration: 0.15 } : ENTER}
-      >
-        {week !== undefined ? (
-          <WeekPage
-            sim={sim}
-            week={week}
-            chosen={chosen ?? null}
-            onChoose={(choice) => what.choose(week.week, choice)}
-          />
-        ) : (
-          <PlayoffsPage
-            sim={sim}
-            page={page}
-            team={(what.runs?.teams ?? sim.teams)[you]}
-            onOpen={openItem}
-          />
-        )}
-      </motion.div>
-
-      <SimButtons
-        week={typeof open === "number" ? open : null}
-        waiting={what.pending}
-        onAsk={setReplay}
       />
+
       {replay !== null && (
         <SimStage
           sim={sim}
@@ -280,8 +371,8 @@ function RegularSimPage({
   );
 }
 
-/* The two buttons of the replay, in the flow under the week page and never fixed over content. The Playoffs page and
-   the playoff weeks have only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
+/* The two buttons of the replay, in the flow under the week card and never fixed over content. The playoff weeks have
+   only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
 function SimButtons({
   week,
   waiting,

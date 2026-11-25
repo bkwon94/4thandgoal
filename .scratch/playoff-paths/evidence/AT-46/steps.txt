@@ -1,0 +1,17 @@
+Instrument: Playwright WebKit (webkit-2370 of the site's @playwright/test), through the scripts evidence/site-set-b/run.mjs and evidence/site-set-b/lib.mjs. The runner pnpm evidence takes Chromium and the widths 375, 768, and 1280, and it builds into the shared apps/site/out, so this round uses its own script.
+Built from: ce601c12, in a detached worktree of that commit in the session scratch folder, because the background make check builds the site in the Spec worktree. The worktree got a copy of each changed file under clients/ of the Spec worktree (the rebuilt cpc week-11 and norcal week-10 sim.json and topics.json, the cpc week-11 history files, and clients/cpc/build/2026/week-10/sim.json).
+Build: CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:8291 pnpm build in apps/site. Nothing listens on 8291, so the build never calls the production API. The only call to it is GET /clients/cpc/eggs/board, which fails with "Could not connect to the server."; that is the console error in readings.txt.
+Playoff fixture build (AT-51): the same build with packages/sim/site/fixtures/week-sim-playoffs.json copied over clients/cpc/published/2026/week-11/sim.json, so the sim page reads it as the newest week sim. The file was copied back after the build.
+Server: evidence/site-set-b/serve.mjs. The cpc export on http://127.0.0.1:4291 and the playoff fixture export on http://127.0.0.1:4292. A folder gives index.html. A missing path gives 404.html with the status 404.
+Sizes: 390x660 (iPhone 15, touch, mobile), 810x980 and 1080x740 (iPad, touch), 1280x800. Themes: light and dark through cpc.theme.
+Local storage of each fresh context, written before each load: cpc.theme, cpc.your-team = 6 (Bo Girds, the key YOUR_TEAM_KEY of packages/analyzer/site/lib/your-team.ts), cpc.tour-seen = 1, cpc.announcement.the-race-2026 = seen, and cpc.announcement.season-sim-2026 = seen, unless the steps below say otherwise.
+Shot: a scroll pass down and back, a wait of 1.2 s, then a full-page screenshot.
+Overlap check: overlapCheck() in lib.mjs, output in overlap.txt. 1: no text line box overlaps a text line box of another element by more than 2 px each way, with each fixed or sticky part hidden (the rule of findOverlap in e2e/smoke.ts). While a modal layer shows, only its texts count. 2: no fixed or sticky bar covers the center of a text box at the top of the page or at the end of the page. 3: the page does not scroll sideways.
+Network log: each request, response, and failed request of the context to a host other than the local export.
+Command: node evidence/site-set-b/run.mjs <AT-n ...>
+
+Steps of AT-46:
+For each size and theme, one fresh context with a route that aborts each request to https://api.sleeper.app/ (blockedbyclient):
+1. Open /2026/week-11/. Wait for network idle, 0.8 s, and 3.5 s (past the 3 s limit of the wait for Sleeper). Count the names and the words error, Error, went wrong, and try again in the visible text. Take week-11-<size>-<theme>.png and run the overlap check.
+2. Open /2026/week-10/, whose published files hold "Puka Deez...". Do the same and take week-10-<size>-<theme>.png.
+3. Write the page errors and console errors to readings.txt and the network log to network.txt.

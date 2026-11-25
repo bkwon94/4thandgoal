@@ -1,29 +1,31 @@
 /**
- * The Announcement of the season sim on the home page: the general Announcement with the art of the sim. It reads Your
+ * The Announcement of The Race on the home page: the general Announcement with the League board as art. It reads Your
  * team from local storage at load and at the load beat, and opens only for a team of the week sim file kept at load.
  */
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Announcement } from "@cpc/design/parts/announcement";
 import type { PreviewData } from "@cpc/sim/announcement/preview";
 import { SimPreview } from "@cpc/sim/announcement/sim-preview";
 import { getYourTeam } from "@/app/front-door/your-team-store";
 import { useAnnouncement } from "@/app/use-announcement";
 
-/* The release is the merge day of the spec, Thursday 2026-11-19, as Brian set. The Announcement stops 1 week later,
-   from the start of 2026-11-26 in the time of the manager. */
+/* The release is the build day of the playoff-paths spec, Tuesday 2026-11-24, so the Announcement shows from the merge.
+   It stops 1 week later, from the start of 2026-12-01 in the time of the manager. A new id shows it also in a browser
+   that saw the season sim Announcement. */
 export const SIM_ANNOUNCEMENT = {
-  id: "season-sim-2026",
-  release: "2026-11-19",
-  stops: "2026-11-26",
+  id: "the-race-2026",
+  release: "2026-11-24",
+  stops: "2026-12-01",
 } as const;
 
+/* The line is a call the spec records for review (PRD of playoff-paths, Further Notes, call 3). */
 const COPY = {
-  eyebrow: "New: Season sim",
-  title: "See your path to the playoffs",
-  line: "Pick this week's results and watch your playoff odds move.",
-  follow: "Open the sim",
+  eyebrow: "New: The Race",
+  title: "The Race is on",
+  line: "See what you need each week, and who to root for.",
+  follow: "Open The Race",
   dismiss: "Not now",
 };
 
@@ -54,12 +56,9 @@ export function SimAnnouncement({
     read: () => {
       if (keptAtLoad.current === null) return null;
       const kept = getYourTeam();
-      return kept !== null && data.table.some((row) => row.id === kept) ? kept : null;
+      return kept !== null && data.rows.some((row) => row.id === kept) ? kept : null;
     },
   });
-  // The art starts its automatic What-if once the sheet stops.
-  const [settled, setSettled] = useState(false);
-
   if (you === null) return null;
   return (
     <Announcement
@@ -67,10 +66,9 @@ export function SimAnnouncement({
       siteName={siteName}
       href={href}
       copy={COPY}
-      art={<SimPreview data={data} you={you} settled={settled} />}
+      art={<SimPreview data={data} you={you} />}
       onDismiss={dismiss}
       onFollow={follow}
-      onSettled={() => setSettled(true)}
     />
   );
 }

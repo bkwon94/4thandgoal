@@ -125,12 +125,39 @@ function cssValue(formula: Formula): string {
   return `color-mix(in srgb, ${cssVar(formula.mix)} ${formula.percent}%, ${cssVar(formula.over)})`;
 }
 
-/* The color declarations of one set: one CSS custom property per role. */
+/*
+ * The quiet tints of the status pill of The Race: green for Clinched, red for Out (decision 04 of playoff-paths). The brand
+ * has no green role, so every client takes the same pair in each set. Each ink sits on its own tint at 4.5 to 1 or more.
+ */
+export const STATUS_TINTS: Record<
+  SetName,
+  Record<"in-tint" | "in-ink" | "out-tint" | "out-ink", Hex>
+> = {
+  light: { "in-tint": "#e2f3e7", "in-ink": "#1a6532", "out-tint": "#fbe4e1", "out-ink": "#a52e25" },
+  dark: { "in-tint": "#16301f", "in-ink": "#8fd4a4", "out-tint": "#3a1a18", "out-ink": "#f2a59e" },
+};
+
+/* The ratio of each ink of the status pill on its own tint in one set: Clinched, then Out. */
+export function statusPairsOf(name: SetName): { text: string; surface: string; ratio: number }[] {
+  const tints = STATUS_TINTS[name];
+  return (["in", "out"] as const).map((status) => ({
+    text: `status-${status}-ink`,
+    surface: `status-${status}-tint`,
+    ratio: contrastRatio(hexToRgba(tints[`${status}-ink`]), hexToRgba(tints[`${status}-tint`])),
+  }));
+}
+
+/* The color declarations of one set: one CSS custom property per role, then the status tints. */
 function colorLines(brand: BrandFile, name: SetName): string[] {
   const formulas = formulasOf(brand, name);
-  return [...BASE_ROLES, ...DERIVED_ROLES].map(
-    (role) => `    --color-${TOKEN[role]}: ${cssValue(formulas[role])};`,
-  );
+  return [
+    ...[...BASE_ROLES, ...DERIVED_ROLES].map(
+      (role) => `    --color-${TOKEN[role]}: ${cssValue(formulas[role])};`,
+    ),
+    ...Object.entries(STATUS_TINTS[name]).map(
+      ([token, hex]) => `    --color-status-${token}: ${hex};`,
+    ),
+  ];
 }
 
 /*

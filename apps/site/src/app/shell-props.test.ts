@@ -46,12 +46,12 @@ describe("menuPages", () => {
     ]);
   });
 
-  it("gives the sim page a destination, Season sim (AT-50)", () => {
-    const links = { ...LINKS, sim: () => ({ label: "Season sim", href: "/sim/2026/" }) };
+  it("gives the sim page a destination, The Race, with the short label Race (AT-50)", () => {
+    const links = { ...LINKS, sim: () => ({ label: "The Race", href: "/sim/2026/" }) };
     const pages = menuPages([{ page: "home" }, { package: "sim" }], links, "/");
     expect(pages).toEqual([
       { kind: "home", label: "Home", short: "Home", href: "/" },
-      { kind: "sim", label: "Season sim", short: "Sim", href: "/sim/2026/" },
+      { kind: "sim", label: "The Race", short: "Race", href: "/sim/2026/" },
     ]);
   });
 

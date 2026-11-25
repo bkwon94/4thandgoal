@@ -1,0 +1,13 @@
+$ make -C apps/pipeline sim CLIENT=cpc WEEK=11 && env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-12/check.py
+uv run --exact --package cornerstone cornerstone sim --client cpc --season 2026 --week 11
+Uninstalled 10 packages in 57ms
+/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/pp-fix/clients/cpc/build/2026/week-11/sim.jsonfile: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+Bo Girds roster 6; 4-2 Finish ends [15, 13]; first Path [{'roster_id': 8, 'record': [15, 13]}] odds 94
+plan: 3 rows; any_order True; Try it odds 81
+week 12 vs Teez Nuts (roster 5): win, above the median; win 109, win_sure 127, median_score 107, median_sure 114; root for 2: Immaculate Concepcion beats Bengals Buddies -> 99%; Nico Collinsizer beats Omarion Himpton -> 98%
+  keys of the row: ['game', 'median', 'median_score', 'median_sure', 'opponent', 'root_for', 'week', 'win', 'win_sure']
+week 13 vs NFC Least (roster 4): win, above the median; win 102, win_sure 120, median_score 107, median_sure 114; root for 2: Bengals Buddies beats Omarion Himpton -> 97%; Unsolicited Dak Picks beats Teez Nuts -> 97%
+  keys of the row: ['game', 'median', 'median_score', 'median_sure', 'opponent', 'root_for', 'week', 'win', 'win_sure']
+week 14 vs Lil Fridge (roster 3): loss, below the median; win None, win_sure None, median_score None, median_sure None; root for 1: Immaculate Concepcion beats Omarion Himpton -> 98%
+  keys of the row: ['game', 'median', 'median_score', 'median_sure', 'opponent', 'root_for', 'week', 'win', 'win_sure']
+plan JSON: {"weeks": [{"week": 12, "opponent": 5, "game": "win", "median": "above", "root_for": [{"winner": 7, "loser": 2, "odds": 99}, {"winner": 10, "loser": 12, "odds": 98}], "win": 109, "win_sure": 127, "median_score": 107, "median_sure": 114}, {"week": 13, "opponent": 4, "game": "win", "median": "above", "root_for": [{"winner": 2, "loser": 12, "odds": 97}, {"winner": 11, "loser": 5, "odds": 97}], "win": 102, "win_sure": 120, "median_score": 107, "median_sure": 114}, {"week": 14, "opponent": 3, "game": "loss", "median": "below", "root_for": [{"winner": 7, "loser": 12, "odds": 98}], "win": null, "win_sure": null, "median_score": null, "median_sure": null}], "any_order": true, "odds": 81}

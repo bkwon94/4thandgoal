@@ -1,0 +1,145 @@
+Each request to a host other than the local export. The route aborts each request to https://api.sleeper.app/.
+
+== 390x660-light ==
+0.19s request GET https://gc.zgo.at/count.js
+0.27s response 200 https://gc.zgo.at/count.js
+0.50s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.55s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.55s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.56s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.56s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+8.43s request GET https://gc.zgo.at/count.js
+8.49s response 200 https://gc.zgo.at/count.js
+8.62s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+8.63s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.64s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+8.64s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.64s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+8.64s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 390x660-dark ==
+0.19s request GET https://gc.zgo.at/count.js
+0.27s response 200 https://gc.zgo.at/count.js
+0.52s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.57s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.57s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.57s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.57s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.58s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+8.43s request GET https://gc.zgo.at/count.js
+8.45s response 200 https://gc.zgo.at/count.js
+8.64s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+8.64s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.64s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+8.65s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.65s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+8.65s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 810x980-light ==
+0.18s request GET https://gc.zgo.at/count.js
+0.26s response 200 https://gc.zgo.at/count.js
+0.50s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.55s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.55s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.56s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.57s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.75s request GET https://gc.zgo.at/count.js
+7.82s response 200 https://gc.zgo.at/count.js
+7.96s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+7.96s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+7.96s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+7.97s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+7.97s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+7.97s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 810x980-dark ==
+0.17s request GET https://gc.zgo.at/count.js
+0.24s response 200 https://gc.zgo.at/count.js
+0.51s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.53s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.53s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.54s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.71s request GET https://gc.zgo.at/count.js
+7.77s response 200 https://gc.zgo.at/count.js
+7.90s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+7.92s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+7.92s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+7.92s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+7.92s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+7.92s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 1080x740-light ==
+0.17s request GET https://gc.zgo.at/count.js
+0.24s response 200 https://gc.zgo.at/count.js
+0.47s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.53s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.53s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.53s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.54s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.98s request GET https://gc.zgo.at/count.js
+8.04s response 200 https://gc.zgo.at/count.js
+8.16s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+8.18s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.18s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+8.18s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.18s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+8.19s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 1080x740-dark ==
+0.16s request GET https://gc.zgo.at/count.js
+0.24s response 200 https://gc.zgo.at/count.js
+0.53s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.54s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.54s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.55s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.55s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.55s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.99s request GET https://gc.zgo.at/count.js
+8.05s response 200 https://gc.zgo.at/count.js
+8.17s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+8.18s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.18s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+8.19s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.19s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+8.19s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 1280x800-light ==
+0.18s request GET https://gc.zgo.at/count.js
+0.26s response 200 https://gc.zgo.at/count.js
+0.51s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.56s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.56s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.56s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.57s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.97s request GET https://gc.zgo.at/count.js
+8.03s response 200 https://gc.zgo.at/count.js
+8.17s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+8.17s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.17s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+8.18s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.18s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+8.18s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+
+== 1280x800-dark ==
+0.17s request GET https://gc.zgo.at/count.js
+0.25s response 200 https://gc.zgo.at/count.js
+0.47s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+0.52s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.52s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+0.52s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+0.52s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+0.53s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board
+7.92s request GET https://gc.zgo.at/count.js
+7.98s response 200 https://gc.zgo.at/count.js
+8.10s request GET http://127.0.0.1:8291/clients/cpc/eggs/board
+8.12s request GET https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.12s request GET https://api.sleeper.app/v1/league/1386167364424318976/users
+8.12s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/rosters
+8.12s failed Blocked by Web Inspector https://api.sleeper.app/v1/league/1386167364424318976/users
+8.13s failed Could not connect to the server. http://127.0.0.1:8291/clients/cpc/eggs/board

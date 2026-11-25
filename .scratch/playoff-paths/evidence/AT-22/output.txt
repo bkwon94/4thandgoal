@@ -1,0 +1,5 @@
+$ python3 /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-22/check.py http://127.0.0.1:8093 clients/cpc/published/2026/week-11/sim.json
+POST http://127.0.0.1:8093/clients/cpc/sim/what-if {"you": 6, "set": []} -> 200, 142385 bytes
+file: clients/cpc/published/2026/week-11/sim.json (week 11)
+page keys: response ['finishes', 'goals', 'need', 'open_goal', 'playoff', 'playoffs', 'record', 'score_to_beat', 'sentence', 'status', 'week_card', 'weeks_left', 'wins_left', 'you']; file ['finishes', 'goals', 'need', 'open_goal', 'playoff', 'playoffs', 'record', 'score_to_beat', 'sentence', 'status', 'week_card', 'weeks_left', 'wins_left', 'you']
+JSON paths that differ between the response page and the file page: 0

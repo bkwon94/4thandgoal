@@ -1,0 +1,34 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-15/reading.py
+file: clients/cpc/build/2026/week-11/sim.json; ROOT_FOR_LIFT = 1
+other head-to-head games of week 12: 5: Lil Fridge vs NFC Least; Bengals Buddies vs Immaculate Concepcion; Nico Collinsizer vs Omarion Himpton; Maye d'force B with U vs Unsolicited Dak Picks; The Blue Tent vs 💿 🐑
+== result win above: Bo Girds at 68%; 5 rows; rows cover the 5 other games: True
+  Immaculate Concepcion wins -> 75%; Bengals Buddies wins -> 65%; lift 10; mark: matters
+  Nico Collinsizer wins -> 73%; Omarion Himpton wins -> 65%; lift 8; mark: matters
+  Unsolicited Dak Picks wins -> 70%; Maye d'force B with U wins -> 68%; lift 2; mark: matters
+  The Blue Tent wins -> 69%; 💿 🐑 wins -> 67%; lift 2; mark: matters
+  NFC Least wins -> 68%; Lil Fridge wins -> 68%; lift 0; mark: Doesn't matter
+== result win below: Bo Girds at 39%; 5 rows; rows cover the 5 other games: True
+  Immaculate Concepcion wins -> 41%; Bengals Buddies wins -> 37%; lift 4; mark: matters
+  Nico Collinsizer wins -> 41%; Omarion Himpton wins -> 37%; lift 4; mark: matters
+  💿 🐑 wins -> 39%; The Blue Tent wins -> 38%; lift 1; mark: matters
+  NFC Least wins -> 39%; Lil Fridge wins -> 39%; lift 0; mark: Doesn't matter
+  Unsolicited Dak Picks wins -> 39%; Maye d'force B with U wins -> 39%; lift 0; mark: Doesn't matter
+== result loss above: Bo Girds at 40%; 5 rows; rows cover the 5 other games: True
+  Nico Collinsizer wins -> 44%; Omarion Himpton wins -> 37%; lift 7; mark: matters
+  Immaculate Concepcion wins -> 43%; Bengals Buddies wins -> 37%; lift 6; mark: matters
+  The Blue Tent wins -> 42%; 💿 🐑 wins -> 37%; lift 5; mark: matters
+  Maye d'force B with U wins -> 41%; Unsolicited Dak Picks wins -> 37%; lift 4; mark: matters
+  Lil Fridge wins -> 40%; NFC Least wins -> 39%; lift 1; mark: matters
+== result loss below: Bo Girds at 15%; 5 rows; rows cover the 5 other games: True
+  Immaculate Concepcion wins -> 18%; Bengals Buddies wins -> 13%; lift 5; mark: matters
+  The Blue Tent wins -> 17%; 💿 🐑 wins -> 12%; lift 5; mark: matters
+  Nico Collinsizer wins -> 17%; Omarion Himpton wins -> 13%; lift 4; mark: matters
+  Maye d'force B with U wins -> 15%; Unsolicited Dak Picks wins -> 14%; lift 1; mark: matters
+  NFC Least wins -> 15%; Lil Fridge wins -> 15%; lift 0; mark: Doesn't matter
+rows marked Doesn't matter: 4
+Where the mark comes from, at head 5f26bcb0 (grep -n):
+19:    the page reads that from the two odds, so the file holds no flag for it."""
+33:const FLAT = 1;
+254:                    {row.odds - row.other < FLAT ? (
+205:/* The root-for list of one result: every other game with both results and their odds, a gray "Doesn't matter" on a game
+262:                          Doesn't matter

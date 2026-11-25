@@ -1,0 +1,60 @@
+
+> 4thandgoal-site@0.1.0 prebuild /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/site-b/wt/apps/site
+> node scripts/client-build.mjs
+
+(node:25839) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/site-b/wt/apps/site/src/lib/trades-closed.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/site-b/wt/apps/site/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> 4thandgoal-site@0.1.0 build /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/bbcae1c9-0e99-49c1-be38-1aefbd218ea6/scratchpad/site-b/wt/apps/site
+> next build
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.ts took 124ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 640ms
+  Running TypeScript ...
+  Finished TypeScript in 573ms ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/27) ...
+Error occurred prerendering page "/2026/week-11". Read more: https://nextjs.org/docs/messages/prerender-error
+Error [ZodError]: [
+  {
+    "expected": "int",
+    "format": "safeint",
+    "code": "invalid_type",
+    "path": [
+      "pages",
+      "6",
+      "week_card",
+      "goals",
+      "spot",
+      "root_for",
+      0,
+      2,
+      "odds"
+    ],
+    "message": "Invalid input: expected int, received number"
+  }
+]
+    at c (src/lib/data/published-file.ts:25:17)
+    at <unknown> (src/lib/data/published-file.ts:35:29)
+    at <unknown> (src/lib/data/sim-data.ts:54:10)
+    at D (src/app/_routes/sim/week-tile.tsx:17:15)
+    at <unknown> (src/app/_routes/week/page.tsx:55:49)
+    at Array.flatMap (<anonymous>)
+    at T (src/app/_routes/week/page.tsx:55:27)
+  23 |     );
+  24 |   }
+> 25 |   return schema.parse(data);
+     |                 ^
+  26 | }
+  27 |
+  28 | /* The parsed file, or null when the file is missing. A missing file is not an error: the site ships before the pipeline {
+  digest: '1828997054'
+}
+Export encountered an error on /(client)/[season]/[week]/page: /2026/week-11, exiting the build.
+⨯ Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

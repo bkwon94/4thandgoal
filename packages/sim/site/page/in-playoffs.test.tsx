@@ -5,7 +5,7 @@
 import "@cpc/design/ui/sheet-jsdom";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
-import { finalWeekSim, playoffsWeekSim, roundTwoWeekSim } from "../fixtures/sim";
+import { finalWeekSim, playoffsWeekSim, roundTwoWeekSim, weekElevenSim } from "../fixtures/sim";
 import { fakeWhatIfApi } from "../fixtures/what-if-api";
 import { whatIfApi } from "../lib/what-if-api";
 import type { WeekSim } from "../schema/sim-types";
@@ -29,6 +29,28 @@ const tile = (name: string) =>
   tiles().find((entry) => entry.querySelector("[data-result-name]")?.textContent === name)!;
 const noTiles = () => expect(screen.queryAllByRole("group", { name: "Results" })).toHaveLength(0);
 const setLine = () => screen.queryByRole("region", { name: "What-if" });
+
+describe("the playoff weeks (AT-51)", () => {
+  const goalSwitch = () => screen.queryAllByLabelText("Goal", { exact: true });
+  const board = () => screen.queryAllByRole("group", { name: /^League board/ });
+
+  it("shows the Goal switch and the League board in a regular week, so the queries below can find them", () => {
+    render(<SimPage sim={weekElevenSim} you={6} />);
+    expect(goalSwitch()).toHaveLength(1);
+    expect(board().length).toBeGreaterThan(0);
+  });
+
+  it.each([
+    ["after week 14", playoffsWeekSim],
+    ["after week 15", roundTwoWeekSim],
+    ["after the final", finalWeekSim],
+  ])("shows the bracket view %s, with no Goal switch and no League board", (_, sim) => {
+    render(<SimPage sim={sim} you={seed(sim, 1)} />);
+    expect(bracket()).toBeTruthy();
+    expect(goalSwitch()).toHaveLength(0);
+    expect(board()).toHaveLength(0);
+  });
+});
 
 describe("a team still in the playoffs", () => {
   it("sees its title odds, its game of the round, and two tiles with the odds after a win and a loss (AT-42)", () => {

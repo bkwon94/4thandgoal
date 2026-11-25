@@ -1,0 +1,60 @@
+$ env -u ANTHROPIC_API_KEY -u TYPESAFE_API_KEY uv run --quiet --exact --package cornerstone python /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/playoff-paths/.scratch/playoff-paths/evidence/AT-17/check.py
+file: clients/cpc/build/2026/week-11/sim.json (week 11, 10000 runs)
+week 12: 9024 sets of results
+Clinch lines of the board:
+  Lil Fridge: {"goal": "spot", "status": "in", "ways": [{"game": "win", "median": "above", "others": [{"kind": "game", "winner": 5, "loser": 6}], "chance": 19.7}, {"game": "win", "median": "above", "others": [{"kind": "median", "roster_id": 6, "median": "below"}], "chance": 17.8}, {"game": null, "median": "above", "others": [{"kind": "game", "winner": 5, "loser": 6}, {"kind": "median", "roster_id": 10, "median": "below"}, {"kind": "median", "roster_id": 12, "median": "below"}, {"kind": "median", "roster_id": 6, "median": "below"}], "chance": 3.0}, {"game": "win", "median": null, "others": [{"kind": "median", "roster_id": 10, "median": "below"}, {"kind": "median", "roster_id": 6, "median": "below"}, {"kind": "median", "roster_id": 12, "median": "below"}, {"kind": "game", "winner": 5, "loser": 6}], "chance": 2.4}]}
+  Bo Girds: {"goal": "bye", "status": "out", "ways": [{"game": "loss", "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}, {"kind": "game", "winner": 3, "loser": 4}, {"kind": "median", "roster_id": 9, "median": "above"}], "chance": 8.8}, {"game": "loss", "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}, {"kind": "median", "roster_id": 3, "median": "above"}, {"kind": "median", "roster_id": 9, "median": "above"}], "chance": 8.8}]}
+  Immaculate Concepcion: {"goal": "spot", "status": "out", "ways": [{"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 1, "median": "above"}, {"kind": "median", "roster_id": 8, "median": "above"}, {"kind": "median", "roster_id": 5, "median": "above"}], "chance": 5.8}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 1, "median": "above"}, {"kind": "game", "winner": 5, "loser": 6}, {"kind": "median", "roster_id": 8, "median": "above"}], "chance": 5.6}]}
+  Immaculate Concepcion: {"goal": "bye", "status": "out", "ways": [{"game": "loss", "median": null, "others": [], "chance": 61.6}, {"game": null, "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}], "chance": 47.0}, {"game": null, "median": "below", "others": [{"kind": "median", "roster_id": 9, "median": "above"}], "chance": 41.2}, {"game": null, "median": "below", "others": [{"kind": "median", "roster_id": 1, "median": "above"}], "chance": 39.1}, {"game": null, "median": "below", "others": [{"kind": "median", "roster_id": 8, "median": "above"}], "chance": 35.6}, {"game": null, "median": null, "others": [{"kind": "median", "roster_id": 9, "median": "above"}, {"kind": "game", "winner": 3, "loser": 4}, {"kind": "game", "winner": 9, "loser": 11}], "chance": 31.7}, {"game": null, "median": null, "others": [{"kind": "median", "roster_id": 9, "median": "above"}, {"kind": "median", "roster_id": 3, "median": "above"}, {"kind": "game", "winner": 9, "loser": 11}], "chance": 29.3}, {"game": null, "median": "below", "others": [{"kind": "game", "winner": 5, "loser": 6}], "chance": 26.9}]}
+  Maye d'force B with U: {"goal": "spot", "status": "in", "ways": [{"game": "win", "median": "above", "others": [{"kind": "game", "winner": 5, "loser": 6}, {"kind": "median", "roster_id": 10, "median": "below"}, {"kind": "median", "roster_id": 12, "median": "below"}, {"kind": "median", "roster_id": 6, "median": "below"}], "chance": 2.4}]}
+  Nico Collinsizer: {"goal": "bye", "status": "out", "ways": [{"game": "loss", "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}], "chance": 31.3}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 9, "median": "above"}], "chance": 28.0}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 1, "median": "above"}], "chance": 25.4}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 8, "median": "above"}], "chance": 23.8}, {"game": "loss", "median": null, "others": [{"kind": "median", "roster_id": 9, "median": "above"}, {"kind": "game", "winner": 3, "loser": 4}, {"kind": "game", "winner": 9, "loser": 11}], "chance": 19.0}, {"game": null, "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}, {"kind": "game", "winner": 3, "loser": 4}, {"kind": "median", "roster_id": 9, "median": "above"}], "chance": 18.4}, {"game": null, "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}, {"kind": "median", "roster_id": 3, "median": "above"}, {"kind": "median", "roster_id": 9, "median": "above"}], "chance": 18.3}, {"game": "loss", "median": null, "others": [{"kind": "median", "roster_id": 9, "median": "above"}, {"kind": "median", "roster_id": 3, "median": "above"}, {"kind": "game", "winner": 9, "loser": 11}], "chance": 17.5}]}
+  Omarion Himpton: {"goal": "bye", "status": "out", "ways": [{"game": "loss", "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}], "chance": 19.0}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 9, "median": "above"}], "chance": 17.0}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 1, "median": "above"}], "chance": 16.4}, {"game": "loss", "median": "below", "others": [{"kind": "median", "roster_id": 8, "median": "above"}], "chance": 14.8}, {"game": null, "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}, {"kind": "median", "roster_id": 3, "median": "above"}, {"kind": "median", "roster_id": 9, "median": "above"}], "chance": 13.5}, {"game": null, "median": "below", "others": [{"kind": "game", "winner": 9, "loser": 11}, {"kind": "game", "winner": 3, "loser": 4}, {"kind": "median", "roster_id": 9, "median": "above"}], "chance": 13.2}, {"game": "loss", "median": null, "others": [{"kind": "median", "roster_id": 9, "median": "above"}, {"kind": "game", "winner": 3, "loser": 4}, {"kind": "game", "winner": 9, "loser": 11}], "chance": 12.7}, {"game": "loss", "median": null, "others": [{"kind": "median", "roster_id": 9, "median": "above"}, {"kind": "median", "roster_id": 3, "median": "above"}, {"kind": "game", "winner": 9, "loser": 11}], "chance": 11.8}]}
+The Blue Tent            spot in: sets that give it 0; line none 
+The Blue Tent            spot out: sets that give it 0; line none 
+The Blue Tent            bye in: sets that give it 0; line none 
+The Blue Tent            bye out: sets that give it 0; line none 
+Bengals Buddies          spot in: sets that give it 0; line none 
+Bengals Buddies          spot out: sets that give it 0; line none 
+Bengals Buddies          bye in: sets that give it 0; line none 
+Bengals Buddies          bye out: sets that give it 0; line none 
+Lil Fridge               spot in: sets that give it 2368; line with 4 ways 
+Lil Fridge               spot out: sets that give it 0; line none 
+Lil Fridge               bye in: sets that give it 0; line none 
+Lil Fridge               bye out: sets that give it 0; line none 
+NFC Least                spot in: status already out now; line none
+NFC Least                spot out: status already out now; line none
+NFC Least                bye in: status already out now; line none
+NFC Least                bye out: status already out now; line none
+Teez Nuts                spot in: sets that give it 0; line none 
+Teez Nuts                spot out: sets that give it 0; line none 
+Teez Nuts                bye in: sets that give it 0; line none 
+Teez Nuts                bye out: sets that give it 0; line none 
+Bo Girds                 spot in: sets that give it 0; line none 
+Bo Girds                 spot out: sets that give it 0; line none 
+Bo Girds                 bye in: sets that give it 0; line none 
+Bo Girds                 bye out: sets that give it 736; line with 2 ways 
+Immaculate Concepcion    spot in: sets that give it 0; line none 
+Immaculate Concepcion    spot out: sets that give it 704; line with 2 ways 
+Immaculate Concepcion    bye in: sets that give it 0; line none 
+Immaculate Concepcion    bye out: sets that give it 6512; line with 8 ways 
+💿 🐑                      spot in: sets that give it 0; line none 
+💿 🐑                      spot out: sets that give it 0; line none 
+💿 🐑                      bye in: sets that give it 0; line none 
+💿 🐑                      bye out: sets that give it 0; line none 
+Maye d'force B with U    spot in: sets that give it 352; line with 1 ways 
+Maye d'force B with U    spot out: sets that give it 0; line none 
+Maye d'force B with U    bye in: sets that give it 0; line none 
+Maye d'force B with U    bye out: sets that give it 0; line none 
+Nico Collinsizer         spot in: sets that give it 0; line none 
+Nico Collinsizer         spot out: sets that give it 0; line none 
+Nico Collinsizer         bye in: sets that give it 0; line none 
+Nico Collinsizer         bye out: sets that give it 3636; line with 8 ways 
+Unsolicited Dak Picks    spot in: status already out now; line none
+Unsolicited Dak Picks    spot out: status already out now; line none
+Unsolicited Dak Picks    bye in: status already out now; line none
+Unsolicited Dak Picks    bye out: status already out now; line none
+Omarion Himpton          spot in: sets that give it 0; line none 
+Omarion Himpton          spot out: sets that give it 0; line none 
+Omarion Himpton          bye in: sets that give it 0; line none 
+Omarion Himpton          bye out: sets that give it 3636; line with 8 ways 
+ways checked 33; ways with a set that does not give the status 0; teams with a set and no line 0

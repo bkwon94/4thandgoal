@@ -51,6 +51,19 @@ async function doorOf(league: League, { sim = false } = {}) {
   return (await import("./front-door/door-page")).default;
 }
 
+/* The front door over cpc week 11, with the topics.json and the sim.json that the build writes, cut to the teams of
+   the tests: Bo Girds, In the hunt, and NFC Least, Out. */
+async function raceDoorOf(rosterId: number) {
+  const root = mkdtempSync(join(tmpdir(), "front-door-race-"));
+  roots.push(root);
+  cpSync(join(__dirname, "..", "fixtures", "race", "cpc", "public"), join(root, "public"), {
+    recursive: true,
+  });
+  spyOn(process, "cwd").mockReturnValue(root);
+  localStorage.setItem("cpc.your-team", String(rosterId));
+  return (await import("./front-door/door-page")).default;
+}
+
 /* Open "More", tap one Topic, and return the block of its Answer. */
 async function openBlock(topic: string, kind: string) {
   fireEvent.click(await screen.findByRole("button", { name: "More" }));
@@ -93,7 +106,7 @@ describe("the link of the standings ladder", () => {
     const Door = await doorOf("cpc", { sim: true });
     render(<Door />);
     const ladder = await openBlock("Playoff race", "ladder");
-    const link = within(ladder).getByRole("link", { name: "Open the season sim" });
+    const link = within(ladder).getByRole("link", { name: "Open The Race" });
     expect(link.getAttribute("href")).toBe("/sim/2026/");
   });
 
@@ -102,6 +115,38 @@ describe("the link of the standings ladder", () => {
     render(<Door />);
     const ladder = await openBlock("Playoff race", "ladder");
     expect(within(ladder).queryByRole("link")).toBeNull();
+  });
+});
+
+describe("the race Answer", () => {
+  it("shows the top 3 Finishes for a playoff spot, no pill In the hunt, and the link to The Race (AT-26)", async () => {
+    const Door = await raceDoorOf(BO_GIRDS.cpc);
+    render(<Door />);
+    const ladder = await openBlock("Playoff race", "ladder");
+    const finishes = within(
+      within(ladder).getByRole("list", { name: "Rest of season" }),
+    ).getAllByRole("listitem");
+    expect(finishes.map((row) => row.getAttribute("aria-label"))).toEqual([
+      "4-2, ends 15-13, 26% likely: 80% playoff odds",
+      "3-3, ends 14-14, 20% likely: 25% playoff odds",
+      "2-4, ends 13-15, 20% likely: 3% playoff odds",
+    ]);
+    expect(finishes[0].textContent).toContain("4-2");
+    expect(finishes[0].textContent).toContain("ends 15-13");
+    expect(finishes[0].textContent).toContain("80%");
+    expect(ladder.querySelector("[data-race-finishes]")!.textContent).toContain("Playoff odds48%");
+    expect(ladder.querySelector("[data-status-pill]")).toBeNull();
+    const link = within(ladder).getByRole("link", { name: "Open The Race" });
+    expect(link.getAttribute("href")).toBe("/sim/2026/");
+  });
+
+  it("shows the Out pill for a team that cannot reach a spot", async () => {
+    const Door = await raceDoorOf(4);
+    render(<Door />);
+    const ladder = await openBlock("Playoff race", "ladder");
+    const pill = ladder.querySelector("[data-status-pill]");
+    expect(pill?.getAttribute("data-status-pill")).toBe("out");
+    expect(pill?.textContent).toBe("Out");
   });
 });
 

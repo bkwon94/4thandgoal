@@ -1,0 +1,16 @@
+Reading of AT-32 (ce601c12 recording), from finishes.txt (390x660 light). Count of each copy in finishes.txt over the 8 runs:
+You're in whatever the others do.:        8
+No way in at this record.:        8
+BEST CHANCE:        8
+tapped 6-0: "6-0 · ends 17-11 · 9% likely | You're in whatever the others do."
+tapped 0-6: "0-6 · ends 11-17 · 4% likely | No way in at this record."
+tapped 3-3: "3-3 · ends 14-14 · 20% likely | BEST CHANCE | If 💿 🐑 ends 15-13 or worse and Omarion Himpton ends 14-14 or worse. | Happens 28% · you're in 45%."
+The case of each spot Finish of Bo Girds in clients/cpc/published/2026/week-11/sim.json (pages."6".finishes.spot). The pipeline sets "sure" at 99.5% or more and "none" under 0.5% (packages/sim/python/src/sim/paths.py lines 31 and 265), and "best" when no Path reaches 90% (lines 322-324):
+17-11 odds 99 case sure paths 0
+16-12 odds 99 case open paths 0
+15-13 odds 80 case paths paths 3
+14-14 odds 25 case best paths 1
+13-15 odds 3 case best paths 1
+12-16 odds 1 case none paths 0
+11-17 odds 1 case none paths 0
+So the 6-0 Finish (ends 17-11, case "sure", shown as "99%") reads "You're in whatever the others do."; the 0-6 Finish (ends 11-17, case "none", shown as "1%") reads "No way in at this record."; the 3-3 Finish (ends 14-14, case "best", 25%) shows "BEST CHANCE" over its one Path.

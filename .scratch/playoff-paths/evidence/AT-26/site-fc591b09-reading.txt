@@ -1,0 +1,7 @@
+Reading of AT-26 (site part) on fc591b09, from site-fc591b09-answer.txt and site-fc591b09-overlap.txt.
+Answer text (the same in all 8 runs): "Playoff race | PLAYOFF ODDS 48% | REST OF SEASON | 4-2 ends 15-13 26% likely 80% | 3-3 ends 14-14 20% likely 25% | 2-4 ends 13-15 20% likely 3% | ODDS W-L | 1 Lil Fridge 99% 15-7 | ... | 7 Bo Girds YOU 48% 11-11 | ... | 12 NFC Least 0% 5-17 | Open The Race | Read the full report".
+The row of Bo Girds holds the tag "YOU" and no pill. Link: text "Open The Race", href "/sim/2026/" in 8 of 8 runs.
+First tap: the Answer showed after the first tap in 8 of 8 runs (site-fc591b09-tries.txt).
+Checks: 8 full-page shots and 18 viewport shots, each with its check. Shots with an overlap: 0. Text boxes that show through a fixed or sticky bar: 0. Text covered by a bar in the page check: 0.
+"Playoff race" in the view1 shots: listed as "hidden" under <header Thread header> (sticky) in each run; the header background is rgb(244, 244, 244) in light and rgb(20, 20, 20) in dark.
+The edge of the bubble (not its text) lies 0.3 px below the header at 810x980 and 1.4 px below it at 1080x740 and 1280x800; see site-fc591b09-strip-edge.txt.
