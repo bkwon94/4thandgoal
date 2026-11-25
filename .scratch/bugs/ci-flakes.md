@@ -42,7 +42,7 @@ cpc: the scene came to rest 1764 ms after entry
 ```
 
 The fix writes the start time of each play to `data-scene-start`, and both tests measure from it. The floor of 1750 ms has no rounding now, because the entry and the rest read one clock. The fix commit also gives the poll of the slow-entry test gaps of 20 ms, so the throttle ends far before the rest. Without it, one run held the throttle late and read 1960 ms.
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The scrolled-up Thread test cannot find the "Your season" Topic on CI
 
