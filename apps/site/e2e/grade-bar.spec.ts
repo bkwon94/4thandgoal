@@ -76,7 +76,7 @@ test.afterAll(async () => {
 test.use({ viewport: { width: 390, height: 600 }, reducedMotion: "reduce" });
 
 /* Opens the analyzer in its first mode, Grade, with Your Team picked. The API answers from the fixtures. */
-async function openAnalyzer(page: Page) {
+async function openAnalyzer(page: Page, query = "") {
   await page.route(
     (url) => !["127.0.0.1", "localhost"].includes(url.hostname),
     (route) => route.abort(),
@@ -99,17 +99,14 @@ async function openAnalyzer(page: Page) {
     // Your Team of the front door, roster 2, so the form picks it for the first side.
     localStorage.setItem("cpc.your-team", "2");
   });
-  await page.goto(`${server.url}/analyze/`);
+  await page.goto(`${server.url}/analyze/${query}`);
 }
 
 /* Opens the analyzer in Find mode with Your Team picked and the finder showing its three cards. */
 async function openFinder(page: Page) {
-  await openAnalyzer(page);
-  // The analyzer opens in Grade mode. A reader taps "Find a trade" on the switch of the hero to show the finder.
-  await page
-    .getByRole("radiogroup", { name: "Mode" })
-    .getByRole("radio", { name: "Find a trade" })
-    .click();
+  // Find mode opens by its address, as in finder-ledger.spec.ts. A tap on the Mode switch before hydration is lost on a slow
+  // CI runner, so the page stayed in Grade mode and showed no "Find a Trade" button.
+  await openAnalyzer(page, "?mode=find");
   const find = page.getByRole("button", { name: "Find a Trade" });
   await expect(find).toBeVisible();
   await find.click();

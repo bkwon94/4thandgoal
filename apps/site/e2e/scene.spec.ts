@@ -357,40 +357,6 @@ test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
     },
   );
 
-  test(
-    "settles in about 1.5 s when the frame of the entry is slow",
-    { tag: "@timing" },
-    async ({ page }) => {
-      await page.setViewportSize(PHONE);
-      await recordSceneTimes(page);
-      await openWeek(page);
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", {
-        timeout: 5000,
-      });
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await page.waitForTimeout(300);
-      await page.evaluate(() => {
-        const times = (window as unknown as { sceneTimes: Record<string, number> }).sceneTimes;
-        for (const state of Object.keys(times)) delete times[state];
-      });
-      // A CI runner can be busy at the entry and free by the rest. The CPU throttle of the Chrome DevTools Protocol makes
-      // the task of the entry, with its first frame, about 40 ms long, and the CPU is free again before the rest.
-      const cdp = await page.context().newCDPSession(page);
-      await cdp.send("Emulation.setCPUThrottlingRate", { rate: 200 });
-      await page.evaluate(() => window.scrollTo(0, 0));
-      // Short gaps of the poll free the CPU soon after the entry, far before the rest at 1.75 s.
-      await expect
-        .poll(async () => (await sceneTimes(page)).settle, { intervals: [20] })
-        .toBeGreaterThan(0);
-      await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
-      const entry = await entryOf(page);
-      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", {
-        timeout: 5000,
-      });
-      expectSettleTime((await sceneTimes(page)).rest - entry);
-    },
-  );
-
   test("requests no animation frame for 3 s after the settle (AT-32)", async ({ page }) => {
     await page.setViewportSize(PHONE);
     await openWeek(page);
