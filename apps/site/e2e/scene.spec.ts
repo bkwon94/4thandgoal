@@ -131,6 +131,38 @@ const frameOf = (page: Page) =>
 const stateOf = (page: Page) => page.locator(CANVAS).getAttribute("data-scene-state");
 const labelOf = (page: Page) => page.locator(CANVAS).getAttribute("data-scene-label");
 
+/* The page records the first time of each state of the canvas, from the first load on. */
+async function recordSceneTimes(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const times: Record<string, number> = {};
+    (window as unknown as { sceneTimes: typeof times }).sceneTimes = times;
+    new MutationObserver((changes) => {
+      for (const change of changes) {
+        const state = (change.target as HTMLElement).dataset.sceneState;
+        if (state) times[state] ??= performance.now();
+      }
+    }).observe(document, { subtree: true, attributeFilter: ["data-scene-state"] });
+  });
+}
+
+const sceneTimes = (page: Page) =>
+  page.evaluate(() => (window as unknown as { sceneTimes: Record<string, number> }).sceneTimes);
+
+/* The time of the entry of the settle that plays now, as the scene reads it. The time of the first "settle" comes only
+   after the first frame, because a MutationObserver runs after the task that changes the state. */
+const entryOf = async (page: Page): Promise<number> =>
+  Number(await page.locator(CANVAS).getAttribute("data-scene-start"));
+
+/* The time from the entry to the rest is inside the designed time of the settle. */
+function expectSettleTime(settled: number): void {
+  console.log(`${CLIENT}: the scene came to rest ${Math.round(settled)} ms after entry`);
+  // The lights settle at 1.5 s and the lines draw by 1.75 s, so the scene is at rest at the check at 1.8 s. A frame can
+  // land a little late on a busy machine, so the upper bound has room. The entry and the rest read one clock, and the
+  // rest shows only after the scene reads 1750 ms on it, so the floor needs no room.
+  expect(settled).toBeGreaterThanOrEqual(1750);
+  expect(settled).toBeLessThan(2200);
+}
+
 const flares = SCENE.lights.flatMap((light, index) => (light.tone === "flare" ? [index] : []));
 const restLabel = SCENE.restIndex === null ? "" : SCENE.lights[SCENE.restIndex].label;
 const lastIndex = SCENE.lights.length - 1;
@@ -309,25 +341,11 @@ test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
     { tag: "@timing" },
     async ({ page }) => {
       await page.setViewportSize(PHONE);
-      // The page records the first time of each state of the canvas, from the first load on.
-      await page.addInitScript(() => {
-        const times: Record<string, number> = {};
-        (window as unknown as { sceneTimes: typeof times }).sceneTimes = times;
-        new MutationObserver((changes) => {
-          for (const change of changes) {
-            const state = (change.target as HTMLElement).dataset.sceneState;
-            if (state) times[state] ??= performance.now();
-          }
-        }).observe(document, { subtree: true, attributeFilter: ["data-scene-state"] });
-      });
+      await recordSceneTimes(page);
       await openWeek(page);
-      const times = () =>
-        page.evaluate(
-          () => (window as unknown as { sceneTimes: Record<string, number> }).sceneTimes,
-        );
-      await expect.poll(async () => (await times()).settle).toBeGreaterThan(0);
+      await expect.poll(async () => (await sceneTimes(page)).settle).toBeGreaterThan(0);
       // At 0.4 s after entry the lights are still on their way, so the frame is not the frame at rest.
-      const entry = (await times()).settle;
+      const entry = await entryOf(page);
       await page.waitForFunction((at) => performance.now() >= at + 400, entry);
       expect(await stateOf(page)).toBe("settle");
       const moving = await frameOf(page);
@@ -335,13 +353,41 @@ test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
         timeout: 5000,
       });
       expect(await frameOf(page)).not.toBe(moving);
-      const settled = (await times()).rest - entry;
-      console.log(`${CLIENT}: the scene came to rest ${Math.round(settled)} ms after entry`);
-      // The lights settle at 1.5 s and the lines draw by 1.75 s, so the scene is at rest at the check at 1.8 s. A frame can
-      // land a little late on a busy machine, so the upper bound has room. Frame timestamps carry sub-millisecond rounding,
-      // so the floor is rounded to whole milliseconds: a scene that settles on time can read 1749.7.
-      expect(Math.round(settled)).toBeGreaterThanOrEqual(1750);
-      expect(settled).toBeLessThan(2200);
+      expectSettleTime((await sceneTimes(page)).rest - entry);
+    },
+  );
+
+  test(
+    "settles in about 1.5 s when the frame of the entry is slow",
+    { tag: "@timing" },
+    async ({ page }) => {
+      await page.setViewportSize(PHONE);
+      await recordSceneTimes(page);
+      await openWeek(page);
+      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", {
+        timeout: 5000,
+      });
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(300);
+      await page.evaluate(() => {
+        const times = (window as unknown as { sceneTimes: Record<string, number> }).sceneTimes;
+        for (const state of Object.keys(times)) delete times[state];
+      });
+      // A CI runner can be busy at the entry and free by the rest. The CPU throttle of the Chrome DevTools Protocol makes
+      // the task of the entry, with its first frame, about 40 ms long, and the CPU is free again before the rest.
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send("Emulation.setCPUThrottlingRate", { rate: 200 });
+      await page.evaluate(() => window.scrollTo(0, 0));
+      // Short gaps of the poll free the CPU soon after the entry, far before the rest at 1.75 s.
+      await expect
+        .poll(async () => (await sceneTimes(page)).settle, { intervals: [20] })
+        .toBeGreaterThan(0);
+      await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
+      const entry = await entryOf(page);
+      await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", {
+        timeout: 5000,
+      });
+      expectSettleTime((await sceneTimes(page)).rest - entry);
     },
   );
 
