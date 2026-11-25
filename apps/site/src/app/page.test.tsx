@@ -467,6 +467,17 @@ describe("the Thread of Lil Fridge", () => {
     ).toBe("/2026/week-08/");
   });
 
+  it("gives the Thread header a solid page color, so no scrolled Answer shows through it (AT-26)", async () => {
+    localStorage.setItem("cpc.your-team", "3");
+    render(<HomePage />);
+    await openTopic("Week recap");
+    const classes = screen.getByRole("banner", { name: "Thread header" }).className.split(/\s+/);
+    // A see-through fill such as bg-page/90, or a blur that only frosts it, lets the user bubble show under Clear.
+    expect(classes).toContain("bg-page");
+    expect(classes.filter((name) => name.startsWith("bg-page/"))).toEqual([]);
+    expect(classes.filter((name) => name.startsWith("backdrop-"))).toEqual([]);
+  });
+
   it("keeps the Thread after a closed tab on the same day (AT-32)", async () => {
     onDay("2026-11-11T12:00:00");
     localStorage.setItem("cpc.your-team", "3");
