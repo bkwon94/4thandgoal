@@ -148,16 +148,18 @@ async function recordSceneTimes(page: Page): Promise<void> {
 const sceneTimes = (page: Page) =>
   page.evaluate(() => (window as unknown as { sceneTimes: Record<string, number> }).sceneTimes);
 
-/* The time of the entry of the settle that plays now. */
-const entryOf = async (page: Page): Promise<number> => (await sceneTimes(page)).settle;
+/* The time of the entry of the settle that plays now, as the scene reads it. The time of the first "settle" comes only
+   after the first frame, because a MutationObserver runs after the task that changes the state. */
+const entryOf = async (page: Page): Promise<number> =>
+  Number(await page.locator(CANVAS).getAttribute("data-scene-start"));
 
 /* The time from the entry to the rest is inside the designed time of the settle. */
 function expectSettleTime(settled: number): void {
   console.log(`${CLIENT}: the scene came to rest ${Math.round(settled)} ms after entry`);
   // The lights settle at 1.5 s and the lines draw by 1.75 s, so the scene is at rest at the check at 1.8 s. A frame can
-  // land a little late on a busy machine, so the upper bound has room. Frame timestamps carry sub-millisecond rounding,
-  // so the floor is rounded to whole milliseconds: a scene that settles on time can read 1749.7.
-  expect(Math.round(settled)).toBeGreaterThanOrEqual(1750);
+  // land a little late on a busy machine, so the upper bound has room. The entry and the rest read one clock, and the
+  // rest shows only after the scene reads 1750 ms on it, so the floor needs no room.
+  expect(settled).toBeGreaterThanOrEqual(1750);
   expect(settled).toBeLessThan(2200);
 }
 
@@ -376,7 +378,10 @@ test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
       const cdp = await page.context().newCDPSession(page);
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: 200 });
       await page.evaluate(() => window.scrollTo(0, 0));
-      await expect.poll(async () => (await sceneTimes(page)).settle).toBeGreaterThan(0);
+      // Short gaps of the poll free the CPU soon after the entry, far before the rest at 1.75 s.
+      await expect
+        .poll(async () => (await sceneTimes(page)).settle, { intervals: [20] })
+        .toBeGreaterThan(0);
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
       const entry = await entryOf(page);
       await expect(page.locator(CANVAS)).toHaveAttribute("data-scene-state", "rest", {
