@@ -31,6 +31,7 @@ from cornerstone_api.suggestion_wording import (
 )
 from cornerstone_api.trade_topics import TradeTopic, trade_key
 from cornerstone_api.trade_wording import option_keys
+from cornerstone_api.trades_closed import client_closed
 from league.jev_port import Jev, JevError
 from league.paths import week_label
 from league.ranks import recent_points_per_game, season_points_per_game
@@ -197,7 +198,9 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
     for topic in PERSONAL:
         facts[topic] = (await anyio.to_thread.run_sync(live.facts, topic, body.roster_id)).block["fact"]
     # The trade check has no weekly fact, so it stays in "More" only.
-    ideas = trade_ideas_fact(live.snapshot, body.roster_id)
+    # A closed client takes no trade, so it gets no trade_ideas fact and no sell_high fact, and no Jev call for the sell read.
+    closed = client_closed(served.client)
+    ideas = None if closed else trade_ideas_fact(live.snapshot, body.roster_id)
     if ideas is not None:
         facts["trade_ideas"] = ideas
     kickoffs = {}
@@ -209,8 +212,8 @@ async def suggestions(body: SuggestionsRequest, asker: ClientAsker, served: Serv
             kickoffs[START_SIT] = int(lineup.kickoff.timestamp() * 1000)
     team = live.snapshot.teams[body.roster_id].name
     try:
-        sell, sell_choice, sell_clear = await anyio.to_thread.run_sync(sell_high_fact, asker.jev, live,
-                                                                       body.roster_id)
+        sell, sell_choice, sell_clear = (None, {}, None) if closed else await anyio.to_thread.run_sync(
+            sell_high_fact, asker.jev, live, body.roster_id)
         if sell is not None:
             facts["sell_high"] = sell
         answers = await anyio.to_thread.run_sync(asker.jev.ask, lift_state(team, live.snapshot.week, facts),

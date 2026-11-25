@@ -54,10 +54,20 @@ function findStream(doc?: unknown) {
 }
 
 /* The page at the address of a link, with the passphrase stored and the teams answer queued. */
-function open(search: string, props: { finderOn?: boolean; lock?: number } = {}) {
+function open(
+  search: string,
+  props: { finderOn?: boolean; lock?: number; deadlineWeek?: boolean } = {},
+) {
   window.history.replaceState(null, "", `/analyze/${search}`);
   answer(200, TEAMS);
-  render(<Analyzer target={apiTarget} finderOn={props.finderOn ?? true} lock={props.lock} />);
+  render(
+    <Analyzer
+      target={apiTarget}
+      finderOn={props.finderOn ?? true}
+      lock={props.lock}
+      deadlineWeek={props.deadlineWeek ?? props.lock !== undefined}
+    />,
+  );
 }
 
 const modeSwitch = () => screen.getByRole("radiogroup", { name: "Mode" });
@@ -477,6 +487,13 @@ describe("The deadline eyebrow", () => {
     await waitFor(() => expect(eyebrow()).toBe("Trade Analyzer"));
     cleanup();
     open("");
+    await waitFor(() => expect(eyebrow()).toBe("Trade Analyzer"));
+  });
+
+  it("shows no eyebrow line for a client with a Lock and no Deadline week", async () => {
+    // 09:55:00 Eastern on Sat 2026-11-21, in the countdown window of the Lock.
+    at("2026-11-21T14:55:00Z");
+    open("", { lock: LOCK, deadlineWeek: false });
     await waitFor(() => expect(eyebrow()).toBe("Trade Analyzer"));
   });
 

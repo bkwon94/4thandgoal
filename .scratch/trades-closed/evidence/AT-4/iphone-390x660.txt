@@ -1,0 +1,2 @@
+AT-4 /analyze/?team=3&with=6&give=5045&get=8151 client cpc, WebKit devices["iPhone 15"], viewport 390x660, light theme, 2026-11-24T20:43:03.620Z
+at the end (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none

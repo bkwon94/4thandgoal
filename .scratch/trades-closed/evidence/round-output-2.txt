@@ -1,0 +1,38 @@
+The runner rounds of the re-record at c477cb22, in the Spec worktree, with ~/.secrets sourced and CORNERSTONE_RESULT_CACHE_DIR=<scratch>/cache/results.
+Round A started Tue Nov 24 2026 16:58:18 GMT-0500 (Eastern Standard Time): AT-11, AT-12, and AT-19. Its API log is round2-api.log.txt.
+Round B: AT-19 again, after a wait of 5000 ms was added before the "analyze" shot, so the teams load before the shot. Its API log is round3-api.log.txt. The AT-19 shots in evidence/AT-19 come from round B.
+
+== Round A
+$ pnpm --dir apps/site evidence trades-closed AT-11 AT-12 AT-19
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/apps/site
+> node scripts/evidence.mjs "trades-closed" "AT-11" "AT-12" "AT-19"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:54752, API http://127.0.0.1:54753, API log /var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/evidence-api-ikVOwm/api.log
+build cpc: 10.5 s
+AT-11 /2026/week-09/ cpc: 6 shots in 31.1 s
+AT-12 / cpc: 6 shots in 58.6 s
+build norcal: 9.0 s
+AT-19 / norcal: 12 shots in 58.8 s
+Total: 3 tests of trades-closed in 168.0 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:34:5 › the evidence of trades-closed (2.8m)
+
+  1 passed (2.9m)
+
+== Round B
+$ pnpm --dir apps/site evidence trades-closed AT-19
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/apps/site
+> node scripts/evidence.mjs "trades-closed" "AT-19"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:55160, API http://127.0.0.1:55161, API log /var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/evidence-api-IbYBQc/api.log
+build norcal: 5.6 s
+AT-19 / norcal: 12 shots in 89.0 s
+Total: 1 test of trades-closed in 94.6 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:34:5 › the evidence of trades-closed (1.6m)
+
+  1 passed (1.6m)

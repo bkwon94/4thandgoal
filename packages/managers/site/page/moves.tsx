@@ -89,13 +89,14 @@ function TradeSide({
 }
 
 /* The name of the other team of a trade, as a link to its manager page when the season has one.
-   The link is a full tap target, so it stands in a line of its own height and keeps the color of the label. */
+   The link is a full tap target, so it stands in a line of its own height and keeps the color of the label.
+   The touch width keeps a short name, such as two emoji, at the tap floor of 44px across too. */
 function TradeTeam({ name, href }: { name: string; href: string | null }) {
   if (href === null) return name;
   return (
     <a
       href={href}
-      className="min-h-touch inline-flex items-center text-inherit underline underline-offset-2"
+      className="min-h-touch min-w-touch inline-flex items-center text-inherit underline underline-offset-2"
     >
       {name}
     </a>

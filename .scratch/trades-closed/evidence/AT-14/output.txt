@@ -1,0 +1,25 @@
+AT-14: each trade route of cpc on the local evidence API of the branch at ad1c9015, started with:
+$ source ~/.secrets; CORNERSTONE_RESULT_CACHE_DIR=/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/cache/results make -C apps/api api-evidence API_PORT=18601 API_ORIGIN=http://127.0.0.1:18602
+Run at Tue Nov 24 2026 15:50:16 GMT-0500 (Eastern Standard Time)
+
+$ curl -sS -X POST http://127.0.0.1:18601/clients/cpc/analyze -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"season":2026,"sides":[{"roster_id":1,"gives":[{"player_id":"11584","to":3}]},{"roster_id":3,"gives":[{"player_id":"2449","to":1}]}],"asker":1}' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410
+$ curl -sS -X POST http://127.0.0.1:18601/clients/cpc/find -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"season":2026,"asker":1,"partner":3}' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410
+$ curl -sS -X POST http://127.0.0.1:18601/clients/cpc/trade-check -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"question":"is Bucky Irving for Stefon Diggs fair","roster_id":1}' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410
+$ curl -sS -X POST http://127.0.0.1:18601/clients/cpc/trade-ideas -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"roster_id":1}' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410
+$ curl -sS -X POST http://127.0.0.1:18601/clients/cpc/find-stream -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"season":2026,"asker":1,"partner":3}' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410
+$ curl -sS -X POST http://127.0.0.1:18601/clients/cpc/sell-high -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -d '{"roster_id":1}' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410
+$ curl -sS -X GET http://127.0.0.1:18601/clients/cpc/deadline/trades -H 'Content-Type: application/json' -H 'X-League-Passphrase: localtest' -w '\nHTTP status: %{http_code}\n'
+{"closed":true,"line":"The trade deadline has passed. Trades open again next season."}
+HTTP status: 410

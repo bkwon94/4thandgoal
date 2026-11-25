@@ -1,0 +1,4 @@
+AT-19 / client norcal, WebKit devices["iPhone 15"], viewport 390x660, light theme, 2026-11-24T22:03:47.151Z
+at shot "menu" (/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at shot "analyze" (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: <h3#_R_5p5jinpfiulb_> "Team Two gets" and <button> "Grade the Trade"
+at the end (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: <h3#_R_5p5jinpfiulb_> "Team Two gets" and <button> "Grade the Trade"

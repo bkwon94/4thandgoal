@@ -1,0 +1,32 @@
+$ source ~/.secrets; export CORNERSTONE_RESULT_CACHE_DIR=<scratch>/cache/results; pnpm --dir apps/site evidence trades-closed
+Started Tue Nov 24 2026 15:47:12 GMT-0500 (Eastern Standard Time) in the Spec worktree at ad1c9015.
+
+> 4thandgoal-site@0.1.0 evidence /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/apps/site
+> node scripts/evidence.mjs "trades-closed"
+
+
+Running 1 test using 1 worker
+
+site http://127.0.0.1:49361, API http://127.0.0.1:49362, API log /var/folders/bz/st0_2tgs66q70nd0m5w3gq3c0000gq/T/evidence-api-KRcHgm/api.log
+build cpc: 4.7 s
+AT-1 / cpc: 6 shots in 43.9 s
+AT-3 /analyze/ cpc: 6 shots in 13.7 s
+AT-4 /analyze/?team=3&with=6&give=5045&get=8151 cpc: 6 shots in 14.5 s
+AT-5 /analyze/?mode=find cpc: 6 shots in 14.3 s
+AT-6 / cpc: 6 shots in 40.1 s
+AT-7 / cpc: 6 shots in 45.2 s
+AT-8 / cpc: 6 shots in 82.1 s
+AT-9 / cpc: 6 shots in 33.2 s
+AT-10 / cpc: 12 shots in 61.4 s
+AT-11 /2026/week-10/ cpc: 6 shots in 19.5 s
+AT-12 / cpc: 6 shots in 57.9 s
+AT-13 /2026/managers/1/ cpc: 6 shots in 24.3 s
+build norcal: 6.4 s
+AT-19 / norcal: 12 shots in 58.7 s
+AT-20 / norcal: 12 shots in 58.9 s
+Total: 14 tests of trades-closed in 578.9 s
+  ✓  1 [evidence] › e2e/evidence.spec.ts:34:5 › the evidence of trades-closed (9.7m)
+
+  Slow test file: [evidence] › e2e/evidence.spec.ts (9.7m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (9.7m)

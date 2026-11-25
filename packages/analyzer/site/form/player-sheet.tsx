@@ -148,7 +148,7 @@ export function PlayerSheet({
                 <span className="flex min-w-0 flex-1 flex-col">
                   <b className="text-row truncate leading-tight font-bold">{player.name}</b>
                   <span className="text-meta text-mute">
-                    {player.position} {player.nfl_team}
+                    {player.position} {player.nfl_team ?? "FA"}
                     {goesTo !== undefined && ` · to ${goesTo}`}
                   </span>
                 </span>

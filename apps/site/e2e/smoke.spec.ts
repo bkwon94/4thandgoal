@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { buildEnv } from "./evidence";
 import { holdPort, startApi } from "./local-api";
 import { serveDir } from "./serve";
-import { addSteps, readFlows, routeOf, runSmoke } from "./smoke";
+import { addSteps, flowsOfBuild, readFlows, routeOf, runSmoke, tradesClosedOf } from "./smoke";
 
 // pnpm runs each script of the site in apps/site, so the repo root sits two folders up.
 const ROOT = join(process.cwd(), "..", "..");
@@ -62,8 +62,11 @@ test(`the smoke run of ${CLIENT}`, async () => {
       throw new Error(`build ${CLIENT} failed:\n${stdout ?? ""}${stderr ?? ""}`);
     }
     console.log(`build ${CLIENT}: ${((Date.now() - start) / 1000).toFixed(1)} s`);
+    // The build decides Trades closed, and it writes the value here. A closed build runs the closedSteps of a flow.
+    const closed = tradesClosedOf(join(process.cwd(), "src", "generated", "client-values.ts"));
+    console.log(`build ${CLIENT}: Trades ${closed ? "closed" : "open"}`);
     const { failures } = await runSmoke({
-      flows,
+      flows: flowsOfBuild(flows, closed),
       client: CLIENT,
       url: server.url,
       api: api.url,

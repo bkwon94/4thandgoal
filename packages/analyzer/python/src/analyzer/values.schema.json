@@ -19,6 +19,11 @@
       ],
       "default": null,
       "title": "Lock"
+    },
+    "deadline_week": {
+      "default": false,
+      "title": "Deadline Week",
+      "type": "boolean"
     }
   },
   "title": "AnalyzerValues",

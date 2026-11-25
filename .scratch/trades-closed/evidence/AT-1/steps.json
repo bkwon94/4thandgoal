@@ -1,0 +1,26 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "wait": "role=dialog[name=\"Which team is yours?\"] >> role=button[name=/^The Blue Tent/]"
+    },
+    {
+      "click": "role=dialog[name=\"Which team is yours?\"] >> role=button[name=/^The Blue Tent/]"
+    },
+    {
+      "wait": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]"
+    },
+    {
+      "click": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "click": "button[aria-label=\"Open the menu\"]:visible, h1:visible"
+    },
+    {
+      "wait": 1200
+    }
+  ]
+}

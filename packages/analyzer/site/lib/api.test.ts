@@ -116,6 +116,14 @@ describe("response parse", () => {
   });
 });
 
+describe("toErrorLine for a closed trade route", () => {
+  it("gives the line of the 410 body, as the API sends it with no detail key", async () => {
+    const line = "The trade deadline has passed. Trades open again next season.";
+    const error = await toApiError(Response.json({ closed: true, line }, { status: 410 }));
+    expect(toErrorLine(error, false, "timed out")).toEqual({ message: line });
+  });
+});
+
 describe("toErrorLine for a wrong body", () => {
   it("gives the plain line for a 502", () => {
     const line = toErrorLine(new ApiError(502, "wrong body"), false, "timed out");

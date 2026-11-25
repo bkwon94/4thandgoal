@@ -4,7 +4,7 @@
  */
 
 /* Open before the last hours, last-hours under 3 h to the Lock, closed from the Lock, and ended one day after the Lock.
-   Deadline week ends by itself, so no deploy turns the Deadline banner off. */
+   The banner shows only in open and last-hours. The eyebrow of the hero shows the passed line in closed and hides in ended. */
 export type DeadlinePhase = "open" | "last-hours" | "closed" | "ended";
 
 /* The phase, and the countdown with a tilde before the Lock. The tilde says the Lock is an estimate for the end of the

@@ -24,13 +24,24 @@ export type Flow = {
   globs: string[];
   route: string;
   steps: Step[];
+  // The steps of a build with Trades closed. The run uses them in place of "steps" then. A flow with none runs "steps" always.
+  closedSteps?: Step[];
   expected: string;
   claude: boolean;
   layout: boolean;
 };
 
 /* The keys of a flow, as the spec names them. Any other key is an error. */
-const KEYS = ["name", "globs", "route", "steps", "expected", "claude", "layout"] as const;
+const KEYS = [
+  "name",
+  "globs",
+  "route",
+  "steps",
+  "closedSteps",
+  "expected",
+  "claude",
+  "layout",
+] as const;
 
 /* One size of a smoke run: its name in the log, its browser, and its context. */
 type Size = {
@@ -163,7 +174,10 @@ export function readFlows(file: string): Flow[] {
       if (!(KEYS as readonly string[]).includes(key))
         throw new Error(`${at}: unknown key "${key}". The known keys are ${KEYS.join(", ")}.`);
     }
-    const { name, globs, route, steps, expected, claude, layout } = flow as Record<string, unknown>;
+    const { name, globs, route, steps, closedSteps, expected, claude, layout } = flow as Record<
+      string,
+      unknown
+    >;
     if (typeof name !== "string" || name === "" || names.has(name))
       throw new Error(`${at}: "name" must be a distinct name`);
     names.add(name);
@@ -188,6 +202,9 @@ export function readFlows(file: string): Flow[] {
       claude,
       layout,
       steps: checkSteps(`${at} "${name}"`, steps),
+      ...(closedSteps === undefined
+        ? {}
+        : { closedSteps: checkSteps(`${at} "${name}" closedSteps`, closedSteps) }),
     };
   });
 }
@@ -200,6 +217,25 @@ function checkSteps(at: string, steps: unknown): Step[] {
     checked.push(checkStep(`${at}: step ${index + 1} ${JSON.stringify(step)}`, step, checked)),
   );
   return checked;
+}
+
+/*
+ * Whether the build of the client has Trades closed. The client build writes the value into the generated client values, so
+ * the run reads that file and never the clock.
+ */
+export function tradesClosedOf(clientValuesFile: string): boolean {
+  const match = /"tradesClosed": (true|false)/.exec(readFileSync(clientValuesFile, "utf8"));
+  if (!match) throw new Error(`${clientValuesFile}: no tradesClosed value`);
+  return match[1] === "true";
+}
+
+/* The flows of a build. With Trades closed, a flow that has closedSteps runs them in place of its steps. */
+export function flowsOfBuild(flows: readonly Flow[], closed: boolean): Flow[] {
+  return flows.map(({ closedSteps, ...flow }) =>
+    closed && closedSteps
+      ? { ...flow, steps: closedSteps }
+      : { ...flow, ...(closedSteps ? { closedSteps } : {}) },
+  );
 }
 
 /*

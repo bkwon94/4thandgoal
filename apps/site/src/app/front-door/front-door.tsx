@@ -89,6 +89,7 @@ export function FrontDoor({
   personalHrefs = {},
   pages = [],
   askTarget,
+  tradesClosed = false,
 }: {
   siteName: string;
   week: number;
@@ -99,6 +100,8 @@ export function FrontDoor({
   // The pages of the Site answer, from the Menu of the build. Each ask sends them, so the route can answer about the site.
   pages?: SitePage[];
   askTarget: AskTarget;
+  // True for a build after the Lock of the client: the front door offers no trade Topic and no trade line.
+  tradesClosed?: boolean;
 }) {
   const off = useMotionOff();
   // The day and the opened Topics live in the browser, so the static page renders no Suggestion until it reads them.
@@ -165,7 +168,7 @@ export function FrontDoor({
     let live = true;
     fetchSuggestions(askTarget, passphrase, {
       roster_id: teamId,
-      order: dayOrder(day),
+      order: dayOrder(day, tradesClosed),
       opened: openedNow.current,
     })
       .then((suggestions) => live && setServed({ team: teamId, suggestions }))
@@ -173,7 +176,7 @@ export function FrontDoor({
     return () => {
       live = false;
     };
-  }, [teamId, day, askTarget, passphraseCount]);
+  }, [teamId, day, askTarget, passphraseCount, tradesClosed]);
 
   // The site asks the API whether the key of each personal and trade Answer of the Thread is still current. The check
   // costs nothing. It runs again only when the set of kept Answers changes. A trade Answer with no key never checks.
@@ -273,7 +276,8 @@ export function FrontDoor({
     ...Object.fromEntries(mine.map((answer) => [answer.topic, answer.fact])),
     ...servedNow?.facts,
   };
-  const picks = day === null ? [] : pickSuggestions(day, facts, opened, servedNow?.urgent ?? []);
+  const picks =
+    day === null ? [] : pickSuggestions(day, facts, opened, servedNow?.urgent ?? [], tradesClosed);
   const avatars = Object.fromEntries(teams.map((candidate) => [candidate.id, candidate.avatar]));
   const empty = thread.length === 0;
   const pinned = raised && empty;
@@ -490,7 +494,7 @@ export function FrontDoor({
           passphrase,
           route.closest,
         ));
-      put(id, itemOfRoute(route, question, team.id, answers));
+      put(id, itemOfRoute(route, question, team.id, answers, tradesClosed));
     } catch (error) {
       // A wrong passphrase opens the passphrase modal, and the question goes again in its place after a new one.
       if (error instanceof AskError && error.status === 401)
@@ -856,7 +860,7 @@ export function FrontDoor({
                     <Suggestions
                       picks={day === null ? null : picks}
                       facts={{
-                        ...TRADE_LINES,
+                        ...(tradesClosed ? {} : TRADE_LINES),
                         ...PERSONAL_LINES,
                         ...shownFacts(facts, servedNow?.kickoffs ?? {}),
                       }}
@@ -864,6 +868,7 @@ export function FrontDoor({
                       onMore={setMoreOpen}
                       onPick={(key) => open(key)}
                       askFirst={askFirst}
+                      tradesClosed={tradesClosed}
                     />
                   </motion.div>
                 ) : null}
@@ -929,7 +934,7 @@ export function FrontDoor({
         )}
       </AnimatePresence>
       {/* The Tour shows once per browser, while Your team is set and no team sheet and no passphrase modal shows. */}
-      <Tour ready={team !== null && !sheetOpen && passStep === null} />
+      <Tour ready={team !== null && !sheetOpen && passStep === null} tradesClosed={tradesClosed} />
     </>
   );
 }

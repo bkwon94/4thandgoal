@@ -893,6 +893,13 @@ describe("TradeForm", () => {
       "Too many requests. Try again in 12 seconds.",
     ],
     ["a 502", 502, { detail: "bad shape" }, {}, "The API sent an answer the site cannot read."],
+    [
+      "a 410 of a closed trade route (AT-15)",
+      410,
+      { closed: true, line: "The trade deadline has passed. Trades open again next season." },
+      {},
+      "The trade deadline has passed. Trades open again next season.",
+    ],
   ])(
     "shows Try Again under the line of toErrorLine on %s",
     async (_name, status, body, headers, line) => {

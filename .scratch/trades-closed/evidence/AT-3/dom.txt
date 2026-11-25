@@ -1,0 +1,30 @@
+AT-3: the DOM of the closed cpc /analyze/ page, read with agent-browser (Chromium).
+The build, in a detached scratch worktree of 26887283 (the head of the Spec branch): CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:18631 pnpm --dir apps/site build
+The generated client values of that build hold "tradesClosed": true. The export was served on http://127.0.0.1:18632 by a static server that answers a missing path with 404.html and status 404.
+Steps at each width: agent-browser set viewport <width> 900; open http://127.0.0.1:18632/analyze/; wait 1500; eval <the script>; snapshot.
+The script, run in the page:
+(()=>{const m=document.querySelector("main");const links=[...m.querySelectorAll("a")];const home=links.filter(a=>a.textContent.trim()==="Home"||a.getAttribute("aria-label")==="Home");const line="The trade deadline has passed. Trades open again next season.";const el=[...m.querySelectorAll("*")].find(e=>e.children.length===0&&e.textContent.trim()===line);return JSON.stringify({linksInMain:links.length,homeLinksInMain:home.length,homeHref:home.map(a=>a.getAttribute("href")),homeText:home.map(a=>a.textContent.trim()),lineElement:el?el.tagName.toLowerCase():null,lineVisible:el?!!(el.offsetWidth||el.offsetHeight):false,lineText:el?el.textContent.trim():null})})()
+Its fields: linksInMain is the count of a elements in main; homeLinksInMain is the count of those named Home; homeHref is the href attribute of each, as getAttribute("href") reads it; lineElement and lineText name the element that holds the line; lineVisible is true when that element has a size.
+
+== 375 x 900, Tue Nov 24 2026 17:51:25 GMT-0500 (Eastern Standard Time)
+The result of the script:
+{"linksInMain":1,"homeLinksInMain":1,"homeHref":["/"],"homeText":["Home"],"lineElement":"h1","lineVisible":true,"lineText":"The trade deadline has passed. Trades open again next season."}
+The accessibility snapshot, cut to main, the headings, and the links. A link above the line "- main" is in the top band, outside main:
+  - link "CORNERSTONE FANTASY FOOTBALL LEAGUE" [ref=e1]
+- main
+    - heading "The trade deadline has passed. Trades open again next season." [level=1, ref=e5]
+    - link "Home" [ref=e6]
+
+== 1280 x 900, Tue Nov 24 2026 17:51:30 GMT-0500 (Eastern Standard Time)
+The result of the script:
+{"linksInMain":1,"homeLinksInMain":1,"homeHref":["/"],"homeText":["Home"],"lineElement":"h1","lineVisible":true,"lineText":"The trade deadline has passed. Trades open again next season."}
+The accessibility snapshot, cut to main, the headings, and the links. A link above the line "- main" is in the top band, outside main:
+  - link "CORNERSTONE FANTASY FOOTBALL LEAGUE" [ref=e1]
+    - link "Home" [ref=e5]
+    - link "Week 10" [ref=e6]
+    - link "Power Rankings" [ref=e7]
+    - link "Season Sim" [ref=e8]
+    - link "Managers" [ref=e9]
+- main
+    - heading "The trade deadline has passed. Trades open again next season." [level=1, ref=e10]
+    - link "Home" [ref=e11]

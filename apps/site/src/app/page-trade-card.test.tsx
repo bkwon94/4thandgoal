@@ -9,6 +9,7 @@ import { readFixtureSite } from "@/fixtures/sites";
 import checkStream from "./front-door/fixtures/trade-check-card-stream.json";
 import ideasStream from "./front-door/fixtures/trade-ideas-card-stream.json";
 import HomePage from "./front-door/door-page";
+import { pinTradesOpen } from "../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the cpc data, as in page-trade.test.tsx. */
 beforeEach(() => readFixtureSite("cpc"));
@@ -80,6 +81,9 @@ afterEach(() => {
   fetchStub.mockReset();
   for (const list of Object.values(replies)) list.length = 0;
 });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the trade card of a Trade check", () => {
   it("shows the two sides with the points of each player, the tug bar, and closes with the Lean (AT-34)", async () => {

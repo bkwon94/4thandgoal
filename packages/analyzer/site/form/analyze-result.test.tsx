@@ -437,6 +437,22 @@ describe("AnalyzeResult", () => {
     expect(card.getByText("A.J. Brown")).toBeTruthy();
   });
 
+  it("shows FA for a player with a null nfl_team", () => {
+    const aiyuk = {
+      player_id: "6803",
+      name: "Brandon Aiyuk",
+      position: "WR",
+      nfl_team: null,
+      headshot: "https://cdn.test/6803.png",
+    };
+    const tradeSides = fixture.trade.sides.map((side, i) =>
+      i === 0 ? { ...side, gets: [...side.gets, aiyuk] } : side,
+    );
+    const doc = { ...fixture, trade: { ...fixture.trade, sides: tradeSides } };
+    const card = renderSwap(doc);
+    expect(card.getByText("WR · FA")).toBeTruthy();
+  });
+
   it("orders the sides by the asker, so the Lean and your side name the same team", () => {
     render(<AnalyzeResult doc={withAsker(12)} />);
     expect(screen.getByText("The read for Amon-Ra Dawg Your Team")).toBeTruthy();

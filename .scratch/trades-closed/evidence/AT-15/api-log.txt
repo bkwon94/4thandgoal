@@ -1,0 +1,16 @@
+The lines of the log of the local evidence API on 127.0.0.1:18601 (this round, started from the Spec worktree at c477cb22) that name /clients/cpc/analyze. Each pair (OPTIONS, then POST) is one press of Grade the Trade: 6 agent-browser presses, then the iPhone WebKit press.
+$ grep -n "/clients/cpc/analyze" <log>
+112:INFO:     127.0.0.1:55484 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+113:INFO:     127.0.0.1:55484 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+127:INFO:     127.0.0.1:55626 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+128:INFO:     127.0.0.1:55626 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+133:INFO:     127.0.0.1:55785 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+134:INFO:     127.0.0.1:55785 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+139:INFO:     127.0.0.1:56007 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+140:INFO:     127.0.0.1:56007 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+145:INFO:     127.0.0.1:56100 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+146:INFO:     127.0.0.1:56100 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+151:INFO:     127.0.0.1:56300 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+152:INFO:     127.0.0.1:56300 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone
+156:INFO:     127.0.0.1:56475 - "OPTIONS /clients/cpc/analyze HTTP/1.1" 200 OK
+157:INFO:     127.0.0.1:56475 - "POST /clients/cpc/analyze HTTP/1.1" 410 Gone

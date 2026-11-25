@@ -1,0 +1,159 @@
+AT-15: how each shot was made, with agent-browser (Chromium), because no runner verb covers a build with a different build clock.
+The build, in a detached scratch worktree of c477cb22: CLIENT=cpc BUILD_NOW=2026-11-21T09:55:00-05:00 NEXT_PUBLIC_API_URL=http://127.0.0.1:18601 pnpm --dir apps/site build
+The generated client values of that build hold "tradesClosed": false and "deadlineWeek": true, so the page is the trade form, as a page from before the close.
+The export apps/site/out was served on http://127.0.0.1:18602 by a static server that answers a missing path with 404.html and status 404.
+The local evidence API of the branch ran on 127.0.0.1:18601 with the real clock, after the CPC Lock. It was started from the Spec worktree at c477cb22 with:
+$ source ~/.secrets; CORNERSTONE_RESULT_CACHE_DIR=/private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/cache/results make -C apps/api api-evidence API_PORT=18601 API_ORIGIN=http://127.0.0.1:18602
+The trade: The Blue Tent (roster 1, Your Team) gets Stefon Diggs; Lil Fridge (Team Two) gets Bucky Irving.
+A ref such as @e12 comes from the snapshot just before the step; the regex names the element.
+The iPhone 15 check ran the same trade in Playwright WebKit with devices["iPhone 15"] at 390x660 (iphone-390x660.txt, after-iphone-390x660-light.png).
+
+session tc15b-375-light
+set viewport 375 900
+open http://127.0.0.1:18602/analyze/
+eval localStorage.setItem('cpc.theme','light')
+reload; wait 1500
+fill /textbox "PASSPHRASE"/i -> @e2: ✓ Done
+click /button "Continue"/ -> @e3: ✓ Done
+click /button "Pick Your Team"/ -> @e12: ✓ Done
+click /button "The Blue Tent/ -> @e3: ✓ Done
+click /button "Pick Team Two"/ -> @e13: ✓ Done
+click /button "Lil Fridge/ -> @e5: ✓ Done
+click /button "Add a player Your Team gets"/ -> @e16: ✓ Done
+click /checkbox "Stefon Diggs/ -> @e14: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+eval window.scrollTo(0, document.documentElement.scrollHeight); wait 600
+click /button "Add a player Team Two gets"/ -> @e18: ✓ Done
+click /checkbox "Bucky Irving/ -> @e12: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+click /button "Grade the Trade"/ -> @e9: ✓ Done
+wait 4000
+eval main text includes the closed line: true
+eval first line of main (the hero eyebrow): "THE TRADE DEADLINE HAS PASSED"
+eval scroll to the end; wait 1500; eval scroll to the top
+screenshot .scratch/trades-closed/evidence/AT-15/375-light.png --full: ✓ Screenshot saved to .scratch/trades-closed/evidence/AT-15/375-light.png
+
+session tc15b-375-dark
+set viewport 375 900
+open http://127.0.0.1:18602/analyze/
+eval localStorage.setItem('cpc.theme','dark')
+reload; wait 1500
+fill /textbox "PASSPHRASE"/i -> @e2: ✓ Done
+click /button "Continue"/ -> @e3: ✓ Done
+click /button "Pick Your Team"/ -> @e12: ✓ Done
+click /button "The Blue Tent/ -> @e3: ✓ Done
+click /button "Pick Team Two"/ -> @e13: ✓ Done
+click /button "Lil Fridge/ -> @e5: ✓ Done
+click /button "Add a player Your Team gets"/ -> @e16: ✓ Done
+click /checkbox "Stefon Diggs/ -> @e14: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+eval window.scrollTo(0, document.documentElement.scrollHeight); wait 600
+click /button "Add a player Team Two gets"/ -> @e18: ✓ Done
+click /checkbox "Bucky Irving/ -> @e12: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+click /button "Grade the Trade"/ -> @e9: ✓ Done
+wait 4000
+eval main text includes the closed line: true
+eval first line of main (the hero eyebrow): "THE TRADE DEADLINE HAS PASSED"
+eval scroll to the end; wait 1500; eval scroll to the top
+screenshot .scratch/trades-closed/evidence/AT-15/375-dark.png --full: ✓ Screenshot saved to .scratch/trades-closed/evidence/AT-15/375-dark.png
+
+session tc15b-768-light
+set viewport 768 900
+open http://127.0.0.1:18602/analyze/
+eval localStorage.setItem('cpc.theme','light')
+reload; wait 1500
+fill /textbox "PASSPHRASE"/i -> @e2: ✓ Done
+click /button "Continue"/ -> @e3: ✓ Done
+click /button "Pick Your Team"/ -> @e12: ✓ Done
+click /button "The Blue Tent/ -> @e3: ✓ Done
+click /button "Pick Team Two"/ -> @e13: ✓ Done
+click /button "Lil Fridge/ -> @e5: ✓ Done
+click /button "Add a player Your Team gets"/ -> @e16: ✓ Done
+click /checkbox "Stefon Diggs/ -> @e14: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+eval window.scrollTo(0, document.documentElement.scrollHeight); wait 600
+click /button "Add a player Team Two gets"/ -> @e18: ✓ Done
+click /checkbox "Bucky Irving/ -> @e12: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+click /button "Grade the Trade"/ -> @e9: ✓ Done
+wait 4000
+eval main text includes the closed line: true
+eval first line of main (the hero eyebrow): "THE TRADE DEADLINE HAS PASSED"
+eval scroll to the end; wait 1500; eval scroll to the top
+screenshot .scratch/trades-closed/evidence/AT-15/768-light.png --full: ✓ Screenshot saved to .scratch/trades-closed/evidence/AT-15/768-light.png
+
+session tc15b-768-dark
+set viewport 768 900
+open http://127.0.0.1:18602/analyze/
+eval localStorage.setItem('cpc.theme','dark')
+reload; wait 1500
+fill /textbox "PASSPHRASE"/i -> @e2: ✓ Done
+click /button "Continue"/ -> @e3: ✓ Done
+click /button "Pick Your Team"/ -> @e12: ✓ Done
+click /button "The Blue Tent/ -> @e3: ✓ Done
+click /button "Pick Team Two"/ -> @e13: ✓ Done
+click /button "Lil Fridge/ -> @e5: ✓ Done
+click /button "Add a player Your Team gets"/ -> @e16: ✓ Done
+click /checkbox "Stefon Diggs/ -> @e14: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+eval window.scrollTo(0, document.documentElement.scrollHeight); wait 600
+click /button "Add a player Team Two gets"/ -> @e18: ✓ Done
+click /checkbox "Bucky Irving/ -> @e12: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+click /button "Grade the Trade"/ -> @e9: ✓ Done
+wait 4000
+eval main text includes the closed line: true
+eval first line of main (the hero eyebrow): "THE TRADE DEADLINE HAS PASSED"
+eval scroll to the end; wait 1500; eval scroll to the top
+screenshot .scratch/trades-closed/evidence/AT-15/768-dark.png --full: ✓ Screenshot saved to .scratch/trades-closed/evidence/AT-15/768-dark.png
+
+session tc15b-1280-light
+set viewport 1280 900
+open http://127.0.0.1:18602/analyze/
+eval localStorage.setItem('cpc.theme','light')
+reload; wait 1500
+fill /textbox "PASSPHRASE"/i -> @e2: ✓ Done
+click /button "Continue"/ -> @e3: ✓ Done
+click /button "Pick Your Team"/ -> @e18: ✓ Done
+click /button "The Blue Tent/ -> @e3: ✓ Done
+click /button "Pick Team Two"/ -> @e19: ✓ Done
+click /button "Lil Fridge/ -> @e5: ✓ Done
+click /button "Add a player Your Team gets"/ -> @e22: ✓ Done
+click /checkbox "Stefon Diggs/ -> @e14: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+eval window.scrollTo(0, document.documentElement.scrollHeight); wait 600
+click /button "Add a player Team Two gets"/ -> @e24: ✓ Done
+click /checkbox "Bucky Irving/ -> @e12: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+click /button "Grade the Trade"/ -> @e15: ✓ Done
+wait 4000
+eval main text includes the closed line: true
+eval first line of main (the hero eyebrow): "THE TRADE DEADLINE HAS PASSED"
+eval scroll to the end; wait 1500; eval scroll to the top
+screenshot .scratch/trades-closed/evidence/AT-15/1280-light.png --full: ✓ Screenshot saved to .scratch/trades-closed/evidence/AT-15/1280-light.png
+
+session tc15b-1280-dark
+set viewport 1280 900
+open http://127.0.0.1:18602/analyze/
+eval localStorage.setItem('cpc.theme','dark')
+reload; wait 1500
+fill /textbox "PASSPHRASE"/i -> @e2: ✓ Done
+click /button "Continue"/ -> @e3: ✓ Done
+click /button "Pick Your Team"/ -> @e18: ✓ Done
+click /button "The Blue Tent/ -> @e3: ✓ Done
+click /button "Pick Team Two"/ -> @e19: ✓ Done
+click /button "Lil Fridge/ -> @e5: ✓ Done
+click /button "Add a player Your Team gets"/ -> @e22: ✓ Done
+click /checkbox "Stefon Diggs/ -> @e14: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+eval window.scrollTo(0, document.documentElement.scrollHeight); wait 600
+click /button "Add a player Team Two gets"/ -> @e24: ✓ Done
+click /checkbox "Bucky Irving/ -> @e12: ✓ Done
+click /button "Done/ -> @e4: ✓ Done
+click /button "Grade the Trade"/ -> @e15: ✓ Done
+wait 4000
+eval main text includes the closed line: true
+eval first line of main (the hero eyebrow): "THE TRADE DEADLINE HAS PASSED"
+eval scroll to the end; wait 1500; eval scroll to the top
+screenshot .scratch/trades-closed/evidence/AT-15/1280-dark.png --full: ✓ Screenshot saved to .scratch/trades-closed/evidence/AT-15/1280-dark.png

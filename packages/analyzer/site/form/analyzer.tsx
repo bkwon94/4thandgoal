@@ -48,15 +48,18 @@ function deadlineEyebrow(deadline: Deadline | null): ReactNode {
 }
 
 /* The API target, the finder flag, and the Lock come from the page, so the analyzer and the form under it import no
-   config. A client with no Lock has no Deadline week. The Lock is in epoch milliseconds. */
+   config. A client with no Lock, or with no deadlineWeek, has no Deadline week and no eyebrow. The Lock is in epoch
+   milliseconds. */
 export function Analyzer({
   target,
   finderOn,
   lock,
+  deadlineWeek = false,
 }: {
   target: ApiTarget;
   finderOn: boolean;
   lock?: number | null;
+  deadlineWeek?: boolean;
 }) {
   // Undefined until the effect reads storage. Local storage does not exist during the static build.
   const [passphrase, setPassphraseState] = useState<string | null | undefined>(undefined);
@@ -71,7 +74,7 @@ export function Analyzer({
   const [prefill, setPrefill] = useState<Sides | null>(null);
   // The half of the switch. A link of the Trade Wire names it in the query, so the effect reads it with the prefill.
   const [mode, setMode] = useState<AnalyzerMode>("grade");
-  const deadline = useDeadline(lock);
+  const deadline = useDeadline(deadlineWeek ? lock : null);
 
   useEffect(() => {
     setPassphraseState(getPassphrase());

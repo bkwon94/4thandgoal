@@ -132,7 +132,10 @@ export function itemOfRoute(
   question: string,
   yourTeam: number,
   answers: Record<number, DoorAnswer[]>,
+  tradesClosed = false,
 ): ThreadItem {
+  // With Trades closed, the front door offers no trade Topic, so the closest Topics of a miss and a cap leave them out.
+  const closest = tradesClosed ? route.closest.filter((key) => !TRADE_TOPICS[key]) : route.closest;
   switch (route.route) {
     case "topic": {
       const team = route.team ?? yourTeam;
@@ -155,21 +158,42 @@ export function itemOfRoute(
       // The stream of the free answer brings its own Suggestion after the check, so the route adds none here.
       return { kind: "free", question, result: null };
     case "miss":
-      return { kind: "miss", question, closest: route.closest };
+      return { kind: "miss", question, closest };
     case "refuse":
       return { kind: "note", question, line: REFUSE_LINE, topic: null, team: null, retry: false };
     case "cap":
       // The API writes the line of each cap, so the site never says a cause or a date that the API did not check.
-      return { kind: "cap", question, line: route.line ?? "", closest: route.closest };
+      return { kind: "cap", question, line: route.line ?? "", closest };
+    case "closed":
+      // The API writes the closed line, so the site never says a cause or a date that the API did not check.
+      return {
+        kind: "note",
+        question,
+        line: route.line ?? "",
+        topic: null,
+        team: null,
+        retry: false,
+      };
     case "site":
       // A site route with no page reads as a page that the client lacks, so the Thread shows the none case.
       return { kind: "site", question, page: route.page ?? MISSING_PAGE };
   }
 }
 
-/* The item of a failed call. A 429 says how long to wait. Each other failure is an error, never a miss, so it offers a
+/* The item of a failed call. A 410 with the closed line shows that line, with no retry. A 429 says how long to wait. Each other failure is an error, never a miss, so it offers a
    retry. The front door takes a wrong passphrase to the passphrase modal before it calls this. */
 export function itemOfError(error: unknown, question: string): ThreadItem {
+  // A page built before the Lock can still call a trade route. The API answers 410 with the closed line, so the page shows it.
+  if (error instanceof AskError && error.closedLine !== undefined) {
+    return {
+      kind: "note",
+      question,
+      line: error.closedLine,
+      topic: null,
+      team: null,
+      retry: false,
+    };
+  }
   if (error instanceof AskError && error.status === 429) {
     const wait = error.retryAfter
       ? `Try again in ${error.retryAfter} seconds.`

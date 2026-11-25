@@ -1,0 +1,4 @@
+iphone-390x660 light: browser clock fixed at 2026-11-23T20:00:00-05:00; Date in page: Mon Nov 23 2026 20:00:00 GMT-0500 (Eastern Standard Time)
+at shot "analyze" (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+at shot "menu" (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none
+/analyze/ at the end (/analyze/): scrollWidth 390, clientWidth 390, horizontal scroll: no; overlap of two text boxes: none

@@ -1302,7 +1302,7 @@ The page of the site that shows the letters of each manager in each egg word, th
 _Avoid_: Finders board, leaderboard, egg ledger, board (alone; that is the board score)
 
 **Deadline week**:
-The event of the trade deadline on the site of one client. It runs from its deploy until one day after the Lock, then it turns off by itself.
+The event of the trade deadline on the site of one client. It runs from its deploy until the Lock, then it turns off by itself. The value `deadline_week = true` under `[values.analyzer]` turns it on. A Lock alone does not.
 _Avoid_: Deadline event, trade week, promo
 
 **Lock**:
@@ -1310,8 +1310,12 @@ The time when Sleeper closes trades for the season, as one value in the client c
 _Avoid_: Deadline (alone), cutoff, close
 
 **Deadline banner**:
-The slim strip under the top band of each page during Deadline week. It counts down to the Lock with a tilde for the estimate, and a tap anywhere on it opens the Trade Wire. After the Lock it says that the trade deadline has passed.
+The slim strip under the top band of each page during Deadline week. It counts down to the Lock with a tilde for the estimate, and a tap anywhere on it opens the Trade Wire. It hides at the Lock.
 _Avoid_: Banner (alone), countdown bar, alert, announcement
+
+**Trades closed**:
+The state of a client after its Lock. Each trade tool is closed: the analyzer with its Finder, the Deadline banner and the Trade Wire, and the trade Topics of the front door. The trade history stays. A client with no Lock never has trades closed. Site copy says "The trade deadline has passed."
+_Avoid_: Trades off, locked, offseason, close (alone)
 
 **Trade Wire**:
 The live list of the trades that Sleeper accepts in the league during Deadline week, newest first, in a sheet that the Deadline banner opens.

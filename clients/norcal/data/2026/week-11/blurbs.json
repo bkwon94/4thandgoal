@@ -1,0 +1,684 @@
+{
+  "motw": {
+    "chapter": "motw",
+    "sentences": [
+      {
+        "text": "Davlionman beat the team above them 115.06 to 97.6 in an upset, and the lead never changed hands.",
+        "fact_ids": [
+          "M4.result",
+          "M4.upset",
+          "M4.lead"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "C.J. Stroud put up 27.46 and Jahmyr Gibbs added 27.8, and either one outscored the margin on his own.",
+        "fact_ids": [
+          "M4.swing.9758",
+          "M4.swing.9221"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Kayshon Boutte, a recent add, chipped in 12, while fellow pickup Kalif Raymond managed 2.4.",
+        "fact_ids": [
+          "M4.move.9504",
+          "M4.move.3634"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "A team called puurdygood started Kirk Cousins for 8.4, dead last among started QBs, then got a flat 0 from Rachaad White.",
+        "fact_ids": [
+          "M4.starter.1.1166",
+          "RANK.1166",
+          "M4.starter.1.8136"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "That loss snapped their winning streak, while the winners pushed their playoff odds from about 65% to 82% this week.",
+        "fact_ids": [
+          "M4.result",
+          "M4.impact"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "DJ Moore, Dallas Goedert and Boutte are all now listed Questionable.",
+        "fact_ids": [
+          "M4.inj.4983",
+          "M4.inj.5022",
+          "M4.inj.9504"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "game_changer": {
+    "chapter": "game_changer",
+    "sentences": [
+      {
+        "text": "Dak Prescott dropped 43.9 for VarsityBlue2, 22.94 over his projection.",
+        "fact_ids": [
+          "AW.game_changer",
+          "M5.starter.2.3294"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Hock Tua 💦 started the week 1st and still lost to a side sitting 10th, an upset.",
+        "fact_ids": [
+          "M5.result",
+          "M5.upset"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Without Dak, that is a loss: his 43.9 outscored the 40.44 margin on his own.",
+        "fact_ids": [
+          "M5.swing.3294",
+          "M5.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "No started quarterback outscored him this week.",
+        "fact_ids": [
+          "RANK.3294"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "He has now beaten his projection in 3 straight weeks.",
+        "fact_ids": [
+          "P.3294.trend"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "awards": {
+    "chapter": "awards",
+    "sentences": [
+      {
+        "text": "Dak Prescott swept Top Scorer and Game Changer for VarsityBlue2, putting up 43.9 and clearing his projection by 22.94.",
+        "fact_ids": [
+          "AW.top_scorer",
+          "AW.game_changer"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Skol Daddy got 8.1 from Ja'Marr Chase, the week's Underperformer, on the way to a 54.96-point loss.",
+        "fact_ids": [
+          "AW.underperformer",
+          "M1.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Bo Girds left Fernando Mendoza's 29.88 on the bench for MVB, and the recent add Ashton Jeanty still started and posted 27.9.",
+        "fact_ids": [
+          "AW.mvb",
+          "W.adds"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Jonah Coleman took Overachiever for BobBuckstein and finished first among every started running back.",
+        "fact_ids": [
+          "AW.overachiever",
+          "RANK.13345"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "position_leaders": {
+    "chapter": "position_leaders",
+    "sentences": [
+      {
+        "text": "Dak Prescott topped the started quarterbacks with 43.9 for VarsityBlue2.",
+        "fact_ids": [
+          "LEAD.QB.1"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Jonah Coleman led the running backs at 34.9 for BobBuckstein, on 77 percent of his team's carries.",
+        "fact_ids": [
+          "LEAD.RB.1",
+          "LEAD.RB.1.volume"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Hock Tua 💦 put Patrick Mahomes, George Pickens and Trey McBride among the position leaders and still took home no gold.",
+        "fact_ids": [
+          "LEAD.QB.2",
+          "LEAD.WR.2",
+          "LEAD.TE.3"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "CeeDee Lamb topped the receivers at 30.2, and Travis Kelce did the same for tight ends at 25.4.",
+        "fact_ids": [
+          "LEAD.WR.1",
+          "LEAD.TE.1"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 2,
+    "fallback": false
+  },
+  "recap_1": {
+    "chapter": "recap_1",
+    "sentences": [
+      {
+        "text": "Mitseeker5000 trailed after Thursday, then led by 72.9 after the early Sunday games and never let go in a 54.96-point win.",
+        "fact_ids": [
+          "M1.lead",
+          "M1.result"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Skol Daddy hit a season low with 0 from Brock Bowers, now listed Out with an ankle, and 5.7 from the new pickup Elic Ayomanor, while recent add Chimere Dike beat his projection for the other side.",
+        "fact_ids": [
+          "H.5.high",
+          "M1.starter.5.11604",
+          "M1.inj.11604",
+          "M1.move.12499",
+          "M1.move.12540"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "This week dropped the losers out of the playoff spots and snapped their winning streak, while the winners climbed to the top of the table.",
+        "fact_ids": [
+          "M1.impact"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_2": {
+    "chapter": "recap_2",
+    "sentences": [
+      {
+        "text": "The Mean Machine led after Thursday, then Bo Girds grabbed the lead in the early Sunday games and never gave it back, winning 145.04 to 75.1, a season low for the losers.",
+        "fact_ids": [
+          "M2.lead",
+          "M2.result",
+          "H.4.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Recent adds Ashton Jeanty and Justice Hill put up 27.9 and 17.6, and this side rose into the playoff spots this week.",
+        "fact_ids": [
+          "M2.move.12527",
+          "M2.move.5995",
+          "M2.impact"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "On the losing side, Juwan Johnson is now listed Questionable and Tyjae Spears is now listed on IR, and the skid keeps rolling.",
+        "fact_ids": [
+          "M2.inj.7002",
+          "M2.inj.9508",
+          "H.4.streak"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_3": {
+    "chapter": "recap_3",
+    "sentences": [
+      {
+        "text": "Jonah Coleman outscored the margin on his own with 34.9, and BobBuckstein, behind only after Thursday, won going away in an upset.",
+        "fact_ids": [
+          "M3.swing.13345",
+          "M3.result",
+          "M3.upset",
+          "M3.lead"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The recent adds flopped, with trade pickup Luther Burden III managing 3.3 and waiver pickup Bo Nix managing 14.5.",
+        "fact_ids": [
+          "M3.move.12519",
+          "M3.move.11563"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Breece Mode fell out of the playoff spots while the winners climbed, and Derrick Henry is now listed Questionable, as are Jalen Coker and Bhayshul Tuten, who were both hurt late in their games.",
+        "fact_ids": [
+          "M3.impact",
+          "M3.inj.3198",
+          "M3.inj.11646",
+          "M3.inj.12490",
+          "M3.hurt.11646",
+          "M3.hurt.12490"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_4": {
+    "chapter": "recap_4",
+    "sentences": [
+      {
+        "text": "Rachaad White went into the lineup for puurdygood after a Questionable tag on the final pre-game report and scored 0, part of a season-low 97.6.",
+        "fact_ids": [
+          "I.8136.pregame",
+          "M4.starter.1.8136",
+          "H.1.high"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Over in the upset, Davlionman got 12 from the new pickup Kayshon Boutte, while fellow recent add Kalif Raymond managed 2.4.",
+        "fact_ids": [
+          "M4.upset",
+          "M4.result",
+          "M4.move.9504",
+          "M4.move.3634"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The losing side's winning streak is over, and DJ Moore, Dallas Goedert and Boutte are all now listed Questionable.",
+        "fact_ids": [
+          "M4.result",
+          "M4.impact",
+          "M4.inj.4983",
+          "M4.inj.5022",
+          "M4.inj.9504"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_5": {
+    "chapter": "recap_5",
+    "sentences": [
+      {
+        "text": "VarsityBlue2 trailed after the early Sunday games, then flattened Hock Tua 💦 148.7 to 108.26 in an upset.",
+        "fact_ids": [
+          "M5.result",
+          "M5.upset",
+          "M5.lead"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Dak Prescott outscored the margin on his own with 43.9, so without him that is a loss, while the recent add Jordan Mason managed 4.7.",
+        "fact_ids": [
+          "M5.swing.3294",
+          "M5.result",
+          "M5.move.8408"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The losers slid out of the top spot, the winners stayed stuck below the cut, and Saquon Barkley and Sam LaPorta are now listed Questionable.",
+        "fact_ids": [
+          "M5.impact",
+          "S.10",
+          "M5.inj.4866",
+          "M5.inj.10859"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "recap_6": {
+    "chapter": "recap_6",
+    "sentences": [
+      {
+        "text": "kaiedmonds beat The Dart Side by 37.48, and the new pickup Justin Herbert was the top scorer for the winners with 26.44.",
+        "fact_ids": [
+          "M6.result",
+          "M6.move.6797",
+          "M6.top.9"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "Herbert is now listed Questionable with a concussion, and this side climbed into the playoff spots this week.",
+        "fact_ids": [
+          "M6.inj.6797",
+          "M6.impact"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "On the losing end, waiver pickup Cade Otton managed 1.8, and the 3-8 side stays stuck at the bottom of the standings.",
+        "fact_ids": [
+          "M6.result",
+          "M6.move.8111",
+          "M6.records",
+          "M6.impact"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "next_week": {
+    "chapter": "next_week",
+    "sentences": [
+      {
+        "text": "Bo Girds puts its win streak on the line against Skol Daddy in a revenge rematch, a shootout between top lineups with both sides near the cut.",
+        "fact_ids": [
+          "NX.5v7",
+          "NX.5v7.streak",
+          "NX.5v7.revenge",
+          "NX.5v7.shootout",
+          "NX.5v7.cut"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The side chasing revenge gets 60% playoff odds with a win and 12% with a loss.",
+        "fact_ids": [
+          "SW.5v7",
+          "NX.5v7.revenge"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The streak holders get 90% playoff odds with a win and 40% with a loss.",
+        "fact_ids": [
+          "SW.5v7",
+          "NX.5v7.streak"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The Mean Machine puts a 4-game losing streak on the line in a rematch with puurdygood, who sit near the cut.",
+        "fact_ids": [
+          "NX.1v4",
+          "NX.1v4.streak",
+          "NX.1v4.rematch",
+          "NX.1v4.cut"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The winners of the first meeting get 97% playoff odds with a win and 76% with a loss.",
+        "fact_ids": [
+          "SW.1v4",
+          "NX.1v4.rematch"
+        ],
+        "roster_id": null
+      },
+      {
+        "text": "The losing-streak side holds near 1% playoff odds either way.",
+        "fact_ids": [
+          "SW.1v4",
+          "NX.1v4.streak"
+        ],
+        "roster_id": null
+      }
+    ],
+    "attempt": 1,
+    "fallback": false
+  },
+  "rankings": {
+    "chapter": "rankings",
+    "sentences": [
+      {
+        "text": "Bo Girds climbs 3 places to the top, with the league's 1st-ranked scoring.",
+        "fact_ids": [
+          "PR.7"
+        ],
+        "roster_id": 7
+      },
+      {
+        "text": "The jump came off a 70-point beatdown of the 11th-place team.",
+        "fact_ids": [
+          "PR.7.why"
+        ],
+        "roster_id": 7
+      },
+      {
+        "text": "That's 3 straight wins, at 149.03 a week over the stretch.",
+        "fact_ids": [
+          "H.7.streak",
+          "H.7.trend"
+        ],
+        "roster_id": 7
+      },
+      {
+        "text": "Hock Tua 💦 lost by 40 and still climbed to 2nd.",
+        "fact_ids": [
+          "PR.8",
+          "PR.8.why"
+        ],
+        "roster_id": 8
+      },
+      {
+        "text": "With the easiest remaining schedule in the league, the playoff odds sit at 94%.",
+        "fact_ids": [
+          "ODDS.8",
+          "ODDS.8.why"
+        ],
+        "roster_id": 8
+      },
+      {
+        "text": "BobBuckstein jumps to 3rd from a spot outside the playoff picture.",
+        "fact_ids": [
+          "PR.3",
+          "S.7"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "A 23-point win made it 2 straight.",
+        "fact_ids": [
+          "PR.3.why",
+          "H.3.streak"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "The scoring has slipped below its season average lately, though.",
+        "fact_ids": [
+          "H.3.trend"
+        ],
+        "roster_id": 3
+      },
+      {
+        "text": "Mitseeker5000 owns 1st place in the standings yet sits only 4th here.",
+        "fact_ids": [
+          "PR.6"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "They put a 55-point beating on the 5th-place team and took over the top standing spot.",
+        "fact_ids": [
+          "PR.6.why"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "Results over the last 3 weeks rank just 8th.",
+        "fact_ids": [
+          "PR.6"
+        ],
+        "roster_id": 6
+      },
+      {
+        "text": "kaiedmonds climbs to 5th after a 37-point win.",
+        "fact_ids": [
+          "PR.9",
+          "PR.9.why"
+        ],
+        "roster_id": 9
+      },
+      {
+        "text": "They hold the last playoff spot and face the hardest remaining schedule in the league.",
+        "fact_ids": [
+          "S.6",
+          "ODDS.9.why"
+        ],
+        "roster_id": 9
+      },
+      {
+        "text": "Davlionman rockets up 3 places after a 17-point win.",
+        "fact_ids": [
+          "PR.10",
+          "PR.10.why"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "Scoring sits 9th, but a 7-4 record covers a lot of sins.",
+        "fact_ids": [
+          "PR.10",
+          "S.4"
+        ],
+        "roster_id": 10
+      },
+      {
+        "text": "puurdygood tumbles 5 places after a 17-point loss.",
+        "fact_ids": [
+          "PR.1",
+          "PR.1.why"
+        ],
+        "roster_id": 1
+      },
+      {
+        "text": "Last in schedule played, and still 3rd in the standings.",
+        "fact_ids": [
+          "PR.1"
+        ],
+        "roster_id": 1
+      },
+      {
+        "text": "Skol Daddy freefalls 7 places after a 55-point loss.",
+        "fact_ids": [
+          "PR.5",
+          "PR.5.why"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "Brutal week.",
+        "fact_ids": [],
+        "roster_id": 5
+      },
+      {
+        "text": "Playoff odds sit at 35%, with a projection below the season pace and only the 9th easiest remaining schedule.",
+        "fact_ids": [
+          "ODDS.5",
+          "ODDS.5.why"
+        ],
+        "roster_id": 5
+      },
+      {
+        "text": "VarsityBlue2 climbs 2 places off a 40-point win over the league's top team.",
+        "fact_ids": [
+          "PR.2",
+          "PR.2.why"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "Still 10th in the standings, with playoff odds around 1%.",
+        "fact_ids": [
+          "S.10",
+          "ODDS.2"
+        ],
+        "roster_id": 2
+      },
+      {
+        "text": "Breece Mode slides to 10th on a 2-game losing streak.",
+        "fact_ids": [
+          "PR.11",
+          "H.11.streak"
+        ],
+        "roster_id": 11
+      },
+      {
+        "text": "After a 23-point loss, they sit 9th in the standings.",
+        "fact_ids": [
+          "PR.11.why"
+        ],
+        "roster_id": 11
+      },
+      {
+        "text": "The scoring has sagged well under the season average lately.",
+        "fact_ids": [
+          "H.11.trend"
+        ],
+        "roster_id": 11
+      },
+      {
+        "text": "The Dart Side slips to 11th, last in both standing and scoring.",
+        "fact_ids": [
+          "PR.12"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "A 3-8 record leaves them 3 games below the cut.",
+        "fact_ids": [
+          "S.12"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "The recent scoring has at least edged above the season average.",
+        "fact_ids": [
+          "H.12.trend"
+        ],
+        "roster_id": 12
+      },
+      {
+        "text": "The Mean Machine holds 12th and has lost 4 straight.",
+        "fact_ids": [
+          "PR.4",
+          "H.4.streak"
+        ],
+        "roster_id": 4
+      },
+      {
+        "text": "The name promises menace, and the offense averages 92.71 a week over the last 3 weeks.",
+        "fact_ids": [
+          "H.4.trend"
+        ],
+        "roster_id": 4
+      }
+    ],
+    "attempt": 2,
+    "fallback": false
+  }
+}

@@ -12,8 +12,9 @@ import type { MenuLinks } from "@/lib/client-values";
 import "@cpc/design/ui/sheet-jsdom";
 import { DeadlineBanner } from "@cpc/analyzer/deadline/deadline-banner";
 import { apiTarget, finderOn } from "@/lib/config";
+import { clientValues } from "@/generated/client-values";
 import { BandPart } from "./_routes/eggs/band";
-import { shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
+import { deadlineStrip, shellProps, menuPages, pageTitle, takesEggs } from "./shell-props";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
    sets the folder, and the preload puts the real one back after each test. */
@@ -156,8 +157,10 @@ describe("shellProps of cpc", () => {
 
   it("puts the Deadline banner with the Lock of client.toml under the band during Deadline week, and none after it (AT-50)", () => {
     // Only `Date` is fixed. The real timers keep running.
+    const built = clientValues.tradesClosed;
     try {
       setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
+      clientValues.tradesClosed = false;
       const strip = shellProps().strip as ReactElement<{
         lock: number;
         api: unknown;
@@ -171,9 +174,33 @@ describe("shellProps of cpc", () => {
       expect(strip.props.api).toEqual(apiTarget);
       expect(strip.props.gradeHref).toBe("/analyze/?mode=grade");
       expect(strip.props.findHref).toBe(finderOn ? "/analyze/?mode=find" : null);
-      // A build one day after the Lock has no Deadline week, so its pages hold no banner.
-      setSystemTime(new Date("2026-11-25T00:00:00-05:00"));
+      // A build with trades closed holds no banner. No closed day follows the Lock.
+      clientValues.tradesClosed = true;
       expect(shellProps().strip).toBeNull();
+    } finally {
+      clientValues.tradesClosed = built;
+      setSystemTime();
+    }
+  });
+
+  it("decides the banner from the build value of Trades closed, not from the clock of the prerender (AT-50)", () => {
+    const lock = Date.parse("2026-11-24T00:00:00-05:00");
+    try {
+      // A build clock before the Lock gives the banner, even when the clock of the prerender is past the Lock.
+      setSystemTime(new Date("2026-11-25T09:00:00-05:00"));
+      expect(deadlineStrip(lock, true, false)).not.toBeNull();
+      // A build clock at the Lock gives no banner, even when the clock of the prerender is before the Lock.
+      setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
+      expect(deadlineStrip(lock, true, true)).toBeNull();
+    } finally {
+      setSystemTime();
+    }
+  });
+
+  it("puts no Deadline banner for a client with a Lock and no deadline_week (AT-20)", () => {
+    try {
+      setSystemTime(new Date("2026-11-21T09:55:00-05:00"));
+      expect(deadlineStrip(Date.parse("2026-11-24T00:00:00-05:00"), false)).toBeNull();
     } finally {
       setSystemTime();
     }

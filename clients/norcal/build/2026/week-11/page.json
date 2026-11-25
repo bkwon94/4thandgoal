@@ -1,0 +1,1276 @@
+{
+  "schema_version": 2,
+  "season": 2026,
+  "week": 11,
+  "dates": "Nov 19 – Nov 23, 2026",
+  "publish_date": "Tue Nov 24, 2026",
+  "teams": {
+    "1": {
+      "roster_id": 1,
+      "name": "puurdygood",
+      "owner": "puurdygood",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/15d8afe3bd93111eed3ba87289274be3",
+      "wins": 7,
+      "losses": 4,
+      "points_for": 1367.38
+    },
+    "2": {
+      "roster_id": 2,
+      "name": "VarsityBlue2",
+      "owner": "VarsityBlue2",
+      "avatar_url": null,
+      "wins": 4,
+      "losses": 7,
+      "points_for": 1265.24
+    },
+    "3": {
+      "roster_id": 3,
+      "name": "BobBuckstein",
+      "owner": "BobBuckstein",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/d55d1f7075eda01948318de4af616075",
+      "wins": 6,
+      "losses": 5,
+      "points_for": 1339.54
+    },
+    "4": {
+      "roster_id": 4,
+      "name": "The Mean Machine",
+      "owner": "ebashrr",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/aa3757d78d955308dd59f3e8f0279310",
+      "wins": 3,
+      "losses": 8,
+      "points_for": 1161.28
+    },
+    "5": {
+      "roster_id": 5,
+      "name": "Skol Daddy",
+      "owner": "CoachOpa",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cb4f8c1cd10932bd54300be0172da87",
+      "wins": 5,
+      "losses": 6,
+      "points_for": 1446.18
+    },
+    "6": {
+      "roster_id": 6,
+      "name": "Mitseeker5000",
+      "owner": "Mitseeker5000",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/1837a5892ccc37af990477480a82960a",
+      "wins": 7,
+      "losses": 4,
+      "points_for": 1474.02
+    },
+    "7": {
+      "roster_id": 7,
+      "name": "Bo Girds",
+      "owner": "bkwon",
+      "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+      "wins": 6,
+      "losses": 5,
+      "points_for": 1430.46
+    },
+    "8": {
+      "roster_id": 8,
+      "name": "Hock Tua 💦",
+      "owner": "JuJuCase",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cd4f84783fdf0a7fbe4459ff905eff1",
+      "wins": 7,
+      "losses": 4,
+      "points_for": 1465.64
+    },
+    "9": {
+      "roster_id": 9,
+      "name": "kaiedmonds",
+      "owner": "kaiedmonds",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/b3338675f635c2c1f42b469621d38ec6",
+      "wins": 6,
+      "losses": 5,
+      "points_for": 1404.76
+    },
+    "10": {
+      "roster_id": 10,
+      "name": "Davlionman",
+      "owner": "Davlionman",
+      "avatar_url": "https://sleepercdn.com/avatars/thumbs/693c46ffc5727c288cc43658a283eb71",
+      "wins": 7,
+      "losses": 4,
+      "points_for": 1325.98
+    },
+    "11": {
+      "roster_id": 11,
+      "name": "Breece Mode",
+      "owner": "smiddyj7",
+      "avatar_url": "https://sleepercdn.com/uploads/0875d8e398f7d5dc3c03b363eb9518ff.jpg",
+      "wins": 5,
+      "losses": 6,
+      "points_for": 1387.0
+    },
+    "12": {
+      "roster_id": 12,
+      "name": "The Dart Side",
+      "owner": "rgomes7",
+      "avatar_url": "https://sleepercdn.com/uploads/fbe9820cc44d4c8f2b27551b41d72bea.jpg",
+      "wins": 3,
+      "losses": 8,
+      "points_for": 1096.56
+    }
+  },
+  "pick": {
+    "reason": "Closest Finish",
+    "sides": [
+      {
+        "team": {
+          "roster_id": 10,
+          "name": "Davlionman",
+          "owner": "Davlionman",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/693c46ffc5727c288cc43658a283eb71",
+          "wins": 7,
+          "losses": 4,
+          "points_for": 1325.98
+        },
+        "score": 115.06,
+        "top": {
+          "player_id": "9221",
+          "name": "Jahmyr Gibbs",
+          "position": "RB",
+          "nfl_team": "DET",
+          "points": 27.8,
+          "projection": 23.36,
+          "season_avg": null,
+          "started": true,
+          "slot": "RB",
+          "injury_status": null,
+          "injury_body_part": null
+        },
+        "winner": true,
+        "loser": false
+      },
+      {
+        "team": {
+          "roster_id": 1,
+          "name": "puurdygood",
+          "owner": "puurdygood",
+          "avatar_url": "https://sleepercdn.com/avatars/thumbs/15d8afe3bd93111eed3ba87289274be3",
+          "wins": 7,
+          "losses": 4,
+          "points_for": 1367.38
+        },
+        "score": 97.6,
+        "top": {
+          "player_id": "4983",
+          "name": "DJ Moore",
+          "position": "WR",
+          "nfl_team": "BUF",
+          "points": 23.1,
+          "projection": 12.89,
+          "season_avg": null,
+          "started": true,
+          "slot": "FLEX",
+          "injury_status": "Questionable",
+          "injury_body_part": "Knee"
+        },
+        "winner": false,
+        "loser": true
+      }
+    ]
+  },
+  "motw": {
+    "matchup_id": 4,
+    "winner": 10,
+    "loser": 1,
+    "score_w": 115.06,
+    "score_l": 97.6,
+    "margin": 17.46,
+    "top_scorer": {
+      "1": {
+        "player_id": "4983",
+        "name": "DJ Moore",
+        "position": "WR",
+        "nfl_team": "BUF",
+        "points": 23.1,
+        "projection": 12.89,
+        "season_avg": null,
+        "started": true,
+        "slot": "FLEX",
+        "injury_status": "Questionable",
+        "injury_body_part": "Knee"
+      },
+      "10": {
+        "player_id": "9221",
+        "name": "Jahmyr Gibbs",
+        "position": "RB",
+        "nfl_team": "DET",
+        "points": 27.8,
+        "projection": 23.36,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    },
+    "drivers": [],
+    "swing": [
+      {
+        "player_id": "9221",
+        "name": "Jahmyr Gibbs",
+        "position": "RB",
+        "nfl_team": "DET",
+        "points": 27.8,
+        "projection": 23.36,
+        "season_avg": null,
+        "started": true,
+        "slot": "RB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "9758",
+        "name": "C.J. Stroud",
+        "position": "QB",
+        "nfl_team": "HOU",
+        "points": 27.46,
+        "projection": 20.5,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      {
+        "player_id": "11632",
+        "name": "Malik Nabers",
+        "position": "WR",
+        "nfl_team": "NYG",
+        "points": 18.5,
+        "projection": 15.95,
+        "season_avg": null,
+        "started": true,
+        "slot": "WR",
+        "injury_status": null,
+        "injury_body_part": null
+      }
+    ],
+    "bench_regret": [],
+    "recent_moves": [
+      {
+        "player_id": "3634",
+        "roster_id": 10,
+        "kind": "free_agent",
+        "week": 11,
+        "bid": null
+      },
+      {
+        "player_id": "9504",
+        "roster_id": 10,
+        "kind": "free_agent",
+        "week": 11,
+        "bid": null
+      }
+    ]
+  },
+  "game_changer": {
+    "award": {
+      "key": "game_changer",
+      "line": {
+        "player_id": "3294",
+        "name": "Dak Prescott",
+        "position": "QB",
+        "nfl_team": "DAL",
+        "points": 43.9,
+        "projection": 20.96,
+        "season_avg": null,
+        "started": true,
+        "slot": "QB",
+        "injury_status": null,
+        "injury_body_part": null
+      },
+      "roster_id": 2,
+      "matchup_id": 5,
+      "reason": "Dak Prescott scored 43.9 on a 20.96 projection, 22.94 over, in a 40.44-point win."
+    },
+    "team": "VarsityBlue2"
+  },
+  "awards": [
+    {
+      "title": "Top Scorer",
+      "missing": false,
+      "player": "Dak Prescott",
+      "player_id": "3294",
+      "points": 43.9,
+      "team": "VarsityBlue2",
+      "projection": null
+    },
+    {
+      "title": "MVB · Most Valuable Benchwarmer",
+      "missing": false,
+      "player": "Fernando Mendoza",
+      "player_id": "13269",
+      "points": 29.88,
+      "team": "Bo Girds",
+      "projection": null
+    },
+    {
+      "title": "Underperformer",
+      "missing": false,
+      "player": "Ja'Marr Chase",
+      "player_id": "7564",
+      "points": 8.1,
+      "team": "Skol Daddy",
+      "projection": 22.07
+    },
+    {
+      "title": "Overachiever",
+      "missing": false,
+      "player": "Jonah Coleman",
+      "player_id": "13345",
+      "points": 34.9,
+      "team": "BobBuckstein",
+      "projection": 17.44
+    }
+  ],
+  "leaders": [
+    {
+      "position": "QB",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Dak Prescott",
+          "player_id": "3294",
+          "nfl_team": "DAL",
+          "points": 43.9,
+          "team": "VarsityBlue2"
+        },
+        {
+          "rank": 2,
+          "player": "Patrick Mahomes",
+          "player_id": "4046",
+          "nfl_team": "KC",
+          "points": 30.96,
+          "team": "Hock Tua 💦"
+        },
+        {
+          "rank": 3,
+          "player": "Brock Purdy",
+          "player_id": "8183",
+          "nfl_team": "SF",
+          "points": 28.2,
+          "team": "The Mean Machine"
+        }
+      ]
+    },
+    {
+      "position": "RB",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Jonah Coleman",
+          "player_id": "13345",
+          "nfl_team": "DEN",
+          "points": 34.9,
+          "team": "BobBuckstein"
+        },
+        {
+          "rank": 2,
+          "player": "Ashton Jeanty",
+          "player_id": "12527",
+          "nfl_team": "LV",
+          "points": 27.9,
+          "team": "Bo Girds"
+        },
+        {
+          "rank": 3,
+          "player": "Jahmyr Gibbs",
+          "player_id": "9221",
+          "nfl_team": "DET",
+          "points": 27.8,
+          "team": "Davlionman"
+        }
+      ]
+    },
+    {
+      "position": "WR",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "CeeDee Lamb",
+          "player_id": "6786",
+          "nfl_team": "DAL",
+          "points": 30.2,
+          "team": "Bo Girds"
+        },
+        {
+          "rank": 2,
+          "player": "George Pickens",
+          "player_id": "8137",
+          "nfl_team": "DAL",
+          "points": 23.8,
+          "team": "Hock Tua 💦"
+        },
+        {
+          "rank": 3,
+          "player": "DJ Moore",
+          "player_id": "4983",
+          "nfl_team": "BUF",
+          "points": 23.1,
+          "team": "puurdygood"
+        }
+      ]
+    },
+    {
+      "position": "TE",
+      "rows": [
+        {
+          "rank": 1,
+          "player": "Travis Kelce",
+          "player_id": "1466",
+          "nfl_team": "KC",
+          "points": 25.4,
+          "team": "Mitseeker5000"
+        },
+        {
+          "rank": 2,
+          "player": "George Kittle",
+          "player_id": "4217",
+          "nfl_team": "SF",
+          "points": 18.4,
+          "team": "kaiedmonds"
+        },
+        {
+          "rank": 3,
+          "player": "Trey McBride",
+          "player_id": "8130",
+          "nfl_team": "ARI",
+          "points": 14.8,
+          "team": "Hock Tua 💦"
+        }
+      ]
+    }
+  ],
+  "trades": [],
+  "matchups": [
+    {
+      "id": 1,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 6,
+            "name": "Mitseeker5000",
+            "owner": "Mitseeker5000",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/1837a5892ccc37af990477480a82960a",
+            "wins": 7,
+            "losses": 4,
+            "points_for": 1474.02
+          },
+          "score": 140.66,
+          "top": {
+            "player_id": "1466",
+            "name": "Travis Kelce",
+            "position": "TE",
+            "nfl_team": "KC",
+            "points": 25.4,
+            "projection": 13.0,
+            "season_avg": null,
+            "started": true,
+            "slot": "TE",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 5,
+            "name": "Skol Daddy",
+            "owner": "CoachOpa",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cb4f8c1cd10932bd54300be0172da87",
+            "wins": 5,
+            "losses": 6,
+            "points_for": 1446.18
+          },
+          "score": 85.7,
+          "top": {
+            "player_id": "6770",
+            "name": "Joe Burrow",
+            "position": "QB",
+            "nfl_team": "CIN",
+            "points": 23.9,
+            "projection": 26.59,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Mitseeker5000 trailed after Thursday, then led by 72.9 after the early Sunday games and never let go in a 54.96-point win. Skol Daddy hit a season low with 0 from Brock Bowers, now listed Out with an ankle, and 5.7 from the new pickup Elic Ayomanor, while recent add Chimere Dike beat his projection for the other side. This week dropped the losers out of the playoff spots and snapped their winning streak, while the winners climbed to the top of the table."
+    },
+    {
+      "id": 2,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 7,
+            "name": "Bo Girds",
+            "owner": "bkwon",
+            "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+            "wins": 6,
+            "losses": 5,
+            "points_for": 1430.46
+          },
+          "score": 145.04,
+          "top": {
+            "player_id": "6786",
+            "name": "CeeDee Lamb",
+            "position": "WR",
+            "nfl_team": "DAL",
+            "points": 30.2,
+            "projection": 21.1,
+            "season_avg": null,
+            "started": true,
+            "slot": "WR",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 4,
+            "name": "The Mean Machine",
+            "owner": "ebashrr",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/aa3757d78d955308dd59f3e8f0279310",
+            "wins": 3,
+            "losses": 8,
+            "points_for": 1161.28
+          },
+          "score": 75.1,
+          "top": {
+            "player_id": "8183",
+            "name": "Brock Purdy",
+            "position": "QB",
+            "nfl_team": "SF",
+            "points": 28.2,
+            "projection": 17.68,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "The Mean Machine led after Thursday, then Bo Girds grabbed the lead in the early Sunday games and never gave it back, winning 145.04 to 75.1, a season low for the losers. Recent adds Ashton Jeanty and Justice Hill put up 27.9 and 17.6, and this side rose into the playoff spots this week. On the losing side, Juwan Johnson is now listed Questionable and Tyjae Spears is now listed on IR, and the skid keeps rolling."
+    },
+    {
+      "id": 3,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 3,
+            "name": "BobBuckstein",
+            "owner": "BobBuckstein",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/d55d1f7075eda01948318de4af616075",
+            "wins": 6,
+            "losses": 5,
+            "points_for": 1339.54
+          },
+          "score": 113.96,
+          "top": {
+            "player_id": "13345",
+            "name": "Jonah Coleman",
+            "position": "RB",
+            "nfl_team": "DEN",
+            "points": 34.9,
+            "projection": 17.44,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 11,
+            "name": "Breece Mode",
+            "owner": "smiddyj7",
+            "avatar_url": "https://sleepercdn.com/uploads/0875d8e398f7d5dc3c03b363eb9518ff.jpg",
+            "wins": 5,
+            "losses": 6,
+            "points_for": 1387.0
+          },
+          "score": 91.4,
+          "top": {
+            "player_id": "3198",
+            "name": "Derrick Henry",
+            "position": "RB",
+            "nfl_team": "BAL",
+            "points": 19.1,
+            "projection": 15.5,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": "Questionable",
+            "injury_body_part": "Concussion"
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "Jonah Coleman outscored the margin on his own with 34.9, and BobBuckstein, behind only after Thursday, won going away in an upset. The recent adds flopped, with trade pickup Luther Burden III managing 3.3 and waiver pickup Bo Nix managing 14.5. Breece Mode fell out of the playoff spots while the winners climbed, and Derrick Henry is now listed Questionable, as are Jalen Coker and Bhayshul Tuten, who were both hurt late in their games."
+    },
+    {
+      "id": 4,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 10,
+            "name": "Davlionman",
+            "owner": "Davlionman",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/693c46ffc5727c288cc43658a283eb71",
+            "wins": 7,
+            "losses": 4,
+            "points_for": 1325.98
+          },
+          "score": 115.06,
+          "top": {
+            "player_id": "9221",
+            "name": "Jahmyr Gibbs",
+            "position": "RB",
+            "nfl_team": "DET",
+            "points": 27.8,
+            "projection": 23.36,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 1,
+            "name": "puurdygood",
+            "owner": "puurdygood",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/15d8afe3bd93111eed3ba87289274be3",
+            "wins": 7,
+            "losses": 4,
+            "points_for": 1367.38
+          },
+          "score": 97.6,
+          "top": {
+            "player_id": "4983",
+            "name": "DJ Moore",
+            "position": "WR",
+            "nfl_team": "BUF",
+            "points": 23.1,
+            "projection": 12.89,
+            "season_avg": null,
+            "started": true,
+            "slot": "FLEX",
+            "injury_status": "Questionable",
+            "injury_body_part": "Knee"
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": true,
+      "recap": "Rachaad White went into the lineup for puurdygood after a Questionable tag on the final pre-game report and scored 0, part of a season-low 97.6. Over in the upset, Davlionman got 12 from the new pickup Kayshon Boutte, while fellow recent add Kalif Raymond managed 2.4. The losing side's winning streak is over, and DJ Moore, Dallas Goedert and Boutte are all now listed Questionable."
+    },
+    {
+      "id": 5,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 2,
+            "name": "VarsityBlue2",
+            "owner": "VarsityBlue2",
+            "avatar_url": null,
+            "wins": 4,
+            "losses": 7,
+            "points_for": 1265.24
+          },
+          "score": 148.7,
+          "top": {
+            "player_id": "3294",
+            "name": "Dak Prescott",
+            "position": "QB",
+            "nfl_team": "DAL",
+            "points": 43.9,
+            "projection": 20.96,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 8,
+            "name": "Hock Tua 💦",
+            "owner": "JuJuCase",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cd4f84783fdf0a7fbe4459ff905eff1",
+            "wins": 7,
+            "losses": 4,
+            "points_for": 1465.64
+          },
+          "score": 108.26,
+          "top": {
+            "player_id": "4046",
+            "name": "Patrick Mahomes",
+            "position": "QB",
+            "nfl_team": "KC",
+            "points": 30.96,
+            "projection": 23.36,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "VarsityBlue2 trailed after the early Sunday games, then flattened Hock Tua 💦 148.7 to 108.26 in an upset. Dak Prescott outscored the margin on his own with 43.9, so without him that is a loss, while the recent add Jordan Mason managed 4.7. The losers slid out of the top spot, the winners stayed stuck below the cut, and Saquon Barkley and Sam LaPorta are now listed Questionable."
+    },
+    {
+      "id": 6,
+      "sides": [
+        {
+          "team": {
+            "roster_id": 9,
+            "name": "kaiedmonds",
+            "owner": "kaiedmonds",
+            "avatar_url": "https://sleepercdn.com/avatars/thumbs/b3338675f635c2c1f42b469621d38ec6",
+            "wins": 6,
+            "losses": 5,
+            "points_for": 1404.76
+          },
+          "score": 129.84,
+          "top": {
+            "player_id": "6797",
+            "name": "Justin Herbert",
+            "position": "QB",
+            "nfl_team": "LAC",
+            "points": 26.44,
+            "projection": 17.0,
+            "season_avg": null,
+            "started": true,
+            "slot": "QB",
+            "injury_status": "Questionable",
+            "injury_body_part": "Concussion"
+          },
+          "winner": true,
+          "loser": false
+        },
+        {
+          "team": {
+            "roster_id": 12,
+            "name": "The Dart Side",
+            "owner": "rgomes7",
+            "avatar_url": "https://sleepercdn.com/uploads/fbe9820cc44d4c8f2b27551b41d72bea.jpg",
+            "wins": 3,
+            "losses": 8,
+            "points_for": 1096.56
+          },
+          "score": 92.36,
+          "top": {
+            "player_id": "13337",
+            "name": "Emmett Johnson",
+            "position": "RB",
+            "nfl_team": "KC",
+            "points": 24.3,
+            "projection": 19.58,
+            "season_avg": null,
+            "started": true,
+            "slot": "RB",
+            "injury_status": null,
+            "injury_body_part": null
+          },
+          "winner": false,
+          "loser": true
+        }
+      ],
+      "is_pick": false,
+      "recap": "kaiedmonds beat The Dart Side by 37.48, and the new pickup Justin Herbert was the top scorer for the winners with 26.44. Herbert is now listed Questionable with a concussion, and this side climbed into the playoff spots this week. On the losing end, waiver pickup Cade Otton managed 1.8, and the 3-8 side stays stuck at the bottom of the standings."
+    }
+  ],
+  "median": null,
+  "table": [
+    {
+      "standing": {
+        "rank": 1,
+        "roster_id": 6,
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1474.02,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.45,
+        "strength_rank": 8
+      },
+      "team": {
+        "roster_id": 6,
+        "name": "Mitseeker5000",
+        "owner": "Mitseeker5000",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/1837a5892ccc37af990477480a82960a",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1474.02
+      }
+    },
+    {
+      "standing": {
+        "rank": 2,
+        "roster_id": 8,
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1465.64,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.55,
+        "strength_rank": 5
+      },
+      "team": {
+        "roster_id": 8,
+        "name": "Hock Tua 💦",
+        "owner": "JuJuCase",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cd4f84783fdf0a7fbe4459ff905eff1",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1465.64
+      }
+    },
+    {
+      "standing": {
+        "rank": 3,
+        "roster_id": 1,
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1367.38,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.27,
+        "strength_rank": 11
+      },
+      "team": {
+        "roster_id": 1,
+        "name": "puurdygood",
+        "owner": "puurdygood",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/15d8afe3bd93111eed3ba87289274be3",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1367.38
+      }
+    },
+    {
+      "standing": {
+        "rank": 4,
+        "roster_id": 10,
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1325.98,
+        "in_playoffs": true,
+        "games_from_cut": 1,
+        "schedule_strength": 0.27,
+        "strength_rank": 12
+      },
+      "team": {
+        "roster_id": 10,
+        "name": "Davlionman",
+        "owner": "Davlionman",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/693c46ffc5727c288cc43658a283eb71",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1325.98
+      }
+    },
+    {
+      "standing": {
+        "rank": 5,
+        "roster_id": 7,
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1430.46,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.45,
+        "strength_rank": 9
+      },
+      "team": {
+        "roster_id": 7,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1430.46
+      }
+    },
+    {
+      "standing": {
+        "rank": 6,
+        "roster_id": 9,
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1404.76,
+        "in_playoffs": true,
+        "games_from_cut": 0,
+        "schedule_strength": 0.64,
+        "strength_rank": 1
+      },
+      "team": {
+        "roster_id": 9,
+        "name": "kaiedmonds",
+        "owner": "kaiedmonds",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/b3338675f635c2c1f42b469621d38ec6",
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1404.76
+      }
+    },
+    {
+      "standing": {
+        "rank": 7,
+        "roster_id": 3,
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1339.54,
+        "in_playoffs": false,
+        "games_from_cut": 0,
+        "schedule_strength": 0.36,
+        "strength_rank": 10
+      },
+      "team": {
+        "roster_id": 3,
+        "name": "BobBuckstein",
+        "owner": "BobBuckstein",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d55d1f7075eda01948318de4af616075",
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1339.54
+      }
+    },
+    {
+      "standing": {
+        "rank": 8,
+        "roster_id": 5,
+        "wins": 5,
+        "losses": 6,
+        "points_for": 1446.18,
+        "in_playoffs": false,
+        "games_from_cut": -1,
+        "schedule_strength": 0.55,
+        "strength_rank": 6
+      },
+      "team": {
+        "roster_id": 5,
+        "name": "Skol Daddy",
+        "owner": "CoachOpa",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cb4f8c1cd10932bd54300be0172da87",
+        "wins": 5,
+        "losses": 6,
+        "points_for": 1446.18
+      }
+    },
+    {
+      "standing": {
+        "rank": 9,
+        "roster_id": 11,
+        "wins": 5,
+        "losses": 6,
+        "points_for": 1387.0,
+        "in_playoffs": false,
+        "games_from_cut": -1,
+        "schedule_strength": 0.64,
+        "strength_rank": 2
+      },
+      "team": {
+        "roster_id": 11,
+        "name": "Breece Mode",
+        "owner": "smiddyj7",
+        "avatar_url": "https://sleepercdn.com/uploads/0875d8e398f7d5dc3c03b363eb9518ff.jpg",
+        "wins": 5,
+        "losses": 6,
+        "points_for": 1387.0
+      }
+    },
+    {
+      "standing": {
+        "rank": 10,
+        "roster_id": 2,
+        "wins": 4,
+        "losses": 7,
+        "points_for": 1265.24,
+        "in_playoffs": false,
+        "games_from_cut": -2,
+        "schedule_strength": 0.55,
+        "strength_rank": 7
+      },
+      "team": {
+        "roster_id": 2,
+        "name": "VarsityBlue2",
+        "owner": "VarsityBlue2",
+        "avatar_url": null,
+        "wins": 4,
+        "losses": 7,
+        "points_for": 1265.24
+      }
+    },
+    {
+      "standing": {
+        "rank": 11,
+        "roster_id": 4,
+        "wins": 3,
+        "losses": 8,
+        "points_for": 1161.28,
+        "in_playoffs": false,
+        "games_from_cut": -3,
+        "schedule_strength": 0.64,
+        "strength_rank": 3
+      },
+      "team": {
+        "roster_id": 4,
+        "name": "The Mean Machine",
+        "owner": "ebashrr",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/aa3757d78d955308dd59f3e8f0279310",
+        "wins": 3,
+        "losses": 8,
+        "points_for": 1161.28
+      }
+    },
+    {
+      "standing": {
+        "rank": 12,
+        "roster_id": 12,
+        "wins": 3,
+        "losses": 8,
+        "points_for": 1096.56,
+        "in_playoffs": false,
+        "games_from_cut": -3,
+        "schedule_strength": 0.64,
+        "strength_rank": 4
+      },
+      "team": {
+        "roster_id": 12,
+        "name": "The Dart Side",
+        "owner": "rgomes7",
+        "avatar_url": "https://sleepercdn.com/uploads/fbe9820cc44d4c8f2b27551b41d72bea.jpg",
+        "wins": 3,
+        "losses": 8,
+        "points_for": 1096.56
+      }
+    }
+  ],
+  "next": [
+    {
+      "a": {
+        "roster_id": 5,
+        "name": "Skol Daddy",
+        "owner": "CoachOpa",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cb4f8c1cd10932bd54300be0172da87",
+        "wins": 5,
+        "losses": 6,
+        "points_for": 1446.18,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 7,
+        "name": "Bo Girds",
+        "owner": "bkwon",
+        "avatar_url": "https://sleepercdn.com/uploads/07bb6c8073ecdfa7326fe4f04bbf8983.jpg",
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1430.46,
+        "byes": []
+      },
+      "must_watch": true,
+      "reason": "Bo Girds puts a 3-game win streak on the line, and both sit near the cut"
+    },
+    {
+      "a": {
+        "roster_id": 6,
+        "name": "Mitseeker5000",
+        "owner": "Mitseeker5000",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/1837a5892ccc37af990477480a82960a",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1474.02,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 11,
+        "name": "Breece Mode",
+        "owner": "smiddyj7",
+        "avatar_url": "https://sleepercdn.com/uploads/0875d8e398f7d5dc3c03b363eb9518ff.jpg",
+        "wins": 5,
+        "losses": 6,
+        "points_for": 1387.0,
+        "byes": []
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 1,
+        "name": "puurdygood",
+        "owner": "puurdygood",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/15d8afe3bd93111eed3ba87289274be3",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1367.38,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 4,
+        "name": "The Mean Machine",
+        "owner": "ebashrr",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/aa3757d78d955308dd59f3e8f0279310",
+        "wins": 3,
+        "losses": 8,
+        "points_for": 1161.28,
+        "byes": []
+      },
+      "must_watch": true,
+      "reason": "The Mean Machine puts a 4-game loss streak on the line, and puurdygood sits near the cut"
+    },
+    {
+      "a": {
+        "roster_id": 2,
+        "name": "VarsityBlue2",
+        "owner": "VarsityBlue2",
+        "avatar_url": null,
+        "wins": 4,
+        "losses": 7,
+        "points_for": 1265.24,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 3,
+        "name": "BobBuckstein",
+        "owner": "BobBuckstein",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/d55d1f7075eda01948318de4af616075",
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1339.54,
+        "byes": []
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 10,
+        "name": "Davlionman",
+        "owner": "Davlionman",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/693c46ffc5727c288cc43658a283eb71",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1325.98,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 12,
+        "name": "The Dart Side",
+        "owner": "rgomes7",
+        "avatar_url": "https://sleepercdn.com/uploads/fbe9820cc44d4c8f2b27551b41d72bea.jpg",
+        "wins": 3,
+        "losses": 8,
+        "points_for": 1096.56,
+        "byes": []
+      },
+      "must_watch": false,
+      "reason": null
+    },
+    {
+      "a": {
+        "roster_id": 8,
+        "name": "Hock Tua 💦",
+        "owner": "JuJuCase",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/9cd4f84783fdf0a7fbe4459ff905eff1",
+        "wins": 7,
+        "losses": 4,
+        "points_for": 1465.64,
+        "byes": []
+      },
+      "b": {
+        "roster_id": 9,
+        "name": "kaiedmonds",
+        "owner": "kaiedmonds",
+        "avatar_url": "https://sleepercdn.com/avatars/thumbs/b3338675f635c2c1f42b469621d38ec6",
+        "wins": 6,
+        "losses": 5,
+        "points_for": 1404.76,
+        "byes": []
+      },
+      "must_watch": false,
+      "reason": null
+    }
+  ],
+  "blurbs": {
+    "motw": "Davlionman beat the team above them 115.06 to 97.6 in an upset, and the lead never changed hands. C.J. Stroud put up 27.46 and Jahmyr Gibbs added 27.8, and either one outscored the margin on his own. Kayshon Boutte, a recent add, chipped in 12, while fellow pickup Kalif Raymond managed 2.4. A team called puurdygood started Kirk Cousins for 8.4, dead last among started QBs, then got a flat 0 from Rachaad White. That loss snapped their winning streak, while the winners pushed their playoff odds from about 65% to 82% this week. DJ Moore, Dallas Goedert and Boutte are all now listed Questionable.",
+    "game_changer": "Dak Prescott dropped 43.9 for VarsityBlue2, 22.94 over his projection. Hock Tua 💦 started the week 1st and still lost to a side sitting 10th, an upset. Without Dak, that is a loss: his 43.9 outscored the 40.44 margin on his own. No started quarterback outscored him this week. He has now beaten his projection in 3 straight weeks.",
+    "awards": "Dak Prescott swept Top Scorer and Game Changer for VarsityBlue2, putting up 43.9 and clearing his projection by 22.94. Skol Daddy got 8.1 from Ja'Marr Chase, the week's Underperformer, on the way to a 54.96-point loss. Bo Girds left Fernando Mendoza's 29.88 on the bench for MVB, and the recent add Ashton Jeanty still started and posted 27.9. Jonah Coleman took Overachiever for BobBuckstein and finished first among every started running back.",
+    "position_leaders": "Dak Prescott topped the started quarterbacks with 43.9 for VarsityBlue2. Jonah Coleman led the running backs at 34.9 for BobBuckstein, on 77 percent of his team's carries. Hock Tua 💦 put Patrick Mahomes, George Pickens and Trey McBride among the position leaders and still took home no gold. CeeDee Lamb topped the receivers at 30.2, and Travis Kelce did the same for tight ends at 25.4.",
+    "recap_1": "Mitseeker5000 trailed after Thursday, then led by 72.9 after the early Sunday games and never let go in a 54.96-point win. Skol Daddy hit a season low with 0 from Brock Bowers, now listed Out with an ankle, and 5.7 from the new pickup Elic Ayomanor, while recent add Chimere Dike beat his projection for the other side. This week dropped the losers out of the playoff spots and snapped their winning streak, while the winners climbed to the top of the table.",
+    "recap_2": "The Mean Machine led after Thursday, then Bo Girds grabbed the lead in the early Sunday games and never gave it back, winning 145.04 to 75.1, a season low for the losers. Recent adds Ashton Jeanty and Justice Hill put up 27.9 and 17.6, and this side rose into the playoff spots this week. On the losing side, Juwan Johnson is now listed Questionable and Tyjae Spears is now listed on IR, and the skid keeps rolling.",
+    "recap_3": "Jonah Coleman outscored the margin on his own with 34.9, and BobBuckstein, behind only after Thursday, won going away in an upset. The recent adds flopped, with trade pickup Luther Burden III managing 3.3 and waiver pickup Bo Nix managing 14.5. Breece Mode fell out of the playoff spots while the winners climbed, and Derrick Henry is now listed Questionable, as are Jalen Coker and Bhayshul Tuten, who were both hurt late in their games.",
+    "recap_4": "Rachaad White went into the lineup for puurdygood after a Questionable tag on the final pre-game report and scored 0, part of a season-low 97.6. Over in the upset, Davlionman got 12 from the new pickup Kayshon Boutte, while fellow recent add Kalif Raymond managed 2.4. The losing side's winning streak is over, and DJ Moore, Dallas Goedert and Boutte are all now listed Questionable.",
+    "recap_5": "VarsityBlue2 trailed after the early Sunday games, then flattened Hock Tua 💦 148.7 to 108.26 in an upset. Dak Prescott outscored the margin on his own with 43.9, so without him that is a loss, while the recent add Jordan Mason managed 4.7. The losers slid out of the top spot, the winners stayed stuck below the cut, and Saquon Barkley and Sam LaPorta are now listed Questionable.",
+    "recap_6": "kaiedmonds beat The Dart Side by 37.48, and the new pickup Justin Herbert was the top scorer for the winners with 26.44. Herbert is now listed Questionable with a concussion, and this side climbed into the playoff spots this week. On the losing end, waiver pickup Cade Otton managed 1.8, and the 3-8 side stays stuck at the bottom of the standings.",
+    "next_week": "Bo Girds puts its win streak on the line against Skol Daddy in a revenge rematch, a shootout between top lineups with both sides near the cut. The side chasing revenge gets 60% playoff odds with a win and 12% with a loss. The streak holders get 90% playoff odds with a win and 40% with a loss. The Mean Machine puts a 4-game losing streak on the line in a rematch with puurdygood, who sit near the cut. The winners of the first meeting get 97% playoff odds with a win and 76% with a loss. The losing-streak side holds near 1% playoff odds either way.",
+    "rankings": "Bo Girds climbs 3 places to the top, with the league's 1st-ranked scoring. The jump came off a 70-point beatdown of the 11th-place team. That's 3 straight wins, at 149.03 a week over the stretch. Hock Tua 💦 lost by 40 and still climbed to 2nd. With the easiest remaining schedule in the league, the playoff odds sit at 94%. BobBuckstein jumps to 3rd from a spot outside the playoff picture. A 23-point win made it 2 straight. The scoring has slipped below its season average lately, though. Mitseeker5000 owns 1st place in the standings yet sits only 4th here. They put a 55-point beating on the 5th-place team and took over the top standing spot. Results over the last 3 weeks rank just 8th. kaiedmonds climbs to 5th after a 37-point win. They hold the last playoff spot and face the hardest remaining schedule in the league. Davlionman rockets up 3 places after a 17-point win. Scoring sits 9th, but a 7-4 record covers a lot of sins. puurdygood tumbles 5 places after a 17-point loss. Last in schedule played, and still 3rd in the standings. Skol Daddy freefalls 7 places after a 55-point loss. Brutal week. Playoff odds sit at 35%, with a projection below the season pace and only the 9th easiest remaining schedule. VarsityBlue2 climbs 2 places off a 40-point win over the league's top team. Still 10th in the standings, with playoff odds around 1%. Breece Mode slides to 10th on a 2-game losing streak. After a 23-point loss, they sit 9th in the standings. The scoring has sagged well under the season average lately. The Dart Side slips to 11th, last in both standing and scoring. A 3-8 record leaves them 3 games below the cut. The recent scoring has at least edged above the season average. The Mean Machine holds 12th and has lost 4 straight. The name promises menace, and the offense averages 92.71 a week over the last 3 weeks."
+  },
+  "avatars": {
+    "1": "avatars/1.jpg",
+    "2": "../../images/avatar-default.svg",
+    "3": "avatars/3.jpg",
+    "4": "avatars/4.jpg",
+    "5": "avatars/5.jpg",
+    "6": "avatars/6.jpg",
+    "7": "avatars/7.jpg",
+    "8": "avatars/8.jpg",
+    "9": "avatars/9.jpg",
+    "10": "avatars/10.jpg",
+    "11": "avatars/11.jpg",
+    "12": "avatars/12.jpg"
+  },
+  "headshots": {
+    "3294": "headshots/3294.png",
+    "13269": "headshots/13269.png",
+    "7564": "headshots/7564.png",
+    "13345": "headshots/13345.png",
+    "4046": "headshots/4046.png",
+    "8183": "headshots/8183.png",
+    "12527": "headshots/12527.png",
+    "9221": "headshots/9221.png",
+    "6786": "headshots/6786.png",
+    "8137": "headshots/8137.png",
+    "4983": "headshots/4983.png",
+    "1466": "headshots/1466.png",
+    "4217": "headshots/4217.png",
+    "8130": "headshots/8130.png"
+  },
+  "summary": "Week 11 · Nov 19 – Nov 23, 2026 · Davlionman vs puurdygood"
+}

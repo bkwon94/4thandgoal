@@ -8,6 +8,7 @@ import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./door-page";
 // The jsdom stand-ins of the browser APIs that the popover and the menu sheet need.
 import "@cpc/design/ui/sheet-jsdom";
+import { pinTradesOpen } from "../../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the norcal data, so a weekly publish never changes these tests. */
 beforeEach(() => readFixtureSite("norcal"));
@@ -43,6 +44,9 @@ afterEach(() => {
   cleanup();
   localStorage.clear();
 });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the Tour of the norcal front door", () => {
   it("shows the same four Stops, copy, and counts after the pick of Bo Girds on a new browser (AT-6)", async () => {

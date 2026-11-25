@@ -1,0 +1,2 @@
+norcal / after the team pick: {"path":"/","deadlineBanner":0,"tradeWireButtons":0}
+norcal /rankings/: {"path":"/rankings/","deadlineBanner":0,"tradeWireButtons":0}

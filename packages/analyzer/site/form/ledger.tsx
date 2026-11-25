@@ -57,7 +57,7 @@ function LedgerRow({ player }: { player: Player }) {
       <span className="flex min-w-0 flex-col">
         <b className="text-row leading-tight font-bold text-pretty">{player.name}</b>
         <span className="text-meta text-mute tabular-nums">
-          {player.position} · {player.nfl_team}
+          {player.position} · {player.nfl_team ?? "FA"}
           {player.season_rank ? ` · ${player.season_rank}` : ""}
         </span>
       </span>

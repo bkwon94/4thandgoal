@@ -1,6 +1,7 @@
 /**
  * The Deadline banner on the static export in out/ of the current CLIENT, in WebKit, as Safari runs, with a fixed clock.
  * It checks the text of each phase, the band that grows to fit, the even pad, the press, the sheet, and no overlap.
+ * Build the export with BUILD_NOW=2026-11-21T09:55:00-05:00, a build clock before the Lock, so the build keeps the banner.
  */
 import { type Page, devices, expect, test } from "@playwright/test";
 import { existsSync, readFileSync } from "node:fs";
@@ -260,15 +261,13 @@ for (const viewport of VIEWPORTS) {
         await expectFits(page);
       });
 
-      test(`${theme}: the banner says the trade deadline has passed, with Final, after the Lock (AT-9)`, async ({
+      test(`${theme}: a page open across the Lock hides the banner at the Lock (AT-9)`, async ({
         page,
       }) => {
         await openAt(page, CLOSED, { theme });
-        await expect(trigger(page)).toContainText(
-          "The trade deadline has passed. Good luck in the playoffs.",
-        );
-        await expect(trigger(page)).toContainText("Final");
-        await expectFits(page);
+        await expect(page.locator("header")).toBeVisible();
+        await expect(banner(page)).toHaveCount(0);
+        await expect(trigger(page)).toHaveCount(0);
       });
     }
 
@@ -359,7 +358,9 @@ for (const viewport of VIEWPORTS) {
       expect(running).toBe(0);
     });
 
-    test("Deadline week ends by itself one day after the Lock (AT-10)", async ({ page }) => {
+    test("Deadline week ends at the Lock, with no closed day after it (AT-10)", async ({
+      page,
+    }) => {
       await openAt(page, ENDED);
       await expect(page.locator("header")).toBeVisible();
       await expect(banner(page)).toHaveCount(0);
