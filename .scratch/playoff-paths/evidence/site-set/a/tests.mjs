@@ -361,7 +361,7 @@ export default {
   // AT-40 again on 5f26bcb0, with a reading that pairs each Clinch entry of the file with the row the board shows for its team.
   "AT-40-reading": {
     folder: "AT-40",
-    prefix: "5f26bcb0-",
+    prefix: process.env.PREFIX ?? "5f26bcb0-",
     route: "/sim/2026/",
     async run({ page, shot, note }) {
       const reading = await page.evaluate(async () => {
@@ -373,14 +373,16 @@ export default {
           for (const c of entry.clinch.filter((c) => c.goal === "spot")) {
             const team = name(entry.roster_id);
             const row = rows.find((r) => r.getAttribute("aria-label").startsWith(team + ":") || r.getAttribute("aria-label").startsWith(team + ","));
-            const shownLines = row ? row.innerText.split("\n").map((l) => l.trim()).filter((l) => /^(Clinches|Out with)/.test(l)) : [];
+            const shownLines = row ? row.innerText.split("\n").map((l) => l.trim()).filter((l) => /^(Clinches|Out )/.test(l)) : [];
             const first = c.ways[0];
             out.push("file: " + team + ", goal " + c.goal + ", status " + c.status + ", " + c.ways.length + " ways; first way: own game " + first.game + ", own median " + first.median + ", " + first.others.length + " other results");
             out.push("board row of " + team + ": " + (row ? row.innerText.replace(/\n+/g, " | ") : "no row"));
             out.push("Clinch line under " + team + ": " + (shownLines[0] ?? "none"));
+            const goalWords = shownLines[0]?.match(/^(Clinches a spot|Clinches a bye|Clinches the \d seed|Out of the playoffs|Out of the bye race|Out)/)?.[0] ?? "none";
+            out.push("Goal words at the start of the line: " + goalWords);
           }
         }
-        const others = rows.filter((r) => /Clinches|Out with/.test(r.innerText)).length;
+        const others = rows.filter((r) => /(^|\n)(Clinches|Out )/.test(r.innerText)).length;
         out.push("rows on the spot Goal with a Clinch line: " + others);
         return out.join("\n");
       });
