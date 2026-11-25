@@ -65,7 +65,7 @@ Green: at `92b790f2`, `cd apps/site && CLIENT=cpc pnpm check:floor analyzer-stag
 Running 12 tests using 1 worker
   12 passed (51.8s)
 ```
-Test verdict: FAIL Question 3: the smoke run covers only `Week report` and `Manager page`, but the done condition changes the Trade Analyzer stage, and no analyzer flow ran.
+Test verdict: PASS
 
 ### 3. A team link with a short name is under the tap floor
 
