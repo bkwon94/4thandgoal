@@ -129,4 +129,8 @@ Green: at `8da7ab95`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/week
 ```
 Test verdict: pending
 
+## Smoke
+
+Smoke: flows `Week report`, `Manager page`. "Smoke run: 2 flows, 2 passed, 0 failed". Shots in `.scratch/bugs/week-11-checks/smoke/`.
+
 ## Comments
