@@ -31,7 +31,7 @@ Green: at `dfdd443d`, `cd apps/pipeline && uv run --exact --package cornerstone 
 .............                                                            [100%]
 13 passed in 7.68s
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 2. The analyzer stage spec pins the team names of the live rosters
 
@@ -65,7 +65,7 @@ Green: at `92b790f2`, `cd apps/site && CLIENT=cpc pnpm check:floor analyzer-stag
 Running 12 tests using 1 worker
   12 passed (51.8s)
 ```
-Test verdict: pending
+Test verdict: FAIL Question 3: the smoke run covers only `Week report` and `Manager page`, but the done condition changes the Trade Analyzer stage, and no analyzer flow ran.
 
 ### 3. A team link with a short name is under the tap floor
 
@@ -97,7 +97,7 @@ Green: at `39cad4d9`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/mana
   ✓  3 [floor] › e2e/floor.spec.ts:190:11 › full floor: cpc /2026/managers/7/ dark 1280px (1.2s)
   4 passed (3.3s)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ### 4. A player name splits a word over two lines on the week page
 
@@ -127,7 +127,7 @@ Green: at `8da7ab95`, `cd apps/site && CLIENT=cpc pnpm check:floor -g /2026/week
   ✓   6 [floor] › e2e/floor.spec.ts:301:7 › no split word: cpc /2026/week-11/ 1280px (233ms)
   13 passed (7.9s)
 ```
-Test verdict: pending
+Test verdict: PASS
 
 ## Smoke
 
