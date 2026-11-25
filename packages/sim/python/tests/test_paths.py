@@ -126,6 +126,29 @@ def test_a_week_plan_has_one_row_per_week_left_and_its_results_add_up_to_its_fin
     assert plans > 0
 
 
+def test_each_row_of_a_week_plan_holds_the_score_to_beat_of_its_result(sim):
+    # AT-12. A win row holds the scores to beat the opponent, and a row above the median holds the scores to beat the
+    # median, as the Score to beat of the page gives them. A loss row and a median miss hold none.
+    kinds = set()
+    for page, _, _, plan in _plans(sim):
+        beat = {s.week: s for s in page.score_to_beat}
+        for week in plan.weeks:
+            kinds.add((week.game, week.median))
+            s = beat[week.week]
+            win = (s.win, s.win_sure) if week.game == "win" else (None, None)
+            median = (s.median, s.median_sure) if week.median == "above" else (None, None)
+            assert (week.win, week.win_sure) == win
+            assert (week.median_score, week.median_sure) == median
+    assert {("win", "above"), ("loss", "below")} <= kinds
+
+
+def test_a_week_plan_row_of_a_league_with_no_median_game_holds_no_median_score():
+    plain = _sim(median_game=False, runs=2_000)
+    rows = [week for _, _, _, plan in _plans(plain) for week in plan.weeks]
+    assert rows and all(week.median_score is None and week.median_sure is None for week in rows)
+    assert all((week.win is None) == (week.game == "loss") for week in rows)
+
+
 def test_each_game_to_root_for_in_a_plan_is_another_game_of_its_week(sim):
     rows = 0
     for page, _, _, plan in _plans(sim):

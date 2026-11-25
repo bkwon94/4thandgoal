@@ -66,7 +66,6 @@ export function FinishList({
   winsLeft,
   goal,
   mine,
-  scoreToBeat = [],
   onTry,
 }: {
   sim: WeekSim;
@@ -74,7 +73,6 @@ export function FinishList({
   winsLeft: number;
   goal: GoalKey;
   mine: boolean;
-  scoreToBeat?: WeekSim["pages"][number]["score_to_beat"];
   onTry?: (set: SetResult[]) => void;
 }) {
   const off = useMotionOff();
@@ -159,7 +157,6 @@ export function FinishList({
         goal={goal}
         winsLeft={winsLeft}
         mine={mine}
-        scoreToBeat={scoreToBeat}
         onClose={() => setPlan(null)}
         onTry={
           onTry &&

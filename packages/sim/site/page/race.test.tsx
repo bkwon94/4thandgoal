@@ -207,16 +207,21 @@ describe("the Week plan of a Path", () => {
       within(sheet).getByRole("list", { name: "Weeks of the plan" }),
     ).getAllByRole("listitem");
     expect(rows).toHaveLength(3);
-    const beat = Object.fromEntries(sim.pages[YOU].score_to_beat.map((s) => [s.week, s]));
     plan.weeks.forEach((week, i) => {
       const text = rows[i].textContent!;
       expect(text).toContain(`Week ${week.week} · vs ${sim.names[week.opponent]}`);
-      const s = beat[week.week];
+      // Each row reads the Score to beat of its own result. A loss row holds none against the opponent.
       if (week.game === "win") {
-        expect(text).toContain(`Score ${s.win} to win, ${s.win_sure} to be sure.`);
+        expect(week.win).not.toBeNull();
+        expect(text).toContain(`Score ${week.win} to win, ${week.win_sure} to be sure.`);
       } else {
+        expect(week.win).toBeNull();
         expect(text).not.toContain("to win,");
       }
+      if (week.median === "above")
+        expect(text).toContain(
+          `Score ${week.median_score} to beat the median, ${week.median_sure} to be sure.`,
+        );
       for (const game of week.root_for)
         expect(text).toContain(`${sim.names[game.winner]} over ${sim.names[game.loser]}`);
     });

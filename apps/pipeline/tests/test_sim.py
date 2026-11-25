@@ -729,18 +729,18 @@ def _bo_girds_plan(sim: dict) -> tuple[str, dict, dict]:
 
 @pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
 def test_the_week_plan_of_the_first_4_2_path_of_bo_girds_has_a_row_for_each_of_weeks_12_to_14(cpc_week_11_file):
-    # AT-12. Each row holds a result, the Score to beat of its week, and 1 or 2 games to root for.
+    # AT-12. Each row holds a result, the Score to beat of that result, and 1 or 2 games to root for. A loss row holds
+    # no score against the opponent.
     sim = cpc_week_11_file
     rid, page, plan = _bo_girds_plan(sim)
     names = sim["names"]
     beat = {s["week"]: s for s in page["score_to_beat"]}
     print(f"AT-12: plan odds {plan['odds']}, any order {plan['any_order']}")
     for week in plan["weeks"]:
-        s = beat[week["week"]]
         roots = [f"{names[str(g['winner'])]} over {names[str(g['loser'])]} -> {g['odds']}%" for g in week["root_for"]]
         print(f"AT-12: week {week['week']} vs {names[str(week['opponent'])]}: {week['game']}, {week['median']} median; "
-              f"score {s['win']} to win, {s['win_sure']} to be sure; median {s['median']}, {s['median_sure']}; "
-              f"root for {roots}")
+              f"score {week['win']} to win, {week['win_sure']} to be sure; median {week['median_score']}, "
+              f"{week['median_sure']}; root for {roots}")
     assert [week["week"] for week in plan["weeks"]] == [12, 13, 14]
     assert sum((w["game"] == "win") + (w["median"] == "above") for w in plan["weeks"]) == 4
     for week in plan["weeks"]:
@@ -748,7 +748,17 @@ def test_the_week_plan_of_the_first_4_2_path_of_bo_girds_has_a_row_for_each_of_w
         assert 1 <= len(week["root_for"]) <= 2
         s = beat[week["week"]]
         assert s["opponent"] == week["opponent"]
-        assert s["win_sure"] > s["win"] and s["median_sure"] > s["median"]
+        if week["game"] == "win":
+            assert (week["win"], week["win_sure"]) == (s["win"], s["win_sure"]) and week["win_sure"] > week["win"]
+        else:
+            assert (week["win"], week["win_sure"]) == (None, None)
+        if week["median"] == "above":
+            assert (week["median_score"], week["median_sure"]) == (s["median"], s["median_sure"])
+            assert week["median_sure"] > week["median_score"]
+        else:
+            assert (week["median_score"], week["median_sure"]) == (None, None)
+    # Week 14 of this plan is a loss below the median, so its row holds no score at all.
+    assert plan["weeks"][2]["game"] == "loss" and plan["weeks"][2]["win"] is None
     # Week 12 is Bo Girds, roster 6, against roster 5, which Sleeper now calls Teez Nuts.
     assert (int(rid), plan["weeks"][0]["opponent"]) == (6, 5)
 

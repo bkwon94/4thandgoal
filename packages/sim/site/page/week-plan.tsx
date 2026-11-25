@@ -16,7 +16,7 @@ import {
   SheetGrip,
   SheetTitle,
 } from "@cpc/design/ui/sheet";
-import type { Finish, ScoreToBeat, SetResult, WeekPlan, WeekSim } from "../schema/sim-types";
+import type { Finish, SetResult, WeekPlan, WeekSim } from "../schema/sim-types";
 import { orderLine, planHeader, planResult, planRootFor, planScores } from "./finish-copy";
 import { PRESS, nameOf } from "./format";
 import type { GoalKey } from "./goals";
@@ -33,7 +33,6 @@ export function WeekPlanSheet({
   goal,
   winsLeft,
   mine,
-  scoreToBeat,
   onClose,
   onTry,
 }: {
@@ -42,7 +41,6 @@ export function WeekPlanSheet({
   goal: GoalKey;
   winsLeft: number;
   mine: boolean;
-  scoreToBeat: ScoreToBeat[];
   onClose: () => void;
   onTry?: (set: SetResult[]) => void;
 }) {
@@ -52,7 +50,6 @@ export function WeekPlanSheet({
   const shown = open ?? kept;
   const header = shown ? planHeader(shown.finish, shown.plan, goal, mine) : "";
   const order = shown ? orderLine(shown.finish, shown.plan, winsLeft, mine) : null;
-  const beat = (week: number) => scoreToBeat.find((entry) => entry.week === week);
   return (
     <Sheet
       side="bottom"
@@ -89,7 +86,7 @@ export function WeekPlanSheet({
           {shown && (
             <ol aria-label="Weeks of the plan" className="gap-sp-2 m-0 flex list-none flex-col p-0">
               {shown.plan.weeks.map((week) => {
-                const scores = planScores(week, beat(week.week));
+                const scores = planScores(week);
                 const roots = planRootFor(sim, week);
                 return (
                   <li

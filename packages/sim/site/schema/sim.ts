@@ -171,13 +171,19 @@ export const planGameSchema = z.object({
   odds: z.number().int(),
 });
 
-/* One week of a Week plan: the result of the team, and the 1 or 2 games of the week to root for. */
+/* One week of a Week plan: the result of the team, the Score to beat of that result, and the 1 or 2 games of the week
+   to root for. A loss row holds no score against the opponent, and a median miss holds no median score. An older file
+   holds no score in the row, so each score defaults to null. */
 export const planWeekSchema = z.object({
   week: z.number(),
   opponent: z.number(),
   game: z.enum(["win", "loss"]),
   median: z.enum(["above", "below"]).nullable(),
   root_for: z.array(planGameSchema),
+  win: z.number().nullable().default(null),
+  win_sure: z.number().nullable().default(null),
+  median_score: z.number().nullable().default(null),
+  median_sure: z.number().nullable().default(null),
 });
 
 /* The results week by week on one Path or one Finish, in the most common order. `odds` are the odds of "Try it", and

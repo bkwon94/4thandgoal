@@ -128,7 +128,6 @@ export function TeamSheet({
                 winsLeft={page.wins_left}
                 goal={goal}
                 mine={false}
-                scoreToBeat={page.score_to_beat}
               />
               {onYou && (
                 <Button
