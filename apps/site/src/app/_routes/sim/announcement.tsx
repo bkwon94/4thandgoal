@@ -20,7 +20,7 @@ export const SIM_ANNOUNCEMENT = {
   stops: "2026-12-01",
 } as const;
 
-/* The line is a call made without Brian (PRD of playoff-paths, Further Notes). */
+/* The line is a call the spec records for review (PRD of playoff-paths, Further Notes, call 3). */
 const COPY = {
   eyebrow: "New: The Race",
   title: "The Race is on",

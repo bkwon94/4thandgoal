@@ -45,7 +45,7 @@ SURE_BEAT = 0.8
 # A Finish at this share of runs or more is sure, and one under 1 minus it has no way in (decision 06).
 SURE_FINISH = 0.995
 # The lowest odds, in percent, of a Goal that The Race opens on. Below it the 1 seed or the bye is no real race, so the
-# page opens on the next Goal. A call made without Brian (PRD, Further Notes).
+# page opens on the next Goal. The 5% bar is a call the spec records for review (PRD, Further Notes, call 1).
 OPEN_GOAL_ODDS = 5
 # The most ways of one Clinch line. A line shows its most likely way, and a sheet lists the rest, so a few keep sim.json
 # small.
