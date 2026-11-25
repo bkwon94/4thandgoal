@@ -40,6 +40,7 @@ export function boardOf(sim: WeekSim): BoardTeam[] {
   return Object.values(sim.teams).map((team) => ({
     roster_id: team.roster_id,
     goals: { spot: { odds: team.playoff, status: "open" as const } },
+    clinch: [],
   }));
 }
 
@@ -57,6 +58,21 @@ export function boardOrder(sim: WeekSim, goal: GoalKey): BoardTeam[] {
   return [...boardOf(sim)].sort(
     (a, b) => boardOdds(b, goal) - boardOdds(a, goal) || standings(a.roster_id, b.roster_id),
   );
+}
+
+/* The status pill of a board team for `goal`, by the plain check on wins, or null for a team In the hunt. A Clinched pill
+   names the best Goal locked: for the spot or the bye, the 1 seed, then the bye, then the spot (decision 04). */
+export type StatusPill = { kind: "clinched" | "out"; label: string };
+
+export function pillOf(team: BoardTeam, goal: GoalKey): StatusPill | null {
+  const status = (key: string) => team.goals[key]?.status;
+  if (status(goal) === "out") return { kind: "out", label: "Out" };
+  if (status(goal) !== "in") return null;
+  const seed = seedOf(goal);
+  if (seed !== null) return { kind: "clinched", label: `Clinched ${seed} seed` };
+  if (status("seed-1") === "in") return { kind: "clinched", label: "Clinched 1 seed" };
+  if (status("bye") === "in") return { kind: "clinched", label: "Clinched bye" };
+  return { kind: "clinched", label: "Clinched spot" };
 }
 
 /* The Goals of the switch in a league: the spot, the bye when the league has one, and the seeds. */

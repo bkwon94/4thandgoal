@@ -85,7 +85,9 @@ def what_if(request: Request, body: WhatIfRequest, served: ServedClient) -> dict
         raise HTTPException(status_code=422, detail=str(error)) from error
     logger.info("What-if of %s ran %d runs in %.2f s, set weeks %s", client.slug, result.runs,
                 time.monotonic() - started, sorted(r.week for r in body.set_results))
-    dumped = result.model_dump(mode="json", include={"teams", "sample", "sample_weights", "board"})
+    # The board leaves out the Clinch lines, which come from the weekly build only (PRD, the page block).
+    dumped = result.model_dump(mode="json", include={"teams": True, "sample": True, "sample_weights": True,
+                                                     "board": {"__all__": {"roster_id", "goals"}}})
     return {
         "schema_version": schema_version, "season": result.season, "week": result.week, "runs": result.runs,
         "effective_runs": result.effective_runs, "you": body.you,

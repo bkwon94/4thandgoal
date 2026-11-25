@@ -436,6 +436,19 @@ def test_the_playoff_fixtures_play_out_stored_run_1_and_name_the_seeds_and_the_c
 
 
 @pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
+def test_the_playoff_fixtures_hold_no_finish_list_no_path_and_no_board(playoff_fixture_files):
+    # AT-53. A bracket plays one game at a time, so the playoff weeks keep the bracket view of season-sim.
+    _, out = playoff_fixture_files
+    for name in ("week-sim-playoffs.json", "week-sim-round-2.json", "week-sim-final.json"):
+        sim = json.loads((out / name).read_text(encoding="utf-8"))
+        page = sim["pages"]["1"]
+        print(f"AT-53: {name} board {sim['board']} keys of page 1 {sorted(page)}")
+        assert sim["board"] == []
+        for page in sim["pages"].values():
+            assert page["finishes"] == {} and page["goals"] == {}
+
+
+@pytest.mark.skipif(not (SAVED / "week-10" / "raw").is_dir(), reason="no saved week 10 data")
 def test_the_playoff_fixtures_of_the_site_tests_equal_a_fresh_fixture_build(playoff_fixture_files):
     # Run `make sim-fixtures` in apps/pipeline if this fails.
     _, out = playoff_fixture_files
@@ -519,6 +532,60 @@ def test_each_week_11_status_equals_the_plain_check_on_wins_by_hand(cpc_week_11_
         hand = {goal: _hand_goal_status(int(rid), wins, reach, goal) for goal in CPC_GOALS}
         print(f"AT-5: {sim['names'][rid]:<24} wins {wins[int(rid)]} hand {hand}")
         assert {goal: page["goals"][goal]["status"] for goal in CPC_GOALS} == hand
+
+
+def _week_sets(pairs: list[list[int]], rosters: list[int]):
+    """Each set of results of one week with the median game, by hand: the winner of each game and the 6 teams above
+    the median. A loser above the median needs its winner above it too."""
+    from itertools import combinations, product
+    for winners in product(*pairs):
+        losers = [b if w == a else a for (a, b), w in zip(pairs, winners, strict=True)]
+        for above in combinations(rosters, len(rosters) // 2):
+            up = set(above)
+            if all(not (loser in up and winner not in up) for winner, loser in zip(winners, losers, strict=True)):
+                yield frozenset(winners), frozenset(up)
+
+
+def _fits_way(way: dict, rid: int, winners: frozenset, above: frozenset) -> bool:
+    own = ((way["game"] is None or (rid in winners) == (way["game"] == "win"))
+           and (way["median"] is None or (rid in above) == (way["median"] == "above")))
+    return own and all(o["winner"] in winners if o["kind"] == "game" else (o["roster_id"] in above) == (
+        o["median"] == "above") for o in way["others"])
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_the_week_11_clinch_lines_agree_with_a_check_of_every_set_of_results_by_hand(cpc_week_11_file):
+    # AT-17. cpc has 9,024 sets of results in week 12. Each way of a line gives its status in every set that fits it,
+    # and each team with a set that clinches or ends its spot or its bye has a line.
+    sim = cpc_week_11_file
+    rosters = sorted(int(rid) for rid in sim["records"])
+    wins = {int(rid): record[0] for rid, record in sim["records"].items()}
+    first = min(sim["schedule"], key=int)
+    sets = list(_week_sets(sim["schedule"][first], rosters))
+    assert len(sets) == 9_024
+    reach_now, reach_after = 2 * len(sim["schedule"]), 2 * (len(sim["schedule"]) - 1)
+    lines = 0
+    for row in sim["board"]:
+        rid = row["roster_id"]
+        found = {(line["goal"], line["status"]): line for line in row["clinch"]}
+        for goal in ("spot", "bye"):
+            for status in ("in", "out"):
+                hits = {s for s in sets if _hand_goal_status(
+                    rid, {r: wins[r] + (r in s[0]) + (r in s[1]) for r in rosters}, reach_after, goal) == status}
+                line = found.get((goal, status))
+                if _hand_goal_status(rid, wins, reach_now, goal) != "open":
+                    assert line is None
+                    continue
+                assert (line is not None) == bool(hits), (sim["names"][str(rid)], goal, status)
+                if line is None:
+                    continue
+                lines += 1
+                for way in line["ways"]:
+                    fitting = {s for s in sets if _fits_way(way, rid, *s)}
+                    assert fitting and fitting <= hits, (sim["names"][str(rid)], goal, status, way)
+                print(f"AT-17: {sim['names'][str(rid)]:<24} {goal} {status} sets {len(hits)} ways "
+                      f"{len(line['ways'])} first {line['ways'][0]}")
+    assert lines > 0
 
 
 def _paths_of(sim: dict):

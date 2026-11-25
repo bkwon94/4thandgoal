@@ -47,6 +47,9 @@ SURE_FINISH = 0.995
 # The lowest odds, in percent, of a Goal that The Race opens on. Below it the 1 seed or the bye is no real race, so the
 # page opens on the next Goal. A call made without Brian (PRD, Further Notes).
 OPEN_GOAL_ODDS = 5
+# The most ways of one Clinch line. A line shows its most likely way, and a sheet lists the rest, so a few keep sim.json
+# small.
+CLINCH_WAYS = 8
 # The lowest playoff odds, in percent, of a team that the league fact counts in the race for the last spots.
 RACE_FLOOR = 10
 # The most root-for rows of one week, and the least lift in whole points that keeps a row (PRD, the page block).

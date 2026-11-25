@@ -133,6 +133,7 @@ LAYER_OF: dict[str, str] = {
     "league.history": "load",
     "league.ranks": "load",
     "league.standings_table": "load",
+    "sim.clinch": "load",
     "league.snapshot": "load",
     "league.season_inputs": "load",
     "league.live": "load",

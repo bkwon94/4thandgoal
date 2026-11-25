@@ -15,6 +15,7 @@ from pydantic import BaseModel, field_validator
 from league.league_settings import LeagueSettings
 from league.models import OddsResult, OddsStatus, Swing, TeamOdds
 from league.standings_table import roster_status
+from sim.clinch import clinch_lines
 from sim.goals import BoardTeam, GoalOdds
 from sim.page import RunRecord, SimPage, league_fact, team_page
 from sim.paths import RunTable, finish_lists, scores_to_beat
@@ -182,6 +183,7 @@ def season_sim(
     pages: Sequence[int] = (),
     stop: Callable[[], bool] | None = None,
     played: Mapping[int, Mapping[int, float]] | None = None,
+    clinch: bool = False,
 ) -> SimResult:
     """The sim of the rest of the season after week `week`, through the playoff bracket.
 
@@ -201,13 +203,15 @@ def season_sim(
     `pages` holds the roster IDs whose page block the result gives, each by a split of the runs of this one sim.
     `stop` runs every STOP_CHECK_RUNS runs. When it gives True, the sim raises SimStopped.
     `played` holds the real scores of each bracket week already played, by week and roster ID. Each run keeps them.
+    `clinch` adds the Clinch lines of the next week to the League board. Only the weekly build asks for them, so a
+    What-if holds none (decision 03). They read the runs of the pages, so `pages` must name a team.
     """
     bracket_weeks = list(range(settings.last_regular_week + 1, settings.last_season_week + 1))
     model = draw_model(scores, records, sorted(remaining) + bracket_weeks, projected)
     return _season_sim(model, records, remaining, season=season, week=week, spots=settings.playoff_spots,
                        bye_count=settings.bye_count, median_game=settings.median_game, reseed=settings.reseed,
                        bracket_weeks=bracket_weeks, runs=runs, sample=sample, you=you, set_results=set_results,
-                       pages=pages, stop=stop, played=played or {})
+                       pages=pages, stop=stop, played=played or {}, clinch=clinch)
 
 
 def rerun(
@@ -248,8 +252,11 @@ def _season_sim(
     pages: Sequence[int],
     stop: Callable[[], bool] | None,
     played: Mapping[int, Mapping[int, float]],
+    clinch: bool = False,
 ) -> SimResult:
     """The sim of `season_sim` on the numbers `model` of its draw."""
+    if clinch and not pages:
+        raise ValueError("the Clinch lines read the runs of the pages, so the sim needs a page")
     rosters = sorted(records)
     regular = sorted(remaining)
     weeks = regular + bracket_weeks
@@ -390,6 +397,9 @@ def _season_sim(
                                                    effective_runs=effective_runs, weeks=regular),
                              score_to_beat=scores_to_beat(rid, run_table, regular))
               for rid in sorted(set(pages))}
+    lines = (clinch_lines(records, remaining[regular[0]], weeks_left=weeks_left, spots=spots, bye_count=bye_count,
+                          median_game=median_game, runs=[(r.weight, *r.weeks[0]) for r in log])
+             if clinch and weeks_left else {})
     return SimResult(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,
         records=dict(records), schedule={w: list(remaining[w]) for w in regular},
@@ -403,7 +413,8 @@ def _season_sim(
         sample=stored, sample_weights=stored_weights, pages=blocks,
         fact=league_fact({rid: t.playoff for rid, t in teams.items()}, spots, weeks_left),
         played={w: dict(scores) for w, scores in played.items()},
-        board=[BoardTeam(roster_id=rid, goals=goals[rid]) for rid in rosters] if weeks_left else [],
+        board=[BoardTeam(roster_id=rid, goals=goals[rid], clinch=lines.get(rid, [])) for rid in rosters]
+        if weeks_left else [],
     )
 
 

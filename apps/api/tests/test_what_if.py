@@ -121,6 +121,15 @@ def test_two_equal_what_ifs_give_the_finish_lists_the_week_plans_the_score_to_be
     print("AT-20 board spot odds", board, "plans of the spot", len(plans))
 
 
+def test_a_what_if_holds_no_clinch_line(api):
+    # AT-21: the Clinch lines come from the weekly build only, so the board of a What-if holds the odds and the status.
+    body = api.post(WHAT_IF, json={"you": BO_GIRDS, "set": [WIN_ABOVE_WEEK_11]}).json()
+    print("AT-21 board of the What-if, first row:", body["board"][0])
+    assert len(body["board"]) == 12
+    assert all(set(row) == {"roster_id", "goals"} for row in body["board"])
+    assert "clinch" not in json.dumps(body)
+
+
 def test_the_what_if_reads_the_latest_published_week(api, repo):
     # An older week file with another week number: the route reads only week 10, the latest.
     week_9 = repo / "published" / "2026" / "week-09"

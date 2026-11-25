@@ -8,6 +8,7 @@ import {
   colorsOf,
   contrastRatio,
   setsOf,
+  statusPairsOf,
   textPairsOf,
   type BrandFile,
   type ColorSet,
@@ -109,6 +110,36 @@ describe("the sets of a brand", () => {
 
   it("writes no font and no radius, because the look owns them", () => {
     expect(css(brand())).not.toMatch(/--(font|radius)-|@font-face/);
+  });
+});
+
+describe("the status tints of The Race", () => {
+  it("writes the green tint of Clinched and the red tint of Out in each set, the same for every brand", () => {
+    for (const block of ["@theme static", ".dark"] as const) {
+      for (const token of ["in-tint", "in-ink", "out-tint", "out-ink"]) {
+        expect(declared(css(brand()), block, `color-status-${token}`)).toMatch(/^#[0-9a-f]{6}$/);
+      }
+    }
+    const other = brand({ light: { ...LIGHT, accent: "#b8342a" } });
+    expect(declared(css(other), "@theme static", "color-status-in-tint")).toBe(
+      declared(css(brand()), "@theme static", "color-status-in-tint"),
+    );
+    expect(declared(css(brand()), ".dark", "color-status-out-ink")).not.toBe(
+      declared(css(brand()), "@theme static", "color-status-out-ink"),
+    );
+  });
+
+  it("gives each pill text 4.5 to 1 or more on its own tint in each set", () => {
+    for (const name of ["light", "dark"] as const) {
+      const pairs = statusPairsOf(name);
+      expect(pairs).toHaveLength(2);
+      for (const pair of pairs) {
+        console.log(
+          `status pill ${name}: ${pair.text} on ${pair.surface} ${pair.ratio.toFixed(2)} to 1`,
+        );
+        expect(pair.ratio).toBeGreaterThanOrEqual(4.5);
+      }
+    }
   });
 });
 
