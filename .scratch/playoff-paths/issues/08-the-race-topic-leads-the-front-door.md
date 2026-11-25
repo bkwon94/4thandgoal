@@ -8,9 +8,14 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-24, AT-25, and AT-26.
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Suggestions of Bo Girds in `cpc` week 11 put the race Topic first.
 - [x] A fixture that runs as week 15 does not pin the race Topic.
 - [x] The race Answer shows the top 3 Finishes, no pill for a team In the hunt, and the link to `/sim/2026/`.
 - [ ] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as acb982a1, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.

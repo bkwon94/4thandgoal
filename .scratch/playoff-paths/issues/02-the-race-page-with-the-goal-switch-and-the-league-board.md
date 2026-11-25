@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-3, AT-4, AT-5, AT-27,
 
 **Blocked by:** 01
 
-**Status:** in-review
+**Status:** done
 
 - [x] `week-11/sim.json` of `cpc` holds the odds and the status of the spot, the bye, and seeds 1 to 6 for each of 12 teams, and the board block.
 - [x] The open Goal of each team is the best Goal with odds of 5% or more, in the order 1 seed, bye, spot.
@@ -16,3 +16,8 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-3, AT-4, AT-5, AT-27,
 - [x] The Goal switch and the seed picker change the board bars and order.
 - [x] The page passes the WebKit overlap check at 390x660, 810x980, 1080x740, and 1280x800, in light and dark mode.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as 8920524e, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.

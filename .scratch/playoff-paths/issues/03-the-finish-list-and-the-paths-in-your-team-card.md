@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-6 to AT-11, AT-30, AT
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Finish list of Bo Girds in `cpc` week 11 runs 6-0 to 0-6, sums to 100% within 1 point, and gives 4-2 the final record 15-13.
 - [x] A NorCal Finish list runs 4-0 to 0-4 with no median results.
@@ -16,3 +16,8 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-6 to AT-11, AT-30, AT
 - [x] A sure Finish and a Finish under 0.5% have no Path, and the page shows their copy.
 - [x] The card and the sheet pass the WebKit overlap check at the 4 sizes, in light and dark mode.
 - [ ] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as 3a28f997, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.

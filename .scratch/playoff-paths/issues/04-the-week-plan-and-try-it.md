@@ -8,10 +8,15 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-12, AT-13, AT-20, AT-
 
 **Blocked by:** 03
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Week plan of the first Path of the 4-2 Finish of Bo Girds holds 3 rows, weeks 12 to 14.
 - [x] "Try it" odds equal a What-if of the plan within 1 point.
 - [ ] Two equal What-if calls on the local evidence API give equal responses.
 - [ ] The sheet and the set line pass the WebKit overlap check at the 4 sizes, in light and dark mode.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as 09965276, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.

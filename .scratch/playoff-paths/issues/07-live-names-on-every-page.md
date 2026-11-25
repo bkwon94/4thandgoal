@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-44 to AT-48 and AT-54
 
 **Blocked by:** none
 
-**Status:** in-review
+**Status:** done
 
 - [ ] The week page and The Race of `cpc` week 11 show "Teez Nuts" in every slot and blurb, and "Puka Deez..." nowhere.
 - [x] A test with a stubbed Sleeper answer shows a new avatar and keeps the local image until it loads.
@@ -16,3 +16,8 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-44 to AT-48 and AT-54
 - [x] A second page within 5 minutes makes no new Sleeper call.
 - [x] The midseason report makes no Sleeper call.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as cd618be1, 5f26bcb0, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.

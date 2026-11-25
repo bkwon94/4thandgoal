@@ -8,9 +8,14 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-49 and AT-50.
 
 **Blocked by:** 02
 
-**Status:** in-review
+**Status:** done
 
 - [x] A fresh browser with Your team set sees the Announcement on the first load and not after a dismiss.
 - [x] The Sim tile reads "The Race" and links to `/sim/2026/`.
 - [x] The Announcement passes the WebKit overlap check at the 4 sizes, in light and dark mode.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as f2f389ee, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.

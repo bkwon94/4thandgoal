@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-17, AT-21, AT-39, AT-
 
 **Blocked by:** 04
 
-**Status:** in-review
+**Status:** done
 
 - [x] The Clinch lines of `cpc` week 11 agree with a check of every set of results by hand.
 - [x] Each pill text has a contrast of 4.5:1 or more in light and dark mode.
@@ -16,3 +16,8 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-17, AT-21, AT-39, AT-
 - [x] The playoff fixture writes no Finish list, Path, or board.
 - [x] The board passes the WebKit overlap check at the 4 sizes, in light and dark mode.
 - [x] `make check-fast` passes.
+
+## Comments
+
+- Merged into `playoff-paths` as c053fbdb, 2026-11-25. Closes with the squash merge of the spec PR.
+- Proof: `make check-fast` passed at each merge, and the Judge gave PASS to each test of this ticket in `VERDICTS.md`.
