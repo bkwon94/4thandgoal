@@ -164,12 +164,12 @@ Then: the page block equals the page of Bo Girds in `week-11/sim.json`.
 Files: `evidence/AT-22/check.py`, `evidence/AT-22/output.txt`, `evidence/AT-22/page.diff`, `evidence/AT-22/request.json`, `evidence/AT-22/response.json`
 Observation: The call with `{"you": 6, "set": []}` returns 200 with 142385 bytes. The script compares the response page with `pages.6` of `clients/cpc/published/2026/week-11/sim.json` of pp-head. That file is the same rebuilt file as in the Spec worktree. The page keys are the same, and 0 JSON paths differ. `page.diff` is empty.
 
-## AT-23: A What-if on Fly stays under 2.5 s
+## AT-23: Retired. A What-if on Fly stays under 2.5 s
 
 App: pipeline
 Then: the median time is 2.5 s or less.
 Files: none
-Observation: Not recorded. Its Given line needs the merged branch deployed to Fly, and its Evidence line says it runs after the merge. No unmerged branch deploys to Fly.
+Observation: Not recorded. The test is retired, so it gets no evidence. It needs the merged branch deployed to Fly.
 
 ## AT-24: The race Topic is the first Suggestion in a regular week
 

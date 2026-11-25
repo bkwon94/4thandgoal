@@ -190,7 +190,7 @@ When: the reader calls the What-if route for Bo Girds with no set result.
 Then: the page block equals the page of Bo Girds in `week-11/sim.json`.
 Evidence: The request, the response, and a diff with the file.
 
-AT-23: A What-if on Fly stays under 2.5 s
+AT-23: Retired. A What-if on Fly stays under 2.5 s
 App: pipeline
 Stories: none
 Given: the merged branch deployed to Fly, with `cpc` 2026 week 11.
@@ -530,4 +530,6 @@ Out of scope "A bigger API machine": AT-23 runs on the existing machine. No othe
 
 ## Revisions
 
-None yet.
+- 2026-11-24: AT-8 lets the Best chance Path of a Finish stay under 90%, as the PRD says. Brian approved it.
+- 2026-11-25: AT-19 sets the 50 KB bar on the latest week only, and records the size of week 10. Brian chose option D.
+- 2026-11-25: AT-23 is retired. It needs the merged branch on Fly, so no evidence can exist before the merge. The PR lists the Fly timing as a check after the merge. Brian chose it.
