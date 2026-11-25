@@ -10,9 +10,9 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-19, AT-23, AT-51, and
 
 **Status:** ready-for-agent
 
-- [ ] The playoff fixture shows the bracket view with no Goal switch and no board.
-- [ ] `sim.json` of `cpc` week 11, the latest week, is 50 KB gzip or less, and the size of week 10 is recorded.
-- [ ] A search finds no service worker, `Notification`, or `PushManager`.
+- [x] The playoff fixture shows the bracket view with no Goal switch and no board.
+- [x] `sim.json` of `cpc` week 11, the latest week, is 50 KB gzip or less, and the size of week 10 is recorded.
+- [x] A search finds no service worker, `Notification`, or `PushManager`.
 - [ ] After the merge, the median of 10 What-if calls on Fly is 2.5 s or less.
 - [ ] `make check-fast` passes.
 

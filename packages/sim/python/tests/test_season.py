@@ -265,7 +265,9 @@ def _week_file(tmp_path, **kwargs):
 def test_a_rerun_of_the_week_file_with_no_set_result_gives_the_numbers_of_the_file(tmp_path):
     result, file = _week_file(tmp_path)
     again = rerun(file, pages=[1])
-    assert again.pages[1] == result.pages[1] == file.pages[1]
+    # The file leaves out the weeks and the ladder of each page, so the file page equals the dump of the page.
+    assert again.pages[1] == result.pages[1]
+    assert again.pages[1].model_dump() == file.pages[1].model_dump()
     assert again.teams == result.teams
     assert again.sample == result.sample
 

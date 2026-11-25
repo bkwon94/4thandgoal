@@ -9,7 +9,7 @@ import pytest
 
 from league.league_settings import LeagueSettings
 from sim.published import read_week_sim, sim_file, week_sim_file, write_sim, write_week_sim
-from sim.season import SetResult, rerun, season_sim
+from sim.season import SetResult, SimResult, rerun, season_sim
 
 SEASON = 2026
 ROSTERS = range(1, 9)
@@ -231,7 +231,9 @@ def test_each_reason_of_the_real_cpc_week_10_file_is_true():
     sim = json.loads(CPC_WEEK_10.read_text(encoding="utf-8"))
     records = {int(rid): tuple(record) for rid, record in sim["records"].items()}
     spots = sim["parameters"]["playoff_spots"]
-    rows = [(int(you), row) for you, page in sim["pages"].items() for week in page["weeks"] for row in week["root_for"]]
+    # The file leaves out the weeks of each page, so the sim runs again on the numbers of its draw to give them.
+    pages = rerun(SimResult.model_validate(sim), pages=[int(rid) for rid in sim["pages"]]).pages
+    rows = [(you, row.model_dump()) for you, page in pages.items() for week in page.weeks for row in week.root_for]
     assert rows
     assert [row["reason"] for _, row in rows] == [_true_reason(you, row["loser"], records, spots) for you, row in rows]
 
@@ -280,7 +282,9 @@ def test_the_week_file_holds_the_pages_and_the_season_file_keeps_its_shape(sim, 
     data = json.loads(out.read_text(encoding="utf-8"))
     assert {"schema_version", "effective_runs", "sample", "sample_weights", "pages", "fact", "names"} <= set(data)
     assert sorted(data["pages"]) == [str(rid) for rid in ROSTERS]
-    assert read_week_sim(out) == week_sim_file(sim, names)
+    # The file leaves out the weeks and the ladder of each page, so the file reads back as the dump of the result.
+    assert all("weeks" not in page and "ladder" not in page for page in data["pages"].values())
+    assert read_week_sim(out).model_dump() == week_sim_file(sim, names).model_dump()
     season = write_sim(sim_file(sim, names), tmp_path).read_text(encoding="utf-8")
     for key in ("effective_runs", "sample_weights", "pages", "fact"):
         assert f'"{key}"' not in season

@@ -182,7 +182,7 @@ function RegularSimPage({
   const finishes = page.finishes[goal] ?? file.finishes[goal] ?? [];
 
   const card = what.card;
-  const nextWeek = file.weeks[0]?.week ?? null;
+  const nextWeek = file.week_card?.week ?? null;
   // The spot odds follow the What-if through the playoff odds of the page. Another Goal reads the Goals of the page, and
   // the file when the answer holds none.
   const goalOdds =

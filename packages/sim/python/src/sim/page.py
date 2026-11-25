@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from league.models import OddsStatus
 from sim.goals import GoalOdds, open_goal
@@ -162,8 +162,10 @@ class SimPage(BaseModel):
     # The smallest count of more wins with playoff odds of IN_ODDS or more. None when no count reaches it.
     need: int | None
     sentence: str
-    ladder: list[LadderStep]
-    weeks: list[PageWeek]
+    # The ladder feeds the sentence, and the weeks hold the results of each regular week left. The page has no week
+    # switch and reads the week card, so the dump leaves both out to keep the week file small. A file read back has none.
+    ladder: list[LadderStep] = Field(default_factory=list, exclude=True)
+    weeks: list[PageWeek] = Field(default_factory=list, exclude=True)
     # The playoff part, with no regular week left. None in the regular season.
     playoffs: Playoffs | None = None
     # The odds and the status of each Goal of The Race, by its key: "spot", "bye", and "seed-1" to the last seed.

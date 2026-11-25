@@ -5,6 +5,7 @@
 import { describe, expect, it } from "bun:test";
 import json from "../fixtures/sim.json";
 import weekJson from "../fixtures/week-sim.json";
+import weekElevenJson from "../fixtures/week-sim-week-11.json";
 import { simSchema, weekSimSchema } from "./sim";
 
 describe("the sim schema", () => {
@@ -34,18 +35,26 @@ describe("the week sim schema", () => {
     expect(sim.sample_weights).toHaveLength(200);
     expect(Object.keys(sim.pages)).toHaveLength(12);
     // Bo Girds, roster 6, plays Maye d'force B with U, roster 9, in week 11, with four results.
-    const week = sim.pages[6].weeks[0];
-    expect(sim.names[week.opponent]).toBe("Maye d'force B with U");
-    expect(week.results.map((r) => r.wins_added)).toEqual([2, 1, 1, 0]);
-    expect(sim.pages[6].ladder).toHaveLength(9);
+    const card = sim.pages[6].week_card!;
+    expect([card.week, sim.names[card.opponent]]).toEqual([11, "Maye d'force B with U"]);
+    expect(card.results).toHaveLength(4);
     expect(sim.fact).toMatch(/managers fight for the last/);
   });
 
-  it("fails on a root-for row with a reason that is not one of the five", () => {
-    const bad = structuredClone(weekJson) as {
-      pages: Record<string, { weeks: { root_for: { reason: string }[] }[] }>;
+  it("reads a page with no week switch data: the week card holds the next week", () => {
+    const raw = weekElevenJson as { pages: Record<string, object> };
+    expect(Object.values(raw.pages).some((page) => "weeks" in page || "ladder" in page)).toBe(
+      false,
+    );
+    const sim = weekSimSchema.parse(weekElevenJson);
+    expect(sim.pages[6].week_card!.week).toBe(12);
+  });
+
+  it("fails on a week card result that is not a win or a loss", () => {
+    const bad = structuredClone(weekElevenJson) as {
+      pages: Record<string, { week_card: { results: { game: string }[] } }>;
     };
-    bad.pages["6"].weeks[0].root_for[0].reason = "Out of nowhere";
+    bad.pages["6"].week_card.results[0].game = "tie";
     expect(weekSimSchema.safeParse(bad).success).toBe(false);
   });
 });

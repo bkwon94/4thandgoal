@@ -65,53 +65,6 @@ const gameSchema = z.enum(["win", "loss"]);
 const medianSchema = z.enum(["above", "below"]).nullable();
 const oddsSchema = z.number().int().nullable();
 
-/* One count of more wins in the weeks left, with its playoff odds and its chance in percent of all runs. */
-export const ladderStepSchema = z.object({
-  more_wins: z.number().int(),
-  playoff: oddsSchema,
-  chance: z.number(),
-  // True when the chance times the effective runs is under 400 runs, so the page shows "about".
-  about: z.boolean(),
-});
-
-/* One result of Your team in one week, with the odds after it. */
-export const weekResultSchema = z.object({
-  game: gameSchema,
-  median: medianSchema,
-  wins_added: z.number().int(),
-  playoff: oddsSchema,
-  chance: z.number(),
-  about: z.boolean(),
-});
-
-/* The five reasons of a root-for row (PRD, the page block). */
-export const rootForReasonSchema = z.enum([
-  "2 wins ahead of you",
-  "1 win ahead of you",
-  "Level with you",
-  "1 win behind you",
-  "In the race for the last spot",
-]);
-
-/* One result of another game that lifts the odds of Your team after a loss, to `playoff` in whole points. */
-export const rootForSchema = z.object({
-  winner: z.number(),
-  loser: z.number(),
-  reason: rootForReasonSchema,
-  playoff: z.number().int(),
-  about: z.boolean(),
-});
-
-/* One regular week left for Your team: four results with a median game, two with none, and up to 3 root-for rows. */
-export const pageWeekSchema = z.object({
-  week: z.number(),
-  opponent: z.number(),
-  results: z.array(weekResultSchema),
-  loss_playoff: oddsSchema,
-  loss_about: z.boolean(),
-  root_for: z.array(rootForSchema).max(3),
-});
-
 /* One result of Your team in its bracket game of this round, with the title odds after it in whole percent. */
 export const playoffResultSchema = z.object({
   game: gameSchema,
@@ -332,8 +285,6 @@ export const simPageSchema = z.object({
   // The smallest count of more wins with playoff odds of 90 or more, which the sentence names.
   need: z.number().int().nullable(),
   sentence: z.string(),
-  ladder: z.array(ladderStepSchema),
-  weeks: z.array(pageWeekSchema),
   // The playoff part, with no regular week left. Null in the regular season. An older file has no key.
   playoffs: playoffsSchema.nullable().default(null),
   // The Goals of The Race, empty with no regular week left, and the Goal the page opens on. An older file has neither.
