@@ -171,10 +171,38 @@ export const goalOddsSchema = z.object({
 /* The Goals of one team by key: "spot", "bye" in a league with a bye, and "seed-1" to the last seed. */
 const goalsSchema = z.record(z.string(), goalOddsSchema);
 
-/* One team of the League board: the odds and the status of each Goal. */
+/* One result of another team in a way of a Clinch line: a game by its winner and loser, or a median result. */
+const otherResultSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("game"), winner: z.number(), loser: z.number() }),
+  z.object({
+    kind: z.literal("median"),
+    roster_id: z.number(),
+    median: z.enum(["above", "below"]),
+  }),
+]);
+
+/* One way of a Clinch line: the result of the team itself, null for any result, the results of other teams it needs, and
+   the share of the runs that fit it. */
+export const clinchWaySchema = z.object({
+  game: z.enum(["win", "loss"]).nullable(),
+  median: z.enum(["above", "below"]).nullable(),
+  others: z.array(otherResultSchema),
+  chance: z.number(),
+});
+
+/* The Clinch line of one team for the spot or the bye: each way this week clinches the Goal or ends it, most likely first. */
+export const clinchLineSchema = z.object({
+  goal: z.enum(["spot", "bye"]),
+  status: z.enum(["in", "out"]),
+  ways: z.array(clinchWaySchema).min(1),
+});
+
+/* One team of the League board: the odds and the status of each Goal, and the Clinch lines of this week. The weekly build
+   writes the lines. A What-if answer and an older file hold none. */
 export const boardTeamSchema = z.object({
   roster_id: z.number(),
   goals: goalsSchema,
+  clinch: z.array(clinchLineSchema).default([]),
 });
 
 /* One condition of a Path: another team ends at the final record `record` or worse. */

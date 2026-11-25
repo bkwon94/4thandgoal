@@ -90,8 +90,8 @@ def week_sim(
 def week_sim_with_pages(
     season: int, week: int, history: History, *, client: Client, runs: int = SIM_RUNS,
 ) -> SimResult | None:
-    """The sim of the week file after `week`: the sim of `week_sim` with the page block of each team. None when the
-    week gives no odds inputs.
+    """The sim of the week file after `week`: the sim of `week_sim` with the page block of each team and the Clinch
+    lines of the League board. None when the week gives no odds inputs.
 
     It reads the bye weeks from the NFL schedule, as `week_sim` and the midseason sim do, so each sim file reads one
     source. The nflverse extract of the build reads its bye weeks from the same cached schedule file.
@@ -99,7 +99,7 @@ def week_sim_with_pages(
     inputs = week_inputs(season, week, history, client=client)
     if inputs is None:
         return None
-    return _sim(inputs, season, week, client, runs, pages=sorted(inputs.records))
+    return _sim(inputs, season, week, client, runs, pages=sorted(inputs.records), clinch=True)
 
 
 def sim_of_week(
@@ -113,12 +113,13 @@ def sim_of_week(
 
 def _sim(
     inputs: SimInputs | None, season: int, week: int, client: Client, runs: int, pages: list[int] | None = None,
+    clinch: bool = False,
 ) -> SimResult | None:
     if inputs is None:
         return None
     return season_sim(inputs.scores, inputs.records, inputs.remaining, season=season, week=week,
                       settings=client.settings, projected=inputs.projected, runs=runs, pages=pages or (),
-                      played=inputs.played)
+                      played=inputs.played, clinch=clinch)
 
 
 # The weeks of the playoff fixtures of ACCEPTANCE.md: the bracket of week 15 set, the bracket of week 16 set after a

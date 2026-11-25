@@ -7,6 +7,8 @@
 - The eight base roles, the derived roles, and the formula of each derived role. A brand can override a derived role.
 - The brand CSS: the light set in one `@theme` block, then the dark set under `.dark`. The dark class on `<html>` makes dark the default.
 - The text pairs of the site and the WCAG contrast ratio of each pair in each set.
+- The green and red tints of the status pill of The Race, the same for every client, in both sets of the brand CSS. Each
+  ink passes 4.5 to 1 on its own tint.
 
 ## Ports
 

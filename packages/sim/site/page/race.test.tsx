@@ -270,3 +270,74 @@ describe("the Week plan of a Path", () => {
     expect(within(plan).queryByRole("button", { name: /^Try it/ })).toBeNull();
   });
 });
+
+describe("the pills and the Clinch lines of the League board", () => {
+  const rowOf = (id: number) =>
+    within(screen.getByRole("group", { name: /^League board/ }))
+      .getAllByRole("button")
+      .find((bar) => Number(bar.getAttribute("data-roster")) === id)!;
+  const pillOf = (id: number) => rowOf(id).querySelector("[data-status-pill]");
+
+  it("shows a red Out pill for a team out of a spot and no pill for a team in the hunt", () => {
+    render(<SimPage sim={sim} you={YOU} />);
+    for (const team of sim.board) {
+      const pill = pillOf(team.roster_id);
+      const status = team.goals.spot.status;
+      if (status === "open") expect(pill).toBeNull();
+      else expect(pill?.textContent).toBe(status === "out" ? "Out" : "Clinched spot");
+    }
+    // The name of the bar reads the pill too, so a screen reader hears it.
+    expect(rowOf(4).getAttribute("aria-label")).toContain("Out.");
+    // NFC Least and Unsolicited Dak Picks are out of a spot after week 11.
+    expect(pillOf(4)?.getAttribute("data-status-pill")).toBe("out");
+    expect(pillOf(11)?.getAttribute("data-status-pill")).toBe("out");
+  });
+
+  it("names the best Goal locked on the green pill of a team that clinched", () => {
+    const clinched = structuredClone(sim);
+    const fridge = clinched.board.find((row) => row.roster_id === 3)!;
+    fridge.goals.spot.status = "in";
+    fridge.goals.bye.status = "in";
+    render(<SimPage sim={clinched} you={YOU} />);
+    expect(pillOf(3)?.textContent).toBe("Clinched bye");
+    expect(pillOf(3)?.getAttribute("data-status-pill")).toBe("clinched");
+  });
+
+  it("shows each Clinch line of a spot under its team, with the Goal named", () => {
+    render(<SimPage sim={sim} you={YOU} />);
+    expect(
+      within(rowOf(3)).getByText(
+        "Clinches a spot with a win, a median win, and a Bo Girds loss to Puka Deez...",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(rowOf(7)).getByText(
+        "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+      ),
+    ).toBeTruthy();
+    // The line of a team names at most 2 results beyond its own, then the count of the rest.
+    expect(
+      within(rowOf(9)).getByText(
+        "Clinches a spot with a win, a median win, a Bo Girds loss to Puka Deez..., a Nico Collinsizer median miss, and 2 more results.",
+      ),
+    ).toBeTruthy();
+    expect(rowOf(3).getAttribute("aria-label")).toContain("Clinches a spot with a win");
+    // A team with no line for a spot shows none.
+    expect(rowOf(10).querySelector("[data-clinch-line]")).toBeNull();
+  });
+
+  it("shows the Clinch lines of a bye on a tap of Bye, and none on a Seed Goal", () => {
+    render(<SimPage sim={sim} you={YOU} />);
+    fireEvent.click(screen.getByRole("radio", { name: "Bye" }));
+    expect(within(rowOf(7)).getByText("Out of the bye race with any loss.")).toBeTruthy();
+    // A name that starts with a vowel takes "an".
+    expect(
+      within(rowOf(6)).getByText(
+        "Out of the bye race with a loss, a median miss, an Unsolicited Dak Picks loss to Maye d'force B with U, a NFC Least loss to Lil Fridge, and 1 more result.",
+      ),
+    ).toBeTruthy();
+    expect(rowOf(3).querySelector("[data-clinch-line]")).toBeNull();
+    fireEvent.click(screen.getByRole("radio", { name: "Seed" }));
+    expect(document.querySelector("[data-clinch-line]")).toBeNull();
+  });
+});

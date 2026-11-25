@@ -1,7 +1,7 @@
 /**
  * The League board of The Race: one bar per team with its odds of the Goal, in odds order. Each bar is ink at 80%, and only
- * Your team takes the accent and the "You" tag. A tap on Your team opens the Your team card, and a tap on another team opens
- * its sheet.
+ * Your team takes the accent and the "You" tag. A quiet pill marks a team Clinched or Out, and the Clinch lines of this week
+ * sit under their team. A tap on Your team opens the Your team card, and a tap on another team opens its sheet.
  */
 "use client";
 
@@ -9,9 +9,17 @@ import { LayoutGroup, motion } from "framer-motion";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import { BarChart, BarChartBar } from "@cpc/design/ui/bar-chart";
-import type { WeekSim } from "../schema/sim-types";
+import type { ClinchLine, WeekSim } from "../schema/sim-types";
+import { clinchLinesOf, clinchText } from "./clinch-copy";
 import { CARD, LABEL, PRESS, nameOf, oddsText, recordText } from "./format";
-import { type GoalKey, boardOdds, boardOrder, goalName } from "./goals";
+import {
+  type GoalKey,
+  type StatusPill as Pill,
+  boardOdds,
+  boardOrder,
+  goalName,
+  pillOf,
+} from "./goals";
 
 /* --ease-smooth-out of transitions-dev, for each move of a row and each fill of a bar. */
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -38,6 +46,48 @@ function OddsBar({ value, index, mine }: { value: number; index: number; mine: b
           transitionDelay: `${index * 40}ms`,
         }}
       />
+    </span>
+  );
+}
+
+/* The quiet tint of the status pill: green for Clinched, red for Out. The tokens live in the brand CSS of packages/design. */
+const PILL_TINT = {
+  clinched: "bg-status-in-tint text-status-in-ink",
+  out: "bg-status-out-tint text-status-out-ink",
+} as const;
+
+function StatusPill({ pill }: { pill: Pill }) {
+  return (
+    <span
+      data-status-pill={pill.kind}
+      className={cn(
+        "rounded-pill px-sp-2 py-sp-0 text-meta inline-flex flex-none items-center leading-tight font-bold whitespace-nowrap",
+        PILL_TINT[pill.kind],
+      )}
+    >
+      {pill.label}
+    </span>
+  );
+}
+
+/* The Clinch lines of one team under its bar, in the lighter text of the board. A line that clinches takes the second ink,
+   and a line that ends the Goal takes the mute ink. */
+function ClinchLines({ sim, lines }: { sim: WeekSim; lines: ClinchLine[] }) {
+  if (lines.length === 0) return null;
+  return (
+    <span className="col-span-2 flex flex-col">
+      {lines.map((line) => (
+        <span
+          key={`${line.goal}-${line.status}`}
+          data-clinch-line={line.status}
+          className={cn(
+            "text-meta leading-snug text-pretty",
+            line.status === "in" ? "text-ink-2" : "text-mute",
+          )}
+        >
+          {clinchText(sim, line)}
+        </span>
+      ))}
     </span>
   );
 }
@@ -82,6 +132,8 @@ export function LeagueBoard({
             const odds = boardOdds(team, goal);
             const mine = id === you;
             const record = sim.records[id];
+            const pill = pillOf(team, goal);
+            const lines = clinchLinesOf(team.clinch, goal);
             return (
               <motion.div
                 key={id}
@@ -92,7 +144,11 @@ export function LeagueBoard({
                   value={String(id)}
                   data-roster={id}
                   aria-haspopup={mine ? undefined : "dialog"}
-                  aria-label={`${nameOf(sim, id)}${mine ? ", your team" : ""}: ${oddsText(odds)} odds of ${name}`}
+                  aria-label={[
+                    `${nameOf(sim, id)}${mine ? ", your team" : ""}: ${oddsText(odds)} odds of ${name}.`,
+                    ...(pill ? [`${pill.label}.`] : []),
+                    ...lines.map((line) => clinchText(sim, line)),
+                  ].join(" ")}
                   className={ROW}
                 >
                   <span className="gap-sp-1 flex min-w-0 flex-col">
@@ -107,9 +163,14 @@ export function LeagueBoard({
                       </span>
                       {mine && <span className={cn(LABEL, "text-ink flex-none")}>You</span>}
                     </span>
-                    {record && (
-                      <span className="text-meta text-mute tabular-nums">
-                        {recordText([record[0], record[1]])}
+                    {(pill || record) && (
+                      <span className="gap-sp-2 flex items-center">
+                        {pill && <StatusPill pill={pill} />}
+                        {record && (
+                          <span className="text-meta text-mute tabular-nums">
+                            {recordText([record[0], record[1]])}
+                          </span>
+                        )}
                       </span>
                     )}
                   </span>
@@ -117,6 +178,7 @@ export function LeagueBoard({
                     {oddsText(odds)}
                   </span>
                   <OddsBar value={odds} index={index} mine={mine} />
+                  <ClinchLines sim={sim} lines={lines} />
                 </BarChartBar>
               </motion.div>
             );
