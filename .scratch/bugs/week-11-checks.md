@@ -1,7 +1,7 @@
 # The week 11 data breaks four checks
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-week-11-checks`.
 Source: the session of 2026-11-24. The Check of `f44dc5b1` (run 45506075668) failed after the cpc week 11 publish.
 Boundary: holds. 4 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -134,3 +134,10 @@ Test verdict: PASS
 Smoke: flows `Week report`, `Manager page`, `Analyzer`. "Smoke run: 3 flows, 3 passed, 0 failed". Shots in `.scratch/bugs/week-11-checks/smoke/`.
 
 ## Comments
+
+1. Closes with the squash merge of the PR of `bug-week-11-checks`. Commits: `(eval):1:`, `command`, `not`, `found:`, `tac`. Date: 2026-11-24.
+2. `make check-fast BASE=main` passes with 1972 site tests, the smoke run passes 3 flows, and the loop of each item went red, then green.
+3. The first quick Judge gave item 2 FAIL because no Analyzer smoke flow ran; the fix round added it, and a fresh Judge gave PASS.
+4. The smoke run's local API rewrites the tracked files of `clients/cpc/data/2026/history/week-11/`; this run put them back by hand each time.
+5. `apps/site/e2e/front-door-tour.spec.ts:354` and `apps/site/e2e/eggs.spec.ts:165` still pin live team names, and the title at `apps/site/e2e/analyzer-stage.spec.ts:768` still names The Blue Tent.
+6. Read 9 files: AGENTS.md, apps/site/AGENTS.md, .claude/plugin/skills/quick/format.md, .scratch/bugs/week-11-checks.md, apps/pipeline/tests/test_topics.py, apps/site/e2e/analyzer-stage.spec.ts, apps/site/src/fixtures/raw-teams.ts, packages/managers/site/page/moves.tsx, packages/week/site/chapters/trades.tsx.
