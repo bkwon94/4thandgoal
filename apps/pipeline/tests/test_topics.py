@@ -11,6 +11,7 @@ from fakes import FakeJev, fixture_nflverse, no_claims, no_news
 from test_pipeline import _fake, _no_bytes, _repo_with_history
 
 from cornerstone.pipeline import run_build, run_page_json
+from cornerstone.topic_blocks import _race_pill
 from cornerstone.topics import write_topics
 from league.models import Week
 from league.parse import parse_week
@@ -371,3 +372,11 @@ def test_a_week_with_no_sim_file_has_no_finishes_and_no_pill(tmp_path):
     """A client with no sim package writes no sim.json, so the race Answer keeps only the ladder."""
     block = _block(tmp_path, "cpc", "playoff_race")
     assert (block["finishes"], block["pill"]) == ([], None)
+
+
+def test_the_pill_of_a_team_with_a_locked_2_seed_and_a_locked_bye_reads_clinched_bye():
+    """The best Clinched label is the 1 seed, then the bye, then the spot, as the site rule pillOf reads it."""
+    goals = {"spot": {"status": "in"}, "bye": {"status": "in"}, "seed-1": {"status": "out"},
+             "seed-2": {"status": "in"}}
+    pill = _race_pill({"goals": goals})
+    assert (pill.kind, pill.label) == ("clinched", "Clinched bye")

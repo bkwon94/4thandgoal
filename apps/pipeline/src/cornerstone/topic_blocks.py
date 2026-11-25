@@ -239,7 +239,7 @@ def _race_finishes(sim_page: dict) -> list[LadderFinish]:
 
 
 def _race_pill(sim_page: dict) -> RacePill | None:
-    """The pill of the spot Goal, the Goal of the race Answer. Clinched names the best Goal locked: a seed, then the
+    """The pill of the spot Goal, the Goal of the race Answer. Clinched names the best Goal locked: the 1 seed, then the
     bye, then the spot. None for a team In the hunt."""
     goals = sim_page.get("goals", {})
     spot = goals.get("spot")
@@ -247,10 +247,8 @@ def _race_pill(sim_page: dict) -> RacePill | None:
         return None
     if spot["status"] == "out":
         return RacePill(kind="out", label="Out")
-    seeds = sorted((int(key.split("-")[1]) for key, goal in goals.items()
-                    if key.startswith("seed-") and goal["status"] == "in"))
-    if seeds:
-        return RacePill(kind="clinched", label=f"Clinched {seeds[0]} seed")
+    if goals.get("seed-1", {}).get("status") == "in":
+        return RacePill(kind="clinched", label="Clinched 1 seed")
     if goals.get("bye", {}).get("status") == "in":
         return RacePill(kind="clinched", label="Clinched bye")
     return RacePill(kind="clinched", label="Clinched spot")
