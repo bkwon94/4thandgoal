@@ -348,7 +348,7 @@ describe("the pills and the Clinch lines of the League board", () => {
     ).toBeTruthy();
     expect(
       within(rowOf(7)).getByText(
-        "Out with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
+        "Out of the playoffs with a loss, a median miss, a median win by The Blue Tent, a 💿 🐑 median win, and 1 more result.",
       ),
     ).toBeTruthy();
     // The line of a team names at most 2 results beyond its own, then the count of the rest.

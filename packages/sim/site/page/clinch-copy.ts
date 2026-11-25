@@ -43,7 +43,7 @@ function wayText(sim: WeekSim, line: ClinchLine, way: ClinchWay, shown: number):
     line.status === "in"
       ? `Clinches ${line.goal === "spot" ? "a spot" : "a bye"}`
       : line.goal === "spot"
-        ? "Out"
+        ? "Out of the playoffs"
         : "Out of the bye race";
   const others = way.others.map((other) => otherResult(sim, other));
   const more = others.length - shown;
