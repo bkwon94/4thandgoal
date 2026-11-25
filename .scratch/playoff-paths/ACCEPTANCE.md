@@ -161,9 +161,9 @@ Evidence: The script and the pages with a gap.
 AT-19: The sim file stays small
 App: pipeline
 Stories: none
-Given: `cpc` 2026 week 11 and `cpc` 2026 week 10 rebuilt on the branch.
+Given: `cpc` 2026 week 11, the latest week, and `cpc` 2026 week 10, both rebuilt on the branch.
 When: the reader measures `sim.json` with gzip.
-Then: each file is 50 KB gzip or less.
+Then: the file of the latest week is 50 KB gzip or less. The size of week 10 is in the record, with no bar, because a past week loads rarely.
 Evidence: The command and the sizes.
 
 AT-20: A What-if returns the Paths and the board odds
