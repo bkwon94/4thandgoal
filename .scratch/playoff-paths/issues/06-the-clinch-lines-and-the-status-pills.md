@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-17, AT-21, AT-39, AT-
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Clinch lines of `cpc` week 11 agree with a check of every set of results by hand.
 - [x] Each pill text has a contrast of 4.5:1 or more in light and dark mode.
