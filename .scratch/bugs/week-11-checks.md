@@ -131,6 +131,6 @@ Test verdict: PASS
 
 ## Smoke
 
-Smoke: flows `Week report`, `Manager page`. "Smoke run: 2 flows, 2 passed, 0 failed". Shots in `.scratch/bugs/week-11-checks/smoke/`.
+Smoke: flows `Week report`, `Manager page`, `Analyzer`. "Smoke run: 3 flows, 3 passed, 0 failed". Shots in `.scratch/bugs/week-11-checks/smoke/`.
 
 ## Comments
