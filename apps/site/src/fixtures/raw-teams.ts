@@ -53,9 +53,14 @@ export function latestRaw(client: string): { season: string; raw: string } {
   return { season, raw: join(data, season, week, "raw") };
 }
 
-/* Each team of the client, with its name from the published managers file and each rostered player with a name. */
-export function rawTeams(client: string): RawTeam[] {
-  const { season, raw } = latestRaw(client);
+/* Each team of the client, with its name from the published managers file and each rostered player with a name.
+   A `week` such as "week-10" reads the rosters of that week of the latest season, so a test of a recorded trade keeps
+   the rosters of the week it was recorded on. No `week` reads the latest week. */
+export function rawTeams(client: string, week?: string): RawTeam[] {
+  const latest = latestRaw(client);
+  const season = latest.season;
+  const raw =
+    week === undefined ? latest.raw : join(clientDir(client), "data", season, week, "raw");
   const read = <T>(path: string) => JSON.parse(readFileSync(path, "utf8")) as T;
   const rosters = read<RawRoster[]>(join(raw, "rosters.json"));
   const players = read<Record<string, RawPlayer>>(join(raw, "players.json"));

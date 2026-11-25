@@ -61,10 +61,14 @@ function Side({
         aria-label={`${side.team.name} gets`}
         className="gap-sp-2 m-0 flex list-none flex-col p-0"
       >
+        {/* The name keeps its longest word whole: it starts at the width of that word, so a word that does not fit
+            beside the photo moves the name under the photo instead of splitting, such as "Montgomery" in a pair card. */}
         {side.players.map((player) => (
-          <li key={player.name} className="gap-sp-2 flex min-w-0 items-center">
+          <li key={player.name} className="gap-sp-2 flex min-w-0 flex-wrap items-center">
             <PhotoFrame src={player.headshot} name={player.name} size="md" decorative />
-            <span className="text-body min-w-0 leading-tight font-semibold">{player.name}</span>
+            <span className="text-body min-w-min grow basis-0 leading-tight font-semibold">
+              {player.name}
+            </span>
           </li>
         ))}
         {side.picks.map((pick) => (

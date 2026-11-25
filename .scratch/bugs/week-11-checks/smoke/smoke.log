@@ -1,0 +1,10 @@
+PASS Week report 390x660 webkit in 8.1 s
+PASS Week report 810x980 webkit in 3.6 s
+PASS Week report 1080x740 webkit in 3.8 s
+PASS Week report 1280x800 chromium in 3.7 s
+PASS Manager page 390x660 webkit in 4.1 s
+PASS Manager page 810x980 webkit in 3.7 s
+PASS Manager page 1080x740 webkit in 4.0 s
+PASS Manager page 1280x800 chromium in 3.5 s
+PASS Analyzer 390x660 webkit in 33.1 s
+Smoke run: 3 flows, 3 passed, 0 failed

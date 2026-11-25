@@ -25,8 +25,13 @@ const CORS = {
   "access-control-allow-methods": "GET, POST",
 };
 
-/* The teams of the latest weekly build of the client, as the teams route of the API gives them. */
-const TEAMS = rawTeams(CLIENT);
+/* The week of the rosters of each recorded trade. The trades and their recorded answers come from the week 10 rosters,
+   and a later trade in the league moves their players, so the spec keeps the rosters of that week. Another client
+   reads its latest week. */
+const TRADE_WEEKS: Record<string, string> = { cpc: "week-10", norcal: "week-10" };
+
+/* The teams of the client, as the teams route of the API gives them, with the rosters of the week of its trades. */
+const TEAMS = rawTeams(CLIENT, TRADE_WEEKS[CLIENT]);
 
 /* The trade on the stage. In cpc it is trade T of the spec: Bo Girds gives Kenneth Walker III to Teehee for Tee Higgins
    and Bhayshul Tuten. In norcal it is the recorded trade of AT-20: The Mean Machine gives Tyler Allgeier to
@@ -302,14 +307,15 @@ async function tapAndTimeTokens(
   );
 }
 
-/* Opens trade B of the spec in cpc. The query fills two sides: The Blue Tent gets 5 from Lil Fridge, and Lil Fridge gets
-   Bucky Irving. The third side, All You Need Is Love, joins through "+", and its gets are picked in the sheets. */
+/* Opens trade B of the spec in cpc. The query fills two sides: roster 1 gets 5 from roster 3, and roster 3 gets
+   Bucky Irving. The third side, roster 2, joins through "+", and its gets are picked in the sheets. A manager can change
+   the name of a team in any week, so the function reads each name from TEAMS by roster. */
 async function openTradeB(page: Page) {
   await openAnalyzer(page, "?team=1&with=3&get=11560,1466,2449,3198,4034&give=11584");
   await page.getByRole("button", { name: "Add a team" }).click();
   await page
     .getByRole("dialog")
-    .getByRole("button", { name: /All You Need Is Love/ })
+    .getByRole("button", { name: teamName(2) })
     .click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   const pick = async (side: string, from: string, names: string[]) => {
@@ -320,8 +326,8 @@ async function openTradeB(page: Page) {
     await sheet.getByRole("button", { name: /^Done/ }).click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
   };
-  await pick("Team Three", "The Blue Tent", ["Rashee Rice", "Brock Bowers"]);
-  await pick("Team Two", "All You Need Is Love", ["Ashton Jeanty", "Jeremiyah Love"]);
+  await pick("Team Three", teamName(1), ["Rashee Rice", "Brock Bowers"]);
+  await pick("Team Two", teamName(2), ["Ashton Jeanty", "Jeremiyah Love"]);
 }
 
 /*
@@ -774,7 +780,7 @@ test.describe("the wait, with motion on", () => {
       await page.getByRole("button", { name: "Grade the Trade" }).click();
       await expect(page.locator(WAIT_HERO)).toBeVisible();
       await expect(page.locator(`${WAIT_HERO} [data-mesh-anchor]`)).toHaveCount(3);
-      const tent = rowOf(page, WAIT_HERO, "The Blue Tent");
+      const tent = rowOf(page, WAIT_HERO, teamName(1));
       await expect(tokensOf(tent)).toHaveCount(3);
       await expect(tent.getByText("+2", { exact: true })).toBeVisible();
       await lineAtRest(page);
