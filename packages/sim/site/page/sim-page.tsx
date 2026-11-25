@@ -18,10 +18,19 @@ import type { WhatIfApi } from "../lib/what-if-api";
 import { SimStage, type StageAsk } from "../stage/sim-stage";
 import { LABEL, PRESS, nameOf, oddsText, recordText, resultName } from "./format";
 import { GoalSwitch } from "./goal-switch";
-import { type GoalKey, goalName, goalShort, hasBye, openGoal, pageGoals } from "./goals";
+import {
+  type GoalKey,
+  boardOf,
+  goalName,
+  goalShort,
+  hasBye,
+  openGoal,
+  pageGoals,
+  pillOf,
+} from "./goals";
 import { FinishList } from "./finish-list";
 import { InPlayoffs, seasonLine } from "./in-playoffs";
-import { LeagueBoard } from "./league-board";
+import { LeagueBoard, StatusPill } from "./league-board";
 import { SoftText } from "./parts";
 import { TeamSheet } from "./team-sheet";
 import { useWhatIf } from "./use-what-if";
@@ -189,6 +198,9 @@ function RegularSimPage({
     goal === "spot"
       ? page.playoff
       : ((pageGoals(page)[goal] ?? pageGoals(file)[goal])?.odds ?? null);
+  // The status pill of Your team reads the same board as the League board, so the card and its bar always agree.
+  const yourRow = (what.board ?? boardOf(sim)).find((team) => team.roster_id === you);
+  const pill = yourRow ? pillOf(yourRow, goal) : null;
   const openCard = () => {
     setCardOpen(true);
     document
@@ -233,7 +245,10 @@ function RegularSimPage({
             <span className="gap-sp-1 flex min-w-0 flex-1 flex-col">
               <span className={cn(LABEL, "text-mute")}>Your team</span>
               <span className="text-lead leading-tight font-bold text-pretty">{name}</span>
-              <span className="text-meta text-mute tabular-nums">{recordText(file.record)}</span>
+              <span className="gap-x-sp-2 gap-y-sp-1 flex flex-wrap items-center">
+                {pill && <StatusPill pill={pill} />}
+                <span className="text-meta text-mute tabular-nums">{recordText(file.record)}</span>
+              </span>
             </span>
             <span className="flex flex-none flex-col items-end">
               <span data-goal-odds={oddsText(goalOdds)} className="flex">
