@@ -1,5 +1,5 @@
 ACCEPTANCE.md: aea7204695471ad1078ac2e1fcc8809887b6caaf
-EVIDENCE.md: bf044511723d6120252b2471d3e38261462d4933
+EVIDENCE.md: edd6b5ab6403233c40d811e08bacab367d93fa2f
 
 Test verdicts
 AT-1: PASS
@@ -40,7 +40,7 @@ AT-36: PASS
 AT-37: PASS
 AT-38: PASS
 AT-39: PASS
-AT-40: FAIL The Then line says each Clinch line names the Goal, but clinch-lines.txt and the board shots show the spot line of Immaculate Concepcion as "Out with a loss, a median miss, ..." with no Goal named.
+AT-40: PASS
 AT-41: PASS
 AT-42: PASS
 AT-43: PASS
