@@ -91,11 +91,12 @@ def test_a_client_with_no_chart_value_has_no_chart(tmp_path):
     assert read_client_values(folder, VALUE_MODELS).package(LeagueValues).chart is None
 
 
-def test_the_lock_of_cpc_is_00_00_eastern_on_tue_2026_11_24_and_norcal_has_none():
-    # AT-50: the Lock is one value in the client config. Norcal has no Lock, so it has no Deadline week.
+def test_the_lock_is_00_00_eastern_on_tue_2026_11_24_for_cpc_and_on_tue_2026_12_15_for_norcal():
+    # AT-24, AT-50: the Lock is one value in the client config. Each client sets its own Lock.
     lock = read_client_values(CPC, VALUE_MODELS).package(AnalyzerValues).lock
     assert lock == datetime(2026, 11, 24, 0, 0, tzinfo=ZoneInfo("America/New_York"))
-    assert read_client_values(ROOT / "clients" / "norcal", VALUE_MODELS).package(AnalyzerValues).lock is None
+    norcal_lock = read_client_values(ROOT / "clients" / "norcal", VALUE_MODELS).package(AnalyzerValues).lock
+    assert norcal_lock == datetime(2026, 12, 15, 0, 0, tzinfo=ZoneInfo("America/New_York"))
 
 
 def test_a_lock_with_no_utc_offset_fails(tmp_path):

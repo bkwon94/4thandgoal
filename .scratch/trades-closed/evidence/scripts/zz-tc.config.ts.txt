@@ -1,0 +1,13 @@
+/**
+ * Scratch Playwright config of the trades-closed evidence. It lives only in a detached scratch worktree, never in the repo.
+ * It runs e2e/zz-tc.spec.ts in WebKit with one worker.
+ */
+import { defineConfig } from "@playwright/test";
+export default defineConfig({
+  testDir: "e2e",
+  testMatch: "zz-tc.spec.ts",
+  workers: 1,
+  timeout: 300000,
+  reporter: [["list"]],
+  use: { browserName: "webkit", reducedMotion: "no-preference" },
+});

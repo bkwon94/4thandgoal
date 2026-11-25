@@ -1,0 +1,11 @@
+{
+  "route": "/2026/managers/1/",
+  "steps": [
+    {
+      "scroll": "#moves"
+    },
+    {
+      "wait": 800
+    }
+  ]
+}

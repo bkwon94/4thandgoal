@@ -9,7 +9,16 @@ import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { serveDir } from "./serve";
-import { addSteps, type Flow, latestWeek, readFlows, routeOf, runSmoke } from "./smoke";
+import {
+  addSteps,
+  type Flow,
+  flowsOfBuild,
+  latestWeek,
+  readFlows,
+  routeOf,
+  runSmoke,
+  tradesClosedOf,
+} from "./smoke";
 
 // Each smoke run starts two browsers and shoots each flow at two sizes, so a test takes more than the default 30 s.
 test.describe.configure({ timeout: 120_000 });
@@ -356,4 +365,39 @@ test("added steps go after the steps of their flow, and a name with no picked fl
   expect(flow.steps).toEqual([{ expect: "text=Week 10" }, { expect: "text=Week 99" }]);
   writeFileSync(file, JSON.stringify({ Analyzer: [{ expect: "text=Lean" }] }));
   expect(() => addSteps([week([])], file)).toThrow(/no picked flow is named "Analyzer"/);
+});
+
+test("a closed build runs the closedSteps of a flow, and an open build keeps its steps", () => {
+  const flow: Flow = {
+    ...week([{ expect: "text=Week 10" }]),
+    closedSteps: [{ expect: "text=Closed" }],
+  };
+  expect(flowsOfBuild([flow], true)[0].steps).toEqual([{ expect: "text=Closed" }]);
+  expect(flowsOfBuild([flow], false)[0].steps).toEqual([{ expect: "text=Week 10" }]);
+  const plain = week([{ expect: "text=Week 10" }]);
+  expect(flowsOfBuild([plain], true)[0].steps).toEqual(plain.steps);
+});
+
+test("the build value of Trades closed comes from the generated client values, never the clock", () => {
+  const { dir } = site({});
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, "client-values.ts");
+  writeFileSync(file, 'export const clientValues = {\n  "tradesClosed": true,\n};\n');
+  expect(tradesClosedOf(file)).toBe(true);
+  writeFileSync(file, 'export const clientValues = {\n  "tradesClosed": false,\n};\n');
+  expect(tradesClosedOf(file)).toBe(false);
+  writeFileSync(file, "export const clientValues = {};\n");
+  expect(() => tradesClosedOf(file)).toThrow(/no tradesClosed value/);
+});
+
+test("the Analyzer flow has closedSteps that expect the closed line and the Home link", () => {
+  const flows = readFlows(
+    join(process.cwd(), "..", "..", ".claude", "skills", "verify", "flows.json"),
+  );
+  const closed = flows.find((flow) => flow.name === "Analyzer")?.closedSteps;
+  expect(closed).toContainEqual({
+    expect: "text=The trade deadline has passed. Trades open again next season.",
+  });
+  expect(closed).toContainEqual({ expect: 'main >> role=link[name="Home"]' });
+  expect(closed?.some((step) => "shot" in step)).toBe(true);
 });

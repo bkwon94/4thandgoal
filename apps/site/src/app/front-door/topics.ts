@@ -34,6 +34,12 @@ export const TOPICS: readonly Topic[] = [
   { key: "trade_check", name: "Trade check", chip: "Check", kind: "judgment" },
 ];
 
+/* The Topics that a client offers. With Trades closed, the trade Topics leave: the three of the kind "judgment", which the
+   trade judge answers. The Topic leaders_trades is a league Topic of the weekly build, so it stays. */
+export function openTopics(tradesClosed: boolean): readonly Topic[] {
+  return tradesClosed ? TOPICS.filter((topic) => topic.kind !== "judgment") : TOPICS;
+}
+
 /* The name of a Topic by its key. A key of no known Topic shows as itself, so a new Topic of the API still reads. */
 export function topicName(key: string): string {
   return TOPICS.find((topic) => topic.key === key)?.name ?? key;
@@ -55,10 +61,11 @@ const DAY_LEADS: Record<number, string[]> = {
   6: ["start_sit", "next_matchup", "weak_spots", "playoff_race"],
 };
 
-/* The keys of all 14 Topics in the order of one day of the week. */
-export function dayOrder(day: number): string[] {
-  const leads = DAY_LEADS[day] ?? [];
-  return [...leads, ...TOPICS.map((topic) => topic.key).filter((key) => !leads.includes(key))];
+/* The keys of all 14 Topics in the order of one day of the week, or of the 11 Topics that stay with Trades closed. */
+export function dayOrder(day: number, tradesClosed = false): string[] {
+  const kept = openTopics(tradesClosed).map((topic) => topic.key);
+  const leads = (DAY_LEADS[day] ?? []).filter((key) => kept.includes(key));
+  return [...leads, ...kept.filter((key) => !leads.includes(key))];
 }
 
 /* The first 3 Topics that have a fact, past the Topics that the manager opened at the same fact. The urgent Topics
@@ -70,8 +77,13 @@ export function pickSuggestions(
   facts: Record<string, string>,
   opened: Record<string, string>,
   urgent: string[] = [],
+  tradesClosed = false,
 ): string[] {
-  return [...urgent, ...dayOrder(day).filter((key) => !urgent.includes(key))]
+  const order = dayOrder(day, tradesClosed);
+  return [
+    ...urgent.filter((key) => order.includes(key)),
+    ...order.filter((key) => !urgent.includes(key)),
+  ]
     .filter((key) => key in facts && opened[key] !== facts[key])
     .slice(0, SUGGESTION_COUNT);
 }

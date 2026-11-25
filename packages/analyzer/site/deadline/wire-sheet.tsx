@@ -29,12 +29,10 @@ export function whenOf(trade: WireTrade): string {
 export type TradeLinks = { gradeHref: string; findHref: string | null };
 
 export function WireSheet({
-  closed,
   countdown,
   wire,
   links,
 }: {
-  closed: boolean;
   countdown: string | null;
   wire: TradeWire;
   links: TradeLinks;
@@ -46,20 +44,17 @@ export function WireSheet({
     >
       <SheetGrip className="mt-sp-2 h-sp-1 w-sp-6" />
       <div className="gap-sp-3 px-sp-5 pt-sp-3 pb-sp-2 flex flex-none flex-col">
-        {/* After the trade deadline Sleeper blocks a trade, so the links leave. */}
-        {!closed && <Links links={links} />}
+        <Links links={links} />
         <div className="gap-sp-1 flex flex-col">
           {/* The meta size, as the eyebrow of the banner: the label size is 10px on a phone, under the floor of 11px. */}
           <span className="text-meta tracking-caps text-mute font-mono leading-tight font-bold uppercase">
-            {closed ? "Final" : `Trade deadline ${countdown}`}
+            {`Trade deadline ${countdown}`}
           </span>
           <div className="gap-sp-2 flex items-center">
             <SheetTitle className="text-score m-0 leading-tight font-bold tracking-tight">
               Trade Wire
             </SheetTitle>
-            {wire.readAt !== null && (
-              <LiveLine closed={closed} readAt={wire.readAt} count={wire.trades?.length ?? 0} />
-            )}
+            {wire.readAt !== null && <LiveLine readAt={wire.readAt} />}
           </div>
           {/* A polite live region, so a screen reader hears the note once, and not each tick of the live line. */}
           <p aria-live="polite" className="text-meta text-mute m-0 font-mono empty:hidden">
@@ -69,7 +64,7 @@ export function WireSheet({
       </div>
       {/* oxlint-disable-next-line design/no-arbitrary-value -- the home bar of an iPhone needs the safe-area inset, which no token adds to a step */}
       <div className="px-sp-5 min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[calc(var(--spacing-sp-6)+env(safe-area-inset-bottom))]">
-        {wire.trades !== null && <WireList trades={wire.trades} closed={closed} />}
+        {wire.trades !== null && <WireList trades={wire.trades} />}
       </div>
       <SheetClose className="sr-only">Close</SheetClose>
     </SheetContent>
@@ -94,17 +89,9 @@ function Links({ links }: { links: TradeLinks }) {
   );
 }
 
-/* The live dot with "Updated Ns ago", which ticks each second while the sheet is open. After the trade deadline the list
-   is final, so the line counts the trades of the week instead. */
-function LiveLine({ closed, readAt, count }: { closed: boolean; readAt: number; count: number }) {
-  const ago = useSecondsSince(readAt, !closed);
-  if (closed) {
-    return (
-      <span className="text-meta text-mute ml-auto font-mono tabular-nums">
-        {count} {count === 1 ? "trade" : "trades"} this week
-      </span>
-    );
-  }
+/* The live dot with "Updated Ns ago", which ticks each second while the sheet is open. */
+function LiveLine({ readAt }: { readAt: number }) {
+  const ago = useSecondsSince(readAt);
   return (
     <span
       data-wire-updated
@@ -126,14 +113,13 @@ export function LiveDot({ className }: { className?: string }) {
   );
 }
 
-/* The whole seconds since `since`, read on each whole second after it while `ticks` holds. The tick lines up with the
+/* The whole seconds since `since`, read on each whole second after it. The tick lines up with the
    read and not with the open of the sheet, so the line reads N s at N s after the read, and never up to 1 s late. A new
    read gives a new `since`, and the count starts again from it. */
-function useSecondsSince(since: number, ticks: boolean): number {
+function useSecondsSince(since: number): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     setNow(Date.now());
-    if (!ticks) return;
     let id: number | undefined;
     const next = () => {
       const intoSecond = (((Date.now() - since) % 1000) + 1000) % 1000;
@@ -144,14 +130,14 @@ function useSecondsSince(since: number, ticks: boolean): number {
     };
     next();
     return () => window.clearTimeout(id);
-  }, [since, ticks]);
+  }, [since]);
   return Math.max(0, Math.floor((now - since) / 1000));
 }
 
 /* The list. The rows on screen when the sheet opens do not animate. A trade that a poll brings in slides down from the
    top with a short blur, 400 ms with the smooth-out ease, and the rows under it move down by layout. Under reduced
    motion it shows at once. With no trade, one quiet line says so. */
-function WireList({ trades, closed }: { trades: WireTrade[]; closed: boolean }) {
+function WireList({ trades }: { trades: WireTrade[] }) {
   const off = useMotionOff();
   if (trades.length === 0) {
     return (
@@ -159,7 +145,7 @@ function WireList({ trades, closed }: { trades: WireTrade[]; closed: boolean }) 
         data-wire-empty
         className="border-rule py-sp-6 text-row text-mute m-0 border-t text-center"
       >
-        {closed ? "No trades this week." : "No trades yet this week."}
+        No trades yet this week.
       </p>
     );
   }

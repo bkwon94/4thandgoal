@@ -30,8 +30,9 @@ NUMBER = re.compile(r"\d+(?:\.\d+)?")
 CUT = re.compile(r"\.\.\.|…")
 # A tool such as Vitest on GitHub Actions colors its output with ANSI codes, so the compare drops each code.
 ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
-# The site client build that a site loop needs at each commit, as the site job of Check does before its tests.
-CLIENT_BUILD = "CLIENT=cpc node scripts/client-build.mjs"
+# The site client build that a site loop needs at each commit, as the site job of Check does before its tests. BUILD_NOW
+# is a time before the CPC Lock, so the unit tests see the analyzer on each day. It is a test input, never a mock mode.
+CLIENT_BUILD = "CLIENT=cpc BUILD_NOW=2026-11-21T09:55:00-05:00 node scripts/client-build.mjs"
 # A loop that runs longer than this counts as a failure, so a hung command cannot hold the job.
 TIMEOUT_SECONDS = 1800
 

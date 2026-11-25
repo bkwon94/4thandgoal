@@ -116,22 +116,17 @@ describe("the Deadline banner", () => {
     );
   });
 
-  it("says the trade deadline has passed, with the badge Final, after the Lock (AT-9)", async () => {
-    await bannerAt("2026-11-24T00:00:01-05:00");
-    const button = screen.getByRole("button", {
-      name: "Open the Trade Wire, final. The trade deadline has passed.",
-    });
-    expect(button.textContent).toContain(
-      "The trade deadline has passed. Good luck in the playoffs.",
-    );
-    expect(button.textContent).toContain("Final");
-    expect(button.textContent).not.toContain("Trade deadline~");
-  });
-
-  it("goes away one day after the Lock (AT-10)", async () => {
-    await bannerAt("2026-11-25T00:00:01-05:00");
-    expect(screen.queryByRole("button")).toBeNull();
-    expect(document.querySelector("[data-deadline-banner]")).toBeNull();
+  it("renders nothing at the Lock and after it, with no closed day (AT-9, AT-10)", async () => {
+    for (const iso of [
+      "2026-11-24T00:00:00-05:00",
+      "2026-11-24T00:00:01-05:00",
+      "2026-11-25T00:00:01-05:00",
+    ]) {
+      const view = await bannerAt(iso);
+      expect(screen.queryByRole("button")).toBeNull();
+      expect(document.querySelector("[data-deadline-banner]")).toBeNull();
+      view.unmount();
+    }
   });
 
   it("opens the shared sheet with the eyebrow, the title Trade Wire, and the empty line", async () => {
@@ -150,19 +145,8 @@ describe("the Deadline banner", () => {
     expect(eyebrow.classList.contains("text-label")).toBe(false);
   });
 
-  it("shows the closed empty line in the sheet after the Lock", async () => {
-    await bannerAt("2026-11-24T00:00:01-05:00");
-    fireEvent.click(trigger());
-    const sheet = screen.getByRole("dialog", { name: "Trade Wire" });
-    expect(within(sheet).getByText("No trades this week.")).toBeTruthy();
-  });
-
   it("never says Lock or that rosters are locked", async () => {
-    for (const iso of [
-      "2026-11-21T09:55:00-05:00",
-      "2026-11-23T21:18:50-05:00",
-      "2026-11-24T00:00:01-05:00",
-    ]) {
+    for (const iso of ["2026-11-21T09:55:00-05:00", "2026-11-23T21:18:50-05:00"]) {
       answer = { status: 200, body: WEEK_9 };
       const view = await bannerAt(iso);
       fireEvent.click(trigger());
@@ -318,14 +302,13 @@ describe("the Trade Wire", () => {
 
   it("stops the poll at the Lock (AT-22)", async () => {
     await bannerAt("2026-11-23T23:59:45-05:00");
-    // One poll before the trade deadline, then one last read at it for the final list.
+    // The first read, then one poll before the trade deadline. The banner leaves at the Lock, and the poll ends with it.
     await wait(10_000);
     await wait(5_000);
-    expect(fetchStub).toHaveBeenCalledTimes(3);
-    const calls = fetchStub.mock.calls.length;
+    expect(document.querySelector("[data-deadline-banner]")).toBeNull();
+    expect(fetchStub).toHaveBeenCalledTimes(2);
     await wait(60_000);
-    expect(fetchStub).toHaveBeenCalledTimes(calls);
-    expect(trigger().textContent).toContain("Final");
+    expect(fetchStub).toHaveBeenCalledTimes(2);
   });
 
   it("keeps the list and shows a short note when a read fails (AT-25)", async () => {
@@ -346,14 +329,6 @@ describe("the Trade Wire", () => {
     fireEvent.click(trigger());
     expect(within(sheet()).getByRole("link", { name: "Grade a trade" })).toBeTruthy();
     expect(within(sheet()).queryByRole("link", { name: "Find a trade" })).toBeNull();
-  });
-
-  it("hides both trade links after the Lock, and keeps the final list (AT-29)", async () => {
-    answer = { status: 200, body: WEEK_9 };
-    await bannerAt("2026-11-24T00:00:01-05:00");
-    fireEvent.click(trigger());
-    expect(within(sheet()).queryByRole("link")).toBeNull();
-    expect(rows()).toHaveLength(2);
   });
 
   it("links to no Deadline Board (AT-52)", async () => {

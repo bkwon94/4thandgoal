@@ -24,6 +24,10 @@ export type ClientValues = {
   // The Lock of [values.analyzer], in ms since the epoch: the time when Sleeper closes trades. With none, the client has
   // no Deadline week.
   lock: number | null;
+  // True when the build ran at or after the Lock. The build sets it, so no browser code reads the clock for it.
+  tradesClosed: boolean;
+  // The flag deadline_week: it turns on the Deadline banner and the Trade Wire. A Lock alone does not.
+  deadlineWeek: boolean;
   // The front door at /, from front_door of client.toml. Off, / is the home page and the front door sits at /ask/.
   frontDoor: boolean;
   // The menu of [menu] in client.toml. The client build fills the items from the package list when client.toml gives none.

@@ -40,11 +40,11 @@ function sitePageOf(value: string): SiteAnswerPage {
 }
 
 /* The route of one question: a Topic, a free answer, an honest miss, a calm refusal, the calm line of a cap in place
-   of a free answer, or a Site answer. `team` is the roster id of the team that the question names, or null for Your
-   team. `closest` holds the 3 closest Topics of a miss and of a cap. `line` is the line of a cap, else null. `page` is
+   of a free answer, a Site answer, or the closed line of a trade question after the Lock. `team` is the roster id of the team that the question names, or null for Your
+   team. `closest` holds the 3 closest Topics of a miss and of a cap. `line` is the line of a cap or the closed line, else null. `page` is
    the page of a Site answer, else null. */
 export const askAnswerSchema = z.object({
-  route: z.enum(["topic", "free", "miss", "refuse", "cap", "site"]),
+  route: z.enum(["topic", "free", "miss", "refuse", "cap", "site", "closed"]),
   line: z.string().nullable().default(null),
   topic: z.string().nullable(),
   team: z.number().nullable(),
@@ -81,12 +81,15 @@ export type AskQuestion = {
 export class AskError extends Error {
   readonly status: number;
   readonly retryAfter?: number;
+  /* The line of the body of a 410 with closed true, which the API writes after the Lock. */
+  readonly closedLine?: string;
 
-  constructor(status: number, message: string, retryAfter?: number) {
+  constructor(status: number, message: string, retryAfter?: number, closedLine?: string) {
     super(message);
     this.name = "AskError";
     this.status = status;
     this.retryAfter = retryAfter;
+    this.closedLine = closedLine;
   }
 }
 
@@ -108,8 +111,21 @@ export async function postClient(
   } catch {
     throw new AskError(0, "The question did not reach the site.");
   }
-  if (!response.ok) throw statusError(response);
+  if (!response.ok) throw await failureOf(response);
   return response;
+}
+
+/* The body of a 410 that the API sends for a trade route after the Lock. */
+const closedBodySchema = z.object({ closed: z.literal(true), line: z.string() });
+
+/* The AskError of a failed response. A 410 with closed true keeps the line of its body, which a page built before the
+   Lock shows as the answer. Each other failure is a statusError. */
+async function failureOf(response: Response): Promise<AskError> {
+  if (response.status === 410) {
+    const body = closedBodySchema.safeParse(await response.json().catch(() => null));
+    if (body.success) return new AskError(410, response.statusText, undefined, body.data.line);
+  }
+  return statusError(response);
 }
 
 /* The AskError of a failed status. A 429 carries its wait in seconds when the Retry-After header gives one. */

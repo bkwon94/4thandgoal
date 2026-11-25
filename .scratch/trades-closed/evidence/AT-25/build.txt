@@ -1,0 +1,83 @@
+AT-25: the build of cpc with the lock of a scratch copy changed to 2027-11-23T00:00:00-05:00. The change was made only in a detached scratch worktree of ad1c9015 outside the repo (git worktree add --detach <scratch>/tc-site HEAD), never committed, and put back after the shots.
+
+$ git diff -- clients/cpc/client.toml   (in the scratch worktree)
+diff --git a/clients/cpc/client.toml b/clients/cpc/client.toml
+index 92eae8c1..f9f21947 100644
+--- a/clients/cpc/client.toml
++++ b/clients/cpc/client.toml
+@@ -22,7 +22,7 @@ chart = "1QB0.5PPR4pt"
+ finder = true
+ # The Lock: the time when Sleeper closes trades, an estimate for the end of the Monday night games of week 11. After
+ # it, trades are closed. Quote it, with its UTC offset.
+-lock = "2026-11-24T00:00:00-05:00"
++lock = "2027-11-23T00:00:00-05:00"
+ # Deadline week: the Deadline banner and the Trade Wire show until the Lock.
+ deadline_week = true
+$ uptime
+16:04  up 109 days,  4:42, 23 users, load averages: 4.91 5.79 8.22
+
+$ CLIENT=cpc NEXT_PUBLIC_API_URL=http://127.0.0.1:18601 pnpm --dir apps/site build
+> 4thandgoal-site@0.1.0 prebuild /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site
+> node scripts/client-build.mjs
+
+(node:95466) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site/src/lib/trades-closed.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> 4thandgoal-site@0.1.0 build /private/tmp/claude-503/-Users-brian-kwon-repos-4thandgoal/63acd77f-c1e1-4b3e-9ed3-8230272f8000/scratchpad/tc-site/apps/site
+> next build
+
+▲ Next.js 16.4.5 (Turbopack)
+✓ Running next.config.ts took 87ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1131ms
+  Running TypeScript ...
+  Finished TypeScript in 560ms ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/26) ...
+  Generating static pages using 9 workers (6/26) 
+  Generating static pages using 9 workers (12/26) 
+  Generating static pages using 9 workers (19/26) 
+✓ Generating static pages using 9 workers (26/26) in 892ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /[season]/[week]
+│ ├ ● /2026/week-06
+│ ├ ● /2026/week-07
+│ ├ ● /2026/week-08
+│ └ ● [+2 more paths]
+├   /[season]/managers
+│ └ ● /2026/managers
+├   /[season]/managers/[roster]
+│ ├ ● /2026/managers/3
+│ ├ ● /2026/managers/2
+│ ├ ● /2026/managers/5
+│ └ ● [+9 more paths]
+├ ○ /analyze
+├ ○ /eggs
+├   /midseason/[season]
+│ └ ● /midseason/2026
+├ ○ /rankings
+└   /sim/[season]
+  └ ● /sim/2026
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+EXIT 0
+$ grep -n "tradesClosed\|\"lock\"" apps/site/src/generated/client-values.ts; grep -n "analyzer" apps/site/src/generated/registry.ts
+18:  "lock": 1826946000000,
+19:  "tradesClosed": false,
+6:import { menuLink as analyzerMenuLink } from "@/app/_routes/analyzer/menu";
+13:import { siteLine as analyzerSiteLine } from "@/app/_routes/analyzer/menu";
+16:import { HomeTool as analyzerHomeTool } from "@/app/_routes/analyzer/home";
+32:  analyzer: analyzerMenuLink,
+43:  analyzer: analyzerSiteLine,
+49:export const homeTools: HomeTool[] = [analyzerHomeTool, managersHomeTool];
+The menu shots (menu-*.png) come from a second build of the same scratch change, made at Tue Nov 24 2026 16:08:03 GMT-0500 (Eastern Standard Time) with the same command, because the first menu pass tapped the menu button while the passphrase sheet closed. That build also wrote "tradesClosed": false. The change was put back with git checkout -- clients/cpc/client.toml after each build; git status of the scratch worktree then shows only the two scratch script files.

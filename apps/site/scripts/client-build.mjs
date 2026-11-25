@@ -17,6 +17,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { parse } from "smol-toml";
+import { tradesClosed } from "../src/lib/trades-closed.ts";
 import { BRAND_SCHEMA, brandCss, COPY_SCHEMA, setsOf } from "@cpc/design/brand/brand.ts";
 
 /* The repo root, two folders above the site app. */
@@ -28,6 +29,19 @@ const SITE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
    then builds from a temp folder, and no test folder goes under clients/. */
 export function clientRoot(env) {
   return env.CLIENT_ROOT ?? REPO_ROOT;
+}
+/* The clock of the build, in ms since the epoch: the real time, or the time that the env value BUILD_NOW names. BUILD_NOW is a
+   test input, never a mock mode. A test build sets it to a time before the Lock, so the page that the test opens does
+   not change with the day. Only the CLI entry reads it. */
+export function buildNow(env) {
+  if (env.BUILD_NOW === undefined) return Date.now();
+  const now = Date.parse(env.BUILD_NOW);
+  if (Number.isNaN(now)) {
+    throw new ClientBuildError(
+      `BUILD_NOW must be a time with a UTC offset, such as 2026-11-21T09:55:00-05:00. Got "${env.BUILD_NOW}".`,
+    );
+  }
+  return now;
 }
 /* The JSON Schema of the kernel keys, which the league package exports from its pydantic model. "make schema" in
    packages/league/python rewrites it. */
@@ -241,6 +255,24 @@ const ROUTES = {
   ],
 };
 
+/* The route of a package after Trades closed, in place of its route in ROUTES. The closed page reads no query, so each
+   old link of the analyzer gives the same page. */
+const CLOSED_ROUTES = {
+  analyzer: [
+    {
+      path: "analyze/page.tsx",
+      source: "@/app/_routes/analyzer/closed-page",
+      exports: ["default", "metadata"],
+    },
+  ],
+};
+
+/* The packages that Trades closed takes out of the menu, the home tools, and the Site answer. The analyzer code stays
+   in the repo, so a build with a later Lock has the analyzer again. */
+function closedPackages(values, now) {
+  return tradesClosed(lockOf(values), now) ? ["analyzer"] : [];
+}
+
 /* The home tool of each package that has one: a row of the Tools chapter of the home page, in the order of the chapter.
    The registry imports it only for a package of the list, so the home page of a client that omits the package holds
    none of its code. The order is fixed here and not by the package list, so the order of client.toml never moves a row. */
@@ -313,18 +345,19 @@ const SITE_LINES = ["week", "rankings", "managers", "analyzer", "midseason", "si
 
 /* The registry of import lines. Only a package of the list gets an import line, so an omitted package is absent from
    the bundle. The map and the list have an explicit type, so a client with no package still type-checks. */
-function registryText(slug, values) {
-  const tools = Object.keys(HOME_TOOLS).filter((name) => values.packages.includes(name));
+function registryText(slug, values, closed = []) {
+  const open = values.packages.filter((name) => !closed.includes(name));
+  const tools = Object.keys(HOME_TOOLS).filter((name) => open.includes(name));
   const home = HOME_SECTIONS.filter((name) => values.packages.includes(name));
   const parts = Object.keys(PAGE_PARTS).filter((name) => values.packages.includes(name));
   const band = Object.keys(BAND_PARTS).filter((name) => values.packages.includes(name));
   const banners = Object.keys(HOME_BANNERS).filter((name) => values.packages.includes(name));
   const weekTiles = Object.keys(WEEK_TILES).filter((name) => values.packages.includes(name));
-  const lines = SITE_LINES.filter((name) => values.packages.includes(name));
+  const lines = SITE_LINES.filter((name) => open.includes(name));
   return [
     headerLine(slug),
     `import type { BandPart, HomeBanner, HomeSections, HomeTool, MenuLinks, PagePart, SiteLines, WeekTile } from "@/lib/client-values";`,
-    ...values.packages.map(
+    ...open.map(
       (name) => `import { menuLink as ${name}MenuLink } from "@/app/_routes/${name}/menu";`,
     ),
     ...lines.map(
@@ -345,7 +378,7 @@ function registryText(slug, values) {
     "",
     "/* The menu link of each package of the client. */",
     "export const menuLinks: MenuLinks = {",
-    ...values.packages.map((name) => `  ${name}: ${name}MenuLink,`),
+    ...open.map((name) => `  ${name}: ${name}MenuLink,`),
     "};",
     "",
     "/* The site line of each package of the client that shows in the Site answer. */",
@@ -399,7 +432,7 @@ function lockOf(values) {
 }
 
 /* The values of the client that the site reads. The site season is the latest season of the client. */
-function clientValuesText(slug, values, brand, copy) {
+function clientValuesText(slug, values, brand, copy, now) {
   const seasons = Object.keys(values.seasons).map(Number);
   const site = {
     slug,
@@ -409,6 +442,9 @@ function clientValuesText(slug, values, brand, copy) {
     finder: values.values?.analyzer?.finder ?? false,
     // The Lock as ms since the epoch, so the site compares it with Date.now(). The schema asks for a UTC offset.
     lock: lockOf(values),
+    // Trades closed is decided here, at build time, so the site needs no second code path in the browser.
+    tradesClosed: tradesClosed(lockOf(values), now),
+    deadlineWeek: values.values?.analyzer?.deadline_week ?? false,
     frontDoor: frontDoorOf(values),
     menu: menuOf(values),
     brand,
@@ -478,26 +514,32 @@ function writeFile(file, text) {
 }
 
 /* Build the client `slug`: check its client.toml, then write the generated files of the site app `site`. */
-export function buildClient({ slug, root = REPO_ROOT, site = join(root, "apps", "site") }) {
+export function buildClient({
+  slug,
+  root = REPO_ROOT,
+  site = join(root, "apps", "site"),
+  now = Date.now(),
+}) {
   const values = readClient(root, slug);
   const brand = readBrand(root, slug);
   const copy = readCopy(root, slug);
   const published = join(root, "clients", slug, "published");
   rmSync(join(site, ROUTE_GROUP), { recursive: true, force: true });
   rmSync(join(site, GENERATED_DIR), { recursive: true, force: true });
+  const closed = closedPackages(values, now);
   for (const name of values.packages) {
-    for (const route of ROUTES[name]) {
+    for (const route of closed.includes(name) ? CLOSED_ROUTES[name] : ROUTES[name]) {
       if (route.needs && !route.needs(published)) continue;
       writeFile(join(site, ROUTE_GROUP, route.path), routeText(slug, route));
     }
   }
   if (!frontDoorOf(values))
     writeFile(join(site, ROUTE_GROUP, ASK_ROUTE.path), routeText(slug, ASK_ROUTE));
-  writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values));
+  writeFile(join(site, GENERATED_DIR, "registry.ts"), registryText(slug, values, closed));
   const logo = copyAssets(root, slug, site);
   writeFile(
     join(site, GENERATED_DIR, "client-values.ts"),
-    clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy),
+    clientValuesText(slug, values, { sets: setsOf(brand), logo }, copy, now),
   );
   writeFile(
     join(site, GENERATED_DIR, "brand.css"),
@@ -518,7 +560,12 @@ function main() {
       "Set CLIENT to the slug of one folder under clients/. Example: CLIENT=cpc pnpm build",
     );
   }
-  buildClient({ slug, root: clientRoot(process.env), site: SITE_DIR });
+  buildClient({
+    slug,
+    root: clientRoot(process.env),
+    site: SITE_DIR,
+    now: buildNow(process.env),
+  });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

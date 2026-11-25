@@ -96,7 +96,7 @@ export function GetCard({
                 <span className="flex min-w-0 flex-1 flex-col">
                   <b className="text-row truncate leading-tight font-bold">{player.name}</b>
                   <span className="text-meta text-mute truncate">
-                    {player.position} {player.nfl_team} ·{" "}
+                    {player.position} {player.nfl_team ?? "FA"} ·{" "}
                     <span className="text-ink font-bold">from {from.team}</span>
                   </span>
                 </span>

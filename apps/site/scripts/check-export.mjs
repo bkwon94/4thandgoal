@@ -8,6 +8,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ClientBuildError, clientRoot, readClient, readCopy } from "./client-build.mjs";
+import { tradesClosedOfBuild } from "./export-closed.mjs";
+import { CLOSED_LINE } from "../src/lib/trades-closed.ts";
 import { FONT_CAPS, FONT_TOTAL } from "../src/app/fonts/budget.ts";
 
 function filesUnder(dir) {
@@ -120,9 +122,20 @@ let finder = "no analyzer";
 if (values.packages.includes("analyzer")) {
   const finderOn = values.values?.analyzer?.finder ?? false;
   const analyze = readFileSync(join("out", "analyze", "index.html"), "utf8");
-  if (!analyze.includes(`finderOn\\":${finderOn}`))
-    fail(`out/analyze/index.html does not set the finder to ${finderOn}`);
-  finder = finderOn ? "the finder" : "no finder";
+  // A build at or after the Lock writes the closed page at /analyze/, with the closed line and no finder flag.
+  // The build decided that from its own clock (BUILD_NOW), so this check reads its value and never the real clock.
+  const generated = readFileSync(join("src", "generated", "client-values.ts"), "utf8");
+  if (tradesClosedOfBuild(generated)) {
+    if (!analyze.includes(CLOSED_LINE))
+      fail("out/analyze/index.html does not show the closed line, but the build is after the Lock");
+    if (analyze.includes("finderOn"))
+      fail("out/analyze/index.html holds the analyzer, but the build is after the Lock");
+    finder = "the closed page";
+  } else {
+    if (!analyze.includes(`finderOn\\":${finderOn}`))
+      fail(`out/analyze/index.html does not set the finder to ${finderOn}`);
+    finder = finderOn ? "the finder" : "no finder";
+  }
 }
 // The flag front_door of client.toml (ticket 43 of front-door). Off, the front door sits at the hidden /ask/: its page
 // has noindex, and no other page links to it. On, the front door is at /, and the export has no /ask/ page.

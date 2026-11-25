@@ -20,7 +20,12 @@ export default function AnalyzePage() {
     <>
       <TopBand {...shellProps()} pageHref={analyzeHref()} />
       <main className="max-w-page px-gutter pt-sp-6 pb-sp-6 mx-auto w-full">
-        <Analyzer target={apiTarget} finderOn={finderOn} lock={clientValues.lock} />
+        <Analyzer
+          target={apiTarget}
+          finderOn={finderOn}
+          lock={clientValues.lock}
+          deadlineWeek={clientValues.deadlineWeek}
+        />
       </main>
     </>
   );

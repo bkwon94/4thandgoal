@@ -1,0 +1,125 @@
+/**
+ * Scratch evidence of trades-closed: the iPhone 15 check of each step list, the page shots that no runner verb covers,
+ * and the text facts of some tests. It imports the runner's own code. It lives only in a scratch worktree.
+ */
+import { devices, test, type Page } from "@playwright/test";
+import { mkdirSync, writeFileSync, appendFileSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { loadTests, takeShot } from "./evidence";
+import { openPage } from "./floor";
+import { findOverlap } from "./smoke";
+
+const ROOT = process.env.TC_ROOT ?? "";
+const SCRATCH = join(ROOT, ".scratch");
+const EVID = join(SCRATCH, "trades-closed", "evidence");
+const URL0 = process.env.TC_URL ?? "http://127.0.0.1:18602";
+const MODE = process.env.TC_MODE ?? "";
+const { defaultBrowserType: _p, ...IPHONE } = devices["iPhone 15"];
+const PHONE = { ...IPHONE, viewport: { width: 390, height: 660 } };
+const LABEL = "iphone-390x660";
+
+type Step = Record<string, any>;
+
+async function runList(page: Page, steps: Step[], onShot: (name: string) => Promise<void>) {
+  let from = page.url();
+  for (const [i, s] of steps.entries()) {
+    try {
+      if ("click" in s) { from = page.url(); await page.locator(s.click).first().click(); }
+      else if ("fill" in s) await page.locator(s.fill.selector).first().fill(s.fill.value);
+      else if ("scroll" in s) {
+        if (s.scroll === "end") await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+        else await page.locator(s.scroll).first().scrollIntoViewIfNeeded();
+        await page.waitForTimeout(100);
+      } else if ("wait" in s) {
+        if (s.wait === "url") await page.waitForURL((u) => u.href !== from);
+        else if (typeof s.wait === "number") await page.waitForTimeout(s.wait);
+        else await page.locator(s.wait).first().waitFor({ state: "visible", timeout: 90000 });
+      } else if ("expect" in s) await page.locator(s.expect).first().waitFor({ state: "visible", timeout: 5000 });
+      else if ("shot" in s) await onShot(s.shot);
+    } catch (e) {
+      throw new Error(`step ${i + 1} ${JSON.stringify(s)}: ${(e as Error).message}`);
+    }
+  }
+}
+
+async function check(page: Page): Promise<string> {
+  const wide = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+  const overlap = await findOverlap(page);
+  return `scrollWidth ${wide.sw}, clientWidth ${wide.cw}, horizontal scroll: ${wide.sw > wide.cw ? "yes" : "no"}; overlap of two text boxes: ${overlap ?? "none"}`;
+}
+
+if (MODE === "iphone") {
+  const ids = (process.env.TC_IDS ?? "").split(/\s+/).filter(Boolean);
+  test.describe("iPhone 15 WebKit 390x660", () => {
+    test.use(PHONE);
+    for (const t of loadTests(SCRATCH, "trades-closed", ids)) {
+      test(`${t.id} iPhone check`, async ({ page }) => {
+        const out = join(t.folder, `${LABEL}.txt`);
+        writeFileSync(out, `${t.id} ${t.route} client ${t.clients.join(",")}, WebKit devices["iPhone 15"], viewport 390x660, light theme, ${new Date().toISOString()}\n`);
+        await openPage(page, `${URL0}${t.route}`, "light");
+        await page.waitForLoadState("networkidle");
+        await runList(page, t.steps as Step[], async (name) => {
+          appendFileSync(out, `at shot "${name}" (${new URL(page.url()).pathname}): ${await check(page)}\n`);
+          await takeShot(page, join(t.folder, `${name}-${LABEL}-light.png`));
+        });
+        appendFileSync(out, `at the end (${new URL(page.url()).pathname}): ${await check(page)}\n`);
+        if (!t.steps.some((s: Step) => "shot" in s)) await takeShot(page, join(t.folder, `${LABEL}-light.png`));
+      });
+    }
+  });
+}
+
+/* TC_PAGES: a JSON list of {folder, route, steps, prefix, clock, iphone}. Each runs at 375, 768, 1280 in light and dark. */
+if (MODE === "pages") {
+  const jobs = JSON.parse(readFileSync(process.env.TC_PAGES ?? "", "utf8")) as {
+    folder: string; route: string; steps?: Step[]; prefix?: string; clock?: string; iphone?: boolean;
+  }[];
+  for (const job of jobs) {
+    const folder = join(EVID, job.folder);
+    mkdirSync(folder, { recursive: true });
+    const sizes: [string, any][] = [
+      ["375", { viewport: { width: 375, height: 900 } }],
+      ["768", { viewport: { width: 768, height: 900 } }],
+      ["1280", { viewport: { width: 1280, height: 900 } }],
+    ];
+    if (job.iphone) sizes.push([LABEL, PHONE]);
+    for (const [size, use] of sizes) {
+      test.describe(`${job.folder} ${job.route} ${size}`, () => {
+        test.use(use);
+        for (const theme of size === LABEL ? (["light"] as const) : (["light", "dark"] as const)) {
+          test(`${job.folder} ${job.prefix ?? ""}${size} ${theme}`, async ({ page }) => {
+            if (job.clock) await page.clock.setFixedTime(new Date(job.clock));
+            await openPage(page, `${URL0}${job.route}`, theme);
+            await page.waitForLoadState("networkidle");
+            const pre = job.prefix ?? "";
+            const log = join(folder, `${pre}${size === LABEL ? LABEL : "sizes"}.txt`);
+            if (job.clock) appendFileSync(log, `${size} ${theme}: browser clock fixed at ${job.clock}; Date in page: ${await page.evaluate(() => new Date().toString())}\n`);
+            const steps = job.steps ?? [];
+            await runList(page, steps, async (name) => {
+              if (size === LABEL) appendFileSync(log, `at shot "${name}" (${new URL(page.url()).pathname}): ${await check(page)}\n`);
+              await takeShot(page, join(folder, `${pre}${name}-${size}-${theme}.png`));
+            });
+            if (size === LABEL) appendFileSync(log, `${job.route} at the end (${new URL(page.url()).pathname}): ${await check(page)}\n`);
+            if (!steps.some((s) => "shot" in s)) await takeShot(page, join(folder, `${pre}${size}-${theme}.png`));
+          });
+        }
+      });
+    }
+  }
+}
+
+/* TC_FACTS: a JSON list of {file, route, steps, js}. Each opens the route at 390x660, runs the steps, and writes the result of js. */
+if (MODE === "facts") {
+  const jobs = JSON.parse(readFileSync(process.env.TC_FACTS ?? "", "utf8")) as { file: string; route: string; steps?: Step[]; js: string; title: string }[];
+  test.use(PHONE);
+  for (const job of jobs) {
+    test(`fact ${job.title}`, async ({ page }) => {
+      await openPage(page, `${URL0}${job.route}`, "light");
+      await page.waitForLoadState("networkidle");
+      await runList(page, job.steps ?? [], async () => {});
+      const value = await page.evaluate(job.js);
+      mkdirSync(join(EVID, job.file, ".."), { recursive: true });
+      appendFileSync(join(EVID, job.file), `${job.title}: ${typeof value === "string" ? value : JSON.stringify(value)}\n`);
+    });
+  }
+}

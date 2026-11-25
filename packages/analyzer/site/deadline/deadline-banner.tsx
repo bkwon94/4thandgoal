@@ -1,6 +1,7 @@
 /**
- * The Deadline banner: the strip under the top band of each page during Deadline week, with the countdown to the trade
- * deadline. The whole strip is one button, the trigger of the shared sheet that holds the Trade Wire.
+ * The Deadline banner: the strip under the top band of each page before the Lock, with the countdown to the trade
+ * deadline. The whole strip is one button, the trigger of the shared sheet that holds the Trade Wire. At the Lock it
+ * renders nothing.
  */
 "use client";
 
@@ -10,20 +11,24 @@ import { Sheet, SheetBackdrop, SheetTrigger } from "@cpc/design/ui/sheet";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import type { ApiTarget } from "../lib/api";
-import { type Deadline, type DeadlinePhase, PASSED_TEXT } from "../lib/deadline";
+import { type Deadline, type DeadlinePhase } from "../lib/deadline";
 import { useDeadline } from "../lib/use-deadline";
 import { useTradeWire } from "../lib/use-trade-wire";
 import { SMOOTH_OUT } from "@cpc/design/lib/motion";
 import { LiveDot, type TradeLinks, WireSheet } from "./wire-sheet";
 
 /* The surface of each phase, from the theme tokens only, so the banner reads in light and in dark. */
-const TONE: Record<Exclude<DeadlinePhase, "ended">, string> = {
+const TONE: Record<OpenPhase, string> = {
   open: "border-rule bg-card text-ink",
   "last-hours": "border-accent bg-accent text-on-dark",
-  closed: "border-rule bg-raised text-ink",
 };
 
-const PASSED = `${PASSED_TEXT}. Good luck in the playoffs.`;
+/* The phases that show the banner. At the Lock the phase is closed, and the banner is gone. */
+type OpenPhase = Exclude<DeadlinePhase, "closed" | "ended">;
+type OpenDeadline = Deadline & { phase: OpenPhase };
+
+const isOpen = (deadline: Deadline): deadline is OpenDeadline =>
+  deadline.phase === "open" || deadline.phase === "last-hours";
 
 /* The banner for the Lock `lock`, in ms since the epoch. The app passes it only for a client with a Lock. It also passes
    the API of the Trade Wire route and the trade links, because the package reads no config. findHref is null while the
@@ -36,7 +41,7 @@ export function DeadlineBanner({
 }: { lock: number; api: ApiTarget } & TradeLinks) {
   const deadline = useDeadline(lock);
   const ref = useRef<HTMLDivElement>(null);
-  const ended = deadline?.phase === "ended";
+  const over = deadline !== null && !isOpen(deadline);
 
   // The top band grows by the height of the banner, so each page that sizes itself under the band, such as the front
   // door, reads the band height token with the banner in it. The CSS adds this height while the banner is in the page.
@@ -56,16 +61,16 @@ export function DeadlineBanner({
       observer?.disconnect();
       root.style.removeProperty("--deadline-banner-h");
     };
-  }, [ended]);
+  }, [over]);
 
-  if (ended) return null;
+  if (over) return null;
   const phase = deadline?.phase ?? "open";
   return (
     <div ref={ref} data-deadline-banner="" data-phase={phase}>
-      {deadline === null ? (
-        <Placeholder />
-      ) : (
+      {deadline !== null && isOpen(deadline) ? (
         <Banner deadline={deadline} api={api} links={{ gradeHref, findHref }} />
+      ) : (
+        <Placeholder />
       )}
     </div>
   );
@@ -82,8 +87,7 @@ function Placeholder() {
 }
 
 /* The name of the button. Before the first read the count is not known, so the name gives none. */
-function nameOf(closed: boolean, count: number | null): string {
-  if (closed) return `Open the Trade Wire, final. ${PASSED_TEXT}.`;
+function nameOf(count: number | null): string {
   if (count === null) return "Open the Trade Wire";
   return `Open the Trade Wire, ${count} new ${count === 1 ? "trade" : "trades"}`;
 }
@@ -93,16 +97,15 @@ function Banner({
   api,
   links,
 }: {
-  deadline: Deadline;
+  deadline: OpenDeadline;
   api: ApiTarget;
   links: TradeLinks;
 }) {
-  const phase = deadline.phase === "ended" ? "closed" : deadline.phase;
-  const closed = phase === "closed";
-  // The poll stops at the trade deadline. After it the hook reads once more for the final list.
-  const wire = useTradeWire(api, !closed);
+  const phase = deadline.phase;
+  // The poll stops when the banner leaves at the Lock, because the hook ends with the banner.
+  const wire = useTradeWire(api);
   const count = wire.trades === null ? null : wire.trades.length;
-  const name = nameOf(closed, count);
+  const name = nameOf(count);
   return (
     <Sheet side="bottom" container={typeof document === "undefined" ? undefined : document.body}>
       {/* The press of transitions.dev: the grid sinks to 0.98 in 150 ms with the ease-out while the press holds, and the
@@ -118,7 +121,7 @@ function Banner({
         <Grid phase={phase} countdown={deadline.countdown} count={count ?? 0} />
       </SheetTrigger>
       <SheetBackdrop />
-      <WireSheet closed={closed} countdown={deadline.countdown} wire={wire} links={links} />
+      <WireSheet countdown={deadline.countdown} wire={wire} links={links} />
     </Sheet>
   );
 }
@@ -131,12 +134,11 @@ function Grid({
   count = 0,
   hidden = false,
 }: {
-  phase: Exclude<DeadlinePhase, "ended">;
+  phase: OpenPhase;
   countdown: string | null;
   count?: number;
   hidden?: boolean;
 }) {
-  const closed = phase === "closed";
   const last = phase === "last-hours";
   return (
     <span
@@ -147,59 +149,41 @@ function Grid({
         hidden && "invisible",
       )}
     >
-      {closed ? (
-        <span className="text-row col-start-2 row-span-2 leading-tight font-bold text-pretty">
-          {PASSED}
-        </span>
-      ) : (
-        <>
-          {/* The eyebrow takes the meta size, the smallest size of the scale over the floor of 11px for other text at
-              every tier. The label size is 10px on a phone, under the floor. */}
-          <span
-            data-deadline-eyebrow
-            className={cn(
-              "text-meta tracking-caps col-start-2 row-start-1 font-mono leading-tight font-bold uppercase",
-              last ? "deadline-shimmer text-on-dark" : "text-mute",
-            )}
-          >
-            Trade deadline
-          </span>
-          <LiveDot className={cn("col-start-1 row-start-2", last && "bg-on-dark")} />
-          {/* A non-breaking space keeps the line height before the first tick. */}
-          <span
-            data-deadline-countdown
-            className="text-body col-start-2 row-start-2 font-mono leading-tight font-bold tabular-nums"
-          >
-            {countdown ?? " "}
-          </span>
-        </>
-      )}
+      {/* The eyebrow takes the meta size, the smallest size of the scale over the floor of 11px for other text at
+            every tier. The label size is 10px on a phone, under the floor. */}
+      <span
+        data-deadline-eyebrow
+        className={cn(
+          "text-meta tracking-caps col-start-2 row-start-1 font-mono leading-tight font-bold uppercase",
+          last ? "deadline-shimmer text-on-dark" : "text-mute",
+        )}
+      >
+        Trade deadline
+      </span>
+      <LiveDot className={cn("col-start-1 row-start-2", last && "bg-on-dark")} />
+      {/* A non-breaking space keeps the line height before the first tick. */}
+      <span
+        data-deadline-countdown
+        className="text-body col-start-2 row-start-2 font-mono leading-tight font-bold tabular-nums"
+      >
+        {countdown ?? " "}
+      </span>
       <span className="gap-sp-2 text-row col-start-3 row-span-2 row-start-1 flex items-center font-bold">
         Trade Wire
-        {/* The count of the trades of the week. With no trade the badge leaves, so the banner never says "0 new". After
-            the trade deadline the badge reads Final. The name of the button carries the count, so the badge is hidden
+        {/* The count of the trades of the week. With no trade the badge leaves, so the banner never says "0 new". The name of the button carries the count, so the badge is hidden
             from a screen reader. */}
-        {closed ? (
+        {count > 0 && (
           <span
             aria-hidden="true"
-            className="rounded-pill border-rule bg-card px-sp-2 py-sp-0 text-meta text-mute border font-mono"
+            data-deadline-badge
+            className={cn(
+              // oxlint-disable-next-line design/no-arbitrary-value -- the gap before "new" is a quarter of the text size, so it scales with the font in em
+              "rounded-pill px-sp-2 py-sp-0 text-meta flex items-center gap-[0.25em] font-mono",
+              last ? "bg-on-dark text-accent" : "bg-accent text-on-dark",
+            )}
           >
-            Final
+            <Count value={count} /> new
           </span>
-        ) : (
-          count > 0 && (
-            <span
-              aria-hidden="true"
-              data-deadline-badge
-              className={cn(
-                // oxlint-disable-next-line design/no-arbitrary-value -- the gap before "new" is a quarter of the text size, so it scales with the font in em
-                "rounded-pill px-sp-2 py-sp-0 text-meta flex items-center gap-[0.25em] font-mono",
-                last ? "bg-on-dark text-accent" : "bg-accent text-on-dark",
-              )}
-            >
-              <Count value={count} /> new
-            </span>
-          )
         )}
       </span>
     </span>

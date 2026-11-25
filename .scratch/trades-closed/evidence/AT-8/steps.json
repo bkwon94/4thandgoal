@@ -1,0 +1,47 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "wait": "role=dialog[name=\"Which team is yours?\"] >> role=button[name=/^The Blue Tent/]"
+    },
+    {
+      "click": "role=dialog[name=\"Which team is yours?\"] >> role=button[name=/^The Blue Tent/]"
+    },
+    {
+      "wait": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]"
+    },
+    {
+      "click": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Skip\"]"
+    },
+    {
+      "wait": 800
+    },
+    {
+      "fill": {
+        "selector": "role=textbox[name=\"Ask a question\"]",
+        "value": "What can this site do?"
+      }
+    },
+    {
+      "click": "role=button[name=\"Send\"]"
+    },
+    {
+      "wait": "input[aria-label=\"League passphrase\"]"
+    },
+    {
+      "fill": {
+        "selector": "input[aria-label=\"League passphrase\"]",
+        "value": "localtest"
+      }
+    },
+    {
+      "click": "role=button[name=\"Use this passphrase\"]"
+    },
+    {
+      "wait": "role=article[name=\"What can this site do?\"]"
+    },
+    {
+      "wait": 8000
+    }
+  ]
+}

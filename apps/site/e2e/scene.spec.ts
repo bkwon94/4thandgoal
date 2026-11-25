@@ -338,8 +338,9 @@ test.describe(`the scene of the week page of ${CLIENT}, with motion`, () => {
       const settled = (await times()).rest - entry;
       console.log(`${CLIENT}: the scene came to rest ${Math.round(settled)} ms after entry`);
       // The lights settle at 1.5 s and the lines draw by 1.75 s, so the scene is at rest at the check at 1.8 s. A frame can
-      // land a little late on a busy machine, so the upper bound has room.
-      expect(settled).toBeGreaterThanOrEqual(1750);
+      // land a little late on a busy machine, so the upper bound has room. Frame timestamps carry sub-millisecond rounding,
+      // so the floor is rounded to whole milliseconds: a scene that settles on time can read 1749.7.
+      expect(Math.round(settled)).toBeGreaterThanOrEqual(1750);
       expect(settled).toBeLessThan(2200);
     },
   );

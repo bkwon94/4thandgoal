@@ -1,0 +1,28 @@
+$ cd apps/api && uv run --exact --package cpc-api pytest -v tests/test_trade_routes_closed.py::test_the_norcal_trade_check_is_410_one_second_after_its_lock
+============================= test session starts ==============================
+platform darwin -- Python 3.11.10, pytest-9.1.1, pluggy-1.7.0 -- /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/brian.kwon/repos/4thandgoal/.claude/worktrees/trades-closed/apps/api
+configfile: pyproject.toml
+plugins: xdist-3.8.0, anyio-4.15.1
+collecting ... collected 1 item
+
+tests/test_trade_routes_closed.py::test_the_norcal_trade_check_is_410_one_second_after_its_lock PASSED [100%]
+
+============================== 1 passed in 2.91s ===============================
+[exit 0]
+
+The source of the test that ran:
+$ awk 'NR>=190 && NR<=202' apps/api/tests/test_trade_routes_closed.py   (cut at the first blank line)
+def test_the_norcal_trade_check_is_410_one_second_after_its_lock(settings, sources, jev, monkeypatch):
+    # AT-22.
+    _set_clock(monkeypatch, datetime(2026, 12, 15, 0, 0, 1, tzinfo=EASTERN))
+    api = _api(settings, sources, jev, Counts(), "norcal")
+    response = _call(api, "trade-check", "POST", {"question": SURE_TRADE, **ROSTER}, "norcal", SECOND_HEADERS)
+    assert response.status_code == 410
+    assert response.json() == CLOSED_BODY
+$ grep -n "CLOSED_BODY =" -A3 apps/api/src/cornerstone_api/trades_closed.py
+11:CLOSED_LINE = "The trade deadline has passed. Trades open again next season."
+12:CLOSED_BODY = {"closed": True, "line": CLOSED_LINE}
+13-# The routes that grade, find, or list trades, as the path under /clients/<slug>. A client that is closed refuses each
+14-# of them with the closed reply. /teams stays open, because the pages still list the teams.

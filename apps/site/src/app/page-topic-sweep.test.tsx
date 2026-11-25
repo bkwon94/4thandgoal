@@ -89,6 +89,9 @@ async function doorOf(league: League) {
   spyOn(process, "cwd").mockReturnValue(root);
   // A reset gives each league a fresh load of the page, so no module state of one league reaches the next.
   resetModules();
+  // The page of these tests has its trades open, whatever the day of the build. The reset loads the client values
+  // again, so the pin sets the value on the new copy.
+  (await import("@/generated/client-values")).clientValues.tradesClosed = false;
   localStorage.setItem("cpc.your-team", String(BO_GIRDS[league]));
   return (await import("./front-door/door-page")).default;
 }

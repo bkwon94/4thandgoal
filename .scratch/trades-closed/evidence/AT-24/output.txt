@@ -1,0 +1,22 @@
+AT-24: the [values.analyzer] table of each client.toml on the Spec branch at ad1c9015.
+
+$ awk '/^\[values.analyzer\]/{p=1;print;next} /^\[/{p=0} p' clients/norcal/client.toml
+[values.analyzer]
+finder = true
+# The Lock: the end of the Monday night games of week 14. After it, trades are closed. NorCal has no deadline_week, so
+# it shows no Deadline banner and no Trade Wire.
+lock = "2026-12-15T00:00:00-05:00"
+
+# The [menu] has no items, so the menu takes the home page, then the package list in its order.
+# With the front door on, the menu is front_door_items: the same six items as CPC, with the sim page.
+
+$ awk '/^\[values.analyzer\]/{p=1;print;next} /^\[/{p=0} p' clients/cpc/client.toml
+[values.analyzer]
+finder = true
+# The Lock: the time when Sleeper closes trades, an estimate for the end of the Monday night games of week 11. After
+# it, trades are closed. Quote it, with its UTC offset.
+lock = "2026-11-24T00:00:00-05:00"
+# Deadline week: the Deadline banner and the Trade Wire show until the Lock.
+deadline_week = true
+
+# The roster of the commissioner, who places every egg and so cannot hunt.

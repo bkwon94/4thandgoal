@@ -20,6 +20,7 @@ import { readFixtureSite } from "@/fixtures/sites";
 import ideasStream from "./front-door/fixtures/trade-ideas-stream.json";
 import { TOPICS, dayOrder } from "./front-door/topics";
 import HomePage from "./front-door/door-page";
+import { pinTradesOpen } from "../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
    sets the folder, and the preload puts the real one back after each test. */
@@ -145,6 +146,9 @@ afterEach(() => {
   streams.length = 0;
   setSystemTime();
 });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the Suggestions that the API serves", () => {
   it("lift each urgent Topic above the order of the day (AT-6)", async () => {

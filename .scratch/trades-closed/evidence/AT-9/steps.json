@@ -1,0 +1,23 @@
+{
+  "route": "/",
+  "steps": [
+    {
+      "wait": "role=dialog[name=\"Which team is yours?\"] >> role=button[name=/^The Blue Tent/]"
+    },
+    {
+      "click": "role=dialog[name=\"Which team is yours?\"] >> role=button[name=/^The Blue Tent/]"
+    },
+    {
+      "wait": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Next\"]"
+    },
+    {
+      "click": "role=dialog[name=\"Suggestions\"] >> role=button[name=\"Next\"]"
+    },
+    {
+      "wait": "role=dialog[name=\"Ask\"]"
+    },
+    {
+      "wait": 800
+    }
+  ]
+}

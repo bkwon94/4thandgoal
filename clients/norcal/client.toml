@@ -22,6 +22,9 @@ chart = "1QB1.0PPR4pt"
 
 [values.analyzer]
 finder = true
+# The Lock: the end of the Monday night games of week 14. After it, trades are closed. NorCal has no deadline_week, so
+# it shows no Deadline banner and no Trade Wire.
+lock = "2026-12-15T00:00:00-05:00"
 
 # The [menu] has no items, so the menu takes the home page, then the package list in its order.
 # With the front door on, the menu is front_door_items: the same six items as CPC, with the sim page.

@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { stubGlobal } from "../../test/stubs";
 import { readFixtureSite } from "@/fixtures/sites";
 import HomePage from "./front-door/door-page";
+import { pinTradesOpen } from "../../test/trades-open";
 
 /* The readers of public/ read the fixed copy of the cpc data, so a weekly publish never changes these tests. Each test
    sets the folder, and the preload puts the real one back after each test. */
@@ -74,6 +75,9 @@ afterEach(() => {
   fetchStub.mockReset();
   for (const list of Object.values(replies)) list.length = 0;
 });
+
+/* The page of these tests has its trades open, whatever the day of the build. */
+pinTradesOpen();
 
 describe("the caps of the front door", () => {
   it("shows the team line with the 3 closest Topics, and makes no call for a free answer (AT-37)", async () => {

@@ -23,7 +23,7 @@ import {
   morphId,
   staggerOf,
 } from "./motion";
-import { TOPICS, type Topic } from "./topics";
+import { openTopics, type Topic } from "./topics";
 
 /* A chip keeps its place when the row changes: a chip that leaves fades out, and the others glide to their new place. */
 const CHIP_GLIDE = { type: "spring", bounce: 0, duration: 0.4 } as const;
@@ -48,6 +48,7 @@ export function Suggestions({
   onMore,
   onPick,
   askFirst,
+  tradesClosed = false,
 }: {
   // null until the browser reads the day, so the placeholder chips show in place of the chips.
   picks: string[] | null;
@@ -58,8 +59,11 @@ export function Suggestions({
   // The front door asks for the passphrase before the first tap shows a fact. It returns true when it took the tap, and
   // it runs `then` once the manager types the passphrase.
   askFirst?: (then: () => void) => boolean;
+  // With Trades closed, a trade Topic gets no chip and no row in "More".
+  tradesClosed?: boolean;
 }) {
   const off = useMotionOff();
+  const offered = openTopics(tradesClosed);
   const panelId = useId();
   const stripId = useId();
   // The key of the chip whose fact shows in the strip. The tap is the reveal, not a long press: a long press is hard to
@@ -83,7 +87,7 @@ export function Suggestions({
     reveal(key);
   };
   const topics = (picks ?? [])
-    .map((key) => TOPICS.find((topic) => topic.key === key))
+    .map((key) => offered.find((topic) => topic.key === key))
     .filter((topic): topic is Topic => !!topic);
   // The strip shows only while its chip is in the row and the "More" panel is shut.
   const strip = moreOpen ? undefined : topics.find((topic) => topic.key === shown);
@@ -276,7 +280,7 @@ export function Suggestions({
               aria-label="All Topics"
               className="max-h-more p-sp-1 m-0 flex list-none flex-col overflow-y-auto overscroll-contain"
             >
-              {TOPICS.map((topic, index) => {
+              {offered.map((topic, index) => {
                 const fact = facts[topic.key];
                 // A live Topic opens with the API. Until then its row shows, so no Topic is missing, but it takes no tap.
                 const ready = fact !== undefined;

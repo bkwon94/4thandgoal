@@ -55,6 +55,7 @@ export default function FrontDoorPage({ pageHref = homeHref() }: { pageHref?: st
               personalHrefs={door.personalHrefs}
               pages={clientSitePages()}
               askTarget={askTarget}
+              tradesClosed={clientValues.tradesClosed}
             />
           </SimLinkProvider>
         ) : (
