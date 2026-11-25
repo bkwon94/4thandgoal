@@ -1,6 +1,6 @@
 /**
- * The copy of a Clinch line of the League board (decision 06), such as "Clinches a spot with a win and a median win." Each
- * takes data from the sim file and returns text, so the board and the tests read one wording.
+ * The copy of a Clinch line of the League board and the team sheet (decision 06), such as "Clinches a spot with a win and a
+ * median win." Each takes data from the sim file and returns text, so the board, the sheet, and the tests read one wording.
  */
 import type { ClinchLine, ClinchWay, WeekSim } from "../schema/sim-types";
 import { nameOf } from "./format";
@@ -36,9 +36,9 @@ function otherResult(sim: WeekSim, other: ClinchWay["others"][number]): string {
   return `${/^[aeiou]/i.test(team) ? "an" : "a"} ${team} ${result}${to}`;
 }
 
-/* The sentence of a Clinch line: its most likely way, with the Goal named. */
-export function clinchText(sim: WeekSim, line: ClinchLine): string {
-  const way = line.ways[0];
+/* The sentence of one way of a Clinch line, with the Goal named. It names at most `shown` results of other teams, then
+   "and N more results". */
+function wayText(sim: WeekSim, line: ClinchLine, way: ClinchWay, shown: number): string {
   const head =
     line.status === "in"
       ? `Clinches ${line.goal === "spot" ? "a spot" : "a bye"}`
@@ -46,10 +46,10 @@ export function clinchText(sim: WeekSim, line: ClinchLine): string {
         ? "Out"
         : "Out of the bye race";
   const others = way.others.map((other) => otherResult(sim, other));
-  const more = others.length - OTHERS_SHOWN;
+  const more = others.length - shown;
   const parts = [
     ...ownResults(way, sim.parameters.median_game),
-    ...others.slice(0, OTHERS_SHOWN),
+    ...others.slice(0, shown),
     ...(more > 0 ? [`${more} more ${more === 1 ? "result" : "results"}`] : []),
   ];
   const text =
@@ -57,6 +57,14 @@ export function clinchText(sim: WeekSim, line: ClinchLine): string {
   // A team name can end in a period, such as "Puka Deez...", and the sentence then takes no second one.
   return text.endsWith(".") ? text : `${text}.`;
 }
+
+/* The sentence of a Clinch line on the board: its most likely way, with the Goal named. */
+export const clinchText = (sim: WeekSim, line: ClinchLine): string =>
+  wayText(sim, line, line.ways[0], OTHERS_SHOWN);
+
+/* The sentences of the team sheet: each stored way of a Clinch line, most likely first, with every result named. */
+export const clinchWayTexts = (sim: WeekSim, line: ClinchLine): string[] =>
+  line.ways.map((way) => wayText(sim, line, way, Infinity));
 
 /* The Clinch lines of a team for the Goal of the view. A Seed Goal has none (decision 06). */
 export const clinchLinesOf = (lines: ClinchLine[], goal: string): ClinchLine[] =>
