@@ -125,13 +125,21 @@ class PlanGame(BaseModel):
 
 
 class PlanWeek(BaseModel):
-    """One week of a Week plan: the result of Your team, and the 1 or PLAN_ROOT_FOR games of the week to root for."""
+    """One week of a Week plan: the result of Your team, the Score to beat of that result, and the 1 or PLAN_ROOT_FOR
+    games of the week to root for."""
     week: int
     opponent: int
     game: Literal["win", "loss"]
     # Above or below the median in a league with a median game. None with none.
     median: Literal["above", "below"] | None
     root_for: list[PlanGame]
+    # The Score to beat of the result, as the ScoreToBeat of the week gives it. A loss needs no score against the
+    # opponent, so a loss row holds None for win and win_sure (PRD story 26). A median miss, or a league with no
+    # median game, holds None for the median scores. None too in a file written before the row held its scores.
+    win: int | None = None
+    win_sure: int | None = None
+    median_score: int | None = None
+    median_sure: int | None = None
 
 
 class WeekPlan(BaseModel):
@@ -380,6 +388,8 @@ class _Planner:
         self.bits = bits
         self.you = you
         self.weeks = weeks
+        # The Score to beat of each week left, so each row of a plan holds the scores of its result.
+        self.beat = scores_to_beat(you, table, weeks)
         codes = (_WIN + _ABOVE, _WIN, _ABOVE, 0) if table.median_game else (_WIN, 0)
         # The runs of each result code of Your team in each week, best result first.
         self.results = [[(code, bits.of(week, lambda c, code=code: c == code)) for code in codes]
@@ -448,8 +458,15 @@ class _Planner:
         rows.sort(key=lambda row: -row[0])
         games = [PlanGame(winner=winner, loser=loser, odds=shown("open", bits.mass(part & reach), bits.mass(part), 1))
                  for _, winner, loser, part in rows[:PLAN_ROOT_FOR]]
+        # A table with no score draws gives no Score to beat, so its rows hold no score.
+        beat = self.beat[i] if i < len(self.beat) else None
+        win = beat if code & _WIN else None
+        above = beat if median == "above" else None
         return PlanWeek(week=self.weeks[i], opponent=opponent, game="win" if code & _WIN else "loss", median=median,
-                        root_for=games)
+                        root_for=games, win=None if win is None else win.win,
+                        win_sure=None if win is None else win.win_sure,
+                        median_score=None if above is None else above.median,
+                        median_sure=None if above is None else above.median_sure)
 
 
 def scores_to_beat(you: int, table: RunTable, weeks: Sequence[int]) -> list[ScoreToBeat]:

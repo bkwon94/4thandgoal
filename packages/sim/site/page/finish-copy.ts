@@ -2,14 +2,7 @@
  * The words of the Finish list and its Paths, the copy of decision 06 of playoff-paths: the name and the line of a Finish,
  * the conditions of a Path, and the sentence of each case. Each takes data from the page block and returns a string.
  */
-import type {
-  Finish,
-  FinishPath,
-  PlanWeek,
-  ScoreToBeat,
-  WeekPlan,
-  WeekSim,
-} from "../schema/sim-types";
+import type { Finish, FinishPath, PlanWeek, WeekPlan, WeekSim } from "../schema/sim-types";
 import { nameOf, recordText } from "./format";
 import { type GoalKey, seedOf } from "./goals";
 
@@ -91,13 +84,13 @@ export function planResult(week: PlanWeek): string {
 }
 
 /* The Score to beat of one week of a plan, such as "Score 109 to win, 127 to be sure. Score 107 to beat the median, 114
-   to be sure." A loss names no score for the game, and a median miss names none for the median. */
-export function planScores(week: PlanWeek, beat: ScoreToBeat | undefined): string | null {
-  if (beat === undefined) return null;
+   to be sure." The row holds the scores of its result: a loss holds no score for the game, and a median miss holds none
+   for the median. */
+export function planScores(week: PlanWeek): string | null {
   const parts: string[] = [];
-  if (week.game === "win") parts.push(`Score ${beat.win} to win, ${beat.win_sure} to be sure.`);
-  if (week.median === "above" && beat.median !== null)
-    parts.push(`Score ${beat.median} to beat the median, ${beat.median_sure} to be sure.`);
+  if (week.win !== null) parts.push(`Score ${week.win} to win, ${week.win_sure} to be sure.`);
+  if (week.median_score !== null)
+    parts.push(`Score ${week.median_score} to beat the median, ${week.median_sure} to be sure.`);
   return parts.length > 0 ? parts.join(" ") : null;
 }
 

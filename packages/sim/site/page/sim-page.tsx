@@ -305,7 +305,6 @@ function RegularSimPage({
                     winsLeft={page.wins_left}
                     goal={goal}
                     mine
-                    scoreToBeat={page.score_to_beat}
                     onTry={what.chooseAll}
                   />
                 </div>
