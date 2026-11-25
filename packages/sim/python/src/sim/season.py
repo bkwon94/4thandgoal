@@ -28,6 +28,7 @@ from sim.tunables import (
     SIM_RUNS,
     STOP_CHECK_RUNS,
 )
+from sim.week_card import week_card
 
 Pair = tuple[int, int]
 # A bracket hold sets the scores of one round before its winners count, and gives the weight of that round.
@@ -388,7 +389,10 @@ def _season_sim(
                                                    records=records, wins_left=(2 if median_game else 1) * weeks_left,
                                                    weeks_left=weeks_left, spots=spots, bye_count=bye_count,
                                                    effective_runs=effective_runs, weeks=regular),
-                             score_to_beat=scores_to_beat(rid, run_table, regular))
+                             score_to_beat=scores_to_beat(rid, run_table, regular),
+                             week_card=week_card(rid, run_table, {key: g.status for key, g in goals[rid].items()},
+                                                 records=records, spots=spots, bye_count=bye_count,
+                                                 effective_runs=effective_runs, weeks=regular, weeks_left=weeks_left))
               for rid in sorted(set(pages))}
     return SimResult(
         season=season, week=week, runs=runs, effective_runs=effective_runs, random_seed=seed, weeks=weeks, bracket_weeks=bracket_weeks,

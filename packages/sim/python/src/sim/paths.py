@@ -62,6 +62,9 @@ class RunTable:
     scores: dict[int, dict[int, array]] = field(default_factory=dict)
     # The score that a team of `pages` must pass in each week to beat the median: the k-th highest of the other scores.
     lines: dict[int, list[array]] = field(default_factory=dict)
+    # For each team, 1 when it scores above the median in the first regular week left, else 0. The median rooting of
+    # the week card reads it for every team, so a What-if of one page still holds it.
+    aboves: dict[int, bytearray] = field(default_factory=dict)
 
     def add(
         self, weight: float, more: Mapping[int, int], seat: Mapping[int, int],
@@ -75,6 +78,10 @@ class RunTable:
             self.seat.setdefault(rid, bytearray()).append(seat.get(rid, 0))
         if not self.games:
             self.games = [[bytearray() for _ in pairs] for pairs in self.pairs]
+        if weeks and self.median_game:
+            above = weeks[0][1]
+            for rid in more:
+                self.aboves.setdefault(rid, bytearray()).append(rid in above)
         for i, (won, above) in enumerate(weeks):
             for (a, b), codes in zip(self.pairs[i], self.games[i], strict=True):
                 codes.append(_FIRST if a in won else _SECOND if b in won else _TIE)

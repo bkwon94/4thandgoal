@@ -10,9 +10,9 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-
 
 **Status:** ready-for-agent
 
-- [ ] The Score to beat of Bo Girds for week 12 holds 2 scores against Teez Nuts and 2 against the median, each 80% score above its 50% score.
-- [ ] Each of the 4 results holds 5 root-for rows.
-- [ ] A tap on a result tile changes the Finish list and the board to the numbers of the response.
-- [ ] NorCal shows 2 tiles and no median score.
-- [ ] The week card passes the WebKit overlap check at the 4 sizes, in light and dark mode.
-- [ ] `make check-fast` passes.
+- [x] The Score to beat of Bo Girds for week 12 holds 2 scores against Teez Nuts and 2 against the median, each 80% score above its 50% score.
+- [x] Each of the 4 results holds 5 root-for rows.
+- [x] A tap on a result tile changes the Finish list and the board to the numbers of the response.
+- [x] NorCal shows 2 tiles and no median score.
+- [x] The week card passes the WebKit overlap check at the 4 sizes, in light and dark mode.
+- [x] `make check-fast` passes.

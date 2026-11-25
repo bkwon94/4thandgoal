@@ -49,6 +49,12 @@ SURE_FINISH = 0.995
 OPEN_GOAL_ODDS = 5
 # The lowest playoff odds, in percent, of a team that the league fact counts in the race for the last spots.
 RACE_FLOOR = 10
+# The tiebreak gap of the week card shows when another team across the edge of the Goal sits within TIE_WINS wins and
+# TIE_POINTS Points For of Your team (PRD, the week card). Closer than that, the points of one week can decide a tie.
+TIE_WINS = 1
+TIE_POINTS = 50
+# The most median rows of the week card. The first always shows, and the second needs a lift of ROOT_FOR_LIFT.
+MEDIAN_ROWS = 2
 # The most root-for rows of one week, and the least lift in whole points that keeps a row (PRD, the page block).
 ROOT_FOR_ROWS = 3
 ROOT_FOR_LIFT = 1

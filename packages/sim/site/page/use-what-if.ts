@@ -1,14 +1,12 @@
 /**
- * The state of the What-if of the sim page: the set results, the page block that the page shows, and the call to the API.
- * Each tap starts a call at once and cancels the call before it. With no set result, the page shows the file.
+ * The state of the What-if of the sim page: the set results, the page block and the board that the page shows, and the call
+ * to the API. Each tap starts a call at once and cancels the call before it. With no set result, the page shows the file.
  */
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { SetResult, SimPage, WhatIfAnswer } from "../schema/sim-types";
+import type { BoardTeam, SetResult, SimPage, WeekCard, WhatIfAnswer } from "../schema/sim-types";
 import type { WhatIfApi } from "../lib/what-if-api";
-
-type PageWeek = SimPage["weeks"][number];
 
 /* The stored runs of an answer, which each hold its set results, and their weights. The replay picks from them. */
 export type AnswerRuns = Pick<WhatIfAnswer, "teams" | "sample" | "sample_weights">;
@@ -19,43 +17,52 @@ export type Choice = Pick<SetResult, "game" | "median"> | null;
 type State = {
   // The set results that the page assumes, in week order.
   set: SetResult[];
-  // The page block of the last answer, and the set results it holds. Null with no answer, so the page shows the file.
-  answer: { page: SimPage; set: SetResult[]; runs: AnswerRuns } | null;
-  // The block of each set week as the page showed it at the tap, so its tiles keep the odds of each other result.
-  held: Record<number, PageWeek>;
+  // The page block and the board of the last answer, and the set results it holds. Null with no answer, so the page
+  // shows the file.
+  answer: { page: SimPage; board: BoardTeam[]; set: SetResult[]; runs: AnswerRuns } | null;
+  // The week card as the page showed it before its week was set, so its tiles keep the odds of each other result.
+  // Null while the week of the card is not set.
+  card: WeekCard | null;
   pending: boolean;
   // True after a call failed, until the next answer or a Reset.
   down: boolean;
 };
 
-/* The held block of `week` with the odds of the answer on its set result. The answer holds the result of the tap and
-   each other set result, so the pressed tile shows the header odds of that answer, not the noisy odds of the split. */
-function withOdds(
-  held: State["held"],
-  week: number,
-  choice: NonNullable<Choice>,
-  page: SimPage,
-): State["held"] {
-  const block = held[week];
-  if (block === undefined) return held;
-  const results = block.results.map((result) =>
-    result.game === choice.game && result.median === choice.median
-      ? { ...result, playoff: page.playoff, about: false }
-      : result,
+/* The week card of an answer over the card held at the tap. An answer with the week set has runs of the set result
+   only, so each other result keeps the odds and the root-for list of the held card. */
+export function heldCard(held: WeekCard | null, shown: WeekCard | null): WeekCard | null {
+  if (held === null || shown === null || shown.week !== held.week) return shown ?? held;
+  const goals = Object.fromEntries(
+    Object.entries(held.goals).map(([key, goal]) => {
+      const now = shown.goals[key];
+      const pick = <T>(mine: T[][], theirs: T[][] | undefined) =>
+        mine.map((rows, i) => (theirs?.[i]?.length ? theirs[i] : rows));
+      return [
+        key,
+        {
+          ...goal,
+          odds: goal.odds.map((odds, i) => now?.odds[i] ?? odds),
+          root_for: pick(goal.root_for, now?.root_for),
+          median_root: pick(goal.median_root, now?.median_root),
+        },
+      ];
+    }),
   );
-  return { ...held, [week]: { ...block, results } };
+  return { ...held, goals };
 }
 
-const EMPTY: State = { set: [], answer: null, held: {}, pending: false, down: false };
+const EMPTY: State = { set: [], answer: null, card: null, pending: false, down: false };
 
 export type WhatIf = {
   set: SetResult[];
   // The page block that the page shows: the answer of the set results, or the file.
   page: SimPage;
+  // The board odds of the answer that `page` shows, or null when the page shows the file.
+  board: BoardTeam[] | null;
+  // The week card that the page shows: the card of `page`, over the card held at the tap of its week.
+  card: WeekCard | null;
   // The stored runs of the answer that `page` shows, or null when the page shows the file.
   runs: AnswerRuns | null;
-  // The block of a week as the page shows it: the held block of a set week, or the week of `page`.
-  weekOf: (week: number) => PageWeek | undefined;
   pending: boolean;
   down: boolean;
   choose: (week: number, choice: Choice) => void;
@@ -77,25 +84,23 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
 
   const answered = state.set.length > 0 && state.answer !== null ? state.answer : null;
   const shown = answered?.page ?? file;
+  const cardWeek = file.week_card?.week;
 
-  /* Start the call of `set`. `heldOf` gives the held blocks after the answer, from the state then and its page. */
-  const start = (
-    set: SetResult[],
-    held: State["held"],
-    heldOf: (was: State, page: SimPage) => State["held"],
-  ) => {
-    setState((was) => ({ ...was, set, held, pending: true }));
+  /* The held card after `set`: the card before its week was set, or null when `set` leaves the week open. */
+  const holdFor = (set: SetResult[], was: State) =>
+    set.some((result) => result.week === cardWeek) ? (was.card ?? shown.week_card) : null;
+
+  /* Start the call of `set`. */
+  const start = (set: SetResult[]) => {
+    setState((was) => ({ ...was, set, card: holdFor(set, was), pending: true }));
     const controller = new AbortController();
     call.current = controller;
     const failed = () =>
       // The page goes back to the set results of the last answer, so each number on it agrees with its set line.
       setState((was) => {
         const kept = was.answer?.set ?? [];
-        const keep = new Set(kept.map((result) => result.week));
-        const left = Object.fromEntries(
-          Object.entries(was.held).filter(([key]) => keep.has(Number(key))),
-        );
-        return { ...was, set: kept, held: left, pending: false, down: true };
+        const card = kept.some((result) => result.week === cardWeek) ? was.card : null;
+        return { ...was, set: kept, card, pending: false, down: true };
       });
     if (api === undefined) {
       failed();
@@ -109,6 +114,7 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
           ...was,
           answer: {
             page: answer.page,
+            board: answer.board,
             set,
             runs: {
               teams: answer.teams,
@@ -116,7 +122,6 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
               sample_weights: answer.sample_weights,
             },
           },
-          held: heldOf(was, answer.page),
           pending: false,
           down: false,
         }));
@@ -136,19 +141,11 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
       const rest = state.set.filter((result) => result.week !== week);
       const set =
         choice === null ? rest : [...rest, { week, ...choice }].sort((a, b) => a.week - b.week);
-      const held = { ...state.held };
-      delete held[week];
-      if (choice !== null) {
-        const block = state.held[week] ?? shown.weeks.find((entry) => entry.week === week);
-        if (block !== undefined) held[week] = block;
-      }
       if (set.length === 0) {
         setState({ ...EMPTY, down: state.down });
         return;
       }
-      start(set, held, (was, page) =>
-        choice === null ? was.held : withOdds(was.held, week, choice, page),
-      );
+      start(set);
     },
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- start reads only refs, props, and setState
     [api, file.you, shown, state],
@@ -162,13 +159,7 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
         setState({ ...EMPTY, down: state.down });
         return;
       }
-      const held: State["held"] = {};
-      for (const result of sorted) {
-        const block =
-          state.held[result.week] ?? shown.weeks.find((entry) => entry.week === result.week);
-        if (block !== undefined) held[result.week] = block;
-      }
-      start(sorted, held, (was) => was.held);
+      start(sorted);
     },
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- start reads only refs, props, and setState
     [api, file.you, shown, state],
@@ -179,14 +170,12 @@ export function useWhatIf(file: SimPage, api: WhatIfApi | undefined): WhatIf {
     setState(EMPTY);
   }, []);
 
-  const weekOf = (week: number) =>
-    state.held[week] ?? shown.weeks.find((entry) => entry.week === week);
-
   return {
     set: state.set,
     page: shown,
+    board: answered !== null && answered.board.length > 0 ? answered.board : null,
+    card: heldCard(state.card, shown.week_card),
     runs: answered?.runs ?? null,
-    weekOf,
     pending: state.pending,
     down: state.down,
     choose,

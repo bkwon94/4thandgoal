@@ -104,6 +104,7 @@ export function FinishList({
               <BarChartBar
                 value={key}
                 data-finish={key}
+                data-odds={finish.odds}
                 aria-expanded={expanded}
                 aria-label={`${key}, ends ${recordText(finish.record)}, ${Math.round(finish.chance)}% likely: ${oddsText(finish.odds, finish.about)} odds of ${name}`}
                 className={cn(ROW, grid)}

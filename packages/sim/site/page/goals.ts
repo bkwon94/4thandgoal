@@ -46,15 +46,20 @@ export function boardOf(sim: WeekSim): BoardTeam[] {
 /* The odds of one Goal of a board team. A Goal the file does not hold reads 0. */
 export const boardOdds = (team: BoardTeam, goal: GoalKey): number => team.goals[goal]?.odds ?? 0;
 
-/* The board in odds order for `goal`. A tie keeps the order of the standings: wins, then Points For, then Points Against. */
-export function boardOrder(sim: WeekSim, goal: GoalKey): BoardTeam[] {
+/* The board in odds order for `goal`. A tie keeps the order of the standings: wins, then Points For, then Points Against.
+   `board` is the board of a What-if answer, else the board of the file. */
+export function boardOrder(
+  sim: WeekSim,
+  goal: GoalKey,
+  board: BoardTeam[] = boardOf(sim),
+): BoardTeam[] {
   const record = (id: number) => sim.records[id] ?? [0, 0, 0, 0];
   const standings = (a: number, b: number) => {
     const [aw, , apf, apa = 0] = record(a);
     const [bw, , bpf, bpa = 0] = record(b);
     return bw - aw || bpf - apf || bpa - apa || a - b;
   };
-  return [...boardOf(sim)].sort(
+  return [...board].sort(
     (a, b) => boardOdds(b, goal) - boardOdds(a, goal) || standings(a.roster_id, b.roster_id),
   );
 }
