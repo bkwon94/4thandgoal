@@ -47,11 +47,11 @@ Test verdict: pending
 ### 2. The scrolled-up Thread test cannot find the "Your season" Topic on CI
 
 Done condition: `e2e/front-door-scroll-up.spec.ts` "a question typed in a scrolled-up Thread" finds its Topic button on each run, with no retry and no longer timeout.
-Method: diagnosing-bugs.
-Cause: pending
-Red: pending
-Green: pending
-Test verdict: pending
+Method: text only. Brian chose a delete of the test on 2026-11-25, which the flaky-test rule of AGENTS.md allows.
+Cause: not fixed. A probe found that `openTopic` taps a row of the All Topics list while the row still moves, so a slow CI runner can miss the tap. The red commit `3edd2ec9` of that probe is not on the branch.
+Red: none, test delete.
+Green: at `a83d1ee1`, the diff of `apps/site/e2e/front-door-scroll-up.spec.ts`.
+Test verdict: none
 
 ## Smoke
 
