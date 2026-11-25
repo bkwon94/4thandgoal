@@ -81,14 +81,15 @@ async function fetchLive(leagueId: string, waitMs: number): Promise<LiveTeams | 
   }
 }
 
-/* Each old name to swap and its Live name, longest first, so a name inside a longer name never swaps first. An old name
-   that is the Live name of another team stays, because the text may mean that team. */
+/* Each old name to swap and its Live name, longest first, so a name inside a longer name never swaps first. Each published
+   name of the season that differs from the Live name swaps, so an older week swaps too when the newest week has the Live
+   name. An old name that is the Live name of another team stays, because the text may mean that team. */
 function nameSwaps(teams: PublishedTeam[], live: LiveTeams): [string, string][] {
   const liveNames = new Set(Object.values(live).map((team) => team.name));
   const swaps: [string, string][] = [];
   for (const team of teams) {
     const now = live[String(team.rosterId)]?.name;
-    if (!now || now === team.names[0]) continue;
+    if (!now) continue;
     for (const old of new Set(team.names)) {
       if (old && old !== now && !liveNames.has(old)) swaps.push([old, now]);
     }

@@ -94,6 +94,29 @@ describe("LiveNames", () => {
     ]);
   });
 
+  it("swaps each older name of a team whose newest published name is the Live name", async () => {
+    // cpc week 11 publishes "Teez Nuts" for roster 5, so the week 10 page still holds the older names.
+    const teams: PublishedTeam[] = [
+      TEAMS[0],
+      TEAMS[1],
+      {
+        rosterId: 5,
+        names: ["Teez Nuts", "Puka Deez...", "London Cooking"],
+        avatarUrl: "https://sleepercdn.com/uploads/puka.jpg",
+      },
+    ];
+    spyOn(globalThis, "fetch").mockImplementation(sleeper() as unknown as typeof globalThis.fetch);
+    const { getByTestId } = render(
+      <div>
+        <h2 data-testid="slot">Puka Deez...</h2>
+        <p data-testid="blurb">London Cooking beat Lil Fridge by 12 points.</p>
+        <LiveNames leagueId={LEAGUE} teams={teams} />
+      </div>,
+    );
+    await waitFor(() => expect(getByTestId("slot").textContent).toBe("Teez Nuts"));
+    expect(getByTestId("blurb").textContent).toBe("Teez Nuts beat Lil Fridge by 12 points.");
+  });
+
   it("swaps an old name that a later render writes again", async () => {
     spyOn(globalThis, "fetch").mockImplementation(sleeper() as unknown as typeof globalThis.fetch);
     const { getByTestId } = page();
