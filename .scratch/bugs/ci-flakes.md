@@ -1,7 +1,7 @@
 # Two flaky browser tests of the site check
 
 Kind: bug
-Status: in-progress
+Status: done
 Branch: `bug-ci-flakes`.
 Source: the session of 2026-11-25. Both tests turned the CI check `Check` red on PR #98.
 Boundary: holds. 2 items of one kind; no new term or ADR; no moved seam; each done condition is one sentence.
@@ -58,3 +58,8 @@ Test verdict: none
 Smoke: flows `Front door`, `Passphrase`, `Week report`, `Manager page`, `Analyzer`, `Power rankings`, `Midseason report`. "Smoke run: 7 flows, 7 passed, 0 failed". Shots in `.scratch/bugs/ci-flakes/smoke/`.
 
 ## Comments
+
+- Closes with the squash merge of the PR of `bug-ci-flakes`. Commits: `ae6e61ce`, `3200d4f1`, `90d0582f`. Date: 2026-11-25.
+- Proof: the loop of item 1 went red at `ae6e61ce` (5 of 10 runs failed) and green at `3200d4f1` (10 of 10 passed), and `make check-fast` passed with 2012 site tests.
+- Note: item 2 is a delete, not a fix. The cause stays: `openTopic` in `apps/site/e2e/door-motion.ts` taps a row of All Topics while the row still moves. Other tests that call it can flake the same way.
+- Read 6 files: apps/site/e2e/scene.spec.ts, packages/design/site/parts/scene-canvas.ts, apps/site/e2e/front-door-scroll-up.spec.ts, apps/site/e2e/door-motion.ts, the two CI job logs.
