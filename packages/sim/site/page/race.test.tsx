@@ -271,6 +271,37 @@ describe("the Week plan of a Path", () => {
   });
 });
 
+describe("the status pill of the Your team card", () => {
+  const cardPill = () =>
+    within(screen.getByRole("region", { name: "Your team" }))
+      .getAllByRole("button")[0]
+      .querySelector("[data-status-pill]");
+
+  it("shows no pill for Bo Girds in the hunt for a spot after week 11", () => {
+    expect(sim.board.find((row) => row.roster_id === YOU)!.goals.spot.status).toBe("open");
+    render(<SimPage sim={sim} you={YOU} />);
+    expect(cardPill()).toBeNull();
+  });
+
+  it("shows a red Out pill when Your team is out of the Goal", () => {
+    const out = structuredClone(sim);
+    out.board.find((row) => row.roster_id === YOU)!.goals.spot.status = "out";
+    render(<SimPage sim={out} you={YOU} />);
+    expect(cardPill()?.textContent).toBe("Out");
+    expect(cardPill()?.getAttribute("data-status-pill")).toBe("out");
+  });
+
+  it("names the best Goal locked on the green pill when Your team clinched", () => {
+    const clinched = structuredClone(sim);
+    const mine = clinched.board.find((row) => row.roster_id === YOU)!;
+    mine.goals.spot.status = "in";
+    mine.goals.bye.status = "in";
+    render(<SimPage sim={clinched} you={YOU} />);
+    expect(cardPill()?.textContent).toBe("Clinched bye");
+    expect(cardPill()?.getAttribute("data-status-pill")).toBe("clinched");
+  });
+});
+
 describe("the pills and the Clinch lines of the League board", () => {
   const rowOf = (id: number) =>
     within(screen.getByRole("group", { name: /^League board/ }))

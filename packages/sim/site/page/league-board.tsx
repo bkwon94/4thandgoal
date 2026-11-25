@@ -56,7 +56,7 @@ const PILL_TINT = {
   out: "bg-status-out-tint text-status-out-ink",
 } as const;
 
-function StatusPill({ pill }: { pill: Pill }) {
+export function StatusPill({ pill }: { pill: Pill }) {
   return (
     <span
       data-status-pill={pill.kind}
