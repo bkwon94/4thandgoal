@@ -8,7 +8,7 @@ Spec: `.scratch/playoff-paths/PRD.md`. Acceptance tests AT-14, AT-15, AT-16, AT-
 
 **Blocked by:** 04
 
-**Status:** ready-for-agent
+**Status:** in-review
 
 - [x] The Score to beat of Bo Girds for week 12 holds 2 scores against Teez Nuts and 2 against the median, each 80% score above its 50% score.
 - [x] Each of the 4 results holds 5 root-for rows.
