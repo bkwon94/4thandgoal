@@ -9,7 +9,7 @@ import { LayoutGroup, motion } from "framer-motion";
 import { useMotionOff } from "@cpc/design/hooks/use-motion-off";
 import { cn } from "@cpc/design/lib/utils";
 import { BarChart, BarChartBar } from "@cpc/design/ui/bar-chart";
-import type { ClinchLine, WeekSim } from "../schema/sim-types";
+import type { BoardTeam, ClinchLine, WeekSim } from "../schema/sim-types";
 import { clinchLinesOf, clinchText } from "./clinch-copy";
 import { CARD, LABEL, PRESS, nameOf, oddsText, recordText } from "./format";
 import {
@@ -94,19 +94,22 @@ function ClinchLines({ sim, lines }: { sim: WeekSim; lines: ClinchLine[] }) {
 
 export function LeagueBoard({
   sim,
+  board,
   you,
   goal,
   onYou,
   onOther,
 }: {
   sim: WeekSim;
+  // The board odds of a What-if answer. Without it, the board shows the file.
+  board?: BoardTeam[];
   you: number;
   goal: GoalKey;
   onYou: () => void;
   onOther: (id: number) => void;
 }) {
   const off = useMotionOff();
-  const order = boardOrder(sim, goal);
+  const order = boardOrder(sim, goal, board);
   const name = goalName(goal);
   return (
     <section className={cn(CARD, "px-sp-2")} aria-labelledby="league-board-title">
@@ -143,6 +146,7 @@ export function LeagueBoard({
                 <BarChartBar
                   value={String(id)}
                   data-roster={id}
+                  data-odds={odds}
                   aria-haspopup={mine ? undefined : "dialog"}
                   aria-label={[
                     `${nameOf(sim, id)}${mine ? ", your team" : ""}: ${oddsText(odds)} odds of ${name}.`,

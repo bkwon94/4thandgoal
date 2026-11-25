@@ -118,7 +118,7 @@ describe("the Finish list of the Your team card", () => {
     ]);
     expect(finishBar("4-2").textContent).toContain("ends 15-13");
     const card = screen.getByRole("region", { name: "Your team" });
-    const week = within(card).getByRole("navigation", { name: "Weeks" });
+    const week = within(card).getByRole("article", { name: /^Week 12 vs / });
     // The Finish list comes before the week card in the order of the page.
     expect(
       finishList().compareDocumentPosition(week) & Node.DOCUMENT_POSITION_FOLLOWING,

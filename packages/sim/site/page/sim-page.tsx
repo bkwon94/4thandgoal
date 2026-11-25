@@ -1,6 +1,6 @@
 /**
  * The sim page of Your team. In the regular season it is The Race, variant D of decision 04 of playoff-paths: the title, the Goal
- * switch, the Your team card that opens in place with the Finish list, the week pages, and the replay, then the League board.
+ * switch, the Your team card that opens in place with the Finish list, the week card, and the replay, then the League board.
  * A tap on another team of the board opens its Finish list in a sheet.
  */
 "use client";
@@ -23,17 +23,12 @@ import { FinishList } from "./finish-list";
 import { InPlayoffs, seasonLine } from "./in-playoffs";
 import { LeagueBoard } from "./league-board";
 import { SoftText } from "./parts";
-import { PlayoffsPage } from "./playoffs-page";
 import { TeamSheet } from "./team-sheet";
 import { useWhatIf } from "./use-what-if";
-import { PLAYOFFS, WeekSwitch, type WeekItem } from "./week-switch";
-import { WeekPage } from "./week-page";
+import { WeekCard } from "./week-card";
 
 /* The avatar src of each team by roster id, with the base path, from the latest week. */
 export type Avatars = Record<string, string>;
-
-/* The entry of a week page: the page slide of transitions-dev, a short move from the side of the item with a soft blur. */
-const ENTER = { duration: 0.25, ease: [0.22, 1, 0.36, 1] } as const;
 
 /* The line of the set results, such as "Wk 11 win, beat median · Wk 12 lose". */
 const setText = (set: SetResult[]) =>
@@ -180,29 +175,14 @@ function RegularSimPage({
   const page = what.page;
   const [goal, setGoal] = useState<GoalKey>(() => openGoal(file));
   const [cardOpen, setCardOpen] = useState(true);
-  const items: WeekItem[] = [...file.weeks.map((week) => week.week), PLAYOFFS];
-  // The side the open page came from: 1 from the right for a later item, -1 from the left, and 0 for the first page,
-  // which shows at rest.
-  const [{ open, side }, setView] = useState<{ open: WeekItem; side: number }>({
-    open: items[0],
-    side: 0,
-  });
   const off = useMotionOff();
   const [replay, setReplay] = useState<StageAsk | null>(null);
   const [other, setOther] = useState<number | null>(null);
   // The Finish list follows the page of a What-if answer, and the file when the answer holds none.
   const finishes = page.finishes[goal] ?? file.finishes[goal] ?? [];
 
-  const openItem = (item: WeekItem) => {
-    setView((was) =>
-      item === was.open
-        ? was
-        : { open: item, side: items.indexOf(item) > items.indexOf(was.open) ? 1 : -1 },
-    );
-  };
-  const week = typeof open === "number" ? what.weekOf(open) : undefined;
-  const chosen =
-    typeof open === "number" ? what.set.find((result) => result.week === open) : undefined;
+  const card = what.card;
+  const nextWeek = file.weeks[0]?.week ?? null;
   // The spot odds follow the What-if through the playoff odds of the page. Another Goal reads the Goals of the page, and
   // the file when the answer holds none.
   const goalOdds =
@@ -315,47 +295,20 @@ function RegularSimPage({
                   />
                 </div>
               </section>
-              <WeekSwitch
-                items={items}
-                open={open}
-                onOpen={openItem}
-                setWeeks={what.set.map((result) => result.week)}
-              />
+              {card !== null && (
+                <WeekCard
+                  sim={sim}
+                  card={card}
+                  goal={goal}
+                  status={(pageGoals(page)[goal] ?? pageGoals(file)[goal])?.status ?? "open"}
+                  scoreToBeat={page.score_to_beat.find((beat) => beat.week === card.week)}
+                  set={what.set}
+                  pending={what.pending}
+                  onChoose={(choice) => what.choose(card.week, choice)}
+                />
+              )}
 
-              <motion.div
-                key={String(open)}
-                initial={
-                  side === 0
-                    ? false
-                    : off
-                      ? { opacity: 0 }
-                      : { opacity: 0, x: side * 8, filter: "blur(3px)" }
-                }
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                transition={off ? { duration: 0.15 } : ENTER}
-              >
-                {week !== undefined ? (
-                  <WeekPage
-                    sim={sim}
-                    week={week}
-                    chosen={chosen ?? null}
-                    onChoose={(choice) => what.choose(week.week, choice)}
-                  />
-                ) : (
-                  <PlayoffsPage
-                    sim={sim}
-                    page={page}
-                    team={(what.runs?.teams ?? sim.teams)[you]}
-                    onOpen={openItem}
-                  />
-                )}
-              </motion.div>
-
-              <SimButtons
-                week={typeof open === "number" ? open : null}
-                waiting={what.pending}
-                onAsk={setReplay}
-              />
+              <SimButtons week={nextWeek} waiting={what.pending} onAsk={setReplay} />
             </div>
           </CollapsiblePanel>
         </Collapsible>
@@ -367,7 +320,14 @@ function RegularSimPage({
         )}
       </section>
 
-      <LeagueBoard sim={sim} you={you} goal={goal} onYou={openCard} onOther={setOther} />
+      <LeagueBoard
+        sim={sim}
+        board={what.board ?? undefined}
+        you={you}
+        goal={goal}
+        onYou={openCard}
+        onOther={setOther}
+      />
       <TeamSheet
         sim={sim}
         team={other}
@@ -397,8 +357,8 @@ function RegularSimPage({
   );
 }
 
-/* The two buttons of the replay, in the flow under the week page and never fixed over content. The Playoffs page and
-   the playoff weeks have only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
+/* The two buttons of the replay, in the flow under the week card and never fixed over content. The playoff weeks have
+   only "Sim the season". While a What-if call runs, they wait, so the replay always plays a run of the set line. */
 function SimButtons({
   week,
   waiting,

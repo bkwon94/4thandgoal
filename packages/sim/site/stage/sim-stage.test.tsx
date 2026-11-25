@@ -169,17 +169,11 @@ describe("the replay of a What-if", () => {
       const card = screen.getByRole("article", { name: /^Week 11 vs / });
       fireEvent.click(
         within(within(card).getByRole("group", { name: "Results" })).getByRole("button", {
-          name: /^Win, beat median/,
+          name: /^Win and beat the median/,
         }),
       );
       await wait(0);
       await wait(400);
-      // The next week opens after the tap, so the reader goes back to week 11.
-      fireEvent.click(
-        within(screen.getByRole("navigation", { name: "Weeks" })).getByRole("button", {
-          name: /^Wk 11/,
-        }),
-      );
       press("Sim week 11");
       fireEvent.click(within(controls()).getByRole("button", { name: "Skip" }));
       await wait(0);

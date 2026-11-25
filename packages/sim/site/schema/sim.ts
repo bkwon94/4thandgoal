@@ -273,6 +273,53 @@ export const finishSchema = z.object({
   plan: weekPlanSchema.nullable().default(null),
 });
 
+/* One other game of the week for one result of Your team: the side to root for, the odds of the Goal after it wins,
+   and the odds after the other side wins. Two odds under 1 point apart make a game that does not matter. */
+export const cardRootSchema = z.object({
+  winner: z.number(),
+  loser: z.number(),
+  odds: z.number().int(),
+  other: z.number().int(),
+});
+
+/* One other team whose median miss lifts the odds of Your team, with the odds after the miss. */
+export const cardMedianSchema = z.object({
+  roster_id: z.number(),
+  odds: z.number().int(),
+});
+
+/* One result of Your team in the week of the card, and how likely it is. */
+export const cardResultSchema = z.object({
+  game: gameSchema,
+  median: medianSchema,
+  chance: z.number(),
+  about: z.boolean(),
+});
+
+/* Another team across the edge of the Goal, close enough that points can decide a tie. `points` is the Points For of
+   Your team minus theirs. */
+export const tieGapSchema = z.object({
+  roster_id: z.number(),
+  points: z.number(),
+});
+
+/* The week card for one Goal. Each list follows the order of the results of the card. A seed and a Goal that is not
+   open hold no root-for list. */
+export const cardGoalSchema = z.object({
+  odds: z.array(oddsSchema),
+  root_for: z.array(z.array(cardRootSchema)).default([]),
+  median_root: z.array(z.array(cardMedianSchema)).default([]),
+  tiebreak: tieGapSchema.nullable().default(null),
+});
+
+/* The week card of the next regular week of Your team: its results, best first, and each Goal after them. */
+export const weekCardSchema = z.object({
+  week: z.number(),
+  opponent: z.number(),
+  results: z.array(cardResultSchema),
+  goals: z.record(z.string(), cardGoalSchema),
+});
+
 /* The page block of one team. sim.json and the What-if answer share it, so the page reads one shape. */
 export const simPageSchema = z.object({
   you: z.number(),
@@ -296,6 +343,8 @@ export const simPageSchema = z.object({
   finishes: z.record(z.string(), z.array(finishSchema)).default({}),
   // The Score to beat of each regular week left, in week order. An older file has none.
   score_to_beat: z.array(scoreToBeatSchema).default([]),
+  // The week card of the next regular week. Null with no regular week left. An older file has none.
+  week_card: weekCardSchema.nullable().default(null),
 });
 
 /* The week file, week-NN/sim.json: the season shape with the run weights, a page for each team, and the league fact. */

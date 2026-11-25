@@ -14,7 +14,7 @@ import { CARD, LABEL, chanceText, nameOf, oddsText, roundName, scoreText, winTex
 import { Bar } from "./parts";
 import type { Avatars } from "./sim-page";
 import type { Choice } from "./use-what-if";
-import { TILE } from "./week-page";
+import { TILE } from "./week-card";
 
 type Round = Playoffs["rounds"][number];
 type Game = Round["games"][number];

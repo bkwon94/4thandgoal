@@ -723,3 +723,71 @@ def test_the_try_it_odds_of_the_plan_equal_a_what_if_of_its_results_within_1_poi
     print(f"AT-13: rerun(week-11/sim.json, you={rid}, set={[r.model_dump() for r in held]})")
     print(f"AT-13: Try it {plan['odds']}%, What-if {odds}%, effective runs {what_if.effective_runs}")
     assert abs(odds - plan["odds"]) <= 1
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_the_score_to_beat_of_bo_girds_for_week_12_holds_2_scores_against_teez_nuts_and_2_against_the_median(
+        cpc_week_11_file):
+    # AT-14. Week 12 is Bo Girds, roster 6, against roster 5, which Sleeper now calls Teez Nuts.
+    sim = cpc_week_11_file
+    page = sim["pages"]["6"]
+    beat = page["score_to_beat"][0]
+    card = page["week_card"]
+    print(f"AT-14: {beat}")
+    assert (beat["week"], beat["opponent"]) == (12, 5) == (card["week"], card["opponent"])
+    assert beat["win_sure"] > beat["win"] and beat["median_sure"] > beat["median"]
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_each_of_the_4_week_12_results_of_bo_girds_roots_for_the_5_other_games(cpc_week_11_file):
+    # AT-15 and AT-16, on the spot and the bye. A seed holds its tiles only, to keep sim.json small.
+    sim = cpc_week_11_file
+    names = sim["names"]
+    card = sim["pages"]["6"]["week_card"]
+    others = {frozenset(pair) for pair in sim["schedule"]["12"] if 6 not in pair}
+    assert len(others) == 5
+    assert [(r["game"], r["median"]) for r in card["results"]] == [
+        ("win", "above"), ("win", "below"), ("loss", "above"), ("loss", "below")]
+    for goal, held in card["goals"].items():
+        if goal.startswith("seed-"):
+            assert held["root_for"] == [] and held["median_root"] == []
+            continue
+        assert len(held["root_for"]) == len(held["median_root"]) == 4
+        for result, value, rows, medians in zip(card["results"], held["odds"], held["root_for"], held["median_root"],
+                                                strict=True):
+            assert len(rows) == 5
+            assert {frozenset((r["winner"], r["loser"])) for r in rows} == others
+            assert all(r["odds"] >= r["other"] for r in rows)
+            assert 1 <= len(medians) <= 2
+            if goal == "spot":
+                print(f"AT-15: {result['game']} {result['median']} -> {value}%: " + "; ".join(
+                    f"{names[str(r['winner'])]} beats {names[str(r['loser'])]} -> {r['odds']}%, "
+                    f"{names[str(r['loser'])]} wins -> {r['other']}%"
+                    + (" (Doesn't matter)" if r["odds"] - r["other"] < 1 else "") for r in rows))
+                print("AT-16: " + "; ".join(f"{names[str(m['roster_id'])]} misses the median -> {m['odds']}%"
+                                            for m in medians))
+
+
+@pytest.mark.skipif(not (SAVED / "week-11" / "raw").is_dir(), reason="no saved week 11 data")
+def test_a_week_11_tiebreak_gap_shows_only_for_a_team_within_1_win_and_50_points_across_the_edge(cpc_week_11_file):
+    # AT-18, checked by hand from the records of the file.
+    sim = cpc_week_11_file
+    records = {int(rid): r for rid, r in sim["records"].items()}
+    order = sorted(records, key=lambda rid: (-records[rid][0], -records[rid][2], -records[rid][3], rid))
+    place = {rid: n for n, rid in enumerate(order, start=1)}
+    edges = {"spot": 6, "bye": 2, **{f"seed-{n}": n for n in range(1, 7)}}
+    shown = 0
+    for rid, page in sim["pages"].items():
+        you = int(rid)
+        for goal, card in page["week_card"]["goals"].items():
+            edge = edges[goal]
+            close = [o for o in order if o != you and (place[o] <= edge) != (place[you] <= edge)
+                     and abs(records[o][0] - records[you][0]) <= 1 and abs(records[o][2] - records[you][2]) <= 50]
+            gap = card["tiebreak"]
+            if page["goals"][goal]["status"] != "open" or not close:
+                assert gap is None
+                continue
+            assert gap is not None and gap["roster_id"] in close
+            shown += 1
+            if goal == "spot":
+                print(f"AT-18: {sim['names'][rid]} {goal}: {sim['names'][str(gap['roster_id'])]} {gap['points']:+}")
+    print(f"AT-18: {shown} gaps")

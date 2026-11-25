@@ -23,3 +23,5 @@ export type FinishPath = z.infer<typeof schema.pathSchema>;
 export type WeekPlan = z.infer<typeof schema.weekPlanSchema>;
 export type PlanWeek = z.infer<typeof schema.planWeekSchema>;
 export type ScoreToBeat = z.infer<typeof schema.scoreToBeatSchema>;
+export type WeekCard = z.infer<typeof schema.weekCardSchema>;
+export type CardGoal = z.infer<typeof schema.cardGoalSchema>;
